@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./Button";
-import { Save, X, Plus } from "lucide-react";
+import { Save } from "lucide-react";
 
 const meta = {
   title: "UI-Kit/Button",
