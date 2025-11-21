@@ -2,7 +2,7 @@ import { useRef, createRef, type FC } from "react";
 import styles from "./ProjectLanguages.module.css";
 import { IconButton, InteractiveField } from "@/ui-kit";
 import { Plus, Edit } from "lucide-react";
-import { languages } from "@/constants/settings";
+import { LANGUAGES } from "@/constants/settings";
 
 interface LanguagesContentProps {
   handleAddNewClick: () => void;
@@ -63,7 +63,7 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
 
       {/* Languages List */}
       <div className={styles.languagesList}>
-        {languages.map((language) => {
+        {LANGUAGES.map((language) => {
           const itemRef = getOrCreateRef(language.code);
           return (
             <div

@@ -1,13 +1,5 @@
-import { InteractiveField, IconButton } from "@/ui-kit";
-import {
-  Plus,
-  X,
-  Check,
-  ChevronRight,
-  ChevronDown,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { InteractiveField } from "@/ui-kit";
+import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import styles from "./ProductSettings.module.css";
 import type { FC, Dispatch, SetStateAction } from "react";
 
@@ -18,7 +10,6 @@ export interface ExistingItem {
 }
 
 interface ProductSettingsProps {
-  handleAddNew: () => void;
   newFieldValue: string;
   setNewFieldValue: Dispatch<SetStateAction<string>>;
   setIsExistingExpanded: Dispatch<SetStateAction<boolean>>;
@@ -30,7 +21,6 @@ interface ProductSettingsProps {
 }
 
 export const ProductContent: FC<ProductSettingsProps> = ({
-  handleAddNew,
   newFieldValue,
   setNewFieldValue,
   setIsExistingExpanded,
@@ -46,16 +36,6 @@ export const ProductContent: FC<ProductSettingsProps> = ({
       <div className={styles.createNewSection}>
         <div className={styles.createNewHeader}>
           <h3 className={styles.createNewTitle}>Create new one</h3>
-          <div className={styles.addButtonWrapper}>
-            <IconButton
-              variant="primary"
-              size="small"
-              icon={<Plus size={12} color="#0e0f11" />}
-              ariaLabel="Add New"
-              onClick={handleAddNew}
-            />
-            <span className={styles.addButtonText}>Add New</span>
-          </div>
         </div>
 
         <div className={styles.interactiveFieldsContainer}>
@@ -66,18 +46,6 @@ export const ProductContent: FC<ProductSettingsProps> = ({
               value: newFieldValue,
               onChange: setNewFieldValue,
               placeholder: "Name here",
-            }}
-            actions={{
-              cancel: {
-                icon: <X size={14} color="#ffffff" />,
-                onClick: () => setNewFieldValue(""),
-                ariaLabel: "Cancel",
-              },
-              save: {
-                icon: <Check size={14} color="#ffffff" />,
-                onClick: handleAddNew,
-                ariaLabel: "Save",
-              },
             }}
           />
         </div>

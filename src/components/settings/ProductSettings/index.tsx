@@ -2,28 +2,38 @@ import { useState } from "react";
 import { Tab, TabGroup, Button } from "@/ui-kit";
 import styles from "./ProductSettings.module.css";
 import { ProductContent, type ExistingItem } from "./ProductContent";
+import { createCategory } from "@/services/settings";
+import { PRODUCT_SETTINGS_TABS } from "@/constants/settings";
 
 const ProductSettings = () => {
   const [activeTab, setActiveTab] = useState("category-code");
   const [isExistingExpanded, setIsExistingExpanded] = useState(false);
   const [newFieldValue, setNewFieldValue] = useState("");
-  const [existingItems, setExistingItems] = useState<ExistingItem[]>([
-    { id: "1", name: "Name here", enabled: true },
-    { id: "2", name: "Name here", enabled: true },
-    { id: "3", name: "Name here", enabled: true },
-  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [existingItems, setExistingItems] = useState<ExistingItem[]>([]);
 
-  const tabs = [
-    { id: "category-code", label: "Category Code" },
-    { id: "brand-code", label: "Brand Code" },
-    { id: "unit-types-code", label: "Unit Types Code" },
-    { id: "box-size-code", label: "Box Size Code" },
-  ];
-
-  const handleAddNew = () => {
-    if (newFieldValue.trim()) {
-      // Handle adding new item
-      setNewFieldValue("");
+  const handleSave = async () => {
+    if (activeTab === "category-code" && newFieldValue.trim()) {
+      setIsLoading(true);
+      try {
+        await createCategory(newFieldValue.trim());
+        setExistingItems((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            name: newFieldValue.trim(),
+            enabled: true,
+          },
+        ]);
+        setNewFieldValue("");
+        // alert("Category created successfully!");
+      } catch (err: any) {
+        console.error("Error creating category:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      console.log("Saving changes...");
     }
   };
 
@@ -50,7 +60,7 @@ const ProductSettings = () => {
         {/* Tabs */}
         <div className={styles.tabsContainer}>
           <TabGroup>
-            {tabs.map((tab) => (
+            {PRODUCT_SETTINGS_TABS.map((tab) => (
               <Tab
                 key={tab.id}
                 variant="segmented"
@@ -63,7 +73,6 @@ const ProductSettings = () => {
         </div>
 
         <ProductContent
-          handleAddNew={handleAddNew}
           newFieldValue={newFieldValue}
           setNewFieldValue={setNewFieldValue}
           setIsExistingExpanded={setIsExistingExpanded}
@@ -76,11 +85,23 @@ const ProductSettings = () => {
       </div>
       {/* Action buttons */}
       <div className={styles.actionButtons}>
-        <Button variant="secondary" size="medium" onClick={() => {}}>
+        <Button
+          variant="secondary"
+          size="medium"
+          onClick={() => {
+            setNewFieldValue("");
+          }}
+          disabled={isLoading}
+        >
           Cancel
         </Button>
-        <Button variant="primary" size="medium" onClick={() => {}}>
-          Save
+        <Button
+          variant="primary"
+          size="medium"
+          onClick={handleSave}
+          disabled={isLoading}
+        >
+          {isLoading ? "Saving..." : "Save"}
         </Button>
       </div>
     </div>

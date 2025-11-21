@@ -3,7 +3,7 @@ import { Button } from "@/ui-kit";
 import styles from "./ProjectLanguages.module.css";
 import { LanguagesContent } from "./LanguagesContent";
 import { EditLanguageDropdown } from "./languagesActions/EditLanguageDropdown";
-import { languages } from "@/constants/settings";
+import { LANGUAGES } from "@/constants/settings";
 
 const ProjectLanguages = () => {
   const [editingLanguageCode, setEditingLanguageCode] = useState<string | null>(
@@ -31,7 +31,7 @@ const ProjectLanguages = () => {
   };
 
   const editingLanguage = editingLanguageCode
-    ? languages.find((lang) => lang.code === editingLanguageCode)
+    ? LANGUAGES.find((lang) => lang.code === editingLanguageCode)
     : null;
 
   return (
@@ -53,14 +53,10 @@ const ProjectLanguages = () => {
         onOpenChange={(open) => {
           if (!open) handleCloseDropdown();
         }}
-        onSave={(data) => {
-          // TODO: wire up real save
-          console.log("Save language:", data);
+        onSave={() => {
           handleCloseDropdown();
         }}
         onDelete={() => {
-          // TODO: wire up real delete
-          console.log("Delete language:", editingLanguageCode);
           handleCloseDropdown();
         }}
       />

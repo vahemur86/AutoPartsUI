@@ -12,7 +12,7 @@ import {
   TableCell,
   IconButton,
 } from "@/ui-kit";
-import { languages } from "@/constants/settings";
+import { LANGUAGES } from "@/constants/settings";
 import { Pencil } from "lucide-react";
 import styles from "./Translation.module.css";
 
@@ -114,7 +114,7 @@ const Translation = () => {
                   value={languageCode}
                   onChange={(e) => setLanguageCode(e.target.value)}
                 >
-                  {languages.map((lang) => (
+                  {LANGUAGES.map((lang) => (
                     <option key={lang.code} value={lang.code}>
                       {lang.name} ({lang.code})
                     </option>
