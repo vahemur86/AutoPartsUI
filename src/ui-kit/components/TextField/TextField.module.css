@@ -1,0 +1,110 @@
+.textFieldWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: "Manrope", sans-serif;
+  width: 100%;
+}
+
+.textFieldLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-white);
+  user-select: none;
+}
+
+.textFieldContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  padding: 12px 16px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  gap: 12px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.textFieldContainer:hover:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-primary-500);
+}
+
+.textFieldContainer:focus-within:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-primary-500);
+  outline: none;
+}
+
+.textFieldContainer.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.textFieldContainer.error {
+  border-color: #ef4444;
+}
+
+.textFieldContainer.error:hover:not(.disabled) {
+  border-color: #ef4444;
+}
+
+.textFieldContainer.error:focus-within:not(.disabled) {
+  border-color: #ef4444;
+}
+
+.textFieldInput {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-white);
+  font-size: 14px;
+  font-family: "Manrope", sans-serif;
+  padding: 0;
+}
+
+.textFieldInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.textFieldInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.textFieldSeparator {
+  width: 1px;
+  height: 20px;
+  background-color: rgba(204, 204, 204, 0.5);
+  flex-shrink: 0;
+}
+
+.textFieldIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.textFieldIcon:hover {
+  color: var(--color-white);
+}
+
+.textFieldHelperText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: -4px;
+}
+
+.textFieldHelperText.error {
+  color: #ef4444;
+}

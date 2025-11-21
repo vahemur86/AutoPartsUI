@@ -1,0 +1,114 @@
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: "Manrope", sans-serif;
+  width: 100%;
+}
+
+.selectLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-white);
+  user-select: none;
+}
+
+.selectContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  padding: 12px 16px;
+  padding-right: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  justify-content: space-between;
+}
+
+.selectContainer:hover:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-primary-500);
+}
+
+.selectContainer:focus-within:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-primary-500);
+  outline: none;
+}
+
+.selectContainer.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selectContainer.error {
+  border-color: #ef4444;
+}
+
+.selectContainer.error:hover:not(.disabled) {
+  border-color: #ef4444;
+}
+
+.selectContainer.error:focus-within:not(.disabled) {
+  border-color: #ef4444;
+}
+
+.selectInput {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-white);
+  font-size: 14px;
+  font-family: "Manrope", sans-serif;
+  padding: 0;
+  padding-right: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.selectInput option {
+  background-color: #1a1a1a;
+  color: var(--color-white);
+  padding: 8px;
+}
+
+.selectInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.selectInput:invalid {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.selectIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.selectContainer.disabled .selectIcon {
+  opacity: 0.5;
+}
+
+.selectHelperText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: -4px;
+}
+
+.selectHelperText.error {
+  color: #ef4444;
+}

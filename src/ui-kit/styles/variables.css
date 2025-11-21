@@ -1,0 +1,37 @@
+:root {
+  /* Primary Colors - Yellow */
+  --primary-300: #f2f693;
+  --primary-400: #f0f47e;
+  --primary-500: #ecf15e;
+  --primary: var(--primary-500); /* Default primary */
+
+  /* Secondary Colors - Grey */
+  --secondary-300: #dddddd;
+  --secondary-400: #d6d6d6;
+  --secondary-500: #cccccc;
+  --secondary: var(--secondary-500); /* Default secondary */
+
+  /* Black */
+  --black-1: #0e0f11;
+  --black-2: #222222;
+  --black: var(--black-1); /* Default black */
+
+  /* White */
+  --white: #ffffff;
+
+  /* Semantic color tokens (optional but recommended) */
+  --background: var(--white);
+  --foreground: var(--black-1);
+  --text-primary: var(--black-1);
+  --text-secondary: var(--black-2);
+  --border: var(--secondary-300);
+}
+
+/* Dark mode variables (optional) */
+.dark {
+  --background: var(--black-1);
+  --foreground: var(--white);
+  --text-primary: var(--white);
+  --text-secondary: var(--secondary-300);
+  --border: var(--black-2);
+}

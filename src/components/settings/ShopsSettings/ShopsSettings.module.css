@@ -1,0 +1,145 @@
+.shopsSettingsWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.shopsSettings {
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.shopNameSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.shopNameHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.shopNameLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.addButtonMobile {
+  display: none;
+}
+
+.addNewFieldSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.createNewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.createNewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.createNewTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.addButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addButtonText {
+  font-size: 13px;
+  color: var(--color-secondary-500);
+  font-weight: 400;
+}
+
+.interactiveFieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  padding-bottom: 24px;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .shopsSettings {
+    gap: 16px;
+  }
+
+  .shopNameHeader {
+    display: none;
+  }
+
+  .addButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .addButtonMobile .addButtonWrapper {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .createNewSection {
+    gap: 16px;
+  }
+
+  .createNewHeader {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .addButtonWrapper {
+    flex-shrink: 0;
+  }
+
+  .actionButtons {
+    padding-top: 16px;
+    gap: 8px;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .shopsSettings {
+    gap: 12px;
+  }
+
+  .createNewSection {
+    gap: 12px;
+  }
+}

@@ -1,0 +1,156 @@
+.projectLanguages {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.languagesSettings {
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.languagesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.addButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addButtonText {
+  font-size: 13px;
+  color: var(--color-secondary-500);
+  font-weight: 400;
+}
+
+.languagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.languageItem {
+  width: 100%;
+  position: relative;
+}
+
+/* the card */
+.languageField {
+  position: relative;
+  background-color: var(--color-black-3);
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
+}
+
+.languageItem.defaultLanguage::before {
+  content: none;
+}
+
+/* green bar as part of the card */
+.languageItem.defaultLanguage .languageField::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 11px;
+  background-color: var(--color-success);
+  border-radius: 12px 0 0 12px;
+}
+
+.flagImage {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* Override InteractiveField displayIcon border for flags */
+.languageField > div:first-child {
+  border: none !important;
+  background-color: transparent !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+}
+
+.languageField button {
+  /* Remove default IconButton background for edit icon */
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  color: var(--color-secondary-500) !important;
+}
+
+.languageField button:hover {
+  opacity: 0.9;
+}
+
+.languageField button:active,
+.languageField button:focus-visible {
+  /* On active / focus, icon becomes yellow */
+  color: var(--color-primary-500) !important;
+}
+
+/* Active state - when dropdown is open, edit icon is yellow */
+.languageItem.active .languageField button {
+  color: var(--color-primary-500) !important;
+}
+
+.languageItem.active .languageField button:hover {
+  opacity: 1;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  padding-bottom: 24px;
+}
+
+/* Desktop: Hide mobile button by default */
+.addButtonMobile {
+  display: none;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .languagesHeader {
+    display: none;
+  }
+
+  .addButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .addButtonMobile .addButtonWrapper {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actionButtons {
+    padding-top: 16px;
+    gap: 8px;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+}

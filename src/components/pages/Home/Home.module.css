@@ -1,0 +1,43 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.backgroundImage {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  opacity: 0.25;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(236, 241, 94, 0.15) 0%,
+    rgba(236, 241, 94, 0.05) 20%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  /* z-index: 12; */
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+}
+
+.main {
+  padding: 20px 48px;
+  padding-bottom: calc(20px + 80px); /* Add space for bottom nav on mobile */
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 24px 16px;
+    padding-bottom: calc(24px + 80px); /* Add space for bottom nav on mobile */
+  }
+}

@@ -1,0 +1,253 @@
+.headerContainer {
+  padding: 48px 48px 0;
+}
+
+.header {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 65px;
+  padding: 0 40px;
+  gap: 16px;
+  backdrop-filter: blur(600px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.rightContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logoImage {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  gap: 12px;
+  flex: 1;
+  justify-content: end;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.navLink {
+  position: relative;
+  height: 30px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: var(--color-primary-400);
+}
+
+.navLinkActive {
+  color: var(--color-white);
+}
+
+.navLinkInactive {
+  color: var(--color-secondary-400);
+}
+
+.navLinkActive:hover {
+  color: var(--color-primary-400);
+}
+
+.navLinkInactive:hover {
+  color: var(--color-white);
+}
+
+.activeIndicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-primary-500);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.bellButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-secondary-500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.bellButton:hover {
+  color: var(--color-primary-400);
+}
+
+.bellIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: auto;
+    min-height: 56px;
+    padding: 8px 12px;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .headerContainer {
+    padding: 16px 16px 0;
+  }
+
+  .logoContainer {
+    flex-shrink: 0;
+  }
+
+  .logoImage {
+    height: 32px;
+    width: 32px;
+  }
+
+  .rightContent {
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .navLink {
+    padding: 0 8px;
+    font-size: 12px;
+    height: 32px;
+  }
+
+  .actions {
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .bellButton {
+    padding: 4px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .bellIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .logoImage {
+    height: 24px;
+    width: 24px;
+  }
+
+  .rightContent {
+    gap: 4px;
+  }
+
+  .nav {
+    gap: 2px;
+  }
+
+  .navLink {
+    padding: 0 6px;
+    font-size: 11px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .bellButton {
+    min-width: 28px;
+    min-height: 28px;
+    padding: 2px;
+  }
+
+  .bellIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navLink {
+    padding: 0 6px;
+    font-size: 11px;
+  }
+}

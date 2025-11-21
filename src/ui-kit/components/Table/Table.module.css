@@ -1,0 +1,59 @@
+.tableWrapper {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--color-black-2);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  color: var(--color-white);
+}
+
+/* Header Styles */
+.tableHeader {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.tableHeader .tableRow {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tableHeader .tableCell {
+  font-weight: 500;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Body Styles */
+.tableBody {
+  background-color: var(--color-black-2);
+}
+
+/* Row Styles */
+.tableRow {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.tableRow:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Cell Styles */
+.tableCell {
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: middle;
+  color: var(--color-white);
+}
+
+.tableCellHeader {
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.04);
+}

@@ -1,0 +1,178 @@
+.vehicleManagementWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.vehicleManagement {
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+
+/* Tabs Container */
+.tabsContainer {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+
+/* Create New Section */
+.createNewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.createNewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.createNewTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.addButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addButtonText {
+  font-size: 13px;
+  color: var(--color-secondary-500);
+  font-weight: 400;
+}
+
+.interactiveFieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Existing Section */
+.existingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.existingHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-white);
+  font-family: "Manrope", sans-serif;
+  outline: none;
+}
+
+.existingHeader:focus,
+.existingHeader:focus-visible {
+  outline: none;
+  border: none;
+}
+
+.existingTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-secondary-500);
+  padding-bottom: 4px;
+}
+
+.existingCount {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary-500);
+}
+
+.existingItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.existingItem {
+  width: 100%;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  padding-bottom: 24px;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .vehicleManagementWrapper {
+    min-height: auto;
+  }
+
+  .vehicleManagement {
+    gap: 16px;
+  }
+
+  .tabsContainer {
+    margin-top: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .createNewSection {
+    gap: 16px;
+  }
+
+  .createNewHeader {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .addButtonWrapper {
+    flex-shrink: 0;
+  }
+
+  .actionButtons {
+    flex-direction: column-reverse;
+    padding-top: 16px;
+    gap: 8px;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicleManagement {
+    gap: 12px;
+  }
+
+  .createNewSection {
+    gap: 12px;
+  }
+
+  .actionButtons {
+    padding-top: 12px;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .vehicleManagementWrapper {
+    min-height: auto;
+  }
+}

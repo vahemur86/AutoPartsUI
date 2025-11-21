@@ -1,0 +1,88 @@
+/* Desktop Popover styles */
+.dropdownContent {
+  background-color: var(--color-black-3) !important; /* #2C2C2C */
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.05),
+    0 10px 15px rgba(0, 0, 0, 0.25) !important;
+  color: var(--color-white) !important;
+  min-width: 200px;
+  max-width: 90vw;
+  width: 490px;
+}
+
+/* Mobile Sheet styles */
+.sheetContent {
+  background-color: var(--color-black-3) !important; /* #2C2C2C */
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  padding: 0 !important;
+  height: 90vh !important;
+  max-height: 90vh !important;
+  color: var(--color-white) !important;
+  z-index: 1000 !important;
+}
+
+/* Hide default Sheet close button */
+.sheetContent > button {
+  display: none !important;
+}
+
+/* Style Sheet overlay */
+.sheetContent + [data-radix-dialog-overlay] {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+.sheetHeader {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.sheetTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+  text-align: left;
+}
+
+.sheetBody {
+  overflow-y: auto;
+  height: calc(90vh - 80px);
+  padding: 16px 24px 24px;
+}
+
+/* Override default popover animations to match design */
+.dropdownContent[data-state="open"] {
+  animation: fadeIn 0.15s ease-out;
+}
+
+.dropdownContent[data-state="closed"] {
+  animation: fadeOut 0.1s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

@@ -1,0 +1,81 @@
+.switchWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Manrope", sans-serif;
+}
+
+.switchLabel {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switchLabel.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switchTrack {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: rgba(204, 204, 204, 0.8);
+  border-radius: 12px;
+  transition: background-color 0.2s ease-in-out;
+  padding: 2px;
+}
+
+.switchTrack.checked {
+  background-color: var(--color-primary-500);
+}
+
+.switchTrack.disabled {
+  background-color: rgba(204, 204, 204, 0.8);
+}
+
+.switchKnob {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-black-2);
+  border-radius: 50%;
+  transition: transform 0.2s ease-in-out;
+  transform: translateX(0);
+  box-shadow: 0px 1px 0.5px 0.05px rgba(29, 41, 61, 0.02);
+}
+
+.switchKnob.checked {
+  transform: translateX(20px);
+  background-color: var(--color-black-2);
+}
+
+.switchKnob.disabled {
+  background-color: var(--color-disabled-500);
+  box-shadow: 0px 1px 0.5px 0.05px rgba(29, 41, 61, 0.02);
+}
+
+.switchText {
+  font-size: 14px;
+  color: var(--color-white);
+  user-select: none;
+}
+
+.switchText.disabled {
+  color: var(--color-disabled-text);
+}
+
+/* Disabled state for checked switch */
+.switchTrack.checked.disabled {
+  background-color: rgba(236, 241, 94, 0.8);
+}

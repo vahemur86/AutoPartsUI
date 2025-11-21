@@ -1,0 +1,127 @@
+/* Desktop header - hidden on mobile as Sheet provides its own */
+.header {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.deleteButton {
+  color: #ff2d55;
+  border: 1px solid #ff2d55;
+  background-color: var(--color-white);
+  width: 100%;
+}
+
+.primaryActions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .header {
+    display: block;
+  }
+
+  .content {
+    padding: 16px 24px 24px;
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .deleteButton {
+    width: auto;
+  }
+
+  .primaryActions {
+    width: auto;
+  }
+
+  .primaryActions button {
+    flex: 0 0 auto;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .header {
+    display: none;
+  }
+
+  .content {
+    padding: 0;
+    gap: 24px;
+  }
+
+  .fields {
+    gap: 16px;
+  }
+
+  .toggles {
+    gap: 12px;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .deleteButton {
+    width: 100%;
+  }
+
+  .primaryActions {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .primaryActions button {
+    flex: 1;
+  }
+}

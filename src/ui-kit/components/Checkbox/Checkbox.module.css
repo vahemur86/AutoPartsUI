@@ -1,0 +1,121 @@
+.checkboxWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Manrope", sans-serif;
+}
+
+.checkboxLabel {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxLabel.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.checkboxInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkboxBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 2px solid var(--color-secondary-500);
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+}
+
+/* Square checkbox styles */
+.checkboxBox.square.checked {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  box-shadow: 0px 1px 0.5px 0.05px rgba(29, 41, 61, 0.02);
+}
+
+.checkboxBox.square.disabled {
+  background-color: var(--color-disabled-500);
+  border-color: var(--color-disabled-500);
+  box-shadow: none;
+}
+
+.checkboxBox.square.disabled.checked {
+  background-color: var(--color-disabled-500);
+  border-color: var(--color-disabled-500);
+  box-shadow: none;
+}
+
+/* Circle checkbox styles */
+.checkboxBox.circle {
+  border-radius: 50%;
+  background-color: var(--color-secondary-500);
+  border-color: var(--color-secondary-500);
+}
+
+.checkboxBox.circle.checked {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+
+.checkboxBox.circle.disabled {
+  background-color: var(--color-disabled-500);
+  border-color: var(--color-disabled-500);
+}
+
+.checkboxBox.circle.disabled.checked {
+  background-color: var(--color-disabled-500);
+  border-color: var(--color-disabled-500);
+}
+
+.checkmark {
+  width: 10px;
+  height: 10px;
+  color: var(--color-black-2);
+  stroke: var(--color-black-2);
+  pointer-events: none;
+}
+
+/* Square checkbox checkmark colors */
+.checkboxBox.square.checked .checkmark {
+  color: var(--color-black-2);
+  stroke: var(--color-black-2);
+}
+
+/* Circle checkbox checkmark colors */
+.checkboxBox.circle .checkmark {
+  color: var(--color-secondary-500);
+  stroke: var(--color-secondary-500);
+}
+
+.checkboxBox.circle.checked .checkmark {
+  color: var(--color-black-2);
+  stroke: var(--color-black-2);
+}
+
+.checkboxBox.disabled .checkmark {
+  color: var(--color-disabled-text);
+  stroke: var(--color-disabled-text);
+}
+
+.checkboxText {
+  font-size: 14px;
+  color: var(--color-white);
+  user-select: none;
+}
+
+.checkboxText.disabled {
+  color: var(--color-disabled-text);
+}

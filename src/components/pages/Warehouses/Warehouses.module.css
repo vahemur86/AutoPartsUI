@@ -1,0 +1,15 @@
+.warehousesPage {
+  padding: 32px 48px;
+}
+
+@media (max-width: 768px) {
+  .warehousesPage {
+    padding: 24px 16px;
+  }
+}
+
+
+
+
+
+
