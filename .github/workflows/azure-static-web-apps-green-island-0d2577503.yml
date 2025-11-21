@@ -15,40 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-          lfs: false
+      - uses: actions/checkout@v4
 
-      # 🔥 ADD NODE 20 HERE
-      - name: Set Node version to 20
+      # ▶ Node 20
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      # 🔥 END
 
-      - name: Build And Deploy
-        id: builddeploy
+      # ▶ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # ▶ Build React (CRA = build / Vite = dist)
+      - name: Build project
+        run: npm run build
+
+      # ▶ Deploy to Azure Static Web App
+      - name: Deploy to Azure
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_ISLAND_0D2577503 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
 
-          # Build Config
-          app_location: "/"              # React source code
-          api_location: ""               # No API
-          output_location: "build"       # CRA build output (if Vite = dist)
-          ###### End Config ######
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_ISLAND_0D2577503 }}
-          action: "close"
+          # Adjust if folder is different
+          app_location: "/"
+          output_location: "build"   # or "dist" for Vite
