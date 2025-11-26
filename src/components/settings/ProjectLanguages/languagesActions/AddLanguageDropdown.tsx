@@ -1,52 +1,52 @@
 import { useEffect, useState } from "react";
 import styles from "./LanguageDropdown.module.css";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
-import type { Language } from "@/types.ts/settings";
 
-export interface EditLanguageDropdownProps {
+export interface AddLanguageDropdownProps {
   open: boolean;
-  language: Language;
   anchorRef?: React.RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: {
-    id: number;
     languageKey: string;
     displayName: string;
+    isDefault: boolean;
+    enabled: boolean;
   }) => void;
-  onDelete?: (id: number) => void;
 }
 
-export const EditLanguageDropdown = ({
+export const AddLanguageDropdown = ({
   open,
-  language,
   anchorRef,
   onOpenChange,
   onSave,
-  onDelete,
-}: EditLanguageDropdownProps) => {
-  const [displayNameValue, setDisplayNameValue] = useState(language.name);
-  const [isDefaultValue, setIsDefaultValue] = useState(language.isDefault);
-  // const [enabledValue, setEnabledValue] = useState(language.enabled);
+}: AddLanguageDropdownProps) => {
+  const [languageKeyValue, setLanguageKeyValue] = useState("");
+  const [displayNameValue, setDisplayNameValue] = useState("");
+  const [isDefaultValue, setIsDefaultValue] = useState(false);
+  const [enabledValue, setEnabledValue] = useState(true);
 
   useEffect(() => {
     if (open) {
-      setDisplayNameValue(language.name);
-      // setIsDefaultValue(language.isDefault);
-      // setEnabledValue(enabled);
+      // Reset form when opening
+      setLanguageKeyValue("");
+      setDisplayNameValue("");
+      setIsDefaultValue(false);
+      setEnabledValue(true);
     }
-  }, [open, language]);
+  }, [open]);
 
   const handleSaveClick = () => {
-    if (!displayNameValue.trim()) {
+    if (!languageKeyValue.trim() || !displayNameValue.trim()) {
       // TODO: Add validation/error handling
       return;
     }
-
     onSave({
-      id: language.id,
-      languageKey: language.code,
+      languageKey: languageKeyValue.trim(),
       displayName: displayNameValue.trim(),
+      isDefault: isDefaultValue,
+      enabled: enabledValue,
     });
+    onOpenChange(false);
   };
 
   const handleClose = () => {
@@ -60,16 +60,20 @@ export const EditLanguageDropdown = ({
       anchorRef={anchorRef}
       align="start"
       side="left"
-      title="Edit Language"
+      title="Add Language"
     >
       {/* Desktop header */}
       <div className={styles.header}>
-        <span className={styles.title}>Edit Language</span>
+        <span className={styles.title}>Add Language</span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.fields}>
-          <TextField label="Language key" value={language.code} disabled />
+          <TextField
+            label="Language key"
+            value={languageKeyValue}
+            onChange={(e) => setLanguageKeyValue(e.target.value)}
+          />
           <TextField
             label="Display name"
             value={displayNameValue}
@@ -86,22 +90,13 @@ export const EditLanguageDropdown = ({
           />
         </div>
 
-        <Switch checked={true} onCheckedChange={() => {}} label="Enabled" />
+        <Switch
+          checked={enabledValue}
+          onCheckedChange={setEnabledValue}
+          label="Enabled"
+        />
 
-        <div className={styles.actions}>
-          {onDelete && (
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => {
-                onDelete(language.id);
-              }}
-              className={styles.deleteButton}
-            >
-              Delete language
-            </Button>
-          )}
-
+        <div className={styles.actionswithoutDelete}>
           <div className={styles.primaryActions}>
             <Button variant="secondary" size="medium" onClick={handleClose}>
               Cancel

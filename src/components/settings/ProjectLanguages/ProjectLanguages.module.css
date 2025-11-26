@@ -75,6 +75,27 @@
   border-radius: 50%;
 }
 
+.languageText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.languageName {
+  font-size: 13px;
+  color: var(--color-white);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.languageCode {
+  font-size: 13px;
+  color: var(--color-white);
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
 /* Override InteractiveField displayIcon border for flags */
 .languageField > div:first-child {
   border: none !important;

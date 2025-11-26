@@ -159,6 +159,13 @@
   white-space: nowrap;
 }
 
+/* When displayText is a ReactNode (not a string), allow multi-line */
+.displayTextNode {
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+}
+
 /* Toggle Wrapper */
 .toggleWrapper {
   display: flex;

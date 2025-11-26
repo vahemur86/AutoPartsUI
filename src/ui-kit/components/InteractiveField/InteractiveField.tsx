@@ -23,7 +23,7 @@ export interface InteractiveFieldProps
     onChange?: (value: string) => void;
     label?: string;
   };
-  displayText?: string;
+  displayText?: string | React.ReactNode;
   displayIcon?: React.ReactNode;
   toggle?: {
     checked?: boolean;
@@ -179,7 +179,13 @@ export const InteractiveField = React.forwardRef<
             />
           </div>
         ) : displayText ? (
-          <div className={styles.displayText}>{displayText}</div>
+          <div
+            className={`${styles.displayText} ${
+              typeof displayText !== "string" ? styles.displayTextNode : ""
+            }`}
+          >
+            {displayText}
+          </div>
         ) : null}
 
         {/* Toggle Switch */}

@@ -6,30 +6,30 @@ import type { Language } from "@/types.ts/settings";
 
 export const LANGUAGES: Language[] = [
   {
+    id: 1,
     code: "en",
     name: "English",
-    shortCode: "en",
     flag: englandFlag,
     isDefault: true,
   },
   {
+    id: 2,
     code: "ru",
     name: "Russian",
-    shortCode: "russ",
     flag: russiaFlag,
     isDefault: false,
   },
   {
+    id: 3,
     code: "am",
     name: "Armenian",
-    shortCode: "arm",
     flag: armeniaFlag,
     isDefault: false,
   },
   {
+    id: 4,
     code: "fr",
     name: "France",
-    shortCode: "fr",
     flag: franceFlag,
     isDefault: false,
   },

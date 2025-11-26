@@ -41,6 +41,13 @@
   margin-top: 16px;
 }
 
+.actionswithoutDelete {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 .deleteButton {
   color: #ff2d55;
   border: 1px solid #ff2d55;
@@ -71,6 +78,12 @@
   .actions {
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: row;
+    justify-content: flex-end;
     align-items: center;
   }
 

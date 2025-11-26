@@ -1,7 +1,7 @@
 export interface Language {
+  id: number;
   code: string;
   name: string;
-  shortCode: string;
-  flag: string;
-  isDefault: boolean;
+  flag?: string;
+  isDefault?: boolean;
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Tab, TabGroup, Button } from "@/ui-kit";
 import styles from "./ProductSettings.module.css";
 import { ProductContent, type ExistingItem } from "./ProductContent";
-import { createCategory } from "@/services/settings";
+import { createCategory } from "@/services/settings/productSettings";
 import { PRODUCT_SETTINGS_TABS } from "@/constants/settings";
 
 const ProductSettings = () => {
