@@ -10,7 +10,7 @@ export interface AddLanguageDropdownProps {
     languageKey: string;
     displayName: string;
     isDefault: boolean;
-    enabled: boolean;
+    isEnabled: boolean;
   }) => void;
 }
 
@@ -44,7 +44,7 @@ export const AddLanguageDropdown = ({
       languageKey: languageKeyValue.trim(),
       displayName: displayNameValue.trim(),
       isDefault: isDefaultValue,
-      enabled: enabledValue,
+      isEnabled: enabledValue,
     });
     onOpenChange(false);
   };

@@ -104,12 +104,16 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
         ) : (
           languages.map((language) => {
             const itemRef = getOrCreateRef(language.id);
+            const isDefault = language.isDefault ?? false;
+            const isDisabled = language.isEnabled === false;
             return (
               <div
                 key={language.id}
                 ref={itemRef}
                 className={`${styles.languageItem} ${
                   activeLanguageId === language.id ? styles.active : ""
+                } ${isDefault ? styles.defaultLanguage : ""} ${
+                  isDisabled ? styles.disabledLanguage : ""
                 }`}
               >
                 <InteractiveField
@@ -126,7 +130,12 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
                   }
                   displayText={
                     <div className={styles.languageText}>
-                      <div className={styles.languageName}>{language.name}</div>
+                      <div className={styles.languageName}>
+                        {language.name}
+                        {isDisabled && (
+                          <span className={styles.disabledLabel}>Disabled</span>
+                        )}
+                      </div>
                       <div className={styles.languageCode}>{language.code}</div>
                     </div>
                   }

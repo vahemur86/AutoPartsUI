@@ -24,7 +24,7 @@ export const WarehouseContent: FC<WarehouseContentProps> = ({}) => {
           value={""}
           onChange={() => {}}
           placeholder="Type"
-          label="Warehouse name"
+          label="Warehouse key"
         />
         <div className={styles.addButtonMobile}>
           <div className={styles.addButtonWrapper}>

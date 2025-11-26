@@ -12,6 +12,8 @@ export interface EditLanguageDropdownProps {
     id: number;
     languageKey: string;
     displayName: string;
+    isDefault: boolean;
+    isEnabled: boolean;
   }) => void;
   onDelete?: (id: number) => void;
 }
@@ -25,14 +27,16 @@ export const EditLanguageDropdown = ({
   onDelete,
 }: EditLanguageDropdownProps) => {
   const [displayNameValue, setDisplayNameValue] = useState(language.name);
-  const [isDefaultValue, setIsDefaultValue] = useState(language.isDefault);
-  // const [enabledValue, setEnabledValue] = useState(language.enabled);
+  const [isDefaultValue, setIsDefaultValue] = useState(
+    language.isDefault ?? false
+  );
+  const [enabledValue, setEnabledValue] = useState(language.isEnabled ?? true);
 
   useEffect(() => {
     if (open) {
       setDisplayNameValue(language.name);
-      // setIsDefaultValue(language.isDefault);
-      // setEnabledValue(enabled);
+      setIsDefaultValue(language.isDefault ?? false);
+      setEnabledValue(language.isEnabled ?? true);
     }
   }, [open, language]);
 
@@ -46,6 +50,8 @@ export const EditLanguageDropdown = ({
       id: language.id,
       languageKey: language.code,
       displayName: displayNameValue.trim(),
+      isDefault: isDefaultValue,
+      isEnabled: enabledValue,
     });
   };
 
@@ -86,7 +92,12 @@ export const EditLanguageDropdown = ({
           />
         </div>
 
-        <Switch checked={true} onCheckedChange={() => {}} label="Enabled" />
+        <Switch
+          checked={enabledValue}
+          onCheckedChange={setEnabledValue}
+          label="Enabled"
+          disabled={language.isDefault}
+        />
 
         <div className={styles.actions}>
           {onDelete && (
@@ -97,6 +108,7 @@ export const EditLanguageDropdown = ({
                 onDelete(language.id);
               }}
               className={styles.deleteButton}
+              disabled={language.isDefault}
             >
               Delete language
             </Button>

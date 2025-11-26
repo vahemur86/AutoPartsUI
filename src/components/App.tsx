@@ -1,5 +1,7 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { store } from "@/store/store";
 import { Home } from "./pages/Home/index";
 import { Settings } from "./pages/Settings/index";
@@ -43,6 +45,18 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </Provider>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/ui-kit";
 import styles from "./ProjectLanguages.module.css";
 import { LanguagesContent } from "./LanguagesContent";
@@ -30,8 +31,9 @@ const ProjectLanguages = () => {
       setIsLoading(true);
       const response = await getLanguages();
       setLanguages(response);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load languages:", error);
+      toast.error(error.message || "Failed to load languages");
     } finally {
       setIsLoading(false);
     }
@@ -75,15 +77,40 @@ const ProjectLanguages = () => {
     languageKey: string;
     displayName: string;
     isDefault: boolean;
-    enabled: boolean;
+    isEnabled: boolean;
   }) => {
     try {
-      await createLanguage(data.languageKey, data.displayName);
+      // If setting this language as default, unset all other default languages
+      if (data.isDefault) {
+        const defaultLanguages = languages.filter((lang) => lang.isDefault);
+        // Unset other default languages
+        for (const lang of defaultLanguages) {
+          try {
+            await updateLanguage(
+              lang.id,
+              lang.code,
+              lang.name,
+              false,
+              lang.isEnabled ?? true
+            );
+          } catch (error: any) {
+            toast.error(error.message || "Failed to update default language");
+            return;
+          }
+        }
+      }
+      await createLanguage(
+        data.languageKey,
+        data.displayName,
+        data.isDefault,
+        data.isEnabled
+      );
+      toast.success("Language created successfully");
       await fetchLanguages(); // Refresh the languages list
       handleCloseAddDropdown();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create language:", error);
-      // TODO: Add error notification
+      toast.error(error.message || "Failed to create language");
     }
   };
 
@@ -91,27 +118,58 @@ const ProjectLanguages = () => {
     id: number;
     languageKey: string;
     displayName: string;
+    isDefault: boolean;
+    isEnabled: boolean;
   }) => {
     if (!editingLanguageId) return;
 
     try {
-      await updateLanguage(data.id, data.languageKey, data.displayName);
+      // If setting this language as default, unset all other default languages
+      if (data.isDefault) {
+        const otherDefaultLanguages = languages.filter(
+          (lang) => lang.id !== data.id && lang.isDefault
+        );
+        // Unset other default languages
+        for (const lang of otherDefaultLanguages) {
+          try {
+            await updateLanguage(
+              lang.id,
+              lang.code,
+              lang.name,
+              false,
+              lang.isEnabled ?? true
+            );
+          } catch (error: any) {
+            toast.error(error.message || "Failed to update default language");
+            return;
+          }
+        }
+      }
+      await updateLanguage(
+        data.id,
+        data.languageKey,
+        data.displayName,
+        data.isDefault,
+        data.isEnabled
+      );
+      toast.success("Language updated successfully");
       await fetchLanguages(); // Refresh the languages list
       handleCloseEditDropdown();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update language:", error);
-      // TODO: Add error notification
+      toast.error(error.message || "Failed to update language");
     }
   };
 
   const handleDeleteLanguage = async (id: number) => {
     try {
       await deleteLanguage(id);
+      toast.success("Language deleted successfully");
       await fetchLanguages(); // Refresh the languages list
       handleCloseEditDropdown();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete language:", error);
-      // TODO: Add error notification
+      toast.error(error.message || "Failed to delete language");
     }
   };
 

@@ -200,3 +200,45 @@ body:has([data-radix-dialog-overlay]) {
     @apply bg-background text-foreground;
   }
 }
+
+/* React Toastify Custom Styles */
+.Toastify__toast-container {
+  z-index: 10000;
+}
+
+.Toastify__toast--dark {
+  background-color: var(--color-black-3);
+  color: var(--color-white);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.Toastify__toast--success {
+  background-color: var(--color-black-3);
+  border-left: 4px solid var(--color-success);
+}
+
+.Toastify__toast--error {
+  background-color: var(--color-black-3);
+  border-left: 4px solid #ff2d55;
+}
+
+.Toastify__toast-body {
+  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  font-size: 14px;
+  color: var(--color-white);
+}
+
+.Toastify__progress-bar {
+  background: var(--color-primary-500);
+}
+
+.Toastify__close-button {
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}

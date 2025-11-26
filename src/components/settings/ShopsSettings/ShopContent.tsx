@@ -62,7 +62,7 @@ export const ShopContent: FC<ShopContentProps> = ({
           value={shopName}
           onChange={(e) => setShopName(e.target.value)}
           placeholder="Type"
-          label="Shop Name"
+          label="Shop Key"
         />
         <div className={styles.addButtonMobile}>
           <div className={styles.addButtonWrapper}>

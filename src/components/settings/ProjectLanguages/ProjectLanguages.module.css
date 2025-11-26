@@ -68,6 +68,10 @@
   border-radius: 12px 0 0 12px;
 }
 
+.languageItem.disabledLanguage {
+  opacity: 0.4;
+}
+
 .flagImage {
   width: 36px;
   height: 36px;
@@ -86,6 +90,15 @@
   color: var(--color-white);
   font-weight: 400;
   line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disabledLabel {
+  font-size: 11px;
+  color: #999999;
+  font-weight: 400;
 }
 
 .languageCode {
