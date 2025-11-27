@@ -11,6 +11,7 @@ export const LANGUAGES: Language[] = [
     name: "English",
     flag: englandFlag,
     isDefault: true,
+    isEnabled: true,
   },
   {
     id: 2,
@@ -18,6 +19,7 @@ export const LANGUAGES: Language[] = [
     name: "Russian",
     flag: russiaFlag,
     isDefault: false,
+    isEnabled: true,
   },
   {
     id: 3,
@@ -25,6 +27,7 @@ export const LANGUAGES: Language[] = [
     name: "Armenian",
     flag: armeniaFlag,
     isDefault: false,
+    isEnabled: true,
   },
   {
     id: 4,
@@ -32,6 +35,7 @@ export const LANGUAGES: Language[] = [
     name: "France",
     flag: franceFlag,
     isDefault: false,
+    isEnabled: true,
   },
 ];
 
