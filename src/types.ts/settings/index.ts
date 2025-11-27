@@ -23,3 +23,8 @@ export interface Shop {
   code: string;
   warehouseId: number;
 }
+
+export interface ExistingItem {
+  id: string;
+  name: string;
+}

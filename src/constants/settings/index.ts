@@ -3,6 +3,12 @@ import russiaFlag from "@/assets/images/russia.svg";
 import armeniaFlag from "@/assets/images/armenia.svg";
 import franceFlag from "@/assets/images/france.svg";
 import type { Language } from "@/types.ts/settings";
+import {
+  boxSizeService,
+  brandsService,
+  categoryService,
+  unitTypeService,
+} from "@/services/settings/productSettings";
 
 export const LANGUAGES: Language[] = [
   {
@@ -40,8 +46,28 @@ export const LANGUAGES: Language[] = [
 ];
 
 export const PRODUCT_SETTINGS_TABS = [
-  { id: "category-code", label: "Category Code" },
-  { id: "brand-code", label: "Brand Code" },
-  { id: "unit-types-code", label: "Unit Types Code" },
-  { id: "box-size-code", label: "Box Size Code" },
+  {
+    id: "category",
+    label: "Category Code",
+    type: "Category",
+    service: categoryService,
+  },
+  {
+    id: "brand",
+    label: "Brand Code",
+    type: "Brand",
+    service: brandsService,
+  },
+  {
+    id: "unitType",
+    label: "Unit Types Code",
+    type: "Unit Type",
+    service: unitTypeService,
+  },
+  {
+    id: "boxSize",
+    label: "Box Size Code",
+    type: "Box Size",
+    service: boxSizeService,
+  },
 ];
