@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
 import { ProductContent } from "./ProductContent";
@@ -14,18 +14,20 @@ const ProductSettings = () => {
   const [newFieldValue, setNewFieldValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [existingItems, setExistingItems] = useState<ExistingItem[]>([]);
+  const loadingRef = useRef(false);
+  const lastLoadedTabRef = useRef<string | null>(null);
 
   const activeTab = PRODUCT_SETTINGS_TABS.find((tab) => tab.id === activeTabId);
 
-  useEffect(() => {
-    if (activeTab) {
-      loadExistingItems();
-    }
-  }, [activeTabId]);
-
   const loadExistingItems = async () => {
-    if (!activeTab) return;
+    if (!activeTab || loadingRef.current) return;
 
+    if (lastLoadedTabRef.current === activeTabId) {
+      return;
+    }
+
+    loadingRef.current = true;
+    lastLoadedTabRef.current = activeTabId;
     setIsLoading(true);
     try {
       const data = await activeTab.service.getAll();
@@ -39,10 +41,19 @@ const ProductSettings = () => {
     } catch (err: any) {
       console.error(`Error loading ${activeTab.type}:`, err);
       toast.error(err.message || `Failed to load ${activeTab.type}`);
+      lastLoadedTabRef.current = null;
     } finally {
       setIsLoading(false);
+      loadingRef.current = false;
     }
   };
+
+  useEffect(() => {
+    if (activeTab) {
+      loadExistingItems();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTabId]);
 
   const handleSave = async () => {
     if (!activeTab || !newFieldValue.trim()) return;
@@ -50,6 +61,7 @@ const ProductSettings = () => {
     setIsLoading(true);
     try {
       await activeTab.service.create(newFieldValue.trim());
+      lastLoadedTabRef.current = null;
       await loadExistingItems();
       setNewFieldValue("");
       toast.success(`${activeTab.type} created successfully`);
@@ -66,6 +78,7 @@ const ProductSettings = () => {
 
     try {
       await activeTab.service.update(Number(id), newName);
+      lastLoadedTabRef.current = null;
       await loadExistingItems();
       toast.success(`${activeTab.type} updated successfully`);
     } catch (err: any) {
@@ -131,7 +144,7 @@ const ProductSettings = () => {
           onClick={handleSave}
           disabled={isLoading || !newFieldValue.trim()}
         >
-          {isLoading ? "Saving..." : "Save"}
+          Save
         </Button>
       </div>
     </div>
