@@ -12,59 +12,36 @@
   flex: 1;
 }
 
+.tabsContainer {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
 .warehouseNameSection {
   display: flex;
   flex-direction: column;
 }
 
-.warehouseNameHeader {
+.historyContainer {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.loadingState,
+.emptyState {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.actionButtonsCell {
+  display: flex;
   justify-content: flex-end;
-  margin-bottom: 16px;
-  margin-top: 16px;
-}
-
-.addButtonMobile {
-  display: none;
-}
-
-.addNewFieldSection {
-  display: flex;
-  flex-direction: column;
   gap: 12px;
-  margin-top: 12px;
-}
-
-.createNewHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.createNewTitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-white);
-  margin: 0;
-}
-
-.addButtonWrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.addButtonText {
-  font-size: 13px;
-  color: var(--color-secondary-500);
-  font-weight: 400;
-}
-
-.interactiveFieldsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 3px;
 }
 
 .actionButtons {
@@ -79,32 +56,6 @@
 @media (max-width: 768px) {
   .warehouseSettings {
     gap: 16px;
-  }
-
-  .warehouseNameHeader {
-    display: none;
-  }
-
-  .addButtonMobile {
-    display: flex;
-    margin-top: 16px;
-    border: 1px solid var(--color-primary-400);
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
-
-  .addButtonMobile .addButtonWrapper {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .createNewHeader {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .addButtonWrapper {
-    flex-shrink: 0;
   }
 
   .actionButtons {

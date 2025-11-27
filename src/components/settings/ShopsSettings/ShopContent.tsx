@@ -1,96 +1,131 @@
-import type { FC, Dispatch, SetStateAction } from "react";
-import { IconButton, TextField } from "@/ui-kit";
-import { Plus } from "lucide-react";
+import { type FC } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+import {
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+  Select,
+  TextField,
+} from "@/ui-kit";
 import styles from "./ShopsSettings.module.css";
-
-export interface ExistingShop {
-  id: string;
-  name: string;
-  enabled: boolean;
-}
+import type { Warehouse, Shop } from "@/types.ts/settings";
 
 interface ShopContentProps {
-  handleAddNew: () => void;
-  handleAddNewClick: () => void;
-  handleCancelAddNew: () => void;
-  newFieldValue: string;
-  setNewFieldValue: Dispatch<SetStateAction<string>>;
-  showAddNewField: boolean;
-  shopName: string;
-  setShopName: Dispatch<SetStateAction<string>>;
-  setIsExistingExpanded: Dispatch<SetStateAction<boolean>>;
-  isExistingExpanded: boolean;
-  handleToggleEnabled: (id: string) => void;
-  handleEdit: (id: string) => void;
-  handleDelete: (id: string) => void;
-  existingShops: ExistingShop[];
+  shopKey: string;
+  setShopKey: (key: string) => void;
+  activeTab: string;
+  warehouseId: number;
+  setWarehouseId: (id: number) => void;
+  warehouses: Warehouse[];
+  shops: Shop[];
+  isLoading: boolean;
+  onEdit?: (shop: Shop) => void;
+  onDelete?: (shopId: number) => void;
 }
 
 export const ShopContent: FC<ShopContentProps> = ({
-  // handleAddNew,
-  handleAddNewClick,
-  // handleCancelAddNew,
-  // newFieldValue,
-  // setNewFieldValue,
-  showAddNewField,
-  shopName,
-  setShopName,
-  // setIsExistingExpanded,
-  // isExistingExpanded,
-  // handleToggleEnabled,
-  // handleEdit,
-  // handleDelete,
-  // existingShops,
+  shopKey,
+  setShopKey,
+  activeTab,
+  warehouseId,
+  setWarehouseId,
+  warehouses,
+  shops,
+  isLoading,
+  onEdit,
+  onDelete,
 }) => {
-  return (
-    <>
-      {/* Shop Name Section with Input and Add New Button */}
-      <div className={styles.shopNameSection}>
-        <div className={styles.shopNameHeader}>
-          <div className={styles.addButtonWrapper}>
-            <IconButton
-              variant="primary"
-              size="small"
-              icon={<Plus size={12} color="#0e0f11" />}
-              ariaLabel="Add New"
-              onClick={handleAddNewClick}
-            />
-            <span className={styles.addButtonText}>Add new</span>
-          </div>
-        </div>
-        <TextField
-          value={shopName}
-          onChange={(e) => setShopName(e.target.value)}
-          placeholder="Type"
-          label="Shop Key"
-        />
-        <div className={styles.addButtonMobile}>
-          <div className={styles.addButtonWrapper}>
-            <IconButton
-              variant="primary"
-              size="small"
-              icon={<Plus size={12} color="#0e0f11" />}
-              ariaLabel="Add New"
-              onClick={handleAddNewClick}
-            />
-            <span className={styles.addButtonText}>Add new</span>
-          </div>
-        </div>
-      </div>
+  const getWarehouseCode = (warehouseId: number) => {
+    const warehouse = warehouses.find((w) => w.id === warehouseId);
+    return warehouse ? warehouse.code : warehouseId;
+  };
 
-      {/* Add New Field (shown when adding new shop) */}
-      {showAddNewField && (
-        <div className={styles.addNewFieldSection}>
-          <div className={styles.shopNameSection}>
+  return (
+    <div className={styles.shopNameSection}>
+      {activeTab === "add-new" && (
+        <div className={styles.formRow}>
+          <div className={styles.formColumn}>
             <TextField
-              value={shopName}
-              onChange={(e) => setShopName(e.target.value)}
+              label="Shop key"
               placeholder="Type"
-              label="Shop Name"
+              value={shopKey}
+              onChange={(e) => setShopKey(e.target.value)}
+              disabled={isLoading}
             />
+          </div>
+          <div className={styles.formColumn}>
+            <Select
+              label="Warehouse"
+              placeholder="Select warehouse"
+              value={warehouseId > 0 ? warehouseId.toString() : ""}
+              onChange={(e) => setWarehouseId(Number(e.target.value))}
+              disabled={isLoading}
+            >
+              <option value="">Select warehouse</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.code}
+                </option>
+              ))}
+            </Select>
           </div>
         </div>
       )}
-    </>
+
+      {activeTab === "shops-history" && (
+        <div className={styles.historyContainer}>
+          {isLoading ? (
+            <div className={styles.loadingState}>Loading shops...</div>
+          ) : shops.length === 0 ? (
+            <div className={styles.emptyState}>No shops found.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableCell asHeader>ID</TableCell>
+                  <TableCell asHeader>Code</TableCell>
+                  <TableCell asHeader>Warehouse ID</TableCell>
+                  <TableCell asHeader></TableCell>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {shops.map((shop) => (
+                  <TableRow key={shop.id}>
+                    <TableCell>{shop.id}</TableCell>
+                    <TableCell>{shop.code}</TableCell>
+                    <TableCell>{getWarehouseCode(shop.warehouseId)}</TableCell>
+                    <TableCell>
+                      <div className={styles.actionButtonsCell}>
+                        {onEdit && (
+                          <IconButton
+                            variant="secondary"
+                            size="small"
+                            icon={<Pencil size={14} />}
+                            ariaLabel="Edit shop"
+                            onClick={() => onEdit(shop)}
+                          />
+                        )}
+                        {onDelete && (
+                          <IconButton
+                            variant="secondary"
+                            size="small"
+                            icon={<Trash2 size={14} />}
+                            ariaLabel="Delete shop"
+                            onClick={() => onDelete(shop.id)}
+                          />
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      )}
+    </div>
   );
 };

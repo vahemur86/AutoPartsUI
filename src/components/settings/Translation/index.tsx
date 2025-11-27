@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Pencil } from "lucide-react";
 import {
   Tab,
   TabGroup,
@@ -13,7 +14,6 @@ import {
   IconButton,
 } from "@/ui-kit";
 import { LANGUAGES } from "@/constants/settings";
-import { Pencil } from "lucide-react";
 import styles from "./Translation.module.css";
 
 const Translation = () => {

@@ -1,22 +1,154 @@
-import { Button } from "@/ui-kit";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Button, Tab, TabGroup } from "@/ui-kit";
 import { WarehouseContent } from "./WarehouseContent";
+import type { Warehouse } from "@/types.ts/settings";
 import styles from "./WarehouseSettings.module.css";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  fetchWarehouses,
+  addWarehouse,
+  updateWarehouseInStore,
+  removeWarehouse,
+} from "@/store/slices/warehousesSlice";
 
 const WarehouseSettings = () => {
+  const dispatch = useAppDispatch();
+  const { warehouses, isLoading, error } = useAppSelector(
+    (state) => state.warehouses
+  );
+
+  const [activeTab, setActiveTab] = useState("add-new");
+  const [warehouseCode, setWarehouseCode] = useState("");
+  const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
+    null
+  );
+
+  const handleAddWarehouse = useCallback(async () => {
+    if (!warehouseCode.trim()) {
+      toast.error("Please enter a warehouse code");
+      return;
+    }
+    try {
+      if (editingWarehouse) {
+        // Update existing warehouse
+        await dispatch(
+          updateWarehouseInStore({
+            id: editingWarehouse.id,
+            code: warehouseCode.trim(),
+          })
+        ).unwrap();
+        toast.success("Warehouse updated successfully");
+        setEditingWarehouse(null);
+      } else {
+        // Create new warehouse
+        await dispatch(addWarehouse(warehouseCode.trim())).unwrap();
+        toast.success("Warehouse created successfully");
+      }
+      setWarehouseCode("");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(
+        error ||
+          (editingWarehouse
+            ? "Failed to update warehouse"
+            : "Failed to create warehouse")
+      );
+    }
+  }, [warehouseCode, editingWarehouse, dispatch]);
+
+  const handleTabChange = useCallback((tab: string) => {
+    setActiveTab(tab);
+    setWarehouseCode("");
+    setEditingWarehouse(null);
+  }, []);
+
+  const handleEdit = useCallback((warehouse: Warehouse) => {
+    setEditingWarehouse(warehouse);
+    setWarehouseCode(warehouse.code);
+    setActiveTab("add-new");
+  }, []);
+
+  const handleDelete = useCallback(
+    async (id: number) => {
+      try {
+        await dispatch(removeWarehouse(id)).unwrap();
+        toast.success("Warehouse deleted successfully");
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error || "Failed to delete warehouse");
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    if (activeTab === "warehouses-history") {
+      dispatch(fetchWarehouses());
+    }
+  }, [activeTab, dispatch]);
+
+  // Show error toast if there's an error in Redux state
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
   return (
     <div className={styles.warehouseSettingsWrapper}>
       <div className={styles.warehouseSettings}>
-        <WarehouseContent />
+        <div className={styles.tabsContainer}>
+          <TabGroup variant="segmented">
+            <Tab
+              variant="segmented"
+              active={activeTab === "add-new"}
+              text="Add New Warehouse"
+              onClick={() => handleTabChange("add-new")}
+            />
+            <Tab
+              variant="segmented"
+              active={activeTab === "warehouses-history"}
+              text="Warehouses History"
+              onClick={() => handleTabChange("warehouses-history")}
+            />
+          </TabGroup>
+        </div>
+
+        <WarehouseContent
+          activeTab={activeTab}
+          warehouseCode={warehouseCode}
+          setWarehouseCode={setWarehouseCode}
+          warehouses={warehouses}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
-      {/* Action buttons */}
-      <div className={styles.actionButtons}>
-        <Button variant="secondary" size="medium" onClick={() => {}}>
-          Cancel
-        </Button>
-        <Button variant="primary" size="medium" onClick={() => {}}>
-          Save
-        </Button>
-      </div>
+
+      {activeTab === "add-new" && (
+        <div className={styles.actionButtons}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={() => {
+              setWarehouseCode("");
+              setEditingWarehouse(null);
+            }}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleAddWarehouse}
+            disabled={isLoading || !warehouseCode.trim()}
+          >
+            {editingWarehouse ? "Update" : "Save"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

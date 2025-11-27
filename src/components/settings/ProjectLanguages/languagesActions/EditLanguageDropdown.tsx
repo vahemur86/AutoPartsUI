@@ -8,13 +8,7 @@ export interface EditLanguageDropdownProps {
   language: Language;
   anchorRef?: React.RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: {
-    id: number;
-    languageKey: string;
-    displayName: string;
-    isDefault: boolean;
-    isEnabled: boolean;
-  }) => void;
+  onSave: (data: Language) => void;
   onDelete?: (id: number) => void;
 }
 
@@ -48,8 +42,8 @@ export const EditLanguageDropdown = ({
 
     onSave({
       id: language.id,
-      languageKey: language.code,
-      displayName: displayNameValue.trim(),
+      code: language.code,
+      name: displayNameValue.trim(),
       isDefault: isDefaultValue,
       isEnabled: enabledValue,
     });

@@ -13,14 +13,12 @@
   flex: 1;
 }
 
-/* Tabs Container */
 .tabsContainer {
   display: flex;
   align-items: flex-start;
   margin-top: 16px;
 }
 
-/* Form Container */
 .formContainer {
   display: flex;
   flex-direction: column;
@@ -38,7 +36,6 @@
   flex-direction: column;
 }
 
-/* History Container */
 .historyContainer {
   display: flex;
   flex-direction: column;

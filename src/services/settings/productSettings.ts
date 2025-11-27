@@ -1,4 +1,4 @@
-import { api } from "../index";
+import api from "..";
 
 export const createCategory = async (code: string) => {
   try {
@@ -6,7 +6,7 @@ export const createCategory = async (code: string) => {
     return response.data;
   } catch (error: any) {
     throw new Error(
-      error.response?.data?.message || "Failed to create category."
+      error.response?.data?.error || "Failed to create category."
     );
   }
 };

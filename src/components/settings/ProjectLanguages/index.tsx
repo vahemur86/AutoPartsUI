@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/ui-kit";
-import styles from "./ProjectLanguages.module.css";
 import { LanguagesContent } from "./LanguagesContent";
 import { EditLanguageDropdown } from "./languagesActions/EditLanguageDropdown";
 import { AddLanguageDropdown } from "./languagesActions/AddLanguageDropdown";
@@ -12,12 +11,13 @@ import {
   updateLanguage,
 } from "@/services/settings/languages";
 import type { Language } from "@/types.ts/settings";
+import styles from "./ProjectLanguages.module.css";
 
 const ProjectLanguages = () => {
   const [editingLanguageId, setEditingLanguageId] = useState<number | null>(
     null
   );
-  const [addLanguageCode, setAddLanguageCode] = useState<string | null>(null);
+  const [isAddingLanguage, setIsAddingLanguage] = useState(false);
   const [editButtonRef, setEditButtonRef] =
     useState<React.RefObject<HTMLElement> | null>(null);
   const [addButtonRef, setAddButtonRef] =
@@ -26,152 +26,150 @@ const ProjectLanguages = () => {
   const [isLoading, setIsLoading] = useState(true);
   const fetchInitiatedRef = useRef(false);
 
-  const fetchLanguages = async () => {
+  const fetchLanguages = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await getLanguages();
       setLanguages(response);
     } catch (error: any) {
-      console.error("Failed to load languages:", error);
+      console.error(error);
       toast.error(error.message || "Failed to load languages");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (fetchInitiatedRef.current) {
-      return;
-    }
-    fetchInitiatedRef.current = true;
-
-    fetchLanguages();
   }, []);
 
-  const handleAddNewClick = (buttonRef: React.RefObject<HTMLElement>) => {
-    if (buttonRef.current) {
-      setAddButtonRef(buttonRef);
-      setAddLanguageCode("new");
-    }
-  };
+  useEffect(() => {
+    if (fetchInitiatedRef.current) return;
+    fetchInitiatedRef.current = true;
+    fetchLanguages();
+  }, [fetchLanguages]);
 
-  const handleEditClick = (
-    languageId: number,
-    buttonRef: React.RefObject<HTMLElement>
-  ) => {
-    setEditButtonRef(buttonRef);
-    setEditingLanguageId(languageId);
-  };
+  const handleAddNewClick = useCallback(
+    (buttonRef: React.RefObject<HTMLElement>) => {
+      if (buttonRef.current) {
+        setAddButtonRef(buttonRef);
+        setIsAddingLanguage(true);
+      }
+    },
+    []
+  );
 
-  const handleCloseEditDropdown = () => {
+  const handleEditClick = useCallback(
+    (languageId: number, buttonRef: React.RefObject<HTMLElement>) => {
+      setEditButtonRef(buttonRef);
+      setEditingLanguageId(languageId);
+    },
+    []
+  );
+
+  const handleCloseEditDropdown = useCallback(() => {
     setEditingLanguageId(null);
     setEditButtonRef(null);
-  };
+  }, []);
 
-  const handleCloseAddDropdown = () => {
-    setAddLanguageCode(null);
+  const handleCloseAddDropdown = useCallback(() => {
+    setIsAddingLanguage(false);
     setAddButtonRef(null);
-  };
+  }, []);
 
-  const handleAddLanguage = async (data: {
-    languageKey: string;
-    displayName: string;
-    isDefault: boolean;
-    isEnabled: boolean;
-  }) => {
-    try {
-      // If setting this language as default, unset all other default languages
-      if (data.isDefault) {
-        const defaultLanguages = languages.filter((lang) => lang.isDefault);
-        // Unset other default languages
-        for (const lang of defaultLanguages) {
-          try {
-            await updateLanguage(
-              lang.id,
-              lang.code,
-              lang.name,
-              false,
-              lang.isEnabled ?? true
-            );
-          } catch (error: any) {
-            toast.error(error.message || "Failed to update default language");
-            return;
-          }
+  // Helper function to unset other default languages
+  const unsetOtherDefaultLanguages = useCallback(
+    async (excludeId?: number) => {
+      const defaultLanguages = languages.filter(
+        (lang) => lang.isDefault && lang.id !== excludeId
+      );
+
+      for (const lang of defaultLanguages) {
+        try {
+          await updateLanguage(
+            lang.id,
+            lang.code,
+            lang.name,
+            false,
+            lang.isEnabled ?? true
+          );
+        } catch (error: any) {
+          toast.error(error.message || "Failed to update default language");
+          throw error;
         }
       }
-      await createLanguage(
-        data.languageKey,
-        data.displayName,
-        data.isDefault,
-        data.isEnabled
-      );
-      toast.success("Language created successfully");
-      await fetchLanguages(); // Refresh the languages list
-      handleCloseAddDropdown();
-    } catch (error: any) {
-      console.error("Failed to create language:", error);
-      toast.error(error.message || "Failed to create language");
-    }
-  };
+    },
+    [languages]
+  );
 
-  const handleUpdateLanguage = async (data: {
-    id: number;
-    languageKey: string;
-    displayName: string;
-    isDefault: boolean;
-    isEnabled: boolean;
-  }) => {
-    if (!editingLanguageId) return;
+  const handleAddLanguage = useCallback(
+    async (data: Omit<Language, "id">) => {
+      try {
+        if (data.isDefault) {
+          await unsetOtherDefaultLanguages();
+        }
 
-    try {
-      // If setting this language as default, unset all other default languages
-      if (data.isDefault) {
-        const otherDefaultLanguages = languages.filter(
-          (lang) => lang.id !== data.id && lang.isDefault
+        await createLanguage(
+          data.code,
+          data.name,
+          data.isDefault,
+          data.isEnabled
         );
-        // Unset other default languages
-        for (const lang of otherDefaultLanguages) {
-          try {
-            await updateLanguage(
-              lang.id,
-              lang.code,
-              lang.name,
-              false,
-              lang.isEnabled ?? true
-            );
-          } catch (error: any) {
-            toast.error(error.message || "Failed to update default language");
-            return;
-          }
-        }
-      }
-      await updateLanguage(
-        data.id,
-        data.languageKey,
-        data.displayName,
-        data.isDefault,
-        data.isEnabled
-      );
-      toast.success("Language updated successfully");
-      await fetchLanguages(); // Refresh the languages list
-      handleCloseEditDropdown();
-    } catch (error: any) {
-      console.error("Failed to update language:", error);
-      toast.error(error.message || "Failed to update language");
-    }
-  };
 
-  const handleDeleteLanguage = async (id: number) => {
-    try {
-      await deleteLanguage(id);
-      toast.success("Language deleted successfully");
-      await fetchLanguages(); // Refresh the languages list
-      handleCloseEditDropdown();
-    } catch (error: any) {
-      console.error("Failed to delete language:", error);
-      toast.error(error.message || "Failed to delete language");
-    }
-  };
+        toast.success("Language created successfully");
+        await fetchLanguages();
+        handleCloseAddDropdown();
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message || "Failed to create language");
+      }
+    },
+    [unsetOtherDefaultLanguages, fetchLanguages, handleCloseAddDropdown]
+  );
+
+  const handleUpdateLanguage = useCallback(
+    async (data: Language) => {
+      if (!editingLanguageId) return;
+
+      try {
+        if (data.isDefault) {
+          await unsetOtherDefaultLanguages(data.id);
+        }
+
+        await updateLanguage(
+          data.id,
+          data.code,
+          data.name,
+          data.isDefault,
+          data.isEnabled
+        );
+
+        toast.success("Language updated successfully");
+        await fetchLanguages();
+        handleCloseEditDropdown();
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message || "Failed to update language");
+      }
+    },
+    [
+      editingLanguageId,
+      unsetOtherDefaultLanguages,
+      fetchLanguages,
+      handleCloseEditDropdown,
+    ]
+  );
+
+  const handleDeleteLanguage = useCallback(
+    async (id: number) => {
+      try {
+        await deleteLanguage(id);
+        toast.success("Language deleted successfully");
+        await fetchLanguages();
+        handleCloseEditDropdown();
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message || "Failed to delete language");
+      }
+    },
+    [fetchLanguages, handleCloseEditDropdown]
+  );
 
   const editingLanguage = editingLanguageId
     ? languages.find((lang) => lang.id === editingLanguageId)
@@ -188,7 +186,8 @@ const ProjectLanguages = () => {
           handleEditClick={handleEditClick}
         />
       </div>
-      {!!editingLanguage && (
+
+      {editingLanguage && (
         <EditLanguageDropdown
           open={editingLanguageId !== null}
           language={editingLanguage}
@@ -200,14 +199,16 @@ const ProjectLanguages = () => {
           onDelete={handleDeleteLanguage}
         />
       )}
+
       <AddLanguageDropdown
-        open={addLanguageCode !== null}
+        open={isAddingLanguage}
         anchorRef={addButtonRef || undefined}
         onOpenChange={(open) => {
           if (!open) handleCloseAddDropdown();
         }}
         onSave={handleAddLanguage}
       />
+
       {/* Action buttons */}
       <div className={styles.actionButtons}>
         <Button variant="secondary" size="medium" onClick={() => {}}>

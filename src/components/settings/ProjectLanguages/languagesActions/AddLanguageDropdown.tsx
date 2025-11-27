@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import styles from "./LanguageDropdown.module.css";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
+import type { Language } from "@/types.ts/settings";
 
 export interface AddLanguageDropdownProps {
   open: boolean;
   anchorRef?: React.RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: {
-    languageKey: string;
-    displayName: string;
-    isDefault: boolean;
-    isEnabled: boolean;
-  }) => void;
+  onSave: (data: Omit<Language, "id">) => void;
 }
 
 export const AddLanguageDropdown = ({
@@ -41,8 +37,8 @@ export const AddLanguageDropdown = ({
       return;
     }
     onSave({
-      languageKey: languageKeyValue.trim(),
-      displayName: displayNameValue.trim(),
+      code: languageKeyValue.trim(),
+      name: displayNameValue.trim(),
       isDefault: isDefaultValue,
       isEnabled: enabledValue,
     });
