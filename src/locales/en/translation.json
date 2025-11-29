@@ -2,7 +2,8 @@
   "header": {
     "settings": "Settings",
     "warehouses": "Warehouses",
-    "shops": "Shops"
+    "shops": "Shops",
+    "products": "Products"
   },
   "common": {
     "save": "Save",

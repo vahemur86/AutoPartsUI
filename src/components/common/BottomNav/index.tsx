@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Settings, Warehouse, ShoppingBag } from "lucide-react";
+import { Settings, Warehouse, ShoppingBag, PackageSearch } from "lucide-react";
 import styles from "./BottomNav.module.css";
 
 export const BottomNav = () => {
@@ -22,6 +22,11 @@ export const BottomNav = () => {
       path: "/settings",
       icon: Settings,
       label: "Settings",
+    },
+    {
+      path: "/products",
+      icon: PackageSearch,
+      label: "Products",
     },
     {
       path: "/warehouses",

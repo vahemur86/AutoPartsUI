@@ -26,8 +26,6 @@
 .icon {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
 .title {
@@ -47,6 +45,10 @@
   gap: 8px;
 }
 
+.goBack {
+  padding-top: 5px;
+}
+
 @media (max-width: 768px) {
   .sectionHeader {
     height: auto;
@@ -57,7 +59,7 @@
   }
 
   .titleContainer {
-    gap: 8px;
+    gap: 12px;
     flex: 1;
     min-width: 0;
     overflow: hidden;
@@ -75,40 +77,5 @@
 
   .title {
     font-size: 14px;
-  }
-
-  .actions {
-    gap: 8px;
-    flex-shrink: 0;
-    margin-left: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .sectionHeader {
-    padding: 8px;
-    gap: 4px;
-  }
-
-  .titleContainer {
-    gap: 4px;
-  }
-
-  .icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .icon svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .title {
-    font-size: 13px;
-  }
-
-  .actions {
-    gap: 4px;
   }
 }

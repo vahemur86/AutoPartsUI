@@ -10,8 +10,8 @@ interface ProductContentProps {
   setNewFieldValue: Dispatch<SetStateAction<string>>;
   setIsExistingExpanded: Dispatch<SetStateAction<boolean>>;
   isExistingExpanded: boolean;
-  handleEdit: (id: string, newName: string) => void;
-  handleDelete: (id: string) => void;
+  handleEdit: (id: string, newName: string) => Promise<void>;
+  handleDelete: (id: string) => Promise<void>;
   existingItems: ExistingItem[];
   isLoading?: boolean;
 }
@@ -34,17 +34,39 @@ export const ProductContent: FC<ProductContentProps> = ({
     setEditValue(item.name);
   };
 
-  const saveEdit = (id: string) => {
-    if (editValue.trim()) {
-      handleEdit(id, editValue.trim());
+  const saveEdit = async (id: string) => {
+    const trimmedValue = editValue.trim();
+
+    if (!trimmedValue) {
+      cancelEdit();
+      return;
     }
-    setEditingId(null);
-    setEditValue("");
+    const originalItem = existingItems.find((item) => item.id === id);
+    if (originalItem && originalItem.name === trimmedValue) {
+      cancelEdit();
+      return;
+    }
+
+    try {
+      await handleEdit(id, trimmedValue);
+      setEditingId(null);
+      setEditValue("");
+    } catch (error) {
+      console.error("Failed to save edit:", error);
+    }
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setEditValue("");
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    try {
+      await handleDelete(id);
+    } catch (error) {
+      console.error("Failed to delete item:", error);
+    }
   };
 
   return (
@@ -132,7 +154,7 @@ export const ProductContent: FC<ProductContentProps> = ({
                         },
                         delete: {
                           icon: <Trash2 size={14} color="#ffffff" />,
-                          onClick: () => handleDelete(item.id),
+                          onClick: () => handleDeleteItem(item.id),
                           ariaLabel: "Delete",
                         },
                       }}

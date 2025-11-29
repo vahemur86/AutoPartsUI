@@ -23,7 +23,6 @@ export const AddLanguageDropdown = ({
 
   useEffect(() => {
     if (open) {
-      // Reset form when opening
       setLanguageKeyValue("");
       setDisplayNameValue("");
       setIsDefaultValue(false);
@@ -33,7 +32,6 @@ export const AddLanguageDropdown = ({
 
   const handleSaveClick = () => {
     if (!languageKeyValue.trim() || !displayNameValue.trim()) {
-      // TODO: Add validation/error handling
       return;
     }
     onSave({

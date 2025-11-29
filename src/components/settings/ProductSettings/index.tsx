@@ -1,104 +1,152 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
 
 import { ProductContent } from "./ProductContent";
-import { PRODUCT_SETTINGS_TABS } from "@/constants/settings";
-import type { ExistingItem } from "@/types.ts/settings";
+import { PRODUCT_SETTINGS_TABS, TAB_CONFIG } from "@/constants/settings";
+import type {
+  ExistingItem,
+  TabId,
+  ProductSettingItem,
+} from "@/types.ts/settings";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 import { Tab, TabGroup, Button } from "@/ui-kit";
 import styles from "./ProductSettings.module.css";
 
 const ProductSettings = () => {
-  const [activeTabId, setActiveTabId] = useState(PRODUCT_SETTINGS_TABS[0].id);
+  const dispatch = useAppDispatch();
+  const { brands, categories, unitTypes, boxSizes, isLoading, fetchedData } =
+    useAppSelector((state) => state.productSettings);
+
+  const [activeTabId, setActiveTabId] = useState<TabId>(
+    PRODUCT_SETTINGS_TABS[0].id as TabId
+  );
   const [isExistingExpanded, setIsExistingExpanded] = useState(false);
   const [newFieldValue, setNewFieldValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [existingItems, setExistingItems] = useState<ExistingItem[]>([]);
-  const loadingRef = useRef(false);
-  const lastLoadedTabRef = useRef<string | null>(null);
+  const fetchingRef = useRef<Set<string>>(new Set());
 
-  const activeTab = PRODUCT_SETTINGS_TABS.find((tab) => tab.id === activeTabId);
+  const activeTab = useMemo(
+    () => PRODUCT_SETTINGS_TABS.find((tab) => tab.id === activeTabId),
+    [activeTabId]
+  );
 
-  const loadExistingItems = async () => {
-    if (!activeTab || loadingRef.current) return;
+  const currentData = useMemo((): ProductSettingItem[] => {
+    const config = TAB_CONFIG[activeTabId];
+    if (!config) return [];
 
-    if (lastLoadedTabRef.current === activeTabId) {
-      return;
-    }
+    const dataMap: Record<string, ProductSettingItem[]> = {
+      brands,
+      categories,
+      unitTypes,
+      boxSizes,
+    };
+    return dataMap[config.dataKey] || [];
+  }, [activeTabId, brands, categories, unitTypes, boxSizes]);
 
-    loadingRef.current = true;
-    lastLoadedTabRef.current = activeTabId;
-    setIsLoading(true);
-    try {
-      const data = await activeTab.service.getAll();
-      setExistingItems(
-        data.map((item: any) => ({
-          id: item.id.toString(),
-          name: item.code,
-          enabled: item.enabled ?? true,
-        }))
-      );
-    } catch (err: any) {
-      console.error(`Error loading ${activeTab.type}:`, err);
-      toast.error(err.message || `Failed to load ${activeTab.type}`);
-      lastLoadedTabRef.current = null;
-    } finally {
-      setIsLoading(false);
-      loadingRef.current = false;
-    }
-  };
+  const existingItems: ExistingItem[] = useMemo(
+    () =>
+      currentData.map((item) => ({
+        id: item.id.toString(),
+        name: item.code,
+        enabled: item.enabled ?? true,
+      })),
+    [currentData]
+  );
 
+  // Optimized fetch logic - only fetch if not already fetched
   useEffect(() => {
-    if (activeTab) {
-      loadExistingItems();
+    const config = TAB_CONFIG[activeTabId];
+    if (!config) return;
+
+    const dataKey = config.dataKey as keyof typeof fetchedData;
+    const alreadyFetched = fetchedData[dataKey];
+    const isCurrentlyFetching = fetchingRef.current.has(dataKey);
+
+    // Only fetch if we haven't fetched this data yet, we're not currently loading,
+    // and we haven't already initiated a fetch for this dataKey
+    if (!alreadyFetched && !isLoading && !isCurrentlyFetching) {
+      fetchingRef.current.add(dataKey);
+      dispatch(config.actions.fetch()).finally(() => {
+        // Remove from fetching set after fetch completes (success or failure)
+        fetchingRef.current.delete(dataKey);
+      });
     }
+    // Only depend on activeTabId - fetchedData is accessed from selector, not as dependency
+    // This prevents duplicate requests when other fetchedData properties change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTabId]);
 
-  const handleSave = async () => {
-    if (!activeTab || !newFieldValue.trim()) return;
+  const executeAction = useCallback(
+    async (
+      actionType: "add" | "update" | "remove",
+      payload: string | { id: number; code: string } | number
+    ) => {
+      if (!activeTab) return;
 
-    setIsLoading(true);
-    try {
-      await activeTab.service.create(newFieldValue.trim());
-      lastLoadedTabRef.current = null;
-      await loadExistingItems();
-      setNewFieldValue("");
-      toast.success(`${activeTab.type} created successfully`);
-    } catch (err: any) {
-      console.error(`Error creating ${activeTab.type}:`, err);
-      toast.error(err.message || `Failed to create ${activeTab.type}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      const config = TAB_CONFIG[activeTabId];
+      if (!config) return;
 
-  const handleEdit = async (id: string, newName: string) => {
-    if (!activeTab) return;
+      try {
+        if (actionType === "add") {
+          await dispatch(config.actions.add(payload as string)).unwrap();
+        } else if (actionType === "update") {
+          const updatePayload = payload as { id: number; code: string };
+          await dispatch(config.actions.update(updatePayload)).unwrap();
+          // After update, refetch to ensure we're in sync with backend
+          // This handles cases where backend might create a new item instead of updating
+          await dispatch(config.actions.fetch()).unwrap();
+        } else {
+          await dispatch(config.actions.remove(payload as number)).unwrap();
+        }
 
-    try {
-      await activeTab.service.update(Number(id), newName);
-      lastLoadedTabRef.current = null;
-      await loadExistingItems();
-      toast.success(`${activeTab.type} updated successfully`);
-    } catch (err: any) {
-      console.error(`Error updating ${activeTab.type}:`, err);
-      toast.error(err.message || `Failed to update ${activeTab.type}`);
-    }
-  };
+        const actionPastTense =
+          actionType === "add"
+            ? "created"
+            : actionType === "remove"
+            ? "deleted"
+            : "updated";
 
-  const handleDelete = async (id: string) => {
-    if (!activeTab) return;
+        toast.success(`${activeTab.type} ${actionPastTense} successfully`);
 
-    try {
-      await activeTab.service.delete(Number(id));
-      setExistingItems((items) => items.filter((item) => item.id !== id));
-      toast.success(`${activeTab.type} deleted successfully`);
-    } catch (err: any) {
-      console.error(`Error deleting ${activeTab.type}:`, err);
-      toast.error(err.message || `Failed to delete ${activeTab.type}`);
-    }
-  };
+        if (actionType === "add") {
+          setNewFieldValue("");
+        }
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : `Failed to ${actionType} ${activeTab.type}`;
+        console.error(`Error ${actionType}ing ${activeTab.type}:`, err);
+        toast.error(errorMessage);
+      }
+    },
+    [activeTab, activeTabId, dispatch]
+  );
+
+  const handleSave = useCallback(async () => {
+    const trimmedValue = newFieldValue.trim();
+    if (!trimmedValue) return;
+
+    await executeAction("add", trimmedValue);
+  }, [newFieldValue, executeAction]);
+
+  const handleEdit = useCallback(
+    async (id: string, newName: string) => {
+      await executeAction("update", { id: Number(id), code: newName });
+    },
+    [executeAction]
+  );
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await executeAction("remove", Number(id));
+    },
+    [executeAction]
+  );
+
+  const handleCancel = useCallback(() => {
+    setNewFieldValue("");
+  }, []);
 
   return (
     <div className={styles.productSettingsWrapper}>
@@ -133,7 +181,7 @@ const ProductSettings = () => {
         <Button
           variant="secondary"
           size="medium"
-          onClick={() => setNewFieldValue("")}
+          onClick={handleCancel}
           disabled={isLoading}
         >
           Cancel

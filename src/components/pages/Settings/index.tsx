@@ -17,10 +17,8 @@ export const Settings = () => {
   const navigate = useNavigate();
 
   const isActive = (path: string) => {
-    // Get the current path without /settings prefix
     const currentPath = location.pathname;
 
-    // Handle exact match
     if (currentPath === `/settings${path}`) {
       return true;
     }

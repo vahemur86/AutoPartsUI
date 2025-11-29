@@ -36,7 +36,12 @@ export const Header = () => {
               text={t("header.settings")}
               onClick={() => navigate("/settings")}
             />
-
+            <Tab
+              variant="underline"
+              active={isActive("/products")}
+              text={t("header.products")}
+              onClick={() => navigate("/products")}
+            />
             <Tab
               variant="underline"
               active={isActive("/warehouses")}

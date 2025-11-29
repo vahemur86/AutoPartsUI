@@ -14,6 +14,7 @@ import ShopsSettings from "@/components/settings/ShopsSettings";
 import ProductSettings from "@/components/settings/ProductSettings";
 import VehicleManagement from "@/components/settings/VehicleManagement";
 import "@/index.css";
+import { Products } from "./pages/Products";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
               />
             </Route>
             <Route path="warehouses" element={<Warehouses />} />
+            <Route path="products" element={<Products />} />
             <Route path="shops" element={<Shops />} />
           </Route>
         </Routes>
