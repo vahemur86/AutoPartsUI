@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useIsMobile } from "@/hooks/isMobile";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -16,8 +16,9 @@ import {
   TableRow,
   TableCell,
   IconButton,
+  Button,
 } from "@/ui-kit";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/types.ts/products";
 import styles from "./ProductsContent.module.css";
 import { ProductCard } from "./MobileProductCard";
@@ -89,6 +90,8 @@ const ProductRow = ({
   );
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
   const { isMobile, mounted } = useIsMobile();
   const dispatch = useAppDispatch();
@@ -96,6 +99,7 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
   const { brands, categories, unitTypes, boxSizes, fetchedData } =
     useAppSelector((state) => state.productSettings);
   const fetchInitiatedRef = useRef(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (fetchInitiatedRef.current) return;
@@ -124,13 +128,48 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
         await dispatch(removeProduct(productId)).unwrap();
         toast.success("Product deleted successfully");
         dispatch(fetchProducts());
+        // Reset to first page if current page becomes empty
+        const totalPages = Math.ceil((products.length - 1) / ITEMS_PER_PAGE);
+        if (currentPage > totalPages && totalPages > 0) {
+          setCurrentPage(totalPages);
+        }
       } catch (error: any) {
         console.error("Failed to delete product:", error);
         toast.error(error || "Failed to delete product");
       }
     },
-    [dispatch]
+    [dispatch, products.length, currentPage]
   );
+
+  const totalPages = useMemo(
+    () => Math.ceil(products.length / ITEMS_PER_PAGE),
+    [products.length]
+  );
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return products.slice(startIndex, endIndex);
+  }, [products, currentPage]);
+
+  const handlePreviousPage = useCallback(() => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }, [currentPage]);
+
+  const handleNextPage = useCallback(() => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  }, [currentPage, totalPages]);
+
+  // Reset to page 1 when products change
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
 
   if (isLoading && products.length === 0) {
     return (
@@ -193,7 +232,7 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products.map((product) => (
+          {paginatedProducts.map((product) => (
             <ProductRow
               key={product.id}
               product={product}
@@ -207,6 +246,30 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
           ))}
         </TableBody>
       </Table>
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className={styles.paginationButton}
+          >
+            <ChevronLeft size={16} />
+            <span>Previous</span>
+          </Button>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={styles.paginationButton}
+          >
+            <span>Next</span>
+            <ChevronRight size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

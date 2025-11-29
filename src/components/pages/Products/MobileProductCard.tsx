@@ -68,7 +68,7 @@ export const ProductCard = ({
           <span className={styles.cardFieldValue}>{product.sku}</span>
         </div>
         <div className={styles.cardField}>
-          <span className={styles.cardFieldLabel}>ANSWER</span>
+          <span className={styles.cardFieldLabel}>Code</span>
           <span className={styles.cardFieldValue}>{product.code}</span>
         </div>
         <div className={styles.cardField}>
