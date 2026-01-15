@@ -1,0 +1,90 @@
+.usersContainer {
+  display: flex;
+  gap: 0;
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  margin-top: 24px;
+  overflow: hidden;
+  min-height: calc(100vh - 270px);
+}
+
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 24px;
+  min-height: 100%;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .formWrapper {
+    padding: 16px;
+  }
+
+  .formContainer {
+    gap: 16px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .actionButtons {
+    flex-direction: column-reverse;
+    margin-top: 24px;
+    padding-top: 16px;
+    gap: 8px;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .formWrapper {
+    padding: 12px;
+  }
+
+  .formContainer {
+    gap: 12px;
+  }
+
+  .formRow {
+    gap: 12px;
+  }
+
+  .actionButtons {
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+}

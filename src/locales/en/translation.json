@@ -3,7 +3,8 @@
     "settings": "Settings",
     "warehouses": "Warehouses",
     "shops": "Shops",
-    "products": "Products"
+    "products": "Products",
+    "users": "User Management"
   },
   "common": {
     "save": "Save",
