@@ -10,7 +10,7 @@ import {
   deleteLanguage,
   updateLanguage,
 } from "@/services/settings/languages";
-import type { Language } from "@/types.ts/settings";
+import type { Language } from "@/types/settings";
 import styles from "./ProjectLanguages.module.css";
 
 const getErrorMessage = (error: unknown, fallback: string) => {

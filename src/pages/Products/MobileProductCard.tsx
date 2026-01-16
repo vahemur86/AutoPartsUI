@@ -2,7 +2,7 @@ import { useRef, useState, type RefObject } from "react";
 import styles from "./ProductsContent.module.css";
 import { Button, IconButton } from "@/ui-kit";
 import { Pencil, Trash2 } from "lucide-react";
-import type { Product } from "@/types.ts/products";
+import type { Product } from "@/types/products";
 
 interface ProductCardProps {
   product: Product;

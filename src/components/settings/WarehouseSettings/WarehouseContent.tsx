@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@/ui-kit";
 import styles from "./WarehouseSettings.module.css";
-import type { Warehouse } from "@/types.ts/settings";
+import type { Warehouse } from "@/types/settings";
 
 interface WarehouseContentProps {
   activeTab: string;

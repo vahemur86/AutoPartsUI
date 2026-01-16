@@ -9,7 +9,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "@/services/products";
-import type { Product } from "@/types.ts/products";
+import type { Product } from "@/types/products";
 
 interface ProductsState {
   products: Product[];

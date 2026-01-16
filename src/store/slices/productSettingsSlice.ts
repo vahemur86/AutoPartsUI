@@ -21,7 +21,7 @@ import {
   updateBoxSize,
   deleteBoxSize,
 } from "@/services/settings/productSettings";
-import type { ProductSettingItem } from "@/types.ts/settings";
+import type { ProductSettingItem } from "@/types/settings";
 
 interface ProductSettingsState {
   brands: ProductSettingItem[];

@@ -26,7 +26,7 @@ import {
   Button,
 } from "@/ui-kit";
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import type { Product } from "@/types.ts/products";
+import type { Product } from "@/types/products";
 import styles from "./ProductsContent.module.css";
 import { ProductCard } from "./MobileProductCard";
 

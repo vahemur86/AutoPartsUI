@@ -7,7 +7,7 @@ import type {
   ExistingItem,
   TabId,
   ProductSettingItem,
-} from "@/types.ts/settings";
+} from "@/types/settings";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 import { Tab, TabGroup, Button } from "@/ui-kit";

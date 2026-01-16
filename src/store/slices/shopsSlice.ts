@@ -9,7 +9,7 @@ import {
   updateShop,
   deleteShop,
 } from "@/services/settings/shop";
-import type { Shop } from "@/types.ts/settings";
+import type { Shop } from "@/types/settings";
 
 interface ShopsState {
   shops: Shop[];

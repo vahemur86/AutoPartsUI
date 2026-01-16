@@ -8,7 +8,7 @@ import {
 } from "@/store/slices/productSettingsSlice";
 import styles from "./AddProductDropdown.module.css";
 import { Button, Switch, TextField, Select, Dropdown } from "@/ui-kit";
-import type { Product } from "@/types.ts/products";
+import type { Product } from "@/types/products";
 
 export interface EditProductDropdownProps {
   open: boolean;
