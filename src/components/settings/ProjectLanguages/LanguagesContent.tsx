@@ -1,4 +1,4 @@
-import { useRef, createRef, type FC } from "react";
+import { useRef, createRef, type FC, type RefObject } from "react";
 import styles from "./ProjectLanguages.module.css";
 import { IconButton, InteractiveField } from "@/ui-kit";
 import { Plus, Edit } from "lucide-react";
@@ -7,11 +7,11 @@ import type { Language } from "@/types.ts/settings";
 interface LanguagesContentProps {
   languages: Language[];
   isLoading: boolean;
-  handleAddNewClick: (buttonRef: React.RefObject<HTMLElement>) => void;
+  handleAddNewClick: (buttonRef: RefObject<HTMLElement>) => void;
   activeLanguageId?: number | null;
   handleEditClick?: (
     languageId: number,
-    buttonRef: React.RefObject<HTMLElement>
+    buttonRef: RefObject<HTMLElement>
   ) => void;
 }
 
@@ -23,12 +23,12 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
   handleEditClick,
 }) => {
   const languageItemRefs = useRef<
-    Map<number, React.RefObject<HTMLDivElement | null>>
+    Map<number, RefObject<HTMLDivElement | null>>
   >(new Map());
 
   const getOrCreateRef = (
     languageId: number
-  ): React.RefObject<HTMLDivElement | null> => {
+  ): RefObject<HTMLDivElement | null> => {
     if (!languageItemRefs.current.has(languageId)) {
       languageItemRefs.current.set(languageId, createRef<HTMLDivElement>());
     }
@@ -53,8 +53,8 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
     if (anchorElement) {
       addButtonAnchorRef.current = anchorElement;
       // Create a stable ref object that won't change
-      const buttonRefObj: React.RefObject<HTMLElement> =
-        addButtonAnchorRef as React.RefObject<HTMLElement>;
+      const buttonRefObj: RefObject<HTMLElement> =
+        addButtonAnchorRef as RefObject<HTMLElement>;
       handleAddNewClick(buttonRefObj);
     }
   };
@@ -67,7 +67,7 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
         'button[aria-label*="Edit"]'
       ) as HTMLElement;
       if (editButton) {
-        const buttonRef: React.RefObject<HTMLElement> = { current: editButton };
+        const buttonRef: RefObject<HTMLElement> = { current: editButton };
         handleEditClick?.(languageId, buttonRef);
       }
     }

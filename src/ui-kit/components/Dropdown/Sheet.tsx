@@ -1,17 +1,23 @@
-import React, { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef,
+  type FC,
+  type ReactNode,
+  type SyntheticEvent,
+} from "react";
 import styles from "./Dropdown.module.css";
 
 interface SheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**
  * A lightweight Sheet using the native HTML Dialog element.
  * Provides built-in focus trapping and accessibility.
  */
-export const Sheet = ({ open, onOpenChange, children }: SheetProps) => {
+export const Sheet: FC<SheetProps> = ({ open, onOpenChange, children }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -20,7 +26,7 @@ export const Sheet = ({ open, onOpenChange, children }: SheetProps) => {
 
     if (open) {
       if (!dialog.open) {
-        dialog.showModal(); // Opens the dialog in the browser's "Top Layer"
+        dialog.showModal();
       }
     } else {
       if (dialog.open) {
@@ -30,7 +36,7 @@ export const Sheet = ({ open, onOpenChange, children }: SheetProps) => {
   }, [open]);
 
   // Handles the 'Escape' key automatically provided by the browser
-  const handleCancel = (e: React.SyntheticEvent) => {
+  const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     onOpenChange(false);
   };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchBrands,
@@ -12,7 +12,7 @@ import type { Product } from "@/types.ts/products";
 
 export interface EditProductDropdownProps {
   open: boolean;
-  anchorRef?: React.RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: any) => void;
   product: Product | null;

@@ -4,6 +4,7 @@ import {
   useRef,
   type RefObject,
   type ReactNode,
+  type FC,
 } from "react";
 import { Sheet } from "./Sheet";
 import { useIsMobile } from "@/hooks/isMobile";
@@ -22,7 +23,7 @@ export interface DropdownProps {
   contentClassName?: string;
 }
 
-export const Dropdown = ({
+export const Dropdown: FC<DropdownProps> = ({
   open,
   onOpenChange,
   anchorRef,
@@ -32,7 +33,7 @@ export const Dropdown = ({
   sideOffset = 8,
   title = "Edit Language",
   contentClassName = "",
-}: DropdownProps) => {
+}) => {
   const { isMobile, mounted } = useIsMobile();
   const [position, setPosition] = useState<{
     top: number;

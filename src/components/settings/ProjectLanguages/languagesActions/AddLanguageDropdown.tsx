@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import styles from "./LanguageDropdown.module.css";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
 import type { Language } from "@/types.ts/settings";
 
 export interface AddLanguageDropdownProps {
   open: boolean;
-  anchorRef?: React.RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: Omit<Language, "id">) => void;
 }

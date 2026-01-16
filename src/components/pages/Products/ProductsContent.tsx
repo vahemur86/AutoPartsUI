@@ -1,4 +1,11 @@
-import { useEffect, useRef, useCallback, useState, useMemo } from "react";
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  useMemo,
+  type RefObject,
+} from "react";
 import { toast } from "react-toastify";
 import { useIsMobile } from "@/hooks/isMobile";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -24,7 +31,7 @@ import styles from "./ProductsContent.module.css";
 import { ProductCard } from "./MobileProductCard";
 
 interface ProductsContentProps {
-  onEdit: (product: Product, buttonRef: React.RefObject<HTMLElement>) => void;
+  onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
 }
 
 interface ProductRowProps {
@@ -33,7 +40,7 @@ interface ProductRowProps {
   categories: Array<{ id: number; code: string }>;
   unitTypes: Array<{ id: number; code: string }>;
   boxSizes: Array<{ id: number; code: string }>;
-  onEdit: (product: Product, buttonRef: React.RefObject<HTMLElement>) => void;
+  onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
   onDelete: (productId: number) => void;
 }
 
@@ -74,7 +81,7 @@ const ProductRow = ({
             icon={<Pencil size={14} color="#ffffff" />}
             ariaLabel="Edit"
             onClick={() =>
-              onEdit(product, editButtonRef as React.RefObject<HTMLElement>)
+              onEdit(product, editButtonRef as RefObject<HTMLElement>)
             }
           />
           <IconButton

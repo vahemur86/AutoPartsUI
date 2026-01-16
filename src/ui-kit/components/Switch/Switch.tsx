@@ -4,6 +4,7 @@ import {
   useEffect,
   forwardRef,
   type InputHTMLAttributes,
+  type ChangeEvent,
 } from "react";
 import styles from "./Switch.module.css";
 
@@ -53,7 +54,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       }
     }, [defaultChecked, isControlled]);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
       if (disabled) return;
       const newChecked = event.target.checked;
       if (!isControlled) {
