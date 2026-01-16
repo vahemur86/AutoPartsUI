@@ -15,44 +15,22 @@
   gap: 24px;
 }
 
-.fields {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 16px;
 }
 
-.fieldRow {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.fullRow {
+  grid-column: 1 / -1;
 }
 
-.fieldLeft,
-.fieldRight {
-  flex: 1;
+.colLeft {
+  grid-column: 1 / 2;
 }
 
-.fieldFullWidth {
-  width: 100%;
-}
-
-.sectionTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-.toggles {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.actions {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 12px;
-  margin-top: 16px;
+.colRight {
+  grid-column: 2 / 3;
 }
 
 .actionswithoutDelete {
@@ -72,7 +50,7 @@
   flex: 1;
 }
 
-/* Desktop styles */
+/* Desktop */
 @media (min-width: 768px) {
   .header {
     display: block;
@@ -82,34 +60,10 @@
     padding: 16px 24px 24px;
   }
 
-  .fieldRow {
-    flex-direction: row;
-    gap: 16px;
-  }
-
-  .fieldLeft,
-  .fieldRight {
-    flex: 1;
-  }
-
-  .fieldFullWidth {
-    width: 100%;
-  }
-
-  .actions {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
   .actionswithoutDelete {
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-  }
-
-  .deleteButton {
-    width: auto;
   }
 
   .primaryActions {
@@ -121,7 +75,7 @@
   }
 }
 
-/* Mobile styles */
+/* Mobile: stack everything into 1 column */
 @media (max-width: 767px) {
   .header {
     display: none;
@@ -132,22 +86,20 @@
     gap: 24px;
   }
 
-  .fields {
-    gap: 16px;
+  .grid {
+    grid-template-columns: 1fr;
   }
 
-  .toggles {
-    gap: 12px;
+  .colLeft,
+  .colRight,
+  .fullRow {
+    grid-column: 1 / -1;
   }
 
-  .actions {
+  .actionswithoutDelete {
     flex-direction: column-reverse;
     gap: 12px;
     margin-top: 16px;
-  }
-
-  .deleteButton {
-    width: 100%;
   }
 
   .primaryActions {
@@ -158,4 +110,15 @@
   .primaryActions button {
     flex: 1;
   }
+}
+
+/* Critical for grid overflow issues */
+.grid > * {
+  min-width: 0;
+}
+
+.colLeft,
+.colRight,
+.fullRow {
+  min-width: 0;
 }

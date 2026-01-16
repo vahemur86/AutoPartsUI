@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
-import { Button, TextField, Select, Dropdown } from "@/ui-kit";
+import { Button, TextField, Select, Dropdown, Textarea } from "@/ui-kit";
 import styles from "./VehicleDropdown.module.css";
 
 export interface VehicleForm {
@@ -24,14 +24,14 @@ export const AddVehicleDropdown = ({
   onOpenChange,
   onSave,
 }: AddVehicleDropdownProps) => {
-  const fields = useMemo(
+  const vehicleFormFields = useMemo(
     () => ({
       brand: { label: "Brand", placeholder: "Select brand..." },
       model: { label: "Model", placeholder: "Enter model..." },
       year: { label: "Year", placeholder: "Enter year..." },
       engine: { label: "Engine", placeholder: "Enter engine..." },
       fuelType: { label: "Fuel Type", placeholder: "Select fuel type..." },
-      status: { label: "Status", placeholder: "Select status..." },
+      status: { label: "Status", placeholder: "Enter status..." },
     }),
     []
   );
@@ -75,16 +75,16 @@ export const AddVehicleDropdown = ({
     setHasTriedSave(true);
     if (!isValid) return;
 
-    const payload: VehicleForm = {
+    onSave?.({
+      ...formValues,
       brand: formValues.brand.trim(),
       model: formValues.model.trim(),
       year: formValues.year.trim(),
       engine: formValues.engine.trim(),
       fuelType: formValues.fuelType.trim(),
       status: formValues.status.trim(),
-    };
+    });
 
-    onSave?.(payload);
     onOpenChange(false);
   };
 
@@ -102,98 +102,89 @@ export const AddVehicleDropdown = ({
       </div>
 
       <div className={styles.content}>
-        <div className={styles.fields}>
-          <div className={styles.fieldRow}>
-            <div className={styles.fieldLeft}>
-              <Select
-                label={fields.brand.label}
-                value={formValues.brand}
-                onChange={(e) =>
-                  setFormValues((p) => ({ ...p, brand: e.target.value }))
-                }
-                placeholder={fields.brand.placeholder}
-                error={hasTriedSave && !formValues.brand.trim()}
-              >
-                <option value="">{fields.brand.placeholder}</option>
-                <option value="bmw">BMW</option>
-                <option value="ford">Ford</option>
-              </Select>
-            </div>
-            <div className={styles.fieldRight} />
+        <div className={styles.grid}>
+          <div className={styles.fullRow}>
+            <Select
+              label={vehicleFormFields.brand.label}
+              value={formValues.brand}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, brand: e.target.value }))
+              }
+              placeholder={vehicleFormFields.brand.placeholder}
+              error={hasTriedSave && !formValues.brand.trim()}
+            >
+              <option value="">{vehicleFormFields.brand.placeholder}</option>
+              <option value="bmw">BMW</option>
+              <option value="ford">Ford</option>
+            </Select>
           </div>
 
-          <div className={styles.fieldRow}>
-            <div className={styles.fieldLeft}>
-              <TextField
-                label={fields.model.label}
-                value={formValues.model}
-                onChange={(e) =>
-                  setFormValues((p) => ({ ...p, model: e.target.value }))
-                }
-                placeholder={fields.model.placeholder}
-                error={hasTriedSave && !formValues.model.trim()}
-              />
-            </div>
-            <div className={styles.fieldRight}>
-              <TextField
-                label={fields.year.label}
-                value={formValues.year}
-                onChange={(e) =>
-                  setFormValues((p) => ({ ...p, year: e.target.value }))
-                }
-                placeholder={fields.year.placeholder}
-                error={hasTriedSave && !formValues.year.trim()}
-              />
-            </div>
+          <div className={styles.colLeft}>
+            <TextField
+              label={vehicleFormFields.model.label}
+              value={formValues.model}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, model: e.target.value }))
+              }
+              placeholder={vehicleFormFields.model.placeholder}
+              error={hasTriedSave && !formValues.model.trim()}
+            />
           </div>
 
-          <div className={styles.fieldRow}>
-            <div className={styles.fieldLeft}>
-              <TextField
-                label={fields.engine.label}
-                value={formValues.engine}
-                onChange={(e) =>
-                  setFormValues((p) => ({ ...p, engine: e.target.value }))
-                }
-                placeholder={fields.engine.placeholder}
-                error={hasTriedSave && !formValues.engine.trim()}
-              />
-            </div>
-            <div className={styles.fieldRight}>
-              <Select
-                label={fields.fuelType.label}
-                value={formValues.fuelType}
-                onChange={(e) =>
-                  setFormValues((p) => ({ ...p, fuelType: e.target.value }))
-                }
-                placeholder={fields.fuelType.placeholder}
-                error={hasTriedSave && !formValues.fuelType.trim()}
-              >
-                <option value="">{fields.fuelType.placeholder}</option>
-                <option value="gasoline">Gasoline</option>
-                <option value="diesel">Diesel</option>
-                <option value="electric">Electric</option>
-                <option value="hybrid">Hybrid</option>
-              </Select>
-            </div>
+          <div className={styles.colRight}>
+            <TextField
+              label={vehicleFormFields.year.label}
+              value={formValues.year}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, year: e.target.value }))
+              }
+              placeholder={vehicleFormFields.year.placeholder}
+              error={hasTriedSave && !formValues.year.trim()}
+            />
           </div>
 
-          <div className={styles.fieldRow}>
-            <div className={styles.fieldFullWidth}>
-              <Select
-                label={fields.status.label}
-                value={formValues.status}
-                onChange={(e) =>
-                  setFormValues((p) => ({ ...p, status: e.target.value }))
-                }
-                placeholder={fields.status.placeholder}
-                error={hasTriedSave && !formValues.status.trim()}
-              >
-                <option value="">{fields.status.placeholder}</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </Select>
-            </div>
+          <div className={styles.colLeft}>
+            <TextField
+              label={vehicleFormFields.engine.label}
+              value={formValues.engine}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, engine: e.target.value }))
+              }
+              placeholder={vehicleFormFields.engine.placeholder}
+              error={hasTriedSave && !formValues.engine.trim()}
+            />
+          </div>
+
+          <div className={styles.colRight}>
+            <Select
+              label={vehicleFormFields.fuelType.label}
+              value={formValues.fuelType}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, fuelType: e.target.value }))
+              }
+              placeholder={vehicleFormFields.fuelType.placeholder}
+              error={hasTriedSave && !formValues.fuelType.trim()}
+            >
+              <option value="">{vehicleFormFields.fuelType.placeholder}</option>
+              <option value="gasoline">Gasoline</option>
+              <option value="diesel">Diesel</option>
+              <option value="electric">Electric</option>
+              <option value="hybrid">Hybrid</option>
+            </Select>
+          </div>
+
+          <div className={styles.fullRow}>
+            <Textarea
+              resizable={false}
+              label={vehicleFormFields.status.label}
+              placeholder={vehicleFormFields.status.placeholder}
+              value={formValues.status ?? ""}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, status: e.target.value }))
+              }
+              className={styles.statusField}
+              error={hasTriedSave && !formValues.status.trim()}
+            />
           </div>
         </div>
 

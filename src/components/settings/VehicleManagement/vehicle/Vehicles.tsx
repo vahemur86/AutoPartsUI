@@ -1,11 +1,4 @@
-import {
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
-  type FC,
-  type RefObject,
-} from "react";
+import { useMemo, useState, useRef, useCallback, type FC } from "react";
 import {
   Button,
   IconButton,
@@ -29,11 +22,11 @@ export const Vehicles: FC<VehiclesProps> = ({
   withDelete = true,
 }) => {
   const [isAddingVehicle, setIsAddingVehicle] = useState(false);
-  const addButtonDesktopRef = useRef<HTMLButtonElement>(null);
+
+  const addAnchorRef = useRef<HTMLElement | null>(null);
+
   const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
-  const addButtonMobileRef = useRef<HTMLButtonElement>(null);
   const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
-  const addButtonAnchorRef = useRef<HTMLElement | null>(null);
 
   const tasksCells = useMemo(
     () => [
@@ -48,26 +41,29 @@ export const Vehicles: FC<VehiclesProps> = ({
     []
   );
 
-  const handleAddButtonClick = useCallback((isMobile: boolean = false) => {
-    const wrapperRef = isMobile
-      ? addButtonMobileWrapperRef
-      : addButtonDesktopWrapperRef;
-    const buttonRef = isMobile ? addButtonMobileRef : addButtonDesktopRef;
-    const anchorElement = wrapperRef.current || buttonRef.current;
+  const openAddDropdown = useCallback((isMobile: boolean) => {
+    const anchorEl = isMobile
+      ? addButtonMobileWrapperRef.current
+      : addButtonDesktopWrapperRef.current;
 
-    if (anchorElement) {
-      addButtonAnchorRef.current = anchorElement;
-      setIsAddingVehicle(true);
-    }
+    if (!anchorEl) return;
+
+    addAnchorRef.current = anchorEl;
+    setIsAddingVehicle(true);
   }, []);
 
   const handleCloseAddDropdown = useCallback(() => {
     setIsAddingVehicle(false);
+    addAnchorRef.current = null;
   }, []);
 
-  const handleAddVehicle = useCallback((data: unknown) => {
-    console.log("Add vehicle:", data);
-  }, []);
+  const handleAddVehicle = useCallback(
+    async (data: unknown) => {
+      console.log("Add vehicle:", data);
+      handleCloseAddDropdown();
+    },
+    [handleCloseAddDropdown]
+  );
 
   const handleEdit = () => {
     console.log("Edit Clicked");
@@ -75,13 +71,6 @@ export const Vehicles: FC<VehiclesProps> = ({
 
   const handleDelete = () => {
     console.log("Delete Clicked");
-  };
-
-  const getAddButtonAnchorRef = (): RefObject<HTMLElement> | undefined => {
-    if (addButtonAnchorRef.current) {
-      return { current: addButtonAnchorRef.current } as RefObject<HTMLElement>;
-    }
-    return undefined;
   };
 
   return (
@@ -92,12 +81,12 @@ export const Vehicles: FC<VehiclesProps> = ({
           className={styles.addButtonWrapper}
         >
           <IconButton
-            ref={addButtonDesktopRef}
             variant="primary"
             size="small"
             icon={<Plus size={12} color="#0e0f11" />}
             ariaLabel="Add New"
-            onClick={() => handleAddButtonClick(false)}
+            className={styles.plusButton}
+            onClick={() => openAddDropdown(false)}
           />
           <span className={styles.addButtonText}>Add vehicle</span>
         </div>
@@ -105,7 +94,7 @@ export const Vehicles: FC<VehiclesProps> = ({
 
       <AddVehicleDropdown
         open={isAddingVehicle}
-        anchorRef={getAddButtonAnchorRef()}
+        anchorRef={addAnchorRef}
         onOpenChange={(open) => {
           if (!open) handleCloseAddDropdown();
         }}
@@ -125,38 +114,40 @@ export const Vehicles: FC<VehiclesProps> = ({
           </TableHeader>
 
           <TableBody>
-            <TableCell>Toyota</TableCell>
-            <TableCell>Camry</TableCell>
-            <TableCell>2018</TableCell>
-            <TableCell>2.5L L4</TableCell>
-            <TableCell>Gasoline</TableCell>
-            <TableCell>Active</TableCell>
+            <TableRow>
+              <TableCell>Toyota</TableCell>
+              <TableCell>Camry</TableCell>
+              <TableCell>2018</TableCell>
+              <TableCell>2.5L L4</TableCell>
+              <TableCell>Gasoline</TableCell>
+              <TableCell>Active</TableCell>
 
-            <TableCell>
-              <div className={styles.actionButtonsCell}>
-                {withEdit && (
-                  <Button
-                    variant="primary"
-                    size="small"
-                    aria-label="Edit vehicle"
-                    onClick={handleEdit}
-                  >
-                    Edit
-                  </Button>
-                )}
+              <TableCell>
+                <div className={styles.actionButtonsCell}>
+                  {withEdit && (
+                    <Button
+                      variant="primary"
+                      size="small"
+                      aria-label="Edit vehicle"
+                      onClick={handleEdit}
+                    >
+                      Edit
+                    </Button>
+                  )}
 
-                {withDelete && (
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    aria-label="Delete vehicle"
-                    onClick={handleDelete}
-                  >
-                    Delete
-                  </Button>
-                )}
-              </div>
-            </TableCell>
+                  {withDelete && (
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      aria-label="Delete vehicle"
+                      onClick={handleDelete}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </div>
@@ -164,15 +155,14 @@ export const Vehicles: FC<VehiclesProps> = ({
       <div className={styles.addButtonMobile}>
         <div
           ref={addButtonMobileWrapperRef}
-          className={styles.addButtonWrapper}
+          className={styles.addButtonWrapperMobile}
         >
           <IconButton
-            ref={addButtonMobileRef}
             variant="primary"
             size="small"
-            icon={<Plus size={12} color="#0e0f11" />}
+            icon={<Plus size={12} />}
             ariaLabel="Add New"
-            onClick={() => handleAddButtonClick(true)}
+            onClick={() => openAddDropdown(true)}
           />
           <span className={styles.addButtonText}>Add vehicle</span>
         </div>
