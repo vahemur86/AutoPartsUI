@@ -3,6 +3,7 @@ export {
   Button,
   Checkbox,
   Dropdown,
+  Sheet,
   IconButton,
   InteractiveField,
   Select,
