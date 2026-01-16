@@ -9,8 +9,8 @@ import {
   Settings as SettingsIcon,
   Truck,
 } from "lucide-react";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import styles from "./Settings.module.css";
-import SectionHeader from "@/components/common/SectionHeader";
 
 export const Settings = () => {
   const location = useLocation();

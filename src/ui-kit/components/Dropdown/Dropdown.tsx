@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  type RefObject,
+  type ReactNode,
+} from "react";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/isMobile";
 import { X } from "lucide-react";
@@ -7,8 +13,8 @@ import styles from "./Dropdown.module.css";
 export interface DropdownProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  anchorRef?: React.RefObject<HTMLElement>;
-  children: React.ReactNode;
+  anchorRef?: RefObject<HTMLElement>;
+  children: ReactNode;
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";
   sideOffset?: number;

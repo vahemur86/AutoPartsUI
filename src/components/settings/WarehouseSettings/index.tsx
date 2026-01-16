@@ -12,7 +12,7 @@ import {
   removeWarehouse,
 } from "@/store/slices/warehousesSlice";
 
-const WarehouseSettings = () => {
+export const WarehouseSettings = () => {
   const dispatch = useAppDispatch();
   const { warehouses, isLoading, error } = useAppSelector(
     (state) => state.warehouses
@@ -152,5 +152,3 @@ const WarehouseSettings = () => {
     </div>
   );
 };
-
-export default WarehouseSettings;

@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import styles from "./IconButton.module.css";
 
 export type IconButtonVariant =
@@ -14,14 +14,14 @@ export type IconButtonVariant =
 export type IconButtonSize = "small" | "medium" | "large";
 
 export interface IconButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: IconButtonVariant;
   size?: IconButtonSize;
-  icon: React.ReactNode;
+  icon: ReactNode;
   ariaLabel: string;
 }
 
-export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (
     {
       variant = "primary",

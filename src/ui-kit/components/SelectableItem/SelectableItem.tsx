@@ -1,4 +1,9 @@
-import React, { useState } from "react";
+import {
+  forwardRef,
+  useState,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
 import styles from "./SelectableItem.module.css";
 
 export type SelectableItemState =
@@ -7,21 +12,17 @@ export type SelectableItemState =
   | "hovered"
   | "disabled";
 
-export interface SelectableItemProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface SelectableItemProps extends HTMLAttributes<HTMLDivElement> {
   state?: SelectableItemState;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   text: string;
-  editIcon?: React.ReactNode;
+  editIcon?: ReactNode;
   onEditClick?: () => void;
   onClick?: () => void;
   width?: number | string;
 }
 
-export const SelectableItem = React.forwardRef<
-  HTMLDivElement,
-  SelectableItemProps
->(
+export const SelectableItem = forwardRef<HTMLDivElement, SelectableItemProps>(
   (
     {
       state = "default",
@@ -101,9 +102,3 @@ export const SelectableItem = React.forwardRef<
 );
 
 SelectableItem.displayName = "SelectableItem";
-
-
-
-
-
-

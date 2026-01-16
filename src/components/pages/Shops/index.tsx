@@ -8,9 +8,3 @@ export const Shops = () => {
     </div>
   );
 };
-
-
-
-
-
-

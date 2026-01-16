@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment, type FC } from "react";
 import styles from "./Stepper.module.css";
 
 export interface StepperStep {
@@ -14,7 +14,7 @@ export interface StepperProps {
   className?: string;
 }
 
-export const Stepper: React.FC<StepperProps> = ({
+export const Stepper: FC<StepperProps> = ({
   steps,
   activeStepIndex,
   onStepClick,
@@ -43,7 +43,7 @@ export const Stepper: React.FC<StepperProps> = ({
         const isLast = index === steps.length - 1;
 
         return (
-          <React.Fragment key={step.id}>
+          <Fragment key={step.id}>
             <div
               className={`${styles.stepContainer} ${
                 onStepClick && status !== "pending" ? styles.clickable : ""
@@ -86,7 +86,7 @@ export const Stepper: React.FC<StepperProps> = ({
                 }`}
               />
             )}
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </div>
@@ -94,9 +94,3 @@ export const Stepper: React.FC<StepperProps> = ({
 };
 
 Stepper.displayName = "Stepper";
-
-
-
-
-
-

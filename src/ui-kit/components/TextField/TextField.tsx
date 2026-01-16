@@ -1,15 +1,15 @@
-import React from "react";
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import styles from "./TextField.module.css";
 
 export interface TextFieldProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   error?: boolean;
   helperText?: string;
 }
 
-export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       label,

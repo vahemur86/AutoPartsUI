@@ -1,35 +1,30 @@
-import React from "react";
-// import { useLocation } from "react-router-dom";
-import styles from "./SectionHeader.module.css";
+import type { FC, ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
+import styles from "./SectionHeader.module.css";
 
 interface SectionHeaderProps {
   title?: string;
-  icon?: React.ReactNode;
-  actions?: React.ReactNode;
-  goBack?: any;
+  icon?: ReactNode;
+  actions?: ReactNode;
+  goBack?: boolean;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({
+export const SectionHeader: FC<SectionHeaderProps> = ({
   title,
   icon,
   actions,
   goBack,
-}) => {
-  return (
-    <div className={styles.sectionHeader}>
-      <div className={styles.titleContainer}>
-        {goBack && (
-          <div className={styles.goBack}>
-            <ChevronLeft />
-          </div>
-        )}
-        {icon && <span className={styles.icon}>{icon}</span>}
-        <h2 className={styles.title}>{title}</h2>
-      </div>
-      {actions && <div className={styles.actions}>{actions}</div>}
+}) => (
+  <div className={styles.sectionHeader}>
+    <div className={styles.titleContainer}>
+      {goBack && (
+        <div className={styles.goBack}>
+          <ChevronLeft />
+        </div>
+      )}
+      {icon && <span className={styles.icon}>{icon}</span>}
+      <h2 className={styles.title}>{title}</h2>
     </div>
-  );
-};
-
-export default SectionHeader;
+    {actions && <div className={styles.actions}>{actions}</div>}
+  </div>
+);
