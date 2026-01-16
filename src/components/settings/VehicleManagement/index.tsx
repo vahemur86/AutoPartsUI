@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Tab, TabGroup } from "@/ui-kit";
-import { Tasks } from "./Tasks";
+import { Tasks } from "./task/Task";
 import { Vehicles } from "./vehicle/Vehicles";
 import styles from "./VehicleManagement.module.css";
 
-export const VehicleManagement = () => {
-  const [activeTabId, setActiveTabId] = useState<"tasks" | "vehicles">("tasks");
+type VehicleManagementTab = "tasks" | "vehicles";
 
-  const tabs = [
-    { id: "tasks", label: "Tasks" },
-    { id: "vehicles", label: "Vehicles" },
-  ] as const;
+export const VehicleManagement = () => {
+  const [activeTabId, setActiveTabId] = useState<VehicleManagementTab>("tasks");
+
+  const tabs = useMemo(
+    () =>
+      [
+        { id: "tasks", label: "Tasks" },
+        { id: "vehicles", label: "Vehicles" },
+      ] as const,
+    []
+  );
 
   return (
     <section className={styles.vehicleManagementWrapper}>

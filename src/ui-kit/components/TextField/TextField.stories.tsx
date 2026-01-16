@@ -165,11 +165,3 @@ export const Interactive: Story = {
     controls: { disable: true },
   },
 };
-
-
-
-
-
-
-
-

@@ -1,4 +1,3 @@
-/* Desktop header - hidden on mobile as Sheet provides its own */
 .header {
   padding: 19px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
@@ -16,37 +15,37 @@
   gap: 24px;
 }
 
-.fields {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* === GRID LAYOUT (matches screenshot) === */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 16px;
 }
 
-.sectionTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-white);
+.fullRow {
+  grid-column: 1 / -1;
 }
 
-.toggles {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.colLeft {
+  grid-column: 1 / 2;
 }
 
-.actions,
+.colRight {
+  grid-column: 2 / 3;
+}
+
+/* Notes should visually feel taller */
+.notesField {
+  /* If your TextField supports textarea/multiline, you can style it here.
+     Otherwise this does nothing harmful. */
+}
+
+/* Actions */
 .actionswithoutDelete {
   display: flex;
   flex-direction: column-reverse;
   gap: 12px;
   margin-top: 16px;
-}
-
-.deleteButton {
-  color: #ff2d55;
-  border: 1px solid #ff2d55;
-  background-color: var(--color-white);
-  width: 100%;
 }
 
 .primaryActions {
@@ -59,7 +58,7 @@
   flex: 1;
 }
 
-/* Desktop styles */
+/* Desktop */
 @media (min-width: 768px) {
   .header {
     display: block;
@@ -69,20 +68,10 @@
     padding: 16px 24px 24px;
   }
 
-  .actions {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
   .actionswithoutDelete {
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-  }
-
-  .deleteButton {
-    width: auto;
   }
 
   .primaryActions {
@@ -94,7 +83,7 @@
   }
 }
 
-/* Mobile styles */
+/* Mobile: stack everything into 1 column */
 @media (max-width: 767px) {
   .header {
     display: none;
@@ -105,6 +94,22 @@
     gap: 24px;
   }
 
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .colLeft,
+  .colRight,
+  .fullRow {
+    grid-column: 1 / -1;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
   .primaryActions {
     width: 100%;
     gap: 12px;
@@ -113,4 +118,15 @@
   .primaryActions button {
     flex: 1;
   }
+}
+
+/* Critical for grid overflow issues */
+.grid > * {
+  min-width: 0;
+}
+
+.colLeft,
+.colRight,
+.fullRow {
+  min-width: 0;
 }

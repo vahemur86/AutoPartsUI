@@ -14,7 +14,7 @@ import styles from "./Dropdown.module.css";
 export interface DropdownProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  anchorRef?: RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement | null>;
   children: ReactNode;
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";

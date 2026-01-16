@@ -43,7 +43,7 @@
   position: relative;
 }
 
-/* the card */
+/* Card */
 .languageField {
   position: relative;
   background-color: var(--color-black-3);
@@ -52,11 +52,7 @@
   overflow: hidden;
 }
 
-.languageItem.defaultLanguage::before {
-  content: none;
-}
-
-/* green bar as part of the card */
+/* Green bar for default language */
 .languageItem.defaultLanguage .languageField::before {
   content: "";
   position: absolute;
@@ -120,7 +116,6 @@
 }
 
 .languageField button {
-  /* Remove default IconButton background for edit icon */
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
@@ -133,17 +128,12 @@
 
 .languageField button:active,
 .languageField button:focus-visible {
-  /* On active / focus, icon becomes yellow */
   color: var(--color-primary-500) !important;
 }
 
-/* Active state - when dropdown is open, edit icon is yellow */
+/* Active state - dropdown open */
 .languageItem.active .languageField button {
   color: var(--color-primary-500) !important;
-}
-
-.languageItem.active .languageField button:hover {
-  opacity: 1;
 }
 
 .actionButtons {
@@ -154,12 +144,12 @@
   padding-bottom: 24px;
 }
 
-/* Desktop: Hide mobile button by default */
+/* Desktop: Hide mobile button */
 .addButtonMobile {
   display: none;
 }
 
-/* Mobile Styles */
+/* Mobile */
 @media (max-width: 768px) {
   .languagesHeader {
     display: none;

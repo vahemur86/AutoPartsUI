@@ -1,12 +1,12 @@
-import { useEffect, useState, type RefObject } from "react";
-import styles from "./LanguageDropdown.module.css";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
 import type { Language } from "@/types.ts/settings";
+import styles from "./LanguageDropdown.module.css";
 
 export interface EditLanguageDropdownProps {
   open: boolean;
   language: Language;
-  anchorRef?: RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: Language) => void;
   onDelete?: (id: number) => void;
@@ -25,20 +25,21 @@ export const EditLanguageDropdown = ({
     language.isDefault ?? false
   );
   const [enabledValue, setEnabledValue] = useState(language.isEnabled ?? true);
+  const [hasTriedSave, setHasTriedSave] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setDisplayNameValue(language.name);
-      setIsDefaultValue(language.isDefault ?? false);
-      setEnabledValue(language.isEnabled ?? true);
-    }
+    if (!open) return;
+    setDisplayNameValue(language.name);
+    setIsDefaultValue(language.isDefault ?? false);
+    setEnabledValue(language.isEnabled ?? true);
+    setHasTriedSave(false);
   }, [open, language]);
 
+  const isValid = useMemo(() => !!displayNameValue.trim(), [displayNameValue]);
+
   const handleSaveClick = () => {
-    if (!displayNameValue.trim()) {
-      // TODO: Add validation/error handling
-      return;
-    }
+    setHasTriedSave(true);
+    if (!isValid) return;
 
     onSave({
       id: language.id,
@@ -49,9 +50,7 @@ export const EditLanguageDropdown = ({
     });
   };
 
-  const handleClose = () => {
-    onOpenChange(false);
-  };
+  const handleClose = () => onOpenChange(false);
 
   return (
     <Dropdown
@@ -62,7 +61,6 @@ export const EditLanguageDropdown = ({
       side="left"
       title="Edit Language"
     >
-      {/* Desktop header */}
       <div className={styles.header}>
         <span className={styles.title}>Edit Language</span>
       </div>
@@ -74,6 +72,7 @@ export const EditLanguageDropdown = ({
             label="Display name"
             value={displayNameValue}
             onChange={(e) => setDisplayNameValue(e.target.value)}
+            error={hasTriedSave && !displayNameValue.trim()}
           />
         </div>
 
@@ -98,9 +97,7 @@ export const EditLanguageDropdown = ({
             <Button
               variant="secondary"
               size="medium"
-              onClick={() => {
-                onDelete(language.id);
-              }}
+              onClick={() => onDelete(language.id)}
               className={styles.deleteButton}
               disabled={language.isDefault}
             >

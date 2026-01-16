@@ -1,3 +1,7 @@
+/* =========================================================
+   Base Layout
+========================================================= */
+
 .vehicleManagementWrapper {
   display: flex;
   flex-direction: column;
@@ -13,13 +17,19 @@
   color: var(--color-white);
 }
 
-/* Tabs Container */
+/* =========================================================
+   Tabs
+========================================================= */
+
 .tabsContainer {
   display: flex;
   margin-block-start: 16px;
 }
 
-/* Create New Section */
+/* =========================================================
+   Create New Section
+========================================================= */
+
 .createNewSection {
   display: flex;
   flex-direction: column;
@@ -39,6 +49,7 @@
   color: var(--color-white);
 }
 
+/* Generic add button wrapper (used in headers etc.) */
 .addButtonWrapper {
   display: flex;
   align-items: center;
@@ -57,7 +68,10 @@
   gap: 10px;
 }
 
-/* Existing Section */
+/* =========================================================
+   Existing Section
+========================================================= */
+
 .existingSection {
   display: flex;
   flex-direction: column;
@@ -68,14 +82,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
   padding: 0;
   background: none;
   border: none;
-
   cursor: pointer;
   color: var(--color-white);
-
   outline: none;
 }
 
@@ -106,15 +117,64 @@
   width: 100%;
 }
 
+/* =========================================================
+   Action Buttons
+========================================================= */
+
 .actionButtons {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-
   margin-top: auto;
   padding-block-end: 24px;
 }
 
+/* Table row actions */
+.actionButtonsCell {
+  display: flex;
+  gap: 12px;
+  padding: 3px;
+}
+
+/* =========================================================
+   Tables
+========================================================= */
+
+.tableContainer {
+  width: 100%;
+}
+
+/* =========================================================
+   Tasks (from second file)
+========================================================= */
+
+.tasksWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tasksHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+/* Desktop add-task button */
+.addTaskButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+/* =========================================================
+   Mobile Buttons (two different patterns)
+========================================================= */
+
+/* From first file */
 .addNewButton {
   display: flex;
   justify-content: flex-end;
@@ -125,7 +185,23 @@
   display: none;
 }
 
-/* Mobile Styles */
+/* From second file */
+.addTaskButtonMobile {
+  display: none;
+}
+
+.addTaskButtonWrapperMobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* =========================================================
+   Mobile Styles
+========================================================= */
+
 @media (max-width: 768px) {
   .vehicleManagementWrapper {
     min-height: auto;
@@ -154,11 +230,18 @@
     flex-shrink: 0;
   }
 
+  /* Hide desktop add buttons */
   .addNewButton {
     display: none;
   }
 
-  .addButtonMobile {
+  .tasksHeader {
+    display: none;
+  }
+
+  /* Show mobile buttons */
+  .addButtonMobile,
+  .addTaskButtonMobile {
     display: flex;
     margin-top: 16px;
     border: 1px solid var(--color-primary-400);
@@ -167,7 +250,8 @@
     text-align: center;
   }
 
-  .addButtonMobile .addButtonWrapper {
+  .addButtonMobile .addButtonWrapper,
+  .addTaskButtonMobile .addTaskButtonWrapperMobile {
     width: 100%;
     justify-content: center;
   }
@@ -202,7 +286,7 @@
   }
 }
 
-/* Landscape mobile styles */
+/* Landscape mobile */
 @media (max-width: 968px) and (orientation: landscape) {
   .tableContainer {
     overflow-x: auto;
@@ -236,14 +320,4 @@
   .actionButtons {
     padding-block-start: 12px;
   }
-}
-
-.actionButtonsCell {
-  display: flex;
-  gap: 12px;
-  padding: 3px;
-}
-
-.tableContainer {
-  width: 100%;
 }

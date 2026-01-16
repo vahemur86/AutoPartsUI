@@ -46,3 +46,9 @@ export {
   type TableRowProps,
 } from "./Table";
 export { TextField, type TextFieldProps } from "./TextField";
+export { Textarea, type TextareaProps } from "./Textarea";
+export {
+  MultiSelect,
+  type MultiSelectProps,
+  type MultiSelectOption,
+} from "./MultiSelect";

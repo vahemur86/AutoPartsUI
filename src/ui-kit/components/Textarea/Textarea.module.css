@@ -1,0 +1,89 @@
+.textareaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: "Manrope", sans-serif;
+  width: 100%;
+}
+
+.textareaLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-white);
+  user-select: none;
+}
+
+.textareaContainer {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.textareaContainer:hover:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-primary-500);
+}
+
+.textareaContainer:focus-within:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-primary-500);
+  outline: none;
+}
+
+.textareaContainer.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.textareaContainer.error {
+  border-color: #ef4444;
+}
+
+.textareaInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-white);
+  font-size: 14px;
+  font-family: "Manrope", sans-serif;
+  line-height: 1.5;
+  padding: 0;
+  margin: 0;
+  display: block;
+  resize: vertical;
+}
+
+.noResize {
+  resize: none !important;
+}
+
+.textareaInput.autoResize {
+  resize: none;
+  overflow: hidden;
+}
+
+.textareaInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.textareaInput:disabled {
+  cursor: not-allowed;
+}
+
+.textareaHelperText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: -4px;
+}
+
+.textareaHelperText.error {
+  color: #ef4444;
+}

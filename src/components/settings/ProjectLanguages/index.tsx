@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  type RefObject,
-} from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/ui-kit";
 import { LanguagesContent } from "./LanguagesContent";
@@ -19,17 +13,25 @@ import {
 import type { Language } from "@/types.ts/settings";
 import styles from "./ProjectLanguages.module.css";
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error && typeof error === "object" && "message" in error) {
+    return String((error as unknown as Error).message);
+  }
+  return fallback;
+};
+
 export const ProjectLanguages = () => {
   const [editingLanguageId, setEditingLanguageId] = useState<number | null>(
     null
   );
   const [isAddingLanguage, setIsAddingLanguage] = useState(false);
-  const [editButtonRef, setEditButtonRef] =
-    useState<RefObject<HTMLElement> | null>(null);
-  const [addButtonRef, setAddButtonRef] =
-    useState<RefObject<HTMLElement> | null>(null);
+
+  const editAnchorRef = useRef<HTMLElement>(null);
+  const addAnchorRef = useRef<HTMLElement>(null);
+
   const [languages, setLanguages] = useState<Language[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
   const fetchInitiatedRef = useRef(false);
 
   const fetchLanguages = useCallback(async () => {
@@ -37,9 +39,9 @@ export const ProjectLanguages = () => {
       setIsLoading(true);
       const response = await getLanguages();
       setLanguages(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(error.message || "Failed to load languages");
+      toast.error(getErrorMessage(error, "Failed to load languages"));
     } finally {
       setIsLoading(false);
     }
@@ -51,16 +53,16 @@ export const ProjectLanguages = () => {
     fetchLanguages();
   }, [fetchLanguages]);
 
-  const handleAddNewClick = useCallback((buttonRef: RefObject<HTMLElement>) => {
-    if (buttonRef.current) {
-      setAddButtonRef(buttonRef);
-      setIsAddingLanguage(true);
-    }
+  const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
+    if (!anchorEl) return;
+    addAnchorRef.current = anchorEl;
+    setIsAddingLanguage(true);
   }, []);
 
   const handleEditClick = useCallback(
-    (languageId: number, buttonRef: RefObject<HTMLElement>) => {
-      setEditButtonRef(buttonRef);
+    (languageId: number, anchorEl: HTMLElement | null) => {
+      if (!anchorEl) return;
+      editAnchorRef.current = anchorEl;
       setEditingLanguageId(languageId);
     },
     []
@@ -68,34 +70,39 @@ export const ProjectLanguages = () => {
 
   const handleCloseEditDropdown = useCallback(() => {
     setEditingLanguageId(null);
-    setEditButtonRef(null);
+    editAnchorRef.current = null;
   }, []);
 
   const handleCloseAddDropdown = useCallback(() => {
     setIsAddingLanguage(false);
-    setAddButtonRef(null);
+    addAnchorRef.current = null;
   }, []);
 
-  // Helper function to unset other default languages
   const unsetOtherDefaultLanguages = useCallback(
     async (excludeId?: number) => {
-      const defaultLanguages = languages.filter(
+      const toUnset = languages.filter(
         (lang) => lang.isDefault && lang.id !== excludeId
       );
 
-      for (const lang of defaultLanguages) {
-        try {
-          await updateLanguage(
-            lang.id,
-            lang.code,
-            lang.name,
-            false,
-            lang.isEnabled ?? true
-          );
-        } catch (error: any) {
-          toast.error(error.message || "Failed to update default language");
-          throw error;
-        }
+      if (toUnset.length === 0) return;
+
+      try {
+        await Promise.all(
+          toUnset.map((lang) =>
+            updateLanguage(
+              lang.id,
+              lang.code,
+              lang.name,
+              false,
+              lang.isEnabled ?? true
+            )
+          )
+        );
+      } catch (error: unknown) {
+        toast.error(
+          getErrorMessage(error, "Failed to update default language")
+        );
+        throw error;
       }
     },
     [languages]
@@ -118,9 +125,9 @@ export const ProjectLanguages = () => {
         toast.success("Language created successfully");
         await fetchLanguages();
         handleCloseAddDropdown();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
-        toast.error(error.message || "Failed to create language");
+        toast.error(getErrorMessage(error, "Failed to create language"));
       }
     },
     [unsetOtherDefaultLanguages, fetchLanguages, handleCloseAddDropdown]
@@ -146,9 +153,9 @@ export const ProjectLanguages = () => {
         toast.success("Language updated successfully");
         await fetchLanguages();
         handleCloseEditDropdown();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
-        toast.error(error.message || "Failed to update language");
+        toast.error(getErrorMessage(error, "Failed to update language"));
       }
     },
     [
@@ -166,16 +173,16 @@ export const ProjectLanguages = () => {
         toast.success("Language deleted successfully");
         await fetchLanguages();
         handleCloseEditDropdown();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
-        toast.error(error.message || "Failed to delete language");
+        toast.error(getErrorMessage(error, "Failed to delete language"));
       }
     },
     [fetchLanguages, handleCloseEditDropdown]
   );
 
   const editingLanguage = editingLanguageId
-    ? languages.find((lang) => lang.id === editingLanguageId)
+    ? languages.find((lang) => lang.id === editingLanguageId) ?? null
     : null;
 
   return (
@@ -184,9 +191,9 @@ export const ProjectLanguages = () => {
         <LanguagesContent
           languages={languages}
           isLoading={isLoading}
-          handleAddNewClick={handleAddNewClick}
+          onAddNewClick={handleAddNewClick}
           activeLanguageId={editingLanguageId}
-          handleEditClick={handleEditClick}
+          onEditClick={handleEditClick}
         />
       </div>
 
@@ -194,7 +201,7 @@ export const ProjectLanguages = () => {
         <EditLanguageDropdown
           open={editingLanguageId !== null}
           language={editingLanguage}
-          anchorRef={editButtonRef || undefined}
+          anchorRef={editAnchorRef}
           onOpenChange={(open) => {
             if (!open) handleCloseEditDropdown();
           }}
@@ -205,18 +212,18 @@ export const ProjectLanguages = () => {
 
       <AddLanguageDropdown
         open={isAddingLanguage}
-        anchorRef={addButtonRef || undefined}
+        anchorRef={addAnchorRef}
         onOpenChange={(open) => {
           if (!open) handleCloseAddDropdown();
         }}
         onSave={handleAddLanguage}
       />
 
-      {/* Action buttons */}
       <div className={styles.actionButtons}>
         <Button variant="secondary" size="medium" onClick={() => {}}>
           Cancel
         </Button>
+
         <Button variant="primary" size="medium" onClick={() => {}}>
           Save
         </Button>
