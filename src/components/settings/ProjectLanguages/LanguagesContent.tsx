@@ -1,7 +1,7 @@
 import { useRef, createRef, type FC, type RefObject } from "react";
 import { IconButton, InteractiveField } from "@/ui-kit";
 import { Plus, Edit } from "lucide-react";
-import type { Language } from "@/types.ts/settings";
+import type { Language } from "@/types/settings";
 import styles from "./ProjectLanguages.module.css";
 
 interface LanguagesContentProps {

@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type FC, type SetStateAction } from "react";
-import type { ExistingItem } from "@/types.ts/settings";
+import type { ExistingItem } from "@/types/settings";
 
 import { InteractiveField } from "@/ui-kit";
 import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";

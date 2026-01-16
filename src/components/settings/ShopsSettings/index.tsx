@@ -11,7 +11,7 @@ import {
   updateShopInStore,
   removeShop,
 } from "@/store/slices/shopsSlice";
-import type { Shop } from "@/types.ts/settings";
+import type { Shop } from "@/types/settings";
 
 export const ShopsSettings = () => {
   const dispatch = useAppDispatch();

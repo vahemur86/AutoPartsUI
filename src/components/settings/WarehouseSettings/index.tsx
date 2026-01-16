@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Tab, TabGroup } from "@/ui-kit";
 import { WarehouseContent } from "./WarehouseContent";
-import type { Warehouse } from "@/types.ts/settings";
+import type { Warehouse } from "@/types/settings";
 import styles from "./WarehouseSettings.module.css";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {

@@ -4,13 +4,13 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Pages
-import { Home } from "@/components/pages/Home/index";
-import { Settings } from "@/components/pages/Settings/index";
-import { Warehouses } from "@/components/pages/Warehouses/index";
-import { Shops } from "@/components/pages/Shops/index";
-import { Login } from "@/components/pages/Login/index";
-import { Products } from "@/components/pages/Products";
-import { UserManagement } from "@/components/pages/Users";
+import { Home } from "@/pages/Home/index";
+import { Settings } from "@/pages/Settings/index";
+import { Warehouses } from "@/pages/Warehouses/index";
+import { Shops } from "@/pages/Shops/index";
+import { Login } from "@/pages/Login/index";
+import { Products } from "@/pages/Products";
+import { UserManagement } from "@/pages/Users";
 
 // Components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";

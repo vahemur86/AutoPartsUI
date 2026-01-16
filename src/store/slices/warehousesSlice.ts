@@ -9,7 +9,7 @@ import {
   updateWarehouse,
   deleteWarehouse,
 } from "@/services/settings/warehouses";
-import type { Warehouse } from "@/types.ts/settings";
+import type { Warehouse } from "@/types/settings";
 
 interface WarehousesState {
   warehouses: Warehouse[];

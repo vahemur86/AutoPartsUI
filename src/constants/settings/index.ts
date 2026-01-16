@@ -7,7 +7,7 @@ import type {
   ProductSettingsTab,
   TabConfig,
   TabId,
-} from "@/types.ts/settings";
+} from "@/types/settings";
 import {
   boxSizeService,
   brandsService,

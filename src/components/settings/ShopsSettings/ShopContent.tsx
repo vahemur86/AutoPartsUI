@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@/ui-kit";
 import styles from "./ShopsSettings.module.css";
-import type { Warehouse, Shop } from "@/types.ts/settings";
+import type { Warehouse, Shop } from "@/types/settings";
 
 interface ShopContentProps {
   shopKey: string;

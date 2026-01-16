@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
-import type { Language } from "@/types.ts/settings";
+import type { Language } from "@/types/settings";
 import styles from "./LanguageDropdown.module.css";
 
 export interface EditLanguageDropdownProps {

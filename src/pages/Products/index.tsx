@@ -13,7 +13,7 @@ import { SectionHeader } from "@/components/common/SectionHeader";
 import { AddProductDropdown } from "./ProductActions/AddProductDropdown";
 import { EditProductDropdown } from "./ProductActions/EditProductDropdown";
 import { ProductsContent } from "./ProductsContent";
-import type { Product } from "@/types.ts/products";
+import type { Product } from "@/types/products";
 import styles from "./Products.module.css";
 
 export const Products = () => {
