@@ -7,7 +7,7 @@ import {
   TextField,
   type MultiSelectOption,
 } from "@/ui-kit";
-import styles from "./AddTaskDropdown.module.css";
+import styles from "./TaskDropdown.module.css";
 
 export interface TaskForm {
   name: string;

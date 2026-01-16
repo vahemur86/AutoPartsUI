@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef, type FC } from "react";
 import { IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
-import { AddTaskDropdown, type TaskForm } from "./AddTaskDropdown";
-import styles from "./VehicleManagement.module.css";
+import { AddTaskDropdown, type TaskForm } from "./taskActions/AddTaskDropdown";
+import styles from "../VehicleManagement.module.css";
 
 interface TasksProps {
   withEdit?: boolean;
