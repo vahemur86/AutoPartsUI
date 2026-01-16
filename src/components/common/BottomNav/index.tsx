@@ -1,5 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Settings, Warehouse, ShoppingBag, PackageSearch } from "lucide-react";
+import {
+  Settings,
+  Warehouse,
+  ShoppingBag,
+  PackageSearch,
+  Users,
+} from "lucide-react";
 import styles from "./BottomNav.module.css";
 
 export const BottomNav = () => {
@@ -37,6 +43,11 @@ export const BottomNav = () => {
       path: "/shops",
       icon: ShoppingBag,
       label: "Shops",
+    },
+    {
+      path: "/users",
+      icon: Users,
+      label: "User Management",
     },
   ];
 

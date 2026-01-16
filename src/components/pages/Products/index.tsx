@@ -135,7 +135,7 @@ export const Products = () => {
         }
       />
 
-      <div className={styles.settingsContainer}>
+      <div className={styles.productsContainer}>
         <ProductsContent onEdit={handleEditProduct} />
         <AddProductDropdown
           open={isAddingProduct}

@@ -3,21 +3,25 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { store } from "@/store/store";
-import "@/index.css";
-
-import { Home } from "./pages/Home";
-import { Settings } from "./pages/Settings";
-import { Warehouses } from "./pages/Warehouses";
-import { Shops } from "./pages/Shops";
+// Pages
+import { Home } from "./pages/Home/index";
+import { Settings } from "./pages/Settings/index";
+import { Warehouses } from "./pages/Warehouses/index";
+import { Shops } from "./pages/Shops/index";
+import { Login } from "./pages/Login/index";
 import { Products } from "./pages/Products";
+import { UserManagement } from "./pages/Users";
 
+// Components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
 import { Translation } from "@/components/settings/Translation";
 import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
 import { ShopsSettings } from "@/components/settings/ShopsSettings";
 import { ProductSettings } from "@/components/settings/ProductSettings";
 import { VehicleManagement } from "@/components/settings/VehicleManagement";
+
+import { store } from "@/store/store";
+import "@/index.css";
 
 const toastOptions = {
   position: "top-right",
@@ -35,6 +39,7 @@ export const App = () => {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />}>
             <Route
               index
@@ -60,6 +65,7 @@ export const App = () => {
             <Route path="warehouses" element={<Warehouses />} />
             <Route path="products" element={<Products />} />
             <Route path="shops" element={<Shops />} />
+            <Route path="users" element={<UserManagement />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

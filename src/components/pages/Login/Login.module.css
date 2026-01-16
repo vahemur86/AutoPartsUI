@@ -1,0 +1,198 @@
+.container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-black-1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gridBackground {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      rgba(236, 241, 94, 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(236, 241, 94, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.3;
+  transform: perspective(1000px) rotateX(60deg) translateY(-20%);
+  transform-origin: center center;
+  z-index: 0;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(236, 241, 94, 0.15) 0%,
+    rgba(236, 241, 94, 0.05) 20%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 40px 20px;
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@keyframes logoGlow {
+  0% {
+    filter: drop-shadow(0 0 20px rgba(236, 241, 94, 0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 30px rgba(236, 241, 94, 0.8));
+  }
+}
+
+.heading {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--color-white);
+  text-align: center;
+  margin-bottom: 50px;
+  font-family: "Manrope", sans-serif;
+  text-shadow: 0 0 10px rgba(236, 241, 94, 0.3);
+}
+
+.form {
+  width: 100%;
+  background-color: rgba(34, 34, 34, 0.8);
+  border-radius: 16px;
+  padding: 32px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(236, 241, 94, 0.1);
+  position: relative;
+}
+
+.fieldWrapper {
+  margin-bottom: 24px;
+}
+
+.fieldWithLeftIcon {
+  position: relative;
+  width: 100%;
+}
+
+.leftIcon {
+  position: absolute;
+  left: 16px;
+  top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.textField {
+  width: 100%;
+}
+
+.textField :global(.textFieldContainer) {
+  padding-left: 44px;
+}
+
+.textField :global(.textFieldInput) {
+  padding-left: 0;
+}
+
+.passwordToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
+}
+
+.passwordToggle:hover {
+  color: var(--color-white);
+}
+
+.passwordToggle:focus {
+  outline: none;
+}
+
+.loginButton {
+  margin-top: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .container {
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+  .content {
+    width: 100%;
+    max-width: 100%;
+    padding: 40px 24px;
+    padding-bottom: 40px;
+    justify-content: center;
+  }
+
+  .heading {
+    font-size: 28px;
+    margin-bottom: 32px;
+  }
+
+  .form {
+    width: 100%;
+    max-width: 100%;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .logoContainer {
+    margin-bottom: 0;
+  }
+}
