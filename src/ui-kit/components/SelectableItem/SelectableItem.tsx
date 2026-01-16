@@ -2,6 +2,7 @@ import {
   forwardRef,
   useState,
   type HTMLAttributes,
+  type MouseEvent,
   type ReactNode,
 } from "react";
 import styles from "./SelectableItem.module.css";
@@ -47,7 +48,7 @@ export const SelectableItem = forwardRef<HTMLDivElement, SelectableItemProps>(
       onClick?.();
     };
 
-    const handleEditClick = (e: React.MouseEvent) => {
+    const handleEditClick = (e: MouseEvent) => {
       e.stopPropagation();
       if (!isDisabled && onEditClick) {
         onEditClick();
