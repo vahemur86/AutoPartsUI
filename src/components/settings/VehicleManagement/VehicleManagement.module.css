@@ -1,3 +1,7 @@
+/* =========================================================
+   Base Layout
+========================================================= */
+
 .vehicleManagementWrapper {
   display: flex;
   flex-direction: column;
@@ -13,13 +17,19 @@
   color: var(--color-white);
 }
 
-/* Tabs Container */
+/* =========================================================
+   Tabs
+========================================================= */
+
 .tabsContainer {
   display: flex;
   margin-block-start: 16px;
 }
 
-/* Create New Section */
+/* =========================================================
+   Create New Section
+========================================================= */
+
 .createNewSection {
   display: flex;
   flex-direction: column;
@@ -39,7 +49,7 @@
   color: var(--color-white);
 }
 
-/* Generic "add button wrapper" (used in headers etc) */
+/* Generic add button wrapper (used in headers etc.) */
 .addButtonWrapper {
   display: flex;
   align-items: center;
@@ -58,7 +68,10 @@
   gap: 10px;
 }
 
-/* Existing Section */
+/* =========================================================
+   Existing Section
+========================================================= */
+
 .existingSection {
   display: flex;
   flex-direction: column;
@@ -104,7 +117,10 @@
   width: 100%;
 }
 
-/* Action Buttons */
+/* =========================================================
+   Action Buttons
+========================================================= */
+
 .actionButtons {
   display: flex;
   justify-content: flex-end;
@@ -113,14 +129,25 @@
   padding-block-end: 24px;
 }
 
-/* Table actions */
+/* Table row actions */
 .actionButtonsCell {
   display: flex;
   gap: 12px;
   padding: 3px;
 }
 
-/* Tasks */
+/* =========================================================
+   Tables
+========================================================= */
+
+.tableContainer {
+  width: 100%;
+}
+
+/* =========================================================
+   Tasks (from second file)
+========================================================= */
+
 .tasksWrapper {
   display: flex;
   flex-direction: column;
@@ -135,7 +162,7 @@
   margin-top: 16px;
 }
 
-/* Desktop add button wrapper */
+/* Desktop add-task button */
 .addTaskButtonWrapper {
   display: flex;
   justify-content: flex-end;
@@ -143,12 +170,26 @@
   gap: 8px;
 }
 
-/* Mobile big button container (hidden on desktop) */
+/* =========================================================
+   Mobile Buttons (two different patterns)
+========================================================= */
+
+/* From first file */
+.addNewButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.addButtonMobile {
+  display: none;
+}
+
+/* From second file */
 .addTaskButtonMobile {
   display: none;
 }
 
-/* Mobile inner wrapper (centered like ProjectLanguages) */
 .addTaskButtonWrapperMobile {
   display: flex;
   align-items: center;
@@ -157,13 +198,49 @@
   width: 100%;
 }
 
+/* =========================================================
+   Mobile Styles
+========================================================= */
+
 @media (max-width: 768px) {
-  /* Hide desktop header button on mobile */
+  .vehicleManagementWrapper {
+    min-height: auto;
+  }
+
+  .vehicleManagement {
+    gap: 16px;
+  }
+
+  .tabsContainer {
+    margin-block-start: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .createNewSection {
+    gap: 16px;
+  }
+
+  .createNewHeader {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .addButtonWrapper {
+    flex-shrink: 0;
+  }
+
+  /* Hide desktop add buttons */
+  .addNewButton {
+    display: none;
+  }
+
   .tasksHeader {
     display: none;
   }
 
-  /* Show big mobile button */
+  /* Show mobile buttons */
+  .addButtonMobile,
   .addTaskButtonMobile {
     display: flex;
     margin-top: 16px;
@@ -173,8 +250,74 @@
     text-align: center;
   }
 
+  .addButtonMobile .addButtonWrapper,
   .addTaskButtonMobile .addTaskButtonWrapperMobile {
     width: 100%;
     justify-content: center;
+  }
+
+  .actionButtons {
+    flex-direction: column-reverse;
+    gap: 8px;
+    padding-block-start: 16px;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .tableContainer > div {
+    min-width: max-content;
+    width: max-content;
+  }
+
+  .tableContainer table {
+    min-width: 600px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 968px) and (orientation: landscape) {
+  .tableContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .tableContainer > div {
+    min-width: max-content;
+    width: max-content;
+  }
+
+  .tableContainer table {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicleManagement {
+    gap: 12px;
+  }
+
+  .createNewSection {
+    gap: 12px;
+  }
+
+  .actionButtons {
+    padding-block-start: 12px;
   }
 }
