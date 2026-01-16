@@ -18,6 +18,8 @@ export {
   TableHeader,
   TableRow,
   TextField,
+  Textarea,
+  MultiSelect,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
@@ -45,6 +47,9 @@ export {
   type TableProps,
   type TableRowProps,
   type TextFieldProps,
+  type TextareaProps,
+  type MultiSelectProps,
+  type MultiSelectOption,
 } from "./components";
 
 // Add other components here as you create them

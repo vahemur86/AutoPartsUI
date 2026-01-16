@@ -1,99 +1,78 @@
 import { useRef, createRef, type FC, type RefObject } from "react";
-import styles from "./ProjectLanguages.module.css";
 import { IconButton, InteractiveField } from "@/ui-kit";
 import { Plus, Edit } from "lucide-react";
 import type { Language } from "@/types.ts/settings";
+import styles from "./ProjectLanguages.module.css";
 
 interface LanguagesContentProps {
   languages: Language[];
   isLoading: boolean;
-  handleAddNewClick: (buttonRef: RefObject<HTMLElement>) => void;
+  onAddNewClick: (anchorEl: HTMLElement | null) => void;
   activeLanguageId?: number | null;
-  handleEditClick?: (
-    languageId: number,
-    buttonRef: RefObject<HTMLElement>
-  ) => void;
+  onEditClick?: (languageId: number, anchorEl: HTMLElement | null) => void;
 }
 
 export const LanguagesContent: FC<LanguagesContentProps> = ({
   languages,
   isLoading,
-  handleAddNewClick,
+  onAddNewClick,
   activeLanguageId,
-  handleEditClick,
+  onEditClick,
 }) => {
   const languageItemRefs = useRef<
     Map<number, RefObject<HTMLDivElement | null>>
   >(new Map());
 
-  const getOrCreateRef = (
-    languageId: number
-  ): RefObject<HTMLDivElement | null> => {
+  const getOrCreateItemRef = (languageId: number) => {
     if (!languageItemRefs.current.has(languageId)) {
       languageItemRefs.current.set(languageId, createRef<HTMLDivElement>());
     }
     return languageItemRefs.current.get(languageId)!;
   };
 
-  // Separate refs for desktop and mobile buttons
-  const addButtonDesktopRef = useRef<HTMLButtonElement>(null);
   const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
-  const addButtonMobileRef = useRef<HTMLButtonElement>(null);
   const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
-  const addButtonAnchorRef = useRef<HTMLElement | null>(null);
 
-  const handleAddButtonClick = (isMobile: boolean = false) => {
-    // Use the appropriate wrapper div as anchor based on device type
-    const wrapperRef = isMobile
-      ? addButtonMobileWrapperRef
-      : addButtonDesktopWrapperRef;
-    const buttonRef = isMobile ? addButtonMobileRef : addButtonDesktopRef;
-    const anchorElement = wrapperRef.current || buttonRef.current;
+  const handleAddClick = (isMobile: boolean) => {
+    const wrapper = isMobile
+      ? addButtonMobileWrapperRef.current
+      : addButtonDesktopWrapperRef.current;
 
-    if (anchorElement) {
-      addButtonAnchorRef.current = anchorElement;
-      // Create a stable ref object that won't change
-      const buttonRefObj: RefObject<HTMLElement> =
-        addButtonAnchorRef as RefObject<HTMLElement>;
-      handleAddNewClick(buttonRefObj);
-    }
+    onAddNewClick(wrapper);
   };
 
   const handleEditButtonClick = (languageId: number) => {
-    const itemRef = getOrCreateRef(languageId);
-    // Find the edit button within the language item
-    if (itemRef.current) {
-      const editButton = itemRef.current.querySelector(
-        'button[aria-label*="Edit"]'
-      ) as HTMLElement;
-      if (editButton) {
-        const buttonRef: RefObject<HTMLElement> = { current: editButton };
-        handleEditClick?.(languageId, buttonRef);
-      }
-    }
+    const itemRef = getOrCreateItemRef(languageId);
+    const root = itemRef.current;
+    if (!root) return;
+
+    const editButton = root.querySelector(
+      'button[aria-label^="Edit "]'
+    ) as HTMLElement | null;
+
+    onEditClick?.(languageId, editButton);
   };
 
   return (
     <>
-      {/* Header with Add New Button - Desktop only */}
+      {/* Desktop header */}
       <div className={styles.languagesHeader}>
         <div
           ref={addButtonDesktopWrapperRef}
           className={styles.addButtonWrapper}
         >
           <IconButton
-            ref={addButtonDesktopRef}
             variant="primary"
             size="small"
             icon={<Plus size={12} color="#0e0f11" />}
             ariaLabel="Add New"
-            onClick={() => handleAddButtonClick(false)}
+            onClick={() => handleAddClick(false)}
           />
           <span className={styles.addButtonText}>Add language</span>
         </div>
       </div>
 
-      {/* Languages List */}
+      {/* List */}
       <div className={styles.languagesList}>
         {isLoading ? (
           <div className={styles.loading}>Loading languages...</div>
@@ -103,18 +82,20 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
           </div>
         ) : (
           languages.map((language) => {
-            const itemRef = getOrCreateRef(language.id);
+            const itemRef = getOrCreateItemRef(language.id);
             const isDefault = language.isDefault ?? false;
             const isDisabled = language.isEnabled === false;
+
             return (
               <div
                 key={language.id}
                 ref={itemRef}
-                className={`${styles.languageItem} ${
-                  activeLanguageId === language.id ? styles.active : ""
-                } ${isDefault ? styles.defaultLanguage : ""} ${
-                  isDisabled ? styles.disabledLanguage : ""
-                }`}
+                className={[
+                  styles.languageItem,
+                  activeLanguageId === language.id ? styles.active : "",
+                  isDefault ? styles.defaultLanguage : "",
+                  isDisabled ? styles.disabledLanguage : "",
+                ].join(" ")}
               >
                 <InteractiveField
                   variant="display"
@@ -155,19 +136,18 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
         )}
       </div>
 
-      {/* Add New Button - Mobile only */}
+      {/* Mobile add button */}
       <div className={styles.addButtonMobile}>
         <div
           ref={addButtonMobileWrapperRef}
           className={styles.addButtonWrapper}
         >
           <IconButton
-            ref={addButtonMobileRef}
             variant="primary"
             size="small"
             icon={<Plus size={12} />}
             ariaLabel="Add New"
-            onClick={() => handleAddButtonClick(true)}
+            onClick={() => handleAddClick(true)}
           />
           <span className={styles.addButtonText}>Add language</span>
         </div>

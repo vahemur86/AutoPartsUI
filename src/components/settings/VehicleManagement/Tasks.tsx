@@ -1,12 +1,7 @@
-import { useMemo, type FC } from "react";
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/ui-kit";
+import { useState, useCallback, useRef, type FC } from "react";
+import { IconButton } from "@/ui-kit";
+import { Plus } from "lucide-react";
+import { AddTaskDropdown, type TaskForm } from "./AddTaskDropdown";
 import styles from "./VehicleManagement.module.css";
 
 interface TasksProps {
@@ -14,73 +9,83 @@ interface TasksProps {
   withDelete?: boolean;
 }
 
-export const Tasks: FC<TasksProps> = ({
-  withEdit = true,
-  withDelete = true,
-}) => {
-  const tasksCells = useMemo(
-    () => [
-      { id: "task", label: "Task/Service" },
-      { id: "type", label: "Type" },
-      { id: "labor-cost", label: "Labor Cost (USD)" },
-      { id: "linked-to-vehicles", label: "Linked to Vehicles" },
-      { id: "actions", label: "" },
-    ],
-    []
+export const Tasks: FC<TasksProps> = () => {
+  const [isTaskDropdownOpen, setIsTaskDropdownOpen] = useState(false);
+
+  const addAnchorRef = useRef<HTMLElement | null>(null);
+
+  const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
+  const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
+
+  const openAddDropdown = useCallback((isMobile: boolean) => {
+    const anchorEl = isMobile
+      ? addButtonMobileWrapperRef.current
+      : addButtonDesktopWrapperRef.current;
+
+    if (!anchorEl) return;
+
+    addAnchorRef.current = anchorEl;
+    setIsTaskDropdownOpen(true);
+  }, []);
+
+  const handleCloseAddDropdown = useCallback(() => {
+    setIsTaskDropdownOpen(false);
+    addAnchorRef.current = null;
+  }, []);
+
+  const handleAddTask = useCallback(
+    async (data: TaskForm) => {
+      console.log("Add task:", data);
+      handleCloseAddDropdown();
+    },
+    [handleCloseAddDropdown]
   );
 
-  const handleEdit = () => {
-    console.log("Edit Clicked");
-  };
-
-  const handleDelete = () => {
-    console.log("Delete Clicked");
-  };
-
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {tasksCells.map(({ id, label }) => (
-            <TableCell key={id} asHeader>
-              {label}
-            </TableCell>
-          ))}
-        </TableRow>
-      </TableHeader>
+    <div className={styles.tasksWrapper}>
+      {/* Desktop header */}
+      <div className={styles.tasksHeader}>
+        <div
+          ref={addButtonDesktopWrapperRef}
+          className={styles.addTaskButtonWrapper}
+        >
+          <IconButton
+            size="small"
+            variant="primary"
+            icon={<Plus size={12} color="#0e0f11" />}
+            ariaLabel="Add new task"
+            className={styles.plusButton}
+            onClick={() => openAddDropdown(false)}
+          />
+          <span className={styles.addButtonText}>Add Task</span>
+        </div>
+      </div>
 
-      <TableBody>
-        <TableCell>Task/Service Value</TableCell>
-        <TableCell>Type Value</TableCell>
-        <TableCell>Labor Cost (USD) Value</TableCell>
-        <TableCell>Linked to Vehicles Value</TableCell>
+      {/* Mobile big button (like ProjectLanguages.addButtonMobile) */}
+      <div className={styles.addTaskButtonMobile}>
+        <div
+          ref={addButtonMobileWrapperRef}
+          className={styles.addTaskButtonWrapperMobile}
+        >
+          <IconButton
+            size="small"
+            variant="primary"
+            icon={<Plus size={12} />}
+            ariaLabel="Add new task"
+            onClick={() => openAddDropdown(true)}
+          />
+          <span className={styles.addButtonText}>Add Task</span>
+        </div>
+      </div>
 
-        <TableCell>
-          <div className={styles.actionButtonsCell}>
-            {withEdit && (
-              <Button
-                variant="primary"
-                size="small"
-                aria-label="Edit shop"
-                onClick={handleEdit}
-              >
-                Edit
-              </Button>
-            )}
-
-            {withDelete && (
-              <Button
-                variant="secondary"
-                size="small"
-                aria-label="Delete shop"
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            )}
-          </div>
-        </TableCell>
-      </TableBody>
-    </Table>
+      <AddTaskDropdown
+        open={isTaskDropdownOpen}
+        anchorRef={addAnchorRef}
+        onOpenChange={(open) => {
+          if (!open) handleCloseAddDropdown();
+        }}
+        onSave={handleAddTask}
+      />
+    </div>
   );
 };

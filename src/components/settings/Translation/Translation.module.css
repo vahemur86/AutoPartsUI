@@ -13,12 +13,13 @@
   flex: 1;
 }
 
+/* Tabs */
 .tabsContainer {
   display: flex;
-  align-items: flex-start;
-  margin-top: 16px;
+  margin-block-start: 16px;
 }
 
+/* Form */
 .formContainer {
   display: flex;
   flex-direction: column;
@@ -31,18 +32,19 @@
   gap: 24px;
 }
 
-.formColumn {
-  display: flex;
-  flex-direction: column;
+.formSpacer {
+  /* keeps second column empty in the last row on desktop */
 }
 
+/* History */
 .historyContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* Ensure table wrapper has distinct background */
+/* If your Table is wrapped by a div inside ui-kit, keep this.
+   Otherwise it's harmless. */
 .historyContainer > div {
   background-color: var(--color-black-2);
   border-radius: 8px;
@@ -55,10 +57,10 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: auto;
-  padding-bottom: 24px;
+  padding-block-end: 24px;
 }
 
-/* Mobile Styles */
+/* Mobile */
 @media (max-width: 768px) {
   .translationWrapper {
     min-height: auto;
@@ -69,7 +71,7 @@
   }
 
   .tabsContainer {
-    margin-top: 8px;
+    margin-block-start: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -83,10 +85,14 @@
     gap: 16px;
   }
 
+  .formSpacer {
+    display: none;
+  }
+
   .actionButtons {
     flex-direction: column-reverse;
-    padding-top: 16px;
     gap: 8px;
+    padding-block-start: 16px;
   }
 
   .actionButtons button {
@@ -108,6 +114,6 @@
   }
 
   .actionButtons {
-    padding-top: 12px;
+    padding-block-start: 12px;
   }
 }

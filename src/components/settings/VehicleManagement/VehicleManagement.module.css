@@ -39,6 +39,7 @@
   color: var(--color-white);
 }
 
+/* Generic "add button wrapper" (used in headers etc) */
 .addButtonWrapper {
   display: flex;
   align-items: center;
@@ -68,14 +69,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
   padding: 0;
   background: none;
   border: none;
-
   cursor: pointer;
   color: var(--color-white);
-
   outline: none;
 }
 
@@ -111,67 +109,72 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-
   margin-top: auto;
   padding-block-end: 24px;
 }
 
-/* Mobile Styles */
-@media (max-width: 768px) {
-  .vehicleManagementWrapper {
-    min-height: auto;
-  }
-
-  .vehicleManagement {
-    gap: 16px;
-  }
-
-  .tabsContainer {
-    margin-block-start: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .createNewSection {
-    gap: 16px;
-  }
-
-  .createNewHeader {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .addButtonWrapper {
-    flex-shrink: 0;
-  }
-
-  .actionButtons {
-    flex-direction: column-reverse;
-    gap: 8px;
-    padding-block-start: 16px;
-  }
-
-  .actionButtons button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .vehicleManagement {
-    gap: 12px;
-  }
-
-  .createNewSection {
-    gap: 12px;
-  }
-
-  .actionButtons {
-    padding-block-start: 12px;
-  }
-}
-
+/* Table actions */
 .actionButtonsCell {
   display: flex;
   gap: 12px;
   padding: 3px;
+}
+
+/* Tasks */
+.tasksWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tasksHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+/* Desktop add button wrapper */
+.addTaskButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mobile big button container (hidden on desktop) */
+.addTaskButtonMobile {
+  display: none;
+}
+
+/* Mobile inner wrapper (centered like ProjectLanguages) */
+.addTaskButtonWrapperMobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  /* Hide desktop header button on mobile */
+  .tasksHeader {
+    display: none;
+  }
+
+  /* Show big mobile button */
+  .addTaskButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .addTaskButtonMobile .addTaskButtonWrapperMobile {
+    width: 100%;
+    justify-content: center;
+  }
 }

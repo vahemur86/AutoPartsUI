@@ -1,11 +1,11 @@
-import { useEffect, useState, type RefObject } from "react";
-import styles from "./LanguageDropdown.module.css";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
 import type { Language } from "@/types.ts/settings";
+import styles from "./LanguageDropdown.module.css";
 
 export interface AddLanguageDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: Omit<Language, "id">) => void;
 }
@@ -20,32 +20,35 @@ export const AddLanguageDropdown = ({
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [isDefaultValue, setIsDefaultValue] = useState(false);
   const [enabledValue, setEnabledValue] = useState(true);
+  const [hasTriedSave, setHasTriedSave] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setLanguageKeyValue("");
-      setDisplayNameValue("");
-      setIsDefaultValue(false);
-      setEnabledValue(true);
-    }
+    if (!open) return;
+    setLanguageKeyValue("");
+    setDisplayNameValue("");
+    setIsDefaultValue(false);
+    setEnabledValue(true);
+    setHasTriedSave(false);
   }, [open]);
 
+  const isValid = useMemo(() => {
+    return !!languageKeyValue.trim() && !!displayNameValue.trim();
+  }, [languageKeyValue, displayNameValue]);
+
   const handleSaveClick = () => {
-    if (!languageKeyValue.trim() || !displayNameValue.trim()) {
-      return;
-    }
+    setHasTriedSave(true);
+    if (!isValid) return;
+
     onSave({
       code: languageKeyValue.trim(),
       name: displayNameValue.trim(),
       isDefault: isDefaultValue,
       isEnabled: enabledValue,
     });
-    onOpenChange(false);
+    // Parent closes dropdown on success.
   };
 
-  const handleClose = () => {
-    onOpenChange(false);
-  };
+  const handleClose = () => onOpenChange(false);
 
   return (
     <Dropdown
@@ -56,7 +59,6 @@ export const AddLanguageDropdown = ({
       side="left"
       title="Add Language"
     >
-      {/* Desktop header */}
       <div className={styles.header}>
         <span className={styles.title}>Add Language</span>
       </div>
@@ -67,11 +69,13 @@ export const AddLanguageDropdown = ({
             label="Language key"
             value={languageKeyValue}
             onChange={(e) => setLanguageKeyValue(e.target.value)}
+            error={hasTriedSave && !languageKeyValue.trim()}
           />
           <TextField
             label="Display name"
             value={displayNameValue}
             onChange={(e) => setDisplayNameValue(e.target.value)}
+            error={hasTriedSave && !displayNameValue.trim()}
           />
         </div>
 
