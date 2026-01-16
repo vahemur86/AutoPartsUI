@@ -1,12 +1,21 @@
-import { useEffect, useState, type RefObject } from "react";
-import styles from "./VehicleDropdown.module.css";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import { Button, TextField, Select, Dropdown } from "@/ui-kit";
+import styles from "./VehicleDropdown.module.css";
+
+export interface VehicleForm {
+  brand: string;
+  model: string;
+  year: string;
+  engine: string;
+  fuelType: string;
+  status: string;
+}
 
 export interface AddVehicleDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
-  onSave?: (data: unknown) => void;
+  onSave?: (data: VehicleForm) => void;
 }
 
 export const AddVehicleDropdown = ({
@@ -15,39 +24,67 @@ export const AddVehicleDropdown = ({
   onOpenChange,
   onSave,
 }: AddVehicleDropdownProps) => {
-  const [brandValue, setBrandValue] = useState("");
-  const [modelValue, setModelValue] = useState("");
-  const [yearValue, setYearValue] = useState("");
-  const [engineValue, setEngineValue] = useState("");
-  const [fuelTypeValue, setFuelTypeValue] = useState("");
-  const [statusValue, setStatusValue] = useState("");
+  const fields = useMemo(
+    () => ({
+      brand: { label: "Brand", placeholder: "Select brand..." },
+      model: { label: "Model", placeholder: "Enter model..." },
+      year: { label: "Year", placeholder: "Enter year..." },
+      engine: { label: "Engine", placeholder: "Enter engine..." },
+      fuelType: { label: "Fuel Type", placeholder: "Select fuel type..." },
+      status: { label: "Status", placeholder: "Select status..." },
+    }),
+    []
+  );
+
+  const [formValues, setFormValues] = useState<VehicleForm>({
+    brand: "",
+    model: "",
+    year: "",
+    engine: "",
+    fuelType: "",
+    status: "",
+  });
+
+  const [hasTriedSave, setHasTriedSave] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setBrandValue("");
-      setModelValue("");
-      setYearValue("");
-      setEngineValue("");
-      setFuelTypeValue("");
-      setStatusValue("");
-    }
+    if (!open) return;
+
+    setFormValues({
+      brand: "",
+      model: "",
+      year: "",
+      engine: "",
+      fuelType: "",
+      status: "",
+    });
+    setHasTriedSave(false);
   }, [open]);
 
-  const handleSaveClick = () => {
-    if (onSave) {
-      onSave({
-        brand: brandValue,
-        model: modelValue,
-        year: yearValue,
-        engine: engineValue,
-        fuelType: fuelTypeValue,
-        status: statusValue,
-      });
-    }
-    onOpenChange(false);
-  };
+  const isValid =
+    formValues.brand.trim().length > 0 &&
+    formValues.model.trim().length > 0 &&
+    formValues.year.trim().length > 0 &&
+    formValues.engine.trim().length > 0 &&
+    formValues.fuelType.trim().length > 0 &&
+    formValues.status.trim().length > 0;
 
-  const handleClose = () => {
+  const handleClose = () => onOpenChange(false);
+
+  const handleSaveClick = () => {
+    setHasTriedSave(true);
+    if (!isValid) return;
+
+    const payload: VehicleForm = {
+      brand: formValues.brand.trim(),
+      model: formValues.model.trim(),
+      year: formValues.year.trim(),
+      engine: formValues.engine.trim(),
+      fuelType: formValues.fuelType.trim(),
+      status: formValues.status.trim(),
+    };
+
+    onSave?.(payload);
     onOpenChange(false);
   };
 
@@ -69,32 +106,43 @@ export const AddVehicleDropdown = ({
           <div className={styles.fieldRow}>
             <div className={styles.fieldLeft}>
               <Select
-                label="Brand"
-                value={brandValue}
-                onChange={(e) => setBrandValue(e.target.value)}
-                placeholder="Select brand..."
+                label={fields.brand.label}
+                value={formValues.brand}
+                onChange={(e) =>
+                  setFormValues((p) => ({ ...p, brand: e.target.value }))
+                }
+                placeholder={fields.brand.placeholder}
+                error={hasTriedSave && !formValues.brand.trim()}
               >
-                <option value="">Select brand...</option>
+                <option value="">{fields.brand.placeholder}</option>
+                <option value="bmw">BMW</option>
+                <option value="ford">Ford</option>
               </Select>
             </div>
-            <div className={styles.fieldRight}></div>
+            <div className={styles.fieldRight} />
           </div>
 
           <div className={styles.fieldRow}>
             <div className={styles.fieldLeft}>
               <TextField
-                label="Model"
-                value={modelValue}
-                onChange={(e) => setModelValue(e.target.value)}
-                placeholder="Enter model..."
+                label={fields.model.label}
+                value={formValues.model}
+                onChange={(e) =>
+                  setFormValues((p) => ({ ...p, model: e.target.value }))
+                }
+                placeholder={fields.model.placeholder}
+                error={hasTriedSave && !formValues.model.trim()}
               />
             </div>
             <div className={styles.fieldRight}>
               <TextField
-                label="Year"
-                value={yearValue}
-                onChange={(e) => setYearValue(e.target.value)}
-                placeholder="Enter year..."
+                label={fields.year.label}
+                value={formValues.year}
+                onChange={(e) =>
+                  setFormValues((p) => ({ ...p, year: e.target.value }))
+                }
+                placeholder={fields.year.placeholder}
+                error={hasTriedSave && !formValues.year.trim()}
               />
             </div>
           </div>
@@ -102,20 +150,26 @@ export const AddVehicleDropdown = ({
           <div className={styles.fieldRow}>
             <div className={styles.fieldLeft}>
               <TextField
-                label="Engine"
-                value={engineValue}
-                onChange={(e) => setEngineValue(e.target.value)}
-                placeholder="Enter engine..."
+                label={fields.engine.label}
+                value={formValues.engine}
+                onChange={(e) =>
+                  setFormValues((p) => ({ ...p, engine: e.target.value }))
+                }
+                placeholder={fields.engine.placeholder}
+                error={hasTriedSave && !formValues.engine.trim()}
               />
             </div>
             <div className={styles.fieldRight}>
               <Select
-                label="Fuel Type"
-                value={fuelTypeValue}
-                onChange={(e) => setFuelTypeValue(e.target.value)}
-                placeholder="Select fuel type..."
+                label={fields.fuelType.label}
+                value={formValues.fuelType}
+                onChange={(e) =>
+                  setFormValues((p) => ({ ...p, fuelType: e.target.value }))
+                }
+                placeholder={fields.fuelType.placeholder}
+                error={hasTriedSave && !formValues.fuelType.trim()}
               >
-                <option value="">Select fuel type...</option>
+                <option value="">{fields.fuelType.placeholder}</option>
                 <option value="gasoline">Gasoline</option>
                 <option value="diesel">Diesel</option>
                 <option value="electric">Electric</option>
@@ -127,12 +181,15 @@ export const AddVehicleDropdown = ({
           <div className={styles.fieldRow}>
             <div className={styles.fieldFullWidth}>
               <Select
-                label="Status"
-                value={statusValue}
-                onChange={(e) => setStatusValue(e.target.value)}
-                placeholder="Select status..."
+                label={fields.status.label}
+                value={formValues.status}
+                onChange={(e) =>
+                  setFormValues((p) => ({ ...p, status: e.target.value }))
+                }
+                placeholder={fields.status.placeholder}
+                error={hasTriedSave && !formValues.status.trim()}
               >
-                <option value="">Select status...</option>
+                <option value="">{fields.status.placeholder}</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </Select>
