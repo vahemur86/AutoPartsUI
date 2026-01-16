@@ -16,7 +16,7 @@ import {
 import { LANGUAGES } from "@/constants/settings";
 import styles from "./Translation.module.css";
 
-const Translation = () => {
+export const Translation = () => {
   const [activeTab, setActiveTab] = useState("add-new");
   const [entityName, setEntityName] = useState("");
   const [fieldName, setFieldName] = useState("");
@@ -208,5 +208,3 @@ const Translation = () => {
     </div>
   );
 };
-
-export default Translation;

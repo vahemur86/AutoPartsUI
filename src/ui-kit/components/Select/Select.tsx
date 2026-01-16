@@ -1,16 +1,16 @@
-import React from "react";
-import styles from "./Select.module.css";
+import { forwardRef, type SelectHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
+import styles from "./Select.module.css";
 
 export interface SelectProps
-  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
   label?: string;
   error?: boolean;
   helperText?: string;
   placeholder?: string;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
       label,

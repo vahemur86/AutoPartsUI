@@ -13,7 +13,7 @@ import {
 import type { Language } from "@/types.ts/settings";
 import styles from "./ProjectLanguages.module.css";
 
-const ProjectLanguages = () => {
+export const ProjectLanguages = () => {
   const [editingLanguageId, setEditingLanguageId] = useState<number | null>(
     null
   );
@@ -221,5 +221,3 @@ const ProjectLanguages = () => {
     </div>
   );
 };
-
-export default ProjectLanguages;

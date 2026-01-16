@@ -1,33 +1,36 @@
-import React from "react";
+import {
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+  type TableHTMLAttributes,
+  type TdHTMLAttributes,
+} from "react";
 import styles from "./Table.module.css";
 
-export interface TableProps
-  extends React.TableHTMLAttributes<HTMLTableElement> {
-  children: React.ReactNode;
+export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
+  children: ReactNode;
 }
 
 export interface TableHeaderProps
-  extends React.HTMLAttributes<HTMLTableSectionElement> {
-  children: React.ReactNode;
+  extends HTMLAttributes<HTMLTableSectionElement> {
+  children: ReactNode;
 }
 
 export interface TableBodyProps
-  extends React.HTMLAttributes<HTMLTableSectionElement> {
-  children: React.ReactNode;
+  extends HTMLAttributes<HTMLTableSectionElement> {
+  children: ReactNode;
 }
 
-export interface TableRowProps
-  extends React.HTMLAttributes<HTMLTableRowElement> {
-  children: React.ReactNode;
+export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
+  children: ReactNode;
 }
 
-export interface TableCellProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement> {
-  children?: React.ReactNode;
+export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
+  children?: ReactNode;
   asHeader?: boolean;
 }
 
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(
+export const Table = forwardRef<HTMLTableElement, TableProps>(
   ({ children, className = "", ...props }, ref) => {
     return (
       <div className={styles.tableWrapper}>
@@ -41,7 +44,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
 
 Table.displayName = "Table";
 
-export const TableHeader = React.forwardRef<
+export const TableHeader = forwardRef<
   HTMLTableSectionElement,
   TableHeaderProps
 >(({ children, className = "", ...props }, ref) => {
@@ -58,20 +61,23 @@ export const TableHeader = React.forwardRef<
 
 TableHeader.displayName = "TableHeader";
 
-export const TableBody = React.forwardRef<
-  HTMLTableSectionElement,
-  TableBodyProps
->(({ children, className = "", ...props }, ref) => {
-  return (
-    <tbody ref={ref} className={`${styles.tableBody} ${className}`} {...props}>
-      {children}
-    </tbody>
-  );
-});
+export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
+  ({ children, className = "", ...props }, ref) => {
+    return (
+      <tbody
+        ref={ref}
+        className={`${styles.tableBody} ${className}`}
+        {...props}
+      >
+        {children}
+      </tbody>
+    );
+  }
+);
 
 TableBody.displayName = "TableBody";
 
-export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
   ({ children, className = "", ...props }, ref) => {
     return (
       <tr ref={ref} className={`${styles.tableRow} ${className}`} {...props}>
@@ -83,7 +89,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
 
 TableRow.displayName = "TableRow";
 
-export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ children, className = "", asHeader = false, ...props }, ref) => {
     const Component = asHeader ? "th" : "td";
     return (

@@ -1,6 +1,6 @@
-import SectionHeader from "@/components/common/SectionHeader";
-import styles from "./Warehouses.module.css";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import productIcon from "@/assets/icons/Vector (3).svg";
+import styles from "./Warehouses.module.css";
 
 export const Warehouses = () => {
   return (

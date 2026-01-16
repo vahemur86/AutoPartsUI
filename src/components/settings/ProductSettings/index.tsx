@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Tab, TabGroup, Button } from "@/ui-kit";
 import styles from "./ProductSettings.module.css";
 
-const ProductSettings = () => {
+export const ProductSettings = () => {
   const dispatch = useAppDispatch();
   const { brands, categories, unitTypes, boxSizes, isLoading, fetchedData } =
     useAppSelector((state) => state.productSettings);
@@ -198,5 +198,3 @@ const ProductSettings = () => {
     </div>
   );
 };
-
-export default ProductSettings;

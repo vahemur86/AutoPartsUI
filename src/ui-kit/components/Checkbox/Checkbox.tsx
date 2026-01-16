@@ -1,10 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  type InputHTMLAttributes,
+  type ChangeEvent,
+} from "react";
 import styles from "./Checkbox.module.css";
 
 export type CheckboxShape = "square" | "circle";
 
 export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
@@ -13,7 +20,7 @@ export interface CheckboxProps
   shape?: CheckboxShape;
 }
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
       checked,
@@ -51,7 +58,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
       }
     }, [defaultChecked, isControlled]);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
       if (disabled) return;
       const newChecked = event.target.checked;
       if (!isControlled) {

@@ -11,18 +11,30 @@ import { Shops } from "./pages/Shops/index";
 import { Login } from "./pages/Login/index";
 import { Products } from "./pages/Products";
 import { UserManagement } from "./pages/Users";
+
 // Components
-import ProjectLanguages from "@/components/settings/ProjectLanguages";
-import Translation from "@/components/settings/Translation";
-import WarehouseSettings from "@/components/settings/WarehouseSettings";
-import ShopsSettings from "@/components/settings/ShopsSettings";
-import ProductSettings from "@/components/settings/ProductSettings";
-import VehicleManagement from "@/components/settings/VehicleManagement";
+import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
+import { Translation } from "@/components/settings/Translation";
+import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
+import { ShopsSettings } from "@/components/settings/ShopsSettings";
+import { ProductSettings } from "@/components/settings/ProductSettings";
+import { VehicleManagement } from "@/components/settings/VehicleManagement";
 
 import { store } from "@/store/store";
 import "@/index.css";
 
-function App() {
+const toastOptions = {
+  position: "top-right",
+  autoClose: 3000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  draggable: true,
+  pauseOnHover: true,
+  theme: "dark",
+} as const;
+
+export const App = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -33,6 +45,7 @@ function App() {
               index
               element={<Navigate to="/settings/product-settings" replace />}
             />
+
             <Route path="settings" element={<Settings />}>
               <Route
                 index
@@ -48,27 +61,18 @@ function App() {
                 element={<VehicleManagement />}
               />
             </Route>
+
             <Route path="warehouses" element={<Warehouses />} />
             <Route path="products" element={<Products />} />
             <Route path="shops" element={<Shops />} />
             <Route path="users" element={<UserManagement />} />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+
+      <ToastContainer {...toastOptions} />
     </Provider>
   );
-}
-
-export default App;
+};

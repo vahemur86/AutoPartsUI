@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import SectionHeader from "@/components/common/SectionHeader";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import userIcon from "@/assets/icons/userVector.svg";
 import { Button, TextField, Select } from "@/ui-kit";
 import { createUser } from "@/services/users";

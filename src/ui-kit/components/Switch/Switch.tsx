@@ -1,8 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  type InputHTMLAttributes,
+} from "react";
 import styles from "./Switch.module.css";
 
 export interface SwitchProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
@@ -10,7 +16,7 @@ export interface SwitchProps
   label?: string;
 }
 
-export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
+export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   (
     {
       checked,

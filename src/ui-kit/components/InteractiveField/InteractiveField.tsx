@@ -1,19 +1,25 @@
-import React, { useState, useRef } from "react";
-import styles from "./InteractiveField.module.css";
+import {
+  useState,
+  useRef,
+  type HTMLAttributes,
+  type ReactNode,
+  forwardRef,
+  type ChangeEvent,
+} from "react";
 import { Switch } from "../Switch";
 import { IconButton } from "../IconButton/IconButton";
+import styles from "./InteractiveField.module.css";
 
 export type InteractiveFieldVariant = "editable" | "display";
 export type InteractiveFieldSize = "medium" | "large";
 
-export interface InteractiveFieldProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface InteractiveFieldProps extends HTMLAttributes<HTMLDivElement> {
   variant?: InteractiveFieldVariant;
   size?: InteractiveFieldSize;
   disabled?: boolean;
   photoUpload?: {
     onUpload?: (file: File) => void;
-    icon?: React.ReactNode;
+    icon?: ReactNode;
     imageUrl?: string;
   };
   textInput?: {
@@ -23,8 +29,8 @@ export interface InteractiveFieldProps
     onChange?: (value: string) => void;
     label?: string;
   };
-  displayText?: string | React.ReactNode;
-  displayIcon?: React.ReactNode;
+  displayText?: string | ReactNode;
+  displayIcon?: ReactNode;
   toggle?: {
     checked?: boolean;
     defaultChecked?: boolean;
@@ -33,29 +39,29 @@ export interface InteractiveFieldProps
   };
   actions?: {
     cancel?: {
-      icon: React.ReactNode;
+      icon: ReactNode;
       onClick?: () => void;
       ariaLabel?: string;
     };
     save?: {
-      icon: React.ReactNode;
+      icon: ReactNode;
       onClick?: () => void;
       ariaLabel?: string;
     };
     edit?: {
-      icon: React.ReactNode;
+      icon: ReactNode;
       onClick?: () => void;
       ariaLabel?: string;
     };
     delete?: {
-      icon: React.ReactNode;
+      icon: ReactNode;
       onClick?: () => void;
       ariaLabel?: string;
     };
   };
 }
 
-export const InteractiveField = React.forwardRef<
+export const InteractiveField = forwardRef<
   HTMLDivElement,
   InteractiveFieldProps
 >(
@@ -83,7 +89,7 @@ export const InteractiveField = React.forwardRef<
     const textValue =
       textInput?.value !== undefined ? textInput.value : internalTextValue;
 
-    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       if (textInput?.value === undefined) {
         setInternalTextValue(newValue);
@@ -91,7 +97,7 @@ export const InteractiveField = React.forwardRef<
       textInput?.onChange?.(newValue);
     };
 
-    const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file && photoUpload?.onUpload) {
         photoUpload.onUpload(file);

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, type RefObject } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "@/store/hooks";
 import {
@@ -6,15 +6,15 @@ import {
   updateProductInStore,
   fetchProducts,
 } from "@/store/slices/productsSlice";
-import SectionHeader from "@/components/common/SectionHeader";
-import styles from "./Products.module.css";
 import productIcon from "@/assets/icons/Vector (3).svg";
-import { IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
+import { IconButton } from "@/ui-kit";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import { AddProductDropdown } from "./ProductActions/AddProductDropdown";
 import { EditProductDropdown } from "./ProductActions/EditProductDropdown";
-import type { Product } from "@/types.ts/products";
 import { ProductsContent } from "./ProductsContent";
+import type { Product } from "@/types.ts/products";
+import styles from "./Products.module.css";
 
 export const Products = () => {
   const dispatch = useAppDispatch();
@@ -22,14 +22,14 @@ export const Products = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [addButtonRef, setAddButtonRef] = useState<
-    React.RefObject<HTMLElement> | undefined
+    RefObject<HTMLElement> | undefined
   >(undefined);
   const [editButtonRef, setEditButtonRef] = useState<
-    React.RefObject<HTMLElement> | undefined
+    RefObject<HTMLElement> | undefined
   >(undefined);
 
   const handleAddButtonClick = useCallback(
-    (buttonRef: React.RefObject<HTMLElement>) => {
+    (buttonRef: RefObject<HTMLElement>) => {
       if (buttonRef.current) {
         setAddButtonRef(buttonRef);
         setIsAddingProduct(true);
@@ -74,7 +74,7 @@ export const Products = () => {
   );
 
   const handleEditProduct = useCallback(
-    (product: Product, buttonRef: React.RefObject<HTMLElement>) => {
+    (product: Product, buttonRef: RefObject<HTMLElement>) => {
       setEditingProduct(product);
       setEditButtonRef(buttonRef);
       setIsEditingProduct(true);
@@ -125,7 +125,7 @@ export const Products = () => {
                 ariaLabel="Add New"
                 onClick={() =>
                   handleAddButtonClick(
-                    buttonWrapperRef as React.RefObject<HTMLElement>
+                    buttonWrapperRef as RefObject<HTMLElement>
                   )
                 }
               />

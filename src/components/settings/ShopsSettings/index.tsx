@@ -13,7 +13,7 @@ import {
 } from "@/store/slices/shopsSlice";
 import type { Shop } from "@/types.ts/settings";
 
-const ShopsSettings = () => {
+export const ShopsSettings = () => {
   const dispatch = useAppDispatch();
   const { warehouses } = useAppSelector((state) => state.warehouses);
   const { shops, isLoading, error } = useAppSelector((state) => state.shops);
@@ -168,5 +168,3 @@ const ShopsSettings = () => {
     </div>
   );
 };
-
-export default ShopsSettings;

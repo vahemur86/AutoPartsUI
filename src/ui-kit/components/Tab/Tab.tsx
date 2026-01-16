@@ -1,19 +1,19 @@
-import React from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import styles from "./Tab.module.css";
 
 export type TabVariant = "underline" | "leftBorder" | "vertical" | "segmented";
 
-export interface TabProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TabProps extends HTMLAttributes<HTMLDivElement> {
   variant?: TabVariant;
   active?: boolean;
   text: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   showCheckmark?: boolean;
   onClick?: () => void;
   disabled?: boolean;
 }
 
-export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
+export const Tab = forwardRef<HTMLDivElement, TabProps>(
   (
     {
       variant = "underline",

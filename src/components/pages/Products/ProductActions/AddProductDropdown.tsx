@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchBrands,
@@ -6,14 +6,14 @@ import {
   fetchUnitTypes,
   fetchBoxSizes,
 } from "@/store/slices/productSettingsSlice";
-import styles from "./AddProductDropdown.module.css";
 import { Button, Switch, TextField, Select, Dropdown } from "@/ui-kit";
+import styles from "./AddProductDropdown.module.css";
 
 export interface AddProductDropdownProps {
   open: boolean;
-  anchorRef?: React.RefObject<HTMLElement>;
+  anchorRef?: RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: any) => void;
+  onSave: (data: unknown) => void;
 }
 
 export const AddProductDropdown = ({
