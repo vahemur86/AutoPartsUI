@@ -10,12 +10,11 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
-// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(dirname, "src"),
     },
   },
   server: {
@@ -23,12 +22,9 @@ export default defineConfig({
     strictPort: false,
   },
   clearScreen: true,
-
-  // Build output folder for Azure SWA
   build: {
-    outDir: "build", // default is 'dist', change to 'build'
+    outDir: "build",
   },
-
   test: {
     projects: [
       {
@@ -44,11 +40,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright({}),
-            instances: [
-              {
-                browser: "chromium",
-              },
-            ],
+            instances: [{ browser: "chromium" }],
           },
           setupFiles: [".storybook/vitest.setup.ts"],
         },

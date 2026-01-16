@@ -5,7 +5,7 @@ export {
   type ButtonVariant,
 } from "./Button";
 export { Checkbox, type CheckboxProps, type CheckboxShape } from "./Checkbox";
-export { Dropdown, type DropdownProps } from "./Dropdown";
+export { Dropdown, Sheet, type DropdownProps } from "./Dropdown";
 export {
   IconButton,
   type IconButtonProps,

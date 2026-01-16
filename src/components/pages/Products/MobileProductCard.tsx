@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type RefObject } from "react";
 import styles from "./ProductsContent.module.css";
 import { Button, IconButton } from "@/ui-kit";
 import { Pencil, Trash2 } from "lucide-react";
@@ -10,7 +10,7 @@ interface ProductCardProps {
   categories: Array<{ id: number; code: string }>;
   unitTypes: Array<{ id: number; code: string }>;
   boxSizes: Array<{ id: number; code: string }>;
-  onEdit: (product: Product, buttonRef: React.RefObject<HTMLElement>) => void;
+  onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
   onDelete: (productId: number) => void;
 }
 
@@ -50,7 +50,7 @@ export const ProductCard = ({
             icon={<Pencil size={14} color="#ffffff" />}
             ariaLabel="Edit"
             onClick={() =>
-              onEdit(product, editButtonRef as React.RefObject<HTMLElement>)
+              onEdit(product, editButtonRef as RefObject<HTMLElement>)
             }
           />
           <IconButton

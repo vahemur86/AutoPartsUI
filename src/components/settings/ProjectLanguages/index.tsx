@@ -1,4 +1,10 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  type RefObject,
+} from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/ui-kit";
 import { LanguagesContent } from "./LanguagesContent";
@@ -19,9 +25,9 @@ export const ProjectLanguages = () => {
   );
   const [isAddingLanguage, setIsAddingLanguage] = useState(false);
   const [editButtonRef, setEditButtonRef] =
-    useState<React.RefObject<HTMLElement> | null>(null);
+    useState<RefObject<HTMLElement> | null>(null);
   const [addButtonRef, setAddButtonRef] =
-    useState<React.RefObject<HTMLElement> | null>(null);
+    useState<RefObject<HTMLElement> | null>(null);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const fetchInitiatedRef = useRef(false);
@@ -45,18 +51,15 @@ export const ProjectLanguages = () => {
     fetchLanguages();
   }, [fetchLanguages]);
 
-  const handleAddNewClick = useCallback(
-    (buttonRef: React.RefObject<HTMLElement>) => {
-      if (buttonRef.current) {
-        setAddButtonRef(buttonRef);
-        setIsAddingLanguage(true);
-      }
-    },
-    []
-  );
+  const handleAddNewClick = useCallback((buttonRef: RefObject<HTMLElement>) => {
+    if (buttonRef.current) {
+      setAddButtonRef(buttonRef);
+      setIsAddingLanguage(true);
+    }
+  }, []);
 
   const handleEditClick = useCallback(
-    (languageId: number, buttonRef: React.RefObject<HTMLElement>) => {
+    (languageId: number, buttonRef: RefObject<HTMLElement>) => {
       setEditButtonRef(buttonRef);
       setEditingLanguageId(languageId);
     },
