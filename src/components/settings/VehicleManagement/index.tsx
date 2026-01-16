@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tab, TabGroup } from "@/ui-kit";
 import { Tasks } from "./Tasks";
-import { Vehicles } from "./Vehicles";
+import { Vehicles } from "./vehicle/Vehicles";
 import styles from "./VehicleManagement.module.css";
 
 export const VehicleManagement = () => {

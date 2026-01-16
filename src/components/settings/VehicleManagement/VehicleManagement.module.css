@@ -106,7 +106,6 @@
   width: 100%;
 }
 
-/* Action Buttons */
 .actionButtons {
   display: flex;
   justify-content: flex-end;
@@ -114,6 +113,16 @@
 
   margin-top: auto;
   padding-block-end: 24px;
+}
+
+.addNewButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.addButtonMobile {
+  display: none;
 }
 
 /* Mobile Styles */
@@ -145,6 +154,24 @@
     flex-shrink: 0;
   }
 
+  .addNewButton {
+    display: none;
+  }
+
+  .addButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .addButtonMobile .addButtonWrapper {
+    width: 100%;
+    justify-content: center;
+  }
+
   .actionButtons {
     flex-direction: column-reverse;
     gap: 8px;
@@ -153,6 +180,47 @@
 
   .actionButtons button {
     width: 100%;
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .tableContainer > div {
+    min-width: max-content;
+    width: max-content;
+  }
+
+  .tableContainer table {
+    min-width: 600px;
+  }
+}
+
+/* Landscape mobile styles */
+@media (max-width: 968px) and (orientation: landscape) {
+  .tableContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .tableContainer > div {
+    min-width: max-content;
+    width: max-content;
+  }
+
+  .tableContainer table {
+    min-width: 600px;
   }
 }
 
@@ -174,4 +242,8 @@
   display: flex;
   gap: 12px;
   padding: 3px;
+}
+
+.tableContainer {
+  width: 100%;
 }
