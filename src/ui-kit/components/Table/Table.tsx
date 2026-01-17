@@ -11,13 +11,11 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   children: ReactNode;
 }
 
-export interface TableHeaderProps
-  extends HTMLAttributes<HTMLTableSectionElement> {
+export interface TableHeaderProps extends HTMLAttributes<HTMLTableSectionElement> {
   children: ReactNode;
 }
 
-export interface TableBodyProps
-  extends HTMLAttributes<HTMLTableSectionElement> {
+export interface TableBodyProps extends HTMLAttributes<HTMLTableSectionElement> {
   children: ReactNode;
 }
 
@@ -39,7 +37,7 @@ export const Table = forwardRef<HTMLTableElement, TableProps>(
         </table>
       </div>
     );
-  }
+  },
 );
 
 Table.displayName = "Table";
@@ -72,7 +70,7 @@ export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
         {children}
       </tbody>
     );
-  }
+  },
 );
 
 TableBody.displayName = "TableBody";
@@ -84,7 +82,7 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
         {children}
       </tr>
     );
-  }
+  },
 );
 
 TableRow.displayName = "TableRow";
@@ -94,7 +92,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
     const Component = asHeader ? "th" : "td";
     return (
       <Component
-        ref={ref as any}
+        ref={ref}
         className={`${styles.tableCell} ${
           asHeader ? styles.tableCellHeader : ""
         } ${className}`}
@@ -103,7 +101,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
         {children}
       </Component>
     );
-  }
+  },
 );
 
 TableCell.displayName = "TableCell";

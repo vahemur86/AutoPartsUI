@@ -1,6 +1,10 @@
+import { useState } from "storybook/internal/preview-api";
+
+// types
 import type { Meta, StoryObj } from "@storybook/react";
+
+// components
 import { Checkbox } from "./Checkbox";
-import { useState } from "react";
 
 const meta = {
   title: "UI-Kit/Checkbox",
@@ -63,6 +67,7 @@ export const Controlled: Story = {
     label: "Use as Default language",
   },
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [checked, setChecked] = useState(false);
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -128,6 +133,7 @@ export const Interactive: Story = {
     label: "Use as Default language",
   },
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [checked, setChecked] = useState(false);
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -203,6 +209,7 @@ export const CircleInteractive: Story = {
     label: "Translation",
   },
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [checked, setChecked] = useState(false);
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

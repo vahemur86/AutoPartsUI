@@ -1,6 +1,10 @@
-import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "storybook/internal/preview-api";
+
+// components
 import { MultiSelect, type MultiSelectOption } from "./MultiSelect";
+
+// types
+import type { Meta, StoryObj } from "@storybook/react";
 
 const mockOptions: MultiSelectOption[] = [
   { value: "volvo", label: "Volvo XC90" },
@@ -85,6 +89,7 @@ export const Disabled: Story = {
 
 export const Interactive: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [selected, setSelected] = useState<string[]>([]);
     return (
       <div

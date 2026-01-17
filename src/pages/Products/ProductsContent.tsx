@@ -7,7 +7,11 @@ import {
   type RefObject,
 } from "react";
 import { toast } from "react-toastify";
+
+// hooks
 import { useIsMobile } from "@/hooks/isMobile";
+
+// stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchProducts, removeProduct } from "@/store/slices/productsSlice";
 import {
@@ -16,6 +20,8 @@ import {
   fetchUnitTypes,
   fetchBoxSizes,
 } from "@/store/slices/productSettingsSlice";
+
+// ui-kit
 import {
   Table,
   TableHeader,
@@ -25,10 +31,21 @@ import {
   IconButton,
   Button,
 } from "@/ui-kit";
+
+// icons
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+
+// types
 import type { Product } from "@/types/products";
-import styles from "./ProductsContent.module.css";
+
+// components
 import { ProductCard } from "./MobileProductCard";
+
+// utils
+import { getErrorMessage } from "@/utils";
+
+// styles
+import styles from "./ProductsContent.module.css";
 
 interface ProductsContentProps {
   onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
@@ -57,7 +74,7 @@ const ProductRow = ({
 
   const getNameById = (
     id: number,
-    items: Array<{ id: number; code: string }>
+    items: Array<{ id: number; code: string }>,
   ): string => {
     const item = items.find((i) => i.id === id);
     return item?.code || `ID: ${id}`;
@@ -140,17 +157,16 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
         if (currentPage > totalPages && totalPages > 0) {
           setCurrentPage(totalPages);
         }
-      } catch (error: any) {
-        console.error("Failed to delete product:", error);
-        toast.error(error || "Failed to delete product");
+      } catch (error: unknown) {
+        toast.error(getErrorMessage(error, "Failed to delete product"));
       }
     },
-    [dispatch, products.length, currentPage]
+    [dispatch, products.length, currentPage],
   );
 
   const totalPages = useMemo(
     () => Math.ceil(products.length / ITEMS_PER_PAGE),
-    [products.length]
+    [products.length],
   );
 
   const paginatedProducts = useMemo(() => {

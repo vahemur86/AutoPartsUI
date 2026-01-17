@@ -1,6 +1,10 @@
-import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "storybook/internal/preview-api";
+
+// components
 import { Textarea } from "./Textarea";
+
+// types
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof Textarea> = {
   title: "UI Kit/Textarea",
@@ -85,6 +89,7 @@ export const AllStates: Story = {
 
 export const Interactive: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [value, setValue] = useState("");
     return (
       <div

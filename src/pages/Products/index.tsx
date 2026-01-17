@@ -1,32 +1,53 @@
 import { useState, useRef, useCallback, type RefObject } from "react";
 import { toast } from "react-toastify";
+
+// stores
 import { useAppDispatch } from "@/store/hooks";
 import {
   addProduct,
   updateProductInStore,
   fetchProducts,
 } from "@/store/slices/productsSlice";
+
+// icons
 import productIcon from "@/assets/icons/Vector (3).svg";
 import { Plus } from "lucide-react";
+
+// ui-kit
 import { IconButton } from "@/ui-kit";
+
+// components
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { AddProductDropdown } from "./ProductActions/AddProductDropdown";
 import { EditProductDropdown } from "./ProductActions/EditProductDropdown";
 import { ProductsContent } from "./ProductsContent";
+
+// utils
+import { getErrorMessage } from "@/utils";
+
+// types
 import type { Product } from "@/types/products";
+import type { ProductFormData } from "./types";
+
+// styles
 import styles from "./Products.module.css";
 
 export const Products = () => {
   const dispatch = useAppDispatch();
+
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
   const [addButtonRef, setAddButtonRef] = useState<
     RefObject<HTMLElement> | undefined
   >(undefined);
+
   const [editButtonRef, setEditButtonRef] = useState<
     RefObject<HTMLElement> | undefined
   >(undefined);
+
+  const buttonWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleAddButtonClick = useCallback(
     (buttonRef: RefObject<HTMLElement>) => {
@@ -35,7 +56,7 @@ export const Products = () => {
         setIsAddingProduct(true);
       }
     },
-    []
+    [],
   );
 
   const handleCloseAddDropdown = useCallback(() => {
@@ -50,7 +71,7 @@ export const Products = () => {
   }, []);
 
   const handleSaveProduct = useCallback(
-    async (data: any) => {
+    async (data: ProductFormData) => {
       try {
         await dispatch(
           addProduct({
@@ -61,16 +82,18 @@ export const Products = () => {
             unitTypeId: data.unitType,
             boxSizeId: data.boxSize,
             vehicleDependent: data.vehicleDependent,
-          })
+          }),
         ).unwrap();
+
         toast.success("Product created successfully");
         dispatch(fetchProducts());
         handleCloseAddDropdown();
-      } catch (error: any) {
-        toast.error(error || "Failed to create product");
+      } catch (error: unknown) {
+        console.error(error);
+        toast.error(getErrorMessage(error, "Failed to create product"));
       }
     },
-    [dispatch, handleCloseAddDropdown]
+    [dispatch, handleCloseAddDropdown],
   );
 
   const handleEditProduct = useCallback(
@@ -79,12 +102,13 @@ export const Products = () => {
       setEditButtonRef(buttonRef);
       setIsEditingProduct(true);
     },
-    []
+    [],
   );
 
   const handleUpdateProduct = useCallback(
-    async (data: any) => {
+    async (data: ProductFormData) => {
       if (!editingProduct) return;
+
       try {
         await dispatch(
           updateProductInStore({
@@ -96,19 +120,19 @@ export const Products = () => {
             unitTypeId: data.unitType,
             boxSizeId: data.boxSize,
             vehicleDependent: data.vehicleDependent,
-          })
+          }),
         ).unwrap();
+
         toast.success("Product updated successfully");
         dispatch(fetchProducts());
         handleCloseEditDropdown();
-      } catch (error: any) {
-        toast.error(error || "Failed to update product");
+      } catch (error: unknown) {
+        console.error(error);
+        toast.error(getErrorMessage(error, "Failed to update product"));
       }
     },
-    [dispatch, editingProduct, handleCloseEditDropdown]
+    [dispatch, editingProduct, handleCloseEditDropdown],
   );
-
-  const buttonWrapperRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -125,7 +149,7 @@ export const Products = () => {
                 ariaLabel="Add New"
                 onClick={() =>
                   handleAddButtonClick(
-                    buttonWrapperRef as RefObject<HTMLElement>
+                    buttonWrapperRef as RefObject<HTMLElement>,
                   )
                 }
               />
@@ -137,12 +161,14 @@ export const Products = () => {
 
       <div className={styles.productsContainer}>
         <ProductsContent onEdit={handleEditProduct} />
+
         <AddProductDropdown
           open={isAddingProduct}
           anchorRef={addButtonRef}
           onOpenChange={handleCloseAddDropdown}
           onSave={handleSaveProduct}
         />
+
         <EditProductDropdown
           open={isEditingProduct}
           anchorRef={editButtonRef}

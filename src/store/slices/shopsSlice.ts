@@ -3,13 +3,20 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
+
+// services
 import {
   getShops,
   createShop,
   updateShop,
   deleteShop,
 } from "@/services/settings/shop";
+
+// types
 import type { Shop } from "@/types/settings";
+
+// utils
+import { getApiErrorMessage } from "@/utils";
 
 interface ShopsState {
   shops: Shop[];
@@ -23,67 +30,72 @@ const initialState: ShopsState = {
   error: null,
 };
 
+type ShopPayload = {
+  code: string;
+  warehouseId: number;
+};
+
+type ShopUpdatePayload = ShopPayload & { id: number };
+
 // Async thunk for fetching shops
-export const fetchShops = createAsyncThunk(
-  "shops/fetchShops",
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await getShops();
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch shops");
-    }
+export const fetchShops = createAsyncThunk<
+  Shop[],
+  void,
+  { rejectValue: string }
+>("shops/fetchShops", async (_, { rejectWithValue }) => {
+  try {
+    const data = await getShops();
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to fetch shops"));
   }
-);
+});
 
 // Async thunk for creating shop
-export const addShop = createAsyncThunk(
-  "shops/addShop",
-  async (
-    { code, warehouseId }: { code: string; warehouseId: number },
-    { rejectWithValue }
-  ) => {
-    try {
-      const data = await createShop(code, warehouseId);
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to create shop");
-    }
+export const addShop = createAsyncThunk<
+  Shop,
+  ShopPayload,
+  { rejectValue: string }
+>("shops/addShop", async (payload, { rejectWithValue }) => {
+  try {
+    const data = await createShop(payload.code, payload.warehouseId);
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to create shop"));
   }
-);
+});
 
 // Async thunk for updating shop
-export const updateShopInStore = createAsyncThunk(
-  "shops/updateShop",
-  async (
-    {
-      id,
-      code,
-      warehouseId,
-    }: { id: number; code: string; warehouseId: number },
-    { rejectWithValue }
-  ) => {
-    try {
-      const data = await updateShop(id, code, warehouseId);
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to update shop");
-    }
+export const updateShopInStore = createAsyncThunk<
+  Shop,
+  ShopUpdatePayload,
+  { rejectValue: string }
+>("shops/updateShop", async (payload, { rejectWithValue }) => {
+  try {
+    const data = await updateShop(
+      payload.id,
+      payload.code,
+      payload.warehouseId,
+    );
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to update shop"));
   }
-);
+});
 
 // Async thunk for deleting shop
-export const removeShop = createAsyncThunk(
-  "shops/removeShop",
-  async (id: number, { rejectWithValue }) => {
-    try {
-      await deleteShop(id);
-      return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to delete shop");
-    }
+export const removeShop = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("shops/removeShop", async (id, { rejectWithValue }) => {
+  try {
+    await deleteShop(id);
+    return id;
+  } catch (error: unknown) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to delete shop"));
   }
-);
+});
 
 const shopsSlice = createSlice({
   name: "shops",
@@ -107,7 +119,7 @@ const shopsSlice = createSlice({
       })
       .addCase(fetchShops.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to fetch shops";
       });
 
     // Add shop
@@ -123,7 +135,7 @@ const shopsSlice = createSlice({
       })
       .addCase(addShop.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to create shop";
       });
 
     // Update shop
@@ -137,17 +149,17 @@ const shopsSlice = createSlice({
         (state, action: PayloadAction<Shop>) => {
           state.isLoading = false;
           const index = state.shops.findIndex(
-            (s) => s.id === action.payload.id
+            (s) => s.id === action.payload.id,
           );
           if (index !== -1) {
             state.shops[index] = action.payload;
           }
           state.error = null;
-        }
+        },
       )
       .addCase(updateShopInStore.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to update shop";
       });
 
     // Delete shop
@@ -163,7 +175,7 @@ const shopsSlice = createSlice({
       })
       .addCase(removeShop.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to delete shop";
       });
   },
 });

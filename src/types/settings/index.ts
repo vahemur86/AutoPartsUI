@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Languages
 export interface Language {
   id: number;
@@ -8,7 +9,7 @@ export interface Language {
   flag?: string;
 }
 
-//Shop & Warehouse
+// Shop & Warehouse
 export interface ExistingShop {
   id: string;
   name: string;
@@ -38,7 +39,7 @@ export interface ProductSettingItem {
   enabled?: boolean;
 }
 
-type DataKey = "brands" | "categories" | "unitTypes" | "boxSizes";
+export type DataKey = "brands" | "categories" | "unitTypes" | "boxSizes";
 export type TabId = "brand" | "category" | "unitType" | "boxSize";
 
 type TabActions = {
@@ -53,14 +54,16 @@ export type TabConfig = {
   actions: TabActions;
 };
 
+export type CrudService<TItem> = {
+  create: (code: string) => Promise<TItem>;
+  getAll: () => Promise<TItem[]>;
+  delete: (id: number) => Promise<unknown>;
+  update: (id: number, code: string) => Promise<TItem>;
+};
+
 export type ProductSettingsTab = {
   id: TabId;
   label: string;
   type: string;
-  service: {
-    create: (code: string) => Promise<any>;
-    getAll: () => Promise<any>;
-    delete: (id: number) => Promise<any>;
-    update: (id: number, code: string) => Promise<any>;
-  };
+  service: CrudService<ProductSettingItem>;
 };
