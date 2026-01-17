@@ -1,14 +1,31 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+
+// components
 import { SectionHeader } from "@/components/common/SectionHeader";
+
+// icons
 import userIcon from "@/assets/icons/userVector.svg";
+
+// ui-kit
 import { Button, TextField, Select } from "@/ui-kit";
+
+// services
 import { createUser } from "@/services/users";
+
+// stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchShops } from "@/store/slices/shopsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
-import styles from "./Users.module.css";
+
+// constants
 import { ROLES, USER_TYPES } from "@/constants/settings/users";
+
+// utils
+import { getErrorMessage } from "@/utils";
+
+// styles
+import styles from "./Users.module.css";
 
 export const UserManagement = () => {
   const dispatch = useAppDispatch();
@@ -64,12 +81,12 @@ export const UserManagement = () => {
         role,
         userType,
         parseInt(shopId),
-        parseInt(warehouseId)
+        parseInt(warehouseId),
       );
       toast.success("User created successfully");
       handleCancel();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create user");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to create user"));
     } finally {
       setIsSubmitting(false);
     }

@@ -1,7 +1,13 @@
+import { useState } from "storybook/internal/preview-api";
+
+// types
 import type { Meta, StoryObj } from "@storybook/react";
+
+// components
 import { InteractiveField } from "./InteractiveField";
+
+// icons
 import { X, Check, Edit, Trash2 } from "lucide-react";
-import { useState } from "react";
 
 const meta = {
   title: "UI-Kit/InteractiveField",
@@ -33,6 +39,7 @@ type Story = StoryObj<typeof meta>;
 
 export const EditableWithPhotoUpload: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [textValue, setTextValue] = useState("Name here");
     return (
       <div style={{ maxWidth: "900px" }}>
@@ -91,6 +98,7 @@ export const EditableWithPhotoUpload: Story = {
 
 export const EditableWithoutPhoto: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [textValue, setTextValue] = useState("Name here");
     return (
       <div style={{ maxWidth: "900px" }}>
@@ -129,6 +137,7 @@ export const EditableWithoutPhoto: Story = {
 
 export const DisplayWithToggleAndActions: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [toggleChecked, setToggleChecked] = useState(true);
     return (
       <div style={{ maxWidth: "900px" }}>
@@ -180,6 +189,7 @@ export const DisplayWithToggleAndActions: Story = {
 
 export const DisplayDisabled: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [toggleChecked, setToggleChecked] = useState(false);
     return (
       <div style={{ maxWidth: "900px" }}>
@@ -215,10 +225,18 @@ export const DisplayDisabled: Story = {
 
 export const AllVariants: Story = {
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [textValue1, setTextValue1] = useState("Name here");
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [textValue2, setTextValue2] = useState("Name here");
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [toggle1, setToggle1] = useState(true);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [toggle2, setToggle2] = useState(false);
+
     return (
       <div
         style={{
@@ -360,8 +378,3 @@ export const AllVariants: Story = {
     controls: { disable: true },
   },
 };
-
-
-
-
-

@@ -1,28 +1,34 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
+
+// ui-kit
 import { Button } from "@/ui-kit";
+
+// components
 import { LanguagesContent } from "./LanguagesContent";
 import { EditLanguageDropdown } from "./languagesActions/EditLanguageDropdown";
 import { AddLanguageDropdown } from "./languagesActions/AddLanguageDropdown";
+
+// services
 import {
   getLanguages,
   createLanguage,
   deleteLanguage,
   updateLanguage,
 } from "@/services/settings/languages";
-import type { Language } from "@/types/settings";
-import styles from "./ProjectLanguages.module.css";
 
-const getErrorMessage = (error: unknown, fallback: string) => {
-  if (error && typeof error === "object" && "message" in error) {
-    return String((error as unknown as Error).message);
-  }
-  return fallback;
-};
+// types
+import type { Language } from "@/types/settings";
+
+// utils
+import { getErrorMessage } from "@/utils";
+
+// styles
+import styles from "./ProjectLanguages.module.css";
 
 export const ProjectLanguages = () => {
   const [editingLanguageId, setEditingLanguageId] = useState<number | null>(
-    null
+    null,
   );
   const [isAddingLanguage, setIsAddingLanguage] = useState(false);
 
@@ -65,7 +71,7 @@ export const ProjectLanguages = () => {
       editAnchorRef.current = anchorEl;
       setEditingLanguageId(languageId);
     },
-    []
+    [],
   );
 
   const handleCloseEditDropdown = useCallback(() => {
@@ -81,7 +87,7 @@ export const ProjectLanguages = () => {
   const unsetOtherDefaultLanguages = useCallback(
     async (excludeId?: number) => {
       const toUnset = languages.filter(
-        (lang) => lang.isDefault && lang.id !== excludeId
+        (lang) => lang.isDefault && lang.id !== excludeId,
       );
 
       if (toUnset.length === 0) return;
@@ -94,18 +100,18 @@ export const ProjectLanguages = () => {
               lang.code,
               lang.name,
               false,
-              lang.isEnabled ?? true
-            )
-          )
+              lang.isEnabled ?? true,
+            ),
+          ),
         );
       } catch (error: unknown) {
         toast.error(
-          getErrorMessage(error, "Failed to update default language")
+          getErrorMessage(error, "Failed to update default language"),
         );
         throw error;
       }
     },
-    [languages]
+    [languages],
   );
 
   const handleAddLanguage = useCallback(
@@ -119,7 +125,7 @@ export const ProjectLanguages = () => {
           data.code,
           data.name,
           data.isDefault,
-          data.isEnabled
+          data.isEnabled,
         );
 
         toast.success("Language created successfully");
@@ -130,7 +136,7 @@ export const ProjectLanguages = () => {
         toast.error(getErrorMessage(error, "Failed to create language"));
       }
     },
-    [unsetOtherDefaultLanguages, fetchLanguages, handleCloseAddDropdown]
+    [unsetOtherDefaultLanguages, fetchLanguages, handleCloseAddDropdown],
   );
 
   const handleUpdateLanguage = useCallback(
@@ -147,7 +153,7 @@ export const ProjectLanguages = () => {
           data.code,
           data.name,
           data.isDefault,
-          data.isEnabled
+          data.isEnabled,
         );
 
         toast.success("Language updated successfully");
@@ -163,7 +169,7 @@ export const ProjectLanguages = () => {
       unsetOtherDefaultLanguages,
       fetchLanguages,
       handleCloseEditDropdown,
-    ]
+    ],
   );
 
   const handleDeleteLanguage = useCallback(
@@ -178,11 +184,11 @@ export const ProjectLanguages = () => {
         toast.error(getErrorMessage(error, "Failed to delete language"));
       }
     },
-    [fetchLanguages, handleCloseEditDropdown]
+    [fetchLanguages, handleCloseEditDropdown],
   );
 
   const editingLanguage = editingLanguageId
-    ? languages.find((lang) => lang.id === editingLanguageId) ?? null
+    ? (languages.find((lang) => lang.id === editingLanguageId) ?? null)
     : null;
 
   return (

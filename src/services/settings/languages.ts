@@ -1,10 +1,13 @@
 import api from "..";
 
+// utils
+import { getApiErrorMessage } from "@/utils";
+
 export const createLanguage = async (
   code: string,
   name: string,
   isDefault: boolean,
-  isEnabled: boolean
+  isEnabled: boolean,
 ) => {
   try {
     const response = await api.post(`/Languages`, {
@@ -13,13 +16,10 @@ export const createLanguage = async (
       isDefault,
       isEnabled,
     });
+
     return response.data;
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Failed to create language.";
-    throw new Error(errorMessage);
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to create language."));
   }
 };
 
@@ -27,8 +27,8 @@ export const getLanguages = async () => {
   try {
     const response = await api.get(`/Languages`);
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to get languages.");
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get languages."));
   }
 };
 
@@ -36,12 +36,8 @@ export const deleteLanguage = async (id: number) => {
   try {
     const response = await api.delete(`/Languages/${id}`);
     return response.data;
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Failed to delete language";
-    throw new Error(errorMessage);
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete language."));
   }
 };
 
@@ -50,7 +46,7 @@ export const updateLanguage = async (
   code: string,
   name: string,
   isDefault: boolean,
-  isEnabled: boolean
+  isEnabled: boolean,
 ) => {
   try {
     const response = await api.put(`/Languages/${id}`, {
@@ -60,13 +56,10 @@ export const updateLanguage = async (
       isDefault,
       isEnabled,
     });
+
     return response.data;
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Failed to update language";
-    throw new Error(errorMessage);
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to update language."));
   }
 };
 
@@ -74,7 +67,7 @@ export const getSingleLanguage = async (id: number) => {
   try {
     const response = await api.get(`/Languages/${id}`);
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to get language");
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get language."));
   }
 };

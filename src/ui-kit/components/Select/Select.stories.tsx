@@ -1,6 +1,10 @@
-import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "storybook/internal/preview-api";
+
+// components
 import { Select } from "./Select";
+
+// types
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof Select> = {
   title: "UI Kit/Select",
@@ -176,7 +180,8 @@ export const Interactive: Story = {
     placeholder: "Select",
   },
   render: () => {
-    const [value, setValue] = React.useState("");
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState("");
     return (
       <div
         style={{

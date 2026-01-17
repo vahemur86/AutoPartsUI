@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+// ui-kit
 import { Button, Tab, TabGroup } from "@/ui-kit";
-import styles from "./ShopsSettings.module.css";
+
+// components
 import { ShopContent } from "./ShopContent";
+
+// stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 import {
@@ -11,12 +16,21 @@ import {
   updateShopInStore,
   removeShop,
 } from "@/store/slices/shopsSlice";
+
+// utils
+import { getErrorMessage } from "@/utils";
+
+// types
 import type { Shop } from "@/types/settings";
+
+// styles
+import styles from "./ShopsSettings.module.css";
 
 export const ShopsSettings = () => {
   const dispatch = useAppDispatch();
   const { warehouses } = useAppSelector((state) => state.warehouses);
   const { shops, isLoading, error } = useAppSelector((state) => state.shops);
+
   const [activeTab, setActiveTab] = useState("add-new");
   const [shopKey, setShopKey] = useState("");
   const [warehouseId, setWarehouseId] = useState(0);
@@ -33,10 +47,12 @@ export const ShopsSettings = () => {
       toast.error("Please enter a shop key");
       return;
     }
+
     if (!warehouseId || warehouseId === 0) {
       toast.error("Please select a warehouse");
       return;
     }
+
     try {
       if (editingShop) {
         // Update existing shop
@@ -45,8 +61,9 @@ export const ShopsSettings = () => {
             id: editingShop.id,
             code: shopKey.trim(),
             warehouseId,
-          })
+          }),
         ).unwrap();
+
         toast.success("Shop updated successfully");
         setEditingShop(null);
       } else {
@@ -54,14 +71,17 @@ export const ShopsSettings = () => {
         await dispatch(addShop({ code: shopKey.trim(), warehouseId })).unwrap();
         toast.success("Shop created successfully");
       }
+
       // Clear inputs after successful save
       setShopKey("");
       setWarehouseId(0);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       toast.error(
-        error ||
-          (editingShop ? "Failed to update shop" : "Failed to create shop")
+        getErrorMessage(
+          error,
+          editingShop ? "Failed to update shop" : "Failed to create shop",
+        ),
       );
     }
   }, [shopKey, warehouseId, editingShop, dispatch]);
@@ -85,12 +105,12 @@ export const ShopsSettings = () => {
       try {
         await dispatch(removeShop(id)).unwrap();
         toast.success("Shop deleted successfully");
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
-        toast.error(error || "Failed to delete shop");
+        toast.error(getErrorMessage(error, "Failed to delete shop"));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   useEffect(() => {
@@ -153,6 +173,7 @@ export const ShopsSettings = () => {
           >
             Cancel
           </Button>
+
           <Button
             variant="primary"
             size="medium"

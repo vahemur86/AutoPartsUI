@@ -1,6 +1,12 @@
-import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "storybook/internal/preview-api";
+
+// components
 import { TextField } from "./TextField";
+
+// types
+import type { Meta, StoryObj } from "@storybook/react";
+
+// icons
 import { Trash2 } from "lucide-react";
 
 const meta: Meta<typeof TextField> = {
@@ -139,7 +145,8 @@ export const Interactive: Story = {
     placeholder: "Type",
   },
   render: () => {
-    const [value, setValue] = React.useState("");
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState("");
     return (
       <div
         style={{

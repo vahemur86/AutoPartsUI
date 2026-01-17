@@ -3,13 +3,20 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
+
+// services
 import {
   getProducts,
   createProduct,
   updateProduct,
   deleteProduct,
 } from "@/services/products";
+
+// types
 import type { Product } from "@/types/products";
+
+// utils
+import { getApiErrorMessage } from "@/utils";
 
 interface ProductsState {
   products: Product[];
@@ -23,114 +30,98 @@ const initialState: ProductsState = {
   error: null,
 };
 
+type ProductPayload = {
+  code: string;
+  sku: string;
+  brandId: number;
+  categoryId: number;
+  unitTypeId: number;
+  boxSizeId: number;
+  vehicleDependent: boolean;
+};
+
+type ProductUpdatePayload = ProductPayload & { id: number };
+
 // Async thunk for fetching products
-export const fetchProducts = createAsyncThunk(
-  "products/fetchProducts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await getProducts();
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch products");
-    }
+export const fetchProducts = createAsyncThunk<
+  Product[],
+  void,
+  { rejectValue: string }
+>("products/fetchProducts", async (_, { rejectWithValue }) => {
+  try {
+    const data = await getProducts();
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch products"),
+    );
   }
-);
+});
 
 // Async thunk for creating product
-export const addProduct = createAsyncThunk(
-  "products/addProduct",
-  async (
-    {
-      code,
-      sku,
-      brandId,
-      categoryId,
-      unitTypeId,
-      boxSizeId,
-      vehicleDependent,
-    }: {
-      code: string;
-      sku: string;
-      brandId: number;
-      categoryId: number;
-      unitTypeId: number;
-      boxSizeId: number;
-      vehicleDependent: boolean;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const data = await createProduct(
-        code,
-        sku,
-        brandId,
-        categoryId,
-        unitTypeId,
-        boxSizeId,
-        vehicleDependent
-      );
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to create product");
-    }
+export const addProduct = createAsyncThunk<
+  Product,
+  ProductPayload,
+  { rejectValue: string }
+>("products/addProduct", async (payload, { rejectWithValue }) => {
+  try {
+    const data = await createProduct(
+      payload.code,
+      payload.sku,
+      payload.brandId,
+      payload.categoryId,
+      payload.unitTypeId,
+      payload.boxSizeId,
+      payload.vehicleDependent,
+    );
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to create product"),
+    );
   }
-);
+});
 
 // Async thunk for updating product
-export const updateProductInStore = createAsyncThunk(
-  "products/updateProduct",
-  async (
-    {
-      id,
-      code,
-      sku,
-      brandId,
-      categoryId,
-      unitTypeId,
-      boxSizeId,
-      vehicleDependent,
-    }: {
-      id: number;
-      code: string;
-      sku: string;
-      brandId: number;
-      categoryId: number;
-      unitTypeId: number;
-      boxSizeId: number;
-      vehicleDependent: boolean;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const data = await updateProduct(
-        id,
-        code,
-        sku,
-        brandId,
-        categoryId,
-        unitTypeId,
-        boxSizeId,
-        vehicleDependent
-      );
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to update product");
-    }
+export const updateProductInStore = createAsyncThunk<
+  Product,
+  ProductUpdatePayload,
+  { rejectValue: string }
+>("products/updateProduct", async (payload, { rejectWithValue }) => {
+  try {
+    const data = await updateProduct(
+      payload.id,
+      payload.code,
+      payload.sku,
+      payload.brandId,
+      payload.categoryId,
+      payload.unitTypeId,
+      payload.boxSizeId,
+      payload.vehicleDependent,
+    );
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to update product"),
+    );
   }
-);
+});
 
 // Async thunk for deleting product
-export const removeProduct = createAsyncThunk(
-  "products/removeProduct",
-  async (id: number, { rejectWithValue }) => {
-    try {
-      await deleteProduct(id);
-      return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to delete product");
-    }
+export const removeProduct = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("products/removeProduct", async (id, { rejectWithValue }) => {
+  try {
+    await deleteProduct(id);
+    return id;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete product"),
+    );
   }
-);
+});
 
 const productsSlice = createSlice({
   name: "products",
@@ -153,11 +144,11 @@ const productsSlice = createSlice({
           state.isLoading = false;
           state.products = action.payload;
           state.error = null;
-        }
+        },
       )
       .addCase(fetchProducts.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to fetch products";
       });
 
     // Add product
@@ -172,11 +163,11 @@ const productsSlice = createSlice({
           state.isLoading = false;
           state.products.push(action.payload);
           state.error = null;
-        }
+        },
       )
       .addCase(addProduct.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to create product";
       });
 
     // Update product
@@ -190,17 +181,17 @@ const productsSlice = createSlice({
         (state, action: PayloadAction<Product>) => {
           state.isLoading = false;
           const index = state.products.findIndex(
-            (p) => p.id === action.payload.id
+            (p) => p.id === action.payload.id,
           );
           if (index !== -1) {
             state.products[index] = action.payload;
           }
           state.error = null;
-        }
+        },
       )
       .addCase(updateProductInStore.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to update product";
       });
 
     // Delete product
@@ -214,14 +205,14 @@ const productsSlice = createSlice({
         (state, action: PayloadAction<number>) => {
           state.isLoading = false;
           state.products = state.products.filter(
-            (p) => p.id !== action.payload
+            (p) => p.id !== action.payload,
           );
           state.error = null;
-        }
+        },
       )
       .addCase(removeProduct.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to delete product";
       });
   },
 });
