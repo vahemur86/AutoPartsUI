@@ -1,7 +1,10 @@
-import { useState, useCallback, useRef, type FC } from "react";
-import { IconButton } from "@/ui-kit";
+import { useState, useCallback, useRef, useMemo, type FC } from "react";
+import { DataTable, IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
 import { AddTaskDropdown, type TaskForm } from "./taskActions/AddTaskDropdown";
+import { tasks } from "./mockData";
+import { getTaskColumns } from "./columns";
+import type { Task } from "./types";
 import styles from "../VehicleManagement.module.css";
 
 interface TasksProps {
@@ -9,13 +12,23 @@ interface TasksProps {
   withDelete?: boolean;
 }
 
-export const Tasks: FC<TasksProps> = () => {
+export const Tasks: FC<TasksProps> = ({
+  withEdit = true,
+  withDelete = true,
+}) => {
   const [isTaskDropdownOpen, setIsTaskDropdownOpen] = useState(false);
 
   const addAnchorRef = useRef<HTMLElement | null>(null);
-
   const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
   const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleEditTask = useCallback((task: Task) => {
+    console.log("Edit task logic for:", task.id);
+  }, []);
+
+  const handleDeleteTask = useCallback((task: Task) => {
+    console.log("Delete task logic for:", task.id);
+  }, []);
 
   const openAddDropdown = useCallback((isMobile: boolean) => {
     const anchorEl = isMobile
@@ -38,12 +51,17 @@ export const Tasks: FC<TasksProps> = () => {
       console.log("Add task:", data);
       handleCloseAddDropdown();
     },
-    [handleCloseAddDropdown]
+    [handleCloseAddDropdown],
+  );
+
+  const columns = useMemo(
+    () =>
+      getTaskColumns(withEdit, withDelete, handleEditTask, handleDeleteTask),
+    [withEdit, withDelete, handleEditTask, handleDeleteTask],
   );
 
   return (
     <div className={styles.tasksWrapper}>
-      {/* Desktop header */}
       <div className={styles.tasksHeader}>
         <div
           ref={addButtonDesktopWrapperRef}
@@ -61,7 +79,6 @@ export const Tasks: FC<TasksProps> = () => {
         </div>
       </div>
 
-      {/* Mobile big button (like ProjectLanguages.addButtonMobile) */}
       <div className={styles.addTaskButtonMobile}>
         <div
           ref={addButtonMobileWrapperRef}
@@ -86,6 +103,15 @@ export const Tasks: FC<TasksProps> = () => {
         }}
         onSave={handleAddTask}
       />
+
+      <div className={styles.tableWrapper}>
+        <DataTable
+          enableSelection
+          data={tasks}
+          columns={columns}
+          pageSize={7}
+        />
+      </div>
     </div>
   );
 };

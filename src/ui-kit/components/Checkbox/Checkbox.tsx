@@ -10,8 +10,10 @@ import styles from "./Checkbox.module.css";
 
 export type CheckboxShape = "square" | "circle";
 
-export interface CheckboxProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+export interface CheckboxProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type" | "size"
+> {
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
@@ -33,10 +35,10 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [internalChecked, setInternalChecked] = useState(
-      defaultChecked || false
+      defaultChecked || false,
     );
     const inputRef = useRef<HTMLInputElement>(null);
     const isControlled = checked !== undefined;
@@ -126,7 +128,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Checkbox.displayName = "Checkbox";

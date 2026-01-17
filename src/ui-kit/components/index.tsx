@@ -39,6 +39,7 @@ export {
   TableCell,
   TableHeader,
   TableRow,
+  DataTable,
   type TableBodyProps,
   type TableCellProps,
   type TableHeaderProps,
