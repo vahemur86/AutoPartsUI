@@ -20,6 +20,7 @@ export {
   TextField,
   Textarea,
   MultiSelect,
+  DataTable,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
