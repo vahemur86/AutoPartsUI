@@ -1,12 +1,15 @@
 import api from ".";
 
+// utils
+import { getApiErrorMessage } from "@/utils";
+
 export const createUser = async (
   username: string,
   password: string,
   role: string,
   userType: string,
   shopId: number,
-  warehouseId: number
+  warehouseId: number,
 ) => {
   try {
     const response = await api.post(`/Users`, {
@@ -18,8 +21,8 @@ export const createUser = async (
       warehouseId,
     });
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to create user.");
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to create user."));
   }
 };
 
@@ -27,8 +30,8 @@ export const getUsers = async () => {
   try {
     const response = await api.get(`/Users`);
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to get users.");
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get users."));
   }
 };
 
@@ -36,8 +39,8 @@ export const deleteUser = async (id: number) => {
   try {
     const response = await api.delete(`/Users/${id}`);
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to delete user.");
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete user."));
   }
 };
 
@@ -47,7 +50,7 @@ export const updateUser = async (
   role: string,
   userType: string,
   shopId: number,
-  warehouseId: number
+  warehouseId: number,
 ) => {
   try {
     const response = await api.put(`/Users`, {
@@ -59,7 +62,7 @@ export const updateUser = async (
       warehouseId,
     });
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to update user.");
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to update user."));
   }
 };

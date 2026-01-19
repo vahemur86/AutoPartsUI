@@ -1,6 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "storybook/internal/preview-api";
+
+// components
 import { Switch } from "./Switch";
-import { useState } from "react";
+
+// types
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "UI-Kit/Switch",
@@ -67,6 +71,7 @@ export const Controlled: Story = {
     label: "Controlled",
   },
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [checked, setChecked] = useState(false);
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -130,6 +135,7 @@ export const Interactive: Story = {
     label: "Interactive Switch",
   },
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [checked, setChecked] = useState(false);
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

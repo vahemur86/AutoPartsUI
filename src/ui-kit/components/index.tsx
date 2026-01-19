@@ -39,6 +39,7 @@ export {
   TableCell,
   TableHeader,
   TableRow,
+  DataTable,
   type TableBodyProps,
   type TableCellProps,
   type TableHeaderProps,
@@ -52,3 +53,7 @@ export {
   type MultiSelectProps,
   type MultiSelectOption,
 } from "./MultiSelect";
+export {
+  ConfirmationModal,
+  type ConfirmationModalProps,
+} from "./ConfirmationModal";

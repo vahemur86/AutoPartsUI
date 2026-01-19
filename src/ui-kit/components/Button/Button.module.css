@@ -151,6 +151,58 @@
   background-color: var(--color-secondary-300);
 }
 
+.danger {
+  background-color: var(--color-danger-500);
+  color: var(--color-danger-text);
+}
+
+.danger:hover:not(:disabled) {
+  background-color: var(--color-danger-400);
+}
+
+.danger:active:not(:disabled) {
+  background-color: var(--color-danger-300);
+}
+
+.danger300 {
+  background-color: var(--color-danger-300);
+  color: var(--color-danger-text);
+}
+
+.danger300:hover:not(:disabled) {
+  background-color: var(--color-danger-400);
+}
+
+.danger300:active:not(:disabled) {
+  background-color: var(--color-danger-500);
+}
+
+.danger400 {
+  background-color: var(--color-danger-400);
+  color: var(--color-danger-text);
+}
+
+.danger400:hover:not(:disabled) {
+  background-color: var(--color-danger-300);
+}
+
+.danger400:active:not(:disabled) {
+  background-color: var(--color-danger-500);
+}
+
+.danger500 {
+  background-color: var(--color-danger-500);
+  color: var(--color-danger-text);
+}
+
+.danger500:hover:not(:disabled) {
+  background-color: var(--color-danger-400);
+}
+
+.danger500:active:not(:disabled) {
+  background-color: var(--color-danger-300);
+}
+
 .disabled {
   background-color: var(--color-disabled-500);
   color: var(--color-disabled-text);

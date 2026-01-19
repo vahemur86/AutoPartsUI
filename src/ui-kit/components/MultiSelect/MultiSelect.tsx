@@ -7,7 +7,11 @@ import {
   useState,
   type HTMLAttributes,
 } from "react";
+
+// icons
 import { ChevronDown, Check } from "lucide-react";
+
+// styles
 import styles from "./MultiSelect.module.css";
 
 export type MultiSelectOption = {
@@ -16,8 +20,10 @@ export type MultiSelectOption = {
   disabled?: boolean;
 };
 
-export interface MultiSelectProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
+export interface MultiSelectProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   label?: string;
   error?: boolean;
   helperText?: string;
@@ -47,7 +53,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const reactId = useId();
     const selectId = id || `multiselect-${reactId}`;
@@ -56,7 +62,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     const mergedRef = (node: HTMLDivElement | null) => {
       rootRef.current = node;
       if (typeof ref === "function") ref(node);
-      else if (ref) (ref as any).current = node;
+      else if (ref) ref.current = node;
     };
 
     const isControlled = value !== undefined;
@@ -211,7 +217,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 MultiSelect.displayName = "MultiSelect";

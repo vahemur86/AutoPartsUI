@@ -120,6 +120,11 @@
   width: 100%;
 }
 
+.tableWrapper {
+  padding-inline: 5px;
+}
+
+/* ---------- Tasks ---------- */
 .tasksWrapper {
   display: flex;
   flex-direction: column;
@@ -134,7 +139,6 @@
   margin-top: 16px;
 }
 
-/* Desktop add-task button */
 .addTaskButtonWrapper {
   display: flex;
   justify-content: flex-end;
@@ -142,23 +146,45 @@
   gap: 8px;
 }
 
-/* From first file */
-.addNewButton {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.addButtonMobile {
-  display: none;
-}
-
-/* From second file */
 .addTaskButtonMobile {
   display: none;
 }
 
 .addTaskButtonWrapperMobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* ---------- Vehicles ---------- */
+.vehiclesWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vehiclesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.addVehicleButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.addVehicleButtonMobile {
+  display: none;
+}
+
+.addVehicleButtonWrapperMobile {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -194,18 +220,15 @@
     flex-shrink: 0;
   }
 
-  /* Hide desktop add buttons */
-  .addNewButton {
+  /* Hide desktop headers (Tasks + Vehicles) */
+  .tasksHeader,
+  .vehiclesHeader {
     display: none;
   }
 
-  .tasksHeader {
-    display: none;
-  }
-
-  /* Show mobile buttons */
-  .addButtonMobile,
-  .addTaskButtonMobile {
+  /* Show mobile buttons (Tasks + Vehicles) */
+  .addTaskButtonMobile,
+  .addVehicleButtonMobile {
     display: flex;
     margin-top: 16px;
     border: 1px solid var(--color-primary-400);
@@ -214,8 +237,8 @@
     text-align: center;
   }
 
-  .addButtonMobile .addButtonWrapper,
-  .addTaskButtonMobile .addTaskButtonWrapperMobile {
+  .addTaskButtonMobile .addTaskButtonWrapperMobile,
+  .addVehicleButtonMobile .addVehicleButtonWrapperMobile {
     width: 100%;
     justify-content: center;
   }
@@ -228,47 +251,6 @@
 
   .actionButtons button {
     width: 100%;
-  }
-
-  .tableContainer {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
-    margin-left: -16px;
-    margin-right: -16px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .tableContainer > div {
-    min-width: max-content;
-    width: max-content;
-  }
-
-  .tableContainer table {
-    min-width: 600px;
-  }
-}
-
-/* Landscape mobile */
-@media (max-width: 968px) and (orientation: landscape) {
-  .tableContainer {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
-    margin-left: -16px;
-    margin-right: -16px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .tableContainer > div {
-    min-width: max-content;
-    width: max-content;
-  }
-
-  .tableContainer table {
-    min-width: 600px;
   }
 }
 

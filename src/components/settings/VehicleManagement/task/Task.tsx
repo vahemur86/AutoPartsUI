@@ -1,7 +1,37 @@
-import { useState, useCallback, useRef, type FC } from "react";
-import { IconButton } from "@/ui-kit";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useMemo,
+  useEffect,
+  type FC,
+} from "react";
+
+// ui-kit
+import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
+
+// icons
 import { Plus } from "lucide-react";
-import { AddTaskDropdown, type TaskForm } from "./taskActions/AddTaskDropdown";
+
+// components
+import { TaskDropdown, type TaskForm } from "./taskActions/TaskDropdown";
+
+// columns
+import { getTaskColumns } from "./columns";
+
+// stores
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  addTask,
+  fetchTasks,
+  editTask,
+  removeTask,
+} from "@/store/slices/tasksSlice";
+
+// types
+import type { Task } from "@/types/settings";
+
+// styles
 import styles from "../VehicleManagement.module.css";
 
 interface TasksProps {
@@ -9,83 +39,155 @@ interface TasksProps {
   withDelete?: boolean;
 }
 
-export const Tasks: FC<TasksProps> = () => {
-  const [isTaskDropdownOpen, setIsTaskDropdownOpen] = useState(false);
+export const Tasks: FC<TasksProps> = ({
+  withEdit = true,
+  withDelete = true,
+}) => {
+  const dispatch = useAppDispatch();
+  const { tasks } = useAppSelector((state) => state.tasks);
 
-  const addAnchorRef = useRef<HTMLElement | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+  const [isMutating, setIsMutating] = useState(false);
 
-  const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
-  const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLElement | null>(null);
 
-  const openAddDropdown = useCallback((isMobile: boolean) => {
-    const anchorEl = isMobile
-      ? addButtonMobileWrapperRef.current
-      : addButtonDesktopWrapperRef.current;
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
 
-    if (!anchorEl) return;
-
-    addAnchorRef.current = anchorEl;
-    setIsTaskDropdownOpen(true);
+  const handleOpenAdd = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    anchorRef.current = e.currentTarget;
+    setActiveTask(null);
+    setIsDropdownOpen(true);
   }, []);
 
-  const handleCloseAddDropdown = useCallback(() => {
-    setIsTaskDropdownOpen(false);
-    addAnchorRef.current = null;
-  }, []);
-
-  const handleAddTask = useCallback(
-    async (data: TaskForm) => {
-      console.log("Add task:", data);
-      handleCloseAddDropdown();
+  const handleOpenEdit = useCallback(
+    (task: Task, e: React.MouseEvent<HTMLElement>) => {
+      anchorRef.current = e.currentTarget;
+      setActiveTask(task);
+      setIsDropdownOpen(true);
     },
-    [handleCloseAddDropdown]
+    [],
+  );
+
+  const handleCloseDropdown = useCallback(() => {
+    setIsDropdownOpen(false);
+  }, []);
+
+  const handleSaveTask = useCallback(
+    async (data: TaskForm) => {
+      try {
+        setIsMutating(true);
+        if (activeTask) {
+          await dispatch(
+            editTask({
+              id: activeTask.id,
+              isActive: activeTask.isActive ?? false,
+              ...data,
+            }),
+          ).unwrap();
+        } else {
+          await dispatch(addTask(data)).unwrap();
+        }
+
+        await dispatch(fetchTasks()).unwrap();
+        handleCloseDropdown();
+      } catch (error) {
+        console.error("Failed to save task:", error);
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [dispatch, activeTask, handleCloseDropdown],
+  );
+
+  const handleDeleteTask = useCallback(
+    async (task: Task) => {
+      try {
+        setIsMutating(true);
+        await dispatch(removeTask(task.id)).unwrap();
+        await dispatch(fetchTasks()).unwrap();
+        setDeletingTask(null);
+      } catch (error) {
+        console.error("Failed to delete task:", error);
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [dispatch],
+  );
+
+  const columns = useMemo(
+    () =>
+      getTaskColumns(withEdit, withDelete, handleOpenEdit, (task) =>
+        setDeletingTask(task),
+      ),
+    [withEdit, withDelete, handleOpenEdit],
   );
 
   return (
     <div className={styles.tasksWrapper}>
-      {/* Desktop header */}
       <div className={styles.tasksHeader}>
-        <div
-          ref={addButtonDesktopWrapperRef}
-          className={styles.addTaskButtonWrapper}
-        >
+        <div className={styles.addTaskButtonWrapper}>
           <IconButton
             size="small"
             variant="primary"
             icon={<Plus size={12} color="#0e0f11" />}
             ariaLabel="Add new task"
             className={styles.plusButton}
-            onClick={() => openAddDropdown(false)}
+            onClick={handleOpenAdd}
           />
           <span className={styles.addButtonText}>Add Task</span>
         </div>
       </div>
 
-      {/* Mobile big button (like ProjectLanguages.addButtonMobile) */}
       <div className={styles.addTaskButtonMobile}>
-        <div
-          ref={addButtonMobileWrapperRef}
-          className={styles.addTaskButtonWrapperMobile}
-        >
+        <div className={styles.addTaskButtonWrapperMobile}>
           <IconButton
             size="small"
             variant="primary"
             icon={<Plus size={12} />}
             ariaLabel="Add new task"
-            onClick={() => openAddDropdown(true)}
+            onClick={handleOpenAdd}
           />
           <span className={styles.addButtonText}>Add Task</span>
         </div>
       </div>
 
-      <AddTaskDropdown
-        open={isTaskDropdownOpen}
-        anchorRef={addAnchorRef}
+      <TaskDropdown
+        open={isDropdownOpen}
+        anchorRef={anchorRef}
+        initialData={activeTask}
+        isLoading={isMutating}
         onOpenChange={(open) => {
-          if (!open) handleCloseAddDropdown();
+          if (!open) handleCloseDropdown();
         }}
-        onSave={handleAddTask}
+        onSave={handleSaveTask}
       />
+
+      {!!deletingTask && (
+        <ConfirmationModal
+          open={!!deletingTask}
+          onOpenChange={(open) => !open && setDeletingTask(null)}
+          title="Delete Task"
+          description={`Are you sure you want to delete "${deletingTask?.code}"? This action cannot be undone.`}
+          confirmText={isMutating ? "Deleting..." : "Delete"}
+          cancelText="Cancel"
+          onConfirm={() => deletingTask && handleDeleteTask(deletingTask)}
+          onCancel={() => setDeletingTask(null)}
+        />
+      )}
+
+      <div className={styles.tableWrapper}>
+        <DataTable
+          enableSelection
+          data={tasks}
+          columns={columns}
+          pageSize={7}
+        />
+      </div>
     </div>
   );
 };

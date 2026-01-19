@@ -1,5 +1,8 @@
 import api from "..";
 
+// utils
+import { getApiErrorMessage } from "@/utils";
+
 // Generic CRUD factory
 export const createCrudService = (endpoint: string, entityName: string) => {
   return {
@@ -7,9 +10,9 @@ export const createCrudService = (endpoint: string, entityName: string) => {
       try {
         const response = await api.post(`/${endpoint}`, { code });
         return response.data;
-      } catch (error: any) {
+      } catch (error: unknown) {
         throw new Error(
-          error.response?.data?.error || `Failed to create ${entityName}.`
+          getApiErrorMessage(error, `Failed to create ${entityName}.`),
         );
       }
     },
@@ -18,9 +21,9 @@ export const createCrudService = (endpoint: string, entityName: string) => {
       try {
         const response = await api.get(`/${endpoint}`);
         return response.data;
-      } catch (error: any) {
+      } catch (error: unknown) {
         throw new Error(
-          error.response?.data?.error || `Failed to get ${entityName}.`
+          getApiErrorMessage(error, `Failed to get ${entityName}.`),
         );
       }
     },
@@ -29,9 +32,9 @@ export const createCrudService = (endpoint: string, entityName: string) => {
       try {
         const response = await api.delete(`/${endpoint}/${id}`);
         return response.data;
-      } catch (error: any) {
+      } catch (error: unknown) {
         throw new Error(
-          error.response?.data?.error || `Failed to delete ${entityName}.`
+          getApiErrorMessage(error, `Failed to delete ${entityName}.`),
         );
       }
     },
@@ -40,9 +43,9 @@ export const createCrudService = (endpoint: string, entityName: string) => {
       try {
         const response = await api.put(`/${endpoint}`, { id, code });
         return response.data;
-      } catch (error: any) {
+      } catch (error: unknown) {
         throw new Error(
-          error.response?.data?.error || `Failed to update ${entityName}.`
+          getApiErrorMessage(error, `Failed to update ${entityName}.`),
         );
       }
     },

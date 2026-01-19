@@ -1,6 +1,14 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0;
+}
+
 .header {
   padding: 19px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  display: none;
 }
 
 .title {
@@ -9,43 +17,28 @@
   color: var(--color-white);
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* === GRID LAYOUT (matches screenshot) === */
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 16px;
+  grid-template-columns: 1fr;
+  gap: 20px;
 }
 
-.fullRow {
-  grid-column: 1 / -1;
+.grid > * {
+  min-width: 0;
+  width: 100%;
 }
 
-.colLeft {
-  grid-column: 1 / 2;
+.switchWrapper {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
 }
 
-.colRight {
-  grid-column: 2 / 3;
-}
-
-/* Notes should visually feel taller */
-.notesField {
-  /* If your TextField supports textarea/multiline, you can style it here.
-     Otherwise this does nothing harmful. */
-}
-
-/* Actions */
 .actionswithoutDelete {
   display: flex;
   flex-direction: column-reverse;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .primaryActions {
@@ -58,7 +51,6 @@
   flex: 1;
 }
 
-/* Desktop */
 @media (min-width: 768px) {
   .header {
     display: block;
@@ -66,6 +58,10 @@
 
   .content {
     padding: 16px 24px 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
   }
 
   .actionswithoutDelete {
@@ -80,53 +76,6 @@
 
   .primaryActions button {
     flex: 0 0 auto;
+    min-width: 100px;
   }
-}
-
-/* Mobile: stack everything into 1 column */
-@media (max-width: 767px) {
-  .header {
-    display: none;
-  }
-
-  .content {
-    padding: 0;
-    gap: 24px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  .colLeft,
-  .colRight,
-  .fullRow {
-    grid-column: 1 / -1;
-  }
-
-  .actionswithoutDelete {
-    flex-direction: column-reverse;
-    gap: 12px;
-    margin-top: 16px;
-  }
-
-  .primaryActions {
-    width: 100%;
-    gap: 12px;
-  }
-
-  .primaryActions button {
-    flex: 1;
-  }
-}
-
-/* Critical for grid overflow issues */
-.grid > * {
-  min-width: 0;
-}
-
-.colLeft,
-.colRight,
-.fullRow {
-  min-width: 0;
 }

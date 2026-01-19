@@ -20,6 +20,8 @@ export {
   TextField,
   Textarea,
   MultiSelect,
+  DataTable,
+  ConfirmationModal,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
@@ -50,6 +52,7 @@ export {
   type TextareaProps,
   type MultiSelectProps,
   type MultiSelectOption,
+  type ConfirmationModalProps,
 } from "./components";
 
 // Add other components here as you create them

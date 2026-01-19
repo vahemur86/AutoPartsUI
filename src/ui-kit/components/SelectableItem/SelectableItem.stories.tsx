@@ -1,7 +1,13 @@
+import { useState } from "storybook/internal/preview-api";
+
+// types
 import type { Meta, StoryObj } from "@storybook/react";
+
+// components
 import { SelectableItem } from "./SelectableItem";
+
+// icons
 import { Edit } from "lucide-react";
-import { useState } from "react";
 
 const meta = {
   title: "UI-Kit/SelectableItem",
@@ -91,6 +97,7 @@ export const AllStates: Story = {
     text: "",
   },
   render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [selectedId, setSelectedId] = useState<string | null>(null);
     return (
       <div

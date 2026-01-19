@@ -1,8 +1,18 @@
 @import "./ui-kit/styles/variables.css";
 
 :root {
-  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -25,6 +35,11 @@
   --color-secondary-400: #d6d6d6;
   --color-secondary-500: #cccccc;
 
+  --color-danger-300: #ff5a5f;
+  --color-danger-400: #e64045;
+  --color-danger-500: #cc1f3a;
+  --color-danger-text: #ffffff;
+
   --color-disabled-300: #6a6a6a;
   --color-disabled-400: #6a6a6a;
   --color-disabled-500: #6a6a6a;
@@ -40,7 +55,11 @@
 }
 
 * {
-  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
 }
 
@@ -55,7 +74,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #0e0f11;
-  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
 }
 
@@ -65,7 +88,11 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
 }
 
@@ -75,7 +102,11 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
   background-color: #1a1a1a;
   cursor: pointer;
@@ -220,7 +251,11 @@ body:has([data-radix-dialog-overlay]) {
 }
 
 .Toastify__toast-body {
-  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family:
+    "Manrope",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
   font-size: 14px;
   color: var(--color-white);

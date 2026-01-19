@@ -1,7 +1,13 @@
-import React from "react";
+import { useState } from "storybook/internal/preview-api";
+
+// types
 import type { Meta, StoryObj } from "@storybook/react";
+
+// components
 import { Tab } from "./Tab";
 import { TabGroup } from "./TabGroup";
+
+// icons
 import {
   Globe,
   Languages,
@@ -240,7 +246,8 @@ export const Interactive: Story = {
     text: "Settings",
   },
   render: () => {
-    const [activeTab, setActiveTab] = React.useState("settings");
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [activeTab, setActiveTab] = useState("settings");
     return (
       <div style={{ padding: "20px" }}>
         <div style={{ display: "flex", gap: "24px", marginBottom: "40px" }}>
@@ -339,7 +346,8 @@ export const SegmentedControlInteractive: Story = {
     text: "Add New Translation",
   },
   render: () => {
-    const [activeSegment, setActiveSegment] = React.useState("add");
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [activeSegment, setActiveSegment] = useState("add");
     return (
       <div style={{ padding: "20px" }}>
         <TabGroup>

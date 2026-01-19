@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useId,
   useRef,
@@ -7,11 +8,17 @@ import {
   type ChangeEvent,
   type SelectHTMLAttributes,
 } from "react";
+
+// icons
 import { ChevronDown } from "lucide-react";
+
+// styles
 import styles from "./Select.module.css";
 
-export interface SelectProps
-  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+export interface SelectProps extends Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "size"
+> {
   label?: string;
   error?: boolean;
   helperText?: string;
@@ -47,18 +54,18 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const currentValue = isControlled ? value : internalValue;
 
     // Get display text from the select element
-    const getDisplayText = (): string => {
+    const getDisplayText = useCallback((): string => {
       if (!selectRef.current) return placeholder || "";
       const selectedOption = selectRef.current.selectedOptions[0];
       return selectedOption?.text || placeholder || "";
-    };
+    }, [placeholder]);
 
     const [displayText, setDisplayText] = useState(getDisplayText);
 
     // Update display text when value changes
     useEffect(() => {
       setDisplayText(getDisplayText());
-    }, [currentValue, children]);
+    }, [currentValue, children, getDisplayText]);
 
     const handleSelect = (optionValue: string) => {
       if (!selectRef.current) return;
@@ -199,7 +206,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";

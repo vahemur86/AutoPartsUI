@@ -1,14 +1,13 @@
-export { Table, TableHeader, TableBody, TableRow, TableCell } from "./Table";
-export type {
-  TableProps,
-  TableHeaderProps,
-  TableBodyProps,
-  TableRowProps,
-  TableCellProps,
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+  type TableProps,
+  type TableHeaderProps,
+  type TableBodyProps,
+  type TableRowProps,
+  type TableCellProps,
 } from "./Table";
-
-
-
-
-
-
+export { DataTable } from "./DataTable";

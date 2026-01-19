@@ -3,13 +3,20 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
+
+// services
 import {
   getWarehouses,
   createWarehouse,
   updateWarehouse,
   deleteWarehouse,
 } from "@/services/settings/warehouses";
+
+// types
 import type { Warehouse } from "@/types/settings";
+
+// utils
+import { getApiErrorMessage } from "@/utils";
 
 interface WarehousesState {
   warehouses: Warehouse[];
@@ -23,57 +30,74 @@ const initialState: WarehousesState = {
   error: null,
 };
 
+type WarehouseUpdatePayload = {
+  id: number;
+  code: string;
+};
+
 // Async thunk for fetching warehouses
-export const fetchWarehouses = createAsyncThunk(
-  "warehouses/fetchWarehouses",
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await getWarehouses();
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch warehouses");
-    }
+export const fetchWarehouses = createAsyncThunk<
+  Warehouse[],
+  void,
+  { rejectValue: string }
+>("warehouses/fetchWarehouses", async (_, { rejectWithValue }) => {
+  try {
+    const data = await getWarehouses();
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch warehouses"),
+    );
   }
-);
+});
 
 // Async thunk for creating warehouse
-export const addWarehouse = createAsyncThunk(
-  "warehouses/addWarehouse",
-  async (code: string, { rejectWithValue }) => {
-    try {
-      const data = await createWarehouse(code);
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to create warehouse");
-    }
+export const addWarehouse = createAsyncThunk<
+  Warehouse,
+  string,
+  { rejectValue: string }
+>("warehouses/addWarehouse", async (code, { rejectWithValue }) => {
+  try {
+    const data = await createWarehouse(code);
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to create warehouse"),
+    );
   }
-);
+});
 
 // Async thunk for updating warehouse
-export const updateWarehouseInStore = createAsyncThunk(
-  "warehouses/updateWarehouse",
-  async ({ id, code }: { id: number; code: string }, { rejectWithValue }) => {
-    try {
-      const data = await updateWarehouse(id, code);
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to update warehouse");
-    }
+export const updateWarehouseInStore = createAsyncThunk<
+  Warehouse,
+  WarehouseUpdatePayload,
+  { rejectValue: string }
+>("warehouses/updateWarehouse", async ({ id, code }, { rejectWithValue }) => {
+  try {
+    const data = await updateWarehouse(id, code);
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to update warehouse"),
+    );
   }
-);
+});
 
 // Async thunk for deleting warehouse
-export const removeWarehouse = createAsyncThunk(
-  "warehouses/removeWarehouse",
-  async (id: number, { rejectWithValue }) => {
-    try {
-      await deleteWarehouse(id);
-      return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to delete warehouse");
-    }
+export const removeWarehouse = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("warehouses/removeWarehouse", async (id, { rejectWithValue }) => {
+  try {
+    await deleteWarehouse(id);
+    return id;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete warehouse"),
+    );
   }
-);
+});
 
 const warehousesSlice = createSlice({
   name: "warehouses",
@@ -96,11 +120,11 @@ const warehousesSlice = createSlice({
           state.isLoading = false;
           state.warehouses = action.payload;
           state.error = null;
-        }
+        },
       )
       .addCase(fetchWarehouses.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to fetch warehouses";
       });
 
     // Add warehouse
@@ -115,11 +139,11 @@ const warehousesSlice = createSlice({
           state.isLoading = false;
           state.warehouses.push(action.payload);
           state.error = null;
-        }
+        },
       )
       .addCase(addWarehouse.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to create warehouse";
       });
 
     // Update warehouse
@@ -133,17 +157,17 @@ const warehousesSlice = createSlice({
         (state, action: PayloadAction<Warehouse>) => {
           state.isLoading = false;
           const index = state.warehouses.findIndex(
-            (w) => w.id === action.payload.id
+            (w) => w.id === action.payload.id,
           );
           if (index !== -1) {
             state.warehouses[index] = action.payload;
           }
           state.error = null;
-        }
+        },
       )
       .addCase(updateWarehouseInStore.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to update warehouse";
       });
 
     // Delete warehouse
@@ -157,14 +181,14 @@ const warehousesSlice = createSlice({
         (state, action: PayloadAction<number>) => {
           state.isLoading = false;
           state.warehouses = state.warehouses.filter(
-            (w) => w.id !== action.payload
+            (w) => w.id !== action.payload,
           );
           state.error = null;
-        }
+        },
       )
       .addCase(removeWarehouse.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? "Failed to delete warehouse";
       });
   },
 });
