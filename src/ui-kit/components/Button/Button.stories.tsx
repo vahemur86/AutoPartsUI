@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
+// components
 import { Button } from "./Button";
-import { Save } from "lucide-react";
+
+// icons
+import { Save, Trash2 } from "lucide-react";
 
 const meta = {
   title: "UI-Kit/Button",
@@ -21,6 +25,10 @@ const meta = {
         "secondary300",
         "secondary400",
         "secondary500",
+        "danger",
+        "danger300",
+        "danger400",
+        "danger500",
         "disabled",
       ],
       description: "Button variant/style",
@@ -64,53 +72,13 @@ export const Secondary: Story = {
   },
 };
 
-// Primary 300
-// export const Primary300: Story = {
-//   args: {
-//     variant: "primary300",
-//     children: "Primary 300",
-//   },
-// };
-
-// Primary 400
-// export const Primary400: Story = {
-//   args: {
-//     variant: "primary400",
-//     children: "Primary 400",
-//   },
-// };
-
-// Primary 500
-// export const Primary500: Story = {
-//   args: {
-//     variant: "primary500",
-//     children: "Primary 500",
-//   },
-// };
-
-// Secondary 300
-// export const Secondary300: Story = {
-//   args: {
-//     variant: "secondary300",
-//     children: "Secondary 300",
-//   },
-// };
-
-// Secondary 400
-// export const Secondary400: Story = {
-//   args: {
-//     variant: "secondary400",
-//     children: "Secondary 400",
-//   },
-// };
-
-// Secondary 500
-// export const Secondary500: Story = {
-//   args: {
-//     variant: "secondary500",
-//     children: "Secondary 500",
-//   },
-// };
+// Danger button
+export const Danger: Story = {
+  args: {
+    variant: "danger",
+    children: "Delete",
+  },
+};
 
 // Disabled button
 export const Disabled: Story = {
@@ -128,6 +96,19 @@ export const WithIcon: Story = {
       <>
         <Save size={16} />
         Save Changes
+      </>
+    ),
+  },
+};
+
+// Danger with icon
+export const DangerWithIcon: Story = {
+  args: {
+    variant: "danger",
+    children: (
+      <>
+        <Trash2 size={16} />
+        Delete Item
       </>
     ),
   },
@@ -189,11 +170,29 @@ export const AllVariants: Story = {
           fontWeight: "600",
         }}
       >
+        Danger Variants
+      </h3>
+      <Button variant="danger300">Danger 300</Button>
+      <Button variant="danger400">Danger 400</Button>
+      <Button variant="danger500">Danger 500</Button>
+      <Button variant="danger">Danger (Default)</Button>
+
+      <h3
+        style={{
+          marginTop: "24px",
+          marginBottom: "8px",
+          fontSize: "16px",
+          fontWeight: "600",
+        }}
+      >
         Disabled States
       </h3>
       <Button variant="disabled">Disabled</Button>
       <Button variant="primary" disabled>
         Disabled Primary
+      </Button>
+      <Button variant="danger" disabled>
+        Disabled Danger
       </Button>
     </div>
   ),
@@ -221,7 +220,7 @@ export const AllSizes: Story = {
     </div>
   ),
   parameters: {
-    controls: { disable: true }, // Disable controls since we're using custom render
+    controls: { disable: true },
   },
 };
 

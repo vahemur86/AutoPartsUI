@@ -1,7 +1,13 @@
 import { useMemo, useState } from "react";
+
+// ui-kit
 import { Tab, TabGroup } from "@/ui-kit";
+
+// components
 import { Tasks } from "./task/Task";
 import { Vehicles } from "./vehicle/Vehicles";
+
+// styles
 import styles from "./VehicleManagement.module.css";
 
 type VehicleManagementTab = "tasks" | "vehicles";
@@ -15,7 +21,7 @@ export const VehicleManagement = () => {
         { id: "tasks", label: "Tasks" },
         { id: "vehicles", label: "Vehicles" },
       ] as const,
-    []
+    [],
   );
 
   return (

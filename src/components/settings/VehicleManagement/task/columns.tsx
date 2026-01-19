@@ -1,60 +1,54 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import type { Task } from "./types";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+
+// ui-kit
 import { Button } from "@/ui-kit";
+
+// types
+import type { Task } from "@/types/settings";
+
+// styles
 import styles from "../VehicleManagement.module.css";
+
+const columnHelper = createColumnHelper<Task>();
 
 export const getTaskColumns = (
   withEdit: boolean,
   withDelete: boolean,
-  onEdit: (task: Task) => void,
+  onEdit: (task: Task, e: React.MouseEvent<HTMLElement>) => void,
   onDelete: (task: Task) => void,
-): ColumnDef<Task>[] => [
-  {
-    accessorKey: "name",
-    header: "Task / Service",
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
-  {
-    accessorKey: "laborCost",
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): ColumnDef<Task, any>[] => [
+  columnHelper.accessor("code", {
+    header: "Code",
+  }),
+  columnHelper.accessor("laborCost", {
     header: "Labor Cost (USD)",
-    cell: (info) => `$${info.getValue<number>()}`,
-  },
-  {
-    accessorKey: "linkedVehiclesCount",
-    header: "Linked to Vehicles",
-    cell: (info) => {
-      const value = info.getValue<number | null>();
-      return value ? `${value} Vehicles` : "No";
-    },
-  },
-  {
+    cell: (info) => `$${info.getValue()}`,
+  }),
+  columnHelper.accessor("isActive", {
+    header: "Status",
+    cell: (info) => `${info.getValue() === true ? "Active" : "Inactive"}`,
+  }),
+  columnHelper.display({
     id: "actions",
     header: "Actions",
-    enableSorting: false,
-    enableHiding: false,
     cell: ({ row }) => {
       const task = row.original;
-
       return (
         <div className={styles.actionButtonsCell}>
           {withEdit && (
             <Button
               variant="primary"
               size="small"
-              aria-label="Edit task"
-              onClick={() => onEdit(task)}
+              onClick={(e) => onEdit(task, e)}
             >
               Edit
             </Button>
           )}
           {withDelete && (
             <Button
-              variant="secondary"
+              variant="danger"
               size="small"
-              aria-label="Delete task"
               onClick={() => onDelete(task)}
             >
               Delete
@@ -63,5 +57,5 @@ export const getTaskColumns = (
         </div>
       );
     },
-  },
+  }),
 ];
