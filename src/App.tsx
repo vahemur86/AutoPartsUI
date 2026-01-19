@@ -19,6 +19,7 @@ import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
 import { ShopsSettings } from "@/components/settings/ShopsSettings";
 import { ProductSettings } from "@/components/settings/ProductSettings";
 import { VehicleManagement } from "@/components/settings/VehicleManagement";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import { store } from "@/store/store";
 import "@/index.css";
@@ -39,39 +40,47 @@ export const App = () => {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
+          {/* Public Route */}
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home />}>
-            <Route
-              index
-              element={<Navigate to="/settings/product-settings" replace />}
-            />
 
-            <Route path="settings" element={<Settings />}>
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />}>
               <Route
                 index
-                element={<Navigate to="product-settings" replace />}
+                element={<Navigate to="/settings/product-settings" replace />}
               />
-              <Route path="project-languages" element={<ProjectLanguages />} />
-              <Route path="translation" element={<Translation />} />
-              <Route path="warehouse" element={<WarehouseSettings />} />
-              <Route path="shops" element={<ShopsSettings />} />
-              <Route path="product-settings" element={<ProductSettings />} />
-              <Route
-                path="vehicle-management"
-                element={<VehicleManagement />}
-              />
+
+              <Route path="settings" element={<Settings />}>
+                <Route
+                  index
+                  element={<Navigate to="product-settings" replace />}
+                />
+                <Route
+                  path="project-languages"
+                  element={<ProjectLanguages />}
+                />
+                <Route path="translation" element={<Translation />} />
+                <Route path="warehouse" element={<WarehouseSettings />} />
+                <Route path="shops" element={<ShopsSettings />} />
+                <Route path="product-settings" element={<ProductSettings />} />
+                <Route
+                  path="vehicle-management"
+                  element={<VehicleManagement />}
+                />
+              </Route>
+
+              <Route path="warehouses" element={<Warehouses />} />
+              <Route path="products" element={<Products />} />
+              <Route path="shops" element={<Shops />} />
+              <Route path="users" element={<UserManagement />} />
             </Route>
-
-            <Route path="warehouses" element={<Warehouses />} />
-            <Route path="products" element={<Products />} />
-            <Route path="shops" element={<Shops />} />
-            <Route path="users" element={<UserManagement />} />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
+
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-
       <ToastContainer {...toastOptions} />
     </Provider>
   );
