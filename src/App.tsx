@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// Protection Wrapper
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 // Pages
 import { Home } from "@/pages/Home/index";
 import { Settings } from "@/pages/Settings/index";
@@ -21,7 +24,10 @@ import { ShopsSettings } from "@/components/settings/ShopsSettings";
 import { ProductSettings } from "@/components/settings/ProductSettings";
 import { VehicleManagement } from "@/components/settings/VehicleManagement";
 
+// Stores
 import { store } from "@/store/store";
+
+// Styles
 import "@/index.css";
 
 const toastOptions = {
@@ -40,37 +46,46 @@ export const App = () => {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
+          {/* PUBLIC ROUTE */}
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home />}>
-            <Route
-              index
-              element={<Navigate to="/settings/product-settings" replace />}
-            />
 
-            <Route path="settings" element={<Settings />}>
+          {/* PROTECTED ROUTES */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />}>
               <Route
                 index
-                element={<Navigate to="product-settings" replace />}
+                element={<Navigate to="/settings/product-settings" replace />}
               />
-              <Route path="project-languages" element={<ProjectLanguages />} />
-              <Route path="translation" element={<Translation />} />
-              <Route path="warehouse" element={<WarehouseSettings />} />
-              <Route path="shops" element={<ShopsSettings />} />
-              <Route path="product-settings" element={<ProductSettings />} />
-              <Route
-                path="vehicle-management"
-                element={<VehicleManagement />}
-              />
+
+              <Route path="settings" element={<Settings />}>
+                <Route
+                  index
+                  element={<Navigate to="product-settings" replace />}
+                />
+                <Route
+                  path="project-languages"
+                  element={<ProjectLanguages />}
+                />
+                <Route path="translation" element={<Translation />} />
+                <Route path="warehouse" element={<WarehouseSettings />} />
+                <Route path="shops" element={<ShopsSettings />} />
+                <Route path="product-settings" element={<ProductSettings />} />
+                <Route
+                  path="vehicle-management"
+                  element={<VehicleManagement />}
+                />
+              </Route>
+
+              <Route path="warehouses" element={<Warehouses />} />
+              <Route path="products" element={<Products />} />
+              <Route path="shops" element={<Shops />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="operator" element={<OperatorPage />} />
             </Route>
-
-            <Route path="warehouses" element={<Warehouses />} />
-            <Route path="products" element={<Products />} />
-            <Route path="shops" element={<Shops />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="operator" element={<OperatorPage />} />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
+
+          {/* CATCH-ALL */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
 
