@@ -4,12 +4,12 @@ import api from ".";
 import { getApiErrorMessage } from "@/utils";
 
 export const createUser = async (
-  username: string,
-  password: string,
-  role: string,
-  userType: string,
-  shopId: number,
-  warehouseId: number,
+  username: string | null,
+  password: string | null,
+  role: string | null,
+  userType: string | null,
+  shopId: number | null,
+  warehouseId: number | null,
 ) => {
   try {
     const response = await api.post(`/Users`, {
