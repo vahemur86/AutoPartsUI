@@ -59,8 +59,15 @@ export const App = () => {
           {/* PUBLIC ROUTE */}
           <Route path="/login" element={<Login />} />
 
-          {/* PROTECTED ROUTES */}
-          <Route element={<ProtectedRoute />}>
+          {/* OPERATOR SPECIFIC ROUTES */}
+          <Route element={<ProtectedRoute allowedRoles={["Operator"]} />}>
+            <Route path="/operator" element={<OperatorPage />} />
+          </Route>
+
+          {/* ADMIN SPECIFIC ROUTES */}
+          <Route
+            element={<ProtectedRoute allowedRoles={["Admin", "SuperAdmin"]} />}
+          >
             <Route path="/" element={<Home />}>
               <Route
                 index
@@ -90,7 +97,6 @@ export const App = () => {
               <Route path="products" element={<Products />} />
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
-              <Route path="operator" element={<OperatorPage />} />
             </Route>
           </Route>
 

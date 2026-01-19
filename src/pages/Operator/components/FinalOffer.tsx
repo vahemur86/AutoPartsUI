@@ -21,10 +21,6 @@ export const FinalOffer = () => {
             Reject Offer
           </Button>
         </div>
-
-        <div className={styles.offerValid}>
-          Offer Valid: <span className={styles.countdown}>04:57</span>
-        </div>
       </div>
     </div>
   );
