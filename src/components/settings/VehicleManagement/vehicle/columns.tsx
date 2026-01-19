@@ -7,7 +7,7 @@ export const getVehicleColumns = (
   withEdit: boolean,
   withDelete: boolean,
   onEdit: (vehicle: Vehicle) => void,
-  onDelete: (vehicle: Vehicle) => void,
+  onDelete: (vehicle: Vehicle) => void
 ): ColumnDef<Vehicle>[] => [
   { accessorKey: "brand", header: "Brand" },
   { accessorKey: "model", header: "Model" },
@@ -35,7 +35,7 @@ export const getVehicleColumns = (
           )}
           {withDelete && (
             <Button
-              variant="secondary"
+              variant="danger"
               size="small"
               aria-label="Delete vehicle"
               onClick={() => onDelete(vehicle)}

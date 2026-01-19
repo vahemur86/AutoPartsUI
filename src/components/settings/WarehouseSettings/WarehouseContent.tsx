@@ -1,16 +1,8 @@
-import { type FC } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import {
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TextField,
-} from "@/ui-kit";
+import { type FC, useMemo } from "react";
+import { DataTable, TextField } from "@/ui-kit";
 import styles from "./WarehouseSettings.module.css";
 import type { Warehouse } from "@/types/settings";
+import { getWarehouseColumns } from "./columns";
 
 interface WarehouseContentProps {
   activeTab: string;
@@ -31,6 +23,11 @@ export const WarehouseContent: FC<WarehouseContentProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const columns = useMemo(
+    () => getWarehouseColumns(onEdit, onDelete),
+    [onEdit, onDelete]
+  );
+
   return (
     <div className={styles.warehouseNameSection}>
       {activeTab === "add-new" && (
@@ -50,45 +47,7 @@ export const WarehouseContent: FC<WarehouseContentProps> = ({
           ) : warehouses.length === 0 ? (
             <div className={styles.emptyState}>No warehouses found. </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableCell asHeader>ID</TableCell>
-                  <TableCell asHeader>Code</TableCell>
-                  <TableCell asHeader></TableCell>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {warehouses.map((warehouse) => (
-                  <TableRow key={warehouse.id}>
-                    <TableCell>{warehouse.id}</TableCell>
-                    <TableCell>{warehouse.code}</TableCell>
-                    <TableCell>
-                      <div className={styles.actionButtonsCell}>
-                        {onEdit && (
-                          <IconButton
-                            variant="secondary"
-                            size="small"
-                            icon={<Pencil size={14} />}
-                            ariaLabel="Edit warehouse"
-                            onClick={() => onEdit(warehouse)}
-                          />
-                        )}
-                        {onDelete && (
-                          <IconButton
-                            variant="secondary"
-                            size="small"
-                            icon={<Trash2 size={14} />}
-                            ariaLabel="Delete warehouse"
-                            onClick={() => onDelete(warehouse.id)}
-                          />
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable data={warehouses} columns={columns} pageSize={10} />
           )}
         </div>
       )}

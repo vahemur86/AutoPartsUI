@@ -1,11 +1,8 @@
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-
 // ui-kit
 import { Button } from "@/ui-kit";
-
 // types
 import type { Task } from "@/types/settings";
-
 // styles
 import styles from "../VehicleManagement.module.css";
 
@@ -15,7 +12,7 @@ export const getTaskColumns = (
   withEdit: boolean,
   withDelete: boolean,
   onEdit: (task: Task, e: React.MouseEvent<HTMLElement>) => void,
-  onDelete: (task: Task) => void,
+  onDelete: (task: Task) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<Task, any>[] => [
   columnHelper.accessor("code", {

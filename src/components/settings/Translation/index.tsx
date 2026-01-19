@@ -1,20 +1,8 @@
 import { useMemo, useState, useCallback } from "react";
-import { Pencil } from "lucide-react";
-import {
-  Tab,
-  TabGroup,
-  Button,
-  TextField,
-  Select,
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableCell,
-  IconButton,
-} from "@/ui-kit";
+import { Tab, TabGroup, Button, TextField, Select, DataTable } from "@/ui-kit";
 import { LANGUAGES } from "@/constants/settings";
 import styles from "./Translation.module.css";
+import { getTranslationColumns } from "./columns";
 
 type TranslationTab = "add-new" | "translation-history";
 
@@ -24,6 +12,14 @@ type TranslationForm = {
   fieldName: string;
   fieldValue: string;
   languageCode: string;
+};
+
+export type TranslationHistoryItem = {
+  entityName: string;
+  entityId: string;
+  fieldName: string;
+  languageCode: string;
+  value: string;
 };
 
 const initialForm: TranslationForm = {
@@ -46,6 +42,35 @@ export const Translation = () => {
       ] as const,
     []
   );
+
+  const translationHistoryData: TranslationHistoryItem[] = useMemo(
+    () => [
+      {
+        entityName: "Product",
+        entityId: "12345",
+        fieldName: "name",
+        languageCode: "en",
+        value: "Product Name",
+      },
+      {
+        entityName: "Category",
+        entityId: "67890",
+        fieldName: "description",
+        languageCode: "ru",
+        value: "Описание категории",
+      },
+      {
+        entityName: "Brand",
+        entityId: "11111",
+        fieldName: "title",
+        languageCode: "am",
+        value: "Անվանում",
+      },
+    ],
+    []
+  );
+
+  const columns = useMemo(() => getTranslationColumns(), []);
 
   const updateField = useCallback(
     <K extends keyof TranslationForm>(key: K, value: TranslationForm[K]) => {
@@ -155,63 +180,11 @@ export const Translation = () => {
 
         {activeTab === "translation-history" && (
           <div className={styles.historyContainer}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableCell asHeader>Entity name</TableCell>
-                  <TableCell asHeader>Entity ID</TableCell>
-                  <TableCell asHeader>Field name</TableCell>
-                  <TableCell asHeader>Language code</TableCell>
-                  <TableCell asHeader>Value</TableCell>
-                  <TableCell asHeader />
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {[
-                  {
-                    entityName: "Product",
-                    entityId: "12345",
-                    fieldName: "name",
-                    languageCode: "en",
-                    value: "Product Name",
-                  },
-                  {
-                    entityName: "Category",
-                    entityId: "67890",
-                    fieldName: "description",
-                    languageCode: "ru",
-                    value: "Описание категории",
-                  },
-                  {
-                    entityName: "Brand",
-                    entityId: "11111",
-                    fieldName: "title",
-                    languageCode: "am",
-                    value: "Անվանում",
-                  },
-                ].map((row) => (
-                  <TableRow
-                    key={`${row.entityName}-${row.entityId}-${row.languageCode}`}
-                  >
-                    <TableCell>{row.entityName}</TableCell>
-                    <TableCell>{row.entityId}</TableCell>
-                    <TableCell>{row.fieldName}</TableCell>
-                    <TableCell>{row.languageCode}</TableCell>
-                    <TableCell>{row.value}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        variant="secondary"
-                        size="small"
-                        icon={<Pencil size={14} color="#ffffff" />}
-                        ariaLabel="Edit"
-                        onClick={() => {}}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable
+              data={translationHistoryData}
+              columns={columns}
+              pageSize={10}
+            />
           </div>
         )}
       </div>

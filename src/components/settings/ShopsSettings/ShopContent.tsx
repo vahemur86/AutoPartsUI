@@ -1,17 +1,8 @@
-import { type FC } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import {
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-  Select,
-  TextField,
-} from "@/ui-kit";
+import { type FC, useMemo } from "react";
+import { DataTable, Select, TextField } from "@/ui-kit";
 import styles from "./ShopsSettings.module.css";
 import type { Warehouse, Shop } from "@/types/settings";
+import { getShopColumns } from "./columns";
 
 interface ShopContentProps {
   shopKey: string;
@@ -38,10 +29,10 @@ export const ShopContent: FC<ShopContentProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const getWarehouseCode = (warehouseId: number) => {
-    const warehouse = warehouses.find((w) => w.id === warehouseId);
-    return warehouse ? warehouse.code : warehouseId;
-  };
+  const columns = useMemo(
+    () => getShopColumns(warehouses, onEdit, onDelete),
+    [warehouses, onEdit, onDelete]
+  );
 
   return (
     <div className={styles.shopNameSection}>
@@ -82,47 +73,7 @@ export const ShopContent: FC<ShopContentProps> = ({
           ) : shops.length === 0 ? (
             <div className={styles.emptyState}>No shops found.</div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableCell asHeader>ID</TableCell>
-                  <TableCell asHeader>Code</TableCell>
-                  <TableCell asHeader>Warehouse ID</TableCell>
-                  <TableCell asHeader></TableCell>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {shops.map((shop) => (
-                  <TableRow key={shop.id}>
-                    <TableCell>{shop.id}</TableCell>
-                    <TableCell>{shop.code}</TableCell>
-                    <TableCell>{getWarehouseCode(shop.warehouseId)}</TableCell>
-                    <TableCell>
-                      <div className={styles.actionButtonsCell}>
-                        {onEdit && (
-                          <IconButton
-                            variant="secondary"
-                            size="small"
-                            icon={<Pencil size={14} />}
-                            ariaLabel="Edit shop"
-                            onClick={() => onEdit(shop)}
-                          />
-                        )}
-                        {onDelete && (
-                          <IconButton
-                            variant="secondary"
-                            size="small"
-                            icon={<Trash2 size={14} />}
-                            ariaLabel="Delete shop"
-                            onClick={() => onDelete(shop.id)}
-                          />
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable data={shops} columns={columns} pageSize={10} />
           )}
         </div>
       )}

@@ -1,15 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
 // ui-kit
 import { Button, Tab, TabGroup } from "@/ui-kit";
-
 // components
 import { WarehouseContent } from "./WarehouseContent";
-
 // types
 import type { Warehouse } from "@/types/settings";
-
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -18,23 +14,21 @@ import {
   updateWarehouseInStore,
   removeWarehouse,
 } from "@/store/slices/warehousesSlice";
-
 // utils
 import { getErrorMessage } from "@/utils";
-
 // styles
 import styles from "./WarehouseSettings.module.css";
 
 export const WarehouseSettings = () => {
   const dispatch = useAppDispatch();
   const { warehouses, isLoading, error } = useAppSelector(
-    (state) => state.warehouses,
+    (state) => state.warehouses
   );
 
   const [activeTab, setActiveTab] = useState("add-new");
   const [warehouseCode, setWarehouseCode] = useState("");
   const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
-    null,
+    null
   );
 
   const handleAddWarehouse = useCallback(async () => {
@@ -50,7 +44,7 @@ export const WarehouseSettings = () => {
           updateWarehouseInStore({
             id: editingWarehouse.id,
             code: warehouseCode.trim(),
-          }),
+          })
         ).unwrap();
 
         toast.success("Warehouse updated successfully");
@@ -69,8 +63,8 @@ export const WarehouseSettings = () => {
           error,
           editingWarehouse
             ? "Failed to update warehouse"
-            : "Failed to create warehouse",
-        ),
+            : "Failed to create warehouse"
+        )
       );
     }
   }, [warehouseCode, editingWarehouse, dispatch]);
@@ -97,7 +91,7 @@ export const WarehouseSettings = () => {
         toast.error(getErrorMessage(error, "Failed to delete warehouse"));
       }
     },
-    [dispatch],
+    [dispatch]
   );
 
   useEffect(() => {

@@ -51,12 +51,12 @@ export const Vehicles: FC<VehiclesProps> = ({
       console.log("Add vehicle:", data);
       handleCloseAddDropdown();
     },
-    [handleCloseAddDropdown],
+    [handleCloseAddDropdown]
   );
 
   const columns = useMemo(
     () => getVehicleColumns(withEdit, withDelete, handleEdit, handleDelete),
-    [withEdit, withDelete, handleEdit, handleDelete],
+    [withEdit, withDelete, handleEdit, handleDelete]
   );
 
   return (
