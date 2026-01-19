@@ -1,4 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
+
+// styles
 import styles from "./Button.module.css";
 
 export type ButtonVariant =
@@ -10,7 +12,12 @@ export type ButtonVariant =
   | "secondary300"
   | "secondary400"
   | "secondary500"
+  | "danger"
+  | "danger300"
+  | "danger400"
+  | "danger500"
   | "disabled";
+
 export type ButtonSize = "small" | "medium" | "large";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -31,7 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
     const classNames = [
       styles.button,
@@ -54,7 +61,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";

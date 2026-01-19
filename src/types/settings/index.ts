@@ -27,6 +27,15 @@ export interface Shop {
   warehouseId: number;
 }
 
+export interface Task {
+  id: number;
+  code: string;
+  laborCost: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ExistingItem {
   id: string;
   name: string;

@@ -4,6 +4,7 @@ import warehousesReducer from "./slices/warehousesSlice";
 import shopsReducer from "./slices/shopsSlice";
 import productSettingsReducer from "./slices/productSettingsSlice";
 import productsReducer from "./slices/productsSlice";
+import tasksReducer from "./slices/tasksSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     shops: shopsReducer,
     productSettings: productSettingsReducer,
     products: productsReducer,
+    tasks: tasksReducer,
   },
 });
 

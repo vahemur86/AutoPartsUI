@@ -53,3 +53,7 @@ export {
   type MultiSelectProps,
   type MultiSelectOption,
 } from "./MultiSelect";
+export {
+  ConfirmationModal,
+  type ConfirmationModalProps,
+} from "./ConfirmationModal";
