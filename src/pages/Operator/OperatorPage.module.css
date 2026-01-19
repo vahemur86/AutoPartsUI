@@ -1,0 +1,636 @@
+.operatorPage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  min-height: calc(100vh - 200px);
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.headerSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.topRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.leftColumn,
+.centerColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.finalOfferContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.finalOfferContainer > * {
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Powder Extraction Card */
+.powderCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.powderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.powderContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.powderAmount {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.powderScale {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scaleBar {
+  height: 100%;
+  width: 70%;
+  background: linear-gradient(
+    to right,
+    var(--color-primary-500),
+    var(--color-primary-400)
+  );
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.powderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.powderDetailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.detailLabel {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.detailValue {
+  color: var(--color-white);
+  font-weight: 500;
+}
+
+/* Pricing Breakdown Card */
+.pricingCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.pricingContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pricingRow {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.pricingMetal {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pricingCalculation {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 8px;
+}
+
+.divider {
+  height: 2px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.pricingSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.summaryValue {
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.finalOfferLabelSummary {
+  font-weight: 600;
+  color: var(--color-primary-500);
+}
+
+.finalOfferValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary-500);
+}
+
+/* Final Offer Card */
+.finalOfferCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.finalOfferContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.finalOfferLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.finalOfferAmount {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--color-primary-500);
+  text-align: center;
+}
+
+.finalOfferActions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.finalOfferActions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.offerValid {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 15px;
+}
+
+.countdown {
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* Customer Details Card */
+.customerCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.customerHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clientType {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.clientTypeValue,
+.discountValue {
+  color: var(--color-white);
+  font-weight: 500;
+}
+
+.customerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.customerProfile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.profileAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-black-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  flex-shrink: 0;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.profileName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.profileType {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.profileDiscount {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.customerFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Recent Clients Section */
+.recentClientsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.recentClientsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.recentClientsTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.recentClientsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recentClientItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.recentClientItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.recentClientLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.recentClientRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recentClientName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.recentClientPhone {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.clientIcon {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+/* Customer Actions */
+.customerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.acceptButton {
+  background-color: var(--color-success) !important;
+  color: var(--color-white) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.acceptButton:hover:not(:disabled) {
+  background-color: #228a3d !important;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #4a9eff !important;
+}
+
+.backButton svg {
+  color: #4a9eff;
+}
+
+/* Live Market Prices Card */
+.marketPricesCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.marketPricesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.liveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.liveText {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-success);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metalsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metalRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.metalIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.metalIcon.silver {
+  background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+}
+
+.metalIcon.gold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+}
+
+.metalInfo {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.metalName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.metalPrice {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.metalSource {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.marketPricesFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+}
+
+.updateTime {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .topRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rightColumn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .operatorPage {
+    gap: 16px;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .topRow {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .leftColumn,
+  .centerColumn,
+  .rightColumn {
+    grid-column: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .finalOfferAmount {
+    font-size: 28px;
+  }
+
+  .finalOfferContainer {
+    margin-top: 16px;
+  }
+
+  .powderCard,
+  .marketPricesCard,
+  .pricingCard,
+  .finalOfferCard,
+  .customerCard {
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

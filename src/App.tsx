@@ -11,6 +11,7 @@ import { Shops } from "@/pages/Shops/index";
 import { Login } from "@/pages/Login/index";
 import { Products } from "@/pages/Products";
 import { UserManagement } from "@/pages/Users";
+import { OperatorPage } from "@/pages/Operator";
 
 // Components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -66,6 +67,7 @@ export const App = () => {
             <Route path="products" element={<Products />} />
             <Route path="shops" element={<Shops />} />
             <Route path="users" element={<UserManagement />} />
+            <Route path="operator" element={<OperatorPage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

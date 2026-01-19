@@ -32,7 +32,7 @@
 
 .main {
   padding: 20px 48px;
-  padding-bottom: calc(20px + 80px); /* Add space for bottom nav on mobile */
+  padding-bottom: calc(20px + 40px);
 }
 
 @media (max-width: 768px) {
