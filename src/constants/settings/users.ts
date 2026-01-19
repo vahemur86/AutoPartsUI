@@ -1,10 +1,8 @@
 // Role options
 export const ROLES = [
-  { value: "superAdmin", label: "Super Admin" },
+  { value: "SuperAdmin", label: "Super Admin" },
   { value: "Operator", label: "Operator" },
-  { value: "ShopAdmin", label: "Shop Admin" },
-  { value: "WarehouseOperator", label: "Warehouse Operator" },
-  { value: "WarehouseAdmin", label: "Warehouse Admin" },
+  { value: "Admin", label: "Admin" },
 ];
 
 // User Type options
