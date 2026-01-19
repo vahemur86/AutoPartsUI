@@ -1,4 +1,5 @@
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import i18next from "i18next";
 // ui-kit
 import { Button } from "@/ui-kit";
 // types
@@ -16,19 +17,20 @@ export const getTaskColumns = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<Task, any>[] => [
   columnHelper.accessor("code", {
-    header: "Code",
+    header: i18next.t("vehicles.tasks.columns.code"),
   }),
   columnHelper.accessor("laborCost", {
-    header: "Labor Cost (USD)",
+    header: i18next.t("vehicles.tasks.columns.laborCost"),
     cell: (info) => `$${info.getValue()}`,
   }),
   columnHelper.accessor("isActive", {
-    header: "Status",
-    cell: (info) => `${info.getValue() === true ? "Active" : "Inactive"}`,
+    header: i18next.t("vehicles.tasks.columns.status"),
+    cell: (info) =>
+      `${info.getValue() === true ? i18next.t("vehicles.tasks.columns.active") : i18next.t("vehicles.tasks.columns.inactive")}`,
   }),
   columnHelper.display({
     id: "actions",
-    header: "Actions",
+    header: i18next.t("vehicles.tasks.columns.actions"),
     cell: ({ row }) => {
       const task = row.original;
       return (
@@ -39,7 +41,7 @@ export const getTaskColumns = (
               size="small"
               onClick={(e) => onEdit(task, e)}
             >
-              Edit
+              {i18next.t("common.edit")}
             </Button>
           )}
           {withDelete && (
@@ -48,7 +50,7 @@ export const getTaskColumns = (
               size="small"
               onClick={() => onDelete(task)}
             >
-              Delete
+              {i18next.t("common.delete")}
             </Button>
           )}
         </div>

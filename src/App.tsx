@@ -6,6 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 // Protection Wrapper
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
+// Hooks
+import { useDefaultLanguage } from "@/hooks/useDefaultLanguage";
+
 // Pages
 import { Home } from "@/pages/Home/index";
 import { Settings } from "@/pages/Settings/index";
@@ -41,9 +44,16 @@ const toastOptions = {
   theme: "dark",
 } as const;
 
+// Component to initialize default language on app load
+const LanguageInitializer = () => {
+  useDefaultLanguage();
+  return null;
+};
+
 export const App = () => {
   return (
     <Provider store={store}>
+      <LanguageInitializer />
       <BrowserRouter>
         <Routes>
           {/* PUBLIC ROUTE */}

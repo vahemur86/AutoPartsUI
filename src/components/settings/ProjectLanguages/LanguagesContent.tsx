@@ -1,4 +1,5 @@
-import { useRef, createRef, type FC, type RefObject } from "react";
+import { useRef, createRef, useCallback, type FC, type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { IconButton, InteractiveField } from "@/ui-kit";
 import { Plus, Edit } from "lucide-react";
 import type { Language } from "@/types/settings";
@@ -19,6 +20,7 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
   activeLanguageId,
   onEditClick,
 }) => {
+  const { t } = useTranslation();
   const languageItemRefs = useRef<
     Map<number, RefObject<HTMLDivElement | null>>
   >(new Map());
@@ -41,17 +43,39 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
     onAddNewClick(wrapper);
   };
 
-  const handleEditButtonClick = (languageId: number) => {
-    const itemRef = getOrCreateItemRef(languageId);
-    const root = itemRef.current;
-    if (!root) return;
+  const handleEditButtonClick = useCallback(
+    (languageId: number, event?: React.MouseEvent<HTMLButtonElement>) => {
+      if (event?.currentTarget) {
+        onEditClick?.(languageId, event.currentTarget);
+        return;
+      }
 
-    const editButton = root.querySelector(
-      'button[aria-label^="Edit "]'
-    ) as HTMLElement | null;
+      setTimeout(() => {
+        const itemRef = getOrCreateItemRef(languageId);
+        const root = itemRef.current;
+        if (!root) return;
 
-    onEditClick?.(languageId, editButton);
-  };
+        const actionsWrapper = root.querySelector(
+          '[class*="actionsWrapper"], [class*="actions"]'
+        );
+        if (actionsWrapper) {
+          // Find the first button in the actions wrapper (should be the edit button)
+          const editButton = actionsWrapper.querySelector(
+            "button"
+          ) as HTMLElement | null;
+          if (editButton) {
+            onEditClick?.(languageId, editButton);
+          }
+        } else {
+          const editButton = root.querySelector("button") as HTMLElement | null;
+          if (editButton) {
+            onEditClick?.(languageId, editButton);
+          }
+        }
+      }, 0);
+    },
+    [onEditClick]
+  );
 
   return (
     <>
@@ -65,21 +89,21 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
             variant="primary"
             size="small"
             icon={<Plus size={12} color="#0e0f11" />}
-            ariaLabel="Add New"
+            ariaLabel={t("languages.addNew")}
             onClick={() => handleAddClick(false)}
           />
-          <span className={styles.addButtonText}>Add language</span>
+          <span className={styles.addButtonText}>
+            {t("languages.addLanguage")}
+          </span>
         </div>
       </div>
 
       {/* List */}
       <div className={styles.languagesList}>
         {isLoading ? (
-          <div className={styles.loading}>Loading languages...</div>
+          <div className={styles.loading}>{t("languages.loading")}</div>
         ) : languages.length === 0 ? (
-          <div className={styles.emptyState}>
-            No languages found. Add your first language.
-          </div>
+          <div className={styles.emptyState}>{t("languages.emptyState")}</div>
         ) : (
           languages.map((language) => {
             const itemRef = getOrCreateItemRef(language.id);
@@ -114,7 +138,9 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
                       <div className={styles.languageName}>
                         {language.name}
                         {isDisabled && (
-                          <span className={styles.disabledLabel}>Disabled</span>
+                          <span className={styles.disabledLabel}>
+                            {t("languages.disabled")}
+                          </span>
                         )}
                       </div>
                       <div className={styles.languageCode}>{language.code}</div>
@@ -123,8 +149,12 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
                   actions={{
                     edit: {
                       icon: <Edit size={16} />,
-                      onClick: () => handleEditButtonClick(language.id),
-                      ariaLabel: `Edit ${language.name}`,
+                      onClick: () => {
+                        handleEditButtonClick(language.id);
+                      },
+                      ariaLabel: t("languages.editLanguage", {
+                        name: language.name,
+                      }),
                     },
                   }}
                   className={styles.languageField}
@@ -146,10 +176,12 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
             variant="primary"
             size="small"
             icon={<Plus size={12} />}
-            ariaLabel="Add New"
+            ariaLabel={t("languages.addNew")}
             onClick={() => handleAddClick(true)}
           />
-          <span className={styles.addButtonText}>Add language</span>
+          <span className={styles.addButtonText}>
+            {t("languages.addLanguage")}
+          </span>
         </div>
       </div>
     </>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, TextField, Select, Dropdown, Textarea } from "@/ui-kit";
 import styles from "./VehicleDropdown.module.css";
 
@@ -24,16 +25,35 @@ export const AddVehicleDropdown = ({
   onOpenChange,
   onSave,
 }: AddVehicleDropdownProps) => {
+  const { t } = useTranslation();
   const vehicleFormFields = useMemo(
     () => ({
-      brand: { label: "Brand", placeholder: "Select brand..." },
-      model: { label: "Model", placeholder: "Enter model..." },
-      year: { label: "Year", placeholder: "Enter year..." },
-      engine: { label: "Engine", placeholder: "Enter engine..." },
-      fuelType: { label: "Fuel Type", placeholder: "Select fuel type..." },
-      status: { label: "Status", placeholder: "Enter status..." },
+      brand: {
+        label: t("vehicles.vehicles.form.brand"),
+        placeholder: t("vehicles.vehicles.form.selectBrand"),
+      },
+      model: {
+        label: t("vehicles.vehicles.form.model"),
+        placeholder: t("vehicles.vehicles.form.enterModel"),
+      },
+      year: {
+        label: t("vehicles.vehicles.form.year"),
+        placeholder: t("vehicles.vehicles.form.enterYear"),
+      },
+      engine: {
+        label: t("vehicles.vehicles.form.engine"),
+        placeholder: t("vehicles.vehicles.form.enterEngine"),
+      },
+      fuelType: {
+        label: t("vehicles.vehicles.form.fuelType"),
+        placeholder: t("vehicles.vehicles.form.selectFuelType"),
+      },
+      status: {
+        label: t("vehicles.vehicles.form.status"),
+        placeholder: t("vehicles.vehicles.form.status"),
+      },
     }),
-    []
+    [t]
   );
 
   const [formValues, setFormValues] = useState<VehicleForm>({
@@ -95,10 +115,10 @@ export const AddVehicleDropdown = ({
       anchorRef={anchorRef}
       align="start"
       side="left"
-      title="Add Vehicle"
+      title={t("vehicles.vehicles.addVehicle")}
     >
       <div className={styles.header}>
-        <span className={styles.title}>Add Vehicle</span>
+        <span className={styles.title}>{t("vehicles.vehicles.addVehicle")}</span>
       </div>
 
       <div className={styles.content}>
@@ -191,10 +211,10 @@ export const AddVehicleDropdown = ({
         <div className={styles.actionswithoutDelete}>
           <div className={styles.primaryActions}>
             <Button variant="secondary" size="medium" onClick={handleClose}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button variant="primary" size="medium" onClick={handleSaveClick}>
-              Save
+              {t("common.save")}
             </Button>
           </div>
         </div>

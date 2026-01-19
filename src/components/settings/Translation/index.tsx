@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, TabGroup, Button, TextField, Select, DataTable } from "@/ui-kit";
 import { LANGUAGES } from "@/constants/settings";
 import styles from "./Translation.module.css";
@@ -31,16 +32,17 @@ const initialForm: TranslationForm = {
 };
 
 export const Translation = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TranslationTab>("add-new");
   const [form, setForm] = useState<TranslationForm>(initialForm);
 
   const tabs = useMemo(
     () =>
       [
-        { id: "add-new", label: "Add New Translation" },
-        { id: "translation-history", label: "Translation History" },
+        { id: "add-new", label: t("translation.tabs.addNew") },
+        { id: "translation-history", label: t("translation.tabs.history") },
       ] as const,
-    []
+    [t]
   );
 
   const translationHistoryData: TranslationHistoryItem[] = useMemo(
@@ -110,7 +112,10 @@ export const Translation = () => {
   return (
     <section className={styles.translationWrapper}>
       <div className={styles.translation}>
-        <nav className={styles.tabsContainer} aria-label="Translation sections">
+        <nav
+          className={styles.tabsContainer}
+          aria-label={t("translation.ariaLabel")}
+        >
           <TabGroup variant="segmented">
             {tabs.map(({ id, label }) => (
               <Tab
@@ -128,15 +133,15 @@ export const Translation = () => {
           <div className={styles.formContainer}>
             <div className={styles.formRow}>
               <TextField
-                label="Entity name"
-                placeholder="Type"
+                label={t("translation.form.entityName")}
+                placeholder={t("translation.form.type")}
                 value={form.entityName}
                 onChange={(e) => updateField("entityName", e.target.value)}
               />
 
               <TextField
-                label="Entity ID"
-                placeholder="Type"
+                label={t("translation.form.entityId")}
+                placeholder={t("translation.form.type")}
                 value={form.entityId}
                 onChange={(e) => updateField("entityId", e.target.value)}
               />
@@ -144,15 +149,15 @@ export const Translation = () => {
 
             <div className={styles.formRow}>
               <TextField
-                label="Field name"
-                placeholder="Type"
+                label={t("translation.form.fieldName")}
+                placeholder={t("translation.form.type")}
                 value={form.fieldName}
                 onChange={(e) => updateField("fieldName", e.target.value)}
               />
 
               <TextField
-                label="Field value"
-                placeholder="Type"
+                label={t("translation.form.fieldValue")}
+                placeholder={t("translation.form.type")}
                 value={form.fieldValue}
                 onChange={(e) => updateField("fieldValue", e.target.value)}
               />
@@ -160,8 +165,8 @@ export const Translation = () => {
 
             <div className={styles.formRow}>
               <Select
-                label="Language code"
-                placeholder="Select"
+                label={t("translation.form.languageCode")}
+                placeholder={t("translation.form.select")}
                 value={form.languageCode}
                 onChange={(e) => updateField("languageCode", e.target.value)}
               >
@@ -192,10 +197,10 @@ export const Translation = () => {
       {activeTab === "add-new" && (
         <div className={styles.actionButtons}>
           <Button variant="secondary" size="medium" onClick={handleCancel}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button variant="primary" size="medium" onClick={handleAdd}>
-            Add
+            {t("common.add")}
           </Button>
         </div>
       )}

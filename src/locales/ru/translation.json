@@ -2,13 +2,258 @@
   "header": {
     "settings": "Настройки",
     "warehouses": "Склады",
-    "shops": "Магазины"
+    "shops": "Магазины",
+    "products": "Товары",
+    "users": "Управление пользователями",
+    "logout": "Выйти",
+    "userMenu": "Меню пользователя"
   },
   "common": {
     "save": "Сохранить",
     "cancel": "Отмена",
     "delete": "Удалить",
     "edit": "Редактировать",
-    "add": "Добавить"
+    "add": "Добавить",
+    "update": "Обновить"
+  },
+  "settings": {
+    "navigation": {
+      "projectLanguages": "Языки проекта",
+      "translation": "Перевод",
+      "warehouse": "Склад",
+      "shops": "Магазины",
+      "productSettings": "Настройки товаров",
+      "vehicleManagement": "Управление транспортными средствами"
+    }
+  },
+  "users": {
+    "iconAlt": "Иконка пользователей",
+    "form": {
+      "username": "Имя пользователя",
+      "enterUsername": "Введите имя пользователя",
+      "password": "Пароль",
+      "enterPassword": "Введите пароль",
+      "role": "Роль",
+      "selectRole": "Выберите роль",
+      "userType": "Тип пользователя",
+      "selectUserType": "Выберите тип пользователя",
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад"
+    },
+    "validation": {
+      "fillAllFields": "Пожалуйста, заполните все поля"
+    },
+    "success": {
+      "userCreated": "Пользователь успешно создан"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать пользователя"
+    }
+  },
+  "shops": {
+    "tabs": {
+      "addNew": "Добавить новый магазин",
+      "shopsHistory": "История магазинов"
+    },
+    "form": {
+      "shopKey": "Код магазина",
+      "type": "Введите",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад"
+    },
+    "validation": {
+      "enterShopKey": "Пожалуйста, введите код магазина",
+      "selectWarehouse": "Пожалуйста, выберите склад"
+    },
+    "success": {
+      "shopCreated": "Магазин успешно создан",
+      "shopUpdated": "Магазин успешно обновлен",
+      "shopDeleted": "Магазин успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать магазин",
+      "failedToUpdate": "Не удалось обновить магазин",
+      "failedToDelete": "Не удалось удалить магазин"
+    },
+    "loading": "Загрузка магазинов...",
+    "emptyState": "Магазины не найдены."
+  },
+  "warehouses": {
+    "tabs": {
+      "addNew": "Добавить новый склад",
+      "warehousesHistory": "История складов"
+    },
+    "form": {
+      "warehouseKey": "Код склада",
+      "type": "Введите"
+    },
+    "validation": {
+      "enterWarehouseCode": "Пожалуйста, введите код склада"
+    },
+    "success": {
+      "warehouseCreated": "Склад успешно создан",
+      "warehouseUpdated": "Склад успешно обновлен",
+      "warehouseDeleted": "Склад успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать склад",
+      "failedToUpdate": "Не удалось обновить склад",
+      "failedToDelete": "Не удалось удалить склад"
+    },
+    "loading": "Загрузка складов...",
+    "emptyState": "Склады не найдены."
+  },
+  "vehicles": {
+    "tabs": {
+      "tasks": "Задачи",
+      "vehicles": "Транспортные средства"
+    },
+    "tasks": {
+      "addTask": "Добавить задачу",
+      "editTask": "Редактировать задачу",
+      "deleteTask": "Удалить задачу",
+      "form": {
+        "taskService": "Задача / Услуга",
+        "enterTaskName": "Введите название задачи...",
+        "laborCost": "Стоимость труда (USD)",
+        "taskNameRequired": "Название задачи обязательно",
+        "enterValidCost": "Введите действительную стоимость",
+        "enabled": "Включено"
+      },
+      "columns": {
+        "code": "Код",
+        "laborCost": "Стоимость труда (USD)",
+        "status": "Статус",
+        "actions": "Действия",
+        "active": "Активен",
+        "inactive": "Неактивен"
+      },
+      "confirmation": {
+        "deleteTitle": "Удалить задачу",
+        "deleteDescription": "Вы уверены, что хотите удалить \"{{code}}\"? Это действие нельзя отменить.",
+        "deleting": "Удаление...",
+        "delete": "Удалить"
+      }
+    },
+    "vehicles": {
+      "addVehicle": "Добавить транспортное средство",
+      "form": {
+        "brand": "Марка",
+        "selectBrand": "Выберите марку...",
+        "model": "Модель",
+        "enterModel": "Введите модель...",
+        "year": "Год",
+        "enterYear": "Введите год...",
+        "engine": "Двигатель",
+        "enterEngine": "Введите двигатель...",
+        "fuelType": "Тип топлива",
+        "selectFuelType": "Выберите тип топлива...",
+        "status": "Статус"
+      },
+      "columns": {
+        "brand": "Марка",
+        "model": "Модель",
+        "year": "Год",
+        "engine": "Двигатель",
+        "fuelType": "Тип топлива",
+        "status": "Статус",
+        "actions": "Действия"
+      }
+    },
+    "ariaLabels": {
+      "addNewTask": "Добавить новую задачу",
+      "addNewVehicle": "Добавить новое транспортное средство",
+      "editVehicle": "Редактировать транспортное средство",
+      "deleteVehicle": "Удалить транспортное средство",
+      "vehicleManagementSections": "Разделы управления транспортными средствами"
+    }
+  },
+  "products": {
+    "iconAlt": "Иконка товаров"
+  },
+  "translation": {
+    "tabs": {
+      "addNew": "Добавить новый перевод",
+      "history": "История переводов"
+    },
+    "ariaLabel": "Разделы переводов",
+    "form": {
+      "entityName": "Имя сущности",
+      "entityId": "ID сущности",
+      "fieldName": "Имя поля",
+      "fieldValue": "Значение поля",
+      "languageCode": "Код языка",
+      "type": "Введите",
+      "select": "Выберите"
+    },
+    "columns": {
+      "entityName": "Имя сущности",
+      "entityId": "ID сущности",
+      "fieldName": "Имя поля",
+      "languageCode": "Код языка",
+      "value": "Значение"
+    }
+  },
+  "languages": {
+    "addNew": "Добавить новый",
+    "addLanguage": "Добавить язык",
+    "editLanguageTitle": "Редактировать язык",
+    "deleteLanguage": "Удалить язык",
+    "loading": "Загрузка языков...",
+    "emptyState": "Языки не найдены. Добавьте первый язык.",
+    "disabled": "Отключено",
+    "editLanguage": "Редактировать {{name}}",
+    "form": {
+      "languageKey": "Код языка",
+      "displayName": "Отображаемое имя",
+      "defaultLanguage": "Язык по умолчанию",
+      "useAsDefault": "Использовать как язык по умолчанию",
+      "enabled": "Включено"
+    },
+    "success": {
+      "languageCreated": "Язык успешно создан",
+      "languageUpdated": "Язык успешно обновлен",
+      "languageDeleted": "Язык успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить языки",
+      "failedToCreate": "Не удалось создать язык",
+      "failedToUpdate": "Не удалось обновить язык",
+      "failedToDelete": "Не удалось удалить язык",
+      "failedToUpdateDefault": "Не удалось обновить язык по умолчанию"
+    }
+  },
+  "productSettings": {
+    "tabs": {
+      "category": "Код категории",
+      "brand": "Код бренда",
+      "unitType": "Код единиц измерения",
+      "boxSize": "Код размера коробки"
+    },
+    "createNew": "Создать новый",
+    "keyHere": "Введите ключ здесь",
+    "existing": "Существующие",
+    "loading": "Загрузка...",
+    "noItems": "Пока нет элементов",
+    "success": {
+      "created": "{{type}} успешно создан",
+      "updated": "{{type}} успешно обновлен",
+      "deleted": "{{type}} успешно удален"
+    },
+    "error": {
+      "failedToAction": "Не удалось {{action}} {{type}}"
+    }
+  },
+  "columns": {
+    "id": "ID",
+    "code": "Код",
+    "warehouseId": "ID склада",
+    "actions": "Действия",
+    "editShop": "Редактировать магазин",
+    "deleteShop": "Удалить магазин",
+    "editWarehouse": "Редактировать склад",
+    "deleteWarehouse": "Удалить склад"
   }
 }

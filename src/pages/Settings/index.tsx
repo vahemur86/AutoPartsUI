@@ -1,4 +1,5 @@
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Tab, Stepper } from "@/ui-kit";
 import type { StepperStep } from "@/ui-kit";
 import {
@@ -13,6 +14,7 @@ import { SectionHeader } from "@/components/common/SectionHeader";
 import styles from "./Settings.module.css";
 
 export const Settings = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -43,32 +45,37 @@ export const Settings = () => {
   const navigationItems = [
     {
       path: "/project-languages",
-      label: "Project Languages",
+      label: t("settings.navigation.projectLanguages"),
       icon: Globe,
       showCheckmark: true,
     },
     {
       path: "/translation",
-      label: "Translation",
+      label: t("settings.navigation.translation"),
       icon: Languages,
       showCheckmark: true,
     },
     {
       path: "/warehouse",
-      label: "Warehouse",
+      label: t("settings.navigation.warehouse"),
       icon: Warehouse,
       showCheckmark: true,
     },
-    { path: "/shops", label: "Shops", icon: ShoppingBag, showCheckmark: true },
+    {
+      path: "/shops",
+      label: t("settings.navigation.shops"),
+      icon: ShoppingBag,
+      showCheckmark: true,
+    },
     {
       path: "/product-settings",
-      label: "Product Settings",
+      label: t("settings.navigation.productSettings"),
       icon: SettingsIcon,
       showCheckmark: true,
     },
     {
       path: "/vehicle-management",
-      label: "Vehicle Management",
+      label: t("settings.navigation.vehicleManagement"),
       icon: Truck,
       showCheckmark: true,
     },
@@ -94,7 +101,8 @@ export const Settings = () => {
   };
 
   const activeSectionTitle =
-    navigationItems.find((item) => isActive(item.path))?.label ?? "Settings";
+    navigationItems.find((item) => isActive(item.path))?.label ??
+    t("header.settings");
 
   return (
     <>

@@ -2,13 +2,258 @@
   "header": {
     "settings": "Կարգավորումներ",
     "warehouses": "Պահեստներ",
-    "shops": "Խանութներ"
+    "shops": "Խանութներ",
+    "products": "Ապրանքներ",
+    "users": "Օգտատերերի կառավարում",
+    "logout": "Ելք",
+    "userMenu": "Օգտատիրոջ ընտրացանկ"
   },
   "common": {
     "save": "Պահպանել",
     "cancel": "Չեղարկել",
     "delete": "Ջնջել",
     "edit": "Խմբագրել",
-    "add": "Ավելացնել"
+    "add": "Ավելացնել",
+    "update": "Թարմացնել"
+  },
+  "settings": {
+    "navigation": {
+      "projectLanguages": "Նախագծի լեզուներ",
+      "translation": "Թարգմանություն",
+      "warehouse": "Պահեստ",
+      "shops": "Խանութներ",
+      "productSettings": "Ապրանքի կարգավորումներ",
+      "vehicleManagement": "Տրանսպորտային միջոցների կառավարում"
+    }
+  },
+  "users": {
+    "iconAlt": "Օգտատերերի պատկերակ",
+    "form": {
+      "username": "Օգտանուն",
+      "enterUsername": "Մուտքագրեք օգտանուն",
+      "password": "Գաղտնաբառ",
+      "enterPassword": "Մուտքագրեք գաղտնաբառ",
+      "role": "Դեր",
+      "selectRole": "Ընտրեք դեր",
+      "userType": "Օգտատիրոջ տեսակ",
+      "selectUserType": "Ընտրեք օգտատիրոջ տեսակ",
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութ",
+      "warehouse": "Պահեստ",
+      "selectWarehouse": "Ընտրեք պահեստ"
+    },
+    "validation": {
+      "fillAllFields": "Խնդրում ենք լրացնել բոլոր դաշտերը"
+    },
+    "success": {
+      "userCreated": "Օգտատերը հաջողությամբ ստեղծվեց"
+    },
+    "error": {
+      "failedToCreate": "Օգտատիրոջ ստեղծումը ձախողվեց"
+    }
+  },
+  "shops": {
+    "tabs": {
+      "addNew": "Ավելացնել նոր խանութ",
+      "shopsHistory": "Խանութների պատմություն"
+    },
+    "form": {
+      "shopKey": "Խանութի կոդ",
+      "type": "Մուտքագրեք",
+      "warehouse": "Պահեստ",
+      "selectWarehouse": "Ընտրեք պահեստ"
+    },
+    "validation": {
+      "enterShopKey": "Խնդրում ենք մուտքագրել խանութի կոդ",
+      "selectWarehouse": "Խնդրում ենք ընտրել պահեստ"
+    },
+    "success": {
+      "shopCreated": "Խանութը հաջողությամբ ստեղծվեց",
+      "shopUpdated": "Խանութը հաջողությամբ թարմացվեց",
+      "shopDeleted": "Խանութը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Խանութի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Խանութի թարմացումը ձախողվեց",
+      "failedToDelete": "Խանութի ջնջումը ձախողվեց"
+    },
+    "loading": "Խանութների բեռնում...",
+    "emptyState": "Խանութներ չեն գտնվել:"
+  },
+  "warehouses": {
+    "tabs": {
+      "addNew": "Ավելացնել նոր պահեստ",
+      "warehousesHistory": "Պահեստների պատմություն"
+    },
+    "form": {
+      "warehouseKey": "Պահեստի կոդ",
+      "type": "Մուտքագրեք"
+    },
+    "validation": {
+      "enterWarehouseCode": "Խնդրում ենք մուտքագրել պահեստի կոդ"
+    },
+    "success": {
+      "warehouseCreated": "Պահեստը հաջողությամբ ստեղծվեց",
+      "warehouseUpdated": "Պահեստը հաջողությամբ թարմացվեց",
+      "warehouseDeleted": "Պահեստը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Պահեստի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Պահեստի թարմացումը ձախողվեց",
+      "failedToDelete": "Պահեստի ջնջումը ձախողվեց"
+    },
+    "loading": "Պահեստների բեռնում...",
+    "emptyState": "Պահեստներ չեն գտնվել:"
+  },
+  "vehicles": {
+    "tabs": {
+      "tasks": "Առաջադրանքներ",
+      "vehicles": "Տրանսպորտային միջոցներ"
+    },
+    "tasks": {
+      "addTask": "Ավելացնել առաջադրանք",
+      "editTask": "Խմբագրել առաջադրանք",
+      "deleteTask": "Ջնջել առաջադրանք",
+      "form": {
+        "taskService": "Առաջադրանք / Ծառայություն",
+        "enterTaskName": "Մուտքագրեք առաջադրանքի անվանում...",
+        "laborCost": "Աշխատանքի արժեք (USD)",
+        "taskNameRequired": "Առաջադրանքի անվանումը պարտադիր է",
+        "enterValidCost": "Մուտքագրեք վավեր արժեք",
+        "enabled": "Միացված"
+      },
+      "columns": {
+        "code": "Կոդ",
+        "laborCost": "Աշխատանքի արժեք (USD)",
+        "status": "Կարգավիճակ",
+        "actions": "Գործողություններ",
+        "active": "Ակտիվ",
+        "inactive": "Անակտիվ"
+      },
+      "confirmation": {
+        "deleteTitle": "Ջնջել առաջադրանք",
+        "deleteDescription": "Դուք համոզված եք, որ ցանկանում եք ջնջել \"{{code}}\"? Այս գործողությունը չի կարող հետարկվել:",
+        "deleting": "Ջնջվում է...",
+        "delete": "Ջնջել"
+      }
+    },
+    "vehicles": {
+      "addVehicle": "Ավելացնել տրանսպորտային միջոց",
+      "form": {
+        "brand": "Արտադրող",
+        "selectBrand": "Ընտրեք արտադրող...",
+        "model": "Մոդել",
+        "enterModel": "Մուտքագրեք մոդել...",
+        "year": "Տարի",
+        "enterYear": "Մուտքագրեք տարի...",
+        "engine": "Շարժիչ",
+        "enterEngine": "Մուտքագրեք շարժիչ...",
+        "fuelType": "Վառելիքի տեսակ",
+        "selectFuelType": "Ընտրեք վառելիքի տեսակ...",
+        "status": "Կարգավիճակ"
+      },
+      "columns": {
+        "brand": "Արտադրող",
+        "model": "Մոդել",
+        "year": "Տարի",
+        "engine": "Շարժիչ",
+        "fuelType": "Վառելիքի տեսակ",
+        "status": "Կարգավիճակ",
+        "actions": "Գործողություններ"
+      }
+    },
+    "ariaLabels": {
+      "addNewTask": "Ավելացնել նոր առաջադրանք",
+      "addNewVehicle": "Ավելացնել նոր տրանսպորտային միջոց",
+      "editVehicle": "Խմբագրել տրանսպորտային միջոց",
+      "deleteVehicle": "Ջնջել տրանսպորտային միջոց",
+      "vehicleManagementSections": "Տրանսպորտային միջոցների կառավարման բաժիններ"
+    }
+  },
+  "products": {
+    "iconAlt": "Ապրանքների պատկերակ"
+  },
+  "translation": {
+    "tabs": {
+      "addNew": "Ավելացնել նոր թարգմանություն",
+      "history": "Թարգմանությունների պատմություն"
+    },
+    "ariaLabel": "Թարգմանությունների բաժիններ",
+    "form": {
+      "entityName": "Օբյեկտի անվանում",
+      "entityId": "Օբյեկտի ID",
+      "fieldName": "Դաշտի անվանում",
+      "fieldValue": "Դաշտի արժեք",
+      "languageCode": "Լեզվի կոդ",
+      "type": "Մուտքագրեք",
+      "select": "Ընտրեք"
+    },
+    "columns": {
+      "entityName": "Օբյեկտի անվանում",
+      "entityId": "Օբյեկտի ID",
+      "fieldName": "Դաշտի անվանում",
+      "languageCode": "Լեզվի կոդ",
+      "value": "Արժեք"
+    }
+  },
+  "languages": {
+    "addNew": "Ավելացնել նոր",
+    "addLanguage": "Ավելացնել լեզու",
+    "editLanguageTitle": "Խմբագրել լեզու",
+    "deleteLanguage": "Ջնջել լեզու",
+    "loading": "Լեզուների բեռնում...",
+    "emptyState": "Լեզուներ չեն գտնվել: Ավելացրեք ձեր առաջին լեզուն:",
+    "disabled": "Անջատված",
+    "editLanguage": "Խմբագրել {{name}}",
+    "form": {
+      "languageKey": "Լեզվի կոդ",
+      "displayName": "Ցուցադրվող անվանում",
+      "defaultLanguage": "Լռելյայն լեզու",
+      "useAsDefault": "Օգտագործել որպես լռելյայն լեզու",
+      "enabled": "Միացված"
+    },
+    "success": {
+      "languageCreated": "Լեզուն հաջողությամբ ստեղծվեց",
+      "languageUpdated": "Լեզուն հաջողությամբ թարմացվեց",
+      "languageDeleted": "Լեզուն հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToLoad": "Լեզուների բեռնումը ձախողվեց",
+      "failedToCreate": "Լեզվի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Լեզվի թարմացումը ձախողվեց",
+      "failedToDelete": "Լեզվի ջնջումը ձախողվեց",
+      "failedToUpdateDefault": "Լռելյայն լեզվի թարմացումը ձախողվեց"
+    }
+  },
+  "productSettings": {
+    "tabs": {
+      "category": "Կատեգորիայի կոդ",
+      "brand": "Արտադրողի կոդ",
+      "unitType": "Չափման միավորի կոդ",
+      "boxSize": "Տուփի չափի կոդ"
+    },
+    "createNew": "Ստեղծել նորը",
+    "keyHere": "Մուտքագրեք բանալին այստեղ",
+    "existing": "Գոյություն ունեցող",
+    "loading": "Բեռնվում է...",
+    "noItems": "Դեռ իրեր չկան",
+    "success": {
+      "created": "{{type}} հաջողությամբ ստեղծվեց",
+      "updated": "{{type}} հաջողությամբ թարմացվեց",
+      "deleted": "{{type}} հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToAction": "{{type}} {{action}} չհաջողվեց"
+    }
+  },
+  "columns": {
+    "id": "ID",
+    "code": "Կոդ",
+    "warehouseId": "Պահեստի ID",
+    "actions": "Գործողություններ",
+    "editShop": "Խմբագրել խանութ",
+    "deleteShop": "Ջնջել խանութ",
+    "editWarehouse": "Խմբագրել պահեստ",
+    "deleteWarehouse": "Ջնջել պահեստ"
   }
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 // ui-kit
 import { Button, Tab, TabGroup } from "@/ui-kit";
 // components
@@ -20,6 +21,7 @@ import { getErrorMessage } from "@/utils";
 import styles from "./WarehouseSettings.module.css";
 
 export const WarehouseSettings = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { warehouses, isLoading, error } = useAppSelector(
     (state) => state.warehouses
@@ -33,7 +35,7 @@ export const WarehouseSettings = () => {
 
   const handleAddWarehouse = useCallback(async () => {
     if (!warehouseCode.trim()) {
-      toast.error("Please enter a warehouse code");
+      toast.error(t("warehouses.validation.enterWarehouseCode"));
       return;
     }
 
@@ -47,12 +49,12 @@ export const WarehouseSettings = () => {
           })
         ).unwrap();
 
-        toast.success("Warehouse updated successfully");
+        toast.success(t("warehouses.success.warehouseUpdated"));
         setEditingWarehouse(null);
       } else {
         // Create new warehouse
         await dispatch(addWarehouse(warehouseCode.trim())).unwrap();
-        toast.success("Warehouse created successfully");
+        toast.success(t("warehouses.success.warehouseCreated"));
       }
 
       setWarehouseCode("");
@@ -62,8 +64,8 @@ export const WarehouseSettings = () => {
         getErrorMessage(
           error,
           editingWarehouse
-            ? "Failed to update warehouse"
-            : "Failed to create warehouse"
+            ? t("warehouses.error.failedToUpdate")
+            : t("warehouses.error.failedToCreate")
         )
       );
     }
@@ -85,10 +87,10 @@ export const WarehouseSettings = () => {
     async (id: number) => {
       try {
         await dispatch(removeWarehouse(id)).unwrap();
-        toast.success("Warehouse deleted successfully");
+        toast.success(t("warehouses.success.warehouseDeleted"));
       } catch (error: unknown) {
         console.error(error);
-        toast.error(getErrorMessage(error, "Failed to delete warehouse"));
+        toast.error(getErrorMessage(error, t("warehouses.error.failedToDelete")));
       }
     },
     [dispatch]
@@ -114,13 +116,13 @@ export const WarehouseSettings = () => {
             <Tab
               variant="segmented"
               active={activeTab === "add-new"}
-              text="Add New Warehouse"
+              text={t("warehouses.tabs.addNew")}
               onClick={() => handleTabChange("add-new")}
             />
             <Tab
               variant="segmented"
               active={activeTab === "warehouses-history"}
-              text="Warehouses History"
+              text={t("warehouses.tabs.warehousesHistory")}
               onClick={() => handleTabChange("warehouses-history")}
             />
           </TabGroup>
@@ -148,7 +150,7 @@ export const WarehouseSettings = () => {
             }}
             disabled={isLoading}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             variant="primary"
@@ -156,7 +158,7 @@ export const WarehouseSettings = () => {
             onClick={handleAddWarehouse}
             disabled={isLoading || !warehouseCode.trim()}
           >
-            {editingWarehouse ? "Update" : "Save"}
+            {editingWarehouse ? t("common.update") : t("common.save")}
           </Button>
         </div>
       )}

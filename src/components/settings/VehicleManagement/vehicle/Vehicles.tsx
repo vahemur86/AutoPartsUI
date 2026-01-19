@@ -1,4 +1,5 @@
 import { useMemo, useState, useRef, useCallback, type FC } from "react";
+import { useTranslation } from "react-i18next";
 import { DataTable, IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
 import { AddVehicleDropdown } from "./vehicleActions/AddVehicleDropdown";
@@ -16,6 +17,7 @@ export const Vehicles: FC<VehiclesProps> = ({
   withEdit = true,
   withDelete = true,
 }) => {
+  const { t } = useTranslation();
   const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
 
   const addAnchorRef = useRef<HTMLElement | null>(null);
@@ -70,11 +72,11 @@ export const Vehicles: FC<VehiclesProps> = ({
             size="small"
             variant="primary"
             icon={<Plus size={12} color="#0e0f11" />}
-            ariaLabel="Add new vehicle"
+            ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
             className={styles.plusButton}
             onClick={() => openAddDropdown(false)}
           />
-          <span className={styles.addButtonText}>Add vehicle</span>
+          <span className={styles.addButtonText}>{t("vehicles.vehicles.addVehicle")}</span>
         </div>
       </div>
 
@@ -87,10 +89,10 @@ export const Vehicles: FC<VehiclesProps> = ({
             size="small"
             variant="primary"
             icon={<Plus size={12} />}
-            ariaLabel="Add new vehicle"
+            ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
             onClick={() => openAddDropdown(true)}
           />
-          <span className={styles.addButtonText}>Add vehicle</span>
+          <span className={styles.addButtonText}>{t("vehicles.vehicles.addVehicle")}</span>
         </div>
       </div>
 

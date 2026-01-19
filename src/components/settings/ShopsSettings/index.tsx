@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
+import { useTranslation } from "react-i18next";
 // ui-kit
 import { Button, Tab, TabGroup } from "@/ui-kit";
-
 // components
 import { ShopContent } from "./ShopContent";
-
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
@@ -16,17 +14,15 @@ import {
   updateShopInStore,
   removeShop,
 } from "@/store/slices/shopsSlice";
-
 // utils
 import { getErrorMessage } from "@/utils";
-
 // types
 import type { Shop } from "@/types/settings";
-
 // styles
 import styles from "./ShopsSettings.module.css";
 
 export const ShopsSettings = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { warehouses } = useAppSelector((state) => state.warehouses);
   const { shops, isLoading, error } = useAppSelector((state) => state.shops);
@@ -44,12 +40,12 @@ export const ShopsSettings = () => {
 
   const handleAddShop = useCallback(async () => {
     if (!shopKey.trim()) {
-      toast.error("Please enter a shop key");
+      toast.error(t("shops.validation.enterShopKey"));
       return;
     }
 
     if (!warehouseId || warehouseId === 0) {
-      toast.error("Please select a warehouse");
+      toast.error(t("shops.validation.selectWarehouse"));
       return;
     }
 
@@ -61,18 +57,16 @@ export const ShopsSettings = () => {
             id: editingShop.id,
             code: shopKey.trim(),
             warehouseId,
-          }),
+          })
         ).unwrap();
 
-        toast.success("Shop updated successfully");
+        toast.success(t("shops.success.shopUpdated"));
         setEditingShop(null);
       } else {
-        // Create new shop
         await dispatch(addShop({ code: shopKey.trim(), warehouseId })).unwrap();
-        toast.success("Shop created successfully");
+        toast.success(t("shops.success.shopCreated"));
       }
 
-      // Clear inputs after successful save
       setShopKey("");
       setWarehouseId(0);
     } catch (error: unknown) {
@@ -80,8 +74,10 @@ export const ShopsSettings = () => {
       toast.error(
         getErrorMessage(
           error,
-          editingShop ? "Failed to update shop" : "Failed to create shop",
-        ),
+          editingShop
+            ? t("shops.error.failedToUpdate")
+            : t("shops.error.failedToCreate")
+        )
       );
     }
   }, [shopKey, warehouseId, editingShop, dispatch]);
@@ -104,13 +100,13 @@ export const ShopsSettings = () => {
     async (id: number) => {
       try {
         await dispatch(removeShop(id)).unwrap();
-        toast.success("Shop deleted successfully");
+        toast.success(t("shops.success.shopDeleted"));
       } catch (error: unknown) {
         console.error(error);
-        toast.error(getErrorMessage(error, "Failed to delete shop"));
+        toast.error(getErrorMessage(error, t("shops.error.failedToDelete")));
       }
     },
-    [dispatch],
+    [dispatch]
   );
 
   useEffect(() => {
@@ -133,13 +129,13 @@ export const ShopsSettings = () => {
             <Tab
               variant="segmented"
               active={activeTab === "add-new"}
-              text="Add New Shop"
+              text={t("shops.tabs.addNew")}
               onClick={() => handleTabChange("add-new")}
             />
             <Tab
               variant="segmented"
               active={activeTab === "shops-history"}
-              text="Shops History"
+              text={t("shops.tabs.shopsHistory")}
               onClick={() => handleTabChange("shops-history")}
             />
           </TabGroup>
@@ -171,7 +167,7 @@ export const ShopsSettings = () => {
             }}
             disabled={isLoading}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
 
           <Button
@@ -182,7 +178,7 @@ export const ShopsSettings = () => {
               isLoading || !shopKey.trim() || !warehouseId || warehouseId === 0
             }
           >
-            {editingShop ? "Update" : "Save"}
+            {editingShop ? t("common.update") : t("common.save")}
           </Button>
         </div>
       )}

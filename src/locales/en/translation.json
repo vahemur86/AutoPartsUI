@@ -4,13 +4,256 @@
     "warehouses": "Warehouses",
     "shops": "Shops",
     "products": "Products",
-    "users": "User Management"
+    "users": "User Management",
+    "logout": "Log Out",
+    "userMenu": "User menu"
   },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "add": "Add"
+    "add": "Add",
+    "update": "Update"
+  },
+  "settings": {
+    "navigation": {
+      "projectLanguages": "Project Languages",
+      "translation": "Translation",
+      "warehouse": "Warehouse",
+      "shops": "Shops",
+      "productSettings": "Product Settings",
+      "vehicleManagement": "Vehicle Management"
+    }
+  },
+  "users": {
+    "iconAlt": "Users icon",
+    "form": {
+      "username": "Username",
+      "enterUsername": "Enter username",
+      "password": "Password",
+      "enterPassword": "Enter password",
+      "role": "Role",
+      "selectRole": "Select role",
+      "userType": "User Type",
+      "selectUserType": "Select user type",
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "warehouse": "Warehouse",
+      "selectWarehouse": "Select warehouse"
+    },
+    "validation": {
+      "fillAllFields": "Please fill in all fields"
+    },
+    "success": {
+      "userCreated": "User created successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create user"
+    }
+  },
+  "shops": {
+    "tabs": {
+      "addNew": "Add New Shop",
+      "shopsHistory": "Shops History"
+    },
+    "form": {
+      "shopKey": "Shop key",
+      "type": "Type",
+      "warehouse": "Warehouse",
+      "selectWarehouse": "Select warehouse"
+    },
+    "validation": {
+      "enterShopKey": "Please enter a shop key",
+      "selectWarehouse": "Please select a warehouse"
+    },
+    "success": {
+      "shopCreated": "Shop created successfully",
+      "shopUpdated": "Shop updated successfully",
+      "shopDeleted": "Shop deleted successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create shop",
+      "failedToUpdate": "Failed to update shop",
+      "failedToDelete": "Failed to delete shop"
+    },
+    "loading": "Loading shops...",
+    "emptyState": "No shops found."
+  },
+  "warehouses": {
+    "tabs": {
+      "addNew": "Add New Warehouse",
+      "warehousesHistory": "Warehouses History"
+    },
+    "form": {
+      "warehouseKey": "Warehouse key",
+      "type": "Type"
+    },
+    "validation": {
+      "enterWarehouseCode": "Please enter a warehouse code"
+    },
+    "success": {
+      "warehouseCreated": "Warehouse created successfully",
+      "warehouseUpdated": "Warehouse updated successfully",
+      "warehouseDeleted": "Warehouse deleted successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create warehouse",
+      "failedToUpdate": "Failed to update warehouse",
+      "failedToDelete": "Failed to delete warehouse"
+    },
+    "loading": "Loading warehouses...",
+    "emptyState": "No warehouses found."
+  },
+  "vehicles": {
+    "tabs": {
+      "tasks": "Tasks",
+      "vehicles": "Vehicles"
+    },
+    "tasks": {
+      "addTask": "Add Task",
+      "editTask": "Edit Task",
+      "deleteTask": "Delete Task",
+      "form": {
+        "taskService": "Task / Service",
+        "enterTaskName": "Enter task name...",
+        "laborCost": "Labor Cost (USD)",
+        "taskNameRequired": "Task name is required",
+        "enterValidCost": "Enter a valid cost",
+        "enabled": "Enabled"
+      },
+      "columns": {
+        "code": "Code",
+        "laborCost": "Labor Cost (USD)",
+        "status": "Status",
+        "actions": "Actions",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "confirmation": {
+        "deleteTitle": "Delete Task",
+        "deleteDescription": "Are you sure you want to delete \"{{code}}\"? This action cannot be undone.",
+        "deleting": "Deleting...",
+        "delete": "Delete"
+      }
+    },
+    "vehicles": {
+      "addVehicle": "Add Vehicle",
+      "form": {
+        "brand": "Brand",
+        "selectBrand": "Select brand...",
+        "model": "Model",
+        "enterModel": "Enter model...",
+        "year": "Year",
+        "enterYear": "Enter year...",
+        "engine": "Engine",
+        "enterEngine": "Enter engine...",
+        "fuelType": "Fuel Type",
+        "selectFuelType": "Select fuel type...",
+        "status": "Status"
+      },
+      "columns": {
+        "brand": "Brand",
+        "model": "Model",
+        "year": "Year",
+        "engine": "Engine",
+        "fuelType": "Fuel Type",
+        "status": "Status",
+        "actions": "Actions"
+      }
+    },
+    "ariaLabels": {
+      "addNewTask": "Add new task",
+      "addNewVehicle": "Add new vehicle",
+      "editVehicle": "Edit vehicle",
+      "deleteVehicle": "Delete vehicle",
+      "vehicleManagementSections": "Vehicle management sections"
+    }
+  },
+  "products": {
+    "iconAlt": "Products icon"
+  },
+  "translation": {
+    "tabs": {
+      "addNew": "Add New Translation",
+      "history": "Translation History"
+    },
+    "ariaLabel": "Translation sections",
+    "form": {
+      "entityName": "Entity name",
+      "entityId": "Entity ID",
+      "fieldName": "Field name",
+      "fieldValue": "Field value",
+      "languageCode": "Language code",
+      "type": "Type",
+      "select": "Select"
+    },
+    "columns": {
+      "entityName": "Entity name",
+      "entityId": "Entity ID",
+      "fieldName": "Field name",
+      "languageCode": "Language code",
+      "value": "Value"
+    }
+  },
+  "languages": {
+    "addNew": "Add New",
+    "addLanguage": "Add language",
+    "editLanguageTitle": "Edit Language",
+    "deleteLanguage": "Delete language",
+    "loading": "Loading languages...",
+    "emptyState": "No languages found. Add your first language.",
+    "disabled": "Disabled",
+    "editLanguage": "Edit {{name}}",
+    "form": {
+      "languageKey": "Language key",
+      "displayName": "Display name",
+      "defaultLanguage": "Default Language",
+      "useAsDefault": "Use as Default language",
+      "enabled": "Enabled"
+    },
+    "success": {
+      "languageCreated": "Language created successfully",
+      "languageUpdated": "Language updated successfully",
+      "languageDeleted": "Language deleted successfully"
+    },
+    "error": {
+      "failedToLoad": "Failed to load languages",
+      "failedToCreate": "Failed to create language",
+      "failedToUpdate": "Failed to update language",
+      "failedToDelete": "Failed to delete language",
+      "failedToUpdateDefault": "Failed to update default language"
+    }
+  },
+  "productSettings": {
+    "tabs": {
+      "category": "Category Code",
+      "brand": "Brand Code",
+      "unitType": "Unit Types Code",
+      "boxSize": "Box Size Code"
+    },
+    "createNew": "Create new one",
+    "keyHere": "Key here",
+    "existing": "Existing",
+    "loading": "Loading...",
+    "noItems": "No items yet",
+    "success": {
+      "created": "{{type}} created successfully",
+      "updated": "{{type}} updated successfully",
+      "deleted": "{{type}} deleted successfully"
+    },
+    "error": {
+      "failedToAction": "Failed to {{action}} {{type}}"
+    }
+  },
+  "columns": {
+    "id": "ID",
+    "code": "Code",
+    "warehouseId": "Warehouse ID",
+    "actions": "Actions",
+    "editShop": "Edit shop",
+    "deleteShop": "Delete shop",
+    "editWarehouse": "Edit warehouse",
+    "deleteWarehouse": "Delete warehouse"
   }
 }

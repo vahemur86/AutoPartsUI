@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Checkbox, Switch, TextField, Dropdown } from "@/ui-kit";
 import type { Language } from "@/types/settings";
 import styles from "./LanguageDropdown.module.css";
@@ -20,6 +21,7 @@ export const EditLanguageDropdown = ({
   onSave,
   onDelete,
 }: EditLanguageDropdownProps) => {
+  const { t } = useTranslation();
   const [displayNameValue, setDisplayNameValue] = useState(language.name);
   const [isDefaultValue, setIsDefaultValue] = useState(
     language.isDefault ?? false
@@ -59,17 +61,21 @@ export const EditLanguageDropdown = ({
       anchorRef={anchorRef}
       align="start"
       side="left"
-      title="Edit Language"
+      title={t("languages.editLanguageTitle")}
     >
       <div className={styles.header}>
-        <span className={styles.title}>Edit Language</span>
+        <span className={styles.title}>{t("languages.editLanguageTitle")}</span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.fields}>
-          <TextField label="Language key" value={language.code} disabled />
           <TextField
-            label="Display name"
+            label={t("languages.form.languageKey")}
+            value={language.code}
+            disabled
+          />
+          <TextField
+            label={t("languages.form.displayName")}
             value={displayNameValue}
             onChange={(e) => setDisplayNameValue(e.target.value)}
             error={hasTriedSave && !displayNameValue.trim()}
@@ -77,18 +83,20 @@ export const EditLanguageDropdown = ({
         </div>
 
         <div className={styles.toggles}>
-          <span className={styles.sectionTitle}>Default Language</span>
+          <span className={styles.sectionTitle}>
+            {t("languages.form.defaultLanguage")}
+          </span>
           <Checkbox
             checked={isDefaultValue}
             onCheckedChange={setIsDefaultValue}
-            label="Use as Default language"
+            label={t("languages.form.useAsDefault")}
           />
         </div>
 
         <Switch
           checked={enabledValue}
           onCheckedChange={setEnabledValue}
-          label="Enabled"
+          label={t("languages.form.enabled")}
           disabled={language.isDefault}
         />
 
@@ -101,16 +109,16 @@ export const EditLanguageDropdown = ({
               className={styles.deleteButton}
               disabled={language.isDefault}
             >
-              Delete language
+              {t("languages.deleteLanguage")}
             </Button>
           )}
 
           <div className={styles.primaryActions}>
             <Button variant="secondary" size="medium" onClick={handleClose}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button variant="primary" size="medium" onClick={handleSaveClick}>
-              Save
+              {t("common.save")}
             </Button>
           </div>
         </div>

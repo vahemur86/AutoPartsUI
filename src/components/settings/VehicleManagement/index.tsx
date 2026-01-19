@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // ui-kit
 import { Tab, TabGroup } from "@/ui-kit";
@@ -13,15 +14,16 @@ import styles from "./VehicleManagement.module.css";
 type VehicleManagementTab = "tasks" | "vehicles";
 
 export const VehicleManagement = () => {
+  const { t } = useTranslation();
   const [activeTabId, setActiveTabId] = useState<VehicleManagementTab>("tasks");
 
   const tabs = useMemo(
     () =>
       [
-        { id: "tasks", label: "Tasks" },
-        { id: "vehicles", label: "Vehicles" },
+        { id: "tasks", label: t("vehicles.tabs.tasks") },
+        { id: "vehicles", label: t("vehicles.tabs.vehicles") },
       ] as const,
-    [],
+    [t],
   );
 
   return (
@@ -29,7 +31,7 @@ export const VehicleManagement = () => {
       <div className={styles.vehicleManagement}>
         <nav
           className={styles.tabsContainer}
-          aria-label="Vehicle management sections"
+          aria-label={t("vehicles.ariaLabels.vehicleManagementSections")}
         >
           <TabGroup variant="segmented">
             {tabs.map(({ id, label }) => (
@@ -45,13 +47,13 @@ export const VehicleManagement = () => {
         </nav>
 
         {activeTabId === "tasks" && (
-          <div role="tabpanel" aria-label="Tasks">
+          <div role="tabpanel" aria-label={t("vehicles.tabs.tasks")}>
             <Tasks />
           </div>
         )}
 
         {activeTabId === "vehicles" && (
-          <div role="tabpanel" aria-label="Vehicles">
+          <div role="tabpanel" aria-label={t("vehicles.tabs.vehicles")}>
             <Vehicles />
           </div>
         )}

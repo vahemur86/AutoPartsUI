@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, type RefObject } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 // stores
 import { useAppDispatch } from "@/store/hooks";
@@ -33,6 +34,7 @@ import type { ProductFormData } from "./types";
 import styles from "./Products.module.css";
 
 export const Products = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -137,8 +139,8 @@ export const Products = () => {
   return (
     <>
       <SectionHeader
-        title="Products"
-        icon={<img src={productIcon} alt="Products icon" />}
+        title={t("header.products")}
+        icon={<img src={productIcon} alt={t("products.iconAlt")} />}
         actions={
           <div className={styles.languagesHeader}>
             <div className={styles.addButtonWrapper} ref={buttonWrapperRef}>

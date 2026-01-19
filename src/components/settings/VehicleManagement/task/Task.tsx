@@ -6,6 +6,7 @@ import {
   useEffect,
   type FC,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 // ui-kit
 import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
@@ -43,6 +44,7 @@ export const Tasks: FC<TasksProps> = ({
   withEdit = true,
   withDelete = true,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { tasks } = useAppSelector((state) => state.tasks);
 
@@ -135,11 +137,11 @@ export const Tasks: FC<TasksProps> = ({
             size="small"
             variant="primary"
             icon={<Plus size={12} color="#0e0f11" />}
-            ariaLabel="Add new task"
+            ariaLabel={t("vehicles.ariaLabels.addNewTask")}
             className={styles.plusButton}
             onClick={handleOpenAdd}
           />
-          <span className={styles.addButtonText}>Add Task</span>
+          <span className={styles.addButtonText}>{t("vehicles.tasks.addTask")}</span>
         </div>
       </div>
 
@@ -149,10 +151,10 @@ export const Tasks: FC<TasksProps> = ({
             size="small"
             variant="primary"
             icon={<Plus size={12} />}
-            ariaLabel="Add new task"
+            ariaLabel={t("vehicles.ariaLabels.addNewTask")}
             onClick={handleOpenAdd}
           />
-          <span className={styles.addButtonText}>Add Task</span>
+          <span className={styles.addButtonText}>{t("vehicles.tasks.addTask")}</span>
         </div>
       </div>
 
@@ -171,10 +173,16 @@ export const Tasks: FC<TasksProps> = ({
         <ConfirmationModal
           open={!!deletingTask}
           onOpenChange={(open) => !open && setDeletingTask(null)}
-          title="Delete Task"
-          description={`Are you sure you want to delete "${deletingTask?.code}"? This action cannot be undone.`}
-          confirmText={isMutating ? "Deleting..." : "Delete"}
-          cancelText="Cancel"
+          title={t("vehicles.tasks.confirmation.deleteTitle")}
+          description={t("vehicles.tasks.confirmation.deleteDescription", {
+            code: deletingTask?.code,
+          })}
+          confirmText={
+            isMutating
+              ? t("vehicles.tasks.confirmation.deleting")
+              : t("vehicles.tasks.confirmation.delete")
+          }
+          cancelText={t("common.cancel")}
           onConfirm={() => deletingTask && handleDeleteTask(deletingTask)}
           onCancel={() => setDeletingTask(null)}
         />

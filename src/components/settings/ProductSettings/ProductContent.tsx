@@ -1,4 +1,5 @@
 import { useState, type Dispatch, type FC, type SetStateAction } from "react";
+import { useTranslation } from "react-i18next";
 import type { ExistingItem } from "@/types/settings";
 
 import { InteractiveField } from "@/ui-kit";
@@ -26,6 +27,7 @@ export const ProductContent: FC<ProductContentProps> = ({
   existingItems,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
 
@@ -74,7 +76,9 @@ export const ProductContent: FC<ProductContentProps> = ({
       {/* Create new section */}
       <div className={styles.createNewSection}>
         <div className={styles.createNewHeader}>
-          <h3 className={styles.createNewTitle}>Create new one</h3>
+          <h3 className={styles.createNewTitle}>
+            {t("productSettings.createNew")}
+          </h3>
         </div>
 
         <div className={styles.interactiveFieldsContainer}>
@@ -84,7 +88,7 @@ export const ProductContent: FC<ProductContentProps> = ({
             textInput={{
               value: newFieldValue,
               onChange: setNewFieldValue,
-              placeholder: "Key here",
+              placeholder: t("productSettings.keyHere"),
             }}
           />
         </div>
@@ -103,7 +107,7 @@ export const ProductContent: FC<ProductContentProps> = ({
             <ChevronRight size={16} color="#ffffff" />
           )}
           <span className={styles.existingTitle}>
-            Existing{" "}
+            {t("productSettings.existing")}{" "}
             <span className={styles.existingCount}>
               ({existingItems.length})
             </span>
@@ -113,9 +117,13 @@ export const ProductContent: FC<ProductContentProps> = ({
         {isExistingExpanded && (
           <div className={styles.existingItems}>
             {isLoading && existingItems.length === 0 ? (
-              <div className={styles.loadingState}>Loading...</div>
+              <div className={styles.loadingState}>
+                {t("productSettings.loading")}
+              </div>
             ) : existingItems.length === 0 ? (
-              <div className={styles.emptyState}>No items yet</div>
+              <div className={styles.emptyState}>
+                {t("productSettings.noItems")}
+              </div>
             ) : (
               existingItems.map((item) => (
                 <div key={item.id} className={styles.existingItem}>
@@ -126,18 +134,18 @@ export const ProductContent: FC<ProductContentProps> = ({
                       textInput={{
                         value: editValue,
                         onChange: setEditValue,
-                        placeholder: "Key here",
+                        placeholder: t("productSettings.keyHere"),
                       }}
                       actions={{
                         edit: {
                           icon: <span>✓</span>,
                           onClick: () => saveEdit(item.id),
-                          ariaLabel: "Save",
+                          ariaLabel: t("common.save"),
                         },
                         delete: {
                           icon: <span>✕</span>,
                           onClick: cancelEdit,
-                          ariaLabel: "Cancel",
+                          ariaLabel: t("common.cancel"),
                         },
                       }}
                     />
@@ -150,12 +158,12 @@ export const ProductContent: FC<ProductContentProps> = ({
                         edit: {
                           icon: <Pencil size={14} color="#ffffff" />,
                           onClick: () => startEdit(item),
-                          ariaLabel: "Edit",
+                          ariaLabel: t("common.edit"),
                         },
                         delete: {
                           icon: <Trash2 size={14} color="#ffffff" />,
                           onClick: () => handleDeleteItem(item.id),
-                          ariaLabel: "Delete",
+                          ariaLabel: t("common.delete"),
                         },
                       }}
                     />

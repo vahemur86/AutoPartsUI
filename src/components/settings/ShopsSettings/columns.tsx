@@ -1,4 +1,5 @@
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import i18next from "i18next";
 // ui-kit
 import { IconButton } from "@/ui-kit";
 // types
@@ -22,13 +23,13 @@ export const getShopColumns = (
 
   return [
     columnHelper.accessor("id", {
-      header: "ID",
+      header: i18next.t("columns.id"),
     }),
     columnHelper.accessor("code", {
-      header: "Code",
+      header: i18next.t("columns.code"),
     }),
     columnHelper.accessor("warehouseId", {
-      header: "Warehouse ID",
+      header: i18next.t("columns.warehouseId"),
       cell: (info) => getWarehouseCode(info.getValue()),
     }),
     columnHelper.display({
@@ -43,7 +44,7 @@ export const getShopColumns = (
                 variant="secondary"
                 size="small"
                 icon={<Pencil size={14} />}
-                ariaLabel="Edit shop"
+                ariaLabel={i18next.t("columns.editShop")}
                 onClick={() => onEdit(shop)}
               />
             )}
@@ -52,7 +53,7 @@ export const getShopColumns = (
                 variant="secondary"
                 size="small"
                 icon={<Trash2 size={14} />}
-                ariaLabel="Delete shop"
+                ariaLabel={i18next.t("columns.deleteShop")}
                 onClick={() => onDelete(shop.id)}
               />
             )}

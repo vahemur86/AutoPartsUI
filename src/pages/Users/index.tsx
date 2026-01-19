@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 // components
 import { SectionHeader } from "@/components/common/SectionHeader";
 // icons
@@ -20,6 +21,7 @@ import { getErrorMessage } from "@/utils";
 import styles from "./Users.module.css";
 
 export const UserManagement = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { shops } = useAppSelector((state) => state.shops);
   const { warehouses } = useAppSelector((state) => state.warehouses);
@@ -60,7 +62,7 @@ export const UserManagement = () => {
       !shopId ||
       !warehouseId
     ) {
-      toast.error("Please fill in all fields");
+      toast.error(t("users.validation.fillAllFields"));
       return;
     }
 
@@ -74,10 +76,10 @@ export const UserManagement = () => {
         parseInt(shopId),
         parseInt(warehouseId)
       );
-      toast.success("User created successfully");
+      toast.success(t("users.success.userCreated"));
       handleCancel();
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Failed to create user"));
+      toast.error(getErrorMessage(error, t("users.error.failedToCreate")));
     } finally {
       setIsSubmitting(false);
     }
@@ -86,8 +88,8 @@ export const UserManagement = () => {
   return (
     <>
       <SectionHeader
-        title="User Management"
-        icon={<img src={userIcon} alt="Users icon" />}
+        title={t("header.users")}
+        icon={<img src={userIcon} alt={t("users.iconAlt")} />}
       />
       <div className={styles.usersContainer}>
         <div className={styles.formWrapper}>
@@ -95,17 +97,17 @@ export const UserManagement = () => {
             <div className={styles.formRow}>
               <div className={styles.formColumn}>
                 <TextField
-                  label="Username"
-                  placeholder="Enter username"
+                  label={t("users.form.username")}
+                  placeholder={t("users.form.enterUsername")}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div className={styles.formColumn}>
                 <TextField
-                  label="Password"
+                  label={t("users.form.password")}
                   type="password"
-                  placeholder="Enter password"
+                  placeholder={t("users.form.enterPassword")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -115,8 +117,8 @@ export const UserManagement = () => {
             <div className={styles.formRow}>
               <div className={styles.formColumn}>
                 <Select
-                  label="Role"
-                  placeholder="Select role"
+                  label={t("users.form.role")}
+                  placeholder={t("users.form.selectRole")}
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                 >
@@ -129,8 +131,8 @@ export const UserManagement = () => {
               </div>
               <div className={styles.formColumn}>
                 <Select
-                  label="User Type"
-                  placeholder="Select user type"
+                  label={t("users.form.userType")}
+                  placeholder={t("users.form.selectUserType")}
                   value={userType}
                   onChange={(e) => setUserType(e.target.value)}
                 >
@@ -146,8 +148,8 @@ export const UserManagement = () => {
             <div className={styles.formRow}>
               <div className={styles.formColumn}>
                 <Select
-                  label="Shop"
-                  placeholder="Select shop"
+                  label={t("users.form.shop")}
+                  placeholder={t("users.form.selectShop")}
                   value={shopId}
                   onChange={(e) => setShopId(e.target.value)}
                 >
@@ -160,8 +162,8 @@ export const UserManagement = () => {
               </div>
               <div className={styles.formColumn}>
                 <Select
-                  label="Warehouse"
-                  placeholder="Select warehouse"
+                  label={t("users.form.warehouse")}
+                  placeholder={t("users.form.selectWarehouse")}
                   value={warehouseId}
                   onChange={(e) => setWarehouseId(e.target.value)}
                 >
@@ -182,7 +184,7 @@ export const UserManagement = () => {
               onClick={handleCancel}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="primary"
@@ -190,7 +192,7 @@ export const UserManagement = () => {
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              Save
+              {t("common.save")}
             </Button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Dropdown, TextField, Switch } from "@/ui-kit";
 import styles from "./TaskDropdown.module.css";
 
@@ -25,6 +26,7 @@ export const TaskDropdown = ({
   onOpenChange,
   onSave,
 }: TaskDropdownProps) => {
+  const { t } = useTranslation();
   const [code, setCode] = useState("");
   const [laborCostInput, setLaborCostInput] = useState("");
   const [isActive, setIsActive] = useState(true);
@@ -66,37 +68,37 @@ export const TaskDropdown = ({
       anchorRef={anchorRef}
       align="start"
       side="left"
-      title={isEditMode ? "Edit Task" : "Add Task"}
+      title={isEditMode ? t("vehicles.tasks.editTask") : t("vehicles.tasks.addTask")}
     >
       <div className={styles.header}>
         <span className={styles.title}>
-          {isEditMode ? "Edit Task" : "Add Task"}
+          {isEditMode ? t("vehicles.tasks.editTask") : t("vehicles.tasks.addTask")}
         </span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.grid}>
           <TextField
-            label="Task / Service"
-            placeholder="Enter task name..."
+            label={t("vehicles.tasks.form.taskService")}
+            placeholder={t("vehicles.tasks.form.enterTaskName")}
             value={code}
             onChange={(e) => setCode(e.target.value)}
             error={hasTriedSave && !isCodeValid}
             helperText={
-              hasTriedSave && !isCodeValid ? "Task name is required" : ""
+              hasTriedSave && !isCodeValid ? t("vehicles.tasks.form.taskNameRequired") : ""
             }
             disabled={isLoading}
           />
 
           <TextField
-            label="Labor Cost (USD)"
+            label={t("vehicles.tasks.form.laborCost")}
             placeholder="0.00"
             type="number"
             value={laborCostInput}
             onChange={(e) => setLaborCostInput(e.target.value)}
             error={hasTriedSave && !isCostValid}
             helperText={
-              hasTriedSave && !isCostValid ? "Enter a valid cost" : ""
+              hasTriedSave && !isCostValid ? t("vehicles.tasks.form.enterValidCost") : ""
             }
             disabled={isLoading}
           />
@@ -106,7 +108,7 @@ export const TaskDropdown = ({
               <Switch
                 checked={isActive}
                 onCheckedChange={setIsActive}
-                label="Enabled"
+                label={t("vehicles.tasks.form.enabled")}
               />
             </div>
           )}
@@ -120,7 +122,7 @@ export const TaskDropdown = ({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="primary"
@@ -128,7 +130,7 @@ export const TaskDropdown = ({
               onClick={handleSaveClick}
               disabled={isLoading}
             >
-              {isEditMode ? "Update" : "Save"}
+              {isEditMode ? t("common.update") : t("common.save")}
             </Button>
           </div>
         </div>

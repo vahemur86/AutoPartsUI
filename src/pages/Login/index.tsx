@@ -1,20 +1,21 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import i18n from "i18next";
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login, clearAuthError } from "@/store/slices/authSlice";
-
+// services
+import { getLanguages } from "@/services/settings/languages";
+// utils, types
+import type { Language } from "@/types/settings";
+import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
-
 // icons
 import { Lock, Eye, EyeOff, User } from "lucide-react";
-
 // images
 import logoImage from "@/assets/icons/Subtract.svg";
-
 // styles
 import styles from "./Login.module.css";
 
@@ -43,6 +44,33 @@ export const Login = () => {
   const isPasswordValid = credentials.password.length >= 4;
   const isFormValid = isUsernameValid && isPasswordValid;
 
+  const initializeDefaultLanguage = async () => {
+    try {
+      const savedLanguage = localStorage.getItem("i18nextLng");
+      if (
+        savedLanguage &&
+        i18n.hasResourceBundle(savedLanguage, "translation")
+      ) {
+        return;
+      }
+
+      const languages = await getLanguages();
+      const defaultLanguage = languages.find(
+        (lang: Language) => lang.isDefault
+      );
+
+      if (defaultLanguage) {
+        const i18nCode = mapApiCodeToI18nCode(defaultLanguage.code);
+        if (i18n.hasResourceBundle(i18nCode, "translation")) {
+          i18n.changeLanguage(i18nCode);
+          localStorage.setItem("i18nextLng", i18nCode);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to initialize default language:", error);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setHasTriedSubmit(true);
@@ -52,6 +80,8 @@ export const Login = () => {
     const resultAction = await dispatch(login(credentials));
 
     if (login.fulfilled.match(resultAction)) {
+      // Initialize default language after successful login
+      await initializeDefaultLanguage();
       toast.success("Welcome back!");
       navigate("/");
     }

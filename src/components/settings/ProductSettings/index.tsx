@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 import { ProductContent } from "./ProductContent";
 import { PRODUCT_SETTINGS_TABS, TAB_CONFIG } from "@/constants/settings";
@@ -14,6 +15,7 @@ import { Tab, TabGroup, Button } from "@/ui-kit";
 import styles from "./ProductSettings.module.css";
 
 export const ProductSettings = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { brands, categories, unitTypes, boxSizes, isLoading, fetchedData } =
     useAppSelector((state) => state.productSettings);
@@ -25,9 +27,17 @@ export const ProductSettings = () => {
   const [newFieldValue, setNewFieldValue] = useState("");
   const fetchingRef = useRef<Set<string>>(new Set());
 
+  // Get translated tab labels
+  const translatedTabs = useMemo(() => {
+    return PRODUCT_SETTINGS_TABS.map((tab) => ({
+      ...tab,
+      label: t(`productSettings.tabs.${tab.id}`),
+    }));
+  }, [t]);
+
   const activeTab = useMemo(
-    () => PRODUCT_SETTINGS_TABS.find((tab) => tab.id === activeTabId),
-    [activeTabId]
+    () => translatedTabs.find((tab) => tab.id === activeTabId),
+    [activeTabId, translatedTabs]
   );
 
   const currentData = useMemo((): ProductSettingItem[] => {
@@ -99,14 +109,14 @@ export const ProductSettings = () => {
           await dispatch(config.actions.remove(payload as number)).unwrap();
         }
 
-        const actionPastTense =
-          actionType === "add"
-            ? "created"
-            : actionType === "remove"
-            ? "deleted"
-            : "updated";
-
-        toast.success(`${activeTab.type} ${actionPastTense} successfully`);
+        if (actionType === "add") {
+          toast.success(t("productSettings.success.created", { type: activeTab.type }));
+          setNewFieldValue("");
+        } else if (actionType === "remove") {
+          toast.success(t("productSettings.success.deleted", { type: activeTab.type }));
+        } else {
+          toast.success(t("productSettings.success.updated", { type: activeTab.type }));
+        }
 
         if (actionType === "add") {
           setNewFieldValue("");
@@ -115,7 +125,10 @@ export const ProductSettings = () => {
         const errorMessage =
           err instanceof Error
             ? err.message
-            : `Failed to ${actionType} ${activeTab.type}`;
+            : t("productSettings.error.failedToAction", {
+                action: actionType,
+                type: activeTab.type,
+              });
         console.error(`Error ${actionType}ing ${activeTab.type}:`, err);
         toast.error(errorMessage);
       }
@@ -153,7 +166,7 @@ export const ProductSettings = () => {
       <div className={styles.productSettings}>
         <div className={styles.tabsContainer}>
           <TabGroup>
-            {PRODUCT_SETTINGS_TABS.map((tab) => (
+            {translatedTabs.map((tab) => (
               <Tab
                 key={tab.id}
                 variant="segmented"
@@ -184,7 +197,7 @@ export const ProductSettings = () => {
           onClick={handleCancel}
           disabled={isLoading}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="primary"
@@ -192,7 +205,7 @@ export const ProductSettings = () => {
           onClick={handleSave}
           disabled={isLoading || !newFieldValue.trim()}
         >
-          Save
+          {t("common.save")}
         </Button>
       </div>
     </div>

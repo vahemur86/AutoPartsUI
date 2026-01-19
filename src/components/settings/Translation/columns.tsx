@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { IconButton } from "@/ui-kit";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Pencil } from "lucide-react";
@@ -10,19 +11,19 @@ export const getTranslationColumns = (): ColumnDef<
   any
 >[] => [
   columnHelper.accessor("entityName", {
-    header: "Entity name",
+    header: i18next.t("translation.columns.entityName"),
   }),
   columnHelper.accessor("entityId", {
-    header: "Entity ID",
+    header: i18next.t("translation.columns.entityId"),
   }),
   columnHelper.accessor("fieldName", {
-    header: "Field name",
+    header: i18next.t("translation.columns.fieldName"),
   }),
   columnHelper.accessor("languageCode", {
-    header: "Language code",
+    header: i18next.t("translation.columns.languageCode"),
   }),
   columnHelper.accessor("value", {
-    header: "Value",
+    header: i18next.t("translation.columns.value"),
   }),
   columnHelper.display({
     id: "actions",
@@ -32,7 +33,7 @@ export const getTranslationColumns = (): ColumnDef<
         variant="secondary"
         size="small"
         icon={<Pencil size={14} color="#ffffff" />}
-        ariaLabel="Edit"
+        ariaLabel={i18next.t("common.edit")}
         onClick={() => {}}
       />
     ),
