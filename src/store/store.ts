@@ -5,6 +5,7 @@ import productSettingsReducer from "./slices/productSettingsSlice";
 import productsReducer from "./slices/productsSlice";
 import tasksReducer from "./slices/tasksSlice";
 import authReducer from "./slices/authSlice";
+import metalRatesReducer from "./slices/metalRatesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     productSettings: productSettingsReducer,
     products: productsReducer,
     tasks: tasksReducer,
+    metalRates: metalRatesReducer,
     auth: authReducer,
   },
 });

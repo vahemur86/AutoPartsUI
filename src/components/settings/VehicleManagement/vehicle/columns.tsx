@@ -8,17 +8,32 @@ export const getVehicleColumns = (
   withEdit: boolean,
   withDelete: boolean,
   onEdit: (vehicle: Vehicle) => void,
-  onDelete: (vehicle: Vehicle) => void
+  onDelete: (vehicle: Vehicle) => void,
 ): ColumnDef<Vehicle>[] => [
-  { accessorKey: "brand", header: i18next.t("vehicles.vehicles.columns.brand") },
-  { accessorKey: "model", header: i18next.t("vehicles.vehicles.columns.model") },
+  {
+    accessorKey: "brand",
+    header: i18next.t("vehicles.vehicles.columns.brand"),
+  },
+  {
+    accessorKey: "model",
+    header: i18next.t("vehicles.vehicles.columns.model"),
+  },
   { accessorKey: "year", header: i18next.t("vehicles.vehicles.columns.year") },
-  { accessorKey: "engine", header: i18next.t("vehicles.vehicles.columns.engine") },
-  { accessorKey: "fuelType", header: i18next.t("vehicles.vehicles.columns.fuelType") },
-  { accessorKey: "status", header: i18next.t("vehicles.vehicles.columns.status") },
+  {
+    accessorKey: "engine",
+    header: i18next.t("vehicles.vehicles.columns.engine"),
+  },
+  {
+    accessorKey: "fuelType",
+    header: i18next.t("vehicles.vehicles.columns.fuelType"),
+  },
+  {
+    accessorKey: "status",
+    header: i18next.t("vehicles.vehicles.columns.status"),
+  },
   {
     id: "actions",
-    header: i18next.t("vehicles.vehicles.columns.actions"),
+    header: i18next.t("common.actions"),
     enableSorting: false,
     cell: ({ row }) => {
       const vehicle = row.original;

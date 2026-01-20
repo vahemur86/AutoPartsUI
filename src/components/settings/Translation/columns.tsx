@@ -8,6 +8,7 @@ const columnHelper = createColumnHelper<TranslationHistoryItem>();
 
 export const getTranslationColumns = (): ColumnDef<
   TranslationHistoryItem,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any
 >[] => [
   columnHelper.accessor("entityName", {

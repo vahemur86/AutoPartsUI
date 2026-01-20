@@ -30,7 +30,7 @@ export const getTaskColumns = (
   }),
   columnHelper.display({
     id: "actions",
-    header: i18next.t("vehicles.tasks.columns.actions"),
+    header: i18next.t("common.actions"),
     cell: ({ row }) => {
       const task = row.original;
       return (
