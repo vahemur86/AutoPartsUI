@@ -19,7 +19,8 @@
     "actions": "Действия",
     "active": "Активен",
     "inactive": "Неактивен",
-    "enabled": "Включено"
+    "enabled": "Включено",
+    "noOptionsAvailable": "Нет доступных вариантов"
   },
   "settings": {
     "navigation": {
