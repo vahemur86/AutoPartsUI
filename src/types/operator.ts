@@ -1,9 +1,9 @@
-export interface MetalRate {
-  id: number;
+export interface Intake {
+  shopId: number;
+  customerPhone: string;
+  powderWeightTotal: number;
+  ptWeight: number;
+  pdWeight: number;
+  rhWeight: number;
   currencyCode: string;
-  ptPricePerGram: number;
-  pdPricePerGram: number;
-  rhPricePerGram: number;
-  effectiveFrom: string;
-  isActive: boolean;
 }
