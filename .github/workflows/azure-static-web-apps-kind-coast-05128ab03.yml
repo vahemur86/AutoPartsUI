@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build React app
+      - name: Build Vite app
         run: yarn build
 
       - name: Deploy to Azure Static Web Apps
@@ -38,8 +38,8 @@ jobs:
           action: upload
 
           # App paths
-          app_location: "/"
-          app_artifact_location: "build"
+          app_location: "/"                  # root of your Vite app
+          app_artifact_location: "dist"      # Vite build folder
 
           # We already built the app
           skip_app_build: true
@@ -56,4 +56,3 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_KIND_COAST_05128AB03 }}
           action: close
-
