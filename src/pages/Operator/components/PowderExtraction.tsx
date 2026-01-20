@@ -1,6 +1,18 @@
+// ui-kit
+import { TextField } from "@/ui-kit";
+
+// styles
 import styles from "../OperatorPage.module.css";
 
-export const PowderExtraction = () => {
+interface PowderExtractionProps {
+  weight: string;
+  onWeightChange: (val: string) => void;
+}
+
+export const PowderExtraction = ({
+  weight,
+  onWeightChange,
+}: PowderExtractionProps) => {
   return (
     <div className={styles.powderCard}>
       <div className={styles.powderHeader}>
@@ -10,7 +22,12 @@ export const PowderExtraction = () => {
       <div className={styles.divider} />
 
       <div className={styles.powderContent}>
-        <div className={styles.powderAmount}>7.00 kg</div>
+        <TextField
+          label="Extraction Weight (kg)"
+          placeholder="0.00"
+          value={weight}
+          onChange={(e) => onWeightChange(e.target.value)}
+        />
 
         <div className={styles.powderDetails}>
           <div className={styles.powderDetailRow}>

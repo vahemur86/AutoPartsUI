@@ -1,42 +1,63 @@
-import type { MetalRate } from "@/types/operator";
 import api from ".";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
 
-export interface GetOrCreateCustomerRequest {
-  phone: string;
-}
+// types
+import type { Intake } from "@/types/operator";
 
-export interface GetOrCreateCustomerResponse {
-  // The exact structure will be determined based on the API response
-  // For now, we'll use a generic type that can be logged
-  [key: string]: any;
-}
-
-export const getOrCreateCustomer = async (
-  phone: string
-): Promise<GetOrCreateCustomerResponse> => {
+export const createIntake = async (intake: Intake) => {
   try {
-    const response = await api.post<GetOrCreateCustomerResponse>(
-      `/catalyst/customers/get-or-create`,
-      {
-        phone,
-      }
-    );
+    const response = await api.post(`/catalyst/intakes`, intake);
     return response.data;
   } catch (error: unknown) {
-    throw new Error(
-      getApiErrorMessage(error, "Failed to get or create customer.")
-    );
+    throw new Error(getApiErrorMessage(error, "Failed to create intake."));
   }
 };
 
-export const getMetalRates = async (): Promise<MetalRate[]> => {
+export const getIntake = async (intakeId: number) => {
   try {
-    const response = await api.get<MetalRate[]>(`/metal-rates`);
+    const response = await api.get(`/catalyst/intakes/${intakeId}`);
     return response.data;
   } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to get metal rates."));
+    throw new Error(getApiErrorMessage(error, "Failed to get intake."));
+  }
+};
+
+export const acceptIntake = async (intakeId: number): Promise<Intake> => {
+  try {
+    const response = await api.post(`/catalyst/intakes/${intakeId}/accept`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to accept intake."));
+  }
+};
+
+export const rejectIntake = async (intakeId: number) => {
+  try {
+    const response = await api.post(`/catalyst/intakes/${intakeId}/reject`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to reject intake."));
+  }
+};
+
+export const offerIntake = async (intakeId: number) => {
+  try {
+    const response = await api.post(`/catalyst/intakes/${intakeId}/offer`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to offer intake."));
+  }
+};
+
+export const recalculateIntake = async (intakeId: number) => {
+  try {
+    const response = await api.post(
+      `/catalyst/intakes/${intakeId}/recalculate`
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to recalculate intake."));
   }
 };
