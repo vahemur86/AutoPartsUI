@@ -191,9 +191,9 @@
     },
     "form": {
       "currency": "Currency Code",
-      "platinum": "Platinum Price",
-      "palladium": "Palladium Price",
-      "rhodium": "Rhodium Price"
+      "platinum": "Platinum Weight",
+      "palladium": "Palladium Weight",
+      "rhodium": "Rhodium Weight"
     },
     "confirmation": {
       "deleteTitle": "Delete Metal Rate",

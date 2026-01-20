@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
 // services
 import {
   createIntake,
@@ -8,13 +9,15 @@ import {
   rejectIntake as rejectIntakeFn,
   recalculateIntake as recalculateIntakeFn,
 } from "@/services/operator";
+
 // types
-import type { Intake } from "@/types/operator";
+import type { Intake, IntakeResponse } from "@/types/operator";
+
 // utils
 import { getApiErrorMessage } from "@/utils";
 
 interface IntakeState {
-  intake: Intake | null;
+  intake: IntakeResponse | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -26,7 +29,7 @@ const initialState: IntakeState = {
 };
 
 export const addIntake = createAsyncThunk<
-  Intake,
+  IntakeResponse,
   Intake,
   { rejectValue: string }
 >("intakes/addIntake", async (intake, { rejectWithValue }) => {
@@ -34,13 +37,13 @@ export const addIntake = createAsyncThunk<
     return await createIntake(intake);
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to create intake")
+      getApiErrorMessage(error, "Failed to create intake"),
     );
   }
 });
 
 export const fetchIntake = createAsyncThunk<
-  Intake,
+  IntakeResponse,
   number,
   { rejectValue: string }
 >("intakes/fetchIntake", async (id, { rejectWithValue }) => {
@@ -72,7 +75,7 @@ export const acceptIntake = createAsyncThunk<
     return await acceptIntakeFn(id);
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to accept intake")
+      getApiErrorMessage(error, "Failed to accept intake"),
     );
   }
 });
@@ -86,7 +89,7 @@ export const rejectIntake = createAsyncThunk<
     return await rejectIntakeFn(id);
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to reject intake")
+      getApiErrorMessage(error, "Failed to reject intake"),
     );
   }
 });
@@ -100,7 +103,7 @@ export const recalculateIntake = createAsyncThunk<
     return await recalculateIntakeFn(id);
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to recalculate intake")
+      getApiErrorMessage(error, "Failed to recalculate intake"),
     );
   }
 });
@@ -138,42 +141,6 @@ const operatorSlice = createSlice({
       .addCase(addIntake.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to create intake";
-      })
-      .addCase(offerIntake.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(offerIntake.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.intake = action.payload;
-      })
-      .addCase(offerIntake.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload ?? "Failed to offer intake";
-      })
-      .addCase(rejectIntake.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(rejectIntake.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.intake = action.payload;
-      })
-      .addCase(rejectIntake.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload ?? "Failed to reject intake";
-      })
-      .addCase(acceptIntake.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(acceptIntake.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.intake = action.payload;
-      })
-      .addCase(acceptIntake.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload ?? "Failed to accept intake";
       });
   },
 });

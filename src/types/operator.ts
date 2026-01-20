@@ -26,3 +26,39 @@ export interface Intake {
   currencyCode: string;
   customer?: Customer;
 }
+
+export interface IntakeResponse {
+  id: number;
+  shopId: number;
+  operatorUserId: number;
+  customerId: number;
+  customer: {
+    id: number;
+    phone: string;
+    customerTypeId: number;
+    customerType: {
+      id: number;
+      code: string;
+      isDefault: boolean;
+      bonusPercent: number;
+      isActive: boolean;
+      createdAt: string;
+    };
+    fullName: string | null;
+    notes: string | null;
+    createdAt: string | null;
+    updatedAt: string | null;
+  };
+  powderWeightTotal: number;
+  ptWeight: number;
+  pdWeight: number;
+  rhWeight: number;
+  offerPrice: number;
+  currencyCode: string;
+  status: number;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serviceItems: any[];
+}

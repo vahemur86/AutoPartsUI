@@ -1,14 +1,14 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import { Button } from "@/ui-kit";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { offerIntake, rejectIntake } from "@/store/slices/operatorSlice";
-import type { Intake } from "@/types/operator";
+import type { IntakeResponse } from "@/types/operator";
 import styles from "../OperatorPage.module.css";
 
-export const FinalOffer = () => {
+export const FinalOffer: FC<{ offerPrice: number }> = ({ offerPrice }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake } = useAppSelector((state) => state.operator);
@@ -16,7 +16,7 @@ export const FinalOffer = () => {
   const [isRejecting, setIsRejecting] = useState(false);
 
   const handleOffer = useCallback(async () => {
-    const currentIntake: Intake | null = intake ?? null;
+    const currentIntake: IntakeResponse | null = intake ?? null;
 
     if (!currentIntake) {
       toast.error(t("finalOffer.error.noIntake"));
@@ -47,7 +47,7 @@ export const FinalOffer = () => {
   }, [dispatch, intake, t]);
 
   const handleReject = useCallback(async () => {
-    const currentIntake: Intake | null = intake ?? null;
+    const currentIntake: IntakeResponse | null = intake ?? null;
 
     if (!currentIntake) {
       toast.error(t("finalOffer.error.noIntake"));
@@ -80,10 +80,8 @@ export const FinalOffer = () => {
   return (
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
-        <div className={styles.finalOfferLabel}>
-          {t("finalOffer.title")}
-        </div>
-        <div className={styles.finalOfferAmount}>$35,640 USD</div>
+        <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
+        <div className={styles.finalOfferAmount}>{offerPrice} AMD</div>
 
         <div className={styles.divider} />
 

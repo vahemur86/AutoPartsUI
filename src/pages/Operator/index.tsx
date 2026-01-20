@@ -23,22 +23,48 @@ import { fetchMetalRates } from "@/store/slices/metalRatesSlice";
 import { getLanguages } from "@/services/settings/languages";
 import type { Language } from "@/types/settings";
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+import { fetchIntake } from "@/store/slices/operatorSlice";
+import { createIntake } from "@/services/operator";
 
 export const OperatorPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { metalRates } = useAppSelector((state) => state.metalRates);
+  const { intake } = useAppSelector((state) => state.operator);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [isLangLoading, setIsLangLoading] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [data, setData] = useState<any | null>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const metalRate = useMemo(
     () => metalRates.find((rate) => rate.isActive),
-    [metalRates]
+    [metalRates],
   );
 
+  // Shared Form State
+  const [formData, setFormData] = useState({
+    powderWeight: "",
+    platinumPrice: "",
+    palladiumPrice: "",
+    rhodiumPrice: "",
+    customerPhone: "",
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
   useEffect(() => {
+    const localeStorageData = JSON.parse(
+      localStorage.getItem("user_data") ?? "{}",
+    );
+    setData(localeStorageData);
     dispatch(fetchMetalRates());
+    dispatch(fetchIntake(localeStorageData.shopId));
   }, [dispatch]);
 
   useEffect(() => {
@@ -59,12 +85,35 @@ export const OperatorPage = () => {
     loadLanguages();
   }, []);
 
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      dispatch(
+        await createIntake({
+          currencyCode: "AMD",
+          ptWeight: Number(formData.platinumPrice),
+          pdWeight: Number(formData.palladiumPrice),
+          rhWeight: Number(formData.rhodiumPrice),
+          powderWeightTotal: Number(formData.powderWeight),
+          customerPhone: formData.customerPhone,
+          shopId: data.shopId,
+        }),
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to submit:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login", { replace: true });
   };
 
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     const apiCode = event.target.value;
     const i18nCode = mapApiCodeToI18nCode(apiCode);
 
@@ -79,16 +128,14 @@ export const OperatorPage = () => {
   return (
     <div className={styles.operatorPage}>
       <div className={styles.headerSection}>
-        <h1 className={styles.pageTitle}>
-          {t("operatorPage.title")}
-        </h1>
+        <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
 
-         <select
+        <select
           className={styles.languageSelect}
           onChange={handleLanguageChange}
           value={
             languages.find(
-              (lang) => mapApiCodeToI18nCode(lang.code) === i18n.language
+              (lang) => mapApiCodeToI18nCode(lang.code) === i18n.language,
             )?.code ?? ""
           }
           disabled={isLangLoading || languages.length === 0}
@@ -106,7 +153,10 @@ export const OperatorPage = () => {
 
       <div className={styles.topRow}>
         <div className={styles.leftColumn}>
-          <PowderExtraction />
+          <PowderExtraction
+            weight={formData.powderWeight}
+            onWeightChange={(val) => handleInputChange("powderWeight", val)}
+          />
           <LiveMarketPrices
             ptPricePerGram={metalRate?.ptPricePerGram}
             pdPricePerGram={metalRate?.pdPricePerGram}
@@ -117,12 +167,21 @@ export const OperatorPage = () => {
         </div>
 
         <div className={styles.centerColumn}>
-          <PricingBreakdown />
-          <FinalOffer />
+          <PricingBreakdown
+            formData={formData}
+            onPriceChange={handleInputChange}
+            onSubmit={handleSubmit}
+            isLoading={isSubmitting}
+          />
+          <FinalOffer offerPrice={intake?.offerPrice ?? 0} />
         </div>
 
         <div className={styles.rightColumn}>
-          <CustomerDetails onCloseSession={handleLogout} />
+          <CustomerDetails
+            customerPhone={formData.customerPhone}
+            onPhoneChange={(val) => handleInputChange("customerPhone", val)}
+            onCloseSession={handleLogout}
+          />
         </div>
       </div>
     </div>

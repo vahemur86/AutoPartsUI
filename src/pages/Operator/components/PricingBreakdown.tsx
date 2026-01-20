@@ -1,80 +1,92 @@
-import { useTranslation } from "react-i18next";
+// ui-kit
+import { TextField, Button } from "@/ui-kit";
+
+// icons
+import { Send } from "lucide-react";
+
+// styles
 import styles from "../OperatorPage.module.css";
 
 interface PricingRowProps {
   metal: string;
-  amount: string;
-  price: string;
-  coefficient?: string;
-  total: string;
+  priceValue: string;
+  onPriceChange: (val: string) => void;
 }
 
-const PricingRow = ({
-  metal,
-  amount,
-  price,
-  coefficient,
-  total,
-}: PricingRowProps) => (
-  <div className={styles.pricingRow}>
-    <div className={styles.pricingMetal}>{metal}:</div>
-    <div className={styles.pricingCalculation}>
-      {amount} × {price}
-      {coefficient && ` × ${coefficient}`} = {total}
+const PricingRow = ({ metal, priceValue, onPriceChange }: PricingRowProps) => (
+  <div
+    className={styles.pricingRow}
+    style={{ display: "flex", alignItems: "center" }}
+  >
+    <div
+      className={styles.pricingMetal}
+      style={{ width: "120px", flexShrink: 0 }}
+    >
+      {metal} Price:
+    </div>
+    <div className={styles.pricingCalculation} style={{ flex: 1, margin: 0 }}>
+      <TextField
+        type="number"
+        value={priceValue}
+        onChange={(e) => onPriceChange(e.target.value)}
+        placeholder="0.00"
+      />
     </div>
   </div>
 );
 
-export const PricingBreakdown = () => {
-  const { t } = useTranslation();
+interface PricingBreakdownProps {
+  formData: {
+    platinumPrice: string;
+    palladiumPrice: string;
+    rhodiumPrice: string;
+  };
+  onPriceChange: (field: string, value: string) => void;
+  onSubmit: () => void;
+  isLoading?: boolean;
+}
 
+export const PricingBreakdown = ({
+  formData,
+  onPriceChange,
+  onSubmit,
+  isLoading,
+}: PricingBreakdownProps) => {
   return (
     <div className={styles.pricingCard}>
-      <h2 className={styles.cardTitle}>
-        {t("pricingBreakdown.title")}
-      </h2>
+      <h2 className={styles.cardTitle}>Pricing Breakdown</h2>
 
       <div className={styles.divider} />
 
       <div className={styles.pricingContent}>
         <PricingRow
-          metal={t("pricingBreakdown.metals.platinum")}
-          amount="1 kg"
-          price="$30,000"
-          total="$28,500"
+          metal="Platinum"
+          priceValue={formData.platinumPrice}
+          onPriceChange={(val) => onPriceChange("platinumPrice", val)}
         />
         <PricingRow
-          metal={t("pricingBreakdown.metals.palladium")}
-          amount="0.5 kg"
-          price="$25,000"
-          coefficient="96%"
-          total="$12,000"
+          metal="Palladium"
+          priceValue={formData.palladiumPrice}
+          onPriceChange={(val) => onPriceChange("palladiumPrice", val)}
         />
         <PricingRow
-          metal={t("pricingBreakdown.metals.rhodium")}
-          amount="0 kg"
-          price="$150,000"
-          coefficient="90%"
-          total="$0"
+          metal="Rhodium"
+          priceValue={formData.rhodiumPrice}
+          onPriceChange={(val) => onPriceChange("rhodiumPrice", val)}
         />
 
         <div className={styles.divider} />
 
-        <div className={styles.pricingSummary}>
-          <div className={styles.summaryRow}>
-            <span>{t("pricingBreakdown.totalMetalValue")}</span>
-            <span className={styles.summaryValue}>$40,500</span>
-          </div>
-          <div className={styles.summaryRow}>
-            <span>{t("pricingBreakdown.clientCoefficient")}</span>
-            <span className={styles.summaryValue}>0.88</span>
-          </div>
-          <div className={styles.summaryRow}>
-            <span className={styles.finalOfferLabelSummary}>
-              {t("pricingBreakdown.finalOffer")}
-            </span>
-            <span className={styles.finalOfferValue}>$35,640</span>
-          </div>
+        <div style={{ marginTop: "8px" }}>
+          <Button
+            variant="primary"
+            onClick={onSubmit}
+            disabled={isLoading}
+            style={{ width: "100%" }}
+          >
+            <Send size={18} style={{ marginRight: "8px" }} />
+            Create Intake
+          </Button>
         </div>
       </div>
     </div>

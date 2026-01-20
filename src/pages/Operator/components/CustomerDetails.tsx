@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Search, User, Check, LogOut } from "lucide-react";
 import { TextField, Button } from "@/ui-kit";
 import { toast } from "react-toastify";
-import type { Intake } from "@/types/operator";
+import type { IntakeResponse } from "@/types/operator";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchIntake,
@@ -12,19 +12,24 @@ import {
 import styles from "../OperatorPage.module.css";
 
 interface CustomerDetailsProps {
+  customerPhone?: string;
+  onPhoneChange?: (val: string) => void;
   onCloseSession: () => void;
 }
 
-export const CustomerDetails = ({ onCloseSession }: CustomerDetailsProps) => {
+export const CustomerDetails = ({
+  customerPhone,
+  onPhoneChange,
+  onCloseSession,
+}: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake, isLoading } = useAppSelector((state) => state.operator);
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [isAccepting, setIsAccepting] = useState(false);
 
   const handleSearch = useCallback(async () => {
-    if (!phoneNumber.trim()) {
-      toast.error(t("customerDetails.validation.enterPhoneNumber"));
+    if (!customerPhone?.trim()) {
+      toast.error(t("customerDetails.validation.entercustomerPhone"));
       return;
     }
 
@@ -42,6 +47,7 @@ export const CustomerDetails = ({ onCloseSession }: CustomerDetailsProps) => {
       if (parsed.shopId !== undefined && parsed.shopId !== null) {
         shopId = Number(parsed.shopId);
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error(t("customerDetails.error.failedToSearch"));
       return;
@@ -63,7 +69,7 @@ export const CustomerDetails = ({ onCloseSession }: CustomerDetailsProps) => {
           : t("customerDetails.error.failedToSearch");
       toast.error(errorMessage);
     }
-  }, [dispatch, phoneNumber, t]);
+  }, [dispatch, customerPhone, t]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -71,11 +77,11 @@ export const CustomerDetails = ({ onCloseSession }: CustomerDetailsProps) => {
         handleSearch();
       }
     },
-    [handleSearch]
+    [handleSearch],
   );
 
   const handleAccept = useCallback(async () => {
-    const currentIntake: Intake | null = intake ?? null;
+    const currentIntake: IntakeResponse | null = intake ?? null;
 
     if (!currentIntake) {
       toast.error(t("customerDetails.error.failedToSearch"));
@@ -134,8 +140,8 @@ export const CustomerDetails = ({ onCloseSession }: CustomerDetailsProps) => {
               <Search size={16} />
             </button>
           }
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          value={customerPhone}
+          onChange={(e) => onPhoneChange?.(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
         />
