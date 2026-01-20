@@ -19,7 +19,8 @@
     "actions": "Actions",
     "active": "Active",
     "inactive": "Inactive",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "noOptionsAvailable": "No options available"
   },
   "settings": {
     "navigation": {

@@ -229,7 +229,7 @@ export const AddVehicleDropdown = ({
               disabled={isLoading || isLoadingDefinitions}
             >
               <option value="">{vehicleFormFields.engine.placeholder}</option>
-              {vehicleDefinitions?.engines.map((engine) => (
+              {vehicleDefinitions?.engines?.map((engine) => (
                 <option key={engine.id} value={engine.id}>
                   {engine.name || engine.code}
                 </option>
@@ -249,7 +249,7 @@ export const AddVehicleDropdown = ({
               disabled={isLoading || isLoadingDefinitions}
             >
               <option value="">{vehicleFormFields.fuelType.placeholder}</option>
-              {vehicleDefinitions?.fuelTypes.map((fuelType) => (
+              {vehicleDefinitions?.fuelTypes?.map((fuelType) => (
                 <option key={fuelType.id} value={fuelType.id}>
                   {fuelType.name || fuelType.code}
                 </option>

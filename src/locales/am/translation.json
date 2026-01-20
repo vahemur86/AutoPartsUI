@@ -19,7 +19,8 @@
     "actions": "Գործողություններ",
     "active": "Ակտիվ",
     "inactive": "Անակտիվ",
-    "enabled": "Միացված"
+    "enabled": "Միացված",
+    "noOptionsAvailable": "Տարբերակներ չկան"
   },
   "settings": {
     "navigation": {

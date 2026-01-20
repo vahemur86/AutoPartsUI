@@ -8,6 +8,7 @@ import {
   type ChangeEvent,
   type SelectHTMLAttributes,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 // icons
 import { ChevronDown } from "lucide-react";
@@ -40,6 +41,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     onChange,
     ...props
   }) => {
+    const { t } = useTranslation();
     const reactId = useId();
     const selectId = id || `select-${reactId}`;
 
@@ -171,26 +173,34 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
           {open && !disabled && (
             <div className={styles.dropdown} role="listbox">
-              {options.map((opt) => {
-                const isSelected = String(currentValue) === opt.value;
-                const isDisabled = opt.disabled;
+              {options.length > 0 ? (
+                options.map((opt) => {
+                  const isSelected = String(currentValue) === opt.value;
+                  const isDisabled = opt.disabled;
 
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={`${styles.option} ${
-                      isSelected ? styles.optionSelected : ""
-                    } ${isDisabled ? styles.optionDisabled : ""}`}
-                    onClick={() => !isDisabled && handleSelect(opt.value)}
-                    disabled={isDisabled}
-                    role="option"
-                    aria-selected={isSelected}
-                  >
-                    <span className={styles.optionLabel}>{opt.label}</span>
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      className={`${styles.option} ${
+                        isSelected ? styles.optionSelected : ""
+                      } ${isDisabled ? styles.optionDisabled : ""}`}
+                      onClick={() => !isDisabled && handleSelect(opt.value)}
+                      disabled={isDisabled}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      <span className={styles.optionLabel}>{opt.label}</span>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className={styles.noOptions}>
+                  <span className={styles.noOptionsText}>
+                    {t("common.noOptionsAvailable")}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
