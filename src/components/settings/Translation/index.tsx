@@ -1,9 +1,14 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Tab, TabGroup, Button, TextField, Select, DataTable } from "@/ui-kit";
 import { LANGUAGES } from "@/constants/settings";
 import styles from "./Translation.module.css";
 import { getTranslationColumns } from "./columns";
+import {
+  createTranslation,
+  getTranslations,
+  type LocalizedText,
+} from "@/services/settings/translations";
 
 type TranslationTab = "add-new" | "translation-history";
 
@@ -17,7 +22,7 @@ type TranslationForm = {
 
 export type TranslationHistoryItem = {
   entityName: string;
-  entityId: string;
+  entityId: number;
   fieldName: string;
   languageCode: string;
   value: string;
@@ -35,6 +40,8 @@ export const Translation = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TranslationTab>("add-new");
   const [form, setForm] = useState<TranslationForm>(initialForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [translations, setTranslations] = useState<LocalizedText[]>([]);
 
   const tabs = useMemo(
     () =>
@@ -45,31 +52,32 @@ export const Translation = () => {
     [t]
   );
 
+  const fetchTranslations = useCallback(async () => {
+    try {
+      const data = await getTranslations();
+      setTranslations(data);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch translations:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "translation-history") {
+      fetchTranslations();
+    }
+  }, [activeTab, fetchTranslations]);
+
   const translationHistoryData: TranslationHistoryItem[] = useMemo(
-    () => [
-      {
-        entityName: "Product",
-        entityId: "12345",
-        fieldName: "name",
-        languageCode: "en",
-        value: "Product Name",
-      },
-      {
-        entityName: "Category",
-        entityId: "67890",
-        fieldName: "description",
-        languageCode: "ru",
-        value: "Описание категории",
-      },
-      {
-        entityName: "Brand",
-        entityId: "11111",
-        fieldName: "title",
-        languageCode: "am",
-        value: "Անվանում",
-      },
-    ],
-    []
+    () =>
+      translations.map((translation) => ({
+        entityName: translation.entityName,
+        entityId: translation.entityId,
+        fieldName: translation.fieldName,
+        languageCode: translation.languageCode,
+        value: translation.value,
+      })),
+    [translations]
   );
 
   const columns = useMemo(() => getTranslationColumns(), []);
@@ -94,20 +102,36 @@ export const Translation = () => {
     resetForm();
   }, [resetForm]);
 
-  const handleAdd = useCallback(() => {
-    if (!isValid) return;
+  const handleAdd = useCallback(async () => {
+    if (!isValid || isSubmitting) return;
 
-    // TODO: call API
-    console.log("Add translation:", {
-      entityName: form.entityName.trim(),
-      entityId: form.entityId.trim(),
-      fieldName: form.fieldName.trim(),
-      fieldValue: form.fieldValue.trim(),
-      languageCode: form.languageCode.trim(),
-    });
+    try {
+      setIsSubmitting(true);
 
-    resetForm();
-  }, [form, isValid, resetForm]);
+      const entityIdNumber = parseInt(form.entityId.trim(), 10);
+      if (isNaN(entityIdNumber)) {
+        throw new Error("Entity ID must be a valid number");
+      }
+
+      await createTranslation({
+        entityName: form.entityName.trim(),
+        entityId: entityIdNumber,
+        fieldName: form.fieldName.trim(),
+        value: form.fieldValue.trim(),
+        languageCode: form.languageCode.trim(),
+      });
+
+      resetForm();
+      if (activeTab === "translation-history") {
+        await fetchTranslations();
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [form, isSubmitting, isValid, resetForm, activeTab, fetchTranslations]);
 
   return (
     <section className={styles.translationWrapper}>
@@ -199,7 +223,12 @@ export const Translation = () => {
           <Button variant="secondary" size="medium" onClick={handleCancel}>
             {t("common.cancel")}
           </Button>
-          <Button variant="primary" size="medium" onClick={handleAdd}>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleAdd}
+            disabled={!isValid || isSubmitting}
+          >
             {t("common.add")}
           </Button>
         </div>
