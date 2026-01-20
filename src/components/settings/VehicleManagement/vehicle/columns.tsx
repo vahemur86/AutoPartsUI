@@ -29,7 +29,7 @@ export const getVehicleColumns = (
   },
   {
     id: "actions",
-    header: i18next.t("vehicles.vehicles.columns.actions"),
+    header: i18next.t("common.actions"),
     enableSorting: false,
     cell: ({ row }) => {
       const vehicle = row.original;

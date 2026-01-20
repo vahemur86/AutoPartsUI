@@ -2,20 +2,27 @@ import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import i18n from "i18next";
+
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login, clearAuthError } from "@/store/slices/authSlice";
+
 // services
 import { getLanguages } from "@/services/settings/languages";
+
 // utils, types
 import type { Language } from "@/types/settings";
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
+
 // icons
 import { Lock, Eye, EyeOff, User } from "lucide-react";
+
 // images
 import logoImage from "@/assets/icons/Subtract.svg";
+
 // styles
 import styles from "./Login.module.css";
 
@@ -23,7 +30,9 @@ export const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { isLoading, error } = useAppSelector((state) => state.auth);
+  const { isLoading, error, isAuthenticated, user } = useAppSelector(
+    (state) => state.auth,
+  );
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -32,6 +41,13 @@ export const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const targetPath = user.role === "operator" ? "/operator" : "/";
+      navigate(targetPath, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     if (error) {
@@ -56,7 +72,7 @@ export const Login = () => {
 
       const languages = await getLanguages();
       const defaultLanguage = languages.find(
-        (lang: Language) => lang.isDefault
+        (lang: Language) => lang.isDefault,
       );
 
       if (defaultLanguage) {
@@ -80,10 +96,17 @@ export const Login = () => {
     const resultAction = await dispatch(login(credentials));
 
     if (login.fulfilled.match(resultAction)) {
-      // Initialize default language after successful login
+      // Use the same casing as the API returns
+      const userRole = resultAction.payload.role.toLowerCase();
+
       await initializeDefaultLanguage();
       toast.success("Welcome back!");
-      navigate("/");
+
+      if (userRole === "operator") {
+        navigate("/operator", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     }
   };
 

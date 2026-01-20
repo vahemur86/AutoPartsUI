@@ -26,6 +26,7 @@ import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
 import { ShopsSettings } from "@/components/settings/ShopsSettings";
 import { ProductSettings } from "@/components/settings/ProductSettings";
 import { VehicleManagement } from "@/components/settings/VehicleManagement";
+import { MetalRates } from "@/components/settings/MetalRates";
 
 // Stores
 import { store } from "@/store/store";
@@ -59,8 +60,15 @@ export const App = () => {
           {/* PUBLIC ROUTE */}
           <Route path="/login" element={<Login />} />
 
-          {/* PROTECTED ROUTES */}
-          <Route element={<ProtectedRoute />}>
+          {/* OPERATOR SPECIFIC ROUTES */}
+          <Route element={<ProtectedRoute allowedRoles={["Operator"]} />}>
+            <Route path="/operator" element={<OperatorPage />} />
+          </Route>
+
+          {/* ADMIN SPECIFIC ROUTES */}
+          <Route
+            element={<ProtectedRoute allowedRoles={["Admin", "SuperAdmin"]} />}
+          >
             <Route path="/" element={<Home />}>
               <Route
                 index
@@ -84,13 +92,13 @@ export const App = () => {
                   path="vehicle-management"
                   element={<VehicleManagement />}
                 />
+                <Route path="metal-rates" element={<MetalRates />} />
               </Route>
 
               <Route path="warehouses" element={<Warehouses />} />
               <Route path="products" element={<Products />} />
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
-              <Route path="operator" element={<OperatorPage />} />
             </Route>
           </Route>
 

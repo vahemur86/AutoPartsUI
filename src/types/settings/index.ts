@@ -36,6 +36,16 @@ export interface Task {
   updatedAt?: string;
 }
 
+export interface MetalRate {
+  id: number;
+  currencyCode: string;
+  ptPricePerGram: number;
+  pdPricePerGram: number;
+  rhPricePerGram: number;
+  effectiveFrom: string;
+  isActive: boolean;
+}
+
 export interface ExistingItem {
   id: string;
   name: string;

@@ -4,11 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { ProductContent } from "./ProductContent";
 import { PRODUCT_SETTINGS_TABS, TAB_CONFIG } from "@/constants/settings";
-import type {
-  ExistingItem,
-  TabId,
-  ProductSettingItem,
-} from "@/types/settings";
+import type { ExistingItem, TabId, ProductSettingItem } from "@/types/settings";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 import { Tab, TabGroup, Button } from "@/ui-kit";
@@ -21,7 +17,7 @@ export const ProductSettings = () => {
     useAppSelector((state) => state.productSettings);
 
   const [activeTabId, setActiveTabId] = useState<TabId>(
-    PRODUCT_SETTINGS_TABS[0].id as TabId
+    PRODUCT_SETTINGS_TABS[0].id as TabId,
   );
   const [isExistingExpanded, setIsExistingExpanded] = useState(false);
   const [newFieldValue, setNewFieldValue] = useState("");
@@ -37,7 +33,7 @@ export const ProductSettings = () => {
 
   const activeTab = useMemo(
     () => translatedTabs.find((tab) => tab.id === activeTabId),
-    [activeTabId, translatedTabs]
+    [activeTabId, translatedTabs],
   );
 
   const currentData = useMemo((): ProductSettingItem[] => {
@@ -60,7 +56,7 @@ export const ProductSettings = () => {
         name: item.code,
         enabled: item.enabled ?? true,
       })),
-    [currentData]
+    [currentData],
   );
 
   // Optimized fetch logic - only fetch if not already fetched
@@ -89,7 +85,7 @@ export const ProductSettings = () => {
   const executeAction = useCallback(
     async (
       actionType: "add" | "update" | "remove",
-      payload: string | { id: number; code: string } | number
+      payload: string | { id: number; code: string } | number,
     ) => {
       if (!activeTab) return;
 
@@ -110,12 +106,18 @@ export const ProductSettings = () => {
         }
 
         if (actionType === "add") {
-          toast.success(t("productSettings.success.created", { type: activeTab.type }));
+          toast.success(
+            t("productSettings.success.created", { type: activeTab.type }),
+          );
           setNewFieldValue("");
         } else if (actionType === "remove") {
-          toast.success(t("productSettings.success.deleted", { type: activeTab.type }));
+          toast.success(
+            t("productSettings.success.deleted", { type: activeTab.type }),
+          );
         } else {
-          toast.success(t("productSettings.success.updated", { type: activeTab.type }));
+          toast.success(
+            t("productSettings.success.updated", { type: activeTab.type }),
+          );
         }
 
         if (actionType === "add") {
@@ -133,7 +135,7 @@ export const ProductSettings = () => {
         toast.error(errorMessage);
       }
     },
-    [activeTab, activeTabId, dispatch]
+    [activeTab, activeTabId, dispatch, t],
   );
 
   const handleSave = useCallback(async () => {
@@ -147,14 +149,14 @@ export const ProductSettings = () => {
     async (id: string, newName: string) => {
       await executeAction("update", { id: Number(id), code: newName });
     },
-    [executeAction]
+    [executeAction],
   );
 
   const handleDelete = useCallback(
     async (id: string) => {
       await executeAction("remove", Number(id));
     },
-    [executeAction]
+    [executeAction],
   );
 
   const handleCancel = useCallback(() => {

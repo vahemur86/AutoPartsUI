@@ -12,9 +12,14 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "add": "Add",
-    "update": "Update"
+    "update": "Update",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "enabled": "Enabled"
   },
   "settings": {
     "navigation": {
@@ -23,7 +28,8 @@
       "warehouse": "Warehouse",
       "shops": "Shops",
       "productSettings": "Product Settings",
-      "vehicleManagement": "Vehicle Management"
+      "vehicleManagement": "Vehicle Management",
+      "metalRates": "Metal Rates"
     }
   },
   "users": {
@@ -160,8 +166,7 @@
         "year": "Year",
         "engine": "Engine",
         "fuelType": "Fuel Type",
-        "status": "Status",
-        "actions": "Actions"
+        "status": "Status"
       }
     },
     "ariaLabels": {
@@ -170,6 +175,28 @@
       "editVehicle": "Edit vehicle",
       "deleteVehicle": "Delete vehicle",
       "vehicleManagementSections": "Vehicle management sections"
+    }
+  },
+  "metals": {
+    "addRate": "Add Metal Rate",
+    "editRate": "Edit Metal Rate",
+    "columns": {
+      "currency": "Currency",
+      "platinum": "Platinum (per gram)",
+      "palladium": "Palladium (per gram)",
+      "rhodium": "Rhodium (per gram)",
+      "effectiveFrom": "Effective From",
+      "status": "Status"
+    },
+    "form": {
+      "currency": "Currency Code",
+      "platinum": "Platinum Price",
+      "palladium": "Palladium Price",
+      "rhodium": "Rhodium Price"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete Metal Rate",
+      "deleteDescription": "Are you sure you want to delete the rate for \"{{name}}\"? This action cannot be undone."
     }
   },
   "products": {
