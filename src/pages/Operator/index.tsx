@@ -100,7 +100,7 @@ export const OperatorPage = () => {
 
     setIsSubmitting(true);
     try {
-      await createIntake({
+      const response = await createIntake({
         currencyCode: "AMD",
         ptWeight: Number(formData.platinumPrice),
         pdWeight: Number(formData.palladiumPrice),
@@ -109,7 +109,7 @@ export const OperatorPage = () => {
         customerPhone: formData.customerPhone,
         shopId: userData.shopId,
       });
-      dispatch(fetchIntake(userData.shopId));
+      dispatch(fetchIntake(response.id));
       setHasTriedSubmit(false);
     } catch (error) {
       console.error("Failed to submit intake:", error);
