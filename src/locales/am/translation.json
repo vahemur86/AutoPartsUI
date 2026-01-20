@@ -292,15 +292,18 @@
     "phonePlaceholder": "+374 93 124567",
     "autoModel": "Ավտոմեքենայի մոդել",
     "acceptAndPurchase": "Ընդունել և գնել",
+    "closeSession": "Փակել աշխատաշրջանը",
     "search": "Որոնել հաճախորդ",
     "clientType": {
+      "label": "Հաճախորդի տեսակ",
       "regular": "Սովորական"
     },
     "validation": {
       "enterPhoneNumber": "Խնդրում ենք մուտքագրել հեռախոսահամար"
     },
     "success": {
-      "customerFound": "Հաճախորդը գտնված է"
+      "customerFound": "Հաճախորդը գտնված է",
+      "customerAccepted": "Հաճախորդը ընդունված է"
     },
     "error": {
       "failedToSearch": "Հաճախորդ որոնելը ձախողվեց"
@@ -315,5 +318,40 @@
     "source": "Kitco",
     "loading": "Բեռնվում է...",
     "updated": "Թարմացվել է {{time}}"
+  },
+  "finalOffer": {
+    "title": "Վերջնական առաջարկ",
+    "offerButton": "Հաշվարկել առաջարկը",
+    "rejectButton": "Մերժել առաջարկը",
+    "success": {
+      "offered": "Առաջարկը հաջողությամբ հաշվարկված է",
+      "rejected": "Առաջարկը հաջողությամբ մերժված է"
+    },
+    "error": {
+      "noIntake": "Հարցում չի գտնվել",
+      "noIntakeId": "Հարցման ID-ն բացակայում է",
+      "failedToOffer": "Առաջարկը հաշվարկելը ձախողվեց",
+      "failedToReject": "Առաջարկը մերժելը ձախողվեց"
+    }
+  },
+  "pricingBreakdown": {
+    "title": "Գիների մանրամասներ",
+    "metals": {
+      "platinum": "Պլատին",
+      "palladium": "Պալադիում",
+      "rhodium": "Ռոդիում"
+    },
+    "totalMetalValue": "Մետաղների ընդհանուր արժեքը:",
+    "clientCoefficient": "Հաճախորդի գործակիցը:",
+    "finalOffer": "Վերջնական առաջարկ:"
+  },
+  "powderExtraction": {
+    "title": "Փոշու ստացում",
+    "scaleId": "Կշեռքի ID:",
+    "measuredAt": "Չափման ժամանակը:"
+  },
+  "operatorPage": {
+    "title": "Օպերատորի տերմինալ",
+    "languageLoading": "Լեզուների բեռնում..."
   }
 }

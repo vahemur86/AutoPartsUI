@@ -292,15 +292,18 @@
     "phonePlaceholder": "+374 93 124567",
     "autoModel": "Модель автомобиля",
     "acceptAndPurchase": "Принять и купить",
+    "closeSession": "Закрыть сессию",
     "search": "Найти клиента",
     "clientType": {
+      "label": "Тип клиента",
       "regular": "Обычный"
     },
     "validation": {
       "enterPhoneNumber": "Пожалуйста, введите номер телефона"
     },
     "success": {
-      "customerFound": "Клиент найден"
+      "customerFound": "Клиент найден",
+      "customerAccepted": "Клиент принят"
     },
     "error": {
       "failedToSearch": "Не удалось найти клиента"
@@ -315,5 +318,40 @@
     "source": "Kitco",
     "loading": "Загрузка...",
     "updated": "Обновлено {{time}}"
+  },
+  "finalOffer": {
+    "title": "Финальное предложение",
+    "offerButton": "Рассчитать предложение",
+    "rejectButton": "Отклонить предложение",
+    "success": {
+      "offered": "Предложение успешно рассчитано",
+      "rejected": "Предложение успешно отклонено"
+    },
+    "error": {
+      "noIntake": "Заявка не найдена",
+      "noIntakeId": "Отсутствует ID заявки",
+      "failedToOffer": "Не удалось рассчитать предложение",
+      "failedToReject": "Не удалось отклонить предложение"
+    }
+  },
+  "pricingBreakdown": {
+    "title": "Расчет стоимости",
+    "metals": {
+      "platinum": "Платина",
+      "palladium": "Палладий",
+      "rhodium": "Родий"
+    },
+    "totalMetalValue": "Общая стоимость металлов:",
+    "clientCoefficient": "Коэффициент клиента:",
+    "finalOffer": "Финальное предложение:"
+  },
+  "powderExtraction": {
+    "title": "Извлечение порошка",
+    "scaleId": "ID весов:",
+    "measuredAt": "Время измерения:"
+  },
+  "operatorPage": {
+    "title": "Операторский терминал",
+    "languageLoading": "Загрузка языков..."
   }
 }

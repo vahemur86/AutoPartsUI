@@ -1,10 +1,15 @@
+import { useTranslation } from "react-i18next";
 import styles from "../OperatorPage.module.css";
 
 export const PowderExtraction = () => {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.powderCard}>
       <div className={styles.powderHeader}>
-        <h2 className={styles.cardTitle}>Powder Extraction</h2>
+        <h2 className={styles.cardTitle}>
+          {t("powderExtraction.title")}
+        </h2>
       </div>
 
       <div className={styles.divider} />
@@ -14,11 +19,15 @@ export const PowderExtraction = () => {
 
         <div className={styles.powderDetails}>
           <div className={styles.powderDetailRow}>
-            <span className={styles.detailLabel}>Scale ID:</span>
+            <span className={styles.detailLabel}>
+              {t("powderExtraction.scaleId")}
+            </span>
             <span className={styles.detailValue}>SC-102</span>
           </div>
           <div className={styles.powderDetailRow}>
-            <span className={styles.detailLabel}>Measured At:</span>
+            <span className={styles.detailLabel}>
+              {t("powderExtraction.measuredAt")}
+            </span>
             <span className={styles.detailValue}>10:42 AM</span>
           </div>
         </div>

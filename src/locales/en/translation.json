@@ -294,15 +294,18 @@
     "phonePlaceholder": "+374 93 124567",
     "autoModel": "Auto Model",
     "acceptAndPurchase": "Accept and Purchase",
+    "closeSession": "Close Session",
     "search": "Search customer",
     "clientType": {
+      "label": "Client Type",
       "regular": "Regular"
     },
     "validation": {
       "enterPhoneNumber": "Please enter a phone number"
     },
     "success": {
-      "customerFound": "Customer found"
+      "customerFound": "Customer found",
+      "customerAccepted": "Customer accepted"
     },
     "error": {
       "failedToSearch": "Failed to search customer"
@@ -317,5 +320,40 @@
     "source": "Kitco",
     "loading": "Loading...",
     "updated": "Updated {{time}}"
+  },
+  "finalOffer": {
+    "title": "Final Offer",
+    "offerButton": "Offer Calculate",
+    "rejectButton": "Reject Offer",
+    "success": {
+      "offered": "Offer calculated successfully",
+      "rejected": "Offer rejected successfully"
+    },
+    "error": {
+      "noIntake": "No intake found",
+      "noIntakeId": "Intake ID is missing",
+      "failedToOffer": "Failed to calculate offer",
+      "failedToReject": "Failed to reject offer"
+    }
+  },
+  "pricingBreakdown": {
+    "title": "Pricing Breakdown",
+    "metals": {
+      "platinum": "Platinum",
+      "palladium": "Palladium",
+      "rhodium": "Rhodium"
+    },
+    "totalMetalValue": "Total Metal Value:",
+    "clientCoefficient": "Client Coefficient:",
+    "finalOffer": "Final Offer:"
+  },
+  "powderExtraction": {
+    "title": "Powder Extraction",
+    "scaleId": "Scale ID:",
+    "measuredAt": "Measured At:"
+  },
+  "operatorPage": {
+    "title": "Operator Terminal",
+    "languageLoading": "Loading languages..."
   }
 }
