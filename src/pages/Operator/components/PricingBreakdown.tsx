@@ -22,7 +22,7 @@ const PricingRow = ({ metal, priceValue, onPriceChange }: PricingRowProps) => (
       className={styles.pricingMetal}
       style={{ width: "120px", flexShrink: 0 }}
     >
-      {metal} Price:
+      {metal} Weight:
     </div>
     <div className={styles.pricingCalculation} style={{ flex: 1, margin: 0 }}>
       <TextField
