@@ -144,10 +144,12 @@
         "selectBrand": "Select brand...",
         "model": "Model",
         "enterModel": "Enter model...",
+        "selectModel": "Select model...",
         "year": "Year",
         "enterYear": "Enter year...",
         "engine": "Engine",
         "enterEngine": "Enter engine...",
+        "selectEngine": "Select engine...",
         "fuelType": "Fuel Type",
         "selectFuelType": "Select fuel type...",
         "status": "Status"
@@ -255,5 +257,37 @@
     "deleteShop": "Delete shop",
     "editWarehouse": "Edit warehouse",
     "deleteWarehouse": "Delete warehouse"
+  },
+  "customerDetails": {
+    "title": "Customer Details",
+    "client": "Client",
+    "discount": "Discount",
+    "phone": "Phone",
+    "phonePlaceholder": "+374 93 124567",
+    "autoModel": "Auto Model",
+    "acceptAndPurchase": "Accept and Purchase",
+    "search": "Search customer",
+    "clientType": {
+      "regular": "Regular"
+    },
+    "validation": {
+      "enterPhoneNumber": "Please enter a phone number"
+    },
+    "success": {
+      "customerFound": "Customer found"
+    },
+    "error": {
+      "failedToSearch": "Failed to search customer"
+    }
+  },
+  "liveMarketPrices": {
+    "title": "Live Market Prices",
+    "live": "LIVE",
+    "platinum": "Platinum",
+    "palladium": "Palladium",
+    "rhodium": "Rhodium",
+    "source": "Kitco",
+    "loading": "Loading...",
+    "updated": "Updated {{time}}"
   }
 }

@@ -1,12 +1,25 @@
-import { useMemo, useState, useRef, useCallback, type FC } from "react";
+import {
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  type FC,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable, IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
-import { AddVehicleDropdown } from "./vehicleActions/AddVehicleDropdown";
-import { vehicles } from "./mockData";
+import {
+  AddVehicleDropdown,
+  type VehicleForm,
+} from "./vehicleActions/AddVehicleDropdown";
 import { getVehicleColumns } from "./columns";
-import type { Vehicle } from "./types";
 import styles from "../VehicleManagement.module.css";
+
+// stores
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addVehicle, fetchVehicles } from "@/store/slices/vehiclesSlice";
+import type { Vehicle } from "@/types/settings";
 
 interface VehiclesProps {
   withEdit?: boolean;
@@ -14,15 +27,23 @@ interface VehiclesProps {
 }
 
 export const Vehicles: FC<VehiclesProps> = ({
-  withEdit = true,
-  withDelete = true,
+  withEdit = false,
+  withDelete = false,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { vehicles } = useAppSelector((state) => state.vehicles);
+
   const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
+  const [isMutating, setIsMutating] = useState(false);
 
   const addAnchorRef = useRef<HTMLElement | null>(null);
   const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
   const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dispatch(fetchVehicles());
+  }, [dispatch]);
 
   const handleEdit = useCallback((vehicle: Vehicle) => {
     console.log("Edit Clicked for:", vehicle.id);
@@ -49,11 +70,26 @@ export const Vehicles: FC<VehiclesProps> = ({
   }, []);
 
   const handleAddVehicle = useCallback(
-    async (data: unknown) => {
-      console.log("Add vehicle:", data);
-      handleCloseAddDropdown();
+    async (data: VehicleForm) => {
+      try {
+        setIsMutating(true);
+        await dispatch(
+          addVehicle({
+            brandId: Number(data.brandId),
+            modelId: Number(data.modelId),
+            fuelTypeId: Number(data.fuelTypeId),
+            engineId: Number(data.engineId),
+          })
+        ).unwrap();
+        await dispatch(fetchVehicles()).unwrap();
+        handleCloseAddDropdown();
+      } catch (error) {
+        console.error("Failed to add vehicle:", error);
+      } finally {
+        setIsMutating(false);
+      }
     },
-    [handleCloseAddDropdown]
+    [dispatch, handleCloseAddDropdown]
   );
 
   const columns = useMemo(
@@ -76,7 +112,9 @@ export const Vehicles: FC<VehiclesProps> = ({
             className={styles.plusButton}
             onClick={() => openAddDropdown(false)}
           />
-          <span className={styles.addButtonText}>{t("vehicles.vehicles.addVehicle")}</span>
+          <span className={styles.addButtonText}>
+            {t("vehicles.vehicles.addVehicle")}
+          </span>
         </div>
       </div>
 
@@ -92,13 +130,16 @@ export const Vehicles: FC<VehiclesProps> = ({
             ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
             onClick={() => openAddDropdown(true)}
           />
-          <span className={styles.addButtonText}>{t("vehicles.vehicles.addVehicle")}</span>
+          <span className={styles.addButtonText}>
+            {t("vehicles.vehicles.addVehicle")}
+          </span>
         </div>
       </div>
 
       <AddVehicleDropdown
         open={isVehicleDropdownOpen}
         anchorRef={addAnchorRef}
+        isLoading={isMutating}
         onOpenChange={(open) => {
           if (!open) handleCloseAddDropdown();
         }}

@@ -76,3 +76,20 @@ export type ProductSettingsTab = {
   type: string;
   service: CrudService<ProductSettingItem>;
 };
+
+export type Vehicle = {
+  id: string;
+  brand: string;
+  model: string;
+  year: number;
+  engine: string;
+  fuelType: string;
+};
+
+export interface VehicleDefinition {
+  lang: string;
+  brands: Array<{ id: number; code: string; name: string }>;
+  models: Array<{ id: number; code: string; name: string }>;
+  fuelTypes: Array<{ id: number; code: string; name: string }>;
+  engines: Array<{ id: number; code: string; name: string }>;
+}

@@ -1,8 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
-import type { Vehicle } from "./types";
 import { Button } from "@/ui-kit";
 import styles from "../VehicleManagement.module.css";
+import type { Vehicle } from "@/types/settings";
 
 export const getVehicleColumns = (
   withEdit: boolean,
@@ -10,12 +10,23 @@ export const getVehicleColumns = (
   onEdit: (vehicle: Vehicle) => void,
   onDelete: (vehicle: Vehicle) => void
 ): ColumnDef<Vehicle>[] => [
-  { accessorKey: "brand", header: i18next.t("vehicles.vehicles.columns.brand") },
-  { accessorKey: "model", header: i18next.t("vehicles.vehicles.columns.model") },
+  {
+    accessorKey: "brand",
+    header: i18next.t("vehicles.vehicles.columns.brand"),
+  },
+  {
+    accessorKey: "model",
+    header: i18next.t("vehicles.vehicles.columns.model"),
+  },
   { accessorKey: "year", header: i18next.t("vehicles.vehicles.columns.year") },
-  { accessorKey: "engine", header: i18next.t("vehicles.vehicles.columns.engine") },
-  { accessorKey: "fuelType", header: i18next.t("vehicles.vehicles.columns.fuelType") },
-  { accessorKey: "status", header: i18next.t("vehicles.vehicles.columns.status") },
+  {
+    accessorKey: "engine",
+    header: i18next.t("vehicles.vehicles.columns.engine"),
+  },
+  {
+    accessorKey: "fuelType",
+    header: i18next.t("vehicles.vehicles.columns.fuelType"),
+  },
   {
     id: "actions",
     header: i18next.t("vehicles.vehicles.columns.actions"),

@@ -4,6 +4,7 @@ import shopsReducer from "./slices/shopsSlice";
 import productSettingsReducer from "./slices/productSettingsSlice";
 import productsReducer from "./slices/productsSlice";
 import tasksReducer from "./slices/tasksSlice";
+import vehiclesReducer from "./slices/vehiclesSlice";
 import authReducer from "./slices/authSlice";
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     productSettings: productSettingsReducer,
     products: productsReducer,
     tasks: tasksReducer,
+    vehicles: vehiclesReducer,
     auth: authReducer,
   },
 });

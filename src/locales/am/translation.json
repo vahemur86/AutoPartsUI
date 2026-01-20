@@ -255,5 +255,37 @@
     "deleteShop": "Ջնջել խանութ",
     "editWarehouse": "Խմբագրել պահեստ",
     "deleteWarehouse": "Ջնջել պահեստ"
+  },
+  "customerDetails": {
+    "title": "Հաճախորդի տվյալներ",
+    "client": "Հաճախորդ",
+    "discount": "Զեղչ",
+    "phone": "Հեռախոս",
+    "phonePlaceholder": "+374 93 124567",
+    "autoModel": "Ավտոմեքենայի մոդել",
+    "acceptAndPurchase": "Ընդունել և գնել",
+    "search": "Որոնել հաճախորդ",
+    "clientType": {
+      "regular": "Սովորական"
+    },
+    "validation": {
+      "enterPhoneNumber": "Խնդրում ենք մուտքագրել հեռախոսահամար"
+    },
+    "success": {
+      "customerFound": "Հաճախորդը գտնված է"
+    },
+    "error": {
+      "failedToSearch": "Հաճախորդ որոնելը ձախողվեց"
+    }
+  },
+  "liveMarketPrices": {
+    "title": "Շուկայական գներ",
+    "live": "ՈՒՂՂԱԿԻ",
+    "platinum": "Պլատին",
+    "palladium": "Պալադիում",
+    "rhodium": "Ռոդիում",
+    "source": "Kitco",
+    "loading": "Բեռնվում է...",
+    "updated": "Թարմացվել է {{time}}"
   }
 }

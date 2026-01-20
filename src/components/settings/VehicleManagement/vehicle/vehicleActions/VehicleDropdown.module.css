@@ -9,16 +9,22 @@
   color: var(--color-white);
 }
 
+.dropdownContentOverride {
+  overflow: visible !important;
+}
+
 .content {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow: visible;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px 16px;
+  overflow: visible;
 }
 
 .fullRow {

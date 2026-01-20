@@ -1,8 +1,0 @@
-node_modules
-storybook-static
-dist-storybook
-src/stories
-.vscode
-.git
-.gitignore
-README.md
