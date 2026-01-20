@@ -14,7 +14,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(dirname, "src"),
+      "@": path.resolve(dirname, "./src"),
     },
   },
   server: {
@@ -22,9 +22,6 @@ export default defineConfig({
     strictPort: false,
   },
   clearScreen: true,
-  build: {
-    outDir: "build",
-  },
   test: {
     projects: [
       {
