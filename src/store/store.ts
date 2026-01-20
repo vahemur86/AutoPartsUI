@@ -7,6 +7,7 @@ import tasksReducer from "./slices/tasksSlice";
 import vehiclesReducer from "./slices/vehiclesSlice";
 import authReducer from "./slices/authSlice";
 import metalRatesReducer from "./slices/metalRatesSlice";
+import operatorReducer from "./slices/operatorSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     tasks: tasksReducer,
     vehicles: vehiclesReducer,
     metalRates: metalRatesReducer,
+    operator: operatorReducer,
     auth: authReducer,
   },
 });
