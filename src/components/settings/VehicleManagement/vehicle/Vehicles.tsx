@@ -6,6 +6,7 @@ import {
   useEffect,
   type FC,
 } from "react";
+import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { DataTable, IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
@@ -20,6 +21,7 @@ import styles from "../VehicleManagement.module.css";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addVehicle, fetchVehicles } from "@/store/slices/vehiclesSlice";
 import type { Vehicle } from "@/types/settings";
+import { getErrorMessage } from "@/utils";
 
 interface VehiclesProps {
   withEdit?: boolean;
@@ -85,11 +87,16 @@ export const Vehicles: FC<VehiclesProps> = ({
         handleCloseAddDropdown();
       } catch (error) {
         console.error("Failed to add vehicle:", error);
+        toast.error(
+          typeof error === "string"
+            ? error
+            : getErrorMessage(error, t("vehicles.vehicles.addVehicle")),
+        );
       } finally {
         setIsMutating(false);
       }
     },
-    [dispatch, handleCloseAddDropdown]
+    [dispatch, handleCloseAddDropdown, t]
   );
 
   const columns = useMemo(

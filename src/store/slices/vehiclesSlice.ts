@@ -33,10 +33,23 @@ export const fetchVehicles = createAsyncThunk<
 >("vehicles/fetchVehicles", async (_, { rejectWithValue }) => {
   try {
     const data = await getVehicles();
-    return data;
+
+    // Backend returns: { totalItems, page, pageSize, results: [...] }
+    const vehicles: Vehicle[] = Array.isArray(data?.results)
+      ? data.results.map((item: any) => ({
+          id: String(item.id),
+          brand: item.brand?.name ?? "",
+          model: item.model?.name ?? "",
+          year: item.year ?? 0,
+          engine: item.engine?.name ?? "",
+          fuelType: item.fuelType?.name ?? "",
+        }))
+      : [];
+
+    return vehicles;
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to fetch vehicles")
+      getApiErrorMessage(error, "Failed to fetch vehicles"),
     );
   }
 });
