@@ -1,19 +1,20 @@
-// ui-kit
 import { TextField, Button } from "@/ui-kit";
-
-// icons
 import { Send } from "lucide-react";
-
-// styles
 import styles from "../OperatorPage.module.css";
 
 interface PricingRowProps {
   metal: string;
   priceValue: string;
   onPriceChange: (val: string) => void;
+  error?: boolean;
 }
 
-const PricingRow = ({ metal, priceValue, onPriceChange }: PricingRowProps) => (
+const PricingRow = ({
+  metal,
+  priceValue,
+  onPriceChange,
+  error,
+}: PricingRowProps) => (
   <div
     className={styles.pricingRow}
     style={{ display: "flex", alignItems: "center" }}
@@ -30,6 +31,7 @@ const PricingRow = ({ metal, priceValue, onPriceChange }: PricingRowProps) => (
         value={priceValue}
         onChange={(e) => onPriceChange(e.target.value)}
         placeholder="0.00"
+        error={error}
       />
     </div>
   </div>
@@ -44,6 +46,7 @@ interface PricingBreakdownProps {
   onPriceChange: (field: string, value: string) => void;
   onSubmit: () => void;
   isLoading?: boolean;
+  hasTriedSubmit: boolean;
 }
 
 export const PricingBreakdown = ({
@@ -51,32 +54,34 @@ export const PricingBreakdown = ({
   onPriceChange,
   onSubmit,
   isLoading,
+  hasTriedSubmit,
 }: PricingBreakdownProps) => {
+  const isInvalid = (val: string) => val.trim() === "" || isNaN(Number(val));
+
   return (
     <div className={styles.pricingCard}>
       <h2 className={styles.cardTitle}>Pricing Breakdown</h2>
-
       <div className={styles.divider} />
-
       <div className={styles.pricingContent}>
         <PricingRow
           metal="Platinum"
           priceValue={formData.platinumPrice}
           onPriceChange={(val) => onPriceChange("platinumPrice", val)}
+          error={hasTriedSubmit && isInvalid(formData.platinumPrice)}
         />
         <PricingRow
           metal="Palladium"
           priceValue={formData.palladiumPrice}
           onPriceChange={(val) => onPriceChange("palladiumPrice", val)}
+          error={hasTriedSubmit && isInvalid(formData.palladiumPrice)}
         />
         <PricingRow
           metal="Rhodium"
           priceValue={formData.rhodiumPrice}
           onPriceChange={(val) => onPriceChange("rhodiumPrice", val)}
+          error={hasTriedSubmit && isInvalid(formData.rhodiumPrice)}
         />
-
         <div className={styles.divider} />
-
         <div style={{ marginTop: "8px" }}>
           <Button
             variant="primary"

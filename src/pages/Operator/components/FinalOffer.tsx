@@ -8,7 +8,7 @@ import { offerIntake, rejectIntake } from "@/store/slices/operatorSlice";
 import type { IntakeResponse } from "@/types/operator";
 import styles from "../OperatorPage.module.css";
 
-export const FinalOffer: FC<{ offerPrice: number }> = ({ offerPrice }) => {
+export const FinalOffer: FC<{ offerPrice: number }> = ({ offerPrice = 0 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake } = useAppSelector((state) => state.operator);

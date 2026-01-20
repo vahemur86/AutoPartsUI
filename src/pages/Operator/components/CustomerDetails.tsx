@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Search, User, Check, LogOut } from "lucide-react";
 import { TextField, Button } from "@/ui-kit";
 import { toast } from "react-toastify";
-import type { IntakeResponse } from "@/types/operator";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchIntake,
@@ -15,12 +14,14 @@ interface CustomerDetailsProps {
   customerPhone?: string;
   onPhoneChange?: (val: string) => void;
   onCloseSession: () => void;
+  phoneError?: boolean;
 }
 
 export const CustomerDetails = ({
   customerPhone,
   onPhoneChange,
   onCloseSession,
+  phoneError,
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -34,40 +35,19 @@ export const CustomerDetails = ({
     }
 
     const userDataRaw = localStorage.getItem("user_data");
-
-    if (!userDataRaw) {
-      toast.error(t("customerDetails.error.failedToSearch"));
-      return;
-    }
-
-    let shopId: number | null = null;
+    if (!userDataRaw) return;
 
     try {
-      const parsed = JSON.parse(userDataRaw) as { shopId?: number | string };
-      if (parsed.shopId !== undefined && parsed.shopId !== null) {
-        shopId = Number(parsed.shopId);
-      }
+      const parsed = JSON.parse(userDataRaw);
+      const shopId = Number(parsed.shopId);
+
+      if (!shopId) throw new Error();
+
+      await dispatch(fetchIntake(shopId)).unwrap();
+      toast.success(t("customerDetails.success.customerFound"));
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error(t("customerDetails.error.failedToSearch"));
-      return;
-    }
-
-    if (!shopId || Number.isNaN(shopId)) {
-      toast.error(t("customerDetails.error.failedToSearch"));
-      return;
-    }
-
-    try {
-      await dispatch(fetchIntake(shopId)).unwrap();
-      toast.success(t("customerDetails.success.customerFound"));
-    } catch (error: unknown) {
-      console.error("Error searching for customer:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t("customerDetails.error.failedToSearch");
-      toast.error(errorMessage);
     }
   }, [dispatch, customerPhone, t]);
 
@@ -81,31 +61,15 @@ export const CustomerDetails = ({
   );
 
   const handleAccept = useCallback(async () => {
-    const currentIntake: IntakeResponse | null = intake ?? null;
-
-    if (!currentIntake) {
-      toast.error(t("customerDetails.error.failedToSearch"));
-      return;
-    }
-
-    const intakeId = currentIntake.id;
-
-    if (!intakeId) {
-      toast.error(t("customerDetails.error.failedToSearch"));
-      return;
-    }
+    if (!intake?.id) return;
 
     try {
       setIsAccepting(true);
-      await dispatch(acceptIntakeThunk(intakeId)).unwrap();
+      await dispatch(acceptIntakeThunk(intake.id)).unwrap();
       toast.success(t("customerDetails.success.customerAccepted"));
-    } catch (error: unknown) {
-      console.error("Error accepting intake:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t("customerDetails.error.failedToSearch");
-      toast.error(errorMessage);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error(t("customerDetails.error.failedToSearch"));
     } finally {
       setIsAccepting(false);
     }
@@ -115,35 +79,26 @@ export const CustomerDetails = ({
     <div className={styles.customerCard}>
       <div className={styles.customerHeader}>
         <h2 className={styles.cardTitle}>{t("customerDetails.title")}</h2>
-        <div className={styles.divider} />
       </div>
+
+      <div className={styles.divider} />
 
       <div className={styles.customerContent}>
         <TextField
+          label={t("customerDetails.phone")} // Added label for better UX
           placeholder={t("customerDetails.phonePlaceholder")}
-          icon={
-            <button
-              type="button"
-              onClick={handleSearch}
-              disabled={isLoading}
-              style={{
-                background: "none",
-                border: "none",
-                padding: 0,
-                cursor: isLoading ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              aria-label={t("customerDetails.search")}
-            >
-              <Search size={16} />
-            </button>
-          }
           value={customerPhone}
           onChange={(e) => onPhoneChange?.(e.target.value)}
           onKeyDown={handleKeyDown}
+          error={phoneError} // Passed from OperatorPage
           disabled={isLoading}
+          icon={
+            <Search
+              size={16}
+              onClick={handleSearch}
+              style={{ cursor: "pointer" }}
+            />
+          }
         />
 
         {intake && (
@@ -153,56 +108,46 @@ export const CustomerDetails = ({
             </div>
             <div className={styles.profileInfo}>
               <div className={styles.profileField}>
-                <div className={styles.profileLabel}>
-                  {t("customerDetails.clientType.label")}
-                </div>
-                <div className={styles.profileValue}>
+                <span className={styles.profileLabel}>
+                  {t("customerDetails.clientType.label")}:{" "}
+                </span>
+                <span className={styles.profileValue}>
                   {intake.customer?.customerType?.code ?? "-"}
-                </div>
+                </span>
               </div>
               <div className={styles.profileField}>
-                <div className={styles.profileLabel}>
-                  {t("customerDetails.discount")}
-                </div>
-                <div className={styles.profileValue}>
+                <span className={styles.profileLabel}>
+                  {t("customerDetails.discount")}:{" "}
+                </span>
+                <span className={styles.profileValue}>
                   {intake.customer?.customerType?.bonusPercent != null
-                    ? `${intake.customer.customerType.bonusPercent * 100}%`
-                    : "-"}
-                </div>
-              </div>
-              <div className={styles.profileField}>
-                <div className={styles.profileLabel}>
-                  {t("customerDetails.phone")}
-                </div>
-                <div className={styles.profileValue}>
-                  {intake.customer?.phone ?? "-"}
-                </div>
+                    ? `${(intake.customer.customerType.bonusPercent * 100).toFixed(0)}%`
+                    : "0%"}
+                </span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className={styles.customerActions}>
           <Button
             variant="primary"
             size="small"
             fullWidth
-            className={styles.acceptButton}
             onClick={handleAccept}
             disabled={isAccepting || !intake}
           >
-            <Check size={20} />
+            <Check size={20} style={{ marginRight: "8px" }} />
             {t("customerDetails.acceptAndPurchase")}
           </Button>
+
           <Button
             variant="secondary300"
             size="small"
             fullWidth
-            className={styles.logoutBtn}
             onClick={onCloseSession}
           >
-            <LogOut size={18} />
+            <LogOut size={18} style={{ marginRight: "8px" }} />
             {t("customerDetails.closeSession")}
           </Button>
         </div>
