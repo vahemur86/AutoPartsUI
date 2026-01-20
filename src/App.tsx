@@ -26,6 +26,7 @@ import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
 import { ShopsSettings } from "@/components/settings/ShopsSettings";
 import { ProductSettings } from "@/components/settings/ProductSettings";
 import { VehicleManagement } from "@/components/settings/VehicleManagement";
+import { MetalRates } from "@/components/settings/MetalRates";
 
 // Stores
 import { store } from "@/store/store";
@@ -91,6 +92,7 @@ export const App = () => {
                   path="vehicle-management"
                   element={<VehicleManagement />}
                 />
+                <Route path="metal-rates" element={<MetalRates />} />
               </Route>
 
               <Route path="warehouses" element={<Warehouses />} />

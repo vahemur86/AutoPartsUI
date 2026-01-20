@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Settings as SettingsIcon,
   Truck,
+  Container,
 } from "lucide-react";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import styles from "./Settings.module.css";
@@ -79,11 +80,17 @@ export const Settings = () => {
       icon: Truck,
       showCheckmark: true,
     },
+    {
+      path: "/metal-rates",
+      label: t("settings.navigation.metalRates"),
+      icon: Container,
+      showCheckmark: true,
+    },
   ];
 
   // Find active step index for stepper
   const activeStepIndex = navigationItems.findIndex((item) =>
-    isActive(item.path)
+    isActive(item.path),
   );
   const activeIndex = activeStepIndex >= 0 ? activeStepIndex : 0;
 

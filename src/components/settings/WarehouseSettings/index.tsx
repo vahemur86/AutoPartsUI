@@ -24,13 +24,13 @@ export const WarehouseSettings = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { warehouses, isLoading, error } = useAppSelector(
-    (state) => state.warehouses
+    (state) => state.warehouses,
   );
 
   const [activeTab, setActiveTab] = useState("add-new");
   const [warehouseCode, setWarehouseCode] = useState("");
   const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
-    null
+    null,
   );
 
   const handleAddWarehouse = useCallback(async () => {
@@ -46,7 +46,7 @@ export const WarehouseSettings = () => {
           updateWarehouseInStore({
             id: editingWarehouse.id,
             code: warehouseCode.trim(),
-          })
+          }),
         ).unwrap();
 
         toast.success(t("warehouses.success.warehouseUpdated"));
@@ -65,11 +65,11 @@ export const WarehouseSettings = () => {
           error,
           editingWarehouse
             ? t("warehouses.error.failedToUpdate")
-            : t("warehouses.error.failedToCreate")
-        )
+            : t("warehouses.error.failedToCreate"),
+        ),
       );
     }
-  }, [warehouseCode, editingWarehouse, dispatch]);
+  }, [warehouseCode, t, editingWarehouse, dispatch]);
 
   const handleTabChange = useCallback((tab: string) => {
     setActiveTab(tab);
@@ -90,10 +90,12 @@ export const WarehouseSettings = () => {
         toast.success(t("warehouses.success.warehouseDeleted"));
       } catch (error: unknown) {
         console.error(error);
-        toast.error(getErrorMessage(error, t("warehouses.error.failedToDelete")));
+        toast.error(
+          getErrorMessage(error, t("warehouses.error.failedToDelete")),
+        );
       }
     },
-    [dispatch]
+    [dispatch, t],
   );
 
   useEffect(() => {

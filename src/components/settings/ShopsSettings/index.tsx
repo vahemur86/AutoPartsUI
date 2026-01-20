@@ -57,7 +57,7 @@ export const ShopsSettings = () => {
             id: editingShop.id,
             code: shopKey.trim(),
             warehouseId,
-          })
+          }),
         ).unwrap();
 
         toast.success(t("shops.success.shopUpdated"));
@@ -76,11 +76,11 @@ export const ShopsSettings = () => {
           error,
           editingShop
             ? t("shops.error.failedToUpdate")
-            : t("shops.error.failedToCreate")
-        )
+            : t("shops.error.failedToCreate"),
+        ),
       );
     }
-  }, [shopKey, warehouseId, editingShop, dispatch]);
+  }, [shopKey, warehouseId, t, editingShop, dispatch]);
 
   const handleTabChange = useCallback((tab: string) => {
     setActiveTab(tab);
@@ -106,7 +106,7 @@ export const ShopsSettings = () => {
         toast.error(getErrorMessage(error, t("shops.error.failedToDelete")));
       }
     },
-    [dispatch]
+    [dispatch, t],
   );
 
   useEffect(() => {

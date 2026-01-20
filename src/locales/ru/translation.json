@@ -12,9 +12,14 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "delete": "Удалить",
+    "deleting": "Удаление...",
     "edit": "Редактировать",
     "add": "Добавить",
-    "update": "Обновить"
+    "update": "Обновить",
+    "actions": "Действия",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "enabled": "Включено"
   },
   "settings": {
     "navigation": {
@@ -23,7 +28,8 @@
       "warehouse": "Склад",
       "shops": "Магазины",
       "productSettings": "Настройки товаров",
-      "vehicleManagement": "Управление транспортными средствами"
+      "vehicleManagement": "Управление транспортными средствами",
+      "metalRates": "Металлические ставки"
     }
   },
   "users": {
@@ -59,7 +65,7 @@
     },
     "form": {
       "shopKey": "Код магазина",
-      "type": "Введите",
+      "type": "Тип",
       "warehouse": "Склад",
       "selectWarehouse": "Выберите склад"
     },
@@ -87,7 +93,7 @@
     },
     "form": {
       "warehouseKey": "Код склада",
-      "type": "Введите"
+      "type": "Тип"
     },
     "validation": {
       "enterWarehouseCode": "Пожалуйста, введите код склада"
@@ -132,7 +138,7 @@
       },
       "confirmation": {
         "deleteTitle": "Удалить задачу",
-        "deleteDescription": "Вы уверены, что хотите удалить \"{{code}}\"? Это действие нельзя отменить.",
+        "deleteDescription": "Вы уверены, что хотите удалить «{{code}}»? Это действие нельзя отменить.",
         "deleting": "Удаление...",
         "delete": "Удалить"
       }
@@ -158,8 +164,7 @@
         "year": "Год",
         "engine": "Двигатель",
         "fuelType": "Тип топлива",
-        "status": "Статус",
-        "actions": "Действия"
+        "status": "Статус"
       }
     },
     "ariaLabels": {
@@ -168,6 +173,28 @@
       "editVehicle": "Редактировать транспортное средство",
       "deleteVehicle": "Удалить транспортное средство",
       "vehicleManagementSections": "Разделы управления транспортными средствами"
+    }
+  },
+  "metals": {
+    "addRate": "Добавить цену металла",
+    "editRate": "Редактировать цену металла",
+    "columns": {
+      "currency": "Валюта",
+      "platinum": "Платина (за грамм)",
+      "palladium": "Палладий (за грамм)",
+      "rhodium": "Родий (за грамм)",
+      "effectiveFrom": "Действует с",
+      "status": "Статус"
+    },
+    "form": {
+      "currency": "Код валюты",
+      "platinum": "Цена платины",
+      "palladium": "Цена палладия",
+      "rhodium": "Цена родия"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить цену металла",
+      "deleteDescription": "Вы уверены, что хотите удалить цену для «{{name}}»? Это действие нельзя отменить."
     }
   },
   "products": {
@@ -185,7 +212,7 @@
       "fieldName": "Имя поля",
       "fieldValue": "Значение поля",
       "languageCode": "Код языка",
-      "type": "Введите",
+      "type": "Тип",
       "select": "Выберите"
     },
     "columns": {
