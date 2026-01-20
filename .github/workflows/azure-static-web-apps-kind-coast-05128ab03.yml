@@ -36,6 +36,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: "/"
-          output_location: "build"   # or "dist" if Vite
+          output_location: "build"
           skip_app_build: true
           skip_api_build: true
