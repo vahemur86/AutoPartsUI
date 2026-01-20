@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import styles from "../OperatorPage.module.css";
 
 interface PricingRowProps {
@@ -25,28 +26,32 @@ const PricingRow = ({
 );
 
 export const PricingBreakdown = () => {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.pricingCard}>
-      <h2 className={styles.cardTitle}>Pricing Breakdown</h2>
+      <h2 className={styles.cardTitle}>
+        {t("pricingBreakdown.title")}
+      </h2>
 
       <div className={styles.divider} />
 
       <div className={styles.pricingContent}>
         <PricingRow
-          metal="Platinum"
+          metal={t("pricingBreakdown.metals.platinum")}
           amount="1 kg"
           price="$30,000"
           total="$28,500"
         />
         <PricingRow
-          metal="Palladium"
+          metal={t("pricingBreakdown.metals.palladium")}
           amount="0.5 kg"
           price="$25,000"
           coefficient="96%"
           total="$12,000"
         />
         <PricingRow
-          metal="Rhodium"
+          metal={t("pricingBreakdown.metals.rhodium")}
           amount="0 kg"
           price="$150,000"
           coefficient="90%"
@@ -57,15 +62,17 @@ export const PricingBreakdown = () => {
 
         <div className={styles.pricingSummary}>
           <div className={styles.summaryRow}>
-            <span>Total Metal Value:</span>
+            <span>{t("pricingBreakdown.totalMetalValue")}</span>
             <span className={styles.summaryValue}>$40,500</span>
           </div>
           <div className={styles.summaryRow}>
-            <span>Client Coefficient:</span>
+            <span>{t("pricingBreakdown.clientCoefficient")}</span>
             <span className={styles.summaryValue}>0.88</span>
           </div>
           <div className={styles.summaryRow}>
-            <span className={styles.finalOfferLabelSummary}>Final Offer:</span>
+            <span className={styles.finalOfferLabelSummary}>
+              {t("pricingBreakdown.finalOffer")}
+            </span>
             <span className={styles.finalOfferValue}>$35,640</span>
           </div>
         </div>

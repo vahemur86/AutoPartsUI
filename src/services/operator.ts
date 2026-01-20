@@ -26,7 +26,7 @@ export const getIntake = async (intakeId: number) => {
 
 export const acceptIntake = async (intakeId: number): Promise<Intake> => {
   try {
-    const response = await api.get(`/catalyst/intakes/${intakeId}/accept`);
+    const response = await api.post(`/catalyst/intakes/${intakeId}/accept`);
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to accept intake."));
@@ -35,7 +35,7 @@ export const acceptIntake = async (intakeId: number): Promise<Intake> => {
 
 export const rejectIntake = async (intakeId: number) => {
   try {
-    const response = await api.get(`/catalyst/intakes/${intakeId}/reject`);
+    const response = await api.post(`/catalyst/intakes/${intakeId}/reject`);
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to reject intake."));
@@ -44,7 +44,7 @@ export const rejectIntake = async (intakeId: number) => {
 
 export const offerIntake = async (intakeId: number) => {
   try {
-    const response = await api.get(`/catalyst/intakes/${intakeId}/offer`);
+    const response = await api.post(`/catalyst/intakes/${intakeId}/offer`);
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to offer intake."));
@@ -53,7 +53,9 @@ export const offerIntake = async (intakeId: number) => {
 
 export const recalculateIntake = async (intakeId: number) => {
   try {
-    const response = await api.get(`/catalyst/intakes/${intakeId}/recalculate`);
+    const response = await api.post(
+      `/catalyst/intakes/${intakeId}/recalculate`
+    );
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to recalculate intake."));
