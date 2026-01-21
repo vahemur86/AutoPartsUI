@@ -30,7 +30,8 @@
       "shops": "Shops",
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
-      "metalRates": "Metal Rates"
+      "metalRates": "Metal Rates",
+      "catalystBuckets": "Catalyst Buckets"
     }
   },
   "users": {
@@ -200,6 +201,43 @@
       "deleteDescription": "Are you sure you want to delete the rate for \"{{name}}\"? This action cannot be undone."
     }
   },
+  "catalystBuckets": {
+    "addBucket": "Add Catalyst Bucket",
+    "editBucket": "Edit Catalyst Bucket",
+    "form": {
+      "code": "Code",
+      "enterCode": "Enter code...",
+      "codeRequired": "Code is required",
+      "ptWeight": "Platinum Weight (g)",
+      "pdWeight": "Palladium Weight (g)",
+      "rhWeight": "Rhodium Weight (g)",
+      "enterValidWeight": "Enter a valid weight",
+      "enabled": "Enabled"
+    },
+    "columns": {
+      "code": "Code",
+      "ptWeight": "Platinum Weight",
+      "pdWeight": "Palladium Weight",
+      "rhWeight": "Rhodium Weight",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete Catalyst Bucket",
+      "deleteDescription": "Are you sure you want to delete \"{{code}}\"? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "delete": "Delete"
+    },
+    "ariaLabels": {
+      "addNewBucket": "Add new catalyst bucket"
+    },
+    "searchBucket": "Search by code",
+    "search": {
+      "notFound": "Catalyst bucket not found",
+      "error": "Failed to search catalyst bucket"
+    }
+  },
   "products": {
     "iconAlt": "Products icon"
   },
@@ -343,12 +381,17 @@
       "palladium": "Palladium",
       "rhodium": "Rhodium"
     },
+    "platinumWeight": "Platinum Weight:",
+    "palladiumWeight": "Palladium Weight:",
+    "rhodiumWeight": "Rhodium Weight:",
+    "createIntake": "Create Intake",
     "totalMetalValue": "Total Metal Value:",
     "clientCoefficient": "Client Coefficient:",
     "finalOffer": "Final Offer:"
   },
   "powderExtraction": {
     "title": "Powder Extraction",
+    "extractionWeight": "Extraction Weight (kg)",
     "scaleId": "Scale ID:",
     "measuredAt": "Measured At:"
   },

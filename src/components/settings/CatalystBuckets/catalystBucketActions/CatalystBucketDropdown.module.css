@@ -1,0 +1,80 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.header {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  display: none;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.grid > * {
+  min-width: 0;
+  width: 100%;
+}
+
+.switchWrapper {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+  grid-column: span 2;
+}
+
+.actionswithoutDelete {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.primaryActions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .header {
+    display: block;
+  }
+
+  .content {
+    padding: 16px 24px 24px;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .primaryActions {
+    width: auto;
+  }
+
+  .primaryActions button {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+}

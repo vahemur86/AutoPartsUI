@@ -30,7 +30,8 @@
       "shops": "Խանութներ",
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
-      "metalRates": "Մետալային գները"
+      "metalRates": "Մետալային գները",
+      "catalystBuckets": "Կատալիզատորի բաքեր"
     }
   },
   "users": {
@@ -198,6 +199,43 @@
       "deleteDescription": "Համոզվա՞ծ եք, որ ցանկանում եք ջնջել «{{name}}»-ի գինը: Այս գործողությունը չի կարող հետարկվել:"
     }
   },
+  "catalystBuckets": {
+    "addBucket": "Ավելացնել կատալիզատորի բաք",
+    "editBucket": "Խմբագրել կատալիզատորի բաք",
+    "form": {
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդ...",
+      "codeRequired": "Կոդը պարտադիր է",
+      "ptWeight": "Պլատինի քաշ (գ)",
+      "pdWeight": "Պալադիումի քաշ (գ)",
+      "rhWeight": "Ռոդիումի քաշ (գ)",
+      "enterValidWeight": "Մուտքագրեք վավեր քաշ",
+      "enabled": "Միացված"
+    },
+    "columns": {
+      "code": "Կոդ",
+      "ptWeight": "Պլատինի քաշ",
+      "pdWeight": "Պալադիումի քաշ",
+      "rhWeight": "Ռոդիումի քաշ",
+      "status": "Կարգավիճակ",
+      "active": "Ակտիվ",
+      "inactive": "Անակտիվ"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել կատալիզատորի բաք",
+      "deleteDescription": "Դուք համոզված եք, որ ցանկանում եք ջնջել «{{code}}»-ը: Այս գործողությունը չի կարող հետարկվել:",
+      "deleting": "Ջնջվում է...",
+      "delete": "Ջնջել"
+    },
+    "ariaLabels": {
+      "addNewBucket": "Ավելացնել նոր կատալիզատորի բաք"
+    },
+    "searchBucket": "Որոնել ըստ կոդի",
+    "search": {
+      "notFound": "Կատալիզատորի բաք չի գտնվել",
+      "error": "Կատալիզատորի բաք որոնելը ձախողվեց"
+    }
+  },
   "products": {
     "iconAlt": "Ապրանքների պատկերակ"
   },
@@ -341,12 +379,17 @@
       "palladium": "Պալադիում",
       "rhodium": "Ռոդիում"
     },
+    "platinumWeight": "Պլատինի քաշը:",
+    "palladiumWeight": "Պալադիումի քաշը:",
+    "rhodiumWeight": "Ռոդիումի քաշը:",
+    "createIntake": "Ստեղծել հարցում",
     "totalMetalValue": "Մետաղների ընդհանուր արժեքը:",
     "clientCoefficient": "Հաճախորդի գործակիցը:",
     "finalOffer": "Վերջնական առաջարկ:"
   },
   "powderExtraction": {
     "title": "Փոշու ստացում",
+    "extractionWeight": "Ստացման քաշ (կգ)",
     "scaleId": "Կշեռքի ID:",
     "measuredAt": "Չափման ժամանակը:"
   },

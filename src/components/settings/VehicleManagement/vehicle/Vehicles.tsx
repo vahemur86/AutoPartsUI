@@ -15,23 +15,13 @@ import {
   type VehicleForm,
 } from "./vehicleActions/AddVehicleDropdown";
 import { getVehicleColumns } from "./columns";
+import { getErrorMessage } from "@/utils";
 import styles from "../VehicleManagement.module.css";
-
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addVehicle, fetchVehicles } from "@/store/slices/vehiclesSlice";
-import type { Vehicle } from "@/types/settings";
-import { getErrorMessage } from "@/utils";
 
-interface VehiclesProps {
-  withEdit?: boolean;
-  withDelete?: boolean;
-}
-
-export const Vehicles: FC<VehiclesProps> = ({
-  withEdit = false,
-  withDelete = false,
-}) => {
+export const Vehicles: FC = ({}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { vehicles } = useAppSelector((state) => state.vehicles);
@@ -46,14 +36,6 @@ export const Vehicles: FC<VehiclesProps> = ({
   useEffect(() => {
     dispatch(fetchVehicles());
   }, [dispatch]);
-
-  const handleEdit = useCallback((vehicle: Vehicle) => {
-    console.log("Edit Clicked for:", vehicle.id);
-  }, []);
-
-  const handleDelete = useCallback((vehicle: Vehicle) => {
-    console.log("Delete Clicked for:", vehicle.id);
-  }, []);
 
   const openAddDropdown = useCallback((isMobile: boolean) => {
     const anchorEl = isMobile
@@ -90,7 +72,7 @@ export const Vehicles: FC<VehiclesProps> = ({
         toast.error(
           typeof error === "string"
             ? error
-            : getErrorMessage(error, t("vehicles.vehicles.addVehicle")),
+            : getErrorMessage(error, t("vehicles.vehicles.addVehicle"))
         );
       } finally {
         setIsMutating(false);
@@ -99,10 +81,7 @@ export const Vehicles: FC<VehiclesProps> = ({
     [dispatch, handleCloseAddDropdown, t]
   );
 
-  const columns = useMemo(
-    () => getVehicleColumns(withEdit, withDelete, handleEdit, handleDelete),
-    [withEdit, withDelete, handleEdit, handleDelete]
-  );
+  const columns = useMemo(() => getVehicleColumns(), []);
 
   return (
     <div className={styles.vehiclesWrapper}>

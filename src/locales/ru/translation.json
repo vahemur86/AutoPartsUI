@@ -30,7 +30,8 @@
       "shops": "Магазины",
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
-      "metalRates": "Металлические ставки"
+      "metalRates": "Металлические ставки",
+      "catalystBuckets": "Катализаторные баки"
     }
   },
   "users": {
@@ -198,6 +199,43 @@
       "deleteDescription": "Вы уверены, что хотите удалить цену для «{{name}}»? Это действие нельзя отменить."
     }
   },
+  "catalystBuckets": {
+    "addBucket": "Добавить катализаторный бак",
+    "editBucket": "Редактировать катализаторный бак",
+    "form": {
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "codeRequired": "Код обязателен",
+      "ptWeight": "Вес платины (г)",
+      "pdWeight": "Вес палладия (г)",
+      "rhWeight": "Вес родия (г)",
+      "enterValidWeight": "Введите действительный вес",
+      "enabled": "Включено"
+    },
+    "columns": {
+      "code": "Код",
+      "ptWeight": "Вес платины",
+      "pdWeight": "Вес палладия",
+      "rhWeight": "Вес родия",
+      "status": "Статус",
+      "active": "Активен",
+      "inactive": "Неактивен"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить катализаторный бак",
+      "deleteDescription": "Вы уверены, что хотите удалить «{{code}}»? Это действие нельзя отменить.",
+      "deleting": "Удаление...",
+      "delete": "Удалить"
+    },
+    "ariaLabels": {
+      "addNewBucket": "Добавить новый катализаторный бак"
+    },
+    "searchBucket": "Поиск по коду",
+    "search": {
+      "notFound": "Катализаторный бак не найден",
+      "error": "Не удалось найти катализаторный бак"
+    }
+  },
   "products": {
     "iconAlt": "Иконка товаров"
   },
@@ -341,12 +379,17 @@
       "palladium": "Палладий",
       "rhodium": "Родий"
     },
+    "platinumWeight": "Вес платины:",
+    "palladiumWeight": "Вес палладия:",
+    "rhodiumWeight": "Вес родия:",
+    "createIntake": "Создать заявку",
     "totalMetalValue": "Общая стоимость металлов:",
     "clientCoefficient": "Коэффициент клиента:",
     "finalOffer": "Финальное предложение:"
   },
   "powderExtraction": {
     "title": "Извлечение порошка",
+    "extractionWeight": "Вес извлечения (кг)",
     "scaleId": "ID весов:",
     "measuredAt": "Время измерения:"
   },

@@ -10,6 +10,7 @@ import {
   Settings as SettingsIcon,
   Truck,
   Container,
+  FlaskConical,
 } from "lucide-react";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import styles from "./Settings.module.css";
@@ -84,6 +85,12 @@ export const Settings = () => {
       path: "/metal-rates",
       label: t("settings.navigation.metalRates"),
       icon: Container,
+      showCheckmark: true,
+    },
+    {
+      path: "/catalyst-buckets",
+      label: t("settings.navigation.catalystBuckets"),
+      icon: FlaskConical,
       showCheckmark: true,
     },
   ];

@@ -103,3 +103,12 @@ export interface VehicleDefinition {
   fuelTypes: Array<{ id: number; code: string; name: string }>;
   engines: Array<{ id: number; code: string; name: string }>;
 }
+
+export interface CatalystBucket {
+  id: number;
+  code: string;
+  ptWeight: number;
+  pdWeight: number;
+  rhWeight: number;
+  isActive: boolean;
+}
