@@ -17,6 +17,10 @@ export const getCatalystBucketColumns = (
   columnHelper.accessor("code", {
     header: i18next.t("catalystBuckets.columns.code"),
   }),
+  columnHelper.accessor("weight", {
+    header: i18next.t("catalystBuckets.columns.weight"),
+    cell: (info) => `${info.getValue()}g`,
+  }),
   columnHelper.accessor("ptWeight", {
     header: i18next.t("catalystBuckets.columns.ptWeight"),
     cell: (info) => `${info.getValue()}g`,

@@ -5,6 +5,7 @@ import styles from "./CatalystBucketDropdown.module.css";
 
 export interface CatalystBucketForm {
   code: string;
+  weight: number;
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;
@@ -30,6 +31,7 @@ export const CatalystBucketDropdown = ({
 }: CatalystBucketDropdownProps) => {
   const { t } = useTranslation();
   const [code, setCode] = useState("");
+  const [weightInput, setWeightInput] = useState("");
   const [ptWeightInput, setPtWeightInput] = useState("");
   const [pdWeightInput, setPdWeightInput] = useState("");
   const [rhWeightInput, setRhWeightInput] = useState("");
@@ -41,6 +43,7 @@ export const CatalystBucketDropdown = ({
   useEffect(() => {
     if (open) {
       setCode(initialData?.code ?? "");
+      setWeightInput(initialData ? String(initialData.weight ?? "") : "");
       setPtWeightInput(initialData ? String(initialData.ptWeight) : "");
       setPdWeightInput(initialData ? String(initialData.pdWeight) : "");
       setRhWeightInput(initialData ? String(initialData.rhWeight) : "");
@@ -50,11 +53,13 @@ export const CatalystBucketDropdown = ({
   }, [open, initialData]);
 
   // Validation Logic
+  const numericWeight = parseFloat(weightInput);
   const numericPtWeight = parseFloat(ptWeightInput);
   const numericPdWeight = parseFloat(pdWeightInput);
   const numericRhWeight = parseFloat(rhWeightInput);
   const isCodeValid = code.trim().length > 0;
   const areWeightsValid =
+    !isNaN(numericWeight) &&
     !isNaN(numericPtWeight) &&
     !isNaN(numericPdWeight) &&
     !isNaN(numericRhWeight);
@@ -66,6 +71,7 @@ export const CatalystBucketDropdown = ({
 
     onSave({
       code: code.trim(),
+      weight: numericWeight,
       ptWeight: numericPtWeight,
       pdWeight: numericPdWeight,
       rhWeight: numericRhWeight,
@@ -102,6 +108,16 @@ export const CatalystBucketDropdown = ({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             error={hasTriedSave && !isCodeValid}
+            disabled={isLoading}
+          />
+
+          <TextField
+            label={t("catalystBuckets.form.weight")}
+            placeholder="0.00"
+            type="number"
+            value={weightInput}
+            onChange={(e) => setWeightInput(e.target.value)}
+            error={hasTriedSave && isNaN(numericWeight)}
             disabled={isLoading}
           />
 

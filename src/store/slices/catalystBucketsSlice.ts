@@ -31,6 +31,7 @@ const initialState: CatalystBucketsState = {
 
 type CatalystBucketPayload = {
   code: string;
+  weight: number;
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;
@@ -84,6 +85,7 @@ export const editCatalystBucket = createAsyncThunk<
     try {
       const data = await updateCatalystBucket(payload.id, {
         code: payload.code,
+        weight: payload.weight,
         ptWeight: payload.ptWeight,
         pdWeight: payload.pdWeight,
         rhWeight: payload.rhWeight,

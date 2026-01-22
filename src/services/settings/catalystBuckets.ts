@@ -6,6 +6,7 @@ import type { CatalystBucket } from "@/types/settings";
 
 export const createCatalystBucket = async (catalystBucket: {
   code: string;
+  weight: number;
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;

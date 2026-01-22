@@ -217,6 +217,7 @@
       "code": "Code",
       "enterCode": "Enter code...",
       "codeRequired": "Code is required",
+      "weight": "Weight (g)",
       "ptWeight": "Platinum Weight (g)",
       "pdWeight": "Palladium Weight (g)",
       "rhWeight": "Rhodium Weight (g)",
@@ -225,6 +226,7 @@
     },
     "columns": {
       "code": "Code",
+      "weight": "Weight",
       "ptWeight": "Platinum Weight",
       "pdWeight": "Palladium Weight",
       "rhWeight": "Rhodium Weight",

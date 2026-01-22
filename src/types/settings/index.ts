@@ -112,6 +112,7 @@ export interface VehicleDefinition {
 export interface CatalystBucket {
   id: number;
   code: string;
+  weight: number;
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;

@@ -215,6 +215,7 @@
       "code": "Код",
       "enterCode": "Введите код...",
       "codeRequired": "Код обязателен",
+      "weight": "Вес (г)",
       "ptWeight": "Вес платины (г)",
       "pdWeight": "Вес палладия (г)",
       "rhWeight": "Вес родия (г)",
@@ -223,6 +224,7 @@
     },
     "columns": {
       "code": "Код",
+      "weight": "Вес",
       "ptWeight": "Вес платины",
       "pdWeight": "Вес палладия",
       "rhWeight": "Вес родия",
