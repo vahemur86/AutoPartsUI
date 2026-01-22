@@ -11,6 +11,9 @@ export interface VehicleForm {
   year: string;
   engineId: string;
   fuelTypeId: string;
+  marketId: string;
+  horsePower: string;
+  driveTypeId: string;
 }
 
 export interface AddVehicleDropdownProps {
@@ -58,6 +61,18 @@ export const AddVehicleDropdown = ({
         label: t("vehicles.vehicles.form.fuelType"),
         placeholder: t("vehicles.vehicles.form.selectFuelType"),
       },
+      market: {
+        label: t("vehicles.vehicles.form.market"),
+        placeholder: t("vehicles.vehicles.form.selectMarket"),
+      },
+      horsePower: {
+        label: t("vehicles.vehicles.form.horsePower"),
+        placeholder: t("vehicles.vehicles.form.enterHorsePower"),
+      },
+      driveType: {
+        label: t("vehicles.vehicles.form.driveType"),
+        placeholder: t("vehicles.vehicles.form.selectDriveType"),
+      },
     }),
     [t]
   );
@@ -68,6 +83,9 @@ export const AddVehicleDropdown = ({
     year: "",
     engineId: "",
     fuelTypeId: "",
+    marketId: "",
+    horsePower: "",
+    driveTypeId: "",
   });
 
   const [hasTriedSave, setHasTriedSave] = useState(false);
@@ -98,6 +116,9 @@ export const AddVehicleDropdown = ({
       year: "",
       engineId: "",
       fuelTypeId: "",
+      marketId: "",
+      horsePower: "",
+      driveTypeId: "",
     });
     setHasTriedSave(false);
   }, [open]);
@@ -126,7 +147,10 @@ export const AddVehicleDropdown = ({
     formValues.modelId.trim().length > 0 &&
     formValues.year.trim().length > 0 &&
     formValues.engineId.trim().length > 0 &&
-    formValues.fuelTypeId.trim().length > 0;
+    formValues.fuelTypeId.trim().length > 0 &&
+    formValues.marketId.trim().length > 0 &&
+    formValues.horsePower.trim().length > 0 &&
+    formValues.driveTypeId.trim().length > 0;
 
   const handleClose = () => onOpenChange(false);
 
@@ -140,6 +164,9 @@ export const AddVehicleDropdown = ({
       year: formValues.year.trim(),
       engineId: formValues.engineId.trim(),
       fuelTypeId: formValues.fuelTypeId.trim(),
+      marketId: formValues.marketId.trim(),
+      horsePower: formValues.horsePower.trim(),
+      driveTypeId: formValues.driveTypeId.trim(),
     });
   };
 
@@ -252,6 +279,60 @@ export const AddVehicleDropdown = ({
               {vehicleDefinitions?.fuelTypes?.map((fuelType) => (
                 <option key={fuelType.id} value={fuelType.id}>
                   {fuelType.name || fuelType.code}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className={styles.colLeft}>
+            <Select
+              label={vehicleFormFields.market.label}
+              value={formValues.marketId}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, marketId: e.target.value }))
+              }
+              placeholder={vehicleFormFields.market.placeholder}
+              error={hasTriedSave && !formValues.marketId.trim()}
+              disabled={isLoading || isLoadingDefinitions}
+            >
+              <option value="">{vehicleFormFields.market.placeholder}</option>
+              {vehicleDefinitions?.markets?.map((market) => (
+                <option key={market.id} value={market.id}>
+                  {market.name || market.code}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className={styles.colRight}>
+            <TextField
+              label={vehicleFormFields.horsePower.label}
+              value={formValues.horsePower}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, horsePower: e.target.value }))
+              }
+              placeholder={vehicleFormFields.horsePower.placeholder}
+              error={hasTriedSave && !formValues.horsePower.trim()}
+              disabled={isLoading}
+              type="number"
+            />
+          </div>
+
+          <div className={styles.fullRow}>
+            <Select
+              label={vehicleFormFields.driveType.label}
+              value={formValues.driveTypeId}
+              onChange={(e) =>
+                setFormValues((p) => ({ ...p, driveTypeId: e.target.value }))
+              }
+              placeholder={vehicleFormFields.driveType.placeholder}
+              error={hasTriedSave && !formValues.driveTypeId.trim()}
+              disabled={isLoading || isLoadingDefinitions}
+            >
+              <option value="">{vehicleFormFields.driveType.placeholder}</option>
+              {vehicleDefinitions?.driveTypes?.map((driveType) => (
+                <option key={driveType.id} value={driveType.id}>
+                  {driveType.name || driveType.code}
                 </option>
               ))}
             </Select>

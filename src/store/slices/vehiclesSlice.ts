@@ -43,6 +43,9 @@ export const fetchVehicles = createAsyncThunk<
           year: item.year ?? 0,
           engine: item.engine?.name ?? "",
           fuelType: item.fuelType?.name ?? "",
+          market: item.market?.name ?? "",
+          horsePower: item.horsePower ?? 0,
+          driveType: item.driveType?.name ?? "",
         }))
       : [];
 

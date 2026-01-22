@@ -160,6 +160,12 @@
         "selectEngine": "Select engine...",
         "fuelType": "Fuel Type",
         "selectFuelType": "Select fuel type...",
+        "market": "Market",
+        "selectMarket": "Select market...",
+        "horsePower": "Horse Power",
+        "enterHorsePower": "Enter horse power...",
+        "driveType": "Drive Type",
+        "selectDriveType": "Select drive type...",
         "status": "Status"
       },
       "columns": {
@@ -168,6 +174,9 @@
         "year": "Year",
         "engine": "Engine",
         "fuelType": "Fuel Type",
+        "market": "Market",
+        "horsePower": "Horse Power",
+        "driveType": "Drive Type",
         "status": "Status"
       }
     },

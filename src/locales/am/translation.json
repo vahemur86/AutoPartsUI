@@ -158,6 +158,12 @@
         "enterEngine": "Մուտքագրեք շարժիչ...",
         "fuelType": "Վառելիքի տեսակ",
         "selectFuelType": "Ընտրեք վառելիքի տեսակ...",
+        "market": "Շուկա",
+        "selectMarket": "Ընտրեք շուկա...",
+        "horsePower": "Ձիաուժ",
+        "enterHorsePower": "Մուտքագրեք ձիաուժ...",
+        "driveType": "Քարշակի տեսակ",
+        "selectDriveType": "Ընտրեք քարշակի տեսակ...",
         "status": "Կարգավիճակ"
       },
       "columns": {
@@ -166,6 +172,9 @@
         "year": "Տարի",
         "engine": "Շարժիչ",
         "fuelType": "Վառելիքի տեսակ",
+        "market": "Շուկա",
+        "horsePower": "Ձիաուժ",
+        "driveType": "Քարշակի տեսակ",
         "status": "Կարգավիճակ"
       }
     },

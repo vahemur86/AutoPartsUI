@@ -158,6 +158,12 @@
         "enterEngine": "Введите двигатель...",
         "fuelType": "Тип топлива",
         "selectFuelType": "Выберите тип топлива...",
+        "market": "Рынок",
+        "selectMarket": "Выберите рынок...",
+        "horsePower": "Лошадиная сила",
+        "enterHorsePower": "Введите лошадиную силу...",
+        "driveType": "Тип привода",
+        "selectDriveType": "Выберите тип привода...",
         "status": "Статус"
       },
       "columns": {
@@ -166,6 +172,9 @@
         "year": "Год",
         "engine": "Двигатель",
         "fuelType": "Тип топлива",
+        "market": "Рынок",
+        "horsePower": "Лошадиная сила",
+        "driveType": "Тип привода",
         "status": "Статус"
       }
     },

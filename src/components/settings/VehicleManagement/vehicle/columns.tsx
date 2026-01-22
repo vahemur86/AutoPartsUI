@@ -20,4 +20,16 @@ export const getVehicleColumns = (): ColumnDef<Vehicle>[] => [
     accessorKey: "fuelType",
     header: i18next.t("vehicles.vehicles.columns.fuelType"),
   },
+  {
+    accessorKey: "market",
+    header: i18next.t("vehicles.vehicles.columns.market"),
+  },
+  {
+    accessorKey: "horsePower",
+    header: i18next.t("vehicles.vehicles.columns.horsePower"),
+  },
+  {
+    accessorKey: "driveType",
+    header: i18next.t("vehicles.vehicles.columns.driveType"),
+  },
 ];

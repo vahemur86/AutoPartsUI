@@ -94,6 +94,9 @@ export type Vehicle = {
   year: number;
   engine: string;
   fuelType: string;
+  market: string;
+  horsePower: number;
+  driveType: string;
 };
 
 export interface VehicleDefinition {
@@ -102,6 +105,8 @@ export interface VehicleDefinition {
   models: Array<{ id: number; code: string; name: string }>;
   fuelTypes: Array<{ id: number; code: string; name: string }>;
   engines: Array<{ id: number; code: string; name: string }>;
+  markets?: Array<{ id: number; code: string; name: string }>;
+  driveTypes?: Array<{ id: number; code: string; name: string }>;
 }
 
 export interface CatalystBucket {

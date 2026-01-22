@@ -63,6 +63,9 @@ export const Vehicles: FC = ({}) => {
             modelId: Number(data.modelId),
             fuelTypeId: Number(data.fuelTypeId),
             engineId: Number(data.engineId),
+            marketId: Number(data.marketId),
+            horsePower: Number(data.horsePower),
+            driveTypeId: Number(data.driveTypeId),
           })
         ).unwrap();
         await dispatch(fetchVehicles()).unwrap();

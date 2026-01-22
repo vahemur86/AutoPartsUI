@@ -20,6 +20,9 @@ export interface CreateVehiclePayload {
   modelId: number;
   fuelTypeId: number;
   engineId: number;
+  marketId: number;
+  horsePower: number;
+  driveTypeId: number;
 }
 
 export const createVehicle = async (payload: CreateVehiclePayload) => {
