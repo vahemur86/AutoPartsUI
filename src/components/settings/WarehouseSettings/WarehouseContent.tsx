@@ -26,8 +26,8 @@ export const WarehouseContent: FC<WarehouseContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const columns = useMemo(
-    () => getWarehouseColumns(onEdit, onDelete),
-    [onEdit, onDelete]
+    () => getWarehouseColumns({ onEdit, onDelete }),
+    [onEdit, onDelete],
   );
 
   return (
@@ -47,7 +47,9 @@ export const WarehouseContent: FC<WarehouseContentProps> = ({
           {isLoading ? (
             <div className={styles.loadingState}>{t("warehouses.loading")}</div>
           ) : warehouses.length === 0 ? (
-            <div className={styles.emptyState}>{t("warehouses.emptyState")}</div>
+            <div className={styles.emptyState}>
+              {t("warehouses.emptyState")}
+            </div>
           ) : (
             <DataTable data={warehouses} columns={columns} pageSize={10} />
           )}

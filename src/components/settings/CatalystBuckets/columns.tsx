@@ -10,8 +10,13 @@ import styles from "./CatalystBuckets.module.css";
 const columnHelper = createColumnHelper<CatalystBucket>();
 
 export const getCatalystBucketColumns = (
-  withEdit: boolean,
-  onEdit: (bucket: CatalystBucket, e: React.MouseEvent<HTMLElement>) => void
+  {
+    withEdit,
+    onEdit,
+  }: {
+    withEdit: boolean;
+    onEdit: (bucket: CatalystBucket, e: React.MouseEvent<HTMLElement>) => void;
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<CatalystBucket, any>[] => [
   columnHelper.accessor("code", {

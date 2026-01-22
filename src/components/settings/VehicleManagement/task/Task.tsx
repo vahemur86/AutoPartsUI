@@ -123,9 +123,12 @@ export const Tasks: FC<TasksProps> = ({
 
   const columns = useMemo(
     () =>
-      getTaskColumns(withEdit, withDelete, handleOpenEdit, (task) =>
-        setDeletingTask(task),
-      ),
+      getTaskColumns({
+        withEdit,
+        withDelete,
+        onEdit: handleOpenEdit,
+        onDelete: (task) => setDeletingTask(task),
+      }),
     [withEdit, withDelete, handleOpenEdit],
   );
 
@@ -141,7 +144,9 @@ export const Tasks: FC<TasksProps> = ({
             className={styles.plusButton}
             onClick={handleOpenAdd}
           />
-          <span className={styles.addButtonText}>{t("vehicles.tasks.addTask")}</span>
+          <span className={styles.addButtonText}>
+            {t("vehicles.tasks.addTask")}
+          </span>
         </div>
       </div>
 
@@ -154,7 +159,9 @@ export const Tasks: FC<TasksProps> = ({
             ariaLabel={t("vehicles.ariaLabels.addNewTask")}
             onClick={handleOpenAdd}
           />
-          <span className={styles.addButtonText}>{t("vehicles.tasks.addTask")}</span>
+          <span className={styles.addButtonText}>
+            {t("vehicles.tasks.addTask")}
+          </span>
         </div>
       </div>
 
@@ -189,12 +196,7 @@ export const Tasks: FC<TasksProps> = ({
       )}
 
       <div className={styles.tableWrapper}>
-        <DataTable
-          enableSelection
-          data={tasks}
-          columns={columns}
-          pageSize={7}
-        />
+        <DataTable data={tasks} columns={columns} pageSize={7} />
       </div>
     </div>
   );

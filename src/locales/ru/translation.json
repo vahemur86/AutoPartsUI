@@ -147,15 +147,21 @@
     },
     "vehicles": {
       "addVehicle": "Добавить транспортное средство",
+      "actions": {
+        "viewBuckets": "Просмотреть баки",
+        "calculatePrice": "Рассчитать цену"
+      },
       "form": {
         "brand": "Марка",
         "selectBrand": "Выберите марку...",
         "model": "Модель",
         "enterModel": "Введите модель...",
+        "selectModel": "Выберите модель...",
         "year": "Год",
         "enterYear": "Введите год...",
         "engine": "Двигатель",
         "enterEngine": "Введите двигатель...",
+        "selectEngine": "Выберите двигатель...",
         "fuelType": "Тип топлива",
         "selectFuelType": "Выберите тип топлива...",
         "status": "Статус"
@@ -200,6 +206,7 @@
     }
   },
   "catalystBuckets": {
+    "title": "Катализаторные баки",
     "addBucket": "Добавить катализаторный бак",
     "editBucket": "Редактировать катализаторный бак",
     "form": {
@@ -234,6 +241,16 @@
     "search": {
       "notFound": "Катализаторный бак не найден",
       "error": "Не удалось найти катализаторный бак"
+    },
+    "success": {
+      "bucketsUpdated": "Баки успешно обновлены",
+      "bucketCreated": "Бак успешно создан",
+      "bucketDeleted": "Бак успешно удален"
+    },
+    "error": {
+      "failedToUpdate": "Не удалось обновить баки",
+      "failedToCreate": "Не удалось создать бак",
+      "failedToDelete": "Не удалось удалить бак"
     }
   },
   "products": {

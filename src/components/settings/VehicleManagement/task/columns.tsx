@@ -10,10 +10,17 @@ import styles from "../VehicleManagement.module.css";
 const columnHelper = createColumnHelper<Task>();
 
 export const getTaskColumns = (
-  withEdit: boolean,
-  withDelete: boolean,
-  onEdit: (task: Task, e: React.MouseEvent<HTMLElement>) => void,
-  onDelete: (task: Task) => void
+  {
+    withEdit,
+    withDelete,
+    onEdit,
+    onDelete,
+  }: {
+    withEdit: boolean;
+    withDelete: boolean;
+    onEdit: (task: Task, e: React.MouseEvent<HTMLElement>) => void;
+    onDelete: (task: Task) => void;
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<Task, any>[] => [
   columnHelper.accessor("code", {

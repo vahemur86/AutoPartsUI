@@ -9,7 +9,7 @@ import {
 } from "react";
 
 // icons
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Search } from "lucide-react";
 
 // styles
 import styles from "./MultiSelect.module.css";
@@ -34,6 +34,8 @@ export interface MultiSelectProps extends Omit<
   defaultValue?: string[];
   onChange?: (values: string[]) => void;
   renderValue?: (selected: MultiSelectOption[]) => string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }
 
 export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
@@ -50,6 +52,8 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       defaultValue = [],
       onChange,
       renderValue,
+      searchable = false,
+      searchPlaceholder = "Search...",
       id,
       ...props
     },
@@ -70,6 +74,14 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     const selectedValues = isControlled ? value! : internal;
 
     const [open, setOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const filteredOptions = useMemo(() => {
+      if (!searchable || !searchQuery.trim()) return options;
+      return options.filter((opt) =>
+        opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }, [options, searchable, searchQuery]);
 
     const selectedOptions = useMemo(() => {
       const map = new Map(options.map((o) => [o.value, o]));
@@ -82,7 +94,6 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       if (renderValue) return renderValue(selectedOptions);
       if (selectedOptions.length === 0) return "";
 
-      // If more than 2 items, show count to prevent extreme truncation
       if (selectedOptions.length > 2) {
         return `${selectedOptions.length} selected`;
       }
@@ -102,6 +113,10 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
         : [...selectedValues, val];
       setSelected(next);
     };
+
+    useEffect(() => {
+      if (!open) setSearchQuery("");
+    }, [open]);
 
     useEffect(() => {
       if (!open) return;
@@ -176,32 +191,54 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
               role="listbox"
               aria-multiselectable="true"
             >
-              {options.map((opt) => {
-                const checked = selectedValues.includes(opt.value);
-                const isOptDisabled = !!opt.disabled;
+              {searchable && (
+                <div className={styles.searchContainer}>
+                  <div className={styles.searchIcon}>
+                    <Search size={14} />
+                  </div>
+                  <input
+                    className={styles.searchInput}
+                    placeholder={searchPlaceholder}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+              )}
 
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={`${styles.option} ${
-                      checked ? styles.optionSelected : ""
-                    } ${isOptDisabled ? styles.optionDisabled : ""}`}
-                    onClick={() => {
-                      if (isOptDisabled) return;
-                      toggleValue(opt.value);
-                    }}
-                    disabled={isOptDisabled}
-                    role="option"
-                    aria-selected={checked}
-                  >
-                    <span className={styles.optionLabel}>{opt.label}</span>
-                    <span className={styles.checkIcon} aria-hidden="true">
-                      {checked ? <Check size={16} /> : null}
-                    </span>
-                  </button>
-                );
-              })}
+              <div className={styles.optionsList}>
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((opt) => {
+                    const checked = selectedValues.includes(opt.value);
+                    const isOptDisabled = !!opt.disabled;
+
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        className={`${styles.option} ${
+                          checked ? styles.optionSelected : ""
+                        } ${isOptDisabled ? styles.optionDisabled : ""}`}
+                        onClick={() => {
+                          if (isOptDisabled) return;
+                          toggleValue(opt.value);
+                        }}
+                        disabled={isOptDisabled}
+                        role="option"
+                        aria-selected={checked}
+                      >
+                        <span className={styles.optionLabel}>{opt.label}</span>
+                        <span className={styles.checkIcon} aria-hidden="true">
+                          {checked ? <Check size={16} /> : null}
+                        </span>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className={styles.noResults}>No results found</div>
+                )}
+              </div>
             </div>
           )}
         </div>

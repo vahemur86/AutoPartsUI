@@ -6,29 +6,39 @@ import {
   useEffect,
   type FC,
 } from "react";
+import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+
 // ui-kit
 import { DataTable, IconButton, TextField } from "@/ui-kit";
+
 // icons
 import { Plus, Search, X } from "lucide-react";
+
 // components
 import {
   CatalystBucketDropdown,
   type CatalystBucketForm,
 } from "./catalystBucketActions/CatalystBucketDropdown";
+
 // columns
 import { getCatalystBucketColumns } from "./columns";
+
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addCatalystBucket,
   fetchCatalystBuckets,
   editCatalystBucket,
+  fetchCatalystBucketsByCode,
 } from "@/store/slices/catalystBucketsSlice";
-// services
-import { getSingleCatalystBucket } from "@/services/settings/catalystBuckets";
+
 // types
 import type { CatalystBucket } from "@/types/settings";
+
+// utils
+import { getErrorMessage } from "@/utils";
+
 // styles
 import styles from "./CatalystBuckets.module.css";
 
@@ -41,20 +51,24 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  // Selectors from Redux
   const { catalystBuckets } = useAppSelector((state) => state.catalystBuckets);
 
+  // Local UI State
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeBucket, setActiveBucket] = useState<CatalystBucket | null>(null);
   const [isMutating, setIsMutating] = useState(false);
+
+  // Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [searchedBucket, setSearchedBucket] = useState<CatalystBucket | null>(
-    null
-  );
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   const anchorRef = useRef<HTMLElement | null>(null);
 
+  // Initial Data Fetch
   useEffect(() => {
     dispatch(fetchCatalystBuckets());
   }, [dispatch]);
@@ -71,18 +85,19 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       setActiveBucket(bucket);
       setIsDropdownOpen(true);
     },
-    []
+    [],
   );
 
   const handleCloseDropdown = useCallback(() => {
     setIsDropdownOpen(false);
   }, []);
 
-  const clearSearchState = useCallback(() => {
-    setSearchedBucket(null);
+  const handleClearSearch = useCallback(() => {
     setSearchQuery("");
     setSearchError(null);
-  }, []);
+    setIsFiltered(false);
+    dispatch(fetchCatalystBuckets());
+  }, [dispatch]);
 
   const handleSaveBucket = useCallback(
     async (data: CatalystBucketForm) => {
@@ -94,38 +109,41 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
               id: activeBucket.id,
               isActive: activeBucket.isActive ?? false,
               ...data,
-            })
+            }),
           ).unwrap();
+          toast.success(t("catalystBuckets.success.bucketUpdated"));
         } else {
           await dispatch(addCatalystBucket(data)).unwrap();
+          toast.success(t("catalystBuckets.success.bucketCreated"));
         }
 
-        await dispatch(fetchCatalystBuckets()).unwrap();
+        // Refresh based on current search state
+        if (isFiltered && searchQuery) {
+          await dispatch(fetchCatalystBucketsByCode(searchQuery)).unwrap();
+        } else {
+          await dispatch(fetchCatalystBuckets()).unwrap();
+        }
+
         handleCloseDropdown();
-        clearSearchState();
       } catch (error) {
-        console.error("Failed to save catalyst bucket:", error);
+        toast.error(
+          getErrorMessage(error, t("catalystBuckets.error.failedToSave")),
+        );
       } finally {
         setIsMutating(false);
       }
     },
-    [dispatch, activeBucket, handleCloseDropdown, clearSearchState]
+    [dispatch, activeBucket, handleCloseDropdown, isFiltered, searchQuery, t],
   );
 
-  const findLocalBucket = useCallback(
-    (query: string) => {
-      return catalystBuckets.find(
-        (bucket) => bucket.code.toLowerCase() === query.toLowerCase()
-      );
-    },
-    [catalystBuckets]
-  );
-
+  /**
+   * Performs the API-based search using fetchCatalystBucketsByCode
+   */
   const handleSearch = useCallback(async () => {
     const trimmedQuery = searchQuery.trim();
 
     if (!trimmedQuery) {
-      clearSearchState();
+      handleClearSearch();
       return;
     }
 
@@ -133,44 +151,21 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       setIsSearching(true);
       setSearchError(null);
 
-      // Check local buckets first
-      const matchingBucket = findLocalBucket(trimmedQuery);
-      if (matchingBucket) {
-        setSearchedBucket(matchingBucket);
-        return;
-      }
+      const results = await dispatch(
+        fetchCatalystBucketsByCode(trimmedQuery),
+      ).unwrap();
 
-      // Fetch from API if not found locally
-      const result = await getSingleCatalystBucket(trimmedQuery);
+      setIsFiltered(true);
 
-      if (result?.code) {
-        const bucketFromQuote: CatalystBucket = {
-          id: result.id || 0,
-          code: result.code,
-          ptWeight: result.ptWeight || 0,
-          pdWeight: result.pdWeight || 0,
-          rhWeight: result.rhWeight || 0,
-          isActive: result.isActive ?? true,
-        };
-        setSearchedBucket(bucketFromQuote);
-      } else {
-        // Check again in case catalystBuckets was updated
-        const updatedBucket = findLocalBucket(trimmedQuery);
-        if (updatedBucket) {
-          setSearchedBucket(updatedBucket);
-        } else {
-          setSearchError(t("catalystBuckets.search.notFound"));
-          setSearchedBucket(null);
-        }
+      if (results.length === 0) {
+        setSearchError(t("catalystBuckets.search.notFound"));
       }
-    } catch (error) {
-      console.error("Failed to search catalyst bucket:", error);
+    } catch {
       setSearchError(t("catalystBuckets.search.error"));
-      setSearchedBucket(null);
     } finally {
       setIsSearching(false);
     }
-  }, [searchQuery, findLocalBucket, clearSearchState, t]);
+  }, [dispatch, handleClearSearch, searchQuery, t]);
 
   const handleSearchInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,20 +173,12 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       setSearchQuery(value);
       setSearchError(null);
 
-      // Clear search results when input is cleared
-      if (!value.trim()) {
-        setSearchedBucket(null);
-        setSearchError(null);
+      if (!value.trim() && isFiltered) {
+        handleClearSearch();
       }
     },
-    []
+    [handleClearSearch, isFiltered],
   );
-
-  const handleClearSearch = useCallback(() => {
-    setSearchQuery("");
-    setSearchedBucket(null);
-    setSearchError(null);
-  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -199,17 +186,12 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
         handleSearch();
       }
     },
-    [handleSearch]
-  );
-
-  const tableData = useMemo(
-    () => (searchedBucket ? [searchedBucket] : catalystBuckets),
-    [searchedBucket, catalystBuckets]
+    [handleSearch],
   );
 
   const columns = useMemo(
-    () => getCatalystBucketColumns(withEdit, handleOpenEdit),
-    [withEdit, handleOpenEdit]
+    () => getCatalystBucketColumns({ withEdit, onEdit: handleOpenEdit }),
+    [withEdit, handleOpenEdit],
   );
 
   return (
@@ -225,7 +207,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
             helperText={searchError || ""}
             disabled={isSearching}
             icon={
-              searchedBucket ? (
+              isFiltered || searchQuery ? (
                 <X
                   size={16}
                   onClick={handleClearSearch}
@@ -284,12 +266,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       />
 
       <div className={styles.tableWrapper}>
-        <DataTable
-          enableSelection
-          data={tableData}
-          columns={columns}
-          pageSize={7}
-        />
+        <DataTable data={catalystBuckets} columns={columns} pageSize={7} />
       </div>
     </div>
   );

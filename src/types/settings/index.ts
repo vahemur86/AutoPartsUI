@@ -104,6 +104,13 @@ export interface VehicleDefinition {
   engines: Array<{ id: number; code: string; name: string }>;
 }
 
+export interface CreateVehiclePayload {
+  brandId: number;
+  modelId: number;
+  fuelTypeId: number;
+  engineId: number;
+}
+
 export interface CatalystBucket {
   id: number;
   code: string;

@@ -11,9 +11,15 @@ import { Pencil, Trash2 } from "lucide-react";
 const columnHelper = createColumnHelper<Shop>();
 
 export const getShopColumns = (
-  warehouses: Warehouse[],
-  onEdit?: (shop: Shop) => void,
-  onDelete?: (shopId: number) => void
+  {
+    warehouses,
+    onEdit,
+    onDelete,
+  }: {
+    warehouses: Warehouse[];
+    onEdit?: (shop: Shop) => void;
+    onDelete?: (shopId: number) => void;
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<Shop, any>[] => {
   const getWarehouseCode = (warehouseId: number) => {

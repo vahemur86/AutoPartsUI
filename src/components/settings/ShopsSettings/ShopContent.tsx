@@ -32,8 +32,8 @@ export const ShopContent: FC<ShopContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const columns = useMemo(
-    () => getShopColumns(warehouses, onEdit, onDelete),
-    [warehouses, onEdit, onDelete]
+    () => getShopColumns({ warehouses, onEdit, onDelete }),
+    [warehouses, onEdit, onDelete],
   );
 
   return (

@@ -13,12 +13,12 @@ export const createCatalystBucket = async (catalystBucket: {
   try {
     const response = await api.post(
       "/superadmin/catalyst-buckets",
-      catalystBucket
+      catalystBucket,
     );
     return response.data;
   } catch (error: unknown) {
     throw new Error(
-      getApiErrorMessage(error, "Failed to create catalyst bucket.")
+      getApiErrorMessage(error, "Failed to create catalyst bucket."),
     );
   }
 };
@@ -33,14 +33,14 @@ export const getCatalystBuckets = async (includeInactive = false) => {
     return response.data;
   } catch (error: unknown) {
     throw new Error(
-      getApiErrorMessage(error, "Failed to fetch catalyst buckets.")
+      getApiErrorMessage(error, "Failed to fetch catalyst buckets."),
     );
   }
 };
 
 export const getSingleCatalystBucket = async (
   code: string,
-  currencyCode: string = "AMD"
+  currencyCode: string = "AMD",
 ) => {
   try {
     const response = await api.get("/superadmin/catalyst-buckets/quote", {
@@ -52,24 +52,35 @@ export const getSingleCatalystBucket = async (
     return response.data;
   } catch (error: unknown) {
     throw new Error(
-      getApiErrorMessage(error, "Failed to get catalyst bucket quote.")
+      getApiErrorMessage(error, "Failed to get catalyst bucket quote."),
+    );
+  }
+};
+
+export const getCatalystBucketsByCode = async (code: string) => {
+  try {
+    const response = await api.get(`/superadmin/catalyst-buckets/${code}`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get catalyst buckets by code."),
     );
   }
 };
 
 export const updateCatalystBucket = async (
   id: number,
-  payload: Omit<CatalystBucket, "id">
+  payload: Omit<CatalystBucket, "id">,
 ) => {
   try {
     const response = await api.put(
       `/superadmin/catalyst-buckets/${id}`,
-      payload
+      payload,
     );
     return response.data;
   } catch (error: unknown) {
     throw new Error(
-      getApiErrorMessage(error, "Failed to update catalyst bucket.")
+      getApiErrorMessage(error, "Failed to update catalyst bucket."),
     );
   }
 };

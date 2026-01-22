@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+
+// ui-kit
 import { Button, TextField, Select, Dropdown } from "@/ui-kit";
+
+// services
 import { getVehicleDefinitions } from "@/services/settings/vehicles";
-import styles from "./VehicleDropdown.module.css";
+
+// types
 import type { VehicleDefinition } from "@/types/settings";
+
+// styles
+import styles from "./VehicleDropdown.module.css";
 
 export interface VehicleForm {
   brandId: string;
@@ -59,7 +67,7 @@ export const AddVehicleDropdown = ({
         placeholder: t("vehicles.vehicles.form.selectFuelType"),
       },
     }),
-    [t]
+    [t],
   );
 
   const [formValues, setFormValues] = useState<VehicleForm>({
