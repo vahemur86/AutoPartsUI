@@ -7,13 +7,16 @@ import { Button } from "@/ui-kit";
 import { LanguagesContent } from "./LanguagesContent";
 import { EditLanguageDropdown } from "./languagesActions/EditLanguageDropdown";
 import { AddLanguageDropdown } from "./languagesActions/AddLanguageDropdown";
-// services
+// Redux
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  getLanguages,
-  createLanguage,
-  deleteLanguage,
-  updateLanguage,
-} from "@/services/settings/languages";
+  fetchLanguages,
+  addLanguage,
+  updateLanguageInStore,
+  removeLanguage,
+} from "@/store/slices/languagesSlice";
+// services
+import { updateLanguage } from "@/services/settings/languages";
 // types
 import type { Language } from "@/types/settings";
 // utils
@@ -24,6 +27,8 @@ import styles from "./ProjectLanguages.module.css";
 
 export const ProjectLanguages = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { languages, isLoading } = useAppSelector((state) => state.languages);
   const [editingLanguageId, setEditingLanguageId] = useState<number | null>(
     null,
   );
@@ -32,34 +37,26 @@ export const ProjectLanguages = () => {
   const editAnchorRef = useRef<HTMLElement>(null);
   const addAnchorRef = useRef<HTMLElement>(null);
 
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const fetchInitiatedRef = useRef(false);
-
-  const fetchLanguages = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await getLanguages();
-      setLanguages(response);
-
-      const defaultLanguage = response.find((lang: Language) => lang.isDefault);
-      if (defaultLanguage) {
-        updateI18nLanguage(defaultLanguage.code);
-      }
-    } catch (error: unknown) {
-      console.error(error);
-      toast.error(getErrorMessage(error, t("languages.error.failedToLoad")));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
 
   useEffect(() => {
     if (fetchInitiatedRef.current) return;
     fetchInitiatedRef.current = true;
-    fetchLanguages();
-  }, [fetchLanguages]);
+    dispatch(fetchLanguages()).then((result) => {
+      if (fetchLanguages.fulfilled.match(result)) {
+        const defaultLanguage = result.payload.find(
+          (lang: Language) => lang.isDefault,
+        );
+        if (defaultLanguage) {
+          updateI18nLanguage(defaultLanguage.code);
+        }
+      } else if (fetchLanguages.rejected.match(result)) {
+        toast.error(
+          getErrorMessage(result.payload, t("languages.error.failedToLoad")),
+        );
+      }
+    });
+  }, [dispatch, t]);
 
   const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
     if (!anchorEl) return;
@@ -119,46 +116,43 @@ export const ProjectLanguages = () => {
   const handleAddLanguage = useCallback(
     async (data: Omit<Language, "id">) => {
       try {
-        let updatedLanguages = [...languages];
         if (data.isDefault) {
-          updatedLanguages = updatedLanguages.map((lang) =>
-            lang.isDefault ? { ...lang, isDefault: false } : lang,
-          );
-
           await unsetOtherDefaultLanguages();
         }
 
-        const newLanguage = await createLanguage(
-          data.code,
-          data.name,
-          data.isDefault,
-          data.isEnabled,
+        const result = await dispatch(
+          addLanguage({
+            code: data.code,
+            name: data.name,
+            isDefault: data.isDefault,
+            isEnabled: data.isEnabled,
+          }),
         );
 
-        setLanguages([...updatedLanguages, newLanguage]);
-
-        if (data.isDefault) {
-          updateI18nLanguage(data.code);
+        if (addLanguage.fulfilled.match(result)) {
+          if (data.isDefault) {
+            updateI18nLanguage(data.code);
+          }
+          toast.success(t("languages.success.languageCreated"));
+          handleCloseAddDropdown();
+        } else {
+          toast.error(
+            getErrorMessage(
+              result.payload,
+              t("languages.error.failedToCreate"),
+            ),
+          );
         }
-
-        toast.success(t("languages.success.languageCreated"));
-        handleCloseAddDropdown();
       } catch (error: unknown) {
         console.error(error);
         toast.error(
           getErrorMessage(error, t("languages.error.failedToCreate")),
         );
         // Revert on error by refetching
-        await fetchLanguages();
+        dispatch(fetchLanguages());
       }
     },
-    [
-      languages,
-      t,
-      handleCloseAddDropdown,
-      unsetOtherDefaultLanguages,
-      fetchLanguages,
-    ],
+    [dispatch, t, handleCloseAddDropdown, unsetOtherDefaultLanguages],
   );
 
   const handleUpdateLanguage = useCallback(
@@ -170,73 +164,78 @@ export const ProjectLanguages = () => {
         const isBeingSetAsDefault =
           !previousLanguage?.isDefault && data.isDefault;
 
-        let updatedLanguages = [...languages];
         if (data.isDefault) {
-          updatedLanguages = updatedLanguages.map((lang) =>
-            lang.id !== data.id && lang.isDefault
-              ? { ...lang, isDefault: false }
-              : lang,
-          );
-
           await unsetOtherDefaultLanguages(data.id);
         }
 
-        const updatedLanguage = await updateLanguage(
-          data.id,
-          data.code,
-          data.name,
-          data.isDefault,
-          data.isEnabled,
+        const result = await dispatch(
+          updateLanguageInStore({
+            id: data.id,
+            code: data.code,
+            name: data.name,
+            isDefault: data.isDefault,
+            isEnabled: data.isEnabled,
+          }),
         );
 
-        updatedLanguages = updatedLanguages.map((lang) =>
-          lang.id === data.id ? updatedLanguage : lang,
-        );
-        setLanguages(updatedLanguages);
-
-        if (isBeingSetAsDefault) {
-          updateI18nLanguage(data.code);
+        if (updateLanguageInStore.fulfilled.match(result)) {
+          if (isBeingSetAsDefault) {
+            updateI18nLanguage(data.code);
+          }
+          toast.success(t("languages.success.languageUpdated"));
+          handleCloseEditDropdown();
+        } else {
+          toast.error(
+            getErrorMessage(
+              result.payload,
+              t("languages.error.failedToUpdate"),
+            ),
+          );
         }
-
-        toast.success(t("languages.success.languageUpdated"));
-        handleCloseEditDropdown();
       } catch (error: unknown) {
         console.error(error);
         toast.error(
           getErrorMessage(error, t("languages.error.failedToUpdate")),
         );
         // Revert on error by refetching
-        await fetchLanguages();
+        dispatch(fetchLanguages());
       }
     },
     [
+      dispatch,
       editingLanguageId,
       languages,
       t,
       handleCloseEditDropdown,
       unsetOtherDefaultLanguages,
-      fetchLanguages,
     ],
   );
 
   const handleDeleteLanguage = useCallback(
     async (id: number) => {
       try {
-        await deleteLanguage(id);
+        const result = await dispatch(removeLanguage(id));
 
-        setLanguages(languages.filter((lang) => lang.id !== id));
-
-        toast.success(t("languages.success.languageDeleted"));
-        handleCloseEditDropdown();
+        if (removeLanguage.fulfilled.match(result)) {
+          toast.success(t("languages.success.languageDeleted"));
+          handleCloseEditDropdown();
+        } else {
+          toast.error(
+            getErrorMessage(
+              result.payload,
+              t("languages.error.failedToDelete"),
+            ),
+          );
+        }
       } catch (error: unknown) {
         console.error(error);
         toast.error(
           getErrorMessage(error, t("languages.error.failedToDelete")),
         );
-        await fetchLanguages();
+        dispatch(fetchLanguages());
       }
     },
-    [languages, t, handleCloseEditDropdown, fetchLanguages],
+    [dispatch, t, handleCloseEditDropdown],
   );
 
   const editingLanguage = editingLanguageId

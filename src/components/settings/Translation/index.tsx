@@ -1,7 +1,6 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Tab, TabGroup, Button, TextField, Select, DataTable } from "@/ui-kit";
-import { LANGUAGES } from "@/constants/settings";
 import styles from "./Translation.module.css";
 import { getTranslationColumns } from "./columns";
 import {
@@ -9,6 +8,8 @@ import {
   getTranslations,
   type LocalizedText,
 } from "@/services/settings/translations";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchLanguages } from "@/store/slices/languagesSlice";
 
 type TranslationTab = "add-new" | "translation-history";
 
@@ -38,6 +39,8 @@ const initialForm: TranslationForm = {
 
 export const Translation = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { languages } = useAppSelector((state) => state.languages);
   const [activeTab, setActiveTab] = useState<TranslationTab>("add-new");
   const [form, setForm] = useState<TranslationForm>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,6 +64,10 @@ export const Translation = () => {
       console.error("Failed to fetch translations:", error);
     }
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchLanguages());
+  }, [dispatch]);
 
   useEffect(() => {
     if (activeTab === "translation-history") {
@@ -194,7 +201,7 @@ export const Translation = () => {
                 value={form.languageCode}
                 onChange={(e) => updateField("languageCode", e.target.value)}
               >
-                {LANGUAGES.map((lang) => (
+                {languages.map((lang) => (
                   <option key={lang.code} value={lang.code}>
                     {lang.name} ({lang.code})
                   </option>

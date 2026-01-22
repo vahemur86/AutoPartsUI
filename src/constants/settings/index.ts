@@ -1,13 +1,4 @@
-import englandFlag from "@/assets/images/england.svg";
-import russiaFlag from "@/assets/images/russia.svg";
-import armeniaFlag from "@/assets/images/armenia.svg";
-import franceFlag from "@/assets/images/france.svg";
-import type {
-  Language,
-  ProductSettingsTab,
-  TabConfig,
-  TabId,
-} from "@/types/settings";
+import type { ProductSettingsTab, TabConfig, TabId } from "@/types/settings";
 import {
   boxSizeService,
   brandsService,
@@ -32,41 +23,6 @@ import {
   updateCategoryInStore,
   updateUnitTypeInStore,
 } from "@/store/slices/productSettingsSlice";
-
-export const LANGUAGES: Language[] = [
-  {
-    id: 1,
-    code: "en",
-    name: "English",
-    flag: englandFlag,
-    isDefault: true,
-    isEnabled: true,
-  },
-  {
-    id: 2,
-    code: "ru",
-    name: "Russian",
-    flag: russiaFlag,
-    isDefault: false,
-    isEnabled: true,
-  },
-  {
-    id: 3,
-    code: "am",
-    name: "Armenian",
-    flag: armeniaFlag,
-    isDefault: false,
-    isEnabled: true,
-  },
-  {
-    id: 4,
-    code: "fr",
-    name: "France",
-    flag: franceFlag,
-    isDefault: false,
-    isEnabled: true,
-  },
-];
 
 export const PRODUCT_SETTINGS_TABS: ProductSettingsTab[] = [
   {

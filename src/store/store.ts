@@ -9,6 +9,7 @@ import authReducer from "./slices/authSlice";
 import metalRatesReducer from "./slices/metalRatesSlice";
 import operatorReducer from "./slices/operatorSlice";
 import catalystBucketsReducer from "./slices/catalystBucketsSlice";
+import languagesReducer from "./slices/languagesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     operator: operatorReducer,
     auth: authReducer,
     catalystBuckets: catalystBucketsReducer,
+    languages: languagesReducer,
   },
 });
 

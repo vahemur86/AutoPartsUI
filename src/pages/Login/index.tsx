@@ -6,9 +6,7 @@ import i18n from "i18next";
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login, clearAuthError } from "@/store/slices/authSlice";
-
-// services
-import { getLanguages } from "@/services/settings/languages";
+import { fetchLanguages } from "@/store/slices/languagesSlice";
 
 // utils, types
 import type { Language } from "@/types/settings";
@@ -33,6 +31,7 @@ export const Login = () => {
   const { isLoading, error, isAuthenticated, user } = useAppSelector(
     (state) => state.auth,
   );
+  const { languages } = useAppSelector((state) => state.languages);
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -70,8 +69,17 @@ export const Login = () => {
         return;
       }
 
-      const languages = await getLanguages();
-      const defaultLanguage = languages.find(
+      let languagesToUse = languages;
+      if (languagesToUse.length === 0) {
+        const result = await dispatch(fetchLanguages());
+        if (fetchLanguages.fulfilled.match(result)) {
+          languagesToUse = result.payload;
+        } else {
+          return;
+        }
+      }
+
+      const defaultLanguage = languagesToUse.find(
         (lang: Language) => lang.isDefault,
       );
 

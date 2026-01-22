@@ -19,10 +19,9 @@ import styles from "./OperatorPage.module.css";
 // stores
 import { fetchMetalRates } from "@/store/slices/metalRatesSlice";
 import { fetchIntake } from "@/store/slices/operatorSlice";
+import { fetchLanguages } from "@/store/slices/languagesSlice";
 
 // services & types
-import { getLanguages } from "@/services/settings/languages";
-import type { Language } from "@/types/settings";
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 import { createIntake } from "@/services/operator";
 
@@ -32,9 +31,11 @@ export const OperatorPage = () => {
   const navigate = useNavigate();
   const { metalRates } = useAppSelector((state) => state.metalRates);
   const { intake } = useAppSelector((state) => state.operator);
+  const { languages: allLanguages, isLoading: isLangLoading } = useAppSelector(
+    (state) => state.languages
+  );
 
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [isLangLoading, setIsLangLoading] = useState(false);
+  const languages = allLanguages.filter((lang) => lang.isEnabled);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userData, setUserData] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,32 +68,17 @@ export const OperatorPage = () => {
 
   const metalRate = useMemo(
     () => metalRates.find((rate) => rate.isActive),
-    [metalRates],
+    [metalRates]
   );
 
   useEffect(() => {
     const localeStorageData = JSON.parse(
-      localStorage.getItem("user_data") ?? "{}",
+      localStorage.getItem("user_data") ?? "{}"
     );
     setUserData(localeStorageData);
     dispatch(fetchMetalRates());
+    dispatch(fetchLanguages());
   }, [dispatch]);
-
-  useEffect(() => {
-    const loadLanguages = async () => {
-      try {
-        setIsLangLoading(true);
-        const data = await getLanguages();
-        const enabled = (data as Language[]).filter((lang) => lang.isEnabled);
-        setLanguages(enabled);
-      } catch (error) {
-        console.error("Failed to load languages:", error);
-      } finally {
-        setIsLangLoading(false);
-      }
-    };
-    loadLanguages();
-  }, []);
 
   const handleSubmit = async () => {
     setHasTriedSubmit(true);
@@ -124,7 +110,7 @@ export const OperatorPage = () => {
   };
 
   const handleLanguageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const apiCode = event.target.value;
     const i18nCode = mapApiCodeToI18nCode(apiCode);
@@ -142,7 +128,7 @@ export const OperatorPage = () => {
             onChange={handleLanguageChange}
             value={
               languages.find(
-                (lang) => mapApiCodeToI18nCode(lang.code) === i18n.language,
+                (lang) => mapApiCodeToI18nCode(lang.code) === i18n.language
               )?.code ?? ""
             }
             disabled={isLangLoading || languages.length === 0}

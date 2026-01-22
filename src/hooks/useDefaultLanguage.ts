@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import i18n from "i18next";
-import { getLanguages } from "@/services/settings/languages";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchLanguages } from "@/store/slices/languagesSlice";
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 import type { Language } from "@/types/settings";
 
@@ -9,6 +10,8 @@ import type { Language } from "@/types/settings";
  * This runs once on app load, but only if the user is authenticated
  */
 export const useDefaultLanguage = () => {
+  const dispatch = useAppDispatch();
+  const { languages } = useAppSelector((state) => state.languages);
   const hasInitialized = useRef(false);
 
   useEffect(() => {
@@ -36,10 +39,20 @@ export const useDefaultLanguage = () => {
           return;
         }
 
-        // Fetch languages from API and find the default one
-        const languages = await getLanguages();
-        const defaultLanguage = languages.find(
-          (lang: Language) => lang.isDefault
+        // Fetch languages from Redux store and find the default one
+        let languagesToUse = languages;
+        if (languagesToUse.length === 0) {
+          const result = await dispatch(fetchLanguages());
+          if (fetchLanguages.fulfilled.match(result)) {
+            languagesToUse = result.payload;
+          } else {
+            hasInitialized.current = true;
+            return;
+          }
+        }
+
+        const defaultLanguage = languagesToUse.find(
+          (lang: Language) => lang.isDefault,
         );
 
         if (defaultLanguage) {
@@ -57,5 +70,5 @@ export const useDefaultLanguage = () => {
     };
 
     initializeLanguage();
-  }, []);
+  }, [dispatch, languages]);
 };
