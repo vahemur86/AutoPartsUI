@@ -41,7 +41,6 @@
   display: flex;
   flex-direction: column-reverse;
   gap: 12px;
-  margin-top: 8px;
 }
 
 .primaryActions {

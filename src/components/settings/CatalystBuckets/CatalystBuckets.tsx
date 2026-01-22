@@ -147,6 +147,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
         const bucketFromQuote: CatalystBucket = {
           id: result.id || 0,
           code: result.code,
+          weight: result.weight || 0,
           ptWeight: result.ptWeight || 0,
           pdWeight: result.pdWeight || 0,
           rhWeight: result.rhWeight || 0,
