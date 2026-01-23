@@ -16,7 +16,11 @@ import {
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { CreateVehiclePayload, Vehicle } from "@/types/settings";
+import type {
+  CreateVehiclePayload,
+  Vehicle,
+  VehicleFilter,
+} from "@/types/settings";
 
 interface VehiclesState {
   vehicles: Vehicle[];
@@ -35,13 +39,12 @@ const initialState: VehiclesState = {
 // Async thunk for fetching vehicles
 export const fetchVehicles = createAsyncThunk<
   Vehicle[],
-  boolean | undefined,
+  { filters?: VehicleFilter; withBuckets?: boolean } | undefined,
   { rejectValue: string }
->("vehicles/fetchVehicles", async (withBuckets, { rejectWithValue }) => {
+>("vehicles/fetchVehicles", async (params, { rejectWithValue }) => {
   try {
-    const data = await getVehicles(withBuckets);
+    const data = await getVehicles(params?.filters, params?.withBuckets);
 
-    // Backend returns: { totalItems, page, pageSize, results: [...] }
     const vehicles: Vehicle[] = Array.isArray(data?.results)
       ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.results.map((item: any) => ({

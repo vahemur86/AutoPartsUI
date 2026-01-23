@@ -46,6 +46,20 @@ export interface CreateVehiclePayload {
   driveTypeId: number;
 }
 
+export interface VehicleFilter {
+  brandId?: number;
+  modelId?: number;
+  fuelTypeId?: number;
+  engineId?: number;
+  marketId?: number;
+  driveTypeId?: number;
+  year?: number;
+  hpMin?: number;
+  hpMax?: number;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface MetalRate {
   id: number;
   currencyCode: string;
