@@ -20,6 +20,8 @@
     "active": "Active",
     "inactive": "Inactive",
     "enabled": "Enabled",
+    "filters": "Filters",
+    "reset": "Reset",
     "noOptionsAvailable": "No options available"
   },
   "settings": {
@@ -169,6 +171,10 @@
         "selectMarket": "Select market...",
         "horsePower": "Horse Power",
         "enterHorsePower": "Enter horse power...",
+        "hpMin": "HP Min",
+        "selectHPMin": "Min",
+        "hpMax": "HP Max",
+        "selectHPMax": "Max",
         "driveType": "Drive Type",
         "selectDriveType": "Select drive type...",
         "status": "Status"

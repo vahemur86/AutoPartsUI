@@ -20,6 +20,8 @@
     "active": "Активен",
     "inactive": "Неактивен",
     "enabled": "Включено",
+    "filters": "Фильтры",
+    "reset": "Сбросить",
     "noOptionsAvailable": "Нет доступных вариантов"
   },
   "settings": {
@@ -149,7 +151,8 @@
       "addVehicle": "Добавить транспортное средство",
       "actions": {
         "viewBuckets": "Просмотреть баки",
-        "calculatePrice": "Рассчитать цену"
+        "calculatePrice": "Рассчитать цену",
+        "withBuckets": "С баками"
       },
       "form": {
         "brand": "Марка",
@@ -168,6 +171,10 @@
         "selectMarket": "Выберите рынок...",
         "horsePower": "Лошадиная сила",
         "enterHorsePower": "Введите лошадиную силу...",
+        "hpMin": "Л.с. (Мин)",
+        "selectHPMin": "Мин",
+        "hpMax": "Л.с. (Макс)",
+        "selectHPMax": "Макс",
         "driveType": "Тип привода",
         "selectDriveType": "Выберите тип привода...",
         "status": "Статус"

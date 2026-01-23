@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { DataTable, IconButton, Switch } from "@/ui-kit";
 
 // icons
-import { Plus } from "lucide-react";
+import { Plus, Filter } from "lucide-react";
 
 // components
 import {
@@ -21,6 +21,7 @@ import {
   type VehicleForm,
 } from "./vehicleActions/AddVehicleDropdown";
 import { BucketsDropdown } from "./vehicleActions/BucketsDropdown";
+import { FilterVehiclesDropdown } from "./vehicleActions/FilterVehiclesDropdown";
 
 // columns
 import { getVehicleColumns } from "./columns";
@@ -39,7 +40,7 @@ import {
 import { fetchCatalystBuckets } from "@/store/slices/catalystBucketsSlice";
 
 // types
-import type { Vehicle } from "@/types/settings";
+import type { Vehicle, VehicleFilter } from "@/types/settings";
 
 // styles
 import styles from "../VehicleManagement.module.css";
@@ -65,20 +66,27 @@ export const Vehicles: FC = () => {
 
   const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
   const [isBucketsDropdownOpen, setIsBucketsDropdownOpen] = useState(false);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isMutating, setIsMutating] = useState(false);
-
   const [showActiveOnly, setShowActiveOnly] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<VehicleFilter>({});
 
   const addAnchorRef = useRef<HTMLElement | null>(null);
   const bucketsAnchorRef = useRef<HTMLElement | null>(null);
+  const filterAnchorRef = useRef<HTMLDivElement>(null);
   const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
   const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // If not SuperAdmin, always fetch all (ignore switcher)
-    dispatch(fetchVehicles(isSuperAdmin ? showActiveOnly : false));
-  }, [dispatch, showActiveOnly, isSuperAdmin]);
+    dispatch(
+      fetchVehicles({
+        filters: activeFilters,
+        withBuckets: isSuperAdmin ? showActiveOnly : false,
+      }),
+    );
+  }, [dispatch, showActiveOnly, isSuperAdmin, activeFilters]);
 
   const openAddDropdown = useCallback((isMobile: boolean) => {
     const anchorEl = isMobile
@@ -86,31 +94,13 @@ export const Vehicles: FC = () => {
       : addButtonDesktopWrapperRef.current;
 
     if (!anchorEl) return;
-
     addAnchorRef.current = anchorEl;
     setIsVehicleDropdownOpen(true);
   }, []);
 
-  const handleCloseAddDropdown = useCallback(() => {
-    setIsVehicleDropdownOpen(false);
-    addAnchorRef.current = null;
-  }, []);
-
-  const handleOpenBuckets = useCallback(
-    (vehicle: Vehicle, e: React.MouseEvent<HTMLElement>) => {
-      setSelectedVehicle(vehicle);
-      dispatch(fetchCatalystBuckets());
-      dispatch(fetchVehicleBuckets(vehicle.id));
-      bucketsAnchorRef.current = e.currentTarget;
-      setIsBucketsDropdownOpen(true);
-    },
-    [dispatch],
-  );
-
-  const handleCloseBucketsDropdown = useCallback(() => {
-    setIsBucketsDropdownOpen(false);
-    setSelectedVehicle(null);
-    bucketsAnchorRef.current = null;
+  const handleApplyFilters = useCallback((filters: VehicleFilter) => {
+    setActiveFilters(filters);
+    setIsFilterDropdownOpen(false);
   }, []);
 
   const handleAddVehicle = useCallback(
@@ -130,9 +120,12 @@ export const Vehicles: FC = () => {
         ).unwrap();
 
         await dispatch(
-          fetchVehicles(isSuperAdmin ? showActiveOnly : false),
+          fetchVehicles({
+            filters: activeFilters,
+            withBuckets: isSuperAdmin ? showActiveOnly : false,
+          }),
         ).unwrap();
-        handleCloseAddDropdown();
+        setIsVehicleDropdownOpen(false);
         toast.success(t("vehicles.success.vehicleCreated"));
       } catch (error) {
         toast.error(getErrorMessage(error, t("vehicles.vehicles.addVehicle")));
@@ -140,8 +133,24 @@ export const Vehicles: FC = () => {
         setIsMutating(false);
       }
     },
-    [dispatch, handleCloseAddDropdown, isSuperAdmin, showActiveOnly, t],
+    [dispatch, isSuperAdmin, showActiveOnly, activeFilters, t],
   );
+
+  const handleOpenBuckets = useCallback(
+    (vehicle: Vehicle, e: React.MouseEvent<HTMLElement>) => {
+      setSelectedVehicle(vehicle);
+      dispatch(fetchCatalystBuckets());
+      dispatch(fetchVehicleBuckets(vehicle.id));
+      bucketsAnchorRef.current = e.currentTarget;
+      setIsBucketsDropdownOpen(true);
+    },
+    [dispatch],
+  );
+
+  const handleCloseBucketsDropdown = useCallback(() => {
+    setIsBucketsDropdownOpen(false);
+    setSelectedVehicle(null);
+  }, []);
 
   const handleSaveBuckets = useCallback(
     async (id: string, ids: number[]) => {
@@ -150,11 +159,14 @@ export const Vehicles: FC = () => {
         await dispatch(
           editVehicleBuckets({ vehicleId: id, bucketIds: ids }),
         ).unwrap();
-
         toast.success(t("catalystBuckets.success.bucketsUpdated"));
         handleCloseBucketsDropdown();
-
-        dispatch(fetchVehicles(isSuperAdmin ? showActiveOnly : false));
+        dispatch(
+          fetchVehicles({
+            filters: activeFilters,
+            withBuckets: isSuperAdmin ? showActiveOnly : false,
+          }),
+        );
       } catch (error) {
         toast.error(
           getErrorMessage(error, t("catalystBuckets.error.failedToUpdate")),
@@ -163,17 +175,22 @@ export const Vehicles: FC = () => {
         setIsMutating(false);
       }
     },
-    [dispatch, handleCloseBucketsDropdown, isSuperAdmin, showActiveOnly, t],
+    [
+      dispatch,
+      handleCloseBucketsDropdown,
+      isSuperAdmin,
+      showActiveOnly,
+      activeFilters,
+      t,
+    ],
   );
 
   const columns = useMemo(
     () =>
       getVehicleColumns({
         isSuperAdmin,
-        onViewBuckets: (vehicle, e) => handleOpenBuckets(vehicle, e),
-        onCalculatePrice: (vehicle) => {
-          console.log("Calculate Price for:", vehicle);
-        },
+        onViewBuckets: handleOpenBuckets,
+        onCalculatePrice: (v) => console.log(v),
       }),
     [handleOpenBuckets, isSuperAdmin],
   );
@@ -182,7 +199,6 @@ export const Vehicles: FC = () => {
     <div className={styles.vehiclesWrapper}>
       <div className={styles.vehiclesHeader}>
         <div className={styles.switchContainer}>
-          {/* Switcher is hidden for everyone EXCEPT SuperAdmin */}
           {isSuperAdmin && (
             <Switch
               checked={showActiveOnly}
@@ -192,28 +208,43 @@ export const Vehicles: FC = () => {
           )}
         </div>
 
-        {/* Add Vehicle Button is ALWAYS VISIBLE */}
-        <div
-          ref={addButtonDesktopWrapperRef}
-          className={styles.addVehicleButtonWrapper}
-        >
-          <IconButton
-            size="small"
-            variant="primary"
-            icon={<Plus size={12} color="#0e0f11" />}
-            ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
-            className={styles.plusButton}
+        <div className={styles.headerActionsDesktop}>
+          <div
+            ref={filterAnchorRef}
+            className={styles.addVehicleButtonWrapper}
+            onClick={() => setIsFilterDropdownOpen(true)}
+            style={{ cursor: "pointer" }}
+          >
+            <IconButton
+              size="small"
+              variant="primary"
+              icon={<Filter size={12} color="#0e0f11" />}
+              ariaLabel={t("common.filters")}
+            />
+            <span className={styles.addButtonText}>{t("common.filters")}</span>
+          </div>
+
+          <div
+            ref={addButtonDesktopWrapperRef}
+            className={styles.addVehicleButtonWrapper}
             onClick={() => openAddDropdown(false)}
-          />
-          <span className={styles.addButtonText}>
-            {t("vehicles.vehicles.addVehicle")}
-          </span>
+            style={{ cursor: "pointer" }}
+          >
+            <IconButton
+              size="small"
+              variant="primary"
+              icon={<Plus size={12} color="#0e0f11" />}
+              ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
+            />
+            <span className={styles.addButtonText}>
+              {t("vehicles.vehicles.addVehicle")}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className={styles.addVehicleButtonMobile}>
         <div className={styles.mobileHeaderActions}>
-          {/* Mobile Switcher only for SuperAdmin */}
           {isSuperAdmin && (
             <>
               <Switch
@@ -225,7 +256,19 @@ export const Vehicles: FC = () => {
             </>
           )}
 
-          {/* Add Vehicle Button is ALWAYS VISIBLE on Mobile */}
+          <div
+            className={styles.addVehicleButtonWrapperMobile}
+            onClick={() => setIsFilterDropdownOpen(true)}
+          >
+            <IconButton
+              size="small"
+              variant="primary"
+              icon={<Filter size={12} color="#0e0f11" />}
+              ariaLabel={t("common.filters")}
+            />
+            <span className={styles.addButtonText}>{t("common.filters")}</span>
+          </div>
+
           <div
             ref={addButtonMobileWrapperRef}
             className={styles.addVehicleButtonWrapperMobile}
@@ -234,7 +277,7 @@ export const Vehicles: FC = () => {
             <IconButton
               size="small"
               variant="primary"
-              icon={<Plus size={12} />}
+              icon={<Plus size={12} color="#0e0f11" />}
               ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
             />
             <span className={styles.addButtonText}>
@@ -244,13 +287,18 @@ export const Vehicles: FC = () => {
         </div>
       </div>
 
+      <FilterVehiclesDropdown
+        open={isFilterDropdownOpen}
+        anchorRef={filterAnchorRef}
+        onOpenChange={setIsFilterDropdownOpen}
+        onSave={handleApplyFilters}
+      />
+
       <AddVehicleDropdown
         open={isVehicleDropdownOpen}
         anchorRef={addAnchorRef}
         isLoading={isMutating}
-        onOpenChange={(open) => {
-          if (!open) handleCloseAddDropdown();
-        }}
+        onOpenChange={setIsVehicleDropdownOpen}
         onSave={handleAddVehicle}
       />
 
@@ -258,9 +306,7 @@ export const Vehicles: FC = () => {
         open={isBucketsDropdownOpen}
         anchorRef={bucketsAnchorRef}
         vehicle={selectedVehicle}
-        onOpenChange={(open) => {
-          if (!open) handleCloseBucketsDropdown();
-        }}
+        onOpenChange={handleCloseBucketsDropdown}
         isLoading={isMutating || isTableLoading}
         onSave={handleSaveBuckets}
       />
