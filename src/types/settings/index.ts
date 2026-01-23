@@ -36,6 +36,16 @@ export interface Task {
   updatedAt?: string;
 }
 
+export interface CreateVehiclePayload {
+  brandId: number;
+  modelId: number;
+  fuelTypeId: number;
+  engineId: number;
+  marketId: number;
+  horsePower: number;
+  driveTypeId: number;
+}
+
 export interface MetalRate {
   id: number;
   currencyCode: string;

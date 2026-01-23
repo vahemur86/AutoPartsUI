@@ -147,6 +147,11 @@
     },
     "vehicles": {
       "addVehicle": "Add Vehicle",
+      "actions": {
+        "viewBuckets": "View buckets",
+        "calculatePrice": "Calculate Price",
+        "withBuckets": "With Buckets"
+      },
       "form": {
         "brand": "Brand",
         "selectBrand": "Select brand...",
@@ -211,6 +216,7 @@
     }
   },
   "catalystBuckets": {
+    "title": "Catalyst Buckets",
     "addBucket": "Add Catalyst Bucket",
     "editBucket": "Edit Catalyst Bucket",
     "form": {
@@ -247,6 +253,16 @@
     "search": {
       "notFound": "Catalyst bucket not found",
       "error": "Failed to search catalyst bucket"
+    },
+    "success": {
+      "bucketsUpdated": "Buckets updated successfully",
+      "bucketCreated": "Bucket created successfully",
+      "bucketDeleted": "Bucket deleted successfully"
+    },
+    "error": {
+      "failedToUpdate": "Failed to update buckets",
+      "failedToCreate": "Failed to create bucket",
+      "failedToDelete": "Failed to delete bucket"
     }
   },
   "products": {

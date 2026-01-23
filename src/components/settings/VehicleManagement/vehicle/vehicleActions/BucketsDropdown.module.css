@@ -1,0 +1,89 @@
+.header {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  display: none;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.dropdownContentOverride {
+  overflow: visible !important;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: visible;
+  padding: 0; /* Mobile default */
+}
+
+.fullRow {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+}
+
+.actionswithoutDelete {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primaryActions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .header {
+    display: block;
+  }
+
+  .content {
+    padding: 16px 24px 24px;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .primaryActions {
+    width: auto;
+  }
+
+  .primaryActions button {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .content {
+    padding: 0;
+    width: 100%;
+  }
+
+  .primaryActions {
+    width: 100%;
+  }
+}
+
+/* Prevent layout shift from grid */
+.fullRow {
+  min-width: 0;
+}

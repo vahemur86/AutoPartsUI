@@ -13,8 +13,9 @@ import styles from "./MetalRates.module.css";
 const columnHelper = createColumnHelper<MetalRate>();
 
 export const getMetalRateColumns = (
-  onEdit: (rate: MetalRate, e: React.MouseEvent<HTMLElement>) => void,
-  //   onDelete: (rate: MetalRate) => void,
+  {
+    onEdit,
+  }: { onEdit: (rate: MetalRate, e: React.MouseEvent<HTMLElement>) => void },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<MetalRate, any>[] => [
   columnHelper.accessor("currencyCode", {
@@ -55,13 +56,6 @@ export const getMetalRateColumns = (
         >
           {i18next.t("common.edit")}
         </Button>
-        {/* <Button
-          variant="danger"
-          size="small"
-          onClick={() => onDelete(row.original)}
-        >
-          {i18next.t("common.delete")}
-        </Button> */}
       </div>
     ),
   }),

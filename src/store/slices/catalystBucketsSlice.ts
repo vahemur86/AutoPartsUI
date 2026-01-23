@@ -9,6 +9,8 @@ import {
   getCatalystBuckets,
   createCatalystBucket,
   updateCatalystBucket,
+  getCatalystBucketsByCode,
+  getSingleCatalystBucket,
 } from "@/services/settings/catalystBuckets";
 
 // types
@@ -19,12 +21,14 @@ import { getApiErrorMessage } from "@/utils";
 
 interface CatalystBucketsState {
   catalystBuckets: CatalystBucket[];
+  catalystBucket: CatalystBucket | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: CatalystBucketsState = {
   catalystBuckets: [],
+  catalystBucket: null,
   isLoading: false,
   error: null,
 };
@@ -53,10 +57,47 @@ export const fetchCatalystBuckets = createAsyncThunk<
     return data;
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to fetch catalyst buckets")
+      getApiErrorMessage(error, "Failed to fetch catalyst buckets"),
     );
   }
 });
+
+export const fetchCatalystBucketsByCode = createAsyncThunk<
+  CatalystBucket[],
+  string,
+  { rejectValue: string }
+>(
+  "catalystBuckets/fetchCatalystBucketsByCode",
+  async (code, { rejectWithValue }) => {
+    try {
+      const data = await getCatalystBucketsByCode(code);
+      return [data];
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch catalyst buckets by code"),
+      );
+    }
+  },
+);
+
+// Async thunk for fetching single catalyst bucket
+export const fetchCatalystBucket = createAsyncThunk<
+  CatalystBucket,
+  { code: string; currencyCode?: string },
+  { rejectValue: string }
+>(
+  "catalystBuckets/fetchCatalystBucket",
+  async ({ code, currencyCode }, { rejectWithValue }) => {
+    try {
+      const data = await getSingleCatalystBucket(code, currencyCode);
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch catalyst bucket"),
+      );
+    }
+  },
+);
 
 // Async thunk for creating catalyst bucket
 export const addCatalystBucket = createAsyncThunk<
@@ -69,7 +110,7 @@ export const addCatalystBucket = createAsyncThunk<
     return data;
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to create catalyst bucket")
+      getApiErrorMessage(error, "Failed to create catalyst bucket"),
     );
   }
 });
@@ -94,10 +135,10 @@ export const editCatalystBucket = createAsyncThunk<
       return data;
     } catch (error: unknown) {
       return rejectWithValue(
-        getApiErrorMessage(error, "Failed to update catalyst bucket")
+        getApiErrorMessage(error, "Failed to update catalyst bucket"),
       );
     }
-  }
+  },
 );
 
 const catalystBucketsSlice = createSlice({
@@ -106,6 +147,9 @@ const catalystBucketsSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    resetSearchedBucket: (state) => {
+      state.catalystBucket = null;
     },
   },
   extraReducers: (builder) => {
@@ -121,11 +165,49 @@ const catalystBucketsSlice = createSlice({
           state.isLoading = false;
           state.catalystBuckets = action.payload;
           state.error = null;
-        }
+        },
       )
       .addCase(fetchCatalystBuckets.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch catalyst buckets";
+      });
+
+    // Fetch catalyst buckets by code
+    builder
+      .addCase(fetchCatalystBucketsByCode.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchCatalystBucketsByCode.fulfilled,
+        (state, action: PayloadAction<CatalystBucket[]>) => {
+          state.isLoading = false;
+          state.catalystBuckets = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchCatalystBucketsByCode.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch catalyst buckets";
+      });
+
+    // Fetch catalyst buckets by code
+    builder
+      .addCase(fetchCatalystBucket.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchCatalystBucket.fulfilled,
+        (state, action: PayloadAction<CatalystBucket>) => {
+          state.isLoading = false;
+          state.catalystBucket = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchCatalystBucket.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch catalyst bucket";
       });
 
     // Add catalyst bucket
@@ -140,7 +222,7 @@ const catalystBucketsSlice = createSlice({
           state.isLoading = false;
           state.catalystBuckets.push(action.payload);
           state.error = null;
-        }
+        },
       )
       .addCase(addCatalystBucket.rejected, (state, action) => {
         state.isLoading = false;
@@ -158,13 +240,13 @@ const catalystBucketsSlice = createSlice({
         (state, action: PayloadAction<CatalystBucket>) => {
           state.isLoading = false;
           const index = state.catalystBuckets.findIndex(
-            (cb) => cb.id === action.payload.id
+            (cb) => cb.id === action.payload.id,
           );
           if (index !== -1) {
             state.catalystBuckets[index] = action.payload;
           }
           state.error = null;
-        }
+        },
       )
       .addCase(editCatalystBucket.rejected, (state, action) => {
         state.isLoading = false;

@@ -8,8 +8,13 @@ import styles from "../WarehouseSettings/WarehouseSettings.module.css";
 const columnHelper = createColumnHelper<Warehouse>();
 
 export const getWarehouseColumns = (
-  onEdit?: (warehouse: Warehouse) => void,
-  onDelete?: (warehouseId: number) => void
+  {
+    onEdit,
+    onDelete,
+  }: {
+    onEdit?: (warehouse: Warehouse) => void;
+    onDelete?: (warehouseId: number) => void;
+  },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<Warehouse, any>[] => [
   columnHelper.accessor("id", {
