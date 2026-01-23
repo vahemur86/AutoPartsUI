@@ -37,7 +37,6 @@
   color: var(--color-white);
 }
 
-/* Generic add button wrapper (used in headers etc.) */
 .addButtonWrapper {
   display: flex;
   align-items: center;
@@ -109,7 +108,6 @@
   padding-block-end: 24px;
 }
 
-/* Table row actions */
 .actionButtonsCell {
   display: flex;
   gap: 12px;
@@ -124,7 +122,6 @@
   padding-inline: 5px;
 }
 
-/* ---------- Tasks ---------- */
 .tasksWrapper {
   display: flex;
   flex-direction: column;
@@ -158,7 +155,6 @@
   width: 100%;
 }
 
-/* ---------- Vehicles ---------- */
 .vehiclesWrapper {
   display: flex;
   flex-direction: column;
@@ -168,9 +164,14 @@
 .vehiclesHeader {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: 24px;
   margin-top: 16px;
+}
+
+.switchContainer {
+  display: flex;
+  align-items: center;
 }
 
 .addVehicleButtonWrapper {
@@ -184,12 +185,26 @@
   display: none;
 }
 
+.mobileHeaderActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+}
+
+.verticalDivider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .addVehicleButtonWrapperMobile {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
@@ -220,15 +235,12 @@
     flex-shrink: 0;
   }
 
-  /* Hide desktop headers (Tasks + Vehicles) */
   .tasksHeader,
   .vehiclesHeader {
     display: none;
   }
 
-  /* Show mobile buttons (Tasks + Vehicles) */
-  .addTaskButtonMobile,
-  .addVehicleButtonMobile {
+  .addTaskButtonMobile {
     display: flex;
     margin-top: 16px;
     border: 1px solid var(--color-primary-400);
@@ -237,10 +249,13 @@
     text-align: center;
   }
 
-  .addTaskButtonMobile .addTaskButtonWrapperMobile,
-  .addVehicleButtonMobile .addVehicleButtonWrapperMobile {
-    width: 100%;
-    justify-content: center;
+  .addVehicleButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 16px;
+    background-color: rgba(255, 255, 255, 0.02);
   }
 
   .actionButtons {

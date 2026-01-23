@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+
+// ui-kit
 import { Button, TextField, Select, Dropdown } from "@/ui-kit";
+
+// services
 import { getVehicleDefinitions } from "@/services/settings/vehicles";
-import styles from "./VehicleDropdown.module.css";
+
+// types
 import type { VehicleDefinition } from "@/types/settings";
+
+// styles
+import styles from "./VehicleDropdown.module.css";
 
 export interface VehicleForm {
   brandId: string;
@@ -74,7 +82,7 @@ export const AddVehicleDropdown = ({
         placeholder: t("vehicles.vehicles.form.selectDriveType"),
       },
     }),
-    [t]
+    [t],
   );
 
   const [formValues, setFormValues] = useState<VehicleForm>({
@@ -329,7 +337,9 @@ export const AddVehicleDropdown = ({
               error={hasTriedSave && !formValues.driveTypeId.trim()}
               disabled={isLoading || isLoadingDefinitions}
             >
-              <option value="">{vehicleFormFields.driveType.placeholder}</option>
+              <option value="">
+                {vehicleFormFields.driveType.placeholder}
+              </option>
               {vehicleDefinitions?.driveTypes?.map((driveType) => (
                 <option key={driveType.id} value={driveType.id}>
                   {driveType.name || driveType.code}

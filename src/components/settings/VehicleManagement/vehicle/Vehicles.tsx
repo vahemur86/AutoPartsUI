@@ -8,34 +8,77 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
-import { DataTable, IconButton } from "@/ui-kit";
+
+// ui-kit
+import { DataTable, IconButton, Switch } from "@/ui-kit";
+
+// icons
 import { Plus } from "lucide-react";
+
+// components
 import {
   AddVehicleDropdown,
   type VehicleForm,
 } from "./vehicleActions/AddVehicleDropdown";
+import { BucketsDropdown } from "./vehicleActions/BucketsDropdown";
+
+// columns
 import { getVehicleColumns } from "./columns";
+
+// utils
 import { getErrorMessage } from "@/utils";
-import styles from "../VehicleManagement.module.css";
+
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addVehicle, fetchVehicles } from "@/store/slices/vehiclesSlice";
+import {
+  addVehicle,
+  editVehicleBuckets,
+  fetchVehicleBuckets,
+  fetchVehicles,
+} from "@/store/slices/vehiclesSlice";
+import { fetchCatalystBuckets } from "@/store/slices/catalystBucketsSlice";
 
-export const Vehicles: FC = ({}) => {
+// types
+import type { Vehicle } from "@/types/settings";
+
+// styles
+import styles from "../VehicleManagement.module.css";
+
+export const Vehicles: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { vehicles } = useAppSelector((state) => state.vehicles);
+
+  const isSuperAdmin = useMemo(() => {
+    try {
+      const storedData = localStorage.getItem("user_data");
+      const userData = storedData ? JSON.parse(storedData) : null;
+      return userData?.role === "SuperAdmin";
+    } catch (error) {
+      console.error("Error parsing user_data from localStorage", error);
+      return false;
+    }
+  }, []);
+
+  const { vehicles, isLoading: isTableLoading } = useAppSelector(
+    (state) => state.vehicles,
+  );
 
   const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
+  const [isBucketsDropdownOpen, setIsBucketsDropdownOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
+
   const addAnchorRef = useRef<HTMLElement | null>(null);
+  const bucketsAnchorRef = useRef<HTMLElement | null>(null);
   const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
   const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    dispatch(fetchVehicles());
-  }, [dispatch]);
+    // If not SuperAdmin, always fetch all (ignore switcher)
+    dispatch(fetchVehicles(isSuperAdmin ? showActiveOnly : false));
+  }, [dispatch, showActiveOnly, isSuperAdmin]);
 
   const openAddDropdown = useCallback((isMobile: boolean) => {
     const anchorEl = isMobile
@@ -53,6 +96,23 @@ export const Vehicles: FC = ({}) => {
     addAnchorRef.current = null;
   }, []);
 
+  const handleOpenBuckets = useCallback(
+    (vehicle: Vehicle, e: React.MouseEvent<HTMLElement>) => {
+      setSelectedVehicle(vehicle);
+      dispatch(fetchCatalystBuckets());
+      dispatch(fetchVehicleBuckets(vehicle.id));
+      bucketsAnchorRef.current = e.currentTarget;
+      setIsBucketsDropdownOpen(true);
+    },
+    [dispatch],
+  );
+
+  const handleCloseBucketsDropdown = useCallback(() => {
+    setIsBucketsDropdownOpen(false);
+    setSelectedVehicle(null);
+    bucketsAnchorRef.current = null;
+  }, []);
+
   const handleAddVehicle = useCallback(
     async (data: VehicleForm) => {
       try {
@@ -66,29 +126,73 @@ export const Vehicles: FC = ({}) => {
             marketId: Number(data.marketId),
             horsePower: Number(data.horsePower),
             driveTypeId: Number(data.driveTypeId),
-          })
+          }),
         ).unwrap();
-        await dispatch(fetchVehicles()).unwrap();
+
+        await dispatch(
+          fetchVehicles(isSuperAdmin ? showActiveOnly : false),
+        ).unwrap();
         handleCloseAddDropdown();
+        toast.success(t("vehicles.success.vehicleCreated"));
       } catch (error) {
-        console.error("Failed to add vehicle:", error);
+        toast.error(getErrorMessage(error, t("vehicles.vehicles.addVehicle")));
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [dispatch, handleCloseAddDropdown, isSuperAdmin, showActiveOnly, t],
+  );
+
+  const handleSaveBuckets = useCallback(
+    async (id: string, ids: number[]) => {
+      try {
+        setIsMutating(true);
+        await dispatch(
+          editVehicleBuckets({ vehicleId: id, bucketIds: ids }),
+        ).unwrap();
+
+        toast.success(t("catalystBuckets.success.bucketsUpdated"));
+        handleCloseBucketsDropdown();
+
+        dispatch(fetchVehicles(isSuperAdmin ? showActiveOnly : false));
+      } catch (error) {
         toast.error(
-          typeof error === "string"
-            ? error
-            : getErrorMessage(error, t("vehicles.vehicles.addVehicle"))
+          getErrorMessage(error, t("catalystBuckets.error.failedToUpdate")),
         );
       } finally {
         setIsMutating(false);
       }
     },
-    [dispatch, handleCloseAddDropdown, t]
+    [dispatch, handleCloseBucketsDropdown, isSuperAdmin, showActiveOnly, t],
   );
 
-  const columns = useMemo(() => getVehicleColumns(), []);
+  const columns = useMemo(
+    () =>
+      getVehicleColumns({
+        isSuperAdmin,
+        onViewBuckets: (vehicle, e) => handleOpenBuckets(vehicle, e),
+        onCalculatePrice: (vehicle) => {
+          console.log("Calculate Price for:", vehicle);
+        },
+      }),
+    [handleOpenBuckets, isSuperAdmin],
+  );
 
   return (
     <div className={styles.vehiclesWrapper}>
       <div className={styles.vehiclesHeader}>
+        <div className={styles.switchContainer}>
+          {/* Switcher is hidden for everyone EXCEPT SuperAdmin */}
+          {isSuperAdmin && (
+            <Switch
+              checked={showActiveOnly}
+              onCheckedChange={setShowActiveOnly}
+              label={t("vehicles.vehicles.actions.withBuckets")}
+            />
+          )}
+        </div>
+
+        {/* Add Vehicle Button is ALWAYS VISIBLE */}
         <div
           ref={addButtonDesktopWrapperRef}
           className={styles.addVehicleButtonWrapper}
@@ -108,20 +212,35 @@ export const Vehicles: FC = ({}) => {
       </div>
 
       <div className={styles.addVehicleButtonMobile}>
-        <div
-          ref={addButtonMobileWrapperRef}
-          className={styles.addVehicleButtonWrapperMobile}
-        >
-          <IconButton
-            size="small"
-            variant="primary"
-            icon={<Plus size={12} />}
-            ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
+        <div className={styles.mobileHeaderActions}>
+          {/* Mobile Switcher only for SuperAdmin */}
+          {isSuperAdmin && (
+            <>
+              <Switch
+                checked={showActiveOnly}
+                onCheckedChange={setShowActiveOnly}
+                label={t("vehicles.vehicles.actions.withBuckets")}
+              />
+              <div className={styles.verticalDivider} />
+            </>
+          )}
+
+          {/* Add Vehicle Button is ALWAYS VISIBLE on Mobile */}
+          <div
+            ref={addButtonMobileWrapperRef}
+            className={styles.addVehicleButtonWrapperMobile}
             onClick={() => openAddDropdown(true)}
-          />
-          <span className={styles.addButtonText}>
-            {t("vehicles.vehicles.addVehicle")}
-          </span>
+          >
+            <IconButton
+              size="small"
+              variant="primary"
+              icon={<Plus size={12} />}
+              ariaLabel={t("vehicles.ariaLabels.addNewVehicle")}
+            />
+            <span className={styles.addButtonText}>
+              {t("vehicles.vehicles.addVehicle")}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -135,13 +254,19 @@ export const Vehicles: FC = ({}) => {
         onSave={handleAddVehicle}
       />
 
+      <BucketsDropdown
+        open={isBucketsDropdownOpen}
+        anchorRef={bucketsAnchorRef}
+        vehicle={selectedVehicle}
+        onOpenChange={(open) => {
+          if (!open) handleCloseBucketsDropdown();
+        }}
+        isLoading={isMutating || isTableLoading}
+        onSave={handleSaveBuckets}
+      />
+
       <div className={styles.tableWrapper}>
-        <DataTable
-          enableSelection
-          data={vehicles}
-          columns={columns}
-          pageSize={7}
-        />
+        <DataTable data={vehicles} columns={columns} pageSize={7} />
       </div>
     </div>
   );

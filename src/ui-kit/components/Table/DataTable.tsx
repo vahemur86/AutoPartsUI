@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,28 +9,30 @@ import {
   type SortingState,
   type RowSelectionState,
 } from "@tanstack/react-table";
-import { useState, useMemo } from "react";
+
+// ui-kit
 import { Checkbox } from "../Checkbox";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./Table";
+
+// styles
 import styles from "./Table.module.css";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageSize?: number;
-  enableSelection?: boolean; // New prop to toggle checkboxes
+  enableSelection?: boolean;
 }
 
 export const DataTable = <TData, TValue>({
   columns,
   data,
   pageSize = 10,
-  enableSelection = false, // Default to hidden
+  enableSelection = false,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  // Define the Selection Column
   const selectionColumn: ColumnDef<TData> = useMemo(
     () => ({
       id: "select",
@@ -51,7 +54,6 @@ export const DataTable = <TData, TValue>({
     [],
   );
 
-  // Conditional logic to include the selection column based on props
   const tableColumns = useMemo(
     () => (enableSelection ? [selectionColumn, ...columns] : columns),
     [columns, selectionColumn, enableSelection],
@@ -62,7 +64,7 @@ export const DataTable = <TData, TValue>({
     columns: tableColumns,
     state: {
       sorting,
-      rowSelection: enableSelection ? rowSelection : {}, // Only track if enabled
+      rowSelection: enableSelection ? rowSelection : {},
     },
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,

@@ -108,11 +108,7 @@ export const MetalRates: FC = () => {
   );
 
   const columns = useMemo(
-    () =>
-      getMetalRateColumns(
-        handleOpenEdit,
-        // (rate) => setDeletingRate(rate)
-      ),
+    () => getMetalRateColumns({ onEdit: handleOpenEdit }),
     [handleOpenEdit],
   );
 

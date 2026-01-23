@@ -3,24 +3,31 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
+
 // services
 import {
   getVehicles,
   createVehicle,
-  type CreateVehiclePayload,
+  getVehicleBuckets,
+  updateVehicleBuckets,
 } from "@/services/settings/vehicles";
+
 // utils
 import { getApiErrorMessage } from "@/utils";
-import type { Vehicle } from "@/types/settings";
+
+// types
+import type { CreateVehiclePayload, Vehicle } from "@/types/settings";
 
 interface VehiclesState {
   vehicles: Vehicle[];
+  vehicleBuckets: { vehicleDefinitionId: number; bucketIds: number[] };
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: VehiclesState = {
   vehicles: [],
+  vehicleBuckets: { vehicleDefinitionId: 0, bucketIds: [] },
   isLoading: false,
   error: null,
 };
@@ -28,15 +35,16 @@ const initialState: VehiclesState = {
 // Async thunk for fetching vehicles
 export const fetchVehicles = createAsyncThunk<
   Vehicle[],
-  void,
+  boolean | undefined,
   { rejectValue: string }
->("vehicles/fetchVehicles", async (_, { rejectWithValue }) => {
+>("vehicles/fetchVehicles", async (withBuckets, { rejectWithValue }) => {
   try {
-    const data = await getVehicles();
+    const data = await getVehicles(withBuckets);
 
     // Backend returns: { totalItems, page, pageSize, results: [...] }
     const vehicles: Vehicle[] = Array.isArray(data?.results)
-      ? data.results.map((item: any) => ({
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.results.map((item: any) => ({
           id: String(item.id),
           brand: item.brand?.name ?? "",
           model: item.model?.name ?? "",
@@ -68,7 +76,42 @@ export const addVehicle = createAsyncThunk<
     return data;
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to create vehicle")
+      getApiErrorMessage(error, "Failed to create vehicle"),
+    );
+  }
+});
+
+// Async thunk for fetching vehicle buckets
+export const fetchVehicleBuckets = createAsyncThunk<
+  { vehicleDefinitionId: number; bucketIds: number[] },
+  string,
+  { rejectValue: string }
+>("vehicles/fetchVehicleBuckets", async (vehicleId, { rejectWithValue }) => {
+  try {
+    const data = await getVehicleBuckets(vehicleId);
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch vehicle buckets"),
+    );
+  }
+});
+
+// Async thunk for updating vehicle buckets
+export const editVehicleBuckets = createAsyncThunk<
+  { vehicleDefinitionId: number; bucketIds: number[] },
+  { vehicleId: string; bucketIds: number[] },
+  { rejectValue: string }
+>("vehicles/editVehicleBuckets", async (params, { rejectWithValue }) => {
+  try {
+    await updateVehicleBuckets(params);
+    return {
+      vehicleDefinitionId: Number(params.vehicleId),
+      bucketIds: params.bucketIds,
+    };
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to update vehicle buckets"),
     );
   }
 });
@@ -94,7 +137,7 @@ const vehiclesSlice = createSlice({
           state.isLoading = false;
           state.vehicles = action.payload;
           state.error = null;
-        }
+        },
       )
       .addCase(fetchVehicles.rejected, (state, action) => {
         state.isLoading = false;
@@ -113,11 +156,52 @@ const vehiclesSlice = createSlice({
           state.isLoading = false;
           state.vehicles.push(action.payload);
           state.error = null;
-        }
+        },
       )
       .addCase(addVehicle.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to create vehicle";
+      });
+
+    // Fetch vehicle buckets
+    builder
+      .addCase(fetchVehicleBuckets.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchVehicleBuckets.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            vehicleDefinitionId: number;
+            bucketIds: number[];
+          }>,
+        ) => {
+          state.isLoading = false;
+          state.vehicleBuckets = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchVehicleBuckets.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch vehicle buckets";
+      });
+
+    // Update vehicle buckets
+    builder
+      .addCase(editVehicleBuckets.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(editVehicleBuckets.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.vehicleBuckets = action.payload;
+        state.error = null;
+      })
+      .addCase(editVehicleBuckets.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to update vehicle buckets";
       });
   },
 });

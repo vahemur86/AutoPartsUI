@@ -7,17 +7,22 @@ import {
   type FC,
 } from "react";
 import { useTranslation } from "react-i18next";
+
 // ui-kit
 import { DataTable, IconButton, TextField } from "@/ui-kit";
+
 // icons
 import { Plus, Search, X } from "lucide-react";
+
 // components
 import {
   CatalystBucketDropdown,
   type CatalystBucketForm,
 } from "./catalystBucketActions/CatalystBucketDropdown";
+
 // columns
 import { getCatalystBucketColumns } from "./columns";
+
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -25,10 +30,13 @@ import {
   fetchCatalystBuckets,
   editCatalystBucket,
 } from "@/store/slices/catalystBucketsSlice";
+
 // services
 import { getSingleCatalystBucket } from "@/services/settings/catalystBuckets";
+
 // types
 import type { CatalystBucket } from "@/types/settings";
+
 // styles
 import styles from "./CatalystBuckets.module.css";
 
@@ -49,7 +57,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchedBucket, setSearchedBucket] = useState<CatalystBucket | null>(
-    null
+    null,
   );
   const [searchError, setSearchError] = useState<string | null>(null);
 
@@ -71,7 +79,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       setActiveBucket(bucket);
       setIsDropdownOpen(true);
     },
-    []
+    [],
   );
 
   const handleCloseDropdown = useCallback(() => {
@@ -94,7 +102,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
               id: activeBucket.id,
               isActive: activeBucket.isActive ?? false,
               ...data,
-            })
+            }),
           ).unwrap();
         } else {
           await dispatch(addCatalystBucket(data)).unwrap();
@@ -109,16 +117,16 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
         setIsMutating(false);
       }
     },
-    [dispatch, activeBucket, handleCloseDropdown, clearSearchState]
+    [dispatch, activeBucket, handleCloseDropdown, clearSearchState],
   );
 
   const findLocalBucket = useCallback(
     (query: string) => {
       return catalystBuckets.find(
-        (bucket) => bucket.code.toLowerCase() === query.toLowerCase()
+        (bucket) => bucket.code.toLowerCase() === query.toLowerCase(),
       );
     },
-    [catalystBuckets]
+    [catalystBuckets],
   );
 
   const handleSearch = useCallback(async () => {
@@ -185,7 +193,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
         setSearchError(null);
       }
     },
-    []
+    [],
   );
 
   const handleClearSearch = useCallback(() => {
@@ -200,17 +208,21 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
         handleSearch();
       }
     },
-    [handleSearch]
+    [handleSearch],
   );
 
   const tableData = useMemo(
     () => (searchedBucket ? [searchedBucket] : catalystBuckets),
-    [searchedBucket, catalystBuckets]
+    [searchedBucket, catalystBuckets],
   );
 
   const columns = useMemo(
-    () => getCatalystBucketColumns(withEdit, handleOpenEdit),
-    [withEdit, handleOpenEdit]
+    () =>
+      getCatalystBucketColumns({
+        withEdit,
+        onEdit: handleOpenEdit,
+      }),
+    [withEdit, handleOpenEdit],
   );
 
   return (
@@ -285,12 +297,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       />
 
       <div className={styles.tableWrapper}>
-        <DataTable
-          enableSelection
-          data={tableData}
-          columns={columns}
-          pageSize={7}
-        />
+        <DataTable data={tableData} columns={columns} pageSize={7} />
       </div>
     </div>
   );
