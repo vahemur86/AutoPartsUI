@@ -20,7 +20,9 @@
     "active": "Активен",
     "inactive": "Неактивен",
     "enabled": "Включено",
-    "noOptionsAvailable": "Нет доступных вариантов"
+    "noOptionsAvailable": "Нет доступных вариантов",
+    "yes": "Да",
+    "no": "Нет"
   },
   "settings": {
     "navigation": {
@@ -31,7 +33,8 @@
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
       "metalRates": "Металлические ставки",
-      "catalystBuckets": "Катализаторные баки"
+      "catalystBuckets": "Катализаторные баки",
+      "customerTypes": "Типы клиентов"
     }
   },
   "users": {
@@ -262,6 +265,22 @@
       "failedToUpdate": "Не удалось обновить баки",
       "failedToCreate": "Не удалось создать бак",
       "failedToDelete": "Не удалось удалить бак"
+    }
+  },
+  "customerTypes": {
+    "addCustomerType": "Добавить тип клиента",
+    "editCustomerType": "Редактировать тип клиента",
+    "form": {
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "bonusPercent": "Процент бонуса (%)",
+      "isDefault": "По умолчанию"
+    },
+    "columns": {
+      "code": "Код",
+      "isDefault": "По умолчанию",
+      "bonusPercent": "Процент бонуса",
+      "status": "Статус"
     }
   },
   "products": {

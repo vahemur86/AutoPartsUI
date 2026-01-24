@@ -11,6 +11,7 @@ import {
   Truck,
   Container,
   FlaskConical,
+  Users,
 } from "lucide-react";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import styles from "./Settings.module.css";
@@ -93,11 +94,17 @@ export const Settings = () => {
       icon: FlaskConical,
       showCheckmark: true,
     },
+    {
+      path: "/customer-types",
+      label: t("settings.navigation.customerTypes"),
+      icon: Users,
+      showCheckmark: true,
+    },
   ];
 
   // Find active step index for stepper
   const activeStepIndex = navigationItems.findIndex((item) =>
-    isActive(item.path),
+    isActive(item.path)
   );
   const activeIndex = activeStepIndex >= 0 ? activeStepIndex : 0;
 

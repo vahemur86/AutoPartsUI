@@ -20,7 +20,9 @@
     "active": "Ակտիվ",
     "inactive": "Անակտիվ",
     "enabled": "Միացված",
-    "noOptionsAvailable": "Տարբերակներ չկան"
+    "noOptionsAvailable": "Տարբերակներ չկան",
+    "yes": "Այո",
+    "no": "Ոչ"
   },
   "settings": {
     "navigation": {
@@ -31,7 +33,8 @@
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
       "metalRates": "Մետալային գները",
-      "catalystBuckets": "Կատալիզատորի բաքեր"
+      "catalystBuckets": "Կատալիզատորի բաքեր",
+      "customerTypes": "Հաճախորդների տեսակներ"
     }
   },
   "users": {
@@ -260,6 +263,22 @@
       "failedToUpdate": "Բաքերի թարմացումը ձախողվեց",
       "failedToCreate": "Բաքի ստեղծումը ձախողվեց",
       "failedToDelete": "Բաքի ջնջումը ձախողվեց"
+    }
+  },
+  "customerTypes": {
+    "addCustomerType": "Ավելացնել հաճախորդի տեսակ",
+    "editCustomerType": "Խմբագրել հաճախորդի տեսակը",
+    "form": {
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդ...",
+      "bonusPercent": "Բոնուսի տոկոս (%)",
+      "isDefault": "Լռելյայն"
+    },
+    "columns": {
+      "code": "Կոդ",
+      "isDefault": "Լռելյայն",
+      "bonusPercent": "Բոնուսի տոկոս",
+      "status": "Կարգավիճակ"
     }
   },
   "products": {

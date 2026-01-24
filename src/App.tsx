@@ -28,6 +28,7 @@ import { ProductSettings } from "@/components/settings/ProductSettings";
 import { VehicleManagement } from "@/components/settings/VehicleManagement";
 import { MetalRates } from "@/components/settings/MetalRates";
 import { CatalystBuckets } from "@/components/settings/CatalystBuckets";
+import { CustomerTypes } from "@/components/settings/CustomerTypes";
 
 // Stores
 import { store } from "@/store/store";
@@ -95,6 +96,7 @@ export const App = () => {
                 />
                 <Route path="metal-rates" element={<MetalRates />} />
                 <Route path="catalyst-buckets" element={<CatalystBuckets />} />
+                <Route path="customer-types" element={<CustomerTypes />} />
               </Route>
 
               <Route path="warehouses" element={<Warehouses />} />

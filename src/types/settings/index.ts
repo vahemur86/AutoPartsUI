@@ -128,3 +128,11 @@ export interface CatalystBucket {
   rhWeight: number;
   isActive: boolean;
 }
+
+export interface CustomerType {
+  id: number;
+  code: string;
+  isDefault: boolean;
+  bonusPercent: number;
+  isActive: boolean;
+}

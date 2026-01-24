@@ -20,7 +20,9 @@
     "active": "Active",
     "inactive": "Inactive",
     "enabled": "Enabled",
-    "noOptionsAvailable": "No options available"
+    "noOptionsAvailable": "No options available",
+    "yes": "Yes",
+    "no": "No"
   },
   "settings": {
     "navigation": {
@@ -31,7 +33,8 @@
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
       "metalRates": "Metal Rates",
-      "catalystBuckets": "Catalyst Buckets"
+      "catalystBuckets": "Catalyst Buckets",
+      "customerTypes": "Customer Types"
     }
   },
   "users": {
@@ -263,6 +266,30 @@
       "failedToUpdate": "Failed to update buckets",
       "failedToCreate": "Failed to create bucket",
       "failedToDelete": "Failed to delete bucket"
+    }
+  },
+  "customerTypes": {
+    "addCustomerType": "Add Customer Type",
+    "editCustomerType": "Edit Customer Type",
+    "form": {
+      "code": "Code",
+      "enterCode": "Enter code...",
+      "bonusPercent": "Bonus Percent (%)",
+      "isDefault": "Is Default"
+    },
+    "columns": {
+      "code": "Code",
+      "isDefault": "Is Default",
+      "bonusPercent": "Bonus Percent",
+      "status": "Status"
+    },
+    "success": {
+      "created": "Customer type created successfully",
+      "updated": "Customer type updated successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create customer type",
+      "failedToUpdate": "Failed to update customer type"
     }
   },
   "products": {

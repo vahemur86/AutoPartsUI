@@ -1,0 +1,84 @@
+.customerTypesWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  padding: 24px;
+  gap: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.addButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.addButtonText {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-secondary-500);
+}
+
+.addCustomerTypeButtonMobile {
+  display: none;
+}
+
+.addButtonWrapperMobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.tableWrapper {
+  width: 100%;
+  padding-inline: 5px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.actionButtonsCell {
+  display: flex;
+  gap: 12px;
+  padding: 3px;
+}
+
+@media (max-width: 768px) {
+  .customerTypesWrapper {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .header {
+    display: none;
+  }
+
+  .addCustomerTypeButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .addCustomerTypeButtonMobile .addButtonWrapperMobile {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
