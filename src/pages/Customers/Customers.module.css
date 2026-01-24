@@ -1,0 +1,252 @@
+.customersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  margin-top: 24px;
+  padding: 24px;
+  min-height: calc(100vh - 270px);
+}
+
+.formSection,
+.filtersSection,
+.tableSection {
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.formHeader,
+.filtersHeader,
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.formTitle,
+.filtersTitle,
+.tableTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.formContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.filtersContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.tableWrapper {
+  width: 100%;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-secondary-500);
+  font-size: 14px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-secondary-500);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.emptyState p {
+  margin: 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  color: var(--color-white);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.modalClose:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modalBody {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+}
+
+.modalInfo p {
+  margin: 0;
+  color: var(--color-white);
+  font-size: 14px;
+}
+
+.modalInfo strong {
+  color: var(--color-secondary-500);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .customersContainer {
+    padding: 16px;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .formSection,
+  .filtersSection,
+  .tableSection {
+    padding: 16px;
+  }
+
+  .filtersContent {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .actionButtons {
+    flex-direction: column-reverse;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+
+  .modalContent {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .modalHeader,
+  .modalBody,
+  .modalActions {
+    padding: 16px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pagination button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .customersContainer {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .formSection,
+  .filtersSection,
+  .tableSection {
+    padding: 12px;
+  }
+}

@@ -5,6 +5,7 @@
     "shops": "Խանութներ",
     "products": "Ապրանքներ",
     "users": "Օգտատերերի կառավարում",
+    "customers": "Հաճախորդներ",
     "logout": "Ելք",
     "userMenu": "Օգտատիրոջ ընտրացանկ"
   },
@@ -24,7 +25,11 @@
     "no": "Ոչ",
     "filters": "Ֆիլտրեր",
     "reset": "Վերակայել",
-    "noOptionsAvailable": "Տարբերակներ չկան"
+    "noOptionsAvailable": "Տարբերակներ չկան",
+    "previous": "Նախորդ",
+    "next": "Հաջորդ",
+    "page": "Էջ",
+    "of": "ից"
   },
   "currencies": {
     "USD": "ԱՄՆ դոլար",
@@ -420,7 +425,7 @@
     "client": "Հաճախորդ",
     "discount": "Զեղչ",
     "phone": "Հեռախոս",
-    "phonePlaceholder": "+374 93 124567",
+    "phonePlaceholder": "Ավելացնել հեռախոսահամար",
     "autoModel": "Ավտոմեքենայի մոդել",
     "acceptAndPurchase": "Ընդունել և գնել",
     "closeSession": "Փակել աշխատաշրջանը",
@@ -489,5 +494,41 @@
   "operatorPage": {
     "title": "Օպերատորի տերմինալ",
     "languageLoading": "Լեզուների բեռնում..."
+  },
+  "customers": {
+    "createOrGet": "Գտնել հաճախորդ",
+    "createOrGetButton": "Փնտրել հաճախորդ",
+    "editCustomer": "Խմբագրել հաճախորդ",
+    "customersList": "Հաճախորդների ցանկ",
+    "loading": "Հաճախորդների բեռնում...",
+    "emptyState": "Հաճախորդներ չեն գտնվել:",
+    "form": {
+      "phone": "Հեռախոս",
+      "phonePlaceholder": "Ավելացնել հեռախոսահամար",
+      "fullName": "Ամբողջական անուն",
+      "customerType": "Հաճախորդի տեսակ",
+      "selectCustomerType": "Ընտրեք հաճախորդի տեսակ",
+      "allTypes": "Բոլոր տեսակները"
+    },
+    "validation": {
+      "phoneRequired": "Հեռախոսահամարը պարտադիր է",
+      "customerTypeRequired": "Հաճախորդի տեսակը պարտադիր է"
+    },
+    "columns": {
+      "id": "ID",
+      "phone": "Հեռախոս",
+      "customerType": "Հաճախորդի տեսակ",
+      "bonusPercent": "Բոնուսի տոկոս",
+      "isActive": "Կարգավիճակ"
+    },
+    "success": {
+      "customerCreated": "Հաճախորդը հաջողությամբ ստեղծվել կամ ստացվել է",
+      "customerUpdated": "Հաճախորդը հաջողությամբ թարմացվել է"
+    },
+    "error": {
+      "failedToLoad": "Հնարավոր չէ բեռնել հաճախորդներին",
+      "failedToCreate": "Հնարավոր չէ ստեղծել կամ ստանալ հաճախորդ",
+      "failedToUpdate": "Հնարավոր չէ թարմացնել հաճախորդ"
+    }
   }
 }
