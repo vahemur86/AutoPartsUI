@@ -1,26 +1,32 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, User, Check, LogOut } from "lucide-react";
-import { TextField, Button } from "@/ui-kit";
 import { toast } from "react-toastify";
+
+// ui-kit
+import { TextField, Button } from "@/ui-kit";
+
+// icons
+import { Search, User, Check } from "lucide-react";
+
+// stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchIntake,
   acceptIntake as acceptIntakeThunk,
 } from "@/store/slices/operatorSlice";
+
+// styles
 import styles from "../OperatorPage.module.css";
 
 interface CustomerDetailsProps {
   customerPhone?: string;
   onPhoneChange?: (val: string) => void;
-  onCloseSession: () => void;
   phoneError?: boolean;
 }
 
 export const CustomerDetails = ({
   customerPhone,
   onPhoneChange,
-  onCloseSession,
   phoneError,
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
@@ -139,16 +145,6 @@ export const CustomerDetails = ({
           >
             <Check size={20} style={{ marginRight: "8px" }} />
             {t("customerDetails.acceptAndPurchase")}
-          </Button>
-
-          <Button
-            variant="secondary300"
-            size="small"
-            fullWidth
-            onClick={onCloseSession}
-          >
-            <LogOut size={18} style={{ marginRight: "8px" }} />
-            {t("customerDetails.closeSession")}
           </Button>
         </div>
       </div>

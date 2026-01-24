@@ -11,10 +11,11 @@ import {
   updateCatalystBucket,
   getCatalystBucketsByCode,
   getSingleCatalystBucket,
+  getCatalystBucketsByGroup,
 } from "@/services/settings/catalystBuckets";
 
 // types
-import type { CatalystBucket } from "@/types/settings";
+import type { CatalystBucket, CatalystBucketByGroup } from "@/types/settings";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
@@ -22,6 +23,7 @@ import { getApiErrorMessage } from "@/utils";
 interface CatalystBucketsState {
   catalystBuckets: CatalystBucket[];
   catalystBucket: CatalystBucket | null;
+  catalystBucketsByGroup: CatalystBucketByGroup | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -29,6 +31,7 @@ interface CatalystBucketsState {
 const initialState: CatalystBucketsState = {
   catalystBuckets: [],
   catalystBucket: null,
+  catalystBucketsByGroup: null,
   isLoading: false,
   error: null,
 };
@@ -136,6 +139,25 @@ export const editCatalystBucket = createAsyncThunk<
     } catch (error: unknown) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to update catalyst bucket"),
+      );
+    }
+  },
+);
+
+// Async thunk for fetching catalyst buckets by group
+export const fetchCatalystBucketsByGroup = createAsyncThunk<
+  CatalystBucketByGroup,
+  string,
+  { rejectValue: string }
+>(
+  "catalystBuckets/fetchCatalystBucketsByGroup",
+  async (code, { rejectWithValue }) => {
+    try {
+      const data = await getCatalystBucketsByGroup(code);
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch catalyst buckets"),
       );
     }
   },
@@ -251,6 +273,25 @@ const catalystBucketsSlice = createSlice({
       .addCase(editCatalystBucket.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to update catalyst bucket";
+      });
+
+    // Fetch catalyst buckets by group
+    builder
+      .addCase(fetchCatalystBucketsByGroup.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchCatalystBucketsByGroup.fulfilled,
+        (state, action: PayloadAction<CatalystBucketByGroup>) => {
+          state.isLoading = false;
+          state.catalystBucketsByGroup = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchCatalystBucketsByGroup.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch catalyst bucket";
       });
   },
 });

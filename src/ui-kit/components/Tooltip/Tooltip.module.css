@@ -1,0 +1,41 @@
+.tooltipTrigger {
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltipContent {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  background-color: #1a1a1b;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 10000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  font-size: 13px;
+  font-family: "Manrope", sans-serif;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #1a1a1b transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 5px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 10px));
+  }
+}

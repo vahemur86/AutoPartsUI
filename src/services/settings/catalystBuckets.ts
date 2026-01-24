@@ -85,3 +85,16 @@ export const updateCatalystBucket = async (
     );
   }
 };
+
+export const getCatalystBucketsByGroup = async (code: string) => {
+  try {
+    const response = await api.get(
+      `/superadmin/catalyst-buckets/quote-group-multi?code=${code}`,
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get catalyst buckets."),
+    );
+  }
+};

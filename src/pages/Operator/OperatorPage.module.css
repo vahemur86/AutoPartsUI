@@ -27,6 +27,10 @@
   font-size: 12px;
 }
 
+.languageSelectContainer {
+  height: 36px;
+}
+
 .pageTitle {
   font-size: 24px;
   font-weight: 600;

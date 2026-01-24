@@ -69,7 +69,7 @@ export const CustomerTypes: FC = () => {
       setActiveCustomerType(customerType);
       setIsDropdownOpen(true);
     },
-    []
+    [],
   );
 
   const handleSaveCustomerType = useCallback(
@@ -83,11 +83,12 @@ export const CustomerTypes: FC = () => {
               id: activeCustomerType.id,
               ...data,
               isActive: data.isActive ?? true,
-            })
+            }),
           ).unwrap();
           toast.success(t("customerTypes.success.updated"));
         } else {
           // For create, exclude isActive as it's not in the POST payload
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { isActive, ...createData } = data;
           await dispatch(addCustomerType(createData)).unwrap();
           toast.success(t("customerTypes.success.created"));
@@ -100,19 +101,19 @@ export const CustomerTypes: FC = () => {
           error,
           activeCustomerType
             ? t("customerTypes.error.failedToUpdate")
-            : t("customerTypes.error.failedToCreate")
+            : t("customerTypes.error.failedToCreate"),
         );
         toast.error(errorMessage);
       } finally {
         setIsMutating(false);
       }
     },
-    [activeCustomerType, dispatch, t]
+    [activeCustomerType, dispatch, t],
   );
 
   const columns = useMemo(
     () => getCustomerTypeColumns({ onEdit: handleOpenEdit }),
-    [handleOpenEdit]
+    [handleOpenEdit],
   );
 
   return (

@@ -4,13 +4,23 @@
   gap: 10px;
 }
 
+.tabsContainer {
+  margin-top: 20px;
+  padding-inline: 5px;
+  width: fit-content;
+}
+
 .catalystBucketsHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-  margin-top: 24px;
   gap: 10px;
+  padding-inline: 5px;
+}
+
+.searchBucketWrapper {
+  width: 100%;
+  max-width: 300px;
 }
 
 .addBucketButtonWrapper {
@@ -20,31 +30,35 @@
   gap: 8px;
 }
 
-.searchBucketWrapper {
-  width: 100%;
-  max-width: 300px;
-}
-
-.addBucketButtonMobile {
-  display: none;
-}
-
-.addBucketButtonWrapperMobile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-}
-
 .addButtonText {
   font-size: 13px;
   font-weight: 400;
   color: var(--color-secondary-500);
 }
 
+.clickableIcon {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.clickableIcon:hover {
+  opacity: 0.7;
+}
+
 .tableWrapper {
   padding-inline: 5px;
+}
+
+.emptySearchState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--color-secondary-400);
+  font-size: 14px;
+  border: 1px dashed var(--color-secondary-200);
+  border-radius: 8px;
+  background-color: var(--color-secondary-50);
 }
 
 .actionButtonsCell {
@@ -53,22 +67,107 @@
   padding: 3px;
 }
 
+/* Tooltip & Currency Styles */
+.priceTrigger {
+  border-bottom: 1px dotted var(--color-secondary-400);
+  font-weight: 500;
+  color: var(--color-secondary-700);
+  transition: color 0.2s;
+}
+
+.priceTrigger:hover {
+  color: var(--color-primary-500);
+}
+
+.currencyList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.currencyItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 13px;
+}
+
+.currencyCode {
+  color: #a1a1aa;
+  font-weight: 600;
+}
+
+.currencyValue {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 500;
+}
+
+/* TOTAL PRICE FOOTER */
+.totalPriceWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid var(--color-secondary-200);
+}
+
+.totalPriceLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-secondary-500);
+}
+
+.totalPriceWrapper .priceTrigger {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Mobile Responsiveness */
+.addBucketButtonMobile {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .tabsContainer {
+    margin-top: 0
+  };
+
   .catalystBucketsHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-inline: 5px;
+  }
+
+  .searchBucketWrapper {
+    max-width: none;
+  }
+
+  .catalystBucketsHeader .addBucketButtonWrapper {
     display: none;
   }
 
   .addBucketButtonMobile {
     display: flex;
-    margin-top: 16px;
     border: 1px solid var(--color-primary-400);
     border-radius: 8px;
     padding: 10px 12px;
+    margin-inline: 5px;
     text-align: center;
   }
 
   .addBucketButtonMobile .addBucketButtonWrapperMobile {
     width: 100%;
     justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .totalPriceWrapper {
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
   }
 }

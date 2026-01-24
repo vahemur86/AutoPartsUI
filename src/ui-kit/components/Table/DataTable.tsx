@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ReactNode } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -26,6 +26,7 @@ interface DataTableProps<TData, TValue> {
   pageCount?: number;
   pageIndex?: number;
   onPaginationChange?: (pageIndex: number) => void;
+  renderBottomLeft?: () => ReactNode;
 }
 
 export const DataTable = <TData, TValue>({
@@ -37,6 +38,7 @@ export const DataTable = <TData, TValue>({
   pageCount,
   pageIndex: controlledPageIndex,
   onPaginationChange,
+  renderBottomLeft,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -74,12 +76,12 @@ export const DataTable = <TData, TValue>({
       ),
       size: 48,
     }),
-    []
+    [],
   );
 
   const tableColumns = useMemo(
     () => (enableSelection ? [selectionColumn, ...columns] : columns),
-    [columns, selectionColumn, enableSelection]
+    [columns, selectionColumn, enableSelection],
   );
 
   const table = useReactTable({
@@ -118,116 +120,123 @@ export const DataTable = <TData, TValue>({
     getPaginationRowModel: manualPagination
       ? undefined
       : getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: pageSize,
-      },
-    },
   });
 
   return (
     <div className={styles.dataTableContainer}>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                const isSelect = header.id === "select";
-                return (
-                  <TableCell
-                    key={header.id}
-                    asHeader
-                    className={isSelect ? styles.selectionCell : ""}
-                    onClick={
-                      !isSelect
-                        ? header.column.getToggleSortingHandler()
-                        : undefined
-                    }
-                    style={{
-                      cursor: header.column.getCanSort()
-                        ? "pointer"
-                        : "default",
-                      width: isSelect ? "48px" : "auto",
-                    }}
-                  >
-                    <div
-                      className={
-                        isSelect
-                          ? styles.selectionCellContent
-                          : styles.headerCellContent
-                      }
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {!isSelect &&
-                        ({
-                          asc: " 🔼",
-                          desc: " 🔽",
-                        }[header.column.getIsSorted() as string] ??
-                          null)}
-                    </div>
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => {
-                  const isSelect = cell.column.id === "select";
+      <div className={styles.tableWrapper}>
+        <Table className={styles.table}>
+          <TableHeader className={styles.tableHeader}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className={styles.tableRow}>
+                {headerGroup.headers.map((header) => {
+                  const isSelect = header.id === "select";
                   return (
                     <TableCell
-                      key={cell.id}
-                      className={isSelect ? styles.selectionCell : ""}
+                      key={header.id}
+                      asHeader
+                      className={
+                        isSelect ? styles.selectionCell : styles.tableCell
+                      }
+                      onClick={
+                        !isSelect
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      style={{
+                        cursor: header.column.getCanSort()
+                          ? "pointer"
+                          : "default",
+                        width: isSelect ? "48px" : "auto",
+                      }}
                     >
                       <div
-                        className={isSelect ? styles.selectionCellContent : ""}
+                        className={
+                          isSelect
+                            ? styles.selectionCellContent
+                            : styles.headerCellContent
+                        }
                       >
                         {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                          header.column.columnDef.header,
+                          header.getContext(),
                         )}
+                        {!isSelect &&
+                          ({ asc: " 🔼", desc: " 🔽" }[
+                            header.column.getIsSorted() as string
+                          ] ??
+                            null)}
                       </div>
                     </TableCell>
                   );
                 })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={tableColumns.length}
-                style={{ textAlign: "center" }}
-              >
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody className={styles.tableBody}>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} className={styles.tableRow}>
+                  {row.getVisibleCells().map((cell) => {
+                    const isSelect = cell.column.id === "select";
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          isSelect ? styles.selectionCell : styles.tableCell
+                        }
+                      >
+                        <div
+                          className={
+                            isSelect ? styles.selectionCellContent : ""
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </div>
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={tableColumns.length}
+                  style={{ textAlign: "center" }}
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-      <div className={styles.pagination}>
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </button>
-        <span>
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-        <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </button>
+      <div className={styles.tableFooter}>
+        <div className={styles.footerLeft}>
+          {renderBottomLeft ? renderBottomLeft() : null}
+        </div>
+        <div className={styles.pagination}>
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </button>
+          <span>
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </span>
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

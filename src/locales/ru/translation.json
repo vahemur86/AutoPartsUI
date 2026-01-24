@@ -272,6 +272,11 @@
     "title": "Катализаторные баки",
     "addBucket": "Добавить катализаторный бак",
     "editBucket": "Редактировать катализаторный бак",
+    "totalPrice": "Общая стоимость",
+    "tabs": {
+      "catalystBuckets": "Катализаторные баки",
+      "groupCodes": "Групповые коды"
+    },
     "form": {
       "code": "Код",
       "enterCode": "Введите код...",
@@ -285,10 +290,12 @@
     },
     "columns": {
       "code": "Код",
+      "name": "Наименование",
+      "price": "Цена",
       "weight": "Вес",
       "ptWeight": "Вес платины",
       "pdWeight": "Вес палладия",
-      "rhWeight": "Вес родия",
+      "rhodiumWeight": "Вес родия",
       "status": "Статус",
       "active": "Активен",
       "inactive": "Неактивен"
@@ -303,6 +310,10 @@
       "addNewBucket": "Добавить новый катализаторный бак"
     },
     "searchBucket": "Поиск по коду",
+    "searchGroup": "Поиск группового кода",
+    "messages": {
+      "searchToSeeResults": "Пожалуйста, выполните поиск по коду, чтобы увидеть результаты"
+    },
     "search": {
       "notFound": "Катализаторный бак не найден",
       "error": "Не удалось найти катализаторный бак"
@@ -313,6 +324,7 @@
       "bucketDeleted": "Бак успешно удален"
     },
     "error": {
+      "failedToFetch": "Не удалось загрузить катализаторные баки",
       "failedToUpdate": "Не удалось обновить баки",
       "failedToCreate": "Не удалось создать бак",
       "failedToDelete": "Не удалось удалить бак"
@@ -332,6 +344,14 @@
       "isDefault": "По умолчанию",
       "bonusPercent": "Процент бонуса",
       "status": "Статус"
+    },
+    "success": {
+      "created": "Тип клиента успешно создан",
+      "updated": "Тип клиента успешно обновлен"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать тип клиента",
+      "failedToUpdate": "Не удалось обновить тип клиента"
     }
   },
   "products": {
@@ -428,7 +448,6 @@
     "phonePlaceholder": "Добавить номер телефона",
     "autoModel": "Модель автомобиля",
     "acceptAndPurchase": "Принять и купить",
-    "closeSession": "Закрыть сессию",
     "search": "Найти клиента",
     "clientType": {
       "label": "Тип клиента",
@@ -488,8 +507,9 @@
   "powderExtraction": {
     "title": "Извлечение порошка",
     "extractionWeight": "Вес извлечения (кг)",
-    "scaleId": "ID весов:",
-    "measuredAt": "Время измерения:"
+    "shopId": "ID магазина:",
+    "username": "Имя пользователя:",
+    "cashRegisterName": "Имя кассы:"
   },
   "operatorPage": {
     "title": "Операторский терминал",

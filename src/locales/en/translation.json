@@ -272,6 +272,11 @@
     "title": "Catalyst Buckets",
     "addBucket": "Add Catalyst Bucket",
     "editBucket": "Edit Catalyst Bucket",
+    "totalPrice": "Total Price",
+    "tabs": {
+      "catalystBuckets": "Catalyst Buckets",
+      "groupCodes": "Group Codes"
+    },
     "form": {
       "code": "Code",
       "enterCode": "Enter code...",
@@ -285,6 +290,8 @@
     },
     "columns": {
       "code": "Code",
+      "name": "Name",
+      "price": "Price",
       "weight": "Weight",
       "ptWeight": "Platinum Weight",
       "pdWeight": "Palladium Weight",
@@ -303,6 +310,10 @@
       "addNewBucket": "Add new catalyst bucket"
     },
     "searchBucket": "Search by code",
+    "searchGroup": "Search group code",
+    "messages": {
+      "searchToSeeResults": "Please search by code to see results"
+    },
     "search": {
       "notFound": "Catalyst bucket not found",
       "error": "Failed to search catalyst bucket"
@@ -313,6 +324,7 @@
       "bucketDeleted": "Bucket deleted successfully"
     },
     "error": {
+      "failedToFetch": "Failed to fetch catalyst buckets",
       "failedToUpdate": "Failed to update buckets",
       "failedToCreate": "Failed to create bucket",
       "failedToDelete": "Failed to delete bucket"
@@ -436,7 +448,6 @@
     "phonePlaceholder": "Add phone number",
     "autoModel": "Auto Model",
     "acceptAndPurchase": "Accept and Purchase",
-    "closeSession": "Close Session",
     "search": "Search customer",
     "clientType": {
       "label": "Client Type",
@@ -496,8 +507,9 @@
   "powderExtraction": {
     "title": "Powder Extraction",
     "extractionWeight": "Extraction Weight (kg)",
-    "scaleId": "Scale ID:",
-    "measuredAt": "Measured At:"
+    "shopId": "Shop ID:",
+    "username": "Username:",
+    "cashRegisterName": "Cash Register ID:"
   },
   "operatorPage": {
     "title": "Operator Terminal",
