@@ -1,5 +1,9 @@
 import { useTranslation } from "react-i18next";
+
+// ui-kit
 import { TextField } from "@/ui-kit";
+
+// styles
 import styles from "../OperatorPage.module.css";
 
 interface PowderExtractionProps {
@@ -14,6 +18,13 @@ export const PowderExtraction = ({
   error,
 }: PowderExtractionProps) => {
   const { t } = useTranslation();
+
+  const rawData = localStorage.getItem("user_data");
+  const userData = rawData ? JSON.parse(rawData) : {};
+
+  const shopId = userData.shopId || "—";
+  const username = userData.username || "—";
+  const cashRegisterName = userData.cashRegisterName || "—";
 
   return (
     <div className={styles.powderCard}>
@@ -33,15 +44,23 @@ export const PowderExtraction = ({
         <div className={styles.powderDetails}>
           <div className={styles.powderDetailRow}>
             <span className={styles.detailLabel}>
-              {t("powderExtraction.scaleId")}
+              {t("powderExtraction.shopId")}
             </span>
-            <span className={styles.detailValue}>SC-102</span>
+            <span className={styles.detailValue}>{shopId}</span>
           </div>
+
           <div className={styles.powderDetailRow}>
             <span className={styles.detailLabel}>
-              {t("powderExtraction.measuredAt")}
+              {t("powderExtraction.username")}
             </span>
-            <span className={styles.detailValue}>10:42 AM</span>
+            <span className={styles.detailValue}>{username}</span>
+          </div>
+
+          <div className={styles.powderDetailRow}>
+            <span className={styles.detailLabel}>
+              {t("powderExtraction.cashRegisterName")}
+            </span>
+            <span className={styles.detailValue}>{cashRegisterName}</span>
           </div>
         </div>
       </div>

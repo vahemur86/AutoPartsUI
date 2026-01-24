@@ -57,3 +57,4 @@ export {
   ConfirmationModal,
   type ConfirmationModalProps,
 } from "./ConfirmationModal";
+export { Tooltip, type TooltipProps } from "./Tooltip";

@@ -8,7 +8,6 @@
 .tableWrapper {
   width: 100%;
   border-radius: 8px;
-  /* Scrollable Logic */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   background-color: var(--color-black-2);
@@ -17,7 +16,6 @@
 
 .table {
   width: 100%;
-  /* Force table to maintain width to trigger scrolling on smaller widths */
   min-width: 900px;
   border-collapse: collapse;
   font-family: "Manrope", sans-serif;
@@ -25,7 +23,6 @@
   color: var(--color-white);
 }
 
-/* Header Styles */
 .tableHeader {
   background-color: rgba(255, 255, 255, 0.04);
 }
@@ -38,11 +35,9 @@
   font-weight: 500;
   padding: 12px 16px;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   white-space: nowrap;
 }
 
-/* Alignment for Sorting icons */
 .headerCellContent {
   display: flex;
   align-items: center;
@@ -50,23 +45,19 @@
   user-select: none;
 }
 
-/* Body Styles */
 .tableBody {
   background-color: var(--color-black-2);
 }
 
-/* Row Styles */
 .tableRow {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   transition: background-color 0.2s ease-in-out;
-  cursor: pointer;
 }
 
 .tableRow:hover {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Cell Styles */
 .tableCell {
   padding: 12px 16px;
   text-align: left;
@@ -75,12 +66,11 @@
   white-space: nowrap;
 }
 
-/* Selection Column Alignment Fixes */
 .selectionCell {
   width: 48px;
   min-width: 48px;
   max-width: 48px;
-  padding: 0 !important; /* Removes default cell padding for centered checkbox */
+  padding: 0 !important;
   text-align: center;
 }
 
@@ -89,24 +79,31 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 48px; /* Should approximate your standard row height */
+  height: 48px;
 }
 
-.tableCellHeader {
-  font-weight: 500;
-  background-color: rgba(255, 255, 255, 0.04);
-}
-
-/* Pagination Styles */
-.pagination {
+.tableFooter {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between; 
   gap: 12px;
-  padding: 12px;
+  padding: 4px 12px;
   color: var(--color-white);
   font-family: "Manrope", sans-serif;
   font-size: 14px;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  flex: 1; 
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .pagination button {
@@ -117,6 +114,7 @@
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: "Manrope", sans-serif;
 }
 
 .pagination button:disabled {
@@ -127,4 +125,23 @@
 .pagination button:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .tableFooter {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .footerLeft {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .pagination {
+    justify-content: center;
+    width: 100%;
+  }
 }

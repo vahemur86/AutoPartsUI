@@ -24,6 +24,7 @@ export interface SelectProps extends Omit<
   error?: boolean;
   helperText?: string;
   placeholder?: string;
+  containerClassName?: string;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
@@ -33,6 +34,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     helperText,
     placeholder,
     className = "",
+    containerClassName = "",
     id,
     disabled = false,
     children,
@@ -131,7 +133,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         )}
 
         <div
-          className={`${styles.selectContainer} ${error ? styles.error : ""} ${
+          className={`${styles.selectContainer} ${containerClassName} ${error ? styles.error : ""} ${
             disabled ? styles.disabled : ""
           }`}
           data-open={open}

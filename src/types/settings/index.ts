@@ -163,6 +163,25 @@ export interface CatalystBucket {
   isActive: boolean;
 }
 
+export interface CatalystBucketByGroupItem {
+  id: number;
+  code: string;
+  name: string | null;
+  weight: number;
+  ptWeight: number;
+  pdWeight: number;
+  rhWeight: number;
+  prices: Record<string, number>;
+}
+
+export interface CatalystBucketByGroup {
+  requestedCode: string;
+  groupCode: string;
+  currencyCode: string;
+  items: CatalystBucketByGroupItem[];
+  totals: Record<string, number>;
+}
+
 export interface CustomerType {
   id: number;
   code: string;

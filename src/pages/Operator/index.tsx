@@ -4,7 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import i18n from "i18next";
 
+// icons
+import { LogOut } from "lucide-react";
+
+// store
 import { logout } from "@/store/slices/authSlice";
+import { fetchMetalRates } from "@/store/slices/metalRatesSlice";
+import { fetchIntake } from "@/store/slices/operatorSlice";
+import { fetchLanguages } from "@/store/slices/languagesSlice";
+
+// ui-kit
+import { Button, Select } from "@/ui-kit";
 
 // Components
 import { FinalOffer } from "./components/FinalOffer";
@@ -16,11 +26,6 @@ import { LiveMarketPrices } from "./components/LiveMarketPrices";
 // styles
 import styles from "./OperatorPage.module.css";
 
-// stores
-import { fetchMetalRates } from "@/store/slices/metalRatesSlice";
-import { fetchIntake } from "@/store/slices/operatorSlice";
-import { fetchLanguages } from "@/store/slices/languagesSlice";
-
 // services & types
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 import { createIntake } from "@/services/operator";
@@ -29,13 +34,15 @@ export const OperatorPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const { metalRates } = useAppSelector((state) => state.metalRates);
   const { intake } = useAppSelector((state) => state.operator);
   const { languages: allLanguages, isLoading: isLangLoading } = useAppSelector(
-    (state) => state.languages
+    (state) => state.languages,
   );
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userData, setUserData] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,12 +75,12 @@ export const OperatorPage = () => {
 
   const metalRate = useMemo(
     () => metalRates.find((rate) => rate.isActive),
-    [metalRates]
+    [metalRates],
   );
 
   useEffect(() => {
     const localeStorageData = JSON.parse(
-      localStorage.getItem("user_data") ?? "{}"
+      localStorage.getItem("user_data") ?? "{}",
     );
     setUserData(localeStorageData);
     dispatch(fetchMetalRates());
@@ -110,7 +117,7 @@ export const OperatorPage = () => {
   };
 
   const handleLanguageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const apiCode = event.target.value;
     const i18nCode = mapApiCodeToI18nCode(apiCode);
@@ -118,27 +125,37 @@ export const OperatorPage = () => {
     localStorage.setItem("i18nextLng", i18nCode);
   };
 
+  const selectedApiCode =
+    languages.find((lang) => mapApiCodeToI18nCode(lang.code) === i18n.language)
+      ?.code ?? "";
+
   return (
     <div className={styles.operatorPage}>
       <div className={styles.headerSection}>
         <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <select
-            className={styles.languageSelect}
-            onChange={handleLanguageChange}
-            value={
-              languages.find(
-                (lang) => mapApiCodeToI18nCode(lang.code) === i18n.language
-              )?.code ?? ""
-            }
-            disabled={isLangLoading || languages.length === 0}
-          >
-            {languages.map((lang) => (
-              <option key={lang.id} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
+
+        <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
+          {/* UI-Kit Select Component */}
+          <div style={{ width: "160px" }}>
+            <Select
+              placeholder={t("common.select")}
+              onChange={handleLanguageChange}
+              value={selectedApiCode}
+              disabled={isLangLoading || languages.length === 0}
+              containerClassName={styles.languageSelectContainer}
+            >
+              {languages.map((lang) => (
+                <option key={lang.id} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <Button variant="danger" size="medium" onClick={handleLogout}>
+            <LogOut size={16} />
+            {t("header.logout")}
+          </Button>
         </div>
       </div>
 
@@ -174,7 +191,6 @@ export const OperatorPage = () => {
           <CustomerDetails
             customerPhone={formData.customerPhone}
             onPhoneChange={(val) => handleInputChange("customerPhone", val)}
-            onCloseSession={handleLogout}
             phoneError={hasTriedSubmit && !isPhoneValid}
           />
         </div>

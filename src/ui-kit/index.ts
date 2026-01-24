@@ -22,6 +22,7 @@ export {
   MultiSelect,
   DataTable,
   ConfirmationModal,
+  Tooltip,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
@@ -53,6 +54,7 @@ export {
   type MultiSelectProps,
   type MultiSelectOption,
   type ConfirmationModalProps,
+  type TooltipProps,
 } from "./components";
 
 // Add other components here as you create them
