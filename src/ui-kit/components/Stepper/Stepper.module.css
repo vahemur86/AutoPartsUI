@@ -107,7 +107,7 @@
 @media (max-width: 768px) {
   .stepper {
     padding: 12px 8px;
-    gap: 4px;
+    gap: 3px;
   }
 
   .step {

@@ -31,7 +31,7 @@ export const Stepper: FC<StepperProps> = ({
   };
 
   const handleStepClick = (index: number) => {
-    if (onStepClick && index <= activeStepIndex) {
+    if (onStepClick) {
       onStepClick(index);
     }
   };
@@ -46,7 +46,7 @@ export const Stepper: FC<StepperProps> = ({
           <Fragment key={step.id}>
             <div
               className={`${styles.stepContainer} ${
-                onStepClick && status !== "pending" ? styles.clickable : ""
+                onStepClick ? styles.clickable : ""
               }`}
               onClick={() => handleStepClick(index)}
             >
