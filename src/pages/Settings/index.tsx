@@ -1,7 +1,10 @@
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Tab, Stepper } from "@/ui-kit";
-import type { StepperStep } from "@/ui-kit";
+
+// ui-kit
+import { Tab, Stepper, type StepperStep } from "@/ui-kit";
+
+// icons
 import {
   Globe,
   Languages,
@@ -11,8 +14,13 @@ import {
   Truck,
   Container,
   FlaskConical,
+  Currency,
 } from "lucide-react";
+
+// components
 import { SectionHeader } from "@/components/common/SectionHeader";
+
+// styles
 import styles from "./Settings.module.css";
 
 export const Settings = () => {
@@ -91,6 +99,12 @@ export const Settings = () => {
       path: "/catalyst-buckets",
       label: t("settings.navigation.catalystBuckets"),
       icon: FlaskConical,
+      showCheckmark: true,
+    },
+    {
+      path: "/exchange-rates",
+      label: t("settings.navigation.exchangeRates"),
+      icon: Currency,
       showCheckmark: true,
     },
   ];

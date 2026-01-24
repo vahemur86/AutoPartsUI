@@ -82,6 +82,26 @@ export interface ProductSettingItem {
   enabled?: boolean;
 }
 
+// Exchange Rates
+export interface ExchangeRate {
+  id: number;
+  baseCurrencyCode: string;
+  quoteCurrencyCode: string;
+  rate: number;
+  effectiveFrom: string;
+  isActive: boolean;
+  createdAt: string;
+  createdByUserId: number;
+}
+
+export interface CreateExchangeRate {
+  baseCurrencyCode: string;
+  quoteCurrencyCode: string;
+  rate: number;
+  effectiveFrom: string;
+  isActive: boolean;
+}
+
 export type DataKey = "brands" | "categories" | "unitTypes" | "boxSizes";
 export type TabId = "brand" | "category" | "unitType" | "boxSize";
 

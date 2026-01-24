@@ -24,6 +24,19 @@
     "reset": "Reset",
     "noOptionsAvailable": "No options available"
   },
+  "currencies": {
+    "USD": "US Dollar",
+    "EUR": "Euro",
+    "RUB": "Russian Ruble",
+    "AMD": "Armenian Dram"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
+  },
   "settings": {
     "navigation": {
       "projectLanguages": "Project Languages",
@@ -33,7 +46,33 @@
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
       "metalRates": "Metal Rates",
-      "catalystBuckets": "Catalyst Buckets"
+      "catalystBuckets": "Catalyst Buckets",
+      "exchangeRates": "Exchange Rates"
+    }
+  },
+  "exchangeRates": {
+    "createNew": "Create Exchange Rates",
+    "addExchangeRate": "Add Exchange Rate",
+    "updateRates": "Update Rates",
+    "baseCurrency": "Base Currency",
+    "quoteCurrency": "Quote Currency",
+    "rate": "Rate",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Exchange rate created successfully",
+      "updated": "Exchange rate updated successfully",
+      "deleted": "Exchange rate deleted successfully",
+      "statusChanged": "Status updated successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create exchange rate",
+      "failedToUpdate": "Failed to update exchange rate",
+      "failedToChangeStatus": "Failed to change status",
+      "addFailed": "Failed to add rate:",
+      "saveFailed": "Failed to save rate:",
+      "statusUpdateFailed": "Failed to {{action}} rate:"
     }
   },
   "users": {

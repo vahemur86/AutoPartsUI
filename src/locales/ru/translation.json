@@ -24,6 +24,19 @@
     "reset": "Сбросить",
     "noOptionsAvailable": "Нет доступных вариантов"
   },
+  "currencies": {
+    "USD": "Доллар США",
+    "EUR": "Евро",
+    "RUB": "Российский рубль",
+    "AMD": "Армянский драм"
+  },
+  "actions": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "activate": "Активировать",
+    "deactivate": "Деактивировать"
+  },
   "settings": {
     "navigation": {
       "projectLanguages": "Языки проекта",
@@ -33,7 +46,33 @@
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
       "metalRates": "Металлические ставки",
-      "catalystBuckets": "Катализаторные баки"
+      "catalystBuckets": "Катализаторные баки",
+      "exchangeRates": "Курсы валют"
+    }
+  },
+  "exchangeRates": {
+    "createNew": "Создать курсы валют",
+    "addExchangeRate": "Добавить курс валют",
+    "updateRates": "Обновить курсы",
+    "baseCurrency": "Базовая валюта",
+    "quoteCurrency": "Котируемая валюта",
+    "rate": "Курс",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Курс валют успешно создан",
+      "updated": "Курс валют успешно обновлен",
+      "deleted": "Курс валют успешно удален",
+      "statusChanged": "Статус успешно обновлен"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать курс валют",
+      "failedToUpdate": "Не удалось обновить курс валют",
+      "failedToChangeStatus": "Не удалось изменить статус",
+      "addFailed": "Не удалось добавить курс:",
+      "saveFailed": "Не удалось сохранить курс:",
+      "statusUpdateFailed": "Не удалось {{action}} курс:"
     }
   },
   "users": {
@@ -59,7 +98,7 @@
       "userCreated": "Пользователь успешно создан"
     },
     "error": {
-      "failedToCreate": "Не удалось создать пользователя"
+      "failedToCreate": "Не удалось создать пользователь"
     }
   },
   "shops": {

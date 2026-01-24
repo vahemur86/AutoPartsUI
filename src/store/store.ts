@@ -9,6 +9,7 @@ import authReducer from "./slices/authSlice";
 import metalRatesReducer from "./slices/metalRatesSlice";
 import operatorReducer from "./slices/operatorSlice";
 import catalystBucketsReducer from "./slices/catalystBucketsSlice";
+import exchangeRatesReducer from "./slices/exchangeRatesSlice";
 import languagesReducer from "./slices/languagesSlice";
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
     operator: operatorReducer,
     auth: authReducer,
     catalystBuckets: catalystBucketsReducer,
+    exchangeRates: exchangeRatesReducer,
     languages: languagesReducer,
   },
 });
