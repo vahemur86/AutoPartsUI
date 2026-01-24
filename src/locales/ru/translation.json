@@ -5,6 +5,7 @@
     "shops": "Магазины",
     "products": "Товары",
     "users": "Управление пользователями",
+    "customers": "Клиенты",
     "logout": "Выйти",
     "userMenu": "Меню пользователя"
   },
@@ -24,7 +25,11 @@
     "no": "Нет",
     "filters": "Фильтры",
     "reset": "Сбросить",
-    "noOptionsAvailable": "Нет доступных вариантов"
+    "noOptionsAvailable": "Нет доступных вариантов",
+    "previous": "Предыдущая",
+    "next": "Следующая",
+    "page": "Страница",
+    "of": "из"
   },
   "currencies": {
     "USD": "Доллар США",
@@ -420,7 +425,7 @@
     "client": "Клиент",
     "discount": "Скидка",
     "phone": "Телефон",
-    "phonePlaceholder": "+374 93 124567",
+    "phonePlaceholder": "Добавить номер телефона",
     "autoModel": "Модель автомобиля",
     "acceptAndPurchase": "Принять и купить",
     "closeSession": "Закрыть сессию",
@@ -489,5 +494,41 @@
   "operatorPage": {
     "title": "Операторский терминал",
     "languageLoading": "Загрузка языков..."
+  },
+  "customers": {
+    "createOrGet": "Получить клиента",
+    "createOrGetButton": "Поиск клиента",
+    "editCustomer": "Редактировать клиента",
+    "customersList": "Список клиентов",
+    "loading": "Загрузка клиентов...",
+    "emptyState": "Клиенты не найдены.",
+    "form": {
+      "phone": "Телефон",
+      "phonePlaceholder": "Добавить номер телефона",
+      "fullName": "Полное имя",
+      "customerType": "Тип клиента",
+      "selectCustomerType": "Выберите тип клиента",
+      "allTypes": "Все типы"
+    },
+    "validation": {
+      "phoneRequired": "Номер телефона обязателен",
+      "customerTypeRequired": "Тип клиента обязателен"
+    },
+    "columns": {
+      "id": "ID",
+      "phone": "Телефон",
+      "customerType": "Тип клиента",
+      "bonusPercent": "Процент бонуса",
+      "isActive": "Статус"
+    },
+    "success": {
+      "customerCreated": "Клиент успешно создан или получен",
+      "customerUpdated": "Клиент успешно обновлен"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить клиентов",
+      "failedToCreate": "Не удалось создать или получить клиента",
+      "failedToUpdate": "Не удалось обновить клиента"
+    }
   }
 }

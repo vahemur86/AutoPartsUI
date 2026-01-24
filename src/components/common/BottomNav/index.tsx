@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   PackageSearch,
   Users,
+  UserCircle,
 } from "lucide-react";
 import styles from "./BottomNav.module.css";
 
@@ -48,6 +49,11 @@ export const BottomNav = () => {
       path: "/users",
       icon: Users,
       label: "User Management",
+    },
+    {
+      path: "/customers",
+      icon: UserCircle,
+      label: "Customers",
     },
   ];
 

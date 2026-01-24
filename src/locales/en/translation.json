@@ -5,6 +5,7 @@
     "shops": "Shops",
     "products": "Products",
     "users": "User Management",
+    "customers": "Customers",
     "logout": "Log Out",
     "userMenu": "User menu"
   },
@@ -24,7 +25,11 @@
     "no": "No",
     "filters": "Filters",
     "reset": "Reset",
-    "noOptionsAvailable": "No options available"
+    "noOptionsAvailable": "No options available",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of"
   },
   "currencies": {
     "USD": "US Dollar",
@@ -428,7 +433,7 @@
     "client": "Client",
     "discount": "Discount",
     "phone": "Phone",
-    "phonePlaceholder": "+374 93 124567",
+    "phonePlaceholder": "Add phone number",
     "autoModel": "Auto Model",
     "acceptAndPurchase": "Accept and Purchase",
     "closeSession": "Close Session",
@@ -497,5 +502,40 @@
   "operatorPage": {
     "title": "Operator Terminal",
     "languageLoading": "Loading languages..."
+  },
+  "customers": {
+    "editCustomer": "Edit Customer",
+    "customersList": "Customers List",
+    "loading": "Loading customers...",
+    "emptyState": "No customers found.",
+    "createCustomer": "Create Customer",
+    "form": {
+      "phone": "Phone",
+      "phonePlaceholder": "Add phone number",
+      "fullName": "Full Name",
+      "customerType": "Customer Type",
+      "selectCustomerType": "Select customer type",
+      "allTypes": "All Types"
+    },
+    "validation": {
+      "phoneRequired": "Phone number is required",
+      "customerTypeRequired": "Customer type is required"
+    },
+    "columns": {
+      "id": "ID",
+      "phone": "Phone",
+      "customerType": "Customer Type",
+      "bonusPercent": "Bonus Percent",
+      "isActive": "Status"
+    },
+    "success": {
+      "customerCreated": "Customer created or retrieved successfully",
+      "customerUpdated": "Customer updated successfully"
+    },
+    "error": {
+      "failedToLoad": "Failed to load customers",
+      "failedToCreate": "Failed to find customer",
+      "failedToUpdate": "Failed to update customer"
+    }
   }
 }

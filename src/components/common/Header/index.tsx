@@ -109,6 +109,12 @@ export const Header = () => {
               text={t("header.users")}
               onClick={() => navigate("/users")}
             />
+            <Tab
+              variant="underline"
+              active={isActive("/customers")}
+              text={t("header.customers")}
+              onClick={() => navigate("/customers")}
+            />
           </nav>
 
           {/* Right: Actions */}

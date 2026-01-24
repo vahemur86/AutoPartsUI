@@ -22,6 +22,10 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   pageSize?: number;
   enableSelection?: boolean;
+  manualPagination?: boolean;
+  pageCount?: number;
+  pageIndex?: number;
+  onPaginationChange?: (pageIndex: number) => void;
 }
 
 export const DataTable = <TData, TValue>({
@@ -29,9 +33,28 @@ export const DataTable = <TData, TValue>({
   data,
   pageSize = 10,
   enableSelection = false,
+  manualPagination = false,
+  pageCount,
+  pageIndex: controlledPageIndex,
+  onPaginationChange,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [internalPagination, setInternalPagination] = useState({
+    pageIndex: 0,
+    pageSize: pageSize,
+  });
+
+  // Use controlled pageIndex if provided, otherwise use internal state
+  const pagination = useMemo(() => {
+    if (manualPagination && controlledPageIndex !== undefined) {
+      return {
+        pageIndex: controlledPageIndex,
+        pageSize: pageSize,
+      };
+    }
+    return internalPagination;
+  }, [manualPagination, controlledPageIndex, pageSize, internalPagination]);
 
   const selectionColumn: ColumnDef<TData> = useMemo(
     () => ({
@@ -51,12 +74,12 @@ export const DataTable = <TData, TValue>({
       ),
       size: 48,
     }),
-    [],
+    []
   );
 
   const tableColumns = useMemo(
     () => (enableSelection ? [selectionColumn, ...columns] : columns),
-    [columns, selectionColumn, enableSelection],
+    [columns, selectionColumn, enableSelection]
   );
 
   const table = useReactTable({
@@ -65,12 +88,36 @@ export const DataTable = <TData, TValue>({
     state: {
       sorting,
       rowSelection: enableSelection ? rowSelection : {},
+      pagination,
     },
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: (updater) => {
+      const currentPagination =
+        manualPagination && controlledPageIndex !== undefined
+          ? { pageIndex: controlledPageIndex, pageSize: pageSize }
+          : internalPagination;
+
+      const newPagination =
+        typeof updater === "function" ? updater(currentPagination) : updater;
+
+      if (manualPagination && controlledPageIndex !== undefined) {
+        // Controlled mode: only call the callback, don't update internal state
+        if (onPaginationChange) {
+          onPaginationChange(newPagination.pageIndex);
+        }
+      } else {
+        // Uncontrolled mode: update internal state
+        setInternalPagination(newPagination);
+      }
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: manualPagination,
+    pageCount: manualPagination ? pageCount : undefined,
+    getPaginationRowModel: manualPagination
+      ? undefined
+      : getPaginationRowModel(),
     initialState: {
       pagination: {
         pageSize: pageSize,
@@ -112,7 +159,7 @@ export const DataTable = <TData, TValue>({
                     >
                       {flexRender(
                         header.column.columnDef.header,
-                        header.getContext(),
+                        header.getContext()
                       )}
                       {!isSelect &&
                         ({
@@ -143,7 +190,7 @@ export const DataTable = <TData, TValue>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </div>
                     </TableCell>
