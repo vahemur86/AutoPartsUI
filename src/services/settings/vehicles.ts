@@ -4,7 +4,11 @@ import api from "..";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { CreateVehiclePayload, VehicleDefinition } from "@/types/settings";
+import type {
+  CreateVehiclePayload,
+  VehicleDefinition,
+  VehicleFilter,
+} from "@/types/settings";
 
 export const getVehicleDefinitions = async (brandId?: number) => {
   try {
@@ -27,14 +31,17 @@ export const createVehicle = async (payload: CreateVehiclePayload) => {
   }
 };
 
-export const getVehicles = async (withBuckets?: boolean) => {
+export const getVehicles = async (
+  filters: VehicleFilter = {},
+  withBuckets?: boolean,
+) => {
   try {
     const BASE_URL = "/vehicle-definitions";
     const FINAL_URL = withBuckets
       ? `${BASE_URL}/search-with-buckets`
       : BASE_URL;
 
-    const response = await api.get(FINAL_URL);
+    const response = await api.get(FINAL_URL, { params: filters });
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get vehicles."));

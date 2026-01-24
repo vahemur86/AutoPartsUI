@@ -20,9 +20,24 @@
     "active": "Ակտիվ",
     "inactive": "Անակտիվ",
     "enabled": "Միացված",
-    "noOptionsAvailable": "Տարբերակներ չկան",
     "yes": "Այո",
-    "no": "Ոչ"
+    "no": "Ոչ",
+    "filters": "Ֆիլտրեր",
+    "reset": "Վերակայել",
+    "noOptionsAvailable": "Տարբերակներ չկան"
+  },
+  "currencies": {
+    "USD": "ԱՄՆ դոլար",
+    "EUR": "Եվրո",
+    "RUB": "Ռուսական ռուբլի",
+    "AMD": "Հայկական դրամ"
+  },
+  "actions": {
+    "save": "Պահպանել",
+    "cancel": "Չեղարկել",
+    "edit": "Խմբագրել",
+    "activate": "Ակտիվացնել",
+    "deactivate": "Ապաակտիվացնել"
   },
   "settings": {
     "navigation": {
@@ -32,9 +47,35 @@
       "shops": "Խանութներ",
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
-      "metalRates": "Մետալային գները",
+      "customerTypes": "Հաճախորդների տեսակներ",
+      "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կատալիզատորի բաքեր",
-      "customerTypes": "Հաճախորդների տեսակներ"
+      "exchangeRates": "Փոխարժեքներ"
+    }
+  },
+  "exchangeRates": {
+    "createNew": "Ստեղծել փոխարժեքներ",
+    "addExchangeRate": "Ավելացնել փոխարժեք",
+    "updateRates": "Թարմացնել փոխարժեքները",
+    "baseCurrency": "Հիմնական արժույթ",
+    "quoteCurrency": "Գնանշվող արժույթ",
+    "rate": "Փոխարժեք",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Փոխարժեքը հաջողությամբ ստեղծվեց",
+      "updated": "Փոխարժեքը հաջողությամբ թարմացվեց",
+      "deleted": "Փոխարժեքը հաջողությամբ ջնջվեց",
+      "statusChanged": "Կարգավիճակը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToCreate": "Փոխարժեքի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Փոխարժեքի թարմացումը ձախողվեց",
+      "failedToChangeStatus": "Կարգավիճակի փոփոխությունը ձախողվեց",
+      "addFailed": "Փոխարժեքի ավելացումը ձախողվեց:",
+      "saveFailed": "Փոխարժեքի պահպանումը ձախողվեց:",
+      "statusUpdateFailed": "Փոխարժեքը {{action}} չհաջողվեց:"
     }
   },
   "users": {
@@ -152,23 +193,30 @@
       "addVehicle": "Ավելացնել տրանսպորտային միջոց",
       "actions": {
         "viewBuckets": "Դիտել բաքերը",
-        "calculatePrice": "Հաշվարկել գինը"
+        "calculatePrice": "Հաշվարկել գինը",
+        "withBuckets": "Բաքերով"
       },
       "form": {
         "brand": "Արտադրող",
         "selectBrand": "Ընտրեք արտադրող...",
         "model": "Մոդել",
         "enterModel": "Մուտքագրեք մոդել...",
+        "selectModel": "Ընտրեք մոդել...",
         "year": "Տարի",
         "enterYear": "Մուտքագրեք տարի...",
         "engine": "Շարժիչ",
         "enterEngine": "Մուտքագրեք շարժիչ...",
+        "selectEngine": "Ընտրեք շարժիչ...",
         "fuelType": "Վառելիքի տեսակ",
         "selectFuelType": "Ընտրեք վառելիքի տեսակ...",
         "market": "Շուկա",
         "selectMarket": "Ընտրեք շուկա...",
         "horsePower": "Ձիաուժ",
         "enterHorsePower": "Մուտքագրեք ձիաուժ...",
+        "hpMin": "Ձիաուժ (Մին)",
+        "selectHPMin": "Մին",
+        "hpMax": "Ձիաուժ (Մաքս)",
+        "selectHPMax": "Մաքս",
         "driveType": "Քարշակի տեսակ",
         "selectDriveType": "Ընտրեք քարշակի տեսակ...",
         "status": "Կարգավիճակ"

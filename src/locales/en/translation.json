@@ -20,9 +20,24 @@
     "active": "Active",
     "inactive": "Inactive",
     "enabled": "Enabled",
-    "noOptionsAvailable": "No options available",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "filters": "Filters",
+    "reset": "Reset",
+    "noOptionsAvailable": "No options available"
+  },
+  "currencies": {
+    "USD": "US Dollar",
+    "EUR": "Euro",
+    "RUB": "Russian Ruble",
+    "AMD": "Armenian Dram"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
   },
   "settings": {
     "navigation": {
@@ -34,7 +49,33 @@
       "vehicleManagement": "Vehicle Management",
       "metalRates": "Metal Rates",
       "catalystBuckets": "Catalyst Buckets",
-      "customerTypes": "Customer Types"
+      "customerTypes": "Customer Types",
+      "exchangeRates": "Exchange Rates"
+    }
+  },
+  "exchangeRates": {
+    "createNew": "Create Exchange Rates",
+    "addExchangeRate": "Add Exchange Rate",
+    "updateRates": "Update Rates",
+    "baseCurrency": "Base Currency",
+    "quoteCurrency": "Quote Currency",
+    "rate": "Rate",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Exchange rate created successfully",
+      "updated": "Exchange rate updated successfully",
+      "deleted": "Exchange rate deleted successfully",
+      "statusChanged": "Status updated successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create exchange rate",
+      "failedToUpdate": "Failed to update exchange rate",
+      "failedToChangeStatus": "Failed to change status",
+      "addFailed": "Failed to add rate:",
+      "saveFailed": "Failed to save rate:",
+      "statusUpdateFailed": "Failed to {{action}} rate:"
     }
   },
   "users": {
@@ -172,6 +213,10 @@
         "selectMarket": "Select market...",
         "horsePower": "Horse Power",
         "enterHorsePower": "Enter horse power...",
+        "hpMin": "HP Min",
+        "selectHPMin": "Min",
+        "hpMax": "HP Max",
+        "selectHPMax": "Max",
         "driveType": "Drive Type",
         "selectDriveType": "Select drive type...",
         "status": "Status"

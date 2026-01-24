@@ -46,6 +46,20 @@ export interface CreateVehiclePayload {
   driveTypeId: number;
 }
 
+export interface VehicleFilter {
+  brandId?: number;
+  modelId?: number;
+  fuelTypeId?: number;
+  engineId?: number;
+  marketId?: number;
+  driveTypeId?: number;
+  year?: number;
+  hpMin?: number;
+  hpMax?: number;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface MetalRate {
   id: number;
   currencyCode: string;
@@ -66,6 +80,26 @@ export interface ProductSettingItem {
   id: number;
   code: string;
   enabled?: boolean;
+}
+
+// Exchange Rates
+export interface ExchangeRate {
+  id: number;
+  baseCurrencyCode: string;
+  quoteCurrencyCode: string;
+  rate: number;
+  effectiveFrom: string;
+  isActive: boolean;
+  createdAt: string;
+  createdByUserId: number;
+}
+
+export interface CreateExchangeRate {
+  baseCurrencyCode: string;
+  quoteCurrencyCode: string;
+  rate: number;
+  effectiveFrom: string;
+  isActive: boolean;
 }
 
 export type DataKey = "brands" | "categories" | "unitTypes" | "boxSizes";
