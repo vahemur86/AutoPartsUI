@@ -5,9 +5,9 @@
 }
 
 .tabsContainer {
+  display: flex;
   margin-top: 20px;
   padding-inline: 5px;
-  width: fit-content;
 }
 
 .catalystBucketsHeader {
@@ -67,7 +67,6 @@
   padding: 3px;
 }
 
-/* Tooltip & Currency Styles */
 .priceTrigger {
   border-bottom: 1px dotted var(--color-secondary-400);
   font-weight: 500;
@@ -102,7 +101,6 @@
   font-weight: 500;
 }
 
-/* TOTAL PRICE FOOTER */
 .totalPriceWrapper {
   display: flex;
   justify-content: flex-end;
@@ -123,15 +121,14 @@
   font-weight: 700;
 }
 
-/* Mobile Responsiveness */
 .addBucketButtonMobile {
   display: none;
 }
 
 @media (max-width: 768px) {
   .tabsContainer {
-    margin-top: 0
-  };
+    padding-inline: 5px;
+  }
 
   .catalystBucketsHeader {
     display: flex;
