@@ -24,6 +24,19 @@
     "reset": "Վերակայել",
     "noOptionsAvailable": "Տարբերակներ չկան"
   },
+  "currencies": {
+    "USD": "ԱՄՆ դոլար",
+    "EUR": "Եվրո",
+    "RUB": "Ռուսական ռուբլի",
+    "AMD": "Հայկական դրամ"
+  },
+  "actions": {
+    "save": "Պահպանել",
+    "cancel": "Չեղարկել",
+    "edit": "Խմբագրել",
+    "activate": "Ակտիվացնել",
+    "deactivate": "Ապաակտիվացնել"
+  },
   "settings": {
     "navigation": {
       "projectLanguages": "Նախագծի լեզուներ",
@@ -32,8 +45,34 @@
       "shops": "Խանութներ",
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
-      "metalRates": "Մետալային գները",
-      "catalystBuckets": "Կատալիզատորի բաքեր"
+      "metalRates": "Մետաղի գներ",
+      "catalystBuckets": "Կատալիզատորի բաքեր",
+      "exchangeRates": "Փոխարժեքներ"
+    }
+  },
+  "exchangeRates": {
+    "createNew": "Ստեղծել փոխարժեքներ",
+    "addExchangeRate": "Ավելացնել փոխարժեք",
+    "updateRates": "Թարմացնել փոխարժեքները",
+    "baseCurrency": "Հիմնական արժույթ",
+    "quoteCurrency": "Գնանշվող արժույթ",
+    "rate": "Փոխարժեք",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Փոխարժեքը հաջողությամբ ստեղծվեց",
+      "updated": "Փոխարժեքը հաջողությամբ թարմացվեց",
+      "deleted": "Փոխարժեքը հաջողությամբ ջնջվեց",
+      "statusChanged": "Կարգավիճակը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToCreate": "Փոխարժեքի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Փոխարժեքի թարմացումը ձախողվեց",
+      "failedToChangeStatus": "Կարգավիճակի փոփոխությունը ձախողվեց",
+      "addFailed": "Փոխարժեքի ավելացումը ձախողվեց:",
+      "saveFailed": "Փոխարժեքի պահպանումը ձախողվեց:",
+      "statusUpdateFailed": "Փոխարժեքը {{action}} չհաջողվեց:"
     }
   },
   "users": {
