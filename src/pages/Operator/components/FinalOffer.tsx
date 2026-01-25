@@ -81,7 +81,7 @@ export const FinalOffer: FC<{ offerPrice: number }> = ({ offerPrice = 0 }) => {
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
         <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
-        <div className={styles.finalOfferAmount}>{offerPrice} AMD</div>
+        <div className={styles.finalOfferAmount}>{offerPrice} USD</div>
 
         <div className={styles.divider} />
 

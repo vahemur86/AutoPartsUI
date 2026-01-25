@@ -39,25 +39,6 @@ export const getCatalystBuckets = async (includeInactive = false) => {
   }
 };
 
-export const getSingleCatalystBucket = async (
-  code: string,
-  currencyCode: string = "AMD",
-) => {
-  try {
-    const response = await api.get("/superadmin/catalyst-buckets/quote", {
-      params: {
-        code,
-        currencyCode,
-      },
-    });
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(
-      getApiErrorMessage(error, "Failed to get catalyst bucket quote."),
-    );
-  }
-};
-
 export const getCatalystBucketsByCode = async (code: string) => {
   try {
     const response = await api.get(`/superadmin/catalyst-buckets/${code}`);

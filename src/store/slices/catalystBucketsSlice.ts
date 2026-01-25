@@ -10,7 +10,6 @@ import {
   createCatalystBucket,
   updateCatalystBucket,
   getCatalystBucketsByCode,
-  getSingleCatalystBucket,
   getCatalystBucketsByGroup,
 } from "@/services/settings/catalystBuckets";
 
@@ -78,25 +77,6 @@ export const fetchCatalystBucketsByCode = createAsyncThunk<
     } catch (error: unknown) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch catalyst buckets by code"),
-      );
-    }
-  },
-);
-
-// Async thunk for fetching single catalyst bucket
-export const fetchCatalystBucket = createAsyncThunk<
-  CatalystBucket,
-  { code: string; currencyCode?: string },
-  { rejectValue: string }
->(
-  "catalystBuckets/fetchCatalystBucket",
-  async ({ code, currencyCode }, { rejectWithValue }) => {
-    try {
-      const data = await getSingleCatalystBucket(code, currencyCode);
-      return data;
-    } catch (error: unknown) {
-      return rejectWithValue(
-        getApiErrorMessage(error, "Failed to fetch catalyst bucket"),
       );
     }
   },
@@ -211,25 +191,6 @@ const catalystBucketsSlice = createSlice({
       .addCase(fetchCatalystBucketsByCode.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch catalyst buckets";
-      });
-
-    // Fetch catalyst buckets by code
-    builder
-      .addCase(fetchCatalystBucket.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(
-        fetchCatalystBucket.fulfilled,
-        (state, action: PayloadAction<CatalystBucket>) => {
-          state.isLoading = false;
-          state.catalystBucket = action.payload;
-          state.error = null;
-        },
-      )
-      .addCase(fetchCatalystBucket.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload ?? "Failed to fetch catalyst bucket";
       });
 
     // Add catalyst bucket

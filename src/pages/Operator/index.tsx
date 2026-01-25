@@ -94,7 +94,7 @@ export const OperatorPage = () => {
     setIsSubmitting(true);
     try {
       const response = await createIntake({
-        currencyCode: "AMD",
+        currencyCode: "USD",
         ptWeight: Number(formData.platinumPrice),
         pdWeight: Number(formData.palladiumPrice),
         rhWeight: Number(formData.rhodiumPrice),
@@ -135,7 +135,6 @@ export const OperatorPage = () => {
         <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
 
         <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
-          {/* UI-Kit Select Component */}
           <div style={{ width: "160px" }}>
             <Select
               placeholder={t("common.select")}

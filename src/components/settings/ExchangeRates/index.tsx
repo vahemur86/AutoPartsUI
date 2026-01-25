@@ -38,16 +38,13 @@ export const ExchangeRates: FC = () => {
     (state) => state.exchangeRates,
   );
 
-  // States for "Create New"
   const [newQuoteCurrency, setNewQuoteCurrency] = useState("EUR");
   const [newRateValue, setNewRateValue] = useState("");
 
-  // UI States
   const [isExistingExpanded, setIsExistingExpanded] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
 
-  // Use useMemo to prevent unnecessary re-renders of translation strings
   const currencies = useMemo(
     () => [
       { code: "EUR", name: t("currencies.EUR") },

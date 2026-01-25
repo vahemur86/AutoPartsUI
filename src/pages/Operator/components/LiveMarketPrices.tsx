@@ -31,7 +31,7 @@ export const LiveMarketPrices = ({
   ptPricePerGram,
   pdPricePerGram,
   rhPricePerGram,
-  // currencyCode = "AMD",
+  currencyCode = "USD",
   updatedAt,
 }: LiveMarketPricesProps) => {
   const { t } = useTranslation();
@@ -42,8 +42,7 @@ export const LiveMarketPrices = ({
       return t("liveMarketPrices.loading");
     }
     const pricePerKg = pricePerGram * 1000;
-    // const currencySymbol = currencyCode === "USD" ? "$" : currencyCode;
-    const currencySymbol = "AMD";
+    const currencySymbol = currencyCode === "USD" ? "$" : currencyCode;
     return `${currencySymbol} ${pricePerKg.toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
