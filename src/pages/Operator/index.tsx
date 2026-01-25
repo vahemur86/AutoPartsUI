@@ -183,7 +183,10 @@ export const OperatorPage = () => {
             hasTriedSubmit={hasTriedSubmit}
           />
 
-          <FinalOffer offerPrice={intake ? intake.offerPrice : 0} />
+          <FinalOffer
+            offerPrice={intake ? intake.offerPrice : 0}
+            currencyCode={intake?.currencyCode}
+          />
         </div>
 
         <div className={styles.rightColumn}>

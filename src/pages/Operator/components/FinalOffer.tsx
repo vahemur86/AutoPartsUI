@@ -8,7 +8,10 @@ import { offerIntake, rejectIntake } from "@/store/slices/operatorSlice";
 import type { IntakeResponse } from "@/types/operator";
 import styles from "../OperatorPage.module.css";
 
-export const FinalOffer: FC<{ offerPrice: number }> = ({ offerPrice = 0 }) => {
+export const FinalOffer: FC<{ offerPrice: number; currencyCode?: string }> = ({
+  offerPrice = 0,
+  currencyCode = "AMD",
+}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake } = useAppSelector((state) => state.operator);
@@ -81,7 +84,9 @@ export const FinalOffer: FC<{ offerPrice: number }> = ({ offerPrice = 0 }) => {
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
         <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
-        <div className={styles.finalOfferAmount}>{offerPrice} AMD</div>
+        <div className={styles.finalOfferAmount}>
+          {offerPrice} {currencyCode}
+        </div>
 
         <div className={styles.divider} />
 
