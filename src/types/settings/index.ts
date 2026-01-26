@@ -203,3 +203,9 @@ export interface CashRegisterBalance {
   balance: number;
   openSessionId: number | null;
 }
+
+export interface TopUpRequest {
+  amount: number;
+  currencyCode: string;
+  comment: string;
+}

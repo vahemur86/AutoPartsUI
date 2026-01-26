@@ -89,3 +89,10 @@ export const TAB_CONFIG: Record<TabId, TabConfig> = {
     },
   },
 };
+
+export const CURRENCIES = [
+  { value: "AMD", label: "AMD" },
+  { value: "USD", label: "USD" },
+  { value: "EUR", label: "EUR" },
+  { value: "RUB", label: "RUB" },
+];

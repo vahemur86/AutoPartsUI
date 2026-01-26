@@ -4,7 +4,11 @@ import api from "..";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { CashRegister, CashRegisterBalance } from "@/types/settings";
+import type {
+  CashRegister,
+  CashRegisterBalance,
+  TopUpRequest,
+} from "@/types/settings";
 
 export const getCashRegisters = async (shopId?: number) => {
   try {
@@ -68,6 +72,23 @@ export const getCashRegisterBalance = async (cashRegisterId: number) => {
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to get cash register balance."),
+    );
+  }
+};
+
+export const topUpCashRegister = async (
+  id: number,
+  topUpData: TopUpRequest,
+) => {
+  try {
+    const response = await api.post(
+      `/cash-registers/${id}/balance/top-up`,
+      topUpData,
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to top up cash register."),
     );
   }
 };
