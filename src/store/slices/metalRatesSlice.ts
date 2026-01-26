@@ -33,11 +33,11 @@ const initialState: MetalRatesState = {
 // Async thunk for fetching metal rates
 export const fetchMetalRates = createAsyncThunk<
   MetalRate[],
-  void,
+  number | undefined,
   { rejectValue: string }
->("metalRates/fetchMetalRates", async (_, { rejectWithValue }) => {
+>("metalRates/fetchMetalRates", async (cashRegisterId, { rejectWithValue }) => {
   try {
-    const data = await getMetalRates();
+    const data = await getMetalRates(cashRegisterId);
     return data;
   } catch (error: unknown) {
     return rejectWithValue(getApiErrorMessage(error, "Failed to fetch tasks"));

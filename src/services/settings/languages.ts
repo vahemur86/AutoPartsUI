@@ -23,9 +23,15 @@ export const createLanguage = async (
   }
 };
 
-export const getLanguages = async () => {
+export const getLanguages = async (cashRegisterId?: number) => {
   try {
-    const response = await api.get(`/Languages`);
+    const response = await api.get(`/Languages`, {
+      headers: {
+        ...(cashRegisterId && {
+          "X-CashRegister-Id": cashRegisterId,
+        }),
+      },
+    });
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get languages."));

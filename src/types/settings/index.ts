@@ -197,3 +197,9 @@ export interface CashRegister {
   description: string;
   isActive: boolean;
 }
+
+export interface CashRegisterBalance {
+  cashRegisterId: number;
+  balance: number;
+  openSessionId: number | null;
+}
