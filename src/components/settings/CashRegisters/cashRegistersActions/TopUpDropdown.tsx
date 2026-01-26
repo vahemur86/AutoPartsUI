@@ -5,14 +5,14 @@ import { useTranslation } from "react-i18next";
 import { Button, Dropdown, TextField } from "@/ui-kit";
 
 // services
-import {
-  getCashRegisterBalance,
-  type CashRegisterBalance,
-  type TopUpRequest,
-} from "@/services/settings/cashRegisters";
+import { getCashRegisterBalance } from "@/services/settings/cashRegisters";
 
 // types
-import type { CashRegister } from "@/types/settings";
+import type {
+  CashRegister,
+  CashRegisterBalance,
+  TopUpRequest,
+} from "@/types/settings";
 
 // styles
 import styles from "./TopUpDropdown.module.css";
