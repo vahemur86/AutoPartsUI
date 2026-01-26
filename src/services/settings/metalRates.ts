@@ -15,9 +15,15 @@ export const createMetalRate = async (metalRate: Omit<MetalRate, "id">) => {
   }
 };
 
-export const getMetalRates = async () => {
+export const getMetalRates = async (cashRegisterId?: number) => {
   try {
-    const response = await api.get("/metal-rates");
+    const response = await api.get("/metal-rates", {
+      headers: {
+        ...(cashRegisterId && {
+          "X-CashRegister-Id": cashRegisterId,
+        }),
+      },
+    });
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get metal rates."));

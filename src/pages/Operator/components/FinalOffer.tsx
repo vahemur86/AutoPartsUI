@@ -8,10 +8,12 @@ import { offerIntake, rejectIntake } from "@/store/slices/operatorSlice";
 import type { IntakeResponse } from "@/types/operator";
 import styles from "../OperatorPage.module.css";
 
-export const FinalOffer: FC<{ offerPrice: number; currencyCode?: string }> = ({
-  offerPrice = 0,
-  currencyCode = "AMD",
-}) => {
+export const FinalOffer: FC<{
+  offerPrice: number;
+  currencyCode?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  userData: any;
+}> = ({ offerPrice = 0, currencyCode = "AMD", userData = {} }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake } = useAppSelector((state) => state.operator);
@@ -35,7 +37,12 @@ export const FinalOffer: FC<{ offerPrice: number; currencyCode?: string }> = ({
 
     try {
       setIsOffering(true);
-      await dispatch(offerIntake(intakeId)).unwrap();
+      await dispatch(
+        offerIntake({
+          intakeId,
+          cashRegisterId: userData?.cashRegisterId,
+        }),
+      ).unwrap();
       toast.success(t("finalOffer.success.offered"));
     } catch (error: unknown) {
       console.error("Error offering intake:", error);
@@ -47,7 +54,7 @@ export const FinalOffer: FC<{ offerPrice: number; currencyCode?: string }> = ({
     } finally {
       setIsOffering(false);
     }
-  }, [dispatch, intake, t]);
+  }, [dispatch, intake, t, userData?.cashRegisterId]);
 
   const handleReject = useCallback(async () => {
     const currentIntake: IntakeResponse | null = intake ?? null;
@@ -66,7 +73,9 @@ export const FinalOffer: FC<{ offerPrice: number; currencyCode?: string }> = ({
 
     try {
       setIsRejecting(true);
-      await dispatch(rejectIntake(intakeId)).unwrap();
+      await dispatch(
+        rejectIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
+      ).unwrap();
       toast.success(t("finalOffer.success.rejected"));
     } catch (error: unknown) {
       console.error("Error rejecting intake:", error);
@@ -78,7 +87,7 @@ export const FinalOffer: FC<{ offerPrice: number; currencyCode?: string }> = ({
     } finally {
       setIsRejecting(false);
     }
-  }, [dispatch, intake, t]);
+  }, [dispatch, intake, t, userData?.cashRegisterId]);
 
   return (
     <div className={styles.finalOfferCard}>

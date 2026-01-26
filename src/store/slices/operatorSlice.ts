@@ -10,6 +10,9 @@ import {
   recalculateIntake as recalculateIntakeFn,
 } from "@/services/operator";
 
+// stores
+import { logout } from "./authSlice";
+
 // types
 import type { Intake, IntakeResponse } from "@/types/operator";
 
@@ -30,49 +33,66 @@ const initialState: IntakeState = {
 
 export const addIntake = createAsyncThunk<
   IntakeResponse,
-  Intake,
+  { intake: Intake; cashRegisterId: number },
   { rejectValue: string }
->("intakes/addIntake", async (intake, { rejectWithValue }) => {
-  try {
-    return await createIntake(intake);
-  } catch (error: unknown) {
-    return rejectWithValue(
-      getApiErrorMessage(error, "Failed to create intake"),
-    );
-  }
-});
+>(
+  "intakes/addIntake",
+  async ({ intake, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await createIntake({ intake, cashRegisterId });
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to create intake"),
+      );
+    }
+  },
+);
 
 export const fetchIntake = createAsyncThunk<
   IntakeResponse,
-  number,
+  { intakeId: number; cashRegisterId: number },
   { rejectValue: string }
->("intakes/fetchIntake", async (id, { rejectWithValue }) => {
-  try {
-    return await getIntake(id);
-  } catch (error: unknown) {
-    return rejectWithValue(getApiErrorMessage(error, "Failed to fetch intake"));
-  }
-});
+>(
+  "intakes/fetchIntake",
+  async ({ intakeId, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await getIntake({ intakeId, cashRegisterId });
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch intake"),
+      );
+    }
+  },
+);
 
 export const offerIntake = createAsyncThunk<
   Intake,
-  number,
+  { intakeId: number; cashRegisterId: number },
   { rejectValue: string }
->("intakes/offerIntake", async (id, { rejectWithValue }) => {
-  try {
-    return await offerIntakeFn(id);
-  } catch (error: unknown) {
-    return rejectWithValue(getApiErrorMessage(error, "Failed to offer intake"));
-  }
-});
+>(
+  "intakes/offerIntake",
+  async ({ intakeId, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await offerIntakeFn({ intakeId, cashRegisterId });
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to offer intake"),
+      );
+    }
+  },
+);
 
 export const acceptIntake = createAsyncThunk<
   Intake,
-  number,
+  {
+    intakeId: number;
+    cashRegisterId: number;
+    paymentType?: number;
+  },
   { rejectValue: string }
->("intakes/acceptIntake", async (id, { rejectWithValue }) => {
+>("intakes/acceptIntake", async (payload, { rejectWithValue }) => {
   try {
-    return await acceptIntakeFn(id);
+    return await acceptIntakeFn(payload);
   } catch (error: unknown) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to accept intake"),
@@ -82,17 +102,20 @@ export const acceptIntake = createAsyncThunk<
 
 export const rejectIntake = createAsyncThunk<
   Intake,
-  number,
+  { intakeId: number; cashRegisterId: number },
   { rejectValue: string }
->("intakes/rejectIntake", async (id, { rejectWithValue }) => {
-  try {
-    return await rejectIntakeFn(id);
-  } catch (error: unknown) {
-    return rejectWithValue(
-      getApiErrorMessage(error, "Failed to reject intake"),
-    );
-  }
-});
+>(
+  "intakes/rejectIntake",
+  async ({ intakeId, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await rejectIntakeFn({ intakeId, cashRegisterId });
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to reject intake"),
+      );
+    }
+  },
+);
 
 export const recalculateIntake = createAsyncThunk<
   Intake,
@@ -115,8 +138,17 @@ const operatorSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearIntakeState: (state) => {
+      state.intake = null;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
+    builder.addCase(logout, (state) => {
+      state.intake = null;
+      state.error = null;
+    });
+
     builder
       .addCase(fetchIntake.pending, (state) => {
         state.isLoading = true;
@@ -145,5 +177,5 @@ const operatorSlice = createSlice({
   },
 });
 
-export const { clearError } = operatorSlice.actions;
+export const { clearError, clearIntakeState } = operatorSlice.actions;
 export default operatorSlice.reducer;

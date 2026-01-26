@@ -13,7 +13,7 @@ const MetalPrice = ({ name, price, source, iconColor }: MetalPriceProps) => (
     <div className={`${styles.metalIcon} ${styles[iconColor]}`} />
     <div className={styles.metalInfo}>
       <span className={styles.metalName}>{name}</span>
-      <span className={styles.metalPrice}>{price} / kg</span>
+      <span className={styles.metalPrice}>{price} / g</span>
       <span className={styles.metalSource}>{source}</span>
     </div>
   </div>
