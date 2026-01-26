@@ -39,13 +39,10 @@ import {
 import { fetchShops } from "@/store/slices/shopsSlice";
 
 // services
-import {
-  topUpCashRegister as topUpCashRegisterService,
-  type TopUpRequest,
-} from "@/services/settings/cashRegisters";
+import { topUpCashRegister as topUpCashRegisterService } from "@/services/settings/cashRegisters";
 
 // types
-import type { CashRegister } from "@/types/settings";
+import type { CashRegister, TopUpRequest } from "@/types/settings";
 
 // styles
 import styles from "./CashRegisters.module.css";
@@ -271,4 +268,3 @@ export const CashRegisters: FC = () => {
     </div>
   );
 };
-
