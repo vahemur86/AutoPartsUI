@@ -189,3 +189,11 @@ export interface CustomerType {
   bonusPercent: number;
   isActive: boolean;
 }
+
+export interface CashRegister {
+  id: number;
+  shopId: number;
+  code: string;
+  description: string;
+  isActive: boolean;
+}

@@ -12,6 +12,7 @@ import catalystBucketsReducer from "./slices/catalystBucketsSlice";
 import exchangeRatesReducer from "./slices/exchangeRatesSlice";
 import languagesReducer from "./slices/languagesSlice";
 import customerTypesReducer from "./slices/customerTypesSlice";
+import cashRegistersReducer from "./slices/cashRegistersSlice";
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
     exchangeRates: exchangeRatesReducer,
     languages: languagesReducer,
     customerTypes: customerTypesReducer,
+    cashRegisters: cashRegistersReducer,
   },
 });
 

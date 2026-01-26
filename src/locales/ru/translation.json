@@ -55,7 +55,8 @@
       "metalRates": "Металлические ставки",
       "catalystBuckets": "Катализаторные баки",
       "customerTypes": "Типы клиентов",
-      "exchangeRates": "Курсы валют"
+      "exchangeRates": "Курсы валют",
+      "cashRegisters": "Кассовые аппараты"
     }
   },
   "exchangeRates": {
@@ -352,6 +353,38 @@
     "error": {
       "failedToCreate": "Не удалось создать тип клиента",
       "failedToUpdate": "Не удалось обновить тип клиента"
+    }
+  },
+  "cashRegisters": {
+    "addCashRegister": "Добавить кассовый аппарат",
+    "editCashRegister": "Редактировать кассовый аппарат",
+    "form": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "description": "Описание",
+      "enterDescription": "Введите описание..."
+    },
+    "columns": {
+      "code": "Код",
+      "description": "Описание",
+      "shopId": "ID магазина",
+      "status": "Статус"
+    },
+    "success": {
+      "created": "Кассовый аппарат успешно создан",
+      "updated": "Кассовый аппарат успешно обновлен",
+      "deleted": "Кассовый аппарат успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать кассовый аппарат",
+      "failedToUpdate": "Не удалось обновить кассовый аппарат",
+      "failedToDelete": "Не удалось удалить кассовый аппарат"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить кассовый аппарат",
+      "deleteDescription": "Вы уверены, что хотите удалить кассовый аппарат \"{{name}}\"? Это действие нельзя отменить."
     }
   },
   "products": {

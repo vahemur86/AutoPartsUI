@@ -55,7 +55,8 @@
       "customerTypes": "Հաճախորդների տեսակներ",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կատալիզատորի բաքեր",
-      "exchangeRates": "Փոխարժեքներ"
+      "exchangeRates": "Փոխարժեքներ",
+      "cashRegisters": "Դրամարկղեր"
     }
   },
   "exchangeRates": {
@@ -352,6 +353,38 @@
     "error": {
       "failedToCreate": "Հաճախորդի տեսակի ստեղծումը ձախողվեց",
       "failedToUpdate": "Հաճախորդի տեսակի թարմացումը ձախողվեց"
+    }
+  },
+  "cashRegisters": {
+    "addCashRegister": "Ավելացնել դրամարկղ",
+    "editCashRegister": "Խմբագրել դրամարկղը",
+    "form": {
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութ",
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդ...",
+      "description": "Նկարագրություն",
+      "enterDescription": "Մուտքագրեք նկարագրություն..."
+    },
+    "columns": {
+      "code": "Կոդ",
+      "description": "Նկարագրություն",
+      "shopId": "Խանութի ID",
+      "status": "Կարգավիճակ"
+    },
+    "success": {
+      "created": "Դրամարկղը հաջողությամբ ստեղծվեց",
+      "updated": "Դրամարկղը հաջողությամբ թարմացվեց",
+      "deleted": "Դրամարկղը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Դրամարկղի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Դրամարկղի թարմացումը ձախողվեց",
+      "failedToDelete": "Դրամարկղի ջնջումը ձախողվեց"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել դրամարկղը",
+      "deleteDescription": "Դուք համոզված եք, որ ցանկանում եք ջնջել դրամարկղը \"{{name}}\"? Այս գործողությունը չի կարող հետարկվել:"
     }
   },
   "products": {

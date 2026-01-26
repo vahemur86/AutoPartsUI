@@ -11,7 +11,6 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   background-color: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .table {
@@ -85,7 +84,7 @@
 .tableFooter {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   gap: 12px;
   padding: 4px 12px;
   color: var(--color-white);
@@ -96,7 +95,7 @@
 .footerLeft {
   display: flex;
   align-items: center;
-  flex: 1; 
+  flex: 1;
 }
 
 .pagination {

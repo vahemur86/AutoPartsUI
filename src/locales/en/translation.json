@@ -55,7 +55,8 @@
       "metalRates": "Metal Rates",
       "catalystBuckets": "Catalyst Buckets",
       "customerTypes": "Customer Types",
-      "exchangeRates": "Exchange Rates"
+      "exchangeRates": "Exchange Rates",
+      "cashRegisters": "Cash Registers"
     }
   },
   "exchangeRates": {
@@ -352,6 +353,38 @@
     "error": {
       "failedToCreate": "Failed to create customer type",
       "failedToUpdate": "Failed to update customer type"
+    }
+  },
+  "cashRegisters": {
+    "addCashRegister": "Add Cash Register",
+    "editCashRegister": "Edit Cash Register",
+    "form": {
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "code": "Code",
+      "enterCode": "Enter code...",
+      "description": "Description",
+      "enterDescription": "Enter description..."
+    },
+    "columns": {
+      "code": "Code",
+      "description": "Description",
+      "shopId": "Shop ID",
+      "status": "Status"
+    },
+    "success": {
+      "created": "Cash register created successfully",
+      "updated": "Cash register updated successfully",
+      "deleted": "Cash register deleted successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create cash register",
+      "failedToUpdate": "Failed to update cash register",
+      "failedToDelete": "Failed to delete cash register"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete Cash Register",
+      "deleteDescription": "Are you sure you want to delete cash register \"{{name}}\"? This action cannot be undone."
     }
   },
   "products": {

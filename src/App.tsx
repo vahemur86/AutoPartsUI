@@ -31,6 +31,7 @@ import { MetalRates } from "@/components/settings/MetalRates";
 import { CatalystBuckets } from "@/components/settings/CatalystBuckets";
 import { CustomerTypes } from "@/components/settings/CustomerTypes";
 import { ExchangeRates } from "@/components/settings/ExchangeRates";
+import { CashRegisters } from "@/components/settings/CashRegisters";
 
 // Stores
 import { store } from "@/store/store";
@@ -100,6 +101,7 @@ export const App = () => {
                 <Route path="catalyst-buckets" element={<CatalystBuckets />} />
                 <Route path="exchange-rates" element={<ExchangeRates />} />
                 <Route path="customer-types" element={<CustomerTypes />} />
+                <Route path="cash-registers" element={<CashRegisters />} />
               </Route>
 
               <Route path="warehouses" element={<Warehouses />} />

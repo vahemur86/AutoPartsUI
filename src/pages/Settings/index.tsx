@@ -16,6 +16,7 @@ import {
   FlaskConical,
   Users,
   Currency,
+  CreditCard,
 } from "lucide-react";
 
 // components
@@ -112,6 +113,12 @@ export const Settings = () => {
       path: "/exchange-rates",
       label: t("settings.navigation.exchangeRates"),
       icon: Currency,
+      showCheckmark: true,
+    },
+    {
+      path: "/cash-registers",
+      label: t("settings.navigation.cashRegisters"),
+      icon: CreditCard,
       showCheckmark: true,
     },
   ];
