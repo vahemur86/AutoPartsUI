@@ -29,7 +29,10 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page",
-    "of": "of"
+    "of": "of",
+    "areYouSure": "Are you sure you want to proceed?",
+    "loading": "Loading...",
+    "select": "Select"
   },
   "currencies": {
     "USD": "US Dollar",
@@ -311,7 +314,7 @@
       "addNewBucket": "Add new catalyst bucket"
     },
     "searchBucket": "Search by code",
-    "searchGroup": "Search group code",
+    "searchGroup": "Search by group code",
     "messages": {
       "searchToSeeResults": "Please search by code to see results"
     },
@@ -358,6 +361,7 @@
   "cashRegisters": {
     "addCashRegister": "Add Cash Register",
     "editCashRegister": "Edit Cash Register",
+    "fetchingBalance": "Fetching balance...",
     "form": {
       "shop": "Shop",
       "selectShop": "Select shop",
@@ -502,14 +506,17 @@
       "regular": "Regular"
     },
     "validation": {
-      "enterPhoneNumber": "Please enter a phone number"
+      "enterPhoneNumber": "Please enter a phone number",
+      "enterCustomerPhone": "Please enter customer phone number",
+      "invalidPhone": "Invalid phone number"
     },
     "success": {
       "customerFound": "Customer found",
       "customerAccepted": "Customer accepted"
     },
     "error": {
-      "failedToSearch": "Failed to search customer"
+      "failedToSearch": "Failed to search customer",
+      "missingData": "Missing required data"
     }
   },
   "liveMarketPrices": {
@@ -561,7 +568,16 @@
   },
   "operatorPage": {
     "title": "Operator Terminal",
-    "languageLoading": "Loading languages..."
+    "languageLoading": "Loading languages...",
+    "openSession": "Open Session",
+    "closeSession": "Close Session",
+    "cashAmount": "Cash in Cash Register",
+    "cashAmountPlaceholder": "Enter current cash amount",
+    "success": {
+      "sessionOpened": "Session opened successfully",
+      "sessionClosed": "Session closed successfully",
+      "intakeCreated": "Intake created successfully"
+    }
   },
   "customers": {
     "editCustomer": "Edit Customer",

@@ -29,7 +29,10 @@
     "previous": "Նախորդ",
     "next": "Հաջորդ",
     "page": "Էջ",
-    "of": "ից"
+    "of": "ից",
+    "areYouSure": "Համոզվա՞ծ եք, որ ցանկանում եք շարունակել:",
+    "loading": "Բեռնվում է...",
+    "select": "Ընտրեք"
   },
   "currencies": {
     "USD": "ԱՄՆ դոլար",
@@ -311,7 +314,7 @@
       "addNewBucket": "Ավելացնել նոր կատալիզատորի բաք"
     },
     "searchBucket": "Որոնել ըստ կոդի",
-    "searchGroup": "Որոնել խմբային կոդը",
+    "searchGroup": "Որոնել ըստ խմբային կոդի",
     "messages": {
       "searchToSeeResults": "Խնդրում ենք որոնել ըստ կոդի՝ արդյունքները տեսնելու համար"
     },
@@ -358,6 +361,7 @@
   "cashRegisters": {
     "addCashRegister": "Ավելացնել դրամարկղ",
     "editCashRegister": "Խմբագրել դրամարկղը",
+    "fetchingBalance": "Բեռնվում է...",
     "form": {
       "shop": "Խանութ",
       "selectShop": "Ընտրեք խանութ",
@@ -502,14 +506,17 @@
       "regular": "Սովորական"
     },
     "validation": {
-      "enterPhoneNumber": "Խնդրում ենք մուտքագրել հեռախոսահամար"
+      "enterPhoneNumber": "Խնդրում ենք մուտքագրել հեռախոսահամար",
+      "enterCustomerPhone": "Խնդրում ենք մուտքագրել հաճախորդի հեռախոսահամարը",
+      "invalidPhone": "Անվավեր հեռախոսահամար"
     },
     "success": {
       "customerFound": "Հաճախորդը գտնված է",
       "customerAccepted": "Հաճախորդը ընդունված է"
     },
     "error": {
-      "failedToSearch": "Հաճախորդ որոնելը ձախողվեց"
+      "failedToSearch": "Հաճախորդ որոնելը ձախողվեց",
+      "missingData": "Տվյալները բացակայում են"
     }
   },
   "liveMarketPrices": {
@@ -561,7 +568,16 @@
   },
   "operatorPage": {
     "title": "Օպերատորի տերմինալ",
-    "languageLoading": "Լեզուների բեռնում..."
+    "languageLoading": "Լեզուների բեռնում...",
+    "openSession": "Բացել հերթափոխը",
+    "closeSession": "Փակել հերթափոխը",
+    "cashAmount": "Կանխիկը դրամարկղում",
+    "cashAmountPlaceholder": "Մուտքագրեք կանխիկ գումարը",
+    "success": {
+      "sessionOpened": "Հերթափոխը հաջողությամբ բացվեց",
+      "sessionClosed": "Հերթափոխը հաջողությամբ փակվեց",
+      "intakeCreated": "Հարցումը հաջողությամբ ստեղծվեց"
+    }
   },
   "customers": {
     "createOrGet": "Գտնել հաճախորդ",

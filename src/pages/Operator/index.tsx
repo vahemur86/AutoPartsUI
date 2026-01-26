@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -8,19 +8,17 @@ import i18n from "i18next";
 // icons
 import { LogOut, Banknote, Eye, EyeOff } from "lucide-react";
 
-// services
-import { createIntake } from "@/services/operator";
-
 // store
 import { logout } from "@/store/slices/authSlice";
 import {
-  fetchMetalRates,
+  fetchActiveMetalRate,
   clearError as clearMetalError,
 } from "@/store/slices/metalRatesSlice";
 import {
   fetchIntake,
   clearError as clearIntakeError,
   clearIntakeState,
+  addIntake,
 } from "@/store/slices/operatorSlice";
 import {
   fetchLanguages,
@@ -34,7 +32,7 @@ import {
 } from "@/store/slices/cashRegistersSlice";
 
 // ui-kit
-import { Button, Select, TextField } from "@/ui-kit";
+import { Button, Select, TextField, ConfirmationModal } from "@/ui-kit";
 
 // components
 import { FinalOffer } from "./components/FinalOffer";
@@ -55,7 +53,7 @@ export const OperatorPage = () => {
   const navigate = useNavigate();
 
   // Redux Selectors
-  const { metalRates, error: metalRatesError } = useAppSelector(
+  const { activeMetalRate, error: metalRatesError } = useAppSelector(
     (state) => state.metalRates,
   );
   const { intake, error: intakeError } = useAppSelector(
@@ -81,6 +79,9 @@ export const OperatorPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
   const [showCashAmount, setShowCashAmount] = useState(false);
+
+  // Modal State
+  const [isCloseSessionModalOpen, setIsCloseSessionModalOpen] = useState(false);
 
   const isSessionOpen = !!sessionId;
 
@@ -143,11 +144,6 @@ export const OperatorPage = () => {
     isNumberValid(formData.rhodiumPrice) &&
     isPhoneValid;
 
-  const metalRate = useMemo(
-    () => metalRates.find((rate) => rate.isActive),
-    [metalRates],
-  );
-
   useEffect(() => {
     const localeStorageData = JSON.parse(
       localStorage.getItem("user_data") ?? "{}",
@@ -155,28 +151,24 @@ export const OperatorPage = () => {
     setUserData(localeStorageData);
 
     if (localeStorageData?.cashRegisterId) {
-      dispatch(fetchMetalRates(localeStorageData.cashRegisterId));
+      dispatch(
+        fetchActiveMetalRate({
+          cashRegisterId: localeStorageData.cashRegisterId,
+          currencyCode: "USD",
+        }),
+      );
       dispatch(fetchLanguages(localeStorageData.cashRegisterId));
     }
   }, [dispatch]);
 
-  // AUTO-HIDE CASH AMOUNT AFTER 10 SECONDS
   useEffect(() => {
     let timer: NodeJS.Timeout;
-
     if (showCashAmount) {
-      // Fetch balance when shown
       if (userData?.cashRegisterId) {
         dispatch(fetchCashRegisterBalance(userData.cashRegisterId));
       }
-
-      // Set the 10-second auto-hide timer
-      timer = setTimeout(() => {
-        setShowCashAmount(false);
-      }, 10000);
+      timer = setTimeout(() => setShowCashAmount(false), 10000);
     }
-
-    // Cleanup timer if the user manually closes it or unmounts
     return () => clearTimeout(timer);
   }, [showCashAmount, dispatch, userData?.cashRegisterId]);
 
@@ -186,29 +178,29 @@ export const OperatorPage = () => {
 
     setIsSubmitting(true);
     try {
-      const { shopId, cashRegisterId } = userData ?? {};
-      const response = await createIntake({
-        intake: {
-          currencyCode: "USD",
-          ptWeight: Number(formData.platinumPrice),
-          pdWeight: Number(formData.palladiumPrice),
-          rhWeight: Number(formData.rhodiumPrice),
-          powderWeightTotal: Number(formData.powderWeight),
-          customerPhone: formData.customerPhone,
-          shopId,
-        },
-        cashRegisterId,
-      });
+      const { cashRegisterId } = userData ?? {};
 
-      dispatch(
-        fetchIntake({
-          intakeId: response.id,
+      const response = await dispatch(
+        addIntake({
+          intake: {
+            currencyCode: "USD",
+            ptWeight: Number(formData.platinumPrice),
+            pdWeight: Number(formData.palladiumPrice),
+            rhWeight: Number(formData.rhodiumPrice),
+            powderWeightTotal: Number(formData.powderWeight),
+            customerPhone: formData.customerPhone,
+            shopId: userData?.shopId,
+          },
           cashRegisterId,
         }),
-      );
+      ).unwrap();
+
+      toast.success(t("operatorPage.success.intakeCreated"));
+
+      dispatch(fetchIntake({ intakeId: response.id, cashRegisterId }));
       setHasTriedSubmit(false);
     } catch (error) {
-      console.error("Failed to submit intake:", error);
+      console.error("Submission failed:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -221,17 +213,28 @@ export const OperatorPage = () => {
   };
 
   const handleToggleSession = useCallback(
-    (actionType: "open" | "close") => {
+    async (actionType: "open" | "close") => {
       const cashRegisterId = userData?.cashRegisterId;
       if (!cashRegisterId) return;
 
       if (actionType === "open") {
-        dispatch(openSession(cashRegisterId));
+        try {
+          await dispatch(openSession(cashRegisterId)).unwrap();
+          toast.success(t("operatorPage.success.sessionOpened"));
+        } catch {
+          // Handled by Global Error Watcher
+        }
       } else if (sessionId) {
-        dispatch(closeSession({ sessionId, cashRegisterId }));
+        try {
+          await dispatch(closeSession({ sessionId, cashRegisterId })).unwrap();
+          toast.success(t("operatorPage.success.sessionClosed"));
+          setIsCloseSessionModalOpen(false);
+        } catch {
+          // Handled by Global Error Watcher
+        }
       }
     },
-    [dispatch, sessionId, userData?.cashRegisterId],
+    [dispatch, sessionId, userData?.cashRegisterId, t],
   );
 
   const handleLanguageChange = (
@@ -256,34 +259,34 @@ export const OperatorPage = () => {
       <div className={styles.headerSection}>
         <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
 
-        <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
-          <div style={{ display: "flex", gap: "10px" }}>
+        <div className={styles.headerActions}>
+          <div className={styles.sessionGroup}>
             <Button
               onClick={() => handleToggleSession("open")}
-              style={{
-                backgroundColor: isSessionOpen ? "#22c55e" : "transparent",
-                color: isSessionOpen ? "white" : "#22c55e",
-                border: "1px solid #22c55e",
-              }}
+              className={
+                isSessionOpen
+                  ? styles.sessionBtnActive
+                  : styles.sessionBtnInactive
+              }
               disabled={isSessionOpen}
             >
-              {t("operatorPage.openSession", "Open Session")}
+              {t("operatorPage.openSession")}
             </Button>
 
             <Button
-              onClick={() => handleToggleSession("close")}
-              style={{
-                backgroundColor: !isSessionOpen ? "#ef4444" : "transparent",
-                color: !isSessionOpen ? "white" : "#ef4444",
-                border: "1px solid #ef4444",
-              }}
+              onClick={() => setIsCloseSessionModalOpen(true)}
+              className={
+                !isSessionOpen
+                  ? styles.sessionBtnActiveClose
+                  : styles.sessionBtnInactiveClose
+              }
               disabled={!isSessionOpen}
             >
-              {t("operatorPage.closeSession", "Close Session")}
+              {t("operatorPage.closeSession")}
             </Button>
           </div>
 
-          <div style={{ width: "160px" }}>
+          <div className={styles.languageSelectWrapper}>
             <Select
               placeholder={t("common.select")}
               onChange={handleLanguageChange}
@@ -299,7 +302,12 @@ export const OperatorPage = () => {
             </Select>
           </div>
 
-          <Button variant="danger" size="medium" onClick={handleLogout}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={handleLogout}
+            className={styles.logoutBtn}
+          >
             <LogOut size={16} />
             {t("header.logout")}
           </Button>
@@ -314,11 +322,11 @@ export const OperatorPage = () => {
             error={hasTriedSubmit && !isNumberValid(formData.powderWeight)}
           />
           <LiveMarketPrices
-            ptPricePerGram={metalRate?.ptPricePerGram}
-            pdPricePerGram={metalRate?.pdPricePerGram}
-            rhPricePerGram={metalRate?.rhPricePerGram}
-            currencyCode={metalRate?.currencyCode}
-            updatedAt={metalRate?.effectiveFrom}
+            ptPricePerGram={activeMetalRate?.ptPricePerGram}
+            pdPricePerGram={activeMetalRate?.pdPricePerGram}
+            rhPricePerGram={activeMetalRate?.rhPricePerGram}
+            currencyCode={activeMetalRate?.currencyCode}
+            updatedAt={activeMetalRate?.effectiveFrom}
           />
         </div>
 
@@ -335,6 +343,7 @@ export const OperatorPage = () => {
             offerPrice={intake ? intake.offerPrice : 0}
             currencyCode={intake?.currencyCode}
             userData={userData}
+            onReset={handleResetForm}
           />
         </div>
 
@@ -352,12 +361,9 @@ export const OperatorPage = () => {
                 <Banknote size={20} />
               </div>
               <TextField
-                label={t("operatorPage.cashAmount", "Cash in Cash Register")}
+                label={t("operatorPage.cashAmount")}
                 type={showCashAmount ? "text" : "password"}
-                placeholder={t(
-                  "operatorPage.cashAmountPlaceholder",
-                  "Enter current cash amount",
-                )}
+                placeholder={t("operatorPage.cashAmountPlaceholder")}
                 value={displayBalance}
                 className={styles.textField}
                 style={{ paddingLeft: "44px" }}
@@ -376,6 +382,19 @@ export const OperatorPage = () => {
           </div>
         </div>
       </div>
+
+      {isCloseSessionModalOpen && (
+        <ConfirmationModal
+          open={isCloseSessionModalOpen}
+          onOpenChange={setIsCloseSessionModalOpen}
+          title={t("operatorPage.closeSession")}
+          description={t("common.areYouSure")}
+          confirmText={isBalanceLoading ? t("common.loading") : t("common.yes")}
+          cancelText={t("common.cancel")}
+          onConfirm={() => handleToggleSession("close")}
+          onCancel={() => setIsCloseSessionModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

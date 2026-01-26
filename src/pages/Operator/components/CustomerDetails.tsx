@@ -1,9 +1,15 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import {
+  parsePhoneNumberFromString,
+  getCountries,
+  getCountryCallingCode,
+  type CountryCode,
+} from "libphonenumber-js";
 
 // ui-kit
-import { TextField, Button } from "@/ui-kit";
+import { TextField, Button, Select } from "@/ui-kit";
 
 // icons
 import { Search, User, Check } from "lucide-react";
@@ -26,20 +32,75 @@ interface CustomerDetailsProps {
   onSuccess?: () => void;
 }
 
+const getFlagEmoji = (countryCode: string) =>
+  countryCode
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
+
 export const CustomerDetails = ({
-  customerPhone,
+  customerPhone = "",
   onPhoneChange,
   phoneError,
   onSuccess,
 }: CustomerDetailsProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake, isLoading } = useAppSelector((state) => state.operator);
+
+  const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [isAccepting, setIsAccepting] = useState(false);
+
+  const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
+
+  const allCountryOptions = useMemo(() => {
+    const regionNames = new Intl.DisplayNames([i18n.language], {
+      type: "region",
+    });
+
+    const list = getCountries().map((country) => ({
+      code: country,
+      label: `${getFlagEmoji(country)} +${getCountryCallingCode(country)}`,
+      dialCode: `+${getCountryCallingCode(country)}`,
+      name: regionNames.of(country) || country,
+    }));
+
+    return list.sort((a, b) => {
+      if (a.code === "AM") return -1;
+      if (b.code === "AM") return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [i18n.language]);
+
+  const dialCode = useMemo(
+    () =>
+      allCountryOptions.find((c) => c.code === selectedCountry)?.dialCode || "",
+    [selectedCountry, allCountryOptions],
+  );
+
+  const getIsValid = useCallback(
+    (phone: string) => {
+      const fullNumber = phone.startsWith("+") ? phone : `${dialCode}${phone}`;
+      const phoneNumber = parsePhoneNumberFromString(
+        fullNumber,
+        selectedCountry,
+      );
+      return phoneNumber?.isValid() ?? false;
+    },
+    [dialCode, selectedCountry],
+  );
+
+  const isPhoneValid = getIsValid(customerPhone);
 
   const handleSearch = useCallback(async () => {
     if (!customerPhone?.trim()) {
+      setLocalHasTriedAccept(true);
       toast.error(t("customerDetails.validation.enterCustomerPhone"));
+      return;
+    }
+
+    if (!isPhoneValid) {
+      setLocalHasTriedAccept(true);
+      toast.error(t("customerDetails.validation.invalidPhone"));
       return;
     }
 
@@ -59,23 +120,23 @@ export const CustomerDetails = ({
       ).unwrap();
       toast.success(t("customerDetails.success.customerFound"));
     } catch (error: unknown) {
-      const errorMessage =
+      toast.error(
         typeof error === "string"
           ? error
-          : t("customerDetails.error.failedToSearch");
-      toast.error(errorMessage);
+          : t("customerDetails.error.failedToSearch"),
+      );
     }
-  }, [customerPhone, t, intake?.id, dispatch]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") handleSearch();
-    },
-    [handleSearch],
-  );
+  }, [customerPhone, isPhoneValid, t, intake?.id, dispatch]);
 
   const handleAccept = useCallback(async () => {
+    setLocalHasTriedAccept(true);
+
     if (!intake?.id) return;
+
+    if (!isPhoneValid) {
+      toast.error(t("customerDetails.validation.invalidPhone"));
+      return;
+    }
 
     try {
       setIsAccepting(true);
@@ -83,30 +144,30 @@ export const CustomerDetails = ({
       const userData = rawData ? JSON.parse(rawData) : {};
       const cashRegisterId = userData.cashRegisterId;
 
-      if (!cashRegisterId) {
-        toast.error(t("customerDetails.error.noCashRegister"));
-        return;
-      }
-
       await dispatch(
         acceptIntakeThunk({ intakeId: intake.id, cashRegisterId }),
       ).unwrap();
-
       toast.success(t("customerDetails.success.customerAccepted"));
-
-      // Refresh balance and clear the page
       dispatch(fetchCashRegisterBalance(cashRegisterId));
       onSuccess?.();
+      setLocalHasTriedAccept(false);
     } catch (error: unknown) {
-      const errorMessage =
+      toast.error(
         typeof error === "string"
           ? error
-          : t("customerDetails.error.failedToAccept");
-      toast.error(errorMessage);
+          : t("customerDetails.error.failedToAccept"),
+      );
     } finally {
       setIsAccepting(false);
     }
-  }, [dispatch, intake, t, onSuccess]);
+  }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
+
+  const handleInternalPhoneChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setLocalHasTriedAccept(false);
+    onPhoneChange?.(e.target.value);
+  };
 
   return (
     <div className={styles.customerCard}>
@@ -117,22 +178,50 @@ export const CustomerDetails = ({
       <div className={styles.divider} />
 
       <div className={styles.customerContent}>
-        <TextField
-          label={t("customerDetails.phone")}
-          placeholder={t("customerDetails.phonePlaceholder")}
-          value={customerPhone}
-          onChange={(e) => onPhoneChange?.(e.target.value)}
-          onKeyDown={handleKeyDown}
-          error={phoneError}
-          disabled={isLoading || isAccepting}
-          icon={
-            <Search
-              size={16}
-              onClick={handleSearch}
-              style={{ cursor: "pointer" }}
-            />
-          }
-        />
+        <div className={styles.phoneSection}>
+          <span className={styles.phoneLabel}>
+            {t("customerDetails.phone")}
+          </span>
+
+          <div className={styles.phoneInputRow}>
+            <div className={styles.countrySelectWrapper}>
+              <Select
+                label={undefined}
+                value={selectedCountry}
+                onChange={(e) => {
+                  setSelectedCountry(e.target.value as CountryCode);
+                  setLocalHasTriedAccept(false);
+                }}
+                containerClassName={styles.countrySelectInner}
+              >
+                {allCountryOptions.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className={styles.phoneFieldWrapper}>
+              <TextField
+                label={undefined}
+                placeholder="91 123456"
+                value={customerPhone}
+                onChange={handleInternalPhoneChange}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                error={phoneError || (localHasTriedAccept && !isPhoneValid)}
+                disabled={isLoading || isAccepting}
+                icon={
+                  <Search
+                    size={16}
+                    onClick={handleSearch}
+                    style={{ cursor: "pointer" }}
+                  />
+                }
+              />
+            </div>
+          </div>
+        </div>
 
         {intake && (
           <div className={styles.customerProfile}>
