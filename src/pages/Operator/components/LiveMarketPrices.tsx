@@ -84,19 +84,19 @@ export const LiveMarketPrices = ({
           name={t("liveMarketPrices.platinum")}
           price={formatPrice(ptPricePerGram)}
           source={t("liveMarketPrices.source")}
-          iconColor="platinum" // [!code hl]
+          iconColor="platinum"
         />
         <MetalPrice
           name={t("liveMarketPrices.palladium")}
           price={formatPrice(pdPricePerGram)}
           source={t("liveMarketPrices.source")}
-          iconColor="palladium" // [!code hl]
+          iconColor="palladium"
         />
         <MetalPrice
           name={t("liveMarketPrices.rhodium")}
           price={formatPrice(rhPricePerGram)}
           source={t("liveMarketPrices.source")}
-          iconColor="rhodium" // [!code hl]
+          iconColor="rhodium"
         />
       </div>
 
