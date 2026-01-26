@@ -56,3 +56,43 @@ export const deleteCashRegister = async (id: number) => {
   }
 };
 
+export interface CashRegisterBalance {
+  cashRegisterId: number;
+  balance: number;
+  openSessionId: number | null;
+}
+
+export interface TopUpRequest {
+  amount: number;
+  currencyCode: string;
+  comment: string;
+}
+
+export const getCashRegisterBalance = async (id: number) => {
+  try {
+    const response = await api.get(`/cash-registers/${id}/balance`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get cash register balance."),
+    );
+  }
+};
+
+export const topUpCashRegister = async (
+  id: number,
+  topUpData: TopUpRequest,
+) => {
+  try {
+    const response = await api.post(
+      `/cash-registers/${id}/balance/top-up`,
+      topUpData,
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to top up cash register."),
+    );
+  }
+};
+

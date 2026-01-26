@@ -23,6 +23,7 @@ import {
   CashRegisterDropdown,
   type CashRegisterForm,
 } from "./cashRegistersActions/CashRegisterDropdown";
+import { TopUpDropdown } from "./cashRegistersActions/TopUpDropdown";
 
 // columns
 import { getCashRegisterColumns } from "./columns";
@@ -37,6 +38,12 @@ import {
 } from "@/store/slices/cashRegistersSlice";
 import { fetchShops } from "@/store/slices/shopsSlice";
 
+// services
+import {
+  topUpCashRegister as topUpCashRegisterService,
+  type TopUpRequest,
+} from "@/services/settings/cashRegisters";
+
 // types
 import type { CashRegister } from "@/types/settings";
 
@@ -50,13 +57,17 @@ export const CashRegisters: FC = () => {
   const { shops } = useAppSelector((state) => state.shops);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isTopUpDropdownOpen, setIsTopUpDropdownOpen] = useState(false);
   const [activeCashRegister, setActiveCashRegister] =
+    useState<CashRegister | null>(null);
+  const [topUpCashRegister, setTopUpCashRegister] =
     useState<CashRegister | null>(null);
   const [deletingCashRegister, setDeletingCashRegister] =
     useState<CashRegister | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
   const anchorRef = useRef<HTMLElement | null>(null);
+  const topUpAnchorRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     dispatch(fetchShops());
@@ -77,6 +88,15 @@ export const CashRegisters: FC = () => {
       anchorRef.current = e.currentTarget;
       setActiveCashRegister(cashRegister);
       setIsDropdownOpen(true);
+    },
+    [],
+  );
+
+  const handleOpenTopUp = useCallback(
+    (cashRegister: CashRegister, e: React.MouseEvent<HTMLElement>) => {
+      topUpAnchorRef.current = e.currentTarget;
+      setTopUpCashRegister(cashRegister);
+      setIsTopUpDropdownOpen(true);
     },
     [],
   );
@@ -140,13 +160,38 @@ export const CashRegisters: FC = () => {
     [dispatch, t],
   );
 
+  const handleTopUp = useCallback(
+    async (data: TopUpRequest) => {
+      if (!topUpCashRegister) return;
+
+      try {
+        setIsMutating(true);
+        await topUpCashRegisterService(topUpCashRegister.id, data);
+        toast.success(t("cashRegisters.topUp.success"));
+        setIsTopUpDropdownOpen(false);
+        setTopUpCashRegister(null);
+      } catch (error: unknown) {
+        console.error("Failed to top up cash register:", error);
+        const errorMessage = getApiErrorMessage(
+          error,
+          t("cashRegisters.topUp.error"),
+        );
+        toast.error(errorMessage);
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [topUpCashRegister, t],
+  );
+
   const columns = useMemo(
     () =>
       getCashRegisterColumns({
         onEdit: handleOpenEdit,
+        onTopUp: handleOpenTopUp,
         onDelete: (cashRegister) => setDeletingCashRegister(cashRegister),
       }),
-    [handleOpenEdit],
+    [handleOpenEdit, handleOpenTopUp],
   );
 
   return (
@@ -190,6 +235,17 @@ export const CashRegisters: FC = () => {
         onOpenChange={setIsDropdownOpen}
         onSave={handleSaveCashRegister}
       />
+
+      {topUpCashRegister && (
+        <TopUpDropdown
+          open={isTopUpDropdownOpen}
+          anchorRef={topUpAnchorRef}
+          cashRegister={topUpCashRegister}
+          isLoading={isMutating}
+          onOpenChange={setIsTopUpDropdownOpen}
+          onTopUp={handleTopUp}
+        />
+      )}
 
       {!!deletingCashRegister && (
         <ConfirmationModal

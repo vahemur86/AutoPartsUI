@@ -16,12 +16,17 @@ export const getCashRegisterColumns = (
   {
     onEdit,
     onDelete,
+    onTopUp,
   }: {
     onEdit: (
       cashRegister: CashRegister,
       e: React.MouseEvent<HTMLElement>,
     ) => void;
     onDelete: (cashRegister: CashRegister) => void;
+    onTopUp: (
+      cashRegister: CashRegister,
+      e: React.MouseEvent<HTMLElement>,
+    ) => void;
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<CashRegister, any>[] => [
@@ -52,6 +57,13 @@ export const getCashRegisterColumns = (
           onClick={(e) => onEdit(row.original, e)}
         >
           {i18next.t("common.edit")}
+        </Button>
+        <Button
+          variant="primary"
+          size="small"
+          onClick={(e) => onTopUp(row.original, e)}
+        >
+          {i18next.t("cashRegisters.topUp.button")}
         </Button>
         <Button
           variant="danger"

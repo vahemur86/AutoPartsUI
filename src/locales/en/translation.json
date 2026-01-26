@@ -385,6 +385,21 @@
     "confirmation": {
       "deleteTitle": "Delete Cash Register",
       "deleteDescription": "Are you sure you want to delete cash register \"{{name}}\"? This action cannot be undone."
+    },
+    "topUp": {
+      "button": "Top Up",
+      "title": "Top Up Cash Register",
+      "currentBalance": "Current Balance",
+      "sessionOpen": "Session Open",
+      "amount": "Amount",
+      "enterAmount": "Enter amount...",
+      "currencyCode": "AMD",
+      "comment": "Comment",
+      "enterComment": "Enter comment...",
+      "submit": "Top Up",
+      "loadingBalance": "Loading balance...",
+      "success": "Cash register topped up successfully",
+      "error": "Failed to top up cash register"
     }
   },
   "products": {

@@ -1,0 +1,108 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.header {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  display: none;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.grid > * {
+  min-width: 0;
+  width: 100%;
+}
+
+.commentField {
+  grid-column: span 1;
+}
+
+.balanceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.balanceLabel {
+  font-size: 14px;
+  color: var(--color-secondary-400);
+  font-weight: 500;
+}
+
+.balanceValue {
+  font-size: 18px;
+  color: var(--color-white);
+  font-weight: 700;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-secondary-400);
+  font-size: 14px;
+}
+
+.actionswithoutDelete {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.primaryActions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .header {
+    display: block;
+  }
+
+  .content {
+    padding: 16px 24px 24px;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .primaryActions {
+    width: auto;
+  }
+
+  .primaryActions button {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+}
+

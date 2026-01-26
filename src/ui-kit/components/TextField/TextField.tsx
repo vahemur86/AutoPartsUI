@@ -5,24 +5,26 @@ export interface TextFieldProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
   icon?: ReactNode;
+  suffix?: string;
   error?: boolean;
   helperText?: string;
 }
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  (
-    {
-      label,
-      icon,
-      error = false,
-      helperText,
-      className = "",
-      id,
-      disabled = false,
-      ...props
-    },
-    ref
-  ) => {
+    (
+      {
+        label,
+        icon,
+        suffix,
+        error = false,
+        helperText,
+        className = "",
+        id,
+        disabled = false,
+        ...props
+      },
+      ref
+    ) => {
     const textFieldId =
       id || `textfield-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -46,6 +48,12 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             disabled={disabled}
             {...props}
           />
+          {suffix && (
+            <>
+              <div className={styles.textFieldSeparator} />
+              <div className={styles.textFieldSuffix}>{suffix}</div>
+            </>
+          )}
           {icon && (
             <>
               <div className={styles.textFieldSeparator} />
