@@ -9,6 +9,7 @@ import {
   createMetalRate,
   deleteMetalRate,
   getMetalRates,
+  getActiveMetalRate,
   updateMetalRate,
 } from "@/services/settings/metalRates";
 
@@ -20,12 +21,14 @@ import { getApiErrorMessage } from "@/utils";
 
 interface MetalRatesState {
   metalRates: MetalRate[];
+  activeMetalRate: MetalRate | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: MetalRatesState = {
   metalRates: [],
+  activeMetalRate: null,
   isLoading: false,
   error: null,
 };
@@ -40,9 +43,33 @@ export const fetchMetalRates = createAsyncThunk<
     const data = await getMetalRates(cashRegisterId);
     return data;
   } catch (error: unknown) {
-    return rejectWithValue(getApiErrorMessage(error, "Failed to fetch tasks"));
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch metal rates"),
+    );
   }
 });
+
+// Async thunk for fetching active metal rates
+export const fetchActiveMetalRate = createAsyncThunk<
+  MetalRate,
+  {
+    currencyCode?: string;
+    cashRegisterId: number;
+  },
+  { rejectValue: string }
+>(
+  "metalRates/fetchActiveMetalRate",
+  async ({ currencyCode = "USD", cashRegisterId }, { rejectWithValue }) => {
+    try {
+      const data = await getActiveMetalRate({ currencyCode, cashRegisterId });
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch active metal rates"),
+      );
+    }
+  },
+);
 
 // Async thunk for creating metal rate
 export const addMetalRate = createAsyncThunk<
@@ -118,6 +145,25 @@ const metalRatesSlice = createSlice({
       .addCase(fetchMetalRates.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch metal rates";
+      });
+
+    // Fetch active metal rates
+    builder
+      .addCase(fetchActiveMetalRate.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchActiveMetalRate.fulfilled,
+        (state, action: PayloadAction<MetalRate>) => {
+          state.isLoading = false;
+          state.activeMetalRate = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchActiveMetalRate.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch active metal rates";
       });
 
     // Add metal rate

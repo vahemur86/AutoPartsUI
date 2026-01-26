@@ -54,28 +54,24 @@
   gap: 24px;
 }
 
-.finalOfferContainer {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: 24px;
-}
-
-.finalOfferContainer > * {
-  max-width: 500px;
-  width: 100%;
-}
-
-/* Powder Extraction Card */
-.powderCard {
+/* --- Card Bases --- */
+.powderCard,
+.pricingCard,
+.finalOfferCard,
+.customerCard,
+.marketPricesCard {
   background-color: var(--color-black-1);
   border-radius: 8px;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* --- Powder Extraction Card --- */
+.powderCard {
+  gap: 16px;
 }
 
 .powderHeader {
@@ -140,16 +136,9 @@
   font-weight: 500;
 }
 
-/* Pricing Breakdown Card */
+/* --- Pricing Breakdown Card --- */
 .pricingCard {
-  background-color: var(--color-black-1);
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 18px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .cardTitle {
@@ -221,17 +210,11 @@
   color: var(--color-primary-500);
 }
 
-/* Final Offer Card */
+/* --- Final Offer Card --- */
 .finalOfferCard {
-  background-color: var(--color-black-1);
-  border-radius: 8px;
   padding: 24px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .finalOfferContent {
@@ -272,44 +255,15 @@
   gap: 8px;
 }
 
-.offerValid {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 15px;
-}
-
-.countdown {
-  color: var(--color-primary-500);
-  font-weight: 600;
-}
-
-/* Customer Details Card */
+/* --- Customer Details Card --- */
 .customerCard {
-  background-color: var(--color-black-1);
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 16px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .customerHeader {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.clientType {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.clientTypeValue,
-.discountValue {
-  color: var(--color-white);
-  font-weight: 500;
 }
 
 .customerContent {
@@ -363,121 +317,6 @@
   color: var(--color-white);
 }
 
-.profileName {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-.profileType {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.profileDiscount {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.profilePhone {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.customerFields {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.fieldGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.fieldLabel {
-  font-size: 12px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* Recent Clients Section */
-.recentClientsSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.recentClientsHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  padding: 8px 0;
-}
-
-.recentClientsTitle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-.recentClientsList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.recentClientItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.recentClientItem:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.recentClientLeft {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.recentClientRight {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.recentClientName {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-white);
-}
-
-.recentClientPhone {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.clientIcon {
-  color: rgba(255, 255, 255, 0.5);
-  flex-shrink: 0;
-}
-
-/* Customer Actions */
 .customerActions {
   display: flex;
   flex-direction: column;
@@ -485,41 +324,9 @@
   margin-top: 16px;
 }
 
-.acceptButton {
-  background-color: var(--color-success) !important;
-  color: var(--color-white) !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.acceptButton:hover:not(:disabled) {
-  background-color: #228a3d !important;
-}
-
-.backButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #4a9eff !important;
-}
-
-.backButton svg {
-  color: #4a9eff;
-}
-
-/* Live Market Prices Card */
+/* --- Live Market Prices Card & Metals --- */
 .marketPricesCard {
-  background-color: var(--color-black-1);
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 16px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .marketPricesHeader {
@@ -571,14 +378,23 @@
   height: 32px;
   border-radius: 50%;
   flex-shrink: 0;
+  isolation: isolate;
+  -webkit-mask-image: radial-gradient(circle, white 100%, transparent 100%);
+  mask-image: radial-gradient(circle, white 100%, transparent 100%);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
-.metalIcon.silver {
-  background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+.metalIcon.platinum {
+  background: linear-gradient(135deg, #ffffff 0%, #e5e4e2 40%, #a6a6a6 100%);
 }
 
-.metalIcon.gold {
-  background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+.metalIcon.palladium {
+  background: linear-gradient(135deg, #cba68b 0%, #6e6259 50%, #2b2724 100%);
+}
+
+.metalIcon.rhodium {
+  background: linear-gradient(135deg, #ffffff 0%, #c4d7f5 45%, #53698c 100%);
 }
 
 .metalInfo {
@@ -618,6 +434,7 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* --- Cash Register Section --- */
 .cashRegisterContainer {
   margin-top: 8px;
   width: 100%;
@@ -664,16 +481,11 @@
   color: var(--color-white);
 }
 
-.passwordToggle:focus {
-  outline: none;
-}
-
-/* Responsive Design */
+/* --- Responsive Design --- */
 @media (max-width: 1200px) {
   .topRow {
     grid-template-columns: 1fr 1fr;
   }
-
   .rightColumn {
     grid-column: 1 / -1;
   }
@@ -683,39 +495,128 @@
   .operatorPage {
     gap: 16px;
     padding: 16px;
-    width: 100%;
-    box-sizing: border-box;
   }
-
   .topRow {
     grid-template-columns: 1fr;
-    width: 100%;
     gap: 16px;
   }
-
   .leftColumn,
   .centerColumn,
   .rightColumn {
     grid-column: 1;
+  }
+}
+
+/* --- UPDATED PHONE ALIGNMENT SECTION --- */
+.phoneSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.phoneLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-white);
+  user-select: none;
+  text-align: left;
+}
+
+.phoneInputRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.countrySelectWrapper {
+  width: 115px; /* Increased a little bit as requested */
+  flex-shrink: 0;
+}
+
+.phoneFieldWrapper {
+  flex: 1;
+}
+
+.countrySelectInner {
+  margin-bottom: 0 !important;
+}
+
+/* --- RESPONSIVE HEADER CLASSES --- */
+.headerSection {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sessionGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.languageSelectWrapper {
+  width: 160px;
+}
+
+.sessionBtnActive {
+  background-color: #22c55e !important;
+  color: white !important;
+  border: 1px solid #22c55e !important;
+}
+
+.sessionBtnInactive {
+  background-color: transparent !important;
+  color: #22c55e !important;
+  border: 1px solid #22c55e !important;
+}
+
+.sessionBtnActiveClose {
+  background-color: #ef4444 !important;
+  color: white !important;
+  border: 1px solid #ef4444 !important;
+}
+
+.sessionBtnInactiveClose {
+  background-color: transparent !important;
+  color: #ef4444 !important;
+  border: 1px solid #ef4444 !important;
+}
+
+@media (max-width: 900px) {
+  .headerSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .headerActions {
     width: 100%;
-    min-width: 0;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 600px) {
+  .headerActions {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .finalOfferAmount {
-    font-size: 28px;
+  .sessionGroup {
+    justify-content: space-between;
   }
 
-  .finalOfferContainer {
-    margin-top: 16px;
+  .sessionGroup button {
+    flex: 1;
   }
 
-  .powderCard,
-  .marketPricesCard,
-  .pricingCard,
-  .finalOfferCard,
-  .customerCard {
-    padding: 16px;
+  .languageSelectWrapper,
+  .logoutBtn {
     width: 100%;
-    box-sizing: border-box;
   }
 }

@@ -39,9 +39,19 @@ export const getMetalRate = async (id: number) => {
   }
 };
 
-export const getActiveMetalRates = async (currencyCode: string) => {
+export const getActiveMetalRate = async ({
+  currencyCode,
+  cashRegisterId,
+}: {
+  currencyCode: string;
+  cashRegisterId: number;
+}) => {
   try {
-    const response = await api.get(`/metal-rates/active/${currencyCode}`);
+    const response = await api.get<MetalRate>(`/metal-rates/active/${currencyCode}`, {
+      headers: {
+        "X-CashRegister-Id": cashRegisterId,
+      },
+    });
     return response.data;
   } catch (error: unknown) {
     throw new Error(
