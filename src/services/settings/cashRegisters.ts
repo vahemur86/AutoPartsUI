@@ -4,7 +4,7 @@ import api from "..";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { CashRegister } from "@/types/settings";
+import type { CashRegister, CashRegisterBalance } from "@/types/settings";
 
 export const getCashRegisters = async (shopId?: number) => {
   try {
@@ -12,9 +12,7 @@ export const getCashRegisters = async (shopId?: number) => {
     const response = await api.get("/cash-registers", { params });
     return response.data;
   } catch (error: unknown) {
-    throw new Error(
-      getApiErrorMessage(error, "Failed to get cash registers."),
-    );
+    throw new Error(getApiErrorMessage(error, "Failed to get cash registers."));
   }
 };
 
@@ -56,3 +54,62 @@ export const deleteCashRegister = async (id: number) => {
   }
 };
 
+export const getCashRegisterBalance = async (cashRegisterId: number) => {
+  try {
+    const response = await api.get<CashRegisterBalance>(
+      `/cash-registers/${cashRegisterId}/balance`,
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get cash register balance."),
+    );
+  }
+};
+
+export const openCashRegisterSession = async (cashRegisterId: number) => {
+  try {
+    const response = await api.post<{
+      sessionId: number;
+    }>(
+      `/cash-registers/${cashRegisterId}/sessions/open`,
+      {},
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to open session."));
+  }
+};
+
+export const closeCashRegisterSession = async ({
+  sessionId,
+  cashRegisterId,
+}: {
+  sessionId: number;
+  cashRegisterId: number;
+}) => {
+  try {
+    const response = await api.post(
+      `/cashbox-sessions/${sessionId}/close`,
+      {},
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to close session."));
+  }
+};

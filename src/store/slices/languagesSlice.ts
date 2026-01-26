@@ -42,11 +42,11 @@ type UpdateLanguagePayload = CreateLanguagePayload & { id: number };
 // Async thunk for fetching languages
 export const fetchLanguages = createAsyncThunk<
   Language[],
-  void,
+  number | undefined,
   { rejectValue: string }
->("languages/fetchLanguages", async (_, { rejectWithValue }) => {
+>("languages/fetchLanguages", async (cashRegisterId, { rejectWithValue }) => {
   try {
-    const data = await getLanguages();
+    const data = await getLanguages(cashRegisterId);
     return data;
   } catch (error: unknown) {
     return rejectWithValue(
@@ -210,4 +210,3 @@ const languagesSlice = createSlice({
 
 export const { clearError } = languagesSlice.actions;
 export default languagesSlice.reducer;
-
