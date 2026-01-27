@@ -7,6 +7,7 @@ import { getApiErrorMessage } from "@/utils";
 import type {
   CashRegister,
   CashRegisterBalance,
+  GetCashRegisterSession,
   TopUpRequest,
 } from "@/types/settings";
 
@@ -132,5 +133,21 @@ export const closeCashRegisterSession = async ({
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to close session."));
+  }
+};
+
+export const getCashRegisterSession = async (cashRegisterId: number) => {
+  try {
+    const response = await api.get<GetCashRegisterSession>(
+      `/cash-sessions/Get-Register-session`,
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get session."));
   }
 };
