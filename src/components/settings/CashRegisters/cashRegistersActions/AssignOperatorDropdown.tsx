@@ -6,10 +6,10 @@ import { Button, Dropdown, Select } from "@/ui-kit";
 
 // services
 import { getOperators } from "@/services/users";
-import { assignOperatorToCashRegister } from "@/services/settings/cashRegisters";
+import { assignOperatorToCashRegister } from "@/services/settings/cash/registers";
 
 // types
-import type { CashRegister, Operator } from "@/types/settings";
+import type { CashRegister, Operator } from "@/types/cash/registers";
 
 // styles
 import styles from "./AssignOperatorDropdown.module.css";

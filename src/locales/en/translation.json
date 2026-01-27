@@ -7,7 +7,8 @@
     "users": "User Management",
     "customers": "Customers",
     "logout": "Log Out",
-    "userMenu": "User menu"
+    "userMenu": "User menu",
+    "reports": "Reports"
   },
   "common": {
     "save": "Save",

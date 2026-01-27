@@ -20,7 +20,7 @@ import {
   fetchIntake,
   acceptIntake as acceptIntakeThunk,
 } from "@/store/slices/operatorSlice";
-import { fetchCashRegisterBalance } from "@/store/slices/cashRegistersSlice";
+import { fetchBalance } from "@/store/slices/cash/registersSlice";
 
 // styles
 import styles from "../OperatorPage.module.css";
@@ -148,7 +148,7 @@ export const CustomerDetails = ({
         acceptIntakeThunk({ intakeId: intake.id, cashRegisterId }),
       ).unwrap();
       toast.success(t("customerDetails.success.customerAccepted"));
-      dispatch(fetchCashRegisterBalance(cashRegisterId));
+      dispatch(fetchBalance(cashRegisterId));
       onSuccess?.();
       setLocalHasTriedAccept(false);
     } catch (error: unknown) {

@@ -36,7 +36,7 @@ import {
   editCashRegister,
   fetchCashRegisters,
   removeCashRegister,
-} from "@/store/slices/cashRegistersSlice";
+} from "@/store/slices/cash/registersSlice";
 import { fetchShops } from "@/store/slices/shopsSlice";
 
 // services
@@ -44,10 +44,10 @@ import {
   topUpCashRegister as topUpCashRegisterService,
   getCashRegisterOperators,
   type CashRegisterOperatorLink,
-} from "@/services/settings/cashRegisters";
+} from "@/services/settings/cash/registers";
 
 // types
-import type { CashRegister, TopUpRequest } from "@/types/settings";
+import type { CashRegister, TopUpRequest } from "@/types/cash";
 
 // styles
 import styles from "./CashRegisters.module.css";
@@ -84,7 +84,7 @@ export const CashRegisters: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchCashRegisters(undefined));
+    dispatch(fetchCashRegisters());
   }, [dispatch]);
 
   useEffect(() => {
@@ -167,12 +167,16 @@ export const CashRegisters: FC = () => {
     async (data: CashRegisterForm) => {
       try {
         setIsMutating(true);
+
         if (activeCashRegister) {
           await dispatch(
             editCashRegister({
               id: activeCashRegister.id,
-              ...data,
-              isActive: data.isActive ?? true,
+              data: {
+                code: data.code,
+                description: data.description,
+                isActive: data.isActive ?? true,
+              },
             }),
           ).unwrap();
           toast.success(t("cashRegisters.success.updated"));
@@ -182,7 +186,7 @@ export const CashRegisters: FC = () => {
           await dispatch(addCashRegister(createData)).unwrap();
           toast.success(t("cashRegisters.success.created"));
         }
-        await dispatch(fetchCashRegisters(undefined)).unwrap();
+
         setIsDropdownOpen(false);
       } catch (error: unknown) {
         console.error("Failed to save cash register:", error);
@@ -205,7 +209,7 @@ export const CashRegisters: FC = () => {
       try {
         setIsMutating(true);
         await dispatch(removeCashRegister(cashRegister.id)).unwrap();
-        await dispatch(fetchCashRegisters(undefined)).unwrap();
+        await dispatch(fetchCashRegisters()).unwrap();
         setDeletingCashRegister(null);
         toast.success(t("cashRegisters.success.deleted"));
       } catch (error: unknown) {

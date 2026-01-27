@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { Button, Dropdown, TextField, Switch, Select } from "@/ui-kit";
 
 // types
-import type { CashRegister, Shop } from "@/types/settings";
+import type { CashRegister } from "@/types/cash";
+import type { Shop } from "@/types/settings";
 
 // styles
 import styles from "./CashRegisterDropdown.module.css";
@@ -158,4 +159,3 @@ export const CashRegisterDropdown = ({
     </Dropdown>
   );
 };
-

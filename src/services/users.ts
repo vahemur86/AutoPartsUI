@@ -4,7 +4,7 @@ import api from ".";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { Operator } from "@/types/settings";
+import type { Operator } from "@/types/cash/registers";
 
 export const createUser = async (
   username: string | null,

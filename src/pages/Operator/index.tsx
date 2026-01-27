@@ -24,13 +24,20 @@ import {
   fetchLanguages,
   clearError as clearLangError,
 } from "@/store/slices/languagesSlice";
+
+// stores
 import {
-  fetchCashRegisterBalance,
-  clearError as clearCashError,
+  fetchBalance,
   openSession,
-  closeSession,
-  getSession,
-} from "@/store/slices/cashRegistersSlice";
+  resetRegistersState,
+  clearError as clearCashError,
+} from "@/store/slices/cash/registersSlice";
+import {
+  fetchRegisterSession,
+  resetSessionState,
+  clearError as clearSessionError,
+} from "@/store/slices/cash/sessionsSlice";
+import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
 
 // ui-kit
 import { Button, Select, TextField, ConfirmationModal } from "@/ui-kit";
@@ -65,13 +72,19 @@ export const OperatorPage = () => {
     error: languagesError,
     isLoading: isLangLoading,
   } = useAppSelector((state) => state.languages);
+
+  // New Store Selectors
   const {
-    cashRegisterBalance,
-    sessionId,
-    hasOpenSession,
-    error: cashRegistersError,
+    activeBalance,
+    error: cashError,
     isLoading: isBalanceLoading,
   } = useAppSelector((state) => state.cashRegisters);
+
+  const {
+    hasOpenSession,
+    sessionDetails,
+    error: sessionError,
+  } = useAppSelector((state) => state.cashSessions);
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
@@ -82,8 +95,6 @@ export const OperatorPage = () => {
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
   const [showCashAmount, setShowCashAmount] = useState(false);
   const [isCloseSessionModalOpen, setIsCloseSessionModalOpen] = useState(false);
-
-  const isSessionOpen = hasOpenSession;
 
   const [formData, setFormData] = useState({
     powderWeight: "0",
@@ -112,7 +123,8 @@ export const OperatorPage = () => {
       { msg: metalRatesError, clear: clearMetalError },
       { msg: intakeError, clear: clearIntakeError },
       { msg: languagesError, clear: clearLangError },
-      { msg: cashRegistersError, clear: clearCashError },
+      { msg: cashError, clear: clearCashError },
+      { msg: sessionError, clear: clearSessionError },
     ];
 
     errors.forEach(({ msg, clear }) => {
@@ -125,7 +137,8 @@ export const OperatorPage = () => {
     metalRatesError,
     intakeError,
     languagesError,
-    cashRegistersError,
+    cashError,
+    sessionError,
     dispatch,
   ]);
 
@@ -156,16 +169,14 @@ export const OperatorPage = () => {
         fetchActiveMetalRate({ cashRegisterId: crId, currencyCode: "USD" }),
       );
       dispatch(fetchLanguages(crId));
-      dispatch(getSession(crId));
+      dispatch(fetchRegisterSession(crId));
     }
   }, [dispatch]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (showCashAmount) {
-      if (userData?.cashRegisterId) {
-        dispatch(fetchCashRegisterBalance(userData.cashRegisterId));
-      }
+    if (showCashAmount && userData?.cashRegisterId) {
+      dispatch(fetchBalance(userData.cashRegisterId));
       timer = setTimeout(() => setShowCashAmount(false), 10000);
     }
     return () => clearTimeout(timer);
@@ -195,7 +206,6 @@ export const OperatorPage = () => {
       ).unwrap();
 
       toast.success(t("operatorPage.success.intakeCreated"));
-
       dispatch(fetchIntake({ intakeId: response.id, cashRegisterId }));
       setHasTriedSubmit(false);
     } catch (error) {
@@ -208,6 +218,8 @@ export const OperatorPage = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearIntakeState());
+    dispatch(resetRegistersState());
+    dispatch(resetSessionState());
     navigate("/login", { replace: true });
   };
 
@@ -219,21 +231,29 @@ export const OperatorPage = () => {
       if (actionType === "open") {
         try {
           await dispatch(openSession(cashRegisterId)).unwrap();
+          await dispatch(fetchRegisterSession(cashRegisterId));
           toast.success(t("operatorPage.success.sessionOpened"));
         } catch {
-          // Handled by Global Error Watcher
+          // Error handled by global watcher
         }
-      } else if (sessionId) {
+      } else if (sessionDetails?.sessionId) {
         try {
-          await dispatch(closeSession({ sessionId, cashRegisterId })).unwrap();
+          await dispatch(
+            closeSession({
+              sessionId: sessionDetails.sessionId,
+              cashRegisterId,
+            }),
+          ).unwrap();
+
+          dispatch(resetSessionState());
           toast.success(t("operatorPage.success.sessionClosed"));
           setIsCloseSessionModalOpen(false);
         } catch {
-          // Handled by Global Error Watcher
+          // Error handled by global watcher
         }
       }
     },
-    [dispatch, sessionId, userData?.cashRegisterId, t],
+    [dispatch, sessionDetails, userData?.cashRegisterId, t],
   );
 
   const handleLanguageChange = (
@@ -251,7 +271,7 @@ export const OperatorPage = () => {
 
   const displayBalance = isBalanceLoading
     ? t("cashRegisters.fetchingBalance", "Fetching...")
-    : (cashRegisterBalance?.balance ?? 0).toString();
+    : (activeBalance?.balance ?? 0).toString();
 
   return (
     <div className={styles.operatorPage}>
@@ -263,11 +283,11 @@ export const OperatorPage = () => {
             <Button
               onClick={() => handleToggleSession("open")}
               className={
-                isSessionOpen
+                hasOpenSession
                   ? styles.sessionBtnActive
                   : styles.sessionBtnInactive
               }
-              disabled={isSessionOpen}
+              disabled={hasOpenSession}
             >
               {t("operatorPage.openSession")}
             </Button>
@@ -275,11 +295,11 @@ export const OperatorPage = () => {
             <Button
               onClick={() => setIsCloseSessionModalOpen(true)}
               className={
-                !isSessionOpen
+                !hasOpenSession
                   ? styles.sessionBtnActiveClose
                   : styles.sessionBtnInactiveClose
               }
-              disabled={!isSessionOpen}
+              disabled={!hasOpenSession}
             >
               {t("operatorPage.closeSession")}
             </Button>
@@ -365,8 +385,9 @@ export const OperatorPage = () => {
                 name="cash-amount-display"
                 autoComplete="new-password"
                 placeholder={t("operatorPage.cashAmountPlaceholder")}
-                value={displayBalance}
+                value={cashError ? t("common.error") : displayBalance}
                 className={styles.textField}
+                error={!!cashError}
                 style={{ paddingLeft: "44px" }}
                 readOnly
                 icon={
@@ -390,7 +411,7 @@ export const OperatorPage = () => {
           onOpenChange={setIsCloseSessionModalOpen}
           title={t("operatorPage.closeSession")}
           description={t("common.areYouSure")}
-          confirmText={isBalanceLoading ? t("common.loading") : t("common.yes")}
+          confirmText={t("common.yes")}
           cancelText={t("common.cancel")}
           onConfirm={() => handleToggleSession("close")}
           onCancel={() => setIsCloseSessionModalOpen(false)}

@@ -1,0 +1,211 @@
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+
+// Individual service imports
+import {
+  getCashRegisters,
+  createCashRegister,
+  updateCashRegister,
+  deleteCashRegister,
+  getCashRegisterBalance,
+  topUpCashRegister,
+  openCashRegisterSession,
+} from "@/services/settings/cash/registers";
+
+// utils
+import { getApiErrorMessage } from "@/utils";
+
+// types
+import type {
+  CashRegister,
+  CashRegisterBalance,
+  TopUpRequest,
+} from "@/types/cash";
+
+interface CashRegistersState {
+  cashRegisters: CashRegister[];
+  activeBalance: CashRegisterBalance | null;
+  currentSessionId: number | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+const initialState: CashRegistersState = {
+  cashRegisters: [],
+  activeBalance: null,
+  currentSessionId: null,
+  isLoading: false,
+  error: null,
+};
+
+// --- Async Thunks ---
+
+export const fetchCashRegisters = createAsyncThunk<
+  CashRegister[],
+  number | undefined,
+  { rejectValue: string }
+>("cashRegisters/fetchAll", async (shopId, { rejectWithValue }) => {
+  try {
+    return await getCashRegisters(shopId);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch registers"),
+    );
+  }
+});
+
+export const addCashRegister = createAsyncThunk<
+  CashRegister,
+  Omit<CashRegister, "id" | "isActive">,
+  { rejectValue: string }
+>("cashRegisters/add", async (data, { rejectWithValue }) => {
+  try {
+    return await createCashRegister(data);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to create register"),
+    );
+  }
+});
+
+export const editCashRegister = createAsyncThunk<
+  CashRegister,
+  { id: number; data: Omit<CashRegister, "id" | "shopId"> },
+  { rejectValue: string }
+>("cashRegisters/edit", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    return await updateCashRegister(id, data);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to update register"),
+    );
+  }
+});
+
+export const removeCashRegister = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("cashRegisters/remove", async (id, { rejectWithValue }) => {
+  try {
+    await deleteCashRegister(id);
+    return id;
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete register"),
+    );
+  }
+});
+
+export const fetchBalance = createAsyncThunk<
+  CashRegisterBalance,
+  number,
+  { rejectValue: string }
+>("cashRegisters/fetchBalance", async (id, { rejectWithValue }) => {
+  try {
+    return await getCashRegisterBalance(id);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch balance"),
+    );
+  }
+});
+
+export const topUpRegister = createAsyncThunk<
+  CashRegisterBalance,
+  { id: number; data: TopUpRequest },
+  { rejectValue: string }
+>("cashRegisters/topUp", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    return await topUpCashRegister(id, data);
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to top up"));
+  }
+});
+
+export const openSession = createAsyncThunk<
+  { sessionId: number },
+  number,
+  { rejectValue: string }
+>("cashRegisters/openSession", async (id, { rejectWithValue }) => {
+  try {
+    return await openCashRegisterSession(id);
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to open session"));
+  }
+});
+
+// --- Slice ---
+
+const cashRegistersSlice = createSlice({
+  name: "cashRegisters",
+  initialState,
+  reducers: {
+    clearActiveBalance: (state) => {
+      state.activeBalance = null;
+    },
+    resetRegistersState: () => initialState,
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCashRegisters.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cashRegisters = action.payload;
+      })
+      .addCase(addCashRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cashRegisters.push(action.payload);
+      })
+      .addCase(editCashRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.cashRegisters.findIndex(
+          (r) => r.id === action.payload.id,
+        );
+        if (index !== -1) state.cashRegisters[index] = action.payload;
+      })
+      .addCase(removeCashRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cashRegisters = state.cashRegisters.filter(
+          (r) => r.id !== action.payload,
+        );
+      })
+      .addCase(fetchBalance.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.activeBalance = action.payload;
+      })
+      .addCase(topUpRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.activeBalance = action.payload;
+      })
+      .addCase(openSession.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentSessionId = action.payload.sessionId;
+      })
+
+      // Global Matchers
+      .addMatcher(
+        (action) => action.type.endsWith("/pending"),
+        (state) => {
+          state.isLoading = true;
+          state.error = null;
+        },
+      )
+      .addMatcher(
+        (action) => action.type.endsWith("/rejected"),
+        (state, action: PayloadAction<string | undefined>) => {
+          state.isLoading = false;
+          state.error = action.payload ?? "An unexpected error occurred";
+        },
+      );
+  },
+});
+
+export const { clearError, clearActiveBalance, resetRegistersState } =
+  cashRegistersSlice.actions;
+export default cashRegistersSlice.reducer;

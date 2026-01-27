@@ -12,7 +12,10 @@ import catalystBucketsReducer from "./slices/catalystBucketsSlice";
 import exchangeRatesReducer from "./slices/exchangeRatesSlice";
 import languagesReducer from "./slices/languagesSlice";
 import customerTypesReducer from "./slices/customerTypesSlice";
-import cashRegistersReducer from "./slices/cashRegistersSlice";
+import cashboxSessionsReducer from "./slices/cash/cashboxSessionsSlice";
+import cashDashboardReducer from "./slices/cash/dashboardSlice";
+import cashRegistersReducer from "./slices/cash/registersSlice";
+import cashSessionsReducer from "./slices/cash/sessionsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -29,7 +32,10 @@ export const store = configureStore({
     exchangeRates: exchangeRatesReducer,
     languages: languagesReducer,
     customerTypes: customerTypesReducer,
+    cashboxSessions: cashboxSessionsReducer,
+    cashDashboard: cashDashboardReducer,
     cashRegisters: cashRegistersReducer,
+    cashSessions: cashSessionsReducer,
   },
 });
 

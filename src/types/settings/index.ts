@@ -189,35 +189,3 @@ export interface CustomerType {
   bonusPercent: number;
   isActive: boolean;
 }
-
-export interface CashRegister {
-  id: number;
-  shopId: number;
-  code: string;
-  description: string;
-  isActive: boolean;
-}
-
-export interface CashRegisterBalance {
-  cashRegisterId: number;
-  balance: number;
-  openSessionId: number | null;
-}
-
-export interface GetCashRegisterSession {
-  hasOpenSession: boolean;
-  sessionId: number;
-  cashBoxId: number;
-  openedAtUtc: string;
-}
-
-export interface TopUpRequest {
-  amount: number;
-  currencyCode: string;
-  comment: string;
-}
-
-export interface Operator {
-  id: number;
-  username: string;
-}
