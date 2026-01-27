@@ -1,20 +1,20 @@
-import api from "..";
+import api from "@/services";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
-
-// types
 import type {
   CashRegister,
   CashRegisterBalance,
-  GetCashRegisterSession,
   TopUpRequest,
-} from "@/types/settings";
+} from "@/types/cash";
 
 export const getCashRegisters = async (shopId?: number) => {
   try {
-    const params = shopId ? { shopId } : {};
-    const response = await api.get("/cash-registers", { params });
+    const response = await api.get("/cash-registers", {
+      params: {
+        shopId,
+      },
+    });
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get cash registers."));
@@ -110,44 +110,5 @@ export const openCashRegisterSession = async (cashRegisterId: number) => {
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to open session."));
-  }
-};
-
-export const closeCashRegisterSession = async ({
-  sessionId,
-  cashRegisterId,
-}: {
-  sessionId: number;
-  cashRegisterId: number;
-}) => {
-  try {
-    const response = await api.post(
-      `/cashbox-sessions/${sessionId}/close`,
-      {},
-      {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to close session."));
-  }
-};
-
-export const getCashRegisterSession = async (cashRegisterId: number) => {
-  try {
-    const response = await api.get<GetCashRegisterSession>(
-      `/cash-sessions/Get-Register-session`,
-      {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to get session."));
   }
 };

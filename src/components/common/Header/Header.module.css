@@ -16,17 +16,6 @@
   box-sizing: border-box;
 }
 
-.rightContent {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 36px;
-  flex: 1;
-  min-width: 0;
-  overflow: visible;
-}
-
 .logoContainer {
   display: flex;
   align-items: center;
@@ -39,15 +28,32 @@
   object-fit: contain;
 }
 
+.rightContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+  flex: 1;
+  min-width: 0;
+  overflow: visible;
+}
+
+/* --- Navigation Section --- */
 .nav {
   display: flex;
   align-items: center;
   height: 36px;
   gap: 12px;
   flex: 1;
-  justify-content: end;
+  justify-content: flex-end;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .navLink {
@@ -219,21 +225,29 @@
   color: var(--color-secondary-400);
 }
 
+@media (max-width: 1024px) {
+  .rightContent {
+    gap: 16px;
+  }
+  .nav {
+    gap: 8px;
+  }
+  .navLink {
+    padding: 0 10px;
+  }
+}
+
 @media (max-width: 768px) {
+  .headerContainer {
+    padding: 16px 16px 0;
+  }
+
   .header {
     height: auto;
     min-height: 56px;
     padding: 8px 12px;
     gap: 8px;
     overflow: hidden;
-  }
-
-  .headerContainer {
-    padding: 16px 16px 0;
-  }
-
-  .logoContainer {
-    flex-shrink: 0;
   }
 
   .logoImage {
@@ -250,12 +264,6 @@
 
   .nav {
     display: none;
-  }
-
-  .navLink {
-    padding: 0 8px;
-    font-size: 12px;
-    height: 32px;
   }
 
   .actions {
@@ -306,15 +314,6 @@
     gap: 4px;
   }
 
-  .nav {
-    gap: 2px;
-  }
-
-  .navLink {
-    padding: 0 6px;
-    font-size: 11px;
-  }
-
   .actions {
     gap: 4px;
   }
@@ -342,12 +341,5 @@
   .dropdownItem {
     padding: 8px 12px;
     font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .navLink {
-    padding: 0 6px;
-    font-size: 11px;
   }
 }

@@ -5,7 +5,7 @@ import i18next from "i18next";
 import { Button } from "@/ui-kit";
 
 // types
-import type { CashRegister } from "@/types/settings";
+import type { CashRegister } from "@/types/cash";
 
 // styles
 import styles from "./CashRegisters.module.css";
@@ -76,4 +76,3 @@ export const getCashRegisterColumns = (
     ),
   }),
 ];
-

@@ -4,15 +4,15 @@ import { useTranslation } from "react-i18next";
 // ui-kit
 import { Button, Dropdown, TextField } from "@/ui-kit";
 
-// services
-import { getCashRegisterBalance } from "@/services/settings/cashRegisters";
+// store
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  fetchBalance,
+  clearActiveBalance,
+} from "@/store/slices/cash/registersSlice";
 
 // types
-import type {
-  CashRegister,
-  CashRegisterBalance,
-  TopUpRequest,
-} from "@/types/settings";
+import type { CashRegister, TopUpRequest } from "@/types/cash/registers";
 
 // styles
 import styles from "./TopUpDropdown.module.css";
@@ -35,9 +35,13 @@ export const TopUpDropdown = ({
   onTopUp,
 }: TopUpDropdownProps) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
-  const [balance, setBalance] = useState<CashRegisterBalance | null>(null);
-  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+  // Get balance and loading state from the Redux store
+  const { activeBalance, isLoading: isStoreLoading } = useAppSelector(
+    (state) => state.cashRegisters,
+  );
+
   const [amount, setAmount] = useState("");
   const [currencyCode, setCurrencyCode] = useState("AMD");
   const [comment, setComment] = useState("");
@@ -49,26 +53,13 @@ export const TopUpDropdown = ({
       setCurrencyCode("AMD");
       setComment("");
       setHasTriedSave(false);
-      setBalance(null);
-      fetchBalance();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, cashRegister.id]);
 
-  const fetchBalance = async () => {
-    try {
-      setIsLoadingBalance(true);
-      const balanceData = await getCashRegisterBalance(cashRegister.id);
-      setBalance(balanceData);
-    } catch (error) {
-      console.error("Failed to fetch balance:", error);
-    } finally {
-      setIsLoadingBalance(false);
+      dispatch(clearActiveBalance());
+      dispatch(fetchBalance(cashRegister.id));
     }
-  };
+  }, [open, cashRegister.id, dispatch]);
 
   const numAmount = parseFloat(amount);
-
   const isAmountValid = !isNaN(numAmount) && numAmount > 0;
   const isCurrencyValid = currencyCode.trim().length > 0;
   const isValid = isAmountValid && isCurrencyValid;
@@ -100,18 +91,19 @@ export const TopUpDropdown = ({
       </div>
 
       <div className={styles.content}>
-        {isLoadingBalance ? (
+        {/* Using isStoreLoading from Redux instead of local state */}
+        {isStoreLoading ? (
           <div className={styles.loadingState}>
             {t("cashRegisters.topUp.loadingBalance")}
           </div>
-        ) : balance ? (
+        ) : activeBalance ? (
           <div className={styles.balanceInfo}>
             <div className={styles.balanceLabel}>
               {t("cashRegisters.topUp.currentBalance")}:
             </div>
             <div className={styles.balanceValue}>
-              {balance.balance.toLocaleString()}{" "}
-              {balance.openSessionId
+              {activeBalance.balance.toLocaleString()}{" "}
+              {activeBalance.openSessionId
                 ? `(${t("cashRegisters.topUp.sessionOpen")})`
                 : ""}
             </div>

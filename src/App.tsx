@@ -19,6 +19,7 @@ import { Products } from "@/pages/Products";
 import { UserManagement } from "@/pages/Users";
 import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
+import { Reports } from "@/pages/Reports";
 
 // Components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -109,6 +110,7 @@ export const App = () => {
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="customers" element={<Customers />} />
+              <Route path="reports" element={<Reports />} />
             </Route>
           </Route>
 

@@ -5,6 +5,7 @@ import { Tab } from "@/ui-kit";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
+
 import styles from "./Header.module.css";
 import logoImage from "@/assets/icons/Subtract.svg";
 
@@ -44,9 +45,8 @@ export const Header = () => {
 
     if (isDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => {
+      return () =>
         document.removeEventListener("mousedown", handleClickOutside);
-      };
     }
   }, [isDropdownOpen]);
 
@@ -58,9 +58,7 @@ export const Header = () => {
     };
 
     document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isDropdownOpen]);
 
   const handleLogout = () => {
@@ -72,7 +70,11 @@ export const Header = () => {
   return (
     <div className={styles.headerContainer}>
       <header className={styles.header}>
-        <div className={styles.logoContainer}>
+        <div
+          className={styles.logoContainer}
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
           <img src={logoImage} alt="Logo" className={styles.logoImage} />
         </div>
 
@@ -96,7 +98,6 @@ export const Header = () => {
               text={t("header.warehouses")}
               onClick={() => navigate("/warehouses")}
             />
-
             <Tab
               variant="underline"
               active={isActive("/shops")}
@@ -115,11 +116,19 @@ export const Header = () => {
               text={t("header.customers")}
               onClick={() => navigate("/customers")}
             />
+            <Tab
+              variant="underline"
+              active={isActive("/reports")}
+              text={t("header.reports")}
+              onClick={() => navigate("/reports")}
+            />
           </nav>
 
-          {/* Right: Actions */}
           <div className={styles.actions}>
-            <button className={styles.bellButton}>
+            <button
+              className={styles.bellButton}
+              aria-label={t("header.notifications")}
+            >
               <Bell className={styles.bellIcon} />
             </button>
 
