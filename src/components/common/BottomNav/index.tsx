@@ -1,4 +1,6 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+// icons
 import {
   Settings,
   Warehouse,
@@ -6,23 +8,19 @@ import {
   PackageSearch,
   Users,
   UserCircle,
+  FileText,
 } from "lucide-react";
+
+// hooks
+import { useActiveRoute } from "@/hooks/useIsActive";
+
+// styles
 import styles from "./BottomNav.module.css";
 
 export const BottomNav = () => {
-  const location = useLocation();
   const navigate = useNavigate();
 
-  const isActive = (path: string) => {
-    // For settings, check if pathname starts with /settings (to include nested routes)
-    if (path === "/settings") {
-      return (
-        location.pathname === path || location.pathname.startsWith("/settings/")
-      );
-    }
-    // For other paths, use exact match
-    return location.pathname === path;
-  };
+  const { isActive } = useActiveRoute();
 
   const navItems = [
     {
@@ -54,6 +52,11 @@ export const BottomNav = () => {
       path: "/customers",
       icon: UserCircle,
       label: "Customers",
+    },
+    {
+      path: "/reports",
+      icon: FileText,
+      label: "Reports",
     },
   ];
 

@@ -21,7 +21,7 @@ import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { Reports } from "@/pages/Reports";
 
-// Components
+// Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
 import { Translation } from "@/components/settings/Translation";
 import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
@@ -33,6 +33,13 @@ import { CatalystBuckets } from "@/components/settings/CatalystBuckets";
 import { CustomerTypes } from "@/components/settings/CustomerTypes";
 import { ExchangeRates } from "@/components/settings/ExchangeRates";
 import { CashRegisters } from "@/components/settings/CashRegisters";
+
+// Reports components
+import { ZReports } from "./components/reports/ZReports";
+import { BatchReports } from "./components/reports/BatchReports";
+import { OpenSessions } from "./components/reports/OpenSessions";
+import { PowderBatches } from "./components/reports/PowderBatches";
+import { CashboxSessionsReports } from "./components/reports/CashboxSessionsReports";
 
 // Stores
 import { store } from "@/store/store";
@@ -51,7 +58,9 @@ const toastOptions = {
   theme: "dark",
 } as const;
 
-// Component to initialize default language on app load
+/**
+ * Component to initialize default language on app load
+ */
 const LanguageInitializer = () => {
   useDefaultLanguage();
   return null;
@@ -71,7 +80,7 @@ export const App = () => {
             <Route path="/operator" element={<OperatorPage />} />
           </Route>
 
-          {/* ADMIN SPECIFIC ROUTES */}
+          {/* ADMIN & SUPERADMIN SPECIFIC ROUTES */}
           <Route
             element={<ProtectedRoute allowedRoles={["Admin", "SuperAdmin"]} />}
           >
@@ -105,16 +114,26 @@ export const App = () => {
                 <Route path="cash-registers" element={<CashRegisters />} />
               </Route>
 
+              <Route path="reports" element={<Reports />}>
+                <Route index element={<Navigate to="z-reports" replace />} />
+                <Route path="z-reports" element={<ZReports />} />
+                <Route path="batch-reports" element={<BatchReports />} />
+                <Route path="open-sessions" element={<OpenSessions />} />
+                <Route path="powder-batches" element={<PowderBatches />} />
+                <Route
+                  path="cashbox-sessions-reports"
+                  element={<CashboxSessionsReports />}
+                />
+              </Route>
+
               <Route path="warehouses" element={<Warehouses />} />
               <Route path="products" element={<Products />} />
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="customers" element={<Customers />} />
-              <Route path="reports" element={<Reports />} />
             </Route>
           </Route>
 
-          {/* CATCH-ALL */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
