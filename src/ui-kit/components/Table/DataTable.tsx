@@ -4,11 +4,16 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getGroupedRowModel,
+  getExpandedRowModel,
   flexRender,
   type ColumnDef,
   type SortingState,
   type RowSelectionState,
+  type GroupingState,
+  type ExpandedState,
 } from "@tanstack/react-table";
+import { ChevronDown, ChevronRight } from "lucide-react"; // Import Lucide icons
 
 // ui-kit
 import { Checkbox } from "../Checkbox";
@@ -27,6 +32,8 @@ interface DataTableProps<TData, TValue> {
   pageIndex?: number;
   onPaginationChange?: (pageIndex: number) => void;
   renderBottomLeft?: () => ReactNode;
+  // New props for grouping
+  groupBy?: string[];
 }
 
 export const DataTable = <TData, TValue>({
@@ -39,21 +46,21 @@ export const DataTable = <TData, TValue>({
   pageIndex: controlledPageIndex,
   onPaginationChange,
   renderBottomLeft,
+  groupBy = [], // Pass the ID of the column you want to group by
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [grouping, setGrouping] = useState<GroupingState>(groupBy);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+
   const [internalPagination, setInternalPagination] = useState({
     pageIndex: 0,
     pageSize: pageSize,
   });
 
-  // Use controlled pageIndex if provided, otherwise use internal state
   const pagination = useMemo(() => {
     if (manualPagination && controlledPageIndex !== undefined) {
-      return {
-        pageIndex: controlledPageIndex,
-        pageSize: pageSize,
-      };
+      return { pageIndex: controlledPageIndex, pageSize: pageSize };
     }
     return internalPagination;
   }, [manualPagination, controlledPageIndex, pageSize, internalPagination]);
@@ -91,9 +98,13 @@ export const DataTable = <TData, TValue>({
       sorting,
       rowSelection: enableSelection ? rowSelection : {},
       pagination,
+      grouping,
+      expanded,
     },
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
+    onGroupingChange: setGrouping,
+    onExpandedChange: setExpanded,
     onPaginationChange: (updater) => {
       const currentPagination =
         manualPagination && controlledPageIndex !== undefined
@@ -104,17 +115,15 @@ export const DataTable = <TData, TValue>({
         typeof updater === "function" ? updater(currentPagination) : updater;
 
       if (manualPagination && controlledPageIndex !== undefined) {
-        // Controlled mode: only call the callback, don't update internal state
-        if (onPaginationChange) {
-          onPaginationChange(newPagination.pageIndex);
-        }
+        if (onPaginationChange) onPaginationChange(newPagination.pageIndex);
       } else {
-        // Uncontrolled mode: update internal state
         setInternalPagination(newPagination);
       }
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     manualPagination: manualPagination,
     pageCount: manualPagination ? pageCount : undefined,
     getPaginationRowModel: manualPagination
@@ -179,6 +188,47 @@ export const DataTable = <TData, TValue>({
                 <TableRow key={row.id} className={styles.tableRow}>
                   {row.getVisibleCells().map((cell) => {
                     const isSelect = cell.column.id === "select";
+
+                    // Logic for Grouping UI (The Subheader)
+                    if (cell.getIsGrouped()) {
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          colSpan={tableColumns.length}
+                          className={styles.groupHeaderCell}
+                        >
+                          <button
+                            {...{
+                              onClick: row.getToggleExpandedHandler(),
+                              // The styling for this button is now handled in Table.module.css (.groupHeaderCell button)
+                            }}
+                          >
+                            {/* Replaced emojis with Lucide icons */}
+                            {row.getIsExpanded() ? (
+                              <ChevronDown size={16} />
+                            ) : (
+                              <ChevronRight size={16} />
+                            )}
+                            <strong>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </strong>
+                            ({row.subRows.length})
+                          </button>
+                        </TableCell>
+                      );
+                    }
+
+                    if (cell.getIsAggregated()) {
+                      return null; // Don't render cells that are hidden by grouping
+                    }
+
+                    if (cell.getIsPlaceholder()) {
+                      return null; // Don't render placeholder cells
+                    }
+
                     return (
                       <TableCell
                         key={cell.id}
