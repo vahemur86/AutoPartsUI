@@ -502,6 +502,14 @@
         "rh": "Родий (Rh)",
         "individualIntakes": "Отдельные заявки",
         "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация о товарах доступна в сводке партии выше."
+      },
+      "filters": {
+        "fromDate": "От",
+        "toDate": "До",
+        "cashRegisterId": "ID кассового аппарата",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания",
+        "enterCashRegisterId": "Введите ID кассового аппарата"
       }
     },
     "cashboxReport": {

@@ -1,0 +1,143 @@
+.header {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.dropdownContentOverride {
+  overflow: visible !important;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: visible;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 16px;
+  overflow: visible;
+}
+
+.fullRow {
+  grid-column: 1 / -1;
+}
+
+.colLeft {
+  grid-column: 1 / 2;
+}
+
+.colRight {
+  grid-column: 2 / 3;
+}
+
+.datePickerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.actionswithoutDelete {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primaryActions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .header {
+    display: block;
+  }
+
+  .content {
+    padding: 16px 24px 24px;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .primaryActions {
+    width: auto;
+  }
+
+  .primaryActions button {
+    flex: 0 0 auto;
+  }
+}
+
+/* Mobile: stack everything into 1 column */
+@media (max-width: 767px) {
+  .header {
+    display: none;
+  }
+
+  .content {
+    padding: 0;
+    gap: 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .colLeft,
+  .colRight,
+  .fullRow {
+    grid-column: 1 / -1;
+  }
+
+  .actionswithoutDelete {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .primaryActions {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .primaryActions button {
+    flex: 1;
+  }
+}
+
+/* Critical for grid overflow issues */
+.grid > * {
+  min-width: 0;
+}
+
+.colLeft,
+.colRight,
+.fullRow {
+  min-width: 0;
+}
+

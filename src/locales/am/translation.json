@@ -502,6 +502,14 @@
         "rh": "Ռոդիում (Rh)",
         "individualIntakes": "Առանձին հարցումներ",
         "summaryInfo": "Այս խմբաքանակը պարունակում է {{count}} հարցում(ներ): Մանրամասն տեղեկատվությունը հասանելի է վերևի խմբաքանակի ամփոփումում:"
+      },
+      "filters": {
+        "fromDate": "Սկսած",
+        "toDate": "Մինչև",
+        "cashRegisterId": "Դրամարկղի ID",
+        "selectFromDate": "Ընտրել սկզբնական ամսաթիվ",
+        "selectToDate": "Ընտրել ավարտական ամսաթիվ",
+        "enterCashRegisterId": "Մուտքագրել դրամարկղի ID"
       }
     },
     "cashboxReport": {

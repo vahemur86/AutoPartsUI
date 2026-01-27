@@ -47,7 +47,8 @@ export interface PowderBatchDetails extends PowderBatch {
   items: PowderBatchItem[];
 }
 
-export type PowderBatchResponse = import("./cashboxSessions").PaginatedResponse<PowderBatch>;
+export type PowderBatchResponse =
+  import("./cashboxSessions").PaginatedResponse<PowderBatch>;
 
 export type GetPowderBatchesParams = {
   fromDate?: string;

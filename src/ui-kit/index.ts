@@ -23,6 +23,7 @@ export {
   DataTable,
   ConfirmationModal,
   Tooltip,
+  DatePicker,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
