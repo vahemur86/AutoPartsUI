@@ -13,7 +13,8 @@ export const FinalOffer: FC<{
   currencyCode?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userData: any;
-}> = ({ offerPrice = 0, currencyCode = "AMD", userData = {} }) => {
+  onReset?: () => void;
+}> = ({ offerPrice = 0, currencyCode = "AMD", userData = {}, onReset }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { intake } = useAppSelector((state) => state.operator);
@@ -76,7 +77,10 @@ export const FinalOffer: FC<{
       await dispatch(
         rejectIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
+
       toast.success(t("finalOffer.success.rejected"));
+
+      onReset?.();
     } catch (error: unknown) {
       console.error("Error rejecting intake:", error);
       const errorMessage =
@@ -87,7 +91,7 @@ export const FinalOffer: FC<{
     } finally {
       setIsRejecting(false);
     }
-  }, [dispatch, intake, t, userData?.cashRegisterId]);
+  }, [dispatch, intake, t, userData?.cashRegisterId, onReset]);
 
   return (
     <div className={styles.finalOfferCard}>

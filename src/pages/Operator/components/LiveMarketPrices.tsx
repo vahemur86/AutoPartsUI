@@ -5,7 +5,7 @@ interface MetalPriceProps {
   name: string;
   price: string;
   source: string;
-  iconColor: "silver" | "gold";
+  iconColor: "platinum" | "palladium" | "rhodium";
 }
 
 const MetalPrice = ({ name, price, source, iconColor }: MetalPriceProps) => (
@@ -36,7 +36,6 @@ export const LiveMarketPrices = ({
 }: LiveMarketPricesProps) => {
   const { t } = useTranslation();
 
-  // Convert price per gram to price per kg (multiply by 1000)
   const formatPrice = (pricePerGram: number | undefined): string => {
     if (pricePerGram === undefined) {
       return t("liveMarketPrices.loading");
@@ -49,7 +48,6 @@ export const LiveMarketPrices = ({
     })}`;
   };
 
-  // Format update time
   const formatUpdateTime = (dateString?: string): string => {
     if (!dateString) {
       return t("liveMarketPrices.updated", {
@@ -86,19 +84,19 @@ export const LiveMarketPrices = ({
           name={t("liveMarketPrices.platinum")}
           price={formatPrice(ptPricePerGram)}
           source={t("liveMarketPrices.source")}
-          iconColor="silver"
+          iconColor="platinum"
         />
         <MetalPrice
           name={t("liveMarketPrices.palladium")}
           price={formatPrice(pdPricePerGram)}
           source={t("liveMarketPrices.source")}
-          iconColor="gold"
+          iconColor="palladium"
         />
         <MetalPrice
           name={t("liveMarketPrices.rhodium")}
           price={formatPrice(rhPricePerGram)}
           source={t("liveMarketPrices.source")}
-          iconColor="gold"
+          iconColor="rhodium"
         />
       </div>
 

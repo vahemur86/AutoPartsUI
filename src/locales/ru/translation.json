@@ -29,7 +29,10 @@
     "previous": "Предыдущая",
     "next": "Следующая",
     "page": "Страница",
-    "of": "из"
+    "of": "из",
+    "areYouSure": "Вы уверены, что хотите продолжить?",
+    "loading": "Загрузка...",
+    "select": "Выберите"
   },
   "currencies": {
     "USD": "Доллар США",
@@ -311,7 +314,7 @@
       "addNewBucket": "Добавить новый катализаторный бак"
     },
     "searchBucket": "Поиск по коду",
-    "searchGroup": "Поиск группового кода",
+    "searchGroup": "Поиск по групповому коду",
     "messages": {
       "searchToSeeResults": "Пожалуйста, выполните поиск по коду, чтобы увидеть результаты"
     },
@@ -358,6 +361,7 @@
   "cashRegisters": {
     "addCashRegister": "Добавить кассовый аппарат",
     "editCashRegister": "Редактировать кассовый аппарат",
+    "fetchingBalance": "Загрузка...",
     "form": {
       "shop": "Магазин",
       "selectShop": "Выберите магазин",
@@ -512,14 +516,17 @@
       "regular": "Обычный"
     },
     "validation": {
-      "enterPhoneNumber": "Пожалуйста, введите номер телефона"
+      "enterPhoneNumber": "Пожалуйста, введите номер телефона",
+      "enterCustomerPhone": "Пожалуйста, введите номер телефона клиента",
+      "invalidPhone": "Неверный номер телефона"
     },
     "success": {
       "customerFound": "Клиент найден",
       "customerAccepted": "Клиент принят"
     },
     "error": {
-      "failedToSearch": "Не удалось найти клиента"
+      "failedToSearch": "Не удалось найти клиента",
+      "missingData": "Необходимые данные отсутствуют"
     }
   },
   "liveMarketPrices": {
@@ -571,7 +578,16 @@
   },
   "operatorPage": {
     "title": "Операторский терминал",
-    "languageLoading": "Загрузка языков..."
+    "languageLoading": "Загрузка языков...",
+    "openSession": "Открыть смену",
+    "closeSession": "Закрыть смену",
+    "cashAmount": "Наличные в кассе",
+    "cashAmountPlaceholder": "Введите сумму наличных",
+    "success": {
+      "sessionOpened": "Смена успешно открыта",
+      "sessionClosed": "Смена успешно закрыта",
+      "intakeCreated": "Заявка успешно создана"
+    }
   },
   "customers": {
     "createOrGet": "Получить клиента",

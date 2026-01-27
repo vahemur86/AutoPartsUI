@@ -204,6 +204,13 @@ export interface CashRegisterBalance {
   openSessionId: number | null;
 }
 
+export interface GetCashRegisterSession {
+  hasOpenSession: boolean;
+  sessionId: number;
+  cashBoxId: number;
+  openedAtUtc: string;
+}
+
 export interface TopUpRequest {
   amount: number;
   currencyCode: string;
