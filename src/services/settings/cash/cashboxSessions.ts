@@ -14,8 +14,10 @@ import type {
   CashboxReport,
 } from "@/types/cash";
 
-const getHeaders = (cashRegisterId: number) => ({
-  "X-CashRegister-Id": cashRegisterId,
+const getHeaders = (cashRegisterId?: number) => ({
+  ...(cashRegisterId && {
+    "X-CashRegister-Id": cashRegisterId,
+  }),
 });
 
 export const closeCashRegisterSession = async ({
@@ -61,7 +63,7 @@ export const getZReports = async ({
 }: {
   fromDate?: string;
   toDate?: string;
-  cashRegisterId: number;
+  cashRegisterId?: number;
   page?: number;
   pageSize?: number;
 }) => {
