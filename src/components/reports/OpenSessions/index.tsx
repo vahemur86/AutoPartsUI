@@ -14,6 +14,7 @@ import { getOpenSessionsColumns } from "./columns";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
+import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./OpenSessions.module.css";
@@ -47,17 +48,6 @@ export const OpenSessions: FC = () => {
   }, [dispatch, t]);
 
   const columns = useMemo(() => getOpenSessionsColumns(), []);
-
-  const checkIsToday = (dateString: string) => {
-    if (!dateString) return false;
-    const today = new Date();
-    const date = new Date(dateString);
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
 
   // Client-side pagination
   const paginatedData = useMemo(() => {

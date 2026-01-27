@@ -482,12 +482,35 @@
         "lastActivity": "Последняя активность"
       }
     },
+    "powderBatches": {
+      "title": "Партии порошка",
+      "columns": {
+        "createdAt": "Создано в",
+        "intakes": "Кол-во заявок",
+        "weight": "Общий вес",
+        "ptTotal": "Платина всего",
+        "pdTotal": "Палладий всего",
+        "rhTotal": "Родий всего",
+        "status": "Статус"
+      },
+      "details": {
+        "analysis": "Анализ партии порошка",
+        "intakeId": "Заявка",
+        "powder": "Порошок",
+        "pt": "Платина (Pt)",
+        "pd": "Палладий (Pd)",
+        "rh": "Родий (Rh)",
+        "individualIntakes": "Отдельные заявки",
+        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация о товарах доступна в сводке партии выше."
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Не удалось загрузить Z-отчеты",
       "failedToFetchZReport": "Не удалось загрузить детали Z-отчета",
       "failedToFetchBatches": "Не удалось загрузить партии",
       "failedToFetchBatchDetails": "Не удалось загрузить элементы партии",
-      "failedToFetchOpenSessionsSummary": "Не удалось загрузить сводку открытых сессий"
+      "failedToFetchOpenSessionsSummary": "Не удалось загрузить сводку открытых сессий",
+      "failedToFetchPowderBatches": "Не удалось загрузить партии порошка"
     }
   },
   "products": {

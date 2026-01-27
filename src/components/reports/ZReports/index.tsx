@@ -18,6 +18,7 @@ import { getZReportColumns } from "./columns";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
+import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./ZReports.module.css";
@@ -166,17 +167,6 @@ export const ZReports: FC = () => {
   }, [dispatch, t]);
 
   const columns = useMemo(() => getZReportColumns(), []);
-
-  const checkIsToday = (dateString: string) => {
-    if (!dateString) return false;
-    const today = new Date();
-    const date = new Date(dateString);
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
 
   const totalPages = useMemo(
     () => Math.ceil((zReports?.totalItems || 0) / PAGE_SIZE),

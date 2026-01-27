@@ -482,12 +482,35 @@
         "lastActivity": "Վերջին ակտիվություն"
       }
     },
+    "powderBatches": {
+      "title": "Փոշու խմբաքանակներ",
+      "columns": {
+        "createdAt": "Ստեղծվել է",
+        "intakes": "Հարցումների քանակ",
+        "weight": "Ընդհանուր քաշ",
+        "ptTotal": "Պլատին ընդամենը",
+        "pdTotal": "Պալադիում ընդամենը",
+        "rhTotal": "Ռոդիում ընդամենը",
+        "status": "Կարգավիճակ"
+      },
+      "details": {
+        "analysis": "Փոշու խմբաքանակի վերլուծություն",
+        "intakeId": "Հարցում",
+        "powder": "Փոշի",
+        "pt": "Պլատին (Pt)",
+        "pd": "Պալադիում (Pd)",
+        "rh": "Ռոդիում (Rh)",
+        "individualIntakes": "Առանձին հարցումներ",
+        "summaryInfo": "Այս խմբաքանակը պարունակում է {{count}} հարցում(ներ): Մանրամասն տեղեկատվությունը հասանելի է վերևի խմբաքանակի ամփոփումում:"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Z-հաշվետվությունների բեռնումը ձախողվեց",
       "failedToFetchZReport": "Z-հաշվետվության մանրամասների բեռնումը ձախողվեց",
       "failedToFetchBatches": "Խմբաքանակների բեռնումը ձախողվեց",
       "failedToFetchBatchDetails": "Խմբաքանակի տարրերի բեռնումը ձախողվեց",
-      "failedToFetchOpenSessionsSummary": "Բացված հերթափոխերի ամփոփման բեռնումը ձախողվեց"
+      "failedToFetchOpenSessionsSummary": "Բացված հերթափոխերի ամփոփման բեռնումը ձախողվեց",
+      "failedToFetchPowderBatches": "Փոշու խմբաքանակների բեռնումը ձախողվեց"
     }
   },
   "products": {

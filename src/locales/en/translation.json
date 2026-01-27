@@ -482,12 +482,35 @@
         "lastActivity": "Last Activity"
       }
     },
+    "powderBatches": {
+      "title": "Powder Batches",
+      "columns": {
+        "createdAt": "Created At",
+        "intakes": "Intake Count",
+        "weight": "Total Weight",
+        "ptTotal": "Platinum Total",
+        "pdTotal": "Palladium Total",
+        "rhTotal": "Rhodium Total",
+        "status": "Status"
+      },
+      "details": {
+        "analysis": "Powder Batch Analysis",
+        "intakeId": "Intake",
+        "powder": "Powder",
+        "pt": "Platinum (Pt)",
+        "pd": "Palladium (Pd)",
+        "rh": "Rhodium (Rh)",
+        "individualIntakes": "Individual Intakes",
+        "summaryInfo": "This batch contains {{count}} intake(s). Detailed item information is available in the batch summary above."
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Failed to fetch Z-Reports",
       "failedToFetchZReport": "Failed to fetch Z-Report details",
       "failedToFetchBatches": "Failed to fetch batches",
       "failedToFetchBatchDetails": "Failed to fetch batch items",
-      "failedToFetchOpenSessionsSummary": "Failed to fetch open sessions summary"
+      "failedToFetchOpenSessionsSummary": "Failed to fetch open sessions summary",
+      "failedToFetchPowderBatches": "Failed to fetch powder batches"
     }
   },
   "products": {
