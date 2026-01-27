@@ -97,30 +97,79 @@
   right: 0;
   top: calc(100% + 6px);
   z-index: 100;
-
   background-color: #2a2a2a;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
-  max-height: 240px;
-  overflow-y: auto;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Enforce full-width children like search bar */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  min-width: 200px; /* Prevents dropdown from being too narrow for search input */
+}
+
+/* Search Styles */
+.searchContainer {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.02);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-white);
+  font-size: 14px;
+  font-family: "Manrope", sans-serif;
+  height: 24px;
+  width: 100%; /* Force input to fill container */
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Options List */
+.optionsList {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0;
+  width: 100%;
 }
 
 .option {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  justify-content: flex-start; /* Ensure left-aligned content */
+  gap: 12px;
+  padding: 10px 16px;
   background: transparent;
   border: none;
   outline: none;
-  border-radius: 0;
   color: var(--color-white);
   font-size: 14px;
   font-family: "Manrope", sans-serif;
   cursor: pointer;
   text-align: left;
+  box-sizing: border-box;
 }
 
 .option:hover:not(:disabled) {
@@ -128,7 +177,7 @@
 }
 
 .optionSelected {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(255, 255, 255, 0.12); /* Slightly higher visibility */
 }
 
 .optionDisabled {
@@ -140,9 +189,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 12px;
 }
 
+/* Decorative / Helper Styles */
 .selectIcon {
   display: flex;
   align-items: center;
@@ -166,13 +215,10 @@
   color: #ef4444;
 }
 
-.noOptions {
-  padding: 12px 16px;
+.noResults {
+  padding: 24px 16px;
   text-align: center;
-}
-
-.noOptionsText {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
   font-family: "Manrope", sans-serif;
 }
