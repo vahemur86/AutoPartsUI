@@ -504,13 +504,25 @@
         "summaryInfo": "This batch contains {{count}} intake(s). Detailed item information is available in the batch summary above."
       }
     },
+    "cashboxReport": {
+      "title": "Cashbox Report",
+      "columns": {
+        "cashBoxId": "Cash Box ID",
+        "date": "Date",
+        "openingBalance": "Opening Balance",
+        "cashIn": "Cash In",
+        "cashOut": "Cash Out",
+        "expectedClosingBalance": "Expected Closing Balance"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Failed to fetch Z-Reports",
       "failedToFetchZReport": "Failed to fetch Z-Report details",
       "failedToFetchBatches": "Failed to fetch batches",
       "failedToFetchBatchDetails": "Failed to fetch batch items",
       "failedToFetchOpenSessionsSummary": "Failed to fetch open sessions summary",
-      "failedToFetchPowderBatches": "Failed to fetch powder batches"
+      "failedToFetchPowderBatches": "Failed to fetch powder batches",
+      "failedToFetchCashboxReport": "Failed to fetch cashbox report"
     }
   },
   "products": {

@@ -504,13 +504,25 @@
         "summaryInfo": "Այս խմբաքանակը պարունակում է {{count}} հարցում(ներ): Մանրամասն տեղեկատվությունը հասանելի է վերևի խմբաքանակի ամփոփումում:"
       }
     },
+    "cashboxReport": {
+      "title": "Դրամարկղի հաշվետվություն",
+      "columns": {
+        "cashBoxId": "Դրամարկղի ID",
+        "date": "Ամսաթիվ",
+        "openingBalance": "Սկզբնական մնացորդ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "expectedClosingBalance": "Ակնկալվող փակման մնացորդ"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Z-հաշվետվությունների բեռնումը ձախողվեց",
       "failedToFetchZReport": "Z-հաշվետվության մանրամասների բեռնումը ձախողվեց",
       "failedToFetchBatches": "Խմբաքանակների բեռնումը ձախողվեց",
       "failedToFetchBatchDetails": "Խմբաքանակի տարրերի բեռնումը ձախողվեց",
       "failedToFetchOpenSessionsSummary": "Բացված հերթափոխերի ամփոփման բեռնումը ձախողվեց",
-      "failedToFetchPowderBatches": "Փոշու խմբաքանակների բեռնումը ձախողվեց"
+      "failedToFetchPowderBatches": "Փոշու խմբաքանակների բեռնումը ձախողվեց",
+      "failedToFetchCashboxReport": "Դրամարկղի հաշվետվության բեռնումը ձախողվեց"
     }
   },
   "products": {
