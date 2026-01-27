@@ -24,6 +24,7 @@ import {
   type CashRegisterForm,
 } from "./cashRegistersActions/CashRegisterDropdown";
 import { TopUpDropdown } from "./cashRegistersActions/TopUpDropdown";
+import { AssignOperatorDropdown } from "./cashRegistersActions/AssignOperatorDropdown";
 
 // columns
 import { getCashRegisterColumns } from "./columns";
@@ -39,13 +40,10 @@ import {
 import { fetchShops } from "@/store/slices/shopsSlice";
 
 // services
-import {
-  topUpCashRegister as topUpCashRegisterService,
-  type TopUpRequest,
-} from "@/services/settings/cashRegisters";
+import { topUpCashRegister as topUpCashRegisterService } from "@/services/settings/cashRegisters";
 
 // types
-import type { CashRegister } from "@/types/settings";
+import type { CashRegister, TopUpRequest } from "@/types/settings";
 
 // styles
 import styles from "./CashRegisters.module.css";
@@ -58,9 +56,12 @@ export const CashRegisters: FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTopUpDropdownOpen, setIsTopUpDropdownOpen] = useState(false);
+  const [isAssignDropdownOpen, setIsAssignDropdownOpen] = useState(false);
   const [activeCashRegister, setActiveCashRegister] =
     useState<CashRegister | null>(null);
   const [topUpCashRegister, setTopUpCashRegister] =
+    useState<CashRegister | null>(null);
+  const [assignCashRegister, setAssignCashRegister] =
     useState<CashRegister | null>(null);
   const [deletingCashRegister, setDeletingCashRegister] =
     useState<CashRegister | null>(null);
@@ -68,6 +69,7 @@ export const CashRegisters: FC = () => {
 
   const anchorRef = useRef<HTMLElement | null>(null);
   const topUpAnchorRef = useRef<HTMLElement | null>(null);
+  const assignAnchorRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     dispatch(fetchShops());
@@ -97,6 +99,15 @@ export const CashRegisters: FC = () => {
       topUpAnchorRef.current = e.currentTarget;
       setTopUpCashRegister(cashRegister);
       setIsTopUpDropdownOpen(true);
+    },
+    [],
+  );
+
+  const handleOpenAssignOperator = useCallback(
+    (cashRegister: CashRegister, e: React.MouseEvent<HTMLElement>) => {
+      assignAnchorRef.current = e.currentTarget;
+      setAssignCashRegister(cashRegister);
+      setIsAssignDropdownOpen(true);
     },
     [],
   );
@@ -184,14 +195,19 @@ export const CashRegisters: FC = () => {
     [topUpCashRegister, t],
   );
 
+  const handleAssignedOperator = useCallback(() => {
+    toast.success(t("cashRegisters.assignOperator.success"));
+  }, [t]);
+
   const columns = useMemo(
     () =>
       getCashRegisterColumns({
         onEdit: handleOpenEdit,
         onTopUp: handleOpenTopUp,
+        onAssignOperator: handleOpenAssignOperator,
         onDelete: (cashRegister) => setDeletingCashRegister(cashRegister),
       }),
-    [handleOpenEdit, handleOpenTopUp],
+    [handleOpenEdit, handleOpenTopUp, handleOpenAssignOperator],
   );
 
   return (
@@ -247,6 +263,17 @@ export const CashRegisters: FC = () => {
         />
       )}
 
+      {assignCashRegister && (
+        <AssignOperatorDropdown
+          open={isAssignDropdownOpen}
+          anchorRef={assignAnchorRef}
+          cashRegister={assignCashRegister}
+          isLoading={isMutating}
+          onOpenChange={setIsAssignDropdownOpen}
+          onAssigned={handleAssignedOperator}
+        />
+      )}
+
       {!!deletingCashRegister && (
         <ConfirmationModal
           open={!!deletingCashRegister}
@@ -271,4 +298,3 @@ export const CashRegisters: FC = () => {
     </div>
   );
 };
-

@@ -3,6 +3,9 @@ import api from ".";
 // utils
 import { getApiErrorMessage } from "@/utils";
 
+// types
+import type { Operator } from "@/types/settings";
+
 export const createUser = async (
   username: string | null,
   password: string | null,
@@ -64,5 +67,31 @@ export const updateUser = async (
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to update user."));
+  }
+};
+
+export const getOperators = async ({
+  role,
+  cashRegisterId,
+  shopId,
+}: {
+  role?: number;
+  cashRegisterId?: number;
+  shopId?: number;
+} = {}): Promise<Operator[]> => {
+  try {
+    const response = await api.get<Operator[]>(`/Users/operators`, {
+      params: {
+        role,
+        shopId,
+      },
+      headers:
+        cashRegisterId !== undefined
+          ? { "X-CashRegister-Id": cashRegisterId }
+          : undefined,
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get operators."));
   }
 };

@@ -134,3 +134,29 @@ export const closeCashRegisterSession = async ({
     throw new Error(getApiErrorMessage(error, "Failed to close session."));
   }
 };
+
+export const assignOperatorToCashRegister = async ({
+  cashRegisterId,
+  userId,
+}: {
+  cashRegisterId: number;
+  userId: number;
+}) => {
+  try {
+    console.log(cashRegisterId, "000cashRegisterId");
+    const response = await api.post(
+      `/cash-registers/${cashRegisterId}/operators`,
+      { userId },
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to assign operator to register."),
+    );
+  }
+};

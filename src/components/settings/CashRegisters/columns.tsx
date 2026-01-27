@@ -17,6 +17,7 @@ export const getCashRegisterColumns = (
     onEdit,
     onDelete,
     onTopUp,
+    onAssignOperator,
   }: {
     onEdit: (
       cashRegister: CashRegister,
@@ -24,6 +25,10 @@ export const getCashRegisterColumns = (
     ) => void;
     onDelete: (cashRegister: CashRegister) => void;
     onTopUp: (
+      cashRegister: CashRegister,
+      e: React.MouseEvent<HTMLElement>,
+    ) => void;
+    onAssignOperator: (
       cashRegister: CashRegister,
       e: React.MouseEvent<HTMLElement>,
     ) => void;
@@ -64,6 +69,13 @@ export const getCashRegisterColumns = (
           onClick={(e) => onTopUp(row.original, e)}
         >
           {i18next.t("cashRegisters.topUp.button")}
+        </Button>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={(e) => onAssignOperator(row.original, e)}
+        >
+          {i18next.t("cashRegisters.assignOperator.button")}
         </Button>
         <Button
           variant="danger"
