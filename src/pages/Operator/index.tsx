@@ -29,6 +29,7 @@ import {
   clearError as clearCashError,
   openSession,
   closeSession,
+  getSession,
 } from "@/store/slices/cashRegistersSlice";
 
 // ui-kit
@@ -67,6 +68,7 @@ export const OperatorPage = () => {
   const {
     cashRegisterBalance,
     sessionId,
+    hasOpenSession,
     error: cashRegistersError,
     isLoading: isBalanceLoading,
   } = useAppSelector((state) => state.cashRegisters);
@@ -79,11 +81,9 @@ export const OperatorPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
   const [showCashAmount, setShowCashAmount] = useState(false);
-
-  // Modal State
   const [isCloseSessionModalOpen, setIsCloseSessionModalOpen] = useState(false);
 
-  const isSessionOpen = !!sessionId;
+  const isSessionOpen = hasOpenSession;
 
   const [formData, setFormData] = useState({
     powderWeight: "0",
@@ -150,14 +150,13 @@ export const OperatorPage = () => {
     );
     setUserData(localeStorageData);
 
-    if (localeStorageData?.cashRegisterId) {
+    const crId = localeStorageData?.cashRegisterId;
+    if (crId) {
       dispatch(
-        fetchActiveMetalRate({
-          cashRegisterId: localeStorageData.cashRegisterId,
-          currencyCode: "USD",
-        }),
+        fetchActiveMetalRate({ cashRegisterId: crId, currencyCode: "USD" }),
       );
-      dispatch(fetchLanguages(localeStorageData.cashRegisterId));
+      dispatch(fetchLanguages(crId));
+      dispatch(getSession(crId));
     }
   }, [dispatch]);
 
@@ -363,6 +362,8 @@ export const OperatorPage = () => {
               <TextField
                 label={t("operatorPage.cashAmount")}
                 type={showCashAmount ? "text" : "password"}
+                name="cash-amount-display"
+                autoComplete="new-password"
                 placeholder={t("operatorPage.cashAmountPlaceholder")}
                 value={displayBalance}
                 className={styles.textField}
