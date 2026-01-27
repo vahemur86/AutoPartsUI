@@ -250,9 +250,19 @@ export const CashRegisters: FC = () => {
     [topUpCashRegister, t],
   );
 
-  const handleAssignedOperator = useCallback(() => {
-    toast.success(t("cashRegisters.assignOperator.success"));
-  }, [t]);
+  const handleAssignedOperator = useCallback(async () => {
+    if (assignCashRegister) {
+      try {
+        const operators = await getCashRegisterOperators(assignCashRegister.id);
+        setRegisterOperators((prev) => ({
+          ...prev,
+          [assignCashRegister.id]: operators,
+        }));
+      } catch (error) {
+        console.error("Failed to refresh operators after assignment:", error);
+      }
+    }
+  }, [assignCashRegister]);
 
   const getAssignedOperatorLabel = useCallback(
     (cashRegisterId: number) => {

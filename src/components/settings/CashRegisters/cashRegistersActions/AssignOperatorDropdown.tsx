@@ -1,12 +1,16 @@
 import { useEffect, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 // ui-kit
 import { Button, Dropdown, Select } from "@/ui-kit";
 
 // services
 import { getOperators } from "@/services/users";
-import { assignOperatorToCashRegister } from "@/services/settings/cash/registers";
+
+// stores
+import { useAppDispatch } from "@/store/hooks";
+import { assignOperator } from "@/store/slices/cash/registersSlice";
 
 // types
 import type { CashRegister, Operator } from "@/types/cash/registers";
@@ -34,6 +38,7 @@ export const AssignOperatorDropdown = ({
   onAssigned,
 }: AssignOperatorDropdownProps) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   const [operators, setOperators] = useState<Operator[]>([]);
   const [selectedOperatorId, setSelectedOperatorId] = useState<string>("");
@@ -83,14 +88,23 @@ export const AssignOperatorDropdown = ({
     if (!isOperatorValid) return;
 
     try {
-      await assignOperatorToCashRegister({
-        cashRegisterId: cashRegister.id,
-        userId: Number(selectedOperatorId),
-      });
+      await dispatch(
+        assignOperator({
+          cashRegisterId: cashRegister.id,
+          userId: Number(selectedOperatorId),
+        }),
+      ).unwrap();
+      toast.success(t("cashRegisters.assignOperator.success"));
       onAssigned();
       onOpenChange(false);
     } catch (error) {
-      console.error("Failed to assign operator:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t("cashRegisters.assignOperator.error", {
+              defaultValue: "Failed to assign operator",
+            });
+      toast.error(errorMessage);
     }
   };
 

@@ -13,6 +13,7 @@ import {
   getCashRegisterBalance,
   topUpCashRegister,
   openCashRegisterSession,
+  assignOperatorToCashRegister,
 } from "@/services/settings/cash/registers";
 
 // utils
@@ -138,6 +139,23 @@ export const openSession = createAsyncThunk<
   }
 });
 
+export const assignOperator = createAsyncThunk<
+  void,
+  { cashRegisterId: number; userId: number },
+  { rejectValue: string }
+>(
+  "cashRegisters/assignOperator",
+  async ({ cashRegisterId, userId }, { rejectWithValue }) => {
+    try {
+      await assignOperatorToCashRegister({ cashRegisterId, userId });
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to assign operator to register"),
+      );
+    }
+  },
+);
+
 // --- Slice ---
 
 const cashRegistersSlice = createSlice({
@@ -186,6 +204,9 @@ const cashRegistersSlice = createSlice({
       .addCase(openSession.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentSessionId = action.payload.sessionId;
+      })
+      .addCase(assignOperator.fulfilled, (state) => {
+        state.isLoading = false;
       })
 
       // Global Matchers
