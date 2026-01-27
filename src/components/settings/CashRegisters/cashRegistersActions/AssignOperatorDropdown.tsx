@@ -19,6 +19,7 @@ interface AssignOperatorDropdownProps {
   anchorRef?: RefObject<HTMLElement | null>;
   cashRegister: CashRegister;
   isLoading?: boolean;
+  assignedUserIds?: number[];
   onOpenChange: (open: boolean) => void;
   onAssigned: () => void;
 }
@@ -28,6 +29,7 @@ export const AssignOperatorDropdown = ({
   anchorRef,
   cashRegister,
   isLoading = false,
+  assignedUserIds = [],
   onOpenChange,
   onAssigned,
 }: AssignOperatorDropdownProps) => {
@@ -40,12 +42,11 @@ export const AssignOperatorDropdown = ({
 
   useEffect(() => {
     if (open) {
-      setSelectedOperatorId("");
       setHasTriedSave(false);
       fetchOperators();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, cashRegister.id]);
+  }, [open, cashRegister.id, assignedUserIds]);
 
   const fetchOperators = async () => {
     try {
@@ -56,6 +57,16 @@ export const AssignOperatorDropdown = ({
         cashRegisterId: cashRegister.id,
       });
       setOperators(data);
+
+      // Preselect the first already-assigned operator, if any exist in the list
+      const defaultAssignedId =
+        assignedUserIds.find((assignedId) =>
+          data.some((op) => op.id === assignedId),
+        ) ?? null;
+
+      setSelectedOperatorId(
+        defaultAssignedId !== null ? String(defaultAssignedId) : "",
+      );
     } catch (error) {
       console.error("Failed to fetch operators:", error);
     } finally {
@@ -116,11 +127,24 @@ export const AssignOperatorDropdown = ({
               <option value="">
                 {t("cashRegisters.assignOperator.selectOperator")}
               </option>
-              {operators.map((op) => (
-                <option key={op.id} value={op.id}>
-                  {op.username}
-                </option>
-              ))}
+              {operators.map((op) => {
+                const isAlreadyAssigned = assignedUserIds.includes(op.id);
+                const assignedLabel = t(
+                  "cashRegisters.assignOperator.alreadyAssigned",
+                  { defaultValue: "assigned" },
+                );
+
+                return (
+                  <option
+                    key={op.id}
+                    value={op.id}
+                    disabled={isAlreadyAssigned}
+                  >
+                    {op.username}
+                    {isAlreadyAssigned ? ` (${assignedLabel})` : ""}
+                  </option>
+                );
+              })}
             </Select>
           </div>
         )}

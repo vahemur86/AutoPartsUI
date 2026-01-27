@@ -40,7 +40,11 @@ import {
 import { fetchShops } from "@/store/slices/shopsSlice";
 
 // services
-import { topUpCashRegister as topUpCashRegisterService } from "@/services/settings/cashRegisters";
+import {
+  topUpCashRegister as topUpCashRegisterService,
+  getCashRegisterOperators,
+  type CashRegisterOperatorLink,
+} from "@/services/settings/cashRegisters";
 
 // types
 import type { CashRegister, TopUpRequest } from "@/types/settings";
@@ -67,6 +71,10 @@ export const CashRegisters: FC = () => {
     useState<CashRegister | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
+  const [registerOperators, setRegisterOperators] = useState<
+    Record<number, CashRegisterOperatorLink[] | null>
+  >({});
+
   const anchorRef = useRef<HTMLElement | null>(null);
   const topUpAnchorRef = useRef<HTMLElement | null>(null);
   const assignAnchorRef = useRef<HTMLElement | null>(null);
@@ -78,6 +86,49 @@ export const CashRegisters: FC = () => {
   useEffect(() => {
     dispatch(fetchCashRegisters(undefined));
   }, [dispatch]);
+
+  useEffect(() => {
+    const fetchRegisterOperators = async () => {
+      if (!cashRegisters.length) {
+        setRegisterOperators({});
+        return;
+      }
+
+      try {
+        const operatorsByRegisterEntries = await Promise.all(
+          cashRegisters.map(async (register) => {
+            try {
+              const operators = await getCashRegisterOperators(register.id);
+              return [
+                register.id,
+                operators as CashRegisterOperatorLink[] | null,
+              ] as const;
+            } catch (error) {
+              console.error(
+                "Failed to fetch operators for cash register:",
+                register.id,
+                error,
+              );
+              return [register.id, null] as const;
+            }
+          }),
+        );
+
+        setRegisterOperators(
+          operatorsByRegisterEntries.reduce<
+            Record<number, CashRegisterOperatorLink[] | null>
+          >((acc, [id, operators]) => {
+            acc[id] = operators;
+            return acc;
+          }, {}),
+        );
+      } catch (error) {
+        console.error("Failed to fetch cash register operators:", error);
+      }
+    };
+
+    void fetchRegisterOperators();
+  }, [cashRegisters]);
 
   const handleOpenAdd = useCallback((e: React.MouseEvent<HTMLElement>) => {
     anchorRef.current = e.currentTarget;
@@ -199,6 +250,34 @@ export const CashRegisters: FC = () => {
     toast.success(t("cashRegisters.assignOperator.success"));
   }, [t]);
 
+  const getAssignedOperatorLabel = useCallback(
+    (cashRegisterId: number) => {
+      const operators = registerOperators[cashRegisterId];
+
+      if (!operators || operators.length === 0) {
+        return t("cashRegisters.assignedOperator.notAssigned", {
+          defaultValue: t("cashRegisters.assignOperator.noOperator", {
+            defaultValue: "No operator assigned",
+          }),
+        });
+      }
+
+      const activeOperators = operators.filter((op) => op.isActive);
+      if (!activeOperators.length) {
+        return t("cashRegisters.assignedOperator.notAssigned", {
+          defaultValue: t("cashRegisters.assignOperator.noOperator", {
+            defaultValue: "No operator assigned",
+          }),
+        });
+      }
+
+      return activeOperators
+        .map((op) => op.username || String(op.userId))
+        .join(", ");
+    },
+    [registerOperators, t],
+  );
+
   const columns = useMemo(
     () =>
       getCashRegisterColumns({
@@ -206,8 +285,14 @@ export const CashRegisters: FC = () => {
         onTopUp: handleOpenTopUp,
         onAssignOperator: handleOpenAssignOperator,
         onDelete: (cashRegister) => setDeletingCashRegister(cashRegister),
+        getAssignedOperator: getAssignedOperatorLabel,
       }),
-    [handleOpenEdit, handleOpenTopUp, handleOpenAssignOperator],
+    [
+      handleOpenEdit,
+      handleOpenTopUp,
+      handleOpenAssignOperator,
+      getAssignedOperatorLabel,
+    ],
   );
 
   return (
@@ -269,6 +354,11 @@ export const CashRegisters: FC = () => {
           anchorRef={assignAnchorRef}
           cashRegister={assignCashRegister}
           isLoading={isMutating}
+          assignedUserIds={
+            registerOperators[assignCashRegister.id]
+              ?.filter((op) => op.isActive)
+              .map((op) => op.userId) ?? []
+          }
           onOpenChange={setIsAssignDropdownOpen}
           onAssigned={handleAssignedOperator}
         />

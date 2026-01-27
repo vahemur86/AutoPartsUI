@@ -77,6 +77,30 @@ export const getCashRegisterBalance = async (cashRegisterId: number) => {
   }
 };
 
+export interface CashRegisterOperatorLink {
+  userId: number;
+  isActive: boolean;
+  username: string;
+}
+
+export const getCashRegisterOperators = async (cashRegisterId: number) => {
+  try {
+    const response = await api.get<CashRegisterOperatorLink[]>(
+      `/cash-registers/${cashRegisterId}/operators`,
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get cash register operators."),
+    );
+  }
+};
+
 export const topUpCashRegister = async (
   id: number,
   topUpData: TopUpRequest,
