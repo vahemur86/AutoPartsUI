@@ -1,4 +1,6 @@
 import type { Preview } from "@storybook/react";
+
+// styles
 import "../src/index.css";
 
 const preview: Preview = {
@@ -11,17 +13,17 @@ const preview: Preview = {
     },
 
     backgrounds: {
-      default: "dark",
-      values: [
-        {
+      options: {
+        dark: {
           name: "dark",
           value: "#0e0f11",
         },
-        {
+
+        light: {
           name: "light",
           value: "#ffffff",
-        },
-      ],
+        }
+      }
     },
 
     a11y: {
@@ -31,6 +33,12 @@ const preview: Preview = {
       test: "todo"
     }
   },
+
+  initialGlobals: {
+    backgrounds: {
+      value: "dark"
+    }
+  }
 };
 
 export default preview;
