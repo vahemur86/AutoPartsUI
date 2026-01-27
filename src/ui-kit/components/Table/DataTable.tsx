@@ -1,4 +1,4 @@
-import { useState, useMemo, type ReactNode } from "react";
+import { useState, useMemo, Fragment, type ReactNode } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,8 +12,8 @@ import {
   type RowSelectionState,
   type GroupingState,
   type ExpandedState,
+  type Row,
 } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight } from "lucide-react";
 
 // ui-kit
 import { Checkbox } from "../Checkbox";
@@ -33,8 +33,8 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange?: (pageIndex: number) => void;
   renderBottomLeft?: () => ReactNode;
   groupBy?: string[];
-  // New prop to handle dynamic row styling
   getRowClassName?: (row: TData) => string;
+  renderSubComponent?: (props: { row: Row<TData> }) => ReactNode;
 }
 
 export const DataTable = <TData, TValue>({
@@ -49,6 +49,7 @@ export const DataTable = <TData, TValue>({
   renderBottomLeft,
   groupBy = [],
   getRowClassName,
+  renderSubComponent,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -103,10 +104,20 @@ export const DataTable = <TData, TValue>({
       grouping,
       expanded,
     },
+    getRowCanExpand: () => !!renderSubComponent,
+    onExpandedChange: (updater) => {
+      const nextExpanded =
+        typeof updater === "function" ? updater(expanded) : updater;
+      const latestExpandedKey = Object.keys(nextExpanded).find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (key) => !(expanded as any)[key],
+      );
+
+      setExpanded(latestExpandedKey ? { [latestExpandedKey]: true } : {});
+    },
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onGroupingChange: setGrouping,
-    onExpandedChange: setExpanded,
     onPaginationChange: (updater) => {
       const currentPagination =
         manualPagination && controlledPageIndex !== undefined
@@ -187,72 +198,61 @@ export const DataTable = <TData, TValue>({
           <TableBody className={styles.tableBody}>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => {
-                // Calculate the dynamic class for this specific row
                 const rowCustomClass = getRowClassName
                   ? getRowClassName(row.original)
                   : "";
 
                 return (
-                  <TableRow
-                    key={row.id}
-                    className={`${styles.tableRow} ${rowCustomClass}`}
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      const isSelect = cell.column.id === "select";
+                  <Fragment key={row.id}>
+                    <TableRow
+                      className={`${styles.tableRow} ${rowCustomClass}`}
+                      data-state={
+                        row.getIsExpanded() ? "expanded" : "collapsed"
+                      }
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const isSelect = cell.column.id === "select";
 
-                      if (cell.getIsGrouped()) {
+                        if (
+                          cell.getIsGrouped() ||
+                          cell.getIsAggregated() ||
+                          cell.getIsPlaceholder()
+                        ) {
+                          return null;
+                        }
+
                         return (
                           <TableCell
                             key={cell.id}
-                            colSpan={tableColumns.length}
-                            className={styles.groupHeaderCell}
-                          >
-                            <button
-                              onClick={row.getToggleExpandedHandler()}
-                              className={styles.groupExpandButton}
-                            >
-                              {row.getIsExpanded() ? (
-                                <ChevronDown size={16} />
-                              ) : (
-                                <ChevronRight size={16} />
-                              )}
-                              <strong>
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                )}
-                              </strong>
-                              ({row.subRows.length})
-                            </button>
-                          </TableCell>
-                        );
-                      }
-
-                      if (cell.getIsAggregated() || cell.getIsPlaceholder()) {
-                        return null;
-                      }
-
-                      return (
-                        <TableCell
-                          key={cell.id}
-                          className={
-                            isSelect ? styles.selectionCell : styles.tableCell
-                          }
-                        >
-                          <div
                             className={
-                              isSelect ? styles.selectionCellContent : ""
+                              isSelect ? styles.selectionCell : styles.tableCell
                             }
                           >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
+                            <div
+                              className={
+                                isSelect ? styles.selectionCellContent : ""
+                              }
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </div>
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+
+                    {row.getIsExpanded() && renderSubComponent && (
+                      <TableRow className={styles.expandedDetailRow}>
+                        <TableCell colSpan={row.getVisibleCells().length}>
+                          <div className={styles.expandedDetailContent}>
+                            {renderSubComponent({ row })}
                           </div>
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
+                      </TableRow>
+                    )}
+                  </Fragment>
                 );
               })
             ) : (
@@ -270,9 +270,7 @@ export const DataTable = <TData, TValue>({
       </div>
 
       <div className={styles.tableFooter}>
-        <div className={styles.footerLeft}>
-          {renderBottomLeft ? renderBottomLeft() : null}
-        </div>
+        <div className={styles.footerLeft}>{renderBottomLeft?.()}</div>
         <div className={styles.pagination}>
           <button
             onClick={() => table.previousPage()}
