@@ -63,6 +63,15 @@
       "cashRegisters": "Кассовые аппараты"
     }
   },
+  "reports": {
+    "navigation": {
+      "zReports": "Z-отчеты",
+      "batchReports": "Отчеты по партиям",
+      "openSessions": "Открытые сессии",
+      "powderBatches": "Партии порошка",
+      "cashboxSessionsReports": "Отчеты сессий кассы"
+    }
+  },
   "exchangeRates": {
     "createNew": "Создать курсы валют",
     "addExchangeRate": "Добавить курс валют",

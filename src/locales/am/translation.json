@@ -63,6 +63,15 @@
       "cashRegisters": "Դրամարկղեր"
     }
   },
+  "reports": {
+    "navigation": {
+      "zReports": "Z-Հաշվետվություններ",
+      "batchReports": "Խմբաքանակի հաշվետվություններ",
+      "openSessions": "Բաց հերթափոխեր",
+      "powderBatches": "Փոշու խմբաքանակներ",
+      "cashboxSessionsReports": "Դրամարկղի հերթափոխի հաշվետվություններ"
+    }
+  },
   "exchangeRates": {
     "createNew": "Ստեղծել փոխարժեքներ",
     "addExchangeRate": "Ավելացնել փոխարժեք",

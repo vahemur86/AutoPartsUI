@@ -63,6 +63,15 @@
       "cashRegisters": "Cash Registers"
     }
   },
+  "reports": {
+    "navigation": {
+      "zReports": "Z Reports",
+      "batchReports": "Batch Reports",
+      "openSessions": "Open Sessions",
+      "powderBatches": "Powder Batches",
+      "cashboxSessionsReports": "Cashbox Sessions Reports"
+    }
+  },
   "exchangeRates": {
     "createNew": "Create Exchange Rates",
     "addExchangeRate": "Add Exchange Rate",

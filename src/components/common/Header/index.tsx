@@ -1,17 +1,26 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Bell, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+// ui-kit
 import { Tab } from "@/ui-kit";
-import { useLocation, useNavigate } from "react-router-dom";
+
+// stores
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 
-import styles from "./Header.module.css";
+// icons
+import { Bell, LogOut } from "lucide-react";
 import logoImage from "@/assets/icons/Subtract.svg";
+
+// hooks
+import { useActiveRoute } from "@/hooks/useIsActive";
+
+// styles
+import styles from "./Header.module.css";
 
 export const Header = () => {
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -19,16 +28,7 @@ export const Header = () => {
   const avatarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const isActive = (path: string) => {
-    // For settings, check if pathname starts with /settings (to include nested routes)
-    if (path === "/settings") {
-      return (
-        location.pathname === path || location.pathname.startsWith("/settings/")
-      );
-    }
-    // For other paths, use exact match
-    return location.pathname === path;
-  };
+  const { isActive } = useActiveRoute();
 
   // Close dropdown when clicking outside
   useEffect(() => {
