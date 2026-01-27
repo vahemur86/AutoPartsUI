@@ -13,7 +13,7 @@ import {
   type GroupingState,
   type ExpandedState,
 } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight } from "lucide-react"; // Import Lucide icons
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 // ui-kit
 import { Checkbox } from "../Checkbox";
@@ -32,8 +32,9 @@ interface DataTableProps<TData, TValue> {
   pageIndex?: number;
   onPaginationChange?: (pageIndex: number) => void;
   renderBottomLeft?: () => ReactNode;
-  // New props for grouping
   groupBy?: string[];
+  // New prop to handle dynamic row styling
+  getRowClassName?: (row: TData) => string;
 }
 
 export const DataTable = <TData, TValue>({
@@ -46,7 +47,8 @@ export const DataTable = <TData, TValue>({
   pageIndex: controlledPageIndex,
   onPaginationChange,
   renderBottomLeft,
-  groupBy = [], // Pass the ID of the column you want to group by
+  groupBy = [],
+  getRowClassName,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -184,73 +186,75 @@ export const DataTable = <TData, TValue>({
           </TableHeader>
           <TableBody className={styles.tableBody}>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className={styles.tableRow}>
-                  {row.getVisibleCells().map((cell) => {
-                    const isSelect = cell.column.id === "select";
+              table.getRowModel().rows.map((row) => {
+                // Calculate the dynamic class for this specific row
+                const rowCustomClass = getRowClassName
+                  ? getRowClassName(row.original)
+                  : "";
 
-                    // Logic for Grouping UI (The Subheader)
-                    if (cell.getIsGrouped()) {
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={`${styles.tableRow} ${rowCustomClass}`}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const isSelect = cell.column.id === "select";
+
+                      if (cell.getIsGrouped()) {
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            colSpan={tableColumns.length}
+                            className={styles.groupHeaderCell}
+                          >
+                            <button
+                              onClick={row.getToggleExpandedHandler()}
+                              className={styles.groupExpandButton}
+                            >
+                              {row.getIsExpanded() ? (
+                                <ChevronDown size={16} />
+                              ) : (
+                                <ChevronRight size={16} />
+                              )}
+                              <strong>
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
+                                )}
+                              </strong>
+                              ({row.subRows.length})
+                            </button>
+                          </TableCell>
+                        );
+                      }
+
+                      if (cell.getIsAggregated() || cell.getIsPlaceholder()) {
+                        return null;
+                      }
+
                       return (
                         <TableCell
                           key={cell.id}
-                          colSpan={tableColumns.length}
-                          className={styles.groupHeaderCell}
-                        >
-                          <button
-                            {...{
-                              onClick: row.getToggleExpandedHandler(),
-                              // The styling for this button is now handled in Table.module.css (.groupHeaderCell button)
-                            }}
-                          >
-                            {/* Replaced emojis with Lucide icons */}
-                            {row.getIsExpanded() ? (
-                              <ChevronDown size={16} />
-                            ) : (
-                              <ChevronRight size={16} />
-                            )}
-                            <strong>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
-                            </strong>
-                            ({row.subRows.length})
-                          </button>
-                        </TableCell>
-                      );
-                    }
-
-                    if (cell.getIsAggregated()) {
-                      return null; // Don't render cells that are hidden by grouping
-                    }
-
-                    if (cell.getIsPlaceholder()) {
-                      return null; // Don't render placeholder cells
-                    }
-
-                    return (
-                      <TableCell
-                        key={cell.id}
-                        className={
-                          isSelect ? styles.selectionCell : styles.tableCell
-                        }
-                      >
-                        <div
                           className={
-                            isSelect ? styles.selectionCellContent : ""
+                            isSelect ? styles.selectionCell : styles.tableCell
                           }
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </div>
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))
+                          <div
+                            className={
+                              isSelect ? styles.selectionCellContent : ""
+                            }
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </div>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell

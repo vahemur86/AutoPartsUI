@@ -426,6 +426,23 @@
       "error": "Не удалось назначить оператора"
     }
   },
+  "cashbox": {
+    "zReports": {
+      "title": "Z-отчеты",
+      "columns": {
+        "openedAt": "Открыт в",
+        "closedAt": "Закрыт в",
+        "intakeCount": "Количество заявок",
+        "totalPurchases": "Всего покупок",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "difference": "Разница"
+      }
+    },
+    "errors": {
+      "failedToFetchZReports": "Не удалось загрузить Z-отчеты"
+    }
+  },
   "products": {
     "iconAlt": "Иконка товаров"
   },

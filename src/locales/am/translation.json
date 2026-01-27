@@ -426,6 +426,23 @@
       "error": "Օպերատորի նշանակումը ձախողվեց"
     }
   },
+  "cashbox": {
+    "zReports": {
+      "title": "Z-Հաշվետվություններ",
+      "columns": {
+        "openedAt": "Բացվել է",
+        "closedAt": "Փակվել է",
+        "intakeCount": "Հարցումների քանակ",
+        "totalPurchases": "Ընդհանուր գնումներ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "difference": "Տարբերություն"
+      }
+    },
+    "errors": {
+      "failedToFetchZReports": "Z-հաշվետվությունների բեռնումը ձախողվեց"
+    }
+  },
   "products": {
     "iconAlt": "Ապրանքների պատկերակ"
   },

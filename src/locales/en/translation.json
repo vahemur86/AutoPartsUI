@@ -426,6 +426,23 @@
       "error": "Failed to assign operator"
     }
   },
+  "cashbox": {
+    "zReports": {
+      "title": "Z Reports",
+      "columns": {
+        "openedAt": "Opened At",
+        "closedAt": "Closed At",
+        "intakeCount": "Intake Count",
+        "totalPurchases": "Total Purchases",
+        "cashIn": "Cash In",
+        "cashOut": "Cash Out",
+        "difference": "Difference"
+      }
+    },
+    "errors": {
+      "failedToFetchZReports": "Failed to fetch Z-Reports"
+    }
+  },
   "products": {
     "iconAlt": "Products icon"
   },
