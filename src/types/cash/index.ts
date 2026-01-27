@@ -9,7 +9,15 @@ export type {
   ZReportResponse,
 } from "./cashboxSessions";
 
-export type { OpenSession, OpenSessionSummary } from "./dashboard";
+export type {
+  OpenSession,
+  OpenSessionSummary,
+  PowderBatch,
+  PowderBatchItem,
+  PowderBatchDetails,
+  PowderBatchResponse,
+  GetPowderBatchesParams,
+} from "./dashboard";
 
 export type { GetRegisterSession } from "./sessions";
 

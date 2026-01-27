@@ -139,17 +139,15 @@ export const getBatchDetails = async ({
 };
 
 export const getCashboxReport = async ({
-  cashboxId,
   cashRegisterId,
   date,
 }: {
-  cashboxId: number;
   cashRegisterId: number;
   date?: string;
 }) => {
   try {
     const { data } = await api.get<CashboxReport>(
-      `/cashbox-sessions/${cashboxId}/reports/cash`,
+      `/cashbox-sessions/${cashRegisterId}/reports/cash`,
       {
         params: { date },
         headers: getHeaders(cashRegisterId),

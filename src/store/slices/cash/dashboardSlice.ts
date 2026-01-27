@@ -8,10 +8,16 @@ import {
 import {
   getOpenSessions,
   getOpenSessionsSummary,
+  getPowderBatches,
 } from "@/services/settings/cash/dashboard";
 
 // types
-import type { OpenSession, OpenSessionSummary } from "@/types/cash";
+import type {
+  OpenSession,
+  OpenSessionSummary,
+  PowderBatch,
+  PowderBatchResponse,
+} from "@/types/cash";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
@@ -19,6 +25,8 @@ import { getApiErrorMessage } from "@/utils";
 interface CashDashboardState {
   openSessions: OpenSession[];
   openSessionsSummary: OpenSessionSummary[];
+  powderBatches: PowderBatchResponse | null;
+  selectedPowderBatch: PowderBatch | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -26,6 +34,8 @@ interface CashDashboardState {
 const initialState: CashDashboardState = {
   openSessions: [],
   openSessionsSummary: [],
+  powderBatches: null,
+  selectedPowderBatch: null,
   isLoading: false,
   error: null,
 };
@@ -63,6 +73,23 @@ export const fetchOpenSessionsSummary = createAsyncThunk<
   },
 );
 
+export const fetchPowderBatches = createAsyncThunk<
+  PowderBatchResponse,
+  Parameters<typeof getPowderBatches>[0],
+  { rejectValue: string }
+>(
+  "cashDashboard/fetchPowderBatches",
+  async (params, { rejectWithValue }) => {
+    try {
+      return await getPowderBatches(params);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch powder batches"),
+      );
+    }
+  },
+);
+
 // --- Slice ---
 
 const cashDashboardSlice = createSlice({
@@ -72,6 +99,9 @@ const cashDashboardSlice = createSlice({
     resetDashboardState: () => initialState,
     clearDashboardError: (state) => {
       state.error = null;
+    },
+    clearPowderBatchSelection: (state) => {
+      state.selectedPowderBatch = null;
     },
   },
   extraReducers: (builder) => {
@@ -83,6 +113,10 @@ const cashDashboardSlice = createSlice({
       .addCase(fetchOpenSessionsSummary.fulfilled, (state, action) => {
         state.isLoading = false;
         state.openSessionsSummary = action.payload;
+      })
+      .addCase(fetchPowderBatches.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.powderBatches = action.payload;
       })
 
       // Global Matchers for clean Loading/Error handling
@@ -103,6 +137,9 @@ const cashDashboardSlice = createSlice({
   },
 });
 
-export const { resetDashboardState, clearDashboardError } =
-  cashDashboardSlice.actions;
+export const {
+  resetDashboardState,
+  clearDashboardError,
+  clearPowderBatchSelection,
+} = cashDashboardSlice.actions;
 export default cashDashboardSlice.reducer;

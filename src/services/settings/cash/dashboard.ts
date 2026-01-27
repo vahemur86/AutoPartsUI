@@ -4,7 +4,12 @@ import api from "@/services";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { OpenSession, OpenSessionSummary } from "@/types/cash";
+import type {
+  OpenSession,
+  OpenSessionSummary,
+  PowderBatchResponse,
+  GetPowderBatchesParams,
+} from "@/types/cash";
 
 interface Params {
   shopId?: number;
@@ -51,5 +56,27 @@ export const getOpenSessionsSummary = async ({
     throw new Error(
       getApiErrorMessage(error, "Failed to get open sessions summary."),
     );
+  }
+};
+
+const getHeaders = (cashRegisterId?: number) => ({
+  ...(cashRegisterId && {
+    "X-CashRegister-Id": cashRegisterId,
+  }),
+});
+
+export const getPowderBatches = async ({
+  cashRegisterId,
+}: GetPowderBatchesParams) => {
+  try {
+    const { data } = await api.get<PowderBatchResponse>(
+      `/cashbox-sessions/batches`,
+      {
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get powder batches."));
   }
 };

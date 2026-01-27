@@ -18,6 +18,7 @@ import { getBatchReportColumns } from "./columns";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
+import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./BatchReports.module.css";
@@ -147,16 +148,6 @@ export const BatchReports: FC = () => {
   }, [dispatch]);
 
   const columns = useMemo(() => getBatchReportColumns(), []);
-
-  const checkIsToday = (dateString: string) => {
-    const today = new Date();
-    const date = new Date(dateString);
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
 
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
 

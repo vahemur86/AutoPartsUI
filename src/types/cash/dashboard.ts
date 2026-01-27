@@ -17,3 +17,42 @@ export interface OpenSessionSummary extends OpenSession {
   diffAmd: number;
   lastActivityAt: string;
 }
+
+export interface PowderBatchItem {
+  id: number;
+  intakeId: number;
+  powderKg: number;
+  ptTotal_g: number;
+  pdTotal_g: number;
+  rhTotal_g: number;
+}
+
+export interface PowderBatch {
+  id: number;
+  sessionId: number;
+  cashBoxId: number;
+  intakeCount: number;
+  totalPowderKg: number;
+  ptTotal_g: number;
+  pdTotal_g: number;
+  rhTotal_g: number;
+  ptPerKg_g: number;
+  pdPerKg_g: number;
+  rhPerKg_g: number;
+  status: number;
+  createdAt: string;
+}
+
+export interface PowderBatchDetails extends PowderBatch {
+  items: PowderBatchItem[];
+}
+
+export type PowderBatchResponse = import("./cashboxSessions").PaginatedResponse<PowderBatch>;
+
+export type GetPowderBatchesParams = {
+  fromDate?: string;
+  toDate?: string;
+  cashRegisterId: number;
+  page?: number;
+  pageSize?: number;
+};

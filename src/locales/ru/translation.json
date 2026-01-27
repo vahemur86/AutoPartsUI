@@ -465,11 +465,64 @@
         "rh": "Родий (Rh)"
       }
     },
+    "openSessions": {
+      "title": "Открытые сессии",
+      "columns": {
+        "sessionId": "ID сессии",
+        "cashBoxCode": "Код кассы",
+        "operator": "Оператор",
+        "openedAt": "Открыта в",
+        "intakesOffered": "Предложено заявок",
+        "intakesAccepted": "Принято заявок",
+        "powderKg": "Порошок (кг)",
+        "purchases": "Покупки",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "difference": "Разница",
+        "lastActivity": "Последняя активность"
+      }
+    },
+    "powderBatches": {
+      "title": "Партии порошка",
+      "columns": {
+        "createdAt": "Создано в",
+        "intakes": "Кол-во заявок",
+        "weight": "Общий вес",
+        "ptTotal": "Платина всего",
+        "pdTotal": "Палладий всего",
+        "rhTotal": "Родий всего",
+        "status": "Статус"
+      },
+      "details": {
+        "analysis": "Анализ партии порошка",
+        "intakeId": "Заявка",
+        "powder": "Порошок",
+        "pt": "Платина (Pt)",
+        "pd": "Палладий (Pd)",
+        "rh": "Родий (Rh)",
+        "individualIntakes": "Отдельные заявки",
+        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация о товарах доступна в сводке партии выше."
+      }
+    },
+    "cashboxReport": {
+      "title": "Отчет по кассе",
+      "columns": {
+        "cashBoxId": "ID кассы",
+        "date": "Дата",
+        "openingBalance": "Начальный остаток",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "expectedClosingBalance": "Ожидаемый остаток при закрытии"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Не удалось загрузить Z-отчеты",
       "failedToFetchZReport": "Не удалось загрузить детали Z-отчета",
       "failedToFetchBatches": "Не удалось загрузить партии",
-      "failedToFetchBatchDetails": "Не удалось загрузить элементы партии"
+      "failedToFetchBatchDetails": "Не удалось загрузить элементы партии",
+      "failedToFetchOpenSessionsSummary": "Не удалось загрузить сводку открытых сессий",
+      "failedToFetchPowderBatches": "Не удалось загрузить партии порошка",
+      "failedToFetchCashboxReport": "Не удалось загрузить отчет по кассе"
     }
   },
   "products": {
