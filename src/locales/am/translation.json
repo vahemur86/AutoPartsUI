@@ -465,11 +465,29 @@
         "rh": "Ռոդիում (Rh)"
       }
     },
+    "openSessions": {
+      "title": "Բացված հերթափոխեր",
+      "columns": {
+        "sessionId": "Հերթափոխի ID",
+        "cashBoxCode": "Դրամարկղի կոդ",
+        "operator": "Օպերատոր",
+        "openedAt": "Բացվել է",
+        "intakesOffered": "Առաջարկված հարցումներ",
+        "intakesAccepted": "Ընդունված հարցումներ",
+        "powderKg": "Փոշի (կգ)",
+        "purchases": "Գնումներ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "difference": "Տարբերություն",
+        "lastActivity": "Վերջին ակտիվություն"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Z-հաշվետվությունների բեռնումը ձախողվեց",
       "failedToFetchZReport": "Z-հաշվետվության մանրամասների բեռնումը ձախողվեց",
       "failedToFetchBatches": "Խմբաքանակների բեռնումը ձախողվեց",
-      "failedToFetchBatchDetails": "Խմբաքանակի տարրերի բեռնումը ձախողվեց"
+      "failedToFetchBatchDetails": "Խմբաքանակի տարրերի բեռնումը ձախողվեց",
+      "failedToFetchOpenSessionsSummary": "Բացված հերթափոխերի ամփոփման բեռնումը ձախողվեց"
     }
   },
   "products": {

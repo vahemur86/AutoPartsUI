@@ -465,11 +465,29 @@
         "rh": "Rhodium (Rh)"
       }
     },
+    "openSessions": {
+      "title": "Open Sessions",
+      "columns": {
+        "sessionId": "Session ID",
+        "cashBoxCode": "Cash Box Code",
+        "operator": "Operator",
+        "openedAt": "Opened At",
+        "intakesOffered": "Intakes Offered",
+        "intakesAccepted": "Intakes Accepted",
+        "powderKg": "Powder (kg)",
+        "purchases": "Purchases",
+        "cashIn": "Cash In",
+        "cashOut": "Cash Out",
+        "difference": "Difference",
+        "lastActivity": "Last Activity"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Failed to fetch Z-Reports",
       "failedToFetchZReport": "Failed to fetch Z-Report details",
       "failedToFetchBatches": "Failed to fetch batches",
-      "failedToFetchBatchDetails": "Failed to fetch batch items"
+      "failedToFetchBatchDetails": "Failed to fetch batch items",
+      "failedToFetchOpenSessionsSummary": "Failed to fetch open sessions summary"
     }
   },
   "products": {

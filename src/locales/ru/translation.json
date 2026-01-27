@@ -465,11 +465,29 @@
         "rh": "Родий (Rh)"
       }
     },
+    "openSessions": {
+      "title": "Открытые сессии",
+      "columns": {
+        "sessionId": "ID сессии",
+        "cashBoxCode": "Код кассы",
+        "operator": "Оператор",
+        "openedAt": "Открыта в",
+        "intakesOffered": "Предложено заявок",
+        "intakesAccepted": "Принято заявок",
+        "powderKg": "Порошок (кг)",
+        "purchases": "Покупки",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "difference": "Разница",
+        "lastActivity": "Последняя активность"
+      }
+    },
     "errors": {
       "failedToFetchZReports": "Не удалось загрузить Z-отчеты",
       "failedToFetchZReport": "Не удалось загрузить детали Z-отчета",
       "failedToFetchBatches": "Не удалось загрузить партии",
-      "failedToFetchBatchDetails": "Не удалось загрузить элементы партии"
+      "failedToFetchBatchDetails": "Не удалось загрузить элементы партии",
+      "failedToFetchOpenSessionsSummary": "Не удалось загрузить сводку открытых сессий"
     }
   },
   "products": {
