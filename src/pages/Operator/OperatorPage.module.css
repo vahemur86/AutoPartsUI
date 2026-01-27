@@ -531,7 +531,7 @@
 }
 
 .countrySelectWrapper {
-  width: 115px; /* Increased a little bit as requested */
+  width: 115px;
   flex-shrink: 0;
 }
 
@@ -543,7 +543,6 @@
   margin-bottom: 0 !important;
 }
 
-/* --- RESPONSIVE HEADER CLASSES --- */
 .headerSection {
   flex-wrap: wrap;
   gap: 16px;

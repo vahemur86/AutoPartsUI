@@ -521,6 +521,7 @@
     "autoModel": "Модель автомобиля",
     "acceptAndPurchase": "Принять и купить",
     "search": "Найти клиента",
+    "searchByCountryCode": "Поиск по коду",
     "clientType": {
       "label": "Тип клиента",
       "regular": "Обычный"

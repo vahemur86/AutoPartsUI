@@ -521,6 +521,7 @@
     "autoModel": "Ավտոմեքենայի մոդել",
     "acceptAndPurchase": "Ընդունել և գնել",
     "search": "Որոնել հաճախորդ",
+    "searchByCountryCode": "Որոնել ըստ կոդի",
     "clientType": {
       "label": "Հաճախորդի տեսակ",
       "regular": "Սովորական"

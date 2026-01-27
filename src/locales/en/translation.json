@@ -521,6 +521,7 @@
     "autoModel": "Auto Model",
     "acceptAndPurchase": "Accept and Purchase",
     "search": "Search customer",
+    "searchByCountryCode": "Search by code",
     "clientType": {
       "label": "Client Type",
       "regular": "Regular"

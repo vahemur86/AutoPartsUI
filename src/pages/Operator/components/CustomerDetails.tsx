@@ -186,6 +186,8 @@ export const CustomerDetails = ({
           <div className={styles.phoneInputRow}>
             <div className={styles.countrySelectWrapper}>
               <Select
+                searchable
+                searchPlaceholder={t("customerDetails.searchByCountryCode")}
                 label={undefined}
                 value={selectedCountry}
                 onChange={(e) => {
