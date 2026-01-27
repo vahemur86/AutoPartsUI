@@ -33,6 +33,7 @@
     "of": "of",
     "areYouSure": "Are you sure you want to proceed?",
     "loading": "Loading...",
+    "noData": "No data available.",
     "select": "Select"
   },
   "currencies": {
@@ -437,10 +438,38 @@
         "cashIn": "Cash In",
         "cashOut": "Cash Out",
         "difference": "Difference"
+      },
+      "details": {
+        "timeline": "Session Timeline",
+        "financials": "Financial Overview",
+        "operations": "Operations",
+        "duration": "Duration",
+        "operator": "Operator ID",
+        "finalDiff": "Final Difference"
+      }
+    },
+    "batches": {
+      "title": "Batch Reports",
+      "columns": {
+        "createdAt": "Created At",
+        "intakes": "Intake Count",
+        "weight": "Total Weight",
+        "status": "Status"
+      },
+      "details": {
+        "analysis": "Batch Items Analysis",
+        "intakeId": "Intake",
+        "powder": "Powder",
+        "pt": "Platinum (Pt)",
+        "pd": "Palladium (Pd)",
+        "rh": "Rhodium (Rh)"
       }
     },
     "errors": {
-      "failedToFetchZReports": "Failed to fetch Z-Reports"
+      "failedToFetchZReports": "Failed to fetch Z-Reports",
+      "failedToFetchZReport": "Failed to fetch Z-Report details",
+      "failedToFetchBatches": "Failed to fetch batches",
+      "failedToFetchBatchDetails": "Failed to fetch batch items"
     }
   },
   "products": {
@@ -618,6 +647,8 @@
     }
   },
   "customers": {
+    "createOrGet": "Get customer",
+    "createOrGetButton": "Search customer",
     "editCustomer": "Edit Customer",
     "customersList": "Customers List",
     "loading": "Loading customers...",
