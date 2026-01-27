@@ -17,3 +17,8 @@ export interface TopUpRequest {
   currencyCode: string;
   comment: string;
 }
+
+export interface Operator {
+  id: number;
+  username: string;
+}

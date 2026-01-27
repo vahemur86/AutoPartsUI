@@ -77,6 +77,30 @@ export const getCashRegisterBalance = async (cashRegisterId: number) => {
   }
 };
 
+export interface CashRegisterOperatorLink {
+  userId: number;
+  isActive: boolean;
+  username: string;
+}
+
+export const getCashRegisterOperators = async (cashRegisterId: number) => {
+  try {
+    const response = await api.get<CashRegisterOperatorLink[]>(
+      `/cash-registers/${cashRegisterId}/operators`,
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get cash register operators."),
+    );
+  }
+};
+
 export const topUpCashRegister = async (
   id: number,
   topUpData: TopUpRequest,
@@ -110,5 +134,30 @@ export const openCashRegisterSession = async (cashRegisterId: number) => {
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to open session."));
+  }
+};
+
+export const assignOperatorToCashRegister = async ({
+  cashRegisterId,
+  userId,
+}: {
+  cashRegisterId: number;
+  userId: number;
+}) => {
+  try {
+    const response = await api.post(
+      `/cash-registers/${cashRegisterId}/operators`,
+      { userId },
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to assign operator to register."),
+    );
   }
 };

@@ -17,6 +17,8 @@ export const getCashRegisterColumns = (
     onEdit,
     onDelete,
     onTopUp,
+    onAssignOperator,
+    getAssignedOperator,
   }: {
     onEdit: (
       cashRegister: CashRegister,
@@ -27,52 +29,73 @@ export const getCashRegisterColumns = (
       cashRegister: CashRegister,
       e: React.MouseEvent<HTMLElement>,
     ) => void;
+    onAssignOperator: (
+      cashRegister: CashRegister,
+      e: React.MouseEvent<HTMLElement>,
+    ) => void;
+    getAssignedOperator: (cashRegisterId: number) => string;
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): ColumnDef<CashRegister, any>[] => [
-  columnHelper.accessor("code", {
-    header: i18next.t("cashRegisters.columns.code"),
-  }),
-  columnHelper.accessor("description", {
-    header: i18next.t("cashRegisters.columns.description"),
-  }),
-  columnHelper.accessor("shopId", {
-    header: i18next.t("cashRegisters.columns.shopId"),
-  }),
-  columnHelper.accessor("isActive", {
-    header: i18next.t("cashRegisters.columns.status"),
-    cell: (info) =>
-      info.getValue()
-        ? i18next.t("common.active")
-        : i18next.t("common.inactive"),
-  }),
-  columnHelper.display({
-    id: "actions",
-    header: i18next.t("common.actions"),
-    cell: ({ row }) => (
-      <div className={styles.actionButtonsCell}>
-        <Button
-          variant="primary"
-          size="small"
-          onClick={(e) => onEdit(row.original, e)}
-        >
-          {i18next.t("common.edit")}
-        </Button>
-        <Button
-          variant="primary"
-          size="small"
-          onClick={(e) => onTopUp(row.original, e)}
-        >
-          {i18next.t("cashRegisters.topUp.button")}
-        </Button>
-        <Button
-          variant="danger"
-          size="small"
-          onClick={() => onDelete(row.original)}
-        >
-          {i18next.t("common.delete")}
-        </Button>
-      </div>
-    ),
-  }),
-];
+): ColumnDef<CashRegister, any>[] => {
+  return [
+    columnHelper.accessor("code", {
+      header: i18next.t("cashRegisters.columns.code"),
+    }),
+    columnHelper.accessor("description", {
+      header: i18next.t("cashRegisters.columns.description"),
+    }),
+    columnHelper.accessor("shopId", {
+      header: i18next.t("cashRegisters.columns.shopId"),
+    }),
+    columnHelper.accessor("isActive", {
+      header: i18next.t("cashRegisters.columns.status"),
+      cell: (info) =>
+        info.getValue()
+          ? i18next.t("common.active")
+          : i18next.t("common.inactive"),
+    }),
+    columnHelper.display({
+      id: "assignedOperator",
+      header: i18next.t("cashRegisters.columns.assignedOperator", {
+        defaultValue: "Operator",
+      }),
+      cell: ({ row }) => getAssignedOperator(row.original.id),
+    }),
+    columnHelper.display({
+      id: "actions",
+      header: i18next.t("common.actions"),
+      cell: ({ row }) => (
+        <div className={styles.actionButtonsCell}>
+          <Button
+            variant="primary"
+            size="small"
+            onClick={(e) => onEdit(row.original, e)}
+          >
+            {i18next.t("common.edit")}
+          </Button>
+          <Button
+            variant="primary"
+            size="small"
+            onClick={(e) => onTopUp(row.original, e)}
+          >
+            {i18next.t("cashRegisters.topUp.button")}
+          </Button>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={(e) => onAssignOperator(row.original, e)}
+          >
+            {i18next.t("cashRegisters.assignOperator.button")}
+          </Button>
+          <Button
+            variant="danger"
+            size="small"
+            onClick={() => onDelete(row.original)}
+          >
+            {i18next.t("common.delete")}
+          </Button>
+        </div>
+      ),
+    }),
+  ];
+};

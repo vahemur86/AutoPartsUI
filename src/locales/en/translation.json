@@ -405,6 +405,16 @@
       "loadingBalance": "Loading balance...",
       "success": "Cash register topped up successfully",
       "error": "Failed to top up cash register"
+    },
+    "assignOperator": {
+      "button": "Assign operator",
+      "title": "Assign operator to register",
+      "operator": "Operator",
+      "selectOperator": "Select operator",
+      "loading": "Loading operators...",
+      "submit": "Assign",
+      "success": "Operator assigned successfully",
+      "error": "Failed to assign operator"
     }
   },
   "products": {
