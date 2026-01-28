@@ -171,7 +171,6 @@ export const BatchReports: FC = () => {
           onPaginationChange={(pageIndex) => {
             dispatch(
               fetchBatches({
-                cashRegisterId: 1,
                 page: pageIndex + 1,
                 pageSize: PAGE_SIZE,
               }),
