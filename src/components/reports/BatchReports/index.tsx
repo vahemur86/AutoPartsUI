@@ -136,7 +136,7 @@ export const BatchReports: FC = () => {
   const { batches } = useAppSelector((state) => state.cashboxSessions);
 
   useEffect(() => {
-    dispatch(fetchBatches({ cashRegisterId: 1, page: 1, pageSize: PAGE_SIZE }))
+    dispatch(fetchBatches({ page: 1, pageSize: PAGE_SIZE }))
       .unwrap()
       .catch((error) => {
         toast.error(getApiErrorMessage(error, "Failed to fetch batches"));

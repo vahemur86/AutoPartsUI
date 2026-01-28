@@ -29,6 +29,7 @@ interface BaseDatePickerProps {
   customInput?: React.ReactElement;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -37,6 +38,7 @@ interface SingleDatePickerProps extends BaseDatePickerProps {
   selected?: Date | null;
   onChange: (
     date: Date | null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     event?: React.SyntheticEvent<any> | undefined,
   ) => void;
   startDate?: never;
@@ -48,6 +50,7 @@ interface RangeDatePickerProps extends BaseDatePickerProps {
   selected?: never;
   onChange: (
     dates: [Date | null, Date | null],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     event?: React.SyntheticEvent<any> | undefined,
   ) => void;
   startDate?: Date | null;
@@ -97,7 +100,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           selectsRange
           startDate={startDate}
           endDate={endDate}
-          onChange={onChange as any}
+          onChange={onChange}
           dateFormat={finalDateFormat}
           placeholderText={placeholder}
           minDate={minDate}
@@ -132,7 +135,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     <div className={`date-picker-wrapper ${wrapperClassName}`}>
       <ReactDatePicker
         selected={selected}
-        onChange={onChange as any}
+        onChange={onChange}
         dateFormat={finalDateFormat}
         placeholderText={placeholder}
         minDate={minDate}

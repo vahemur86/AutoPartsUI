@@ -87,7 +87,7 @@ export const getBatches = async ({
 }: {
   fromDate?: string;
   toDate?: string;
-  cashRegisterId: number;
+  cashRegisterId?: number;
   page?: number;
   pageSize?: number;
 }) => {

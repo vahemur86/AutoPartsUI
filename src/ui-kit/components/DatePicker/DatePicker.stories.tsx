@@ -49,10 +49,12 @@ export default meta;
 type Story = StoryObj<typeof DatePicker>;
 
 // Template for single date picker
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SingleDateTemplate = (args: any) => {
   const [date, setDate] = useState<Date | null>(new Date());
 
   // Remove selectsRange from args to avoid conflicts
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { selectsRange, startDate, endDate, ...singleDateArgs } = args;
 
   return (
@@ -67,11 +69,13 @@ const SingleDateTemplate = (args: any) => {
 };
 
 // Template for range date picker
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RangeDateTemplate = (args: any) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   // Remove single date props to avoid conflicts
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { selected, ...rangeDateArgs } = args;
 
   return (
@@ -158,6 +162,7 @@ export const InlineCalendar: Story = {
 
 export const WeekdaysOnly: Story = {
   render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [date, setDate] = useState<Date | null>(null);
 
     const isWeekday = (date: Date) => {
@@ -166,6 +171,7 @@ export const WeekdaysOnly: Story = {
     };
 
     // Remove conflicting props
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { selectsRange, startDate, endDate, ...singleDateArgs } = args;
 
     return (
