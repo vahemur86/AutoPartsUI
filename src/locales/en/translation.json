@@ -520,6 +520,13 @@
     },
     "cashboxReport": {
       "title": "Cashbox Report",
+      "shopLabel": "Shop",
+      "registerLabel": "Cash register",
+      "dateLabel": "Date",
+      "selectShop": "Select shop",
+      "selectRegister": "Select cash register",
+      "selectDatePlaceholder": "Select date (optional)",
+      "load": "Load report",
       "columns": {
         "cashBoxId": "Cash Box ID",
         "date": "Date",
