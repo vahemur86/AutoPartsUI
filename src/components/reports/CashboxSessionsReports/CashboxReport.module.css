@@ -6,6 +6,28 @@
   width: 100%;
 }
 
+.filters {
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filtersContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+  gap: 15px;
+}
+
 .header h1 {
   font-size: 24px;
   font-weight: 600;
@@ -36,5 +58,13 @@
   .cashboxReportWrapper {
     padding: 16px;
   }
-}
 
+  .filters {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .filtersContent {
+    grid-template-columns: 1fr;
+  }
+}
