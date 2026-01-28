@@ -30,10 +30,17 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
     toDate: null,
   });
 
+  const toSafeISO = (date: Date | null) => {
+    if (!date) return null;
+    const safeDate = new Date(date);
+    safeDate.setHours(12, 0, 0, 0);
+    return safeDate.toISOString();
+  };
+
   const handleApply = () => {
     onSave({
-      fromDate: tempValues.fromDate ? tempValues.fromDate.toISOString() : null,
-      toDate: tempValues.toDate ? tempValues.toDate.toISOString() : null,
+      fromDate: toSafeISO(tempValues.fromDate),
+      toDate: toSafeISO(tempValues.toDate),
     });
     onOpenChange(false);
   };
@@ -74,6 +81,9 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                 placeholderText={t("cashbox.zReports.filters.selectFromDate")}
                 isClearable
                 showTimeSelect={false}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
               />
             </div>
           </div>
@@ -91,6 +101,9 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                 placeholderText={t("cashbox.zReports.filters.selectToDate")}
                 isClearable
                 showTimeSelect={false}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
                 minDate={tempValues.fromDate || undefined}
               />
             </div>

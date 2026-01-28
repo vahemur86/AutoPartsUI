@@ -138,6 +138,7 @@ export const OperatorPage = () => {
         dispatch(clear());
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metalRatesError, intakeError, languagesError, cashError, sessionError]);
 
   const handleInputChange = (field: string, value: string) => {
