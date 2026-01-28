@@ -527,6 +527,10 @@
       "selectRegister": "Ընտրեք դրամարկղ",
       "selectDatePlaceholder": "Ընտրեք ամսաթիվ (ըստ ցանկության)",
       "load": "Բեռնել հաշվետվությունը",
+      "validation": {
+        "shopRequired": "Խանութը պարտադիր է",
+        "registerRequired": "Դրամարկղը պարտադիր է"
+      },
       "columns": {
         "cashBoxId": "Դրամարկղի ID",
         "date": "Ամսաթիվ",

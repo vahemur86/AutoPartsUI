@@ -35,6 +35,8 @@ export const CashboxSessionsReports: FC = () => {
   const [selectedShopId, setSelectedShopId] = useState<number | "">("");
   const [selectedRegisterId, setSelectedRegisterId] = useState<number | "">("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [shopError, setShopError] = useState(false);
+  const [registerError, setRegisterError] = useState(false);
 
   useEffect(() => {
     if (!shops.length) {
@@ -69,22 +71,39 @@ export const CashboxSessionsReports: FC = () => {
     const value = event.target.value ? Number(event.target.value) : "";
     setSelectedShopId(value);
     setSelectedRegisterId("");
+    setShopError(false);
+    setRegisterError(false);
   };
 
   const handleRegisterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value ? Number(event.target.value) : "";
     setSelectedRegisterId(value);
+    setRegisterError(false);
   };
 
   const handleResetFilters = () => {
     setSelectedShopId("");
     setSelectedRegisterId("");
     setSelectedDate(null);
+    setShopError(false);
+    setRegisterError(false);
     dispatch(clearSelection());
   };
 
   const handleLoadReport = () => {
-    if (selectedRegisterId === "") return;
+    let hasError = false;
+
+    if (selectedShopId === "") {
+      setShopError(true);
+      hasError = true;
+    }
+
+    if (selectedRegisterId === "") {
+      setRegisterError(true);
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     const dateParam =
       selectedDate != null
@@ -139,6 +158,14 @@ export const CashboxSessionsReports: FC = () => {
             placeholder={t("cashbox.cashboxReport.selectShop", {
               defaultValue: "Select shop",
             })}
+            error={shopError}
+            helperText={
+              shopError
+                ? t("cashbox.cashboxReport.validation.shopRequired", {
+                    defaultValue: "Please select a shop",
+                  })
+                : ""
+            }
           >
             {shops.map((shop) => (
               <option key={shop.id} value={shop.id}>
@@ -157,6 +184,14 @@ export const CashboxSessionsReports: FC = () => {
               defaultValue: "Select cash register",
             })}
             disabled={selectedShopId === ""}
+            error={registerError}
+            helperText={
+              registerError
+                ? t("cashbox.cashboxReport.validation.registerRequired", {
+                    defaultValue: "Please select a cash register",
+                  })
+                : ""
+            }
           >
             {cashRegisters
               .filter(
