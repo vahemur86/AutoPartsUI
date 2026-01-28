@@ -98,12 +98,17 @@ export const AssignOperatorDropdown = ({
       onAssigned();
       onOpenChange(false);
     } catch (error) {
+      const fallbackMessage = t("cashRegisters.assignOperator.error", {
+        defaultValue: "Failed to assign operator",
+      });
+
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t("cashRegisters.assignOperator.error", {
-              defaultValue: "Failed to assign operator",
-            });
+        typeof error === "string"
+          ? error
+          : error instanceof Error
+            ? error.message
+            : fallbackMessage;
+
       toast.error(errorMessage);
     }
   };
