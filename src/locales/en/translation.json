@@ -666,7 +666,7 @@
     "phone": "Phone",
     "phonePlaceholder": "Add phone number",
     "autoModel": "Auto Model",
-    "acceptAndPurchase": "Accept and Purchase",
+    "acceptAndPurchase": "Purchase",
     "search": "Search customer",
     "searchByCountryCode": "Search by code",
     "clientType": {
@@ -699,7 +699,7 @@
   },
   "finalOffer": {
     "title": "Final Offer",
-    "offerButton": "Offer Calculate",
+    "offerButton": "Accept Offer",
     "rejectButton": "Reject Offer",
     "success": {
       "offered": "Offer calculated successfully",
@@ -722,7 +722,7 @@
     "platinumWeight": "Platinum Weight:",
     "palladiumWeight": "Palladium Weight:",
     "rhodiumWeight": "Rhodium Weight:",
-    "createIntake": "Create Intake",
+    "createIntake": "Offer Calculate",
     "totalMetalValue": "Total Metal Value:",
     "clientCoefficient": "Client Coefficient:",
     "finalOffer": "Final Offer:"
