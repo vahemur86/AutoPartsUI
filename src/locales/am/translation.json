@@ -639,7 +639,7 @@
     "phone": "Հեռախոս",
     "phonePlaceholder": "Ավելացնել հեռախոսահամար",
     "autoModel": "Ավտոմեքենայի մոդել",
-    "acceptAndPurchase": "Ընդունել և գնել",
+    "acceptAndPurchase": "Գնել",
     "search": "Որոնել հաճախորդ",
     "searchByCountryCode": "Որոնել ըստ կոդի",
     "clientType": {
@@ -672,7 +672,7 @@
   },
   "finalOffer": {
     "title": "Վերջնական առաջարկ",
-    "offerButton": "Հաշվարկել առաջարկը",
+    "offerButton": "Ընդունել առաջարկը",
     "rejectButton": "Մերժել առաջարկը",
     "success": {
       "offered": "Առաջարկը հաջողությամբ հաշվարկված է",
@@ -695,7 +695,7 @@
     "platinumWeight": "Պլատինի քաշը:",
     "palladiumWeight": "Պալադիումի քաշը:",
     "rhodiumWeight": "Ռոդիումի քաշը:",
-    "createIntake": "Ստեղծել հարցում",
+    "createIntake": "Հաշվարկել առաջարկը",
     "totalMetalValue": "Մետաղների ընդհանուր արժեքը:",
     "clientCoefficient": "Հաճախորդի գործակիցը:",
     "finalOffer": "Վերջնական առաջարկ:"

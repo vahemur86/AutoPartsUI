@@ -639,7 +639,7 @@
     "phone": "Телефон",
     "phonePlaceholder": "Добавить номер телефона",
     "autoModel": "Модель автомобиля",
-    "acceptAndPurchase": "Принять и купить",
+    "acceptAndPurchase": "Купить",
     "search": "Найти клиента",
     "searchByCountryCode": "Поиск по коду",
     "clientType": {
@@ -672,7 +672,7 @@
   },
   "finalOffer": {
     "title": "Финальное предложение",
-    "offerButton": "Рассчитать предложение",
+    "offerButton": "Принять предложение",
     "rejectButton": "Отклонить предложение",
     "success": {
       "offered": "Предложение успешно рассчитано",
@@ -695,7 +695,7 @@
     "platinumWeight": "Вес платины:",
     "palladiumWeight": "Вес палладия:",
     "rhodiumWeight": "Вес родия:",
-    "createIntake": "Создать заявку",
+    "createIntake": "Рассчитать предложение",
     "totalMetalValue": "Общая стоимость металлов:",
     "clientCoefficient": "Коэффициент клиента:",
     "finalOffer": "Финальное предложение:"
