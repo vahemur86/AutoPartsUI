@@ -1,5 +1,14 @@
-import React from "react";
+import {
+  type FC,
+  type FocusEvent,
+  type ReactElement,
+  type SyntheticEvent,
+} from "react";
+
+// components
 import ReactDatePicker from "react-datepicker";
+
+// styles
 import "react-datepicker/dist/react-datepicker.css";
 import "./DatePicker.css";
 
@@ -26,9 +35,14 @@ interface BaseDatePickerProps {
   monthsShown?: number;
   showWeekNumbers?: boolean;
   readOnly?: boolean;
-  customInput?: React.ReactElement;
-  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  customInput?: ReactElement;
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
+  onSelect?: (
+    date: Date,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    event?: SyntheticEvent<any> | undefined,
+  ) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
@@ -39,7 +53,7 @@ interface SingleDatePickerProps extends BaseDatePickerProps {
   onChange: (
     date: Date | null,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    event?: React.SyntheticEvent<any> | undefined,
+    event?: SyntheticEvent<any> | undefined,
   ) => void;
   startDate?: never;
   endDate?: never;
@@ -51,7 +65,7 @@ interface RangeDatePickerProps extends BaseDatePickerProps {
   onChange: (
     dates: [Date | null, Date | null],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    event?: React.SyntheticEvent<any> | undefined,
+    event?: SyntheticEvent<any> | undefined,
   ) => void;
   startDate?: Date | null;
   endDate?: Date | null;
@@ -59,7 +73,7 @@ interface RangeDatePickerProps extends BaseDatePickerProps {
 
 type DatePickerProps = SingleDatePickerProps | RangeDatePickerProps;
 
-export const DatePicker: React.FC<DatePickerProps> = ({
+export const DatePicker: FC<DatePickerProps> = ({
   dateFormat = "MM/dd/yyyy",
   placeholder = "Select date",
   minDate,
@@ -76,8 +90,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   className = "",
   calendarClassName = "",
   wrapperClassName = "",
-  excludeDates = [],
-  includeDates = [],
+  excludeDates,
+  includeDates,
   filterDate,
   inline = false,
   monthsShown = 1,
@@ -86,6 +100,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   customInput,
   onBlur,
   onFocus,
+  onSelect,
   ...props
 }) => {
   const finalDateFormat = showTimeSelect
@@ -101,6 +116,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           startDate={startDate}
           endDate={endDate}
           onChange={onChange}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onSelect={onSelect as any}
           dateFormat={finalDateFormat}
           placeholderText={placeholder}
           minDate={minDate}
@@ -136,6 +153,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <ReactDatePicker
         selected={selected}
         onChange={onChange}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onSelect={onSelect as any}
         dateFormat={finalDateFormat}
         placeholderText={placeholder}
         minDate={minDate}
