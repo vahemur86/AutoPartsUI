@@ -119,7 +119,7 @@ export const OperatorPage = () => {
 
   // Global Error Watcher
   useEffect(() => {
-    const errors = [
+    const errorConfigs = [
       { msg: metalRatesError, clear: clearMetalError },
       { msg: intakeError, clear: clearIntakeError },
       { msg: languagesError, clear: clearLangError },
@@ -127,20 +127,19 @@ export const OperatorPage = () => {
       { msg: sessionError, clear: clearSessionError },
     ];
 
-    errors.forEach(({ msg, clear }) => {
+    let toastFired = false;
+
+    errorConfigs.forEach(({ msg, clear }) => {
       if (msg) {
-        toast.error(msg);
+        if (!toastFired) {
+          toast.error(msg);
+          toastFired = true;
+        }
         dispatch(clear());
       }
     });
-  }, [
-    metalRatesError,
-    intakeError,
-    languagesError,
-    cashError,
-    sessionError,
-    dispatch,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [metalRatesError, intakeError, languagesError, cashError, sessionError]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
