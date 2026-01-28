@@ -58,7 +58,7 @@ export const fetchOpenSessions = createAsyncThunk<
 
 export const fetchOpenSessionsSummary = createAsyncThunk<
   OpenSessionSummary[],
-  Parameters<typeof getOpenSessionsSummary>[0],
+  { shopId?: number; cashRegisterId?: number },
   { rejectValue: string }
 >(
   "cashDashboard/fetchOpenSessionsSummary",
@@ -77,18 +77,15 @@ export const fetchPowderBatches = createAsyncThunk<
   PowderBatchResponse,
   Parameters<typeof getPowderBatches>[0],
   { rejectValue: string }
->(
-  "cashDashboard/fetchPowderBatches",
-  async (params, { rejectWithValue }) => {
-    try {
-      return await getPowderBatches(params);
-    } catch (error) {
-      return rejectWithValue(
-        getApiErrorMessage(error, "Failed to fetch powder batches"),
-      );
-    }
-  },
-);
+>("cashDashboard/fetchPowderBatches", async (params, { rejectWithValue }) => {
+  try {
+    return await getPowderBatches(params);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch powder batches"),
+    );
+  }
+});
 
 // --- Slice ---
 

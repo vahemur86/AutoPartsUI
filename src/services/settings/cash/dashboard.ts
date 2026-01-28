@@ -13,7 +13,7 @@ import type {
 
 interface Params {
   shopId?: number;
-  cashRegisterId: number;
+  cashRegisterId?: number;
 }
 
 export const getOpenSessions = async ({ shopId, cashRegisterId }: Params) => {

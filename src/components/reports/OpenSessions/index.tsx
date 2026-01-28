@@ -31,11 +31,7 @@ export const OpenSessions: FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
-    dispatch(
-      fetchOpenSessionsSummary({
-        cashRegisterId: 1,
-      }),
-    )
+    dispatch(fetchOpenSessionsSummary({}))
       .unwrap()
       .catch((error) => {
         toast.error(
