@@ -37,8 +37,9 @@ const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
   );
 
   useEffect(() => {
+    console.log({ selectedZReport });
     if (!isLoading && selectedZReport?.sessionId !== sessionId) {
-      dispatch(fetchZReport({ sessionId, cashRegisterId: 1 }))
+      dispatch(fetchZReport({ sessionId }))
         .unwrap()
         .catch((error) => {
           toast.error(
@@ -46,7 +47,7 @@ const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
           );
         });
     }
-  }, [sessionId, dispatch, t, selectedZReport?.sessionId, isLoading]);
+  }, [sessionId, dispatch, t, selectedZReport?.sessionId, isLoading, selectedZReport]);
 
   const getDuration = (start: string, end: string) => {
     const durationMs = new Date(end).getTime() - new Date(start).getTime();
