@@ -38,7 +38,7 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
 
   useEffect(() => {
     if (!isLoading && batchDetails?.sessionId !== sessionId) {
-      dispatch(fetchBatchDetails({ sessionId, cashRegisterId: 1 }))
+      dispatch(fetchBatchDetails({ sessionId }))
         .unwrap()
         .catch((error) => {
           toast.error(

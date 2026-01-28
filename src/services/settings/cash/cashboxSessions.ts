@@ -44,7 +44,7 @@ export const getZReport = async ({
   cashRegisterId,
 }: {
   sessionId: number;
-  cashRegisterId: number;
+  cashRegisterId?: number;
 }) => {
   try {
     const { data } = await api.get<ZReport>(
@@ -125,7 +125,7 @@ export const getBatchDetails = async ({
   cashRegisterId,
 }: {
   sessionId: number;
-  cashRegisterId: number;
+  cashRegisterId?: number;
 }) => {
   try {
     const { data } = await api.get<BatchDetails>(
