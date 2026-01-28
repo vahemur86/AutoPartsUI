@@ -1,9 +1,12 @@
-import { type FC, useEffect, useMemo } from "react";
+import { type FC, useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable } from "@/ui-kit";
+import { DataTable, IconButton } from "@/ui-kit";
+
+// icons
+import { Filter } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -13,10 +16,11 @@ import {
   clearSelection,
 } from "@/store/slices/cash/cashboxSessionsSlice";
 
-// columns
-import { getBatchReportColumns } from "./columns";
+// components
+import { FilterBatchesDropdown } from "./FilterBatchesDropdown";
 
-// utils
+// columns & utils
+import { getBatchReportColumns } from "./columns";
 import { getApiErrorMessage } from "@/utils";
 import { checkIsToday } from "@/utils/checkIsToday.utils";
 
@@ -135,27 +139,79 @@ export const BatchReports: FC = () => {
   const dispatch = useAppDispatch();
   const { batches } = useAppSelector((state) => state.cashboxSessions);
 
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<{
+    fromDate: string | null;
+    toDate: string | null;
+  }>({
+    fromDate: null,
+    toDate: null,
+  });
+  const filterAnchorRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    dispatch(fetchBatches({ page: 1, pageSize: PAGE_SIZE }))
+    dispatch(
+      fetchBatches({
+        page: currentPage + 1,
+        pageSize: PAGE_SIZE,
+        fromDate: activeFilters.fromDate || undefined,
+        toDate: activeFilters.toDate || undefined,
+      }),
+    )
       .unwrap()
       .catch((error) => {
-        toast.error(getApiErrorMessage(error, "Failed to fetch batches"));
+        toast.error(
+          getApiErrorMessage(error, t("cashbox.errors.failedToFetchBatches")),
+        );
       });
 
     return () => {
       dispatch(clearSelection());
     };
-  }, [dispatch]);
+  }, [dispatch, activeFilters, currentPage, t]);
+
+  const handleApplyFilters = (filters: {
+    fromDate: string | null;
+    toDate: string | null;
+  }) => {
+    setActiveFilters(filters);
+    setCurrentPage(0);
+    setIsFilterOpen(false);
+  };
 
   const columns = useMemo(() => getBatchReportColumns(), []);
-
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
 
   return (
     <div className={styles.batchReportsWrapper}>
       <header className={styles.header}>
         <h1>{t("cashbox.batches.title")}</h1>
+        <div className={styles.headerActions}>
+          <div
+            ref={filterAnchorRef}
+            className={styles.filterButtonWrapper}
+            onClick={() => setIsFilterOpen(true)}
+          >
+            <IconButton
+              size="small"
+              variant="primary"
+              icon={<Filter size={12} color="#0e0f11" />}
+              ariaLabel={t("common.filters")}
+            />
+            <span className={styles.filterButtonText}>
+              {t("common.filters")}
+            </span>
+          </div>
+        </div>
       </header>
+
+      <FilterBatchesDropdown
+        open={isFilterOpen}
+        anchorRef={filterAnchorRef}
+        onOpenChange={setIsFilterOpen}
+        onSave={handleApplyFilters}
+      />
 
       <div className={styles.tableContainer}>
         <DataTable
@@ -164,18 +220,11 @@ export const BatchReports: FC = () => {
           pageSize={PAGE_SIZE}
           manualPagination
           pageCount={totalPages}
-          pageIndex={batches?.page ? batches.page - 1 : 0}
+          pageIndex={currentPage}
           getRowClassName={(row) =>
             checkIsToday(row.createdAt) ? styles.todayRow : ""
           }
-          onPaginationChange={(pageIndex) => {
-            dispatch(
-              fetchBatches({
-                page: pageIndex + 1,
-                pageSize: PAGE_SIZE,
-              }),
-            );
-          }}
+          onPaginationChange={setCurrentPage}
           renderSubComponent={({ row }) => (
             <BatchDetailView sessionId={row.original.sessionId} />
           )}

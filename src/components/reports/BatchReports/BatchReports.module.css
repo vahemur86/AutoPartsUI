@@ -6,11 +6,36 @@
   width: 100%;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .header h1 {
   font-size: 24px;
   font-weight: 600;
   color: var(--color-white);
   margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filterButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.filterButtonText {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-secondary-500);
 }
 
 .tableContainer {
@@ -47,17 +72,14 @@
   color: #22c55e;
   font-weight: 600;
 }
-
 .statusPartiallySold {
   color: #f59e0b;
   font-weight: 600;
 }
-
 .statusSold {
   color: #94a3b8;
   font-weight: 600;
 }
-
 .statusCancelled {
   color: #ef4444;
   font-weight: 600;
@@ -146,14 +168,12 @@
   flex-direction: column;
   gap: 16px;
 }
-
 .subTitle {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-white);
   margin: 0;
 }
-
 .itemsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -187,7 +207,6 @@
   font-weight: 700;
   color: var(--color-primary-500);
 }
-
 .itemCardHeader strong {
   font-size: 13px;
   color: var(--color-white);
@@ -198,21 +217,18 @@
   flex-direction: column;
   gap: 6px;
 }
-
 .statLine {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
 }
-
 .statLine span {
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
   font-size: 10px;
   font-weight: 600;
 }
-
 .statLine strong {
   color: var(--color-white);
 }
@@ -224,15 +240,12 @@
   color: rgba(255, 255, 255, 0.4);
   font-style: italic;
 }
-
 .detailError {
   color: #ef4444;
 }
-
 .negativeText {
   color: #ef4444;
 }
-
 .positiveText {
   color: #22c55e;
 }
@@ -242,7 +255,6 @@
     flex-direction: column;
     gap: 20px;
   }
-
   .totalsGrid {
     width: 100%;
     grid-template-columns: repeat(2, 1fr);
@@ -253,11 +265,9 @@
   .detailContainer {
     padding: 16px 16px 16px 20px;
   }
-
   .totalsGrid {
     grid-template-columns: 1fr;
   }
-
   .itemsGrid {
     grid-template-columns: 1fr;
   }

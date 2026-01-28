@@ -446,6 +446,12 @@
         "duration": "Длительность",
         "operator": "ID оператора",
         "finalDiff": "Итоговая разница"
+      },
+      "filters": {
+        "fromDate": "От",
+        "toDate": "До",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания"
       }
     },
     "batches": {
