@@ -527,6 +527,10 @@
       "selectRegister": "Выберите кассовый аппарат",
       "selectDatePlaceholder": "Выберите дату (необязательно)",
       "load": "Загрузить отчет",
+      "validation": {
+        "shopRequired": "Необходимо выбрать магазин",
+        "registerRequired": "Необходимо выбрать кассовый аппарат"
+      },
       "columns": {
         "cashBoxId": "ID кассы",
         "date": "Дата",
