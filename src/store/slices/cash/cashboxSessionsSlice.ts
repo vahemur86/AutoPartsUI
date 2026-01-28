@@ -95,7 +95,7 @@ export const fetchBatch = createAsyncThunk<
 
 export const fetchBatchDetails = createAsyncThunk<
   BatchDetails,
-  { sessionId: number; cashRegisterId: number },
+  { sessionId: number; cashRegisterId?: number },
   { rejectValue: string }
 >("cashReports/fetchBatchDetails", async (params, { rejectWithValue }) => {
   try {
@@ -123,7 +123,7 @@ export const fetchZReports = createAsyncThunk<
 
 export const fetchZReport = createAsyncThunk<
   ZReport,
-  { sessionId: number; cashRegisterId: number },
+  { sessionId: number; cashRegisterId?: number },
   { rejectValue: string }
 >("cashReports/fetchZReport", async (params, { rejectWithValue }) => {
   try {

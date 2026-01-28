@@ -38,7 +38,7 @@ const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
 
   useEffect(() => {
     if (!isLoading && selectedZReport?.sessionId !== sessionId) {
-      dispatch(fetchZReport({ sessionId, cashRegisterId: 1 }))
+      dispatch(fetchZReport({ sessionId }))
         .unwrap()
         .catch((error) => {
           toast.error(
