@@ -40,9 +40,8 @@ export const LiveMarketPrices = ({
     if (pricePerGram === undefined) {
       return t("liveMarketPrices.loading");
     }
-    const pricePerKg = pricePerGram * 1000;
     const currencySymbol = currencyCode === "USD" ? "$" : currencyCode;
-    return `${currencySymbol} ${pricePerKg.toLocaleString("en-US", {
+    return `${currencySymbol} ${pricePerGram.toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     })}`;

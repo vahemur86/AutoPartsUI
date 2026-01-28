@@ -446,6 +446,12 @@
         "duration": "Տևողություն",
         "operator": "Օպերատորի ID",
         "finalDiff": "Վերջնական տարբերություն"
+      },
+      "filters": {
+        "fromDate": "Սկսած",
+        "toDate": "Մինչև",
+        "selectFromDate": "Ընտրել սկզբնական ամսաթիվ",
+        "selectToDate": "Ընտրել ավարտական ամսաթիվ"
       }
     },
     "batches": {

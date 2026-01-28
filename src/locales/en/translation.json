@@ -446,6 +446,12 @@
         "duration": "Duration",
         "operator": "Operator ID",
         "finalDiff": "Final Difference"
+      },
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "selectFromDate": "Select from date",
+        "selectToDate": "Select to date"
       }
     },
     "batches": {
