@@ -58,3 +58,4 @@ export {
   type ConfirmationModalProps,
 } from "./ConfirmationModal";
 export { Tooltip, type TooltipProps } from "./Tooltip";
+export { DatePicker } from "./DatePicker";

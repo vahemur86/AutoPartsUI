@@ -6,11 +6,36 @@
   width: 100%;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .header h1 {
   font-size: 24px;
   font-weight: 600;
   color: var(--color-white);
   margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filterButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.filterButtonText {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-secondary-500);
 }
 
 .tableContainer {

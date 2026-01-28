@@ -502,6 +502,14 @@
         "rh": "Rhodium (Rh)",
         "individualIntakes": "Individual Intakes",
         "summaryInfo": "This batch contains {{count}} intake(s). Detailed item information is available in the batch summary above."
+      },
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "cashRegisterId": "Cash Register ID",
+        "selectFromDate": "Select from date",
+        "selectToDate": "Select to date",
+        "enterCashRegisterId": "Enter cash register ID"
       }
     },
     "cashboxReport": {

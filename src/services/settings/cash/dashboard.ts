@@ -67,11 +67,22 @@ const getHeaders = (cashRegisterId?: number) => ({
 
 export const getPowderBatches = async ({
   cashRegisterId,
+  fromDate,
+  toDate,
+  page = 1,
+  pageSize = 50,
 }: GetPowderBatchesParams) => {
   try {
     const { data } = await api.get<PowderBatchResponse>(
       `/cashbox-sessions/batches`,
       {
+        params: {
+          fromDate,
+          toDate,
+          cashRegisterId,
+          page,
+          pageSize,
+        },
         headers: getHeaders(cashRegisterId),
       },
     );
