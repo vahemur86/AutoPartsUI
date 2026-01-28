@@ -9,6 +9,7 @@ import {
   getOpenSessions,
   getOpenSessionsSummary,
   getPowderBatches,
+  getPowderBatchesSummary,
 } from "@/services/settings/cash/dashboard";
 
 // types
@@ -17,6 +18,7 @@ import type {
   OpenSessionSummary,
   PowderBatch,
   PowderBatchResponse,
+  PowderBatchesSummary,
 } from "@/types/cash";
 
 // utils
@@ -27,6 +29,7 @@ interface CashDashboardState {
   openSessionsSummary: OpenSessionSummary[];
   powderBatches: PowderBatchResponse | null;
   selectedPowderBatch: PowderBatch | null;
+  powderBatchesSummary: PowderBatchesSummary | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -36,6 +39,7 @@ const initialState: CashDashboardState = {
   openSessionsSummary: [],
   powderBatches: null,
   selectedPowderBatch: null,
+  powderBatchesSummary: null,
   isLoading: false,
   error: null,
 };
@@ -87,6 +91,20 @@ export const fetchPowderBatches = createAsyncThunk<
   }
 });
 
+export const fetchPowderBatchesSummary = createAsyncThunk<
+  PowderBatchesSummary,
+  void,
+  { rejectValue: string }
+>("cashDashboard/fetchPowderBatchesSummary", async (_, { rejectWithValue }) => {
+  try {
+    return await getPowderBatchesSummary();
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch powder batches summary"),
+    );
+  }
+});
+
 // --- Slice ---
 
 const cashDashboardSlice = createSlice({
@@ -114,6 +132,10 @@ const cashDashboardSlice = createSlice({
       .addCase(fetchPowderBatches.fulfilled, (state, action) => {
         state.isLoading = false;
         state.powderBatches = action.payload;
+      })
+      .addCase(fetchPowderBatchesSummary.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.powderBatchesSummary = action.payload;
       })
 
       // Global Matchers for clean Loading/Error handling

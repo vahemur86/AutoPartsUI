@@ -9,6 +9,7 @@ import type {
   OpenSessionSummary,
   PowderBatchResponse,
   GetPowderBatchesParams,
+  PowderBatchesSummary,
 } from "@/types/cash";
 
 interface Params {
@@ -89,5 +90,18 @@ export const getPowderBatches = async ({
     return data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get powder batches."));
+  }
+};
+
+export const getPowderBatchesSummary = async () => {
+  try {
+    const { data } = await api.get<PowderBatchesSummary>(
+      `/cashbox-sessions/powder/summary`,
+    );
+    return data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get powder batches summary."),
+    );
   }
 };

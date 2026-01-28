@@ -499,6 +499,28 @@
         "rhTotal": "Rhodium Total",
         "status": "Status"
       },
+      "summary": {
+        "title": "Powder summary",
+        "button": "Summary",
+        "tooltip": "Show total powder and metals for all batches",
+        "empty": "No summary data available.",
+        "totalPowderKg": "Total powder (kg)",
+        "ptTotal": "Total platinum (g)",
+        "pdTotal": "Total palladium (g)",
+        "rhTotal": "Total rhodium (g)",
+        "batchCount": "Batch count",
+        "metalsTitle": "Precious metals",
+        "metals": {
+          "pt": "Platinum",
+          "pd": "Palladium",
+          "rh": "Rhodium"
+        },
+        "units": {
+          "kg": "kg",
+          "g": "g",
+          "batches": "batches"
+        }
+      },
       "details": {
         "analysis": "Powder Batch Analysis",
         "intakeId": "Intake",
@@ -547,6 +569,7 @@
       "failedToFetchBatchDetails": "Failed to fetch batch items",
       "failedToFetchOpenSessionsSummary": "Failed to fetch open sessions summary",
       "failedToFetchPowderBatches": "Failed to fetch powder batches",
+      "failedToFetchPowderBatchesSummary": "Failed to fetch powder batches summary",
       "failedToFetchCashboxReport": "Failed to fetch cashbox report"
     }
   },

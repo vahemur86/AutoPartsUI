@@ -27,6 +27,17 @@ export interface PowderBatchItem {
   rhTotal_g: number;
 }
 
+export interface PowderBatchesSummary {
+  totalPowderKg: number;
+  ptTotal_g: number;
+  pdTotal_g: number;
+  rhTotal_g: number;
+  ptPerKg_g: number;
+  pdPerKg_g: number;
+  rhPerKg_g: number;
+  batchCount: number;
+}
+
 export interface PowderBatch {
   id: number;
   sessionId: number;

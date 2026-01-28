@@ -17,6 +17,7 @@ export type {
   PowderBatchDetails,
   PowderBatchResponse,
   GetPowderBatchesParams,
+  PowderBatchesSummary,
 } from "./dashboard";
 
 export type { GetRegisterSession } from "./sessions";
