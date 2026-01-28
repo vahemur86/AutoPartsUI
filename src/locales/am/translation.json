@@ -520,6 +520,13 @@
     },
     "cashboxReport": {
       "title": "Դրամարկղի հաշվետվություն",
+      "shopLabel": "Խանութ",
+      "registerLabel": "Դրամարկղ",
+      "dateLabel": "Ամսաթիվ",
+      "selectShop": "Ընտրեք խանութ",
+      "selectRegister": "Ընտրեք դրամարկղ",
+      "selectDatePlaceholder": "Ընտրեք ամսաթիվ (ըստ ցանկության)",
+      "load": "Բեռնել հաշվետվությունը",
       "columns": {
         "cashBoxId": "Դրամարկղի ID",
         "date": "Ամսաթիվ",

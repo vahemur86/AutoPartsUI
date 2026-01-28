@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 24px;
   padding: 20px;
-  width: 100%;
+  width: 96%;
 }
 
 .filters {
@@ -16,16 +16,35 @@
 
 .filtersContent {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.dateFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dateLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-secondary-500);
 }
 
 .actionsRow {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
+  gap: 16px;
+}
+
+.actionsButtons {
+  display: flex;
+  flex-direction: row;
   gap: 15px;
+  margin-top: 24px;
 }
 
 .header h1 {
@@ -66,5 +85,15 @@
 
   .filtersContent {
     grid-template-columns: 1fr;
+  }
+
+  .actionsRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .actionsButtons {
+    justify-content: flex-end;
   }
 }

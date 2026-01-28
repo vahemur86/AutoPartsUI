@@ -520,6 +520,13 @@
     },
     "cashboxReport": {
       "title": "Отчет по кассе",
+      "shopLabel": "Магазин",
+      "registerLabel": "Кассовый аппарат",
+      "dateLabel": "Дата",
+      "selectShop": "Выберите магазин",
+      "selectRegister": "Выберите кассовый аппарат",
+      "selectDatePlaceholder": "Выберите дату (необязательно)",
+      "load": "Загрузить отчет",
       "columns": {
         "cashBoxId": "ID кассы",
         "date": "Дата",

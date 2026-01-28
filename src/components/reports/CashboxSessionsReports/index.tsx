@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Select, Button } from "@/ui-kit";
+import { DataTable, Select, Button, DatePicker } from "@/ui-kit";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -34,6 +34,7 @@ export const CashboxSessionsReports: FC = () => {
 
   const [selectedShopId, setSelectedShopId] = useState<number | "">("");
   const [selectedRegisterId, setSelectedRegisterId] = useState<number | "">("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   useEffect(() => {
     if (!shops.length) {
@@ -78,15 +79,30 @@ export const CashboxSessionsReports: FC = () => {
   const handleResetFilters = () => {
     setSelectedShopId("");
     setSelectedRegisterId("");
+    setSelectedDate(null);
     dispatch(clearSelection());
   };
 
   const handleLoadReport = () => {
     if (selectedRegisterId === "") return;
 
+    const dateParam =
+      selectedDate != null
+        ? new Date(
+            Date.UTC(
+              selectedDate.getFullYear(),
+              selectedDate.getMonth(),
+              selectedDate.getDate(),
+            ),
+          )
+            .toISOString()
+            .split("T")[0]
+        : undefined;
+
     dispatch(
       fetchCashboxReport({
         cashRegisterId: selectedRegisterId as number,
+        date: dateParam,
       }),
     )
       .unwrap()
@@ -156,14 +172,36 @@ export const CashboxSessionsReports: FC = () => {
         </div>
 
         <div className={styles.actionsRow}>
-          <Button variant="secondary" size="small" onClick={handleResetFilters}>
-            {t("common.reset")}
-          </Button>
-          <Button variant="primary" onClick={handleLoadReport}>
-            {t("cashbox.cashboxReport.load", {
-              defaultValue: "Load report",
-            })}
-          </Button>
+          <div className={styles.dateFilter}>
+            <label className={styles.dateLabel}>
+              {t("cashbox.cashboxReport.dateLabel", { defaultValue: "Date" })}
+            </label>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date: Date | null) => setSelectedDate(date)}
+              dateFormat="MM/dd/yyyy"
+              placeholderText={t(
+                "cashbox.cashboxReport.selectDatePlaceholder",
+                { defaultValue: "Select date (optional)" },
+              )}
+              isClearable
+              showTimeSelect={false}
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+            />
+          </div>
+
+          <div className={styles.actionsButtons}>
+            <Button variant="secondary" onClick={handleResetFilters}>
+              {t("common.reset")}
+            </Button>
+            <Button variant="primary" onClick={handleLoadReport}>
+              {t("cashbox.cashboxReport.load", {
+                defaultValue: "Load report",
+              })}
+            </Button>
+          </div>
         </div>
       </div>
 
