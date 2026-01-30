@@ -17,6 +17,7 @@ import {
   Users,
   Currency,
   CreditCard,
+  Percent,
 } from "lucide-react";
 
 // components
@@ -121,12 +122,16 @@ export const Settings = () => {
       icon: CreditCard,
       showCheckmark: true,
     },
+    {
+      path: "/offer-increase-options",
+      label: t("settings.navigation.offerIncreaseOptions"),
+      icon: Percent,
+      showCheckmark: true,
+    },
   ];
 
   const activeItem = navigationItems.find((item) => isActive(item.path));
-
   const activeSectionTitle = activeItem?.label ?? t("header.settings");
-
   const ActiveIcon = activeItem?.icon ?? SettingsIcon;
 
   const activeStepIndex = navigationItems.findIndex((item) =>

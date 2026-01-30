@@ -55,6 +55,7 @@
       "translation": "Translation",
       "warehouse": "Warehouse",
       "shops": "Shops",
+      "offerIncreaseOptions": "Offer Increase Options",
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
       "metalRates": "Metal Rates",
@@ -62,6 +63,37 @@
       "customerTypes": "Customer Types",
       "exchangeRates": "Exchange Rates",
       "cashRegisters": "Cash Registers"
+    }
+  },
+  "offers": {
+    "addOption": "Add option",
+    "addNew": "Add New",
+    "editOption": "Edit Option",
+    "deleteOption": "Delete option",
+    "increase": "Increase",
+    "loading": "Loading offer options...",
+    "emptyState": "No offer options found. Add your first one.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "percent": "Percent",
+      "active": "Active"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete Offer Option",
+      "deleteDescription": "Are you sure you want to delete the {{percent}}% increase option? This action cannot be undone."
+    },
+    "success": {
+      "optionCreated": "Offer option created successfully",
+      "optionUpdated": "Offer option updated successfully",
+      "optionDeleted": "Offer option deleted successfully"
+    },
+    "error": {
+      "failedToLoad": "Failed to load offer options",
+      "failedToSave": "Failed to save offer option",
+      "failedToDelete": "Failed to delete offer option"
     }
   },
   "reports": {

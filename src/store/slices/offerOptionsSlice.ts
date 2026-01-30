@@ -87,26 +87,15 @@ const offerOptionsSlice = createSlice({
           state.options = action.payload;
         },
       )
-      .addCase(
-        saveOfferOption.fulfilled,
-        (state, action: PayloadAction<OfferIncreaseOption>) => {
-          const index = state.options.findIndex(
-            (o) => o.id === action.payload.id,
-          );
-          if (index !== -1) {
-            state.options[index] = action.payload;
-          } else {
-            state.options.push(action.payload);
-          }
-        },
-      )
+      .addCase(saveOfferOption.fulfilled, (state) => {
+        state.isLoading = false;
+      })
       .addCase(
         deleteOfferOption.fulfilled,
         (state, action: PayloadAction<number>) => {
           state.options = state.options.filter((o) => o.id !== action.payload);
         },
       )
-      // Global Matchers for Loading/Error states
       .addMatcher(
         isAnyOf(
           fetchOfferOptions.pending,

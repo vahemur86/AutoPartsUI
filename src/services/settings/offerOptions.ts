@@ -49,12 +49,12 @@ export const createOrUpdateOfferIncreaseOption = async ({
   const url = getEndpoint(shopId, isUpdate ? id : undefined);
 
   try {
-    const { data } = await api[method](
+    const response = await api[method](
       url,
       { percent, isActive },
       { headers: getHeaders(cashRegisterId) },
     );
-    return data;
+    return response.data;
   } catch (error) {
     throw new Error(
       getApiErrorMessage(error, `Failed to ${action} offer increase option.`),
