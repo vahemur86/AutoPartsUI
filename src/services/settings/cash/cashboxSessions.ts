@@ -2,7 +2,7 @@
 import api from "@/services";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type {
@@ -13,12 +13,6 @@ import type {
   ZReportResponse,
   CashboxReport,
 } from "@/types/cash";
-
-const getHeaders = (cashRegisterId?: number) => ({
-  ...(cashRegisterId && {
-    "X-CashRegister-Id": cashRegisterId,
-  }),
-});
 
 export const closeCashRegisterSession = async ({
   sessionId,

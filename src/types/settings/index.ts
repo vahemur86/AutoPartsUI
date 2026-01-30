@@ -189,3 +189,13 @@ export interface CustomerType {
   bonusPercent: number;
   isActive: boolean;
 }
+
+export interface OfferIncreaseOption {
+  id: number;
+  shopId: number;
+  order: number;
+  percent: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
