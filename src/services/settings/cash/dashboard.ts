@@ -1,7 +1,7 @@
 import api from "@/services";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type {
@@ -59,12 +59,6 @@ export const getOpenSessionsSummary = async ({
     );
   }
 };
-
-const getHeaders = (cashRegisterId?: number) => ({
-  ...(cashRegisterId && {
-    "X-CashRegister-Id": cashRegisterId,
-  }),
-});
 
 export const getPowderBatches = async ({
   cashRegisterId,
