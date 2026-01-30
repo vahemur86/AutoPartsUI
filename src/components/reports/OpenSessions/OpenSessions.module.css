@@ -3,7 +3,6 @@
   flex-direction: column;
   gap: 24px;
   padding: 20px;
-  width: 100%;
 }
 
 .header h1 {
@@ -38,4 +37,3 @@
     padding: 16px;
   }
 }
-

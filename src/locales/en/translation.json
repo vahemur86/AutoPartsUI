@@ -497,6 +497,9 @@
         "ptTotal": "Platinum Total",
         "pdTotal": "Palladium Total",
         "rhTotal": "Rhodium Total",
+        "ptPerKg_g": "Platinum per kg (g)",
+        "pdPerKg_g": "Palladium per kg (g)",
+        "rhPerKg_g": "Rhodium per kg (g)",
         "status": "Status"
       },
       "summary": {
