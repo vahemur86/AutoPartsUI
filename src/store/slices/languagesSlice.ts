@@ -121,6 +121,15 @@ const languagesSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearDefaultFlags: (
+      state,
+      action: PayloadAction<{ excludeId?: number } | undefined>,
+    ) => {
+      state.languages = state.languages.map((lang) => ({
+        ...lang,
+        isDefault: lang.id === action.payload?.excludeId,
+      }));
+    },
   },
   extraReducers: (builder) => {
     // Fetch languages
@@ -208,5 +217,5 @@ const languagesSlice = createSlice({
   },
 });
 
-export const { clearError } = languagesSlice.actions;
+export const { clearError, clearDefaultFlags } = languagesSlice.actions;
 export default languagesSlice.reducer;

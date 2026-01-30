@@ -123,13 +123,17 @@ export const Settings = () => {
     },
   ];
 
-  // Find active step index for stepper
+  const activeItem = navigationItems.find((item) => isActive(item.path));
+
+  const activeSectionTitle = activeItem?.label ?? t("header.settings");
+
+  const ActiveIcon = activeItem?.icon ?? SettingsIcon;
+
   const activeStepIndex = navigationItems.findIndex((item) =>
-    isActive(item.path)
+    isActive(item.path),
   );
   const activeIndex = activeStepIndex >= 0 ? activeStepIndex : 0;
 
-  // Convert navigation items to stepper steps
   const stepperSteps: StepperStep[] = navigationItems.map((item, index) => ({
     id: item.path,
     label: item.label,
@@ -142,13 +146,12 @@ export const Settings = () => {
     }
   };
 
-  const activeSectionTitle =
-    navigationItems.find((item) => isActive(item.path))?.label ??
-    t("header.settings");
-
   return (
     <>
-      <SectionHeader title={activeSectionTitle} />
+      <SectionHeader
+        icon={<ActiveIcon size={24} />}
+        title={activeSectionTitle}
+      />
 
       <div className={styles.settingsContainer}>
         <div className={styles.mainCard}>

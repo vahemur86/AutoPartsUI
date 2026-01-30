@@ -17,6 +17,7 @@ export const getZReportColumns = (): ColumnDef<ZReport, any>[] => [
     header: () => null,
     cell: ({ row }) => (
       <button
+        type="button"
         onClick={row.getToggleExpandedHandler()}
         className={styles.expandTrigger}
       >

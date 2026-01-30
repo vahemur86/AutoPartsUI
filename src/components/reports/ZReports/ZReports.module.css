@@ -3,7 +3,6 @@
   flex-direction: column;
   gap: 24px;
   padding: 20px;
-  width: 100%;
 }
 
 .header {
@@ -42,6 +41,17 @@
   background-color: var(--color-black-2);
   border-radius: 8px;
   overflow: hidden;
+}
+
+.expandTrigger {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--color-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
 }
 
 .todayRow {

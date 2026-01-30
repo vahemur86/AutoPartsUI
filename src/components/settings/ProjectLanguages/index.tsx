@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+
 // ui-kit
 import { Button } from "@/ui-kit";
+
 // components
 import { LanguagesContent } from "./LanguagesContent";
 import { EditLanguageDropdown } from "./languagesActions/EditLanguageDropdown";
 import { AddLanguageDropdown } from "./languagesActions/AddLanguageDropdown";
+
 // Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -14,14 +17,19 @@ import {
   addLanguage,
   updateLanguageInStore,
   removeLanguage,
+  clearDefaultFlags,
 } from "@/store/slices/languagesSlice";
+
 // services
 import { updateLanguage } from "@/services/settings/languages";
+
 // types
 import type { Language } from "@/types/settings";
+
 // utils
 import { getErrorMessage } from "@/utils";
 import { updateI18nLanguage } from "@/utils/updateI18nLanguage";
+
 // styles
 import styles from "./ProjectLanguages.module.css";
 
@@ -36,7 +44,6 @@ export const ProjectLanguages = () => {
 
   const editAnchorRef = useRef<HTMLElement>(null);
   const addAnchorRef = useRef<HTMLElement>(null);
-
   const fetchInitiatedRef = useRef(false);
 
   useEffect(() => {
@@ -47,9 +54,7 @@ export const ProjectLanguages = () => {
         const defaultLanguage = result.payload.find(
           (lang: Language) => lang.isDefault,
         );
-        if (defaultLanguage) {
-          updateI18nLanguage(defaultLanguage.code);
-        }
+        if (defaultLanguage) updateI18nLanguage(defaultLanguage.code);
       } else if (fetchLanguages.rejected.match(result)) {
         toast.error(
           getErrorMessage(result.payload, t("languages.error.failedToLoad")),
@@ -58,6 +63,7 @@ export const ProjectLanguages = () => {
     });
   }, [dispatch, t]);
 
+  // UI Helper functions
   const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
     if (!anchorEl) return;
     addAnchorRef.current = anchorEl;
@@ -83,15 +89,18 @@ export const ProjectLanguages = () => {
     addAnchorRef.current = null;
   }, []);
 
+  /**
+   * UPDATED: Syncs the database and then cleans up the Redux state
+   */
   const unsetOtherDefaultLanguages = useCallback(
     async (excludeId?: number) => {
       const toUnset = languages.filter(
         (lang) => lang.isDefault && lang.id !== excludeId,
       );
-
       if (toUnset.length === 0) return;
 
       try {
+        // 1. Tell the server to unset previous defaults
         await Promise.all(
           toUnset.map((lang) =>
             updateLanguage(
@@ -103,6 +112,9 @@ export const ProjectLanguages = () => {
             ),
           ),
         );
+
+        // 2. Clear flags in Redux so only the current/new one has the green bar
+        dispatch(clearDefaultFlags({ excludeId }));
       } catch (error: unknown) {
         toast.error(
           getErrorMessage(error, t("languages.error.failedToUpdateDefault")),
@@ -110,7 +122,7 @@ export const ProjectLanguages = () => {
         throw error;
       }
     },
-    [languages, t],
+    [languages, t, dispatch],
   );
 
   const handleAddLanguage = useCallback(
@@ -130,9 +142,7 @@ export const ProjectLanguages = () => {
         );
 
         if (addLanguage.fulfilled.match(result)) {
-          if (data.isDefault) {
-            updateI18nLanguage(data.code);
-          }
+          if (data.isDefault) updateI18nLanguage(data.code);
           toast.success(t("languages.success.languageCreated"));
           handleCloseAddDropdown();
         } else {
@@ -144,11 +154,9 @@ export const ProjectLanguages = () => {
           );
         }
       } catch (error: unknown) {
-        console.error(error);
         toast.error(
           getErrorMessage(error, t("languages.error.failedToCreate")),
         );
-        // Revert on error by refetching
         dispatch(fetchLanguages());
       }
     },
@@ -179,9 +187,7 @@ export const ProjectLanguages = () => {
         );
 
         if (updateLanguageInStore.fulfilled.match(result)) {
-          if (isBeingSetAsDefault) {
-            updateI18nLanguage(data.code);
-          }
+          if (isBeingSetAsDefault) updateI18nLanguage(data.code);
           toast.success(t("languages.success.languageUpdated"));
           handleCloseEditDropdown();
         } else {
@@ -193,11 +199,9 @@ export const ProjectLanguages = () => {
           );
         }
       } catch (error: unknown) {
-        console.error(error);
         toast.error(
           getErrorMessage(error, t("languages.error.failedToUpdate")),
         );
-        // Revert on error by refetching
         dispatch(fetchLanguages());
       }
     },
@@ -215,7 +219,6 @@ export const ProjectLanguages = () => {
     async (id: number) => {
       try {
         const result = await dispatch(removeLanguage(id));
-
         if (removeLanguage.fulfilled.match(result)) {
           toast.success(t("languages.success.languageDeleted"));
           handleCloseEditDropdown();
@@ -228,7 +231,6 @@ export const ProjectLanguages = () => {
           );
         }
       } catch (error: unknown) {
-        console.error(error);
         toast.error(
           getErrorMessage(error, t("languages.error.failedToDelete")),
         );
@@ -280,7 +282,6 @@ export const ProjectLanguages = () => {
         <Button variant="secondary" size="medium" onClick={() => {}}>
           {t("common.cancel")}
         </Button>
-
         <Button variant="primary" size="medium" onClick={() => {}}>
           {t("common.save")}
         </Button>

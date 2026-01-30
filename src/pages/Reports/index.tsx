@@ -59,6 +59,11 @@ export const Reports = () => {
     },
   ];
 
+  const activeItem = navigationItems.find((item) => isActive(item.path));
+
+  const activeSectionTitle = activeItem?.label ?? t("header.reports");
+  const ActiveIcon = activeItem?.icon ?? FileText;
+
   const activeStepIndex = navigationItems.findIndex((item) =>
     isActive(item.path),
   );
@@ -76,13 +81,12 @@ export const Reports = () => {
     }
   };
 
-  const activeSectionTitle =
-    navigationItems.find((item) => isActive(item.path))?.label ??
-    t("header.reports");
-
   return (
     <>
-      <SectionHeader title={activeSectionTitle} />
+      <SectionHeader
+        icon={<ActiveIcon size={24} />}
+        title={activeSectionTitle}
+      />
 
       <div className={styles.reportsContainer}>
         <div className={styles.reportsLayout}>

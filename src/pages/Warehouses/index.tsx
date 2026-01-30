@@ -6,8 +6,8 @@ export const Warehouses = () => {
   return (
     <>
       <SectionHeader
-        title="Products"
-        icon={<img src={productIcon} alt="Products icon" />}
+        title="Warehouses"
+        icon={<img src={productIcon} alt="Warehouse icon" />}
       />
 
       <div className={styles.warehousesPage}>

@@ -34,16 +34,16 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
     header: i18next.t("cashbox.powderBatches.columns.weight"),
     cell: (info) => `${info.getValue().toLocaleString()} kg`,
   }),
-  columnHelper.accessor("ptTotal_g", {
-    header: i18next.t("cashbox.powderBatches.columns.ptTotal"),
+  columnHelper.accessor("ptPerKg_g", {
+    header: i18next.t("cashbox.powderBatches.columns.ptPerKg_g"),
     cell: (info) => `${info.getValue().toLocaleString()} g`,
   }),
-  columnHelper.accessor("pdTotal_g", {
-    header: i18next.t("cashbox.powderBatches.columns.pdTotal"),
+  columnHelper.accessor("pdPerKg_g", {
+    header: i18next.t("cashbox.powderBatches.columns.pdPerKg_g"),
     cell: (info) => `${info.getValue().toLocaleString()} g`,
   }),
-  columnHelper.accessor("rhTotal_g", {
-    header: i18next.t("cashbox.powderBatches.columns.rhTotal"),
+  columnHelper.accessor("rhPerKg_g", {
+    header: i18next.t("cashbox.powderBatches.columns.rhPerKg_g"),
     cell: (info) => `${info.getValue().toLocaleString()} g`,
   }),
   columnHelper.accessor("status", {
@@ -61,4 +61,3 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
     },
   }),
 ];
-
