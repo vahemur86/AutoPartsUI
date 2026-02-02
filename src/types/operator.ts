@@ -62,3 +62,12 @@ export interface IntakeResponse {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   serviceItems: any[];
 }
+
+export interface NewPropose {
+  intakeId: number;
+  baseOfferAmd: number;
+  stepOrder: number;
+  percent: number;
+  offeredAmountAmd: number;
+  offeredAt: string;
+}

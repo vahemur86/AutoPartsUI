@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 
 // services
 import {
@@ -7,26 +11,28 @@ import {
   offerIntake as offerIntakeFn,
   acceptIntake as acceptIntakeFn,
   rejectIntake as rejectIntakeFn,
-  recalculateIntake as recalculateIntakeFn,
+  proposeNewOffer as proposeNewOfferFn,
 } from "@/services/operator";
 
 // stores
 import { logout } from "./authSlice";
 
 // types
-import type { Intake, IntakeResponse } from "@/types/operator";
+import type { Intake, IntakeResponse, NewPropose } from "@/types/operator";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
 
 interface IntakeState {
   intake: IntakeResponse | null;
+  newPropose?: NewPropose | null; // Added for new method
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: IntakeState = {
   intake: null,
+  newPropose: null,
   isLoading: false,
   error: null,
 };
@@ -40,7 +46,7 @@ export const addIntake = createAsyncThunk<
   async ({ intake, cashRegisterId }, { rejectWithValue }) => {
     try {
       return await createIntake({ intake, cashRegisterId });
-    } catch (error: unknown) {
+    } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to create intake"),
       );
@@ -57,7 +63,7 @@ export const fetchIntake = createAsyncThunk<
   async ({ intakeId, cashRegisterId }, { rejectWithValue }) => {
     try {
       return await getIntake({ intakeId, cashRegisterId });
-    } catch (error: unknown) {
+    } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch intake"),
       );
@@ -69,31 +75,22 @@ export const offerIntake = createAsyncThunk<
   Intake,
   { intakeId: number; cashRegisterId: number },
   { rejectValue: string }
->(
-  "intakes/offerIntake",
-  async ({ intakeId, cashRegisterId }, { rejectWithValue }) => {
-    try {
-      return await offerIntakeFn({ intakeId, cashRegisterId });
-    } catch (error: unknown) {
-      return rejectWithValue(
-        getApiErrorMessage(error, "Failed to offer intake"),
-      );
-    }
-  },
-);
+>("intakes/offerIntake", async (payload, { rejectWithValue }) => {
+  try {
+    return await offerIntakeFn(payload);
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to offer intake"));
+  }
+});
 
 export const acceptIntake = createAsyncThunk<
   Intake,
-  {
-    intakeId: number;
-    cashRegisterId: number;
-    paymentType?: number;
-  },
+  { intakeId: number; cashRegisterId: number; paymentType?: number },
   { rejectValue: string }
 >("intakes/acceptIntake", async (payload, { rejectWithValue }) => {
   try {
     return await acceptIntakeFn(payload);
-  } catch (error: unknown) {
+  } catch (error) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to accept intake"),
     );
@@ -104,29 +101,26 @@ export const rejectIntake = createAsyncThunk<
   Intake,
   { intakeId: number; cashRegisterId: number },
   { rejectValue: string }
->(
-  "intakes/rejectIntake",
-  async ({ intakeId, cashRegisterId }, { rejectWithValue }) => {
-    try {
-      return await rejectIntakeFn({ intakeId, cashRegisterId });
-    } catch (error: unknown) {
-      return rejectWithValue(
-        getApiErrorMessage(error, "Failed to reject intake"),
-      );
-    }
-  },
-);
-
-export const recalculateIntake = createAsyncThunk<
-  Intake,
-  number,
-  { rejectValue: string }
->("intakes/recalculateIntake", async (id, { rejectWithValue }) => {
+>("intakes/rejectIntake", async (payload, { rejectWithValue }) => {
   try {
-    return await recalculateIntakeFn(id);
-  } catch (error: unknown) {
+    return await rejectIntakeFn(payload);
+  } catch (error) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to recalculate intake"),
+      getApiErrorMessage(error, "Failed to reject intake"),
+    );
+  }
+});
+
+export const proposeNewOffer = createAsyncThunk<
+  NewPropose,
+  { intakeId: number; cashRegisterId: number },
+  { rejectValue: string }
+>("intakes/proposeNewOffer", async (payload, { rejectWithValue }) => {
+  try {
+    return await proposeNewOfferFn(payload);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to propose new offer"),
     );
   }
 });
@@ -140,15 +134,18 @@ const operatorSlice = createSlice({
     },
     clearIntakeState: (state) => {
       state.intake = null;
+      state.newPropose = null;
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(logout, (state) => {
       state.intake = null;
+      state.newPropose = null;
       state.error = null;
     });
 
+    // Exact matches to the OLD logic
     builder
       .addCase(fetchIntake.pending, (state) => {
         state.isLoading = true;
@@ -156,7 +153,7 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchIntake.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.intake = action.payload;
+        state.intake = action.payload; // Direct overwrite
       })
       .addCase(fetchIntake.rejected, (state, action) => {
         state.isLoading = false;
@@ -173,6 +170,25 @@ const operatorSlice = createSlice({
       .addCase(addIntake.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to create intake";
+      })
+
+      .addCase(proposeNewOffer.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        proposeNewOffer.fulfilled,
+        (state, action: PayloadAction<NewPropose>) => {
+          state.isLoading = false;
+          state.newPropose = action.payload;
+          if (state.intake) {
+            state.intake.offerPrice = action.payload.offeredAmountAmd;
+          }
+        },
+      )
+      .addCase(proposeNewOffer.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to propose new offer";
       });
   },
 });

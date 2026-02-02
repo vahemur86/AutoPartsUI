@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -8,7 +8,7 @@ import i18n from "i18next";
 // icons
 import { LogOut, Banknote, Eye, EyeOff } from "lucide-react";
 
-// store
+// stores
 import { logout } from "@/store/slices/authSlice";
 import {
   fetchActiveMetalRate,
@@ -24,8 +24,6 @@ import {
   fetchLanguages,
   clearError as clearLangError,
 } from "@/store/slices/languagesSlice";
-
-// stores
 import {
   fetchBalance,
   openSession,
@@ -38,6 +36,7 @@ import {
   clearError as clearSessionError,
 } from "@/store/slices/cash/sessionsSlice";
 import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
+import { fetchOfferOptions } from "@/store/slices/offerOptionsSlice";
 
 // ui-kit
 import { Button, Select, TextField, ConfirmationModal } from "@/ui-kit";
@@ -72,29 +71,32 @@ export const OperatorPage = () => {
     error: languagesError,
     isLoading: isLangLoading,
   } = useAppSelector((state) => state.languages);
-
-  // New Store Selectors
   const {
     activeBalance,
     error: cashError,
-    isLoading: isBalanceLoading,
+    isBalanceLoading,
   } = useAppSelector((state) => state.cashRegisters);
-
   const {
     hasOpenSession,
     sessionDetails,
     error: sessionError,
   } = useAppSelector((state) => state.cashSessions);
+  const { options: offerOptions } = useAppSelector(
+    (state) => state.offerOptions,
+  );
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
-  // Local State
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userData, setUserData] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
   const [showCashAmount, setShowCashAmount] = useState(false);
   const [isCloseSessionModalOpen, setIsCloseSessionModalOpen] = useState(false);
+  const [recalculationsAmount, setRecalculationsAmount] = useState(0);
+  const [initialOfferPrice, setInitialOfferPrice] = useState<number | null>(
+    null,
+  );
 
   const [formData, setFormData] = useState({
     powderWeight: "0",
@@ -103,6 +105,15 @@ export const OperatorPage = () => {
     rhodiumPrice: "0",
     customerPhone: "",
   });
+
+  useEffect(() => {
+    if (intake?.offerPrice && initialOfferPrice === null) {
+      setInitialOfferPrice(intake.offerPrice);
+    }
+    if (!intake) {
+      setInitialOfferPrice(null);
+    }
+  }, [intake, initialOfferPrice]);
 
   const handleResetForm = useCallback(() => {
     setFormData({
@@ -114,6 +125,8 @@ export const OperatorPage = () => {
     });
     setHasTriedSubmit(false);
     setShowCashAmount(false);
+    setInitialOfferPrice(null);
+    setRecalculationsAmount(0);
     dispatch(clearIntakeState());
   }, [dispatch]);
 
@@ -140,7 +153,7 @@ export const OperatorPage = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metalRatesError, intakeError, languagesError, cashError, sessionError]);
-
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -148,7 +161,6 @@ export const OperatorPage = () => {
   const isNumberValid = (val: string) =>
     val.trim() !== "" && !isNaN(Number(val));
   const isPhoneValid = formData.customerPhone.trim().length > 0;
-
   const isFormValid =
     isNumberValid(formData.powderWeight) &&
     isNumberValid(formData.platinumPrice) &&
@@ -161,7 +173,6 @@ export const OperatorPage = () => {
       localStorage.getItem("user_data") ?? "{}",
     );
     setUserData(localeStorageData);
-
     const crId = localeStorageData?.cashRegisterId;
     if (crId) {
       dispatch(
@@ -169,6 +180,7 @@ export const OperatorPage = () => {
       );
       dispatch(fetchLanguages(crId));
       dispatch(fetchRegisterSession(crId));
+      dispatch(fetchBalance(crId));
     }
   }, [dispatch]);
 
@@ -188,7 +200,6 @@ export const OperatorPage = () => {
     setIsSubmitting(true);
     try {
       const { cashRegisterId } = userData ?? {};
-
       const response = await dispatch(
         addIntake({
           intake: {
@@ -206,6 +217,12 @@ export const OperatorPage = () => {
 
       toast.success(t("operatorPage.success.intakeCreated"));
       dispatch(fetchIntake({ intakeId: response.id, cashRegisterId }));
+      dispatch(
+        fetchOfferOptions({
+          shopId: userData?.shopId,
+          cashRegisterId: userData?.cashRegisterId,
+        }),
+      );
       setHasTriedSubmit(false);
     } catch (error) {
       console.error("Submission failed:", error);
@@ -243,7 +260,6 @@ export const OperatorPage = () => {
               cashRegisterId,
             }),
           ).unwrap();
-
           dispatch(resetSessionState());
           toast.success(t("operatorPage.success.sessionClosed"));
           setIsCloseSessionModalOpen(false);
@@ -255,9 +271,7 @@ export const OperatorPage = () => {
     [dispatch, sessionDetails, userData?.cashRegisterId, t],
   );
 
-  const handleLanguageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
+  const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const apiCode = event.target.value;
     const i18nCode = mapApiCodeToI18nCode(apiCode);
     i18n.changeLanguage(i18nCode);
@@ -267,16 +281,17 @@ export const OperatorPage = () => {
   const selectedApiCode =
     languages.find((lang) => mapApiCodeToI18nCode(lang.code) === i18n.language)
       ?.code ?? "";
-
+  const rawBalanceValue = (activeBalance?.balance ?? 0).toString();
   const displayBalance = isBalanceLoading
     ? t("cashRegisters.fetchingBalance", "Fetching...")
-    : (activeBalance?.balance ?? 0).toString();
+    : showCashAmount
+      ? rawBalanceValue
+      : "••••••••";
 
   return (
     <div className={styles.operatorPage}>
       <div className={styles.headerSection}>
         <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
-
         <div className={styles.headerActions}>
           <div className={styles.sessionGroup}>
             <Button
@@ -290,7 +305,6 @@ export const OperatorPage = () => {
             >
               {t("operatorPage.openSession")}
             </Button>
-
             <Button
               onClick={() => setIsCloseSessionModalOpen(true)}
               className={
@@ -303,7 +317,6 @@ export const OperatorPage = () => {
               {t("operatorPage.closeSession")}
             </Button>
           </div>
-
           <div className={styles.languageSelectWrapper}>
             <Select
               placeholder={t("common.select")}
@@ -319,7 +332,6 @@ export const OperatorPage = () => {
               ))}
             </Select>
           </div>
-
           <Button
             variant="secondary"
             size="medium"
@@ -356,12 +368,15 @@ export const OperatorPage = () => {
             isLoading={isSubmitting}
             hasTriedSubmit={hasTriedSubmit}
           />
-
           <FinalOffer
-            offerPrice={intake ? intake.offerPrice : 0}
+            offerPrice={initialOfferPrice ?? (intake ? intake.offerPrice : 0)}
             currencyCode={intake?.currencyCode}
             userData={userData}
+            isRecalculationsLimitReached={
+              recalculationsAmount >= offerOptions.length
+            }
             onReset={handleResetForm}
+            setRecalculationsAmount={setRecalculationsAmount}
           />
         </div>
 
@@ -372,7 +387,6 @@ export const OperatorPage = () => {
             phoneError={hasTriedSubmit && !isPhoneValid}
             onSuccess={handleResetForm}
           />
-
           <div className={styles.cashRegisterContainer}>
             <div className={styles.fieldWithLeftIcon}>
               <div className={styles.leftIcon}>
@@ -380,9 +394,9 @@ export const OperatorPage = () => {
               </div>
               <TextField
                 label={t("operatorPage.cashAmount")}
-                type={showCashAmount ? "text" : "password"}
+                type="text"
                 name="cash-amount-display"
-                autoComplete="new-password"
+                autoComplete="off"
                 placeholder={t("operatorPage.cashAmountPlaceholder")}
                 value={cashError ? t("common.error") : displayBalance}
                 className={styles.textField}

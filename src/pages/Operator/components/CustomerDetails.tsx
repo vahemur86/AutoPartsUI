@@ -130,33 +130,26 @@ export const CustomerDetails = ({
 
   const handleAccept = useCallback(async () => {
     setLocalHasTriedAccept(true);
-
-    if (!intake?.id) return;
-
-    if (!isPhoneValid) {
-      toast.error(t("customerDetails.validation.invalidPhone"));
-      return;
-    }
+    if (!intake?.id || !isPhoneValid) return;
 
     try {
       setIsAccepting(true);
-      const rawData = localStorage.getItem("user_data");
-      const userData = rawData ? JSON.parse(rawData) : {};
-      const cashRegisterId = userData.cashRegisterId;
+      const userData = JSON.parse(localStorage.getItem("user_data") ?? "{}");
 
+      // This will update state.operator.error, which OperatorPage is already watching
       await dispatch(
-        acceptIntakeThunk({ intakeId: intake.id, cashRegisterId }),
+        acceptIntakeThunk({
+          intakeId: intake.id,
+          cashRegisterId: userData.cashRegisterId,
+        }),
       ).unwrap();
+
       toast.success(t("customerDetails.success.customerAccepted"));
-      dispatch(fetchBalance(cashRegisterId));
+      dispatch(fetchBalance(userData.cashRegisterId));
       onSuccess?.();
       setLocalHasTriedAccept(false);
-    } catch (error: unknown) {
-      toast.error(
-        typeof error === "string"
-          ? error
-          : t("customerDetails.error.failedToAccept"),
-      );
+    } catch {
+      /* Handled by global watcher */
     } finally {
       setIsAccepting(false);
     }

@@ -4,7 +4,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 
-// Individual service imports
+// services
 import {
   getCashRegisters,
   createCashRegister,
@@ -31,6 +31,7 @@ interface CashRegistersState {
   activeBalance: CashRegisterBalance | null;
   currentSessionId: number | null;
   isLoading: boolean;
+  isBalanceLoading: boolean;
   error: string | null;
 }
 
@@ -39,6 +40,7 @@ const initialState: CashRegistersState = {
   activeBalance: null,
   currentSessionId: null,
   isLoading: false,
+  isBalanceLoading: false,
   error: null,
 };
 
@@ -138,7 +140,6 @@ export const openSession = createAsyncThunk<
     return rejectWithValue(getApiErrorMessage(error, "Failed to open session"));
   }
 });
-
 export const assignOperator = createAsyncThunk<
   void,
   { cashRegisterId: number; userId: number },
@@ -172,6 +173,21 @@ const cashRegistersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      /* fetchBalance specific cases */
+      .addCase(fetchBalance.pending, (state) => {
+        state.isBalanceLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchBalance.fulfilled, (state, action) => {
+        state.isBalanceLoading = false;
+        state.activeBalance = action.payload;
+      })
+      .addCase(fetchBalance.rejected, (state, action) => {
+        state.isBalanceLoading = false;
+        state.error = action.payload ?? "Failed to fetch balance";
+      })
+
+      /* Standard fulfilled cases */
       .addCase(fetchCashRegisters.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cashRegisters = action.payload;
@@ -193,10 +209,6 @@ const cashRegistersSlice = createSlice({
           (r) => r.id !== action.payload,
         );
       })
-      .addCase(fetchBalance.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.activeBalance = action.payload;
-      })
       .addCase(topUpRegister.fulfilled, (state, action) => {
         state.isLoading = false;
         state.activeBalance = action.payload;
@@ -209,16 +221,19 @@ const cashRegistersSlice = createSlice({
         state.isLoading = false;
       })
 
-      // Global Matchers
       .addMatcher(
-        (action) => action.type.endsWith("/pending"),
+        (action) =>
+          action.type.endsWith("/pending") &&
+          !action.type.includes("fetchBalance"),
         (state) => {
           state.isLoading = true;
           state.error = null;
         },
       )
       .addMatcher(
-        (action) => action.type.endsWith("/rejected"),
+        (action) =>
+          action.type.endsWith("/rejected") &&
+          !action.type.includes("fetchBalance"),
         (state, action: PayloadAction<string | undefined>) => {
           state.isLoading = false;
           state.error = action.payload ?? "An unexpected error occurred";

@@ -16,6 +16,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .languageSelect {
@@ -31,6 +33,10 @@
   height: 36px;
 }
 
+.languageSelectWrapper {
+  width: 160px;
+}
+
 .pageTitle {
   font-size: 24px;
   font-weight: 600;
@@ -38,6 +44,50 @@
   margin: 0;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sessionGroup {
+  display: flex;
+  gap: 10px;
+}
+
+/* --- Session Button States --- */
+.sessionBtnActive {
+  background-color: #22c55e !important;
+  color: white !important;
+  border: 1px solid #22c55e !important;
+}
+
+.sessionBtnInactive {
+  background-color: transparent !important;
+  color: #22c55e !important;
+  border: 1px solid #22c55e !important;
+}
+
+.sessionBtnActiveClose {
+  background-color: #ef4444 !important;
+  color: white !important;
+  border: 1px solid #ef4444 !important;
+}
+
+.sessionBtnInactiveClose {
+  background-color: transparent !important;
+  color: #ef4444 !important;
+  border: 1px solid #ef4444 !important;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Layout Grid --- */
 .topRow {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -233,11 +283,49 @@
   letter-spacing: 0.5px;
 }
 
-.finalOfferAmount {
-  font-size: 30px;
+/* --- Updated Price Styling Magic --- */
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.oldPriceStruck {
+  font-size: 18px;
   font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: line-through;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 2px;
+  margin-bottom: -4px;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.finalOfferAmount {
+  font-size: 32px;
+  font-weight: 700;
   color: var(--color-primary-500);
   text-align: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.newPriceHighlight {
+  color: var(--color-success, #22c55e);
+  transform: scale(1.1);
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .finalOfferActions {
@@ -324,7 +412,7 @@
   margin-top: 16px;
 }
 
-/* --- Live Market Prices Card & Metals --- */
+/* --- Live Market Prices --- */
 .marketPricesCard {
   gap: 16px;
 }
@@ -388,11 +476,9 @@
 .metalIcon.platinum {
   background: linear-gradient(135deg, #ffffff 0%, #e5e4e2 40%, #a6a6a6 100%);
 }
-
 .metalIcon.palladium {
   background: linear-gradient(135deg, #cba68b 0%, #6e6259 50%, #2b2724 100%);
 }
-
 .metalIcon.rhodium {
   background: linear-gradient(135deg, #ffffff 0%, #c4d7f5 45%, #53698c 100%);
 }
@@ -465,6 +551,13 @@
   padding-left: 44px;
 }
 
+/* Logic for masking the balance display without using type="password" */
+.textField input[value="••••••••"] {
+  letter-spacing: 2px;
+  font-family: monospace;
+  font-size: 18px;
+}
+
 .passwordToggle {
   background: none;
   border: none;
@@ -481,33 +574,7 @@
   color: var(--color-white);
 }
 
-/* --- Responsive Design --- */
-@media (max-width: 1200px) {
-  .topRow {
-    grid-template-columns: 1fr 1fr;
-  }
-  .rightColumn {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 768px) {
-  .operatorPage {
-    gap: 16px;
-    padding: 16px;
-  }
-  .topRow {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .leftColumn,
-  .centerColumn,
-  .rightColumn {
-    grid-column: 1;
-  }
-}
-
-/* --- UPDATED PHONE ALIGNMENT SECTION --- */
+/* --- Customer Phone Section --- */
 .phoneSection {
   display: flex;
   flex-direction: column;
@@ -543,49 +610,14 @@
   margin-bottom: 0 !important;
 }
 
-.headerSection {
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.sessionGroup {
-  display: flex;
-  gap: 10px;
-}
-
-.languageSelectWrapper {
-  width: 160px;
-}
-
-.sessionBtnActive {
-  background-color: #22c55e !important;
-  color: white !important;
-  border: 1px solid #22c55e !important;
-}
-
-.sessionBtnInactive {
-  background-color: transparent !important;
-  color: #22c55e !important;
-  border: 1px solid #22c55e !important;
-}
-
-.sessionBtnActiveClose {
-  background-color: #ef4444 !important;
-  color: white !important;
-  border: 1px solid #ef4444 !important;
-}
-
-.sessionBtnInactiveClose {
-  background-color: transparent !important;
-  color: #ef4444 !important;
-  border: 1px solid #ef4444 !important;
+/* --- Responsive Design --- */
+@media (max-width: 1200px) {
+  .topRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rightColumn {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 900px) {
@@ -600,10 +632,30 @@
   }
 }
 
+@media (max-width: 768px) {
+  .operatorPage {
+    gap: 16px;
+    padding: 16px;
+  }
+  .topRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .leftColumn,
+  .centerColumn,
+  .rightColumn {
+    grid-column: 1;
+  }
+}
+
 @media (max-width: 600px) {
   .headerActions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .finalOfferActions {
+    flex-wrap: wrap;
   }
 
   .sessionGroup {

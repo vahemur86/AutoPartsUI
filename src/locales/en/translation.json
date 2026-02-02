@@ -738,9 +738,11 @@
     "title": "Final Offer",
     "offerButton": "Accept Offer",
     "rejectButton": "Reject Offer",
+    "recalculateButton": "Recalculate Offer",
     "success": {
       "offered": "Offer calculated successfully",
-      "rejected": "Offer rejected successfully"
+      "rejected": "Offer rejected successfully",
+      "recalculated": "Offer recalculated successfully"
     },
     "error": {
       "noIntake": "No intake found",
