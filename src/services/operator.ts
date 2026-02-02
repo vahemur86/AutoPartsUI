@@ -4,7 +4,7 @@ import api from ".";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { Intake } from "@/types/operator";
+import type { Intake, NewPropose } from "@/types/operator";
 
 export const createIntake = async ({
   intake,
@@ -94,6 +94,29 @@ export const rejectIntake = async ({
   }
 };
 
+export const proposeNewOffer = async ({
+  intakeId,
+  cashRegisterId,
+}: {
+  intakeId: number;
+  cashRegisterId: number;
+}) => {
+  try {
+    const response = await api.post<NewPropose>(
+      `/catalyst/intakes/${intakeId}/new-offer`,
+      {},
+      {
+        headers: {
+          "X-CashRegister-Id": cashRegisterId,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to propose new offer."));
+  }
+};
+
 export const offerIntake = async ({
   intakeId,
   cashRegisterId,
@@ -114,16 +137,5 @@ export const offerIntake = async ({
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to offer intake."));
-  }
-};
-
-export const recalculateIntake = async (intakeId: number) => {
-  try {
-    const response = await api.post(
-      `/catalyst/intakes/${intakeId}/recalculate`,
-    );
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to recalculate intake."));
   }
 };

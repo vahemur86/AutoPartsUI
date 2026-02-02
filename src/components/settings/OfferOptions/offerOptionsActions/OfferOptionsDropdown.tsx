@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Button, Switch, TextField, Dropdown } from "@/ui-kit";
+import { Button, TextField, Dropdown } from "@/ui-kit";
 
 // types
 import type { OfferIncreaseOption } from "@/types/settings";
@@ -29,17 +29,14 @@ export const OfferIncreaseOptionDropdown = ({
   const isEdit = !!option;
 
   const [percentValue, setPercentValue] = useState("");
-  const [isActiveValue, setIsActiveValue] = useState(true);
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     if (option) {
       setPercentValue(option.percent.toString());
-      setIsActiveValue(option.isActive);
     } else {
       setPercentValue("");
-      setIsActiveValue(true);
     }
     setHasTriedSave(false);
   }, [open, option]);
@@ -56,7 +53,7 @@ export const OfferIncreaseOptionDropdown = ({
     onSave({
       id: option?.id,
       percent: parseFloat(percentValue),
-      isActive: isActiveValue,
+      isActive: true,
     });
   };
 
@@ -84,13 +81,6 @@ export const OfferIncreaseOptionDropdown = ({
             error={hasTriedSave && !isPercentValid}
             suffix="%"
             autoFocus
-          />
-        </div>
-        <div className={styles.toggles}>
-          <Switch
-            checked={isActiveValue}
-            onCheckedChange={setIsActiveValue}
-            label={t("offers.form.active")}
           />
         </div>
         <div className={styles.actions}>
