@@ -1,4 +1,11 @@
-import { useRef, createRef, useState, type FC, type RefObject } from "react";
+import {
+  useRef,
+  createRef,
+  useState,
+  type FC,
+  type RefObject,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
@@ -20,6 +27,7 @@ interface OfferOptionsContentProps {
   activeOptionId?: number | null;
   onEditClick?: (optionId: number, anchorEl: HTMLElement | null) => void;
   onDeleteClick?: (id: number) => void;
+  shopSelector: ReactNode;
 }
 
 export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
@@ -29,6 +37,7 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
   activeOptionId,
   onEditClick,
   onDeleteClick,
+  shopSelector,
 }) => {
   const { t } = useTranslation();
   const [optionToDelete, setOptionToDelete] =
@@ -68,7 +77,24 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
           />
           <span className={styles.addButtonLabel}>{t("offers.addOption")}</span>
         </div>
+
+        <div ref={mobileAddRef} className={styles.mobileAddButton}>
+          <div className={styles.addButtonContainerMobile}>
+            <IconButton
+              variant="primary"
+              size="small"
+              icon={<Plus size={12} color="#0e0f11" />}
+              ariaLabel={t("offers.addNew")}
+              onClick={() => onAddNewClick(mobileAddRef.current)}
+            />
+            <span className={styles.addButtonLabel}>
+              {t("offers.addOption")}
+            </span>
+          </div>
+        </div>
       </div>
+
+      {shopSelector}
 
       <div className={styles.optionsList}>
         {isLoading ? (
@@ -109,14 +135,10 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
                     edit: {
                       icon: <Edit size={16} />,
                       onClick: () => {
-                        // Crucial Fix: Anchor to the specific button inside the row
-                        const buttonAnchor = itemRef.current?.querySelector(
+                        const btn = itemRef.current?.querySelector(
                           "button",
                         ) as HTMLElement;
-                        onEditClick?.(
-                          option.id,
-                          buttonAnchor || itemRef.current,
-                        );
+                        onEditClick?.(option.id, btn || itemRef.current);
                       },
                       ariaLabel: t("offers.editOption"),
                     },
@@ -133,19 +155,6 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
             );
           })
         )}
-      </div>
-
-      <div className={styles.mobileAddButton}>
-        <div ref={mobileAddRef} className={styles.addButtonContainer}>
-          <IconButton
-            variant="primary"
-            size="small"
-            icon={<Plus size={12} />}
-            ariaLabel={t("offers.addNew")}
-            onClick={() => onAddNewClick(mobileAddRef.current)}
-          />
-          <span className={styles.addButtonLabel}>{t("offers.addOption")}</span>
-        </div>
       </div>
 
       {!!optionToDelete && (

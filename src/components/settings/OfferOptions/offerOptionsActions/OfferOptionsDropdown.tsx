@@ -16,7 +16,6 @@ export interface OfferIncreaseOptionDropdownProps {
   anchorRef?: RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: { percent: number; isActive: boolean; id?: number }) => void;
-  onDelete?: (id: number) => void;
 }
 
 export const OfferIncreaseOptionDropdown = ({
@@ -45,14 +44,14 @@ export const OfferIncreaseOptionDropdown = ({
     setHasTriedSave(false);
   }, [open, option]);
 
-  const isValid = useMemo(() => {
+  const isPercentValid = useMemo(() => {
     const val = parseFloat(percentValue);
     return !isNaN(val) && val >= 0;
   }, [percentValue]);
 
   const handleSaveClick = () => {
     setHasTriedSave(true);
-    if (!isValid) return;
+    if (!isPercentValid) return;
 
     onSave({
       id: option?.id,
@@ -60,8 +59,6 @@ export const OfferIncreaseOptionDropdown = ({
       isActive: isActiveValue,
     });
   };
-
-  const handleClose = () => onOpenChange(false);
 
   return (
     <Dropdown
@@ -77,7 +74,6 @@ export const OfferIncreaseOptionDropdown = ({
           {isEdit ? t("offers.editOption") : t("offers.addOption")}
         </span>
       </div>
-
       <div className={styles.content}>
         <div className={styles.fields}>
           <TextField
@@ -85,11 +81,11 @@ export const OfferIncreaseOptionDropdown = ({
             type="number"
             value={percentValue}
             onChange={(e) => setPercentValue(e.target.value)}
-            error={hasTriedSave && !isValid}
+            error={hasTriedSave && !isPercentValid}
             suffix="%"
+            autoFocus
           />
         </div>
-
         <div className={styles.toggles}>
           <Switch
             checked={isActiveValue}
@@ -97,13 +93,12 @@ export const OfferIncreaseOptionDropdown = ({
             label={t("offers.form.active")}
           />
         </div>
-
         <div className={styles.actions}>
           <div className={styles.primaryActions}>
-            <Button variant="secondary" size="medium" onClick={handleClose}>
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>
               {t("common.cancel")}
             </Button>
-            <Button variant="primary" size="medium" onClick={handleSaveClick}>
+            <Button variant="primary" onClick={handleSaveClick}>
               {t("common.save")}
             </Button>
           </div>

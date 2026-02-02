@@ -31,6 +31,12 @@
   font-weight: 400;
 }
 
+.shopSelectorSection {
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 320px;
+}
+
 .optionsList {
   display: flex;
   flex-direction: column;
@@ -50,7 +56,6 @@
   overflow: hidden;
 }
 
-/* Status indicator bar */
 .optionItem.activeOption .optionField::before {
   content: "";
   position: absolute;
@@ -78,8 +83,6 @@
 .statusText {
   font-size: 13px;
   color: var(--color-white);
-  font-weight: 400;
-  line-height: 1.4;
   opacity: 0.6;
 }
 
@@ -108,16 +111,32 @@
 
 @media (max-width: 768px) {
   .header {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .addButtonContainer {
     display: none;
   }
 
   .mobileAddButton {
     display: flex;
-    margin-top: 16px;
     border: 1px solid var(--color-primary-400);
     border-radius: 8px;
     padding: 10px 12px;
     justify-content: center;
+    cursor: pointer;
+  }
+
+  .addButtonContainerMobile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .shopSelectorSection {
+    max-width: 100%;
   }
 
   .footerActions {

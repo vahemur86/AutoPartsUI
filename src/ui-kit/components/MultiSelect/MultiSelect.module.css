@@ -145,7 +145,6 @@
 .optionsList {
   overflow-y: auto;
   flex: 1;
-  padding: 4px 0;
 }
 
 .option {
@@ -162,14 +161,15 @@
   font-family: "Manrope", sans-serif;
   cursor: pointer;
   text-align: left;
+  border-radius: 0;
+  transition: background-color 0.2s ease;
+}
+.optionSelected {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .option:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.08);
-}
-
-.optionSelected {
-  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .optionDisabled {
