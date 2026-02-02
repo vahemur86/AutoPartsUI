@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Button } from "@/ui-kit";
+import { Select } from "@/ui-kit";
 
 // components
 import { OfferOptionsContent } from "./OfferOptionsContent";
@@ -16,6 +16,7 @@ import {
   saveOfferOption,
   deleteOfferOption,
 } from "@/store/slices/offerOptionsSlice";
+import { fetchShops } from "@/store/slices/shopsSlice";
 
 // utils
 import { getErrorMessage } from "@/utils";
@@ -28,42 +29,54 @@ export const OfferIncreaseOptions = () => {
   const dispatch = useAppDispatch();
 
   const { options, isLoading } = useAppSelector((state) => state.offerOptions);
+  const { shops } = useAppSelector((state) => state.shops);
 
+  const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
   const [activeOptionId, setActiveOptionId] = useState<number | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const anchorRef = useRef<HTMLElement | null>(null);
-  const fetchInitiatedRef = useRef(false);
 
-  const { shopId, cashRegisterId } = useMemo(() => {
+  const { cashRegisterId } = useMemo(() => {
     try {
       const rawData = localStorage.getItem("user_data");
       const userData = rawData ? JSON.parse(rawData) : {};
-
       return {
-        shopId:
-          userData.shopId && userData.shopId !== "—"
-            ? Number(userData.shopId)
-            : null,
         cashRegisterId: userData.cashRegisterId
           ? Number(userData.cashRegisterId)
           : undefined,
       };
     } catch {
-      return { shopId: null, cashRegisterId: undefined };
+      return { cashRegisterId: undefined };
     }
   }, []);
 
+  // 1. Fetch shops on mount
   useEffect(() => {
-    if (fetchInitiatedRef.current || !shopId) return;
-    fetchInitiatedRef.current = true;
+    dispatch(fetchShops());
+  }, [dispatch]);
 
-    dispatch(fetchOfferOptions({ shopId, cashRegisterId }))
-      .unwrap()
-      .catch((error) => {
-        toast.error(getErrorMessage(error, t("offers.error.failedToLoad")));
-      });
-  }, [dispatch, shopId, cashRegisterId, t]);
+  // 2. Auto-select first shop when loaded
+  useEffect(() => {
+    if (shops.length > 0 && selectedShopId === null) {
+      setSelectedShopId(shops[0].id);
+    }
+  }, [shops, selectedShopId]);
+
+  // 3. Fetch options based on selection
+  useEffect(() => {
+    if (selectedShopId) {
+      dispatch(fetchOfferOptions({ shopId: selectedShopId, cashRegisterId }))
+        .unwrap()
+        .catch((error) => {
+          toast.error(getErrorMessage(error, t("offers.error.failedToLoad")));
+        });
+    }
+  }, [dispatch, selectedShopId, cashRegisterId, t]);
+
+  const handleShopChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedShopId(Number(e.target.value));
+  };
 
   const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
     if (!anchorEl) return;
@@ -89,12 +102,17 @@ export const OfferIncreaseOptions = () => {
 
   const handleSaveOption = useCallback(
     async (data: { percent: number; isActive: boolean; id?: number }) => {
-      if (!shopId) return;
-      const action = data.id ? "update" : "create";
+      if (!selectedShopId) return;
 
+      const action = data.id ? "update" : "create";
       try {
         const result = await dispatch(
-          saveOfferOption({ shopId, cashRegisterId, ...data, action }),
+          saveOfferOption({
+            ...data,
+            shopId: selectedShopId,
+            cashRegisterId,
+            action,
+          }),
         );
 
         if (saveOfferOption.fulfilled.match(result)) {
@@ -103,10 +121,9 @@ export const OfferIncreaseOptions = () => {
               `offers.success.option${action === "create" ? "Created" : "Updated"}`,
             ),
           );
-
-          // Re-fetch to ensure store is 100% in sync with DB
-          dispatch(fetchOfferOptions({ shopId, cashRegisterId }));
-
+          dispatch(
+            fetchOfferOptions({ shopId: selectedShopId, cashRegisterId }),
+          );
           handleCloseDropdown();
         } else {
           toast.error(
@@ -117,19 +134,18 @@ export const OfferIncreaseOptions = () => {
         toast.error(getErrorMessage(error, t("offers.error.failedToSave")));
       }
     },
-    [dispatch, shopId, cashRegisterId, t, handleCloseDropdown],
+    [dispatch, cashRegisterId, t, handleCloseDropdown, selectedShopId],
   );
 
   const handleDeleteOption = useCallback(
     async (id: number) => {
-      if (!shopId) return;
+      if (!selectedShopId) return;
       try {
         const result = await dispatch(
-          deleteOfferOption({ shopId, cashRegisterId, id }),
+          deleteOfferOption({ shopId: selectedShopId, cashRegisterId, id }),
         );
         if (deleteOfferOption.fulfilled.match(result)) {
           toast.success(t("offers.success.optionDeleted"));
-          handleCloseDropdown();
         } else {
           toast.error(
             getErrorMessage(result.payload, t("offers.error.failedToDelete")),
@@ -139,7 +155,7 @@ export const OfferIncreaseOptions = () => {
         toast.error(getErrorMessage(error, t("offers.error.failedToDelete")));
       }
     },
-    [dispatch, shopId, cashRegisterId, t, handleCloseDropdown],
+    [dispatch, selectedShopId, cashRegisterId, t],
   );
 
   const selectedOption = activeOptionId
@@ -156,6 +172,21 @@ export const OfferIncreaseOptions = () => {
           activeOptionId={activeOptionId}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteOption}
+          shopSelector={
+            <div className={styles.shopSelectorSection}>
+              <Select
+                label={t("offers.selectShop")}
+                value={selectedShopId || ""}
+                onChange={handleShopChange}
+              >
+                {shops.map((shop) => (
+                  <option key={shop.id} value={shop.id}>
+                    {shop.code}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          }
         />
       </div>
 
@@ -167,17 +198,7 @@ export const OfferIncreaseOptions = () => {
           if (!open) handleCloseDropdown();
         }}
         onSave={handleSaveOption}
-        onDelete={handleDeleteOption}
       />
-
-      <div className={styles.footerActions}>
-        <Button variant="secondary" size="medium">
-          {t("common.cancel")}
-        </Button>
-        <Button variant="primary" size="medium">
-          {t("common.save")}
-        </Button>
-      </div>
     </div>
   );
 };

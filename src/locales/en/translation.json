@@ -66,6 +66,8 @@
     }
   },
   "offers": {
+    "selectShop": "Select shop",
+    "shop": "Shop",
     "addOption": "Add option",
     "addNew": "Add New",
     "editOption": "Edit Option",
