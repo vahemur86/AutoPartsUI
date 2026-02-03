@@ -17,6 +17,8 @@ import cashDashboardReducer from "./slices/cash/dashboardSlice";
 import cashRegistersReducer from "./slices/cash/registersSlice";
 import cashSessionsReducer from "./slices/cash/sessionsSlice";
 import offerOptionsReducer from "./slices/offerOptionsSlice";
+import salesLotsReducer from "./slices/warehouses/salesLotsSlice";
+import reportsReducer from "./slices/warehouses/reportsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,6 +40,8 @@ export const store = configureStore({
     cashRegisters: cashRegistersReducer,
     cashSessions: cashSessionsReducer,
     offerOptions: offerOptionsReducer,
+    salesLots: salesLotsReducer,
+    warehousesReports: reportsReducer,
   },
 });
 
