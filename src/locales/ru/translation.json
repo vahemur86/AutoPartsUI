@@ -187,6 +187,11 @@
     "emptyState": "Магазины не найдены."
   },
   "warehouses": {
+    "navigation": {
+      "totalBatches": "Всего партий",
+      "batchesToSale": "Партии к продаже",
+      "soldBatches": "Проданные партии"
+    },
     "tabs": {
       "addNew": "Добавить новый склад",
       "warehousesHistory": "История складов"

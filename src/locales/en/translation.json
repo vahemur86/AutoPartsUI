@@ -187,6 +187,11 @@
     "emptyState": "No shops found."
   },
   "warehouses": {
+    "navigation": {
+      "totalBatches": "Total Batches",
+      "batchesToSale": "Batches To Sale",
+      "soldBatches": "Sold Batches"
+    },
     "tabs": {
       "addNew": "Add New Warehouse",
       "warehousesHistory": "Warehouses History"

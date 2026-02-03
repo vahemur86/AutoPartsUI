@@ -187,6 +187,11 @@
     "emptyState": "Խանութներ չեն գտնվել:"
   },
   "warehouses": {
+    "navigation": {
+      "totalBatches": "Խմբաքանակների քանակը",
+      "batchesToSale": "Վաճառքի ենթակա խմբաքանակներ",
+      "soldBatches": "Վաճառված խմբաքանակներ"
+    },
     "tabs": {
       "addNew": "Ավելացնել նոր պահեստ",
       "warehousesHistory": "Պահեստների պատմություն"

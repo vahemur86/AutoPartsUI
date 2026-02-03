@@ -42,6 +42,11 @@ import { OpenSessions } from "./components/reports/OpenSessions";
 import { PowderBatches } from "./components/reports/PowderBatches";
 import { CashboxSessionsReports } from "./components/reports/CashboxSessionsReports";
 
+// Warehouses components
+import { TotalBatches } from "@/components/warehouses/TotalBatches";
+import { BatchesToSale } from "@/components/warehouses/BatchesToSale";
+import { SoldBatches } from "@/components/warehouses/SoldBatches";
+
 // Stores
 import { store } from "@/store/store";
 
@@ -131,7 +136,16 @@ export const App = () => {
                 />
               </Route>
 
-              <Route path="warehouses" element={<Warehouses />} />
+              <Route path="warehouses" element={<Warehouses />}>
+                <Route
+                  index
+                  element={<Navigate to="total-batches" replace />}
+                />
+                <Route path="total-batches" element={<TotalBatches />} />
+                <Route path="batches-to-sale" element={<BatchesToSale />} />
+                <Route path="sold-batches" element={<SoldBatches />} />
+              </Route>
+
               <Route path="products" element={<Products />} />
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
