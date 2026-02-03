@@ -15,6 +15,7 @@ import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
 // utils
 import { checkIsToday } from "@/utils/checkIsToday.utils";
+import { getCashRegisterId } from "@/utils";
 
 // styles
 import styles from "./TotalBatches.module.css";
@@ -32,17 +33,7 @@ export const TotalBatches = () => {
     null,
   );
 
-  const cashRegisterId = useMemo(() => {
-    try {
-      const rawData = localStorage.getItem("user_data");
-      const userData = rawData ? JSON.parse(rawData) : {};
-      return userData.cashRegisterId
-        ? Number(userData.cashRegisterId)
-        : undefined;
-    } catch {
-      return undefined;
-    }
-  }, []);
+  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
     dispatch(fetchWarehouses());
@@ -59,7 +50,7 @@ export const TotalBatches = () => {
       dispatch(
         fetchInventoryLotsReport({
           id: selectedWarehouseId,
-          cashRegisterId: cashRegisterId || 1,
+          cashRegisterId,
         }),
       );
     }

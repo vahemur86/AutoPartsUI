@@ -17,7 +17,7 @@ import { FilterSoldBatchesDropdown } from "./FilterSoldBatchesDropdown";
 
 // columns & utils
 import { getSoldBatchesColumns } from "./columns";
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getCashRegisterId } from "@/utils";
 import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
@@ -28,7 +28,9 @@ const PAGE_SIZE = 50;
 export const SoldBatches: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { data, error } = useAppSelector((state) => state.powderSales);
+  const { data, isLoading, error } = useAppSelector(
+    (state) => state.powderSales,
+  );
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -41,15 +43,7 @@ export const SoldBatches: FC = () => {
   });
   const filterAnchorRef = useRef<HTMLDivElement>(null);
 
-  const cashRegisterId = useMemo(() => {
-    try {
-      const rawData = localStorage.getItem("user_data");
-      const userData = rawData ? JSON.parse(rawData) : {};
-      return userData.cashRegisterId ? Number(userData.cashRegisterId) : 1;
-    } catch {
-      return 1;
-    }
-  }, []);
+  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
     dispatch(
@@ -121,18 +115,28 @@ export const SoldBatches: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        <DataTable
-          columns={columns}
-          data={data?.results || []}
-          pageSize={PAGE_SIZE}
-          manualPagination
-          pageCount={totalPages}
-          pageIndex={currentPage}
-          getRowClassName={(row) =>
-            checkIsToday(row.createdAt) ? styles.todayRow : ""
-          }
-          onPaginationChange={setCurrentPage}
-        />
+        {isLoading ? (
+          <div className={styles.loading}>
+            {t("warehouses.soldBatches.loading")}
+          </div>
+        ) : data?.results.length === 0 ? (
+          <div className={styles.emptyState}>
+            {t("warehouses.soldBatches.emptyState")}
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={data?.results || []}
+            pageSize={PAGE_SIZE}
+            manualPagination
+            pageCount={totalPages}
+            pageIndex={currentPage}
+            getRowClassName={(row) =>
+              checkIsToday(row.createdAt) ? styles.todayRow : ""
+            }
+            onPaginationChange={setCurrentPage}
+          />
+        )}
       </div>
     </div>
   );

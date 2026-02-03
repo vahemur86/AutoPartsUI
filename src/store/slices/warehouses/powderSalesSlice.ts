@@ -5,16 +5,16 @@ import {
 } from "@reduxjs/toolkit";
 
 // services
-import { getPowderSales } from "@/services/warehouses/powderSales";
+import { getPowderSales } from "@/services/warehouses/salesLots";
+
+// utils
+import { getApiErrorMessage } from "@/utils";
 
 // types
 import type {
   GetPowderSalesParams,
   GetPowderSalesResponse,
-} from "@/types/warehouses/powderSales";
-
-// utils
-import { getApiErrorMessage } from "@/utils";
+} from "@/types/warehouses/salesLots";
 
 interface PowderSalesState {
   data: GetPowderSalesResponse | null;
@@ -85,4 +85,3 @@ const powderSalesSlice = createSlice({
 export const { clearPowderSalesError, resetPowderSalesState } =
   powderSalesSlice.actions;
 export default powderSalesSlice.reducer;
-

@@ -2,7 +2,7 @@ import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
 
 // types
-import type { PowderSale } from "@/types/warehouses/powderSales";
+import type { PowderSale } from "@/types/warehouses/salesLots";
 
 const columnHelper = createColumnHelper<PowderSale>();
 
@@ -47,4 +47,3 @@ export const getSoldBatchesColumns = (): ColumnDef<PowderSale, any>[] => [
     cell: (info) => new Date(info.getValue()).toLocaleString(),
   }),
 ];
-

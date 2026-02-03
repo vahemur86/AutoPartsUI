@@ -8,6 +8,8 @@ import { getApiErrorMessage } from "@/utils";
 import type {
   CreateSalesLotRequest,
   GetLotDetailsResponse,
+  GetPowderSalesParams,
+  GetPowderSalesResponse,
   GetSalesLotsParams,
   GetSalesLotsResponse,
   SellSalesLotRequest,
@@ -68,4 +70,18 @@ export const sellSalesLot = ({
       }),
     cashRegisterId,
     "Failed to complete sales lot transaction.",
+  );
+
+export const getPowderSales = ({
+  cashRegisterId,
+  ...params
+}: GetPowderSalesParams) =>
+  performRequest(
+    (headers) =>
+      api.get<GetPowderSalesResponse>(`/admin/powder-sales`, {
+        params,
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to get powder sales.",
   );

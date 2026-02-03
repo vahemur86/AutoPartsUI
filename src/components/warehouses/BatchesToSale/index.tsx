@@ -15,6 +15,7 @@ import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
 // utils
 import { checkIsToday } from "@/utils/checkIsToday.utils";
+import { getCashRegisterId } from "@/utils";
 
 // styles
 import styles from "./BatchesToSale.module.css";
@@ -35,17 +36,7 @@ export const BatchesToSale = () => {
   );
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
-  const cashRegisterId = useMemo(() => {
-    try {
-      const rawData = localStorage.getItem("user_data");
-      const userData = rawData ? JSON.parse(rawData) : {};
-      return userData.cashRegisterId
-        ? Number(userData.cashRegisterId)
-        : undefined;
-    } catch {
-      return undefined;
-    }
-  }, []);
+  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
     dispatch(fetchWarehouses());
@@ -65,7 +56,7 @@ export const BatchesToSale = () => {
           // status: 1, // Status 1 typically means "available for sale"
           // page: currentPageIndex + 1,
           // pageSize: PAGE_SIZE,
-          cashRegisterId: cashRegisterId || 1,
+          cashRegisterId,
         }),
       );
     }
