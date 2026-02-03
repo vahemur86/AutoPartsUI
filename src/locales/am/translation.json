@@ -234,6 +234,22 @@
         "createdAt": "Ստեղծվել է",
         "updatedAt": "Թարմացվել է"
       }
+    },
+    "batchesToSale": {
+      "loading": "Վաճառքի ենթակա խմբաքանակների բեռնում...",
+      "emptyState": "Վաճառքի ենթակա խմբաքանակներ չեն գտնվել:",
+      "columns": {
+        "id": "ID",
+        "warehouseId": "Պահեստի ID",
+        "status": "Կարգավիճակ",
+        "totalPowderKg": "Ընդհանուր պոդեր (կգ)",
+        "costTotalAmd": "Ընդհանուր արժեք (AMD)",
+        "ptTotal_g": "Պլատին ընդհանուր (գ)",
+        "pdTotal_g": "Պալադիում ընդհանուր (գ)",
+        "rhTotal_g": "Ռոդիում ընդհանուր (գ)",
+        "createdAt": "Ստեղծվել է",
+        "soldAt": "Վաճառվել է"
+      }
     }
   },
   "vehicles": {

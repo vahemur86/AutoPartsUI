@@ -234,6 +234,22 @@
         "createdAt": "Created At",
         "updatedAt": "Updated At"
       }
+    },
+    "batchesToSale": {
+      "loading": "Loading batches to sale...",
+      "emptyState": "No batches available for sale.",
+      "columns": {
+        "id": "ID",
+        "warehouseId": "Warehouse ID",
+        "status": "Status",
+        "totalPowderKg": "Total Powder (kg)",
+        "costTotalAmd": "Total Cost (AMD)",
+        "ptTotal_g": "Platinum Total (g)",
+        "pdTotal_g": "Palladium Total (g)",
+        "rhTotal_g": "Rhodium Total (g)",
+        "createdAt": "Created At",
+        "soldAt": "Sold At"
+      }
     }
   },
   "vehicles": {

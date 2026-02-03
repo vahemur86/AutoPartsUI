@@ -234,6 +234,22 @@
         "createdAt": "Создано",
         "updatedAt": "Обновлено"
       }
+    },
+    "batchesToSale": {
+      "loading": "Загрузка партий к продаже...",
+      "emptyState": "Партии для продажи не найдены.",
+      "columns": {
+        "id": "ID",
+        "warehouseId": "ID склада",
+        "status": "Статус",
+        "totalPowderKg": "Всего порошка (кг)",
+        "costTotalAmd": "Общая стоимость (AMD)",
+        "ptTotal_g": "Платина всего (г)",
+        "pdTotal_g": "Палладий всего (г)",
+        "rhTotal_g": "Родий всего (г)",
+        "createdAt": "Создано",
+        "soldAt": "Продано"
+      }
     }
   },
   "vehicles": {
