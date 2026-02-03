@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "react-toastify";
 import i18n from "i18next";
-
-// icons
-import { LogOut, Banknote, Eye, EyeOff } from "lucide-react";
 
 // stores
 import { logout } from "@/store/slices/authSlice";
@@ -27,7 +24,6 @@ import {
 import {
   fetchBalance,
   openSession,
-  resetRegistersState,
   clearError as clearCashError,
 } from "@/store/slices/cash/registersSlice";
 import {
@@ -39,14 +35,18 @@ import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchOfferOptions } from "@/store/slices/offerOptionsSlice";
 
 // ui-kit
-import { Button, Select, TextField, ConfirmationModal } from "@/ui-kit";
+import { ConfirmationModal } from "@/ui-kit";
 
 // components
-import { FinalOffer } from "./components/FinalOffer";
-import { PricingBreakdown } from "./components/PricingBreakdown";
-import { CustomerDetails } from "./components/CustomerDetails";
-import { PowderExtraction } from "./components/PowderExtraction";
-import { LiveMarketPrices } from "./components/LiveMarketPrices";
+import {
+  FinalOffer,
+  PricingBreakdown,
+  CustomerDetails,
+  PowderExtraction,
+  LiveMarketPrices,
+  OperatorHeader,
+  CashRegisterField,
+} from "./components";
 
 // utils
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
@@ -87,17 +87,19 @@ export const OperatorPage = () => {
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [userData, setUserData] = useState<any | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
-  const [showCashAmount, setShowCashAmount] = useState(false);
-  const [isCloseSessionModalOpen, setIsCloseSessionModalOpen] = useState(false);
+  const [userData] = useState(() =>
+    JSON.parse(localStorage.getItem("user_data") ?? "null"),
+  );
+  const [uiState, setUiState] = useState({
+    isSubmitting: false,
+    hasTriedSubmit: false,
+    showCashAmount: false,
+    isCloseSessionModalOpen: false,
+  });
   const [recalculationsAmount, setRecalculationsAmount] = useState(0);
   const [initialOfferPrice, setInitialOfferPrice] = useState<number | null>(
     null,
   );
-
   const [formData, setFormData] = useState({
     powderWeight: "0",
     platinumPrice: "0",
@@ -107,13 +109,57 @@ export const OperatorPage = () => {
   });
 
   useEffect(() => {
-    if (intake?.offerPrice && initialOfferPrice === null) {
+    if (intake?.offerPrice && initialOfferPrice === null)
       setInitialOfferPrice(intake.offerPrice);
-    }
-    if (!intake) {
-      setInitialOfferPrice(null);
-    }
+    if (!intake) setInitialOfferPrice(null);
   }, [intake, initialOfferPrice]);
+
+  useEffect(() => {
+    const errors = [
+      { msg: metalRatesError, clear: clearMetalError },
+      { msg: intakeError, clear: clearIntakeError },
+      { msg: languagesError, clear: clearLangError },
+      { msg: cashError, clear: clearCashError },
+      { msg: sessionError, clear: clearSessionError },
+    ];
+    errors.forEach(({ msg, clear }) => {
+      if (msg) {
+        toast.error(msg);
+        dispatch(clear());
+      }
+    });
+  }, [
+    metalRatesError,
+    intakeError,
+    languagesError,
+    cashError,
+    sessionError,
+    dispatch,
+  ]);
+
+  useEffect(() => {
+    const crId = userData?.cashRegisterId;
+    if (crId) {
+      dispatch(
+        fetchActiveMetalRate({ cashRegisterId: crId, currencyCode: "USD" }),
+      );
+      dispatch(fetchLanguages(crId));
+      dispatch(fetchRegisterSession(crId));
+      dispatch(fetchBalance(crId));
+    }
+  }, [dispatch, userData?.cashRegisterId]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (uiState.showCashAmount && userData?.cashRegisterId) {
+      dispatch(fetchBalance(userData.cashRegisterId));
+      timer = setTimeout(
+        () => setUiState((p) => ({ ...p, showCashAmount: false })),
+        10000,
+      );
+    }
+    return () => clearTimeout(timer);
+  }, [uiState.showCashAmount, dispatch, userData?.cashRegisterId]);
 
   const handleResetForm = useCallback(() => {
     setFormData({
@@ -123,83 +169,21 @@ export const OperatorPage = () => {
       rhodiumPrice: "0",
       customerPhone: "",
     });
-    setHasTriedSubmit(false);
-    setShowCashAmount(false);
+    setUiState((p) => ({ ...p, hasTriedSubmit: false, showCashAmount: false }));
     setInitialOfferPrice(null);
     setRecalculationsAmount(0);
     dispatch(clearIntakeState());
   }, [dispatch]);
 
-  // Global Error Watcher
-  useEffect(() => {
-    const errorConfigs = [
-      { msg: metalRatesError, clear: clearMetalError },
-      { msg: intakeError, clear: clearIntakeError },
-      { msg: languagesError, clear: clearLangError },
-      { msg: cashError, clear: clearCashError },
-      { msg: sessionError, clear: clearSessionError },
-    ];
-
-    let toastFired = false;
-
-    errorConfigs.forEach(({ msg, clear }) => {
-      if (msg) {
-        if (!toastFired) {
-          toast.error(msg);
-          toastFired = true;
-        }
-        dispatch(clear());
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metalRatesError, intakeError, languagesError, cashError, sessionError]);
-  
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const isNumberValid = (val: string) =>
-    val.trim() !== "" && !isNaN(Number(val));
-  const isPhoneValid = formData.customerPhone.trim().length > 0;
-  const isFormValid =
-    isNumberValid(formData.powderWeight) &&
-    isNumberValid(formData.platinumPrice) &&
-    isNumberValid(formData.palladiumPrice) &&
-    isNumberValid(formData.rhodiumPrice) &&
-    isPhoneValid;
-
-  useEffect(() => {
-    const localeStorageData = JSON.parse(
-      localStorage.getItem("user_data") ?? "{}",
-    );
-    setUserData(localeStorageData);
-    const crId = localeStorageData?.cashRegisterId;
-    if (crId) {
-      dispatch(
-        fetchActiveMetalRate({ cashRegisterId: crId, currencyCode: "USD" }),
-      );
-      dispatch(fetchLanguages(crId));
-      dispatch(fetchRegisterSession(crId));
-      dispatch(fetchBalance(crId));
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (showCashAmount && userData?.cashRegisterId) {
-      dispatch(fetchBalance(userData.cashRegisterId));
-      timer = setTimeout(() => setShowCashAmount(false), 10000);
-    }
-    return () => clearTimeout(timer);
-  }, [showCashAmount, dispatch, userData?.cashRegisterId]);
-
   const handleSubmit = async () => {
-    setHasTriedSubmit(true);
-    if (!isFormValid) return;
+    setUiState((p) => ({ ...p, hasTriedSubmit: true }));
+    const isValid =
+      !isNaN(Number(formData.powderWeight)) && formData.customerPhone.trim();
+    if (!isValid) return;
 
-    setIsSubmitting(true);
+    setUiState((p) => ({ ...p, isSubmitting: true }));
     try {
-      const { cashRegisterId } = userData ?? {};
+      const crId = userData?.cashRegisterId;
       const response = await dispatch(
         addIntake({
           intake: {
@@ -211,145 +195,86 @@ export const OperatorPage = () => {
             customerPhone: formData.customerPhone,
             shopId: userData?.shopId,
           },
-          cashRegisterId,
+          cashRegisterId: crId,
         }),
       ).unwrap();
 
       toast.success(t("operatorPage.success.intakeCreated"));
-      dispatch(fetchIntake({ intakeId: response.id, cashRegisterId }));
+      dispatch(fetchIntake({ intakeId: response.id, cashRegisterId: crId }));
       dispatch(
-        fetchOfferOptions({
-          shopId: userData?.shopId,
-          cashRegisterId: userData?.cashRegisterId,
-        }),
+        fetchOfferOptions({ shopId: userData?.shopId, cashRegisterId: crId }),
       );
-      setHasTriedSubmit(false);
-    } catch (error) {
-      console.error("Submission failed:", error);
+      setUiState((p) => ({ ...p, hasTriedSubmit: false }));
+    } catch (e) {
+      console.error(e);
     } finally {
-      setIsSubmitting(false);
+      setUiState((p) => ({ ...p, isSubmitting: false }));
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    dispatch(clearIntakeState());
-    dispatch(resetRegistersState());
-    dispatch(resetSessionState());
-    navigate("/login", { replace: true });
-  };
-
   const handleToggleSession = useCallback(
-    async (actionType: "open" | "close") => {
-      const cashRegisterId = userData?.cashRegisterId;
-      if (!cashRegisterId) return;
+    async (action: "open" | "close") => {
+      const crId = userData?.cashRegisterId;
+      if (!crId) return;
 
-      if (actionType === "open") {
-        try {
-          await dispatch(openSession(cashRegisterId)).unwrap();
-          await dispatch(fetchRegisterSession(cashRegisterId));
-          toast.success(t("operatorPage.success.sessionOpened"));
-        } catch {
-          // Error handled by global watcher
-        }
+      if (action === "open") {
+        await dispatch(openSession(crId)).unwrap();
+        dispatch(fetchRegisterSession(crId));
       } else if (sessionDetails?.sessionId) {
-        try {
-          await dispatch(
-            closeSession({
-              sessionId: sessionDetails.sessionId,
-              cashRegisterId,
-            }),
-          ).unwrap();
-          dispatch(resetSessionState());
-          toast.success(t("operatorPage.success.sessionClosed"));
-          setIsCloseSessionModalOpen(false);
-        } catch {
-          // Error handled by global watcher
-        }
+        await dispatch(
+          closeSession({
+            sessionId: sessionDetails.sessionId,
+            cashRegisterId: crId,
+          }),
+        ).unwrap();
+        dispatch(resetSessionState());
+        setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }));
       }
     },
-    [dispatch, sessionDetails, userData?.cashRegisterId, t],
+    [dispatch, sessionDetails, userData?.cashRegisterId],
   );
 
-  const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const apiCode = event.target.value;
-    const i18nCode = mapApiCodeToI18nCode(apiCode);
-    i18n.changeLanguage(i18nCode);
-    localStorage.setItem("i18nextLng", i18nCode);
-  };
-
-  const selectedApiCode =
-    languages.find((lang) => mapApiCodeToI18nCode(lang.code) === i18n.language)
-      ?.code ?? "";
-  const rawBalanceValue = (activeBalance?.balance ?? 0).toString();
   const displayBalance = isBalanceLoading
-    ? t("cashRegisters.fetchingBalance", "Fetching...")
-    : showCashAmount
-      ? rawBalanceValue
+    ? t("cashRegisters.fetchingBalance")
+    : uiState.showCashAmount
+      ? activeBalance?.balance.toString()
       : "••••••••";
 
   return (
     <div className={styles.operatorPage}>
-      <div className={styles.headerSection}>
-        <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
-        <div className={styles.headerActions}>
-          <div className={styles.sessionGroup}>
-            <Button
-              onClick={() => handleToggleSession("open")}
-              className={
-                hasOpenSession
-                  ? styles.sessionBtnActive
-                  : styles.sessionBtnInactive
-              }
-              disabled={hasOpenSession}
-            >
-              {t("operatorPage.openSession")}
-            </Button>
-            <Button
-              onClick={() => setIsCloseSessionModalOpen(true)}
-              className={
-                !hasOpenSession
-                  ? styles.sessionBtnActiveClose
-                  : styles.sessionBtnInactiveClose
-              }
-              disabled={!hasOpenSession}
-            >
-              {t("operatorPage.closeSession")}
-            </Button>
-          </div>
-          <div className={styles.languageSelectWrapper}>
-            <Select
-              placeholder={t("common.select")}
-              onChange={handleLanguageChange}
-              value={selectedApiCode}
-              disabled={isLangLoading || languages.length === 0}
-              containerClassName={styles.languageSelectContainer}
-            >
-              {languages.map((lang) => (
-                <option key={lang.id} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={handleLogout}
-            className={styles.logoutBtn}
-          >
-            <LogOut size={16} />
-            {t("header.logout")}
-          </Button>
-        </div>
-      </div>
+      <OperatorHeader
+        hasOpenSession={hasOpenSession}
+        onToggleSession={handleToggleSession}
+        onOpenCloseModal={() =>
+          setUiState((p) => ({ ...p, isCloseSessionModalOpen: true }))
+        }
+        languages={languages}
+        selectedApiCode={
+          languages.find((l) => mapApiCodeToI18nCode(l.code) === i18n.language)
+            ?.code ?? ""
+        }
+        onLanguageChange={(e) => {
+          const code = mapApiCodeToI18nCode(e.target.value);
+          i18n.changeLanguage(code);
+          localStorage.setItem("i18nextLng", code);
+        }}
+        onLogout={() => {
+          dispatch(logout());
+          navigate("/login");
+        }}
+        isLangLoading={isLangLoading}
+      />
 
       <div className={styles.topRow}>
         <div className={styles.leftColumn}>
           <PowderExtraction
             weight={formData.powderWeight}
-            onWeightChange={(val) => handleInputChange("powderWeight", val)}
-            error={hasTriedSubmit && !isNumberValid(formData.powderWeight)}
+            onWeightChange={(v) =>
+              setFormData((p) => ({ ...p, powderWeight: v }))
+            }
+            error={
+              uiState.hasTriedSubmit && isNaN(Number(formData.powderWeight))
+            }
           />
           <LiveMarketPrices
             ptPricePerGram={activeMetalRate?.ptPricePerGram}
@@ -363,13 +288,13 @@ export const OperatorPage = () => {
         <div className={styles.centerColumn}>
           <PricingBreakdown
             formData={formData}
-            onPriceChange={handleInputChange}
+            onPriceChange={(f, v) => setFormData((p) => ({ ...p, [f]: v }))}
             onSubmit={handleSubmit}
-            isLoading={isSubmitting}
-            hasTriedSubmit={hasTriedSubmit}
+            isLoading={uiState.isSubmitting}
+            hasTriedSubmit={uiState.hasTriedSubmit}
           />
           <FinalOffer
-            offerPrice={initialOfferPrice ?? (intake ? intake.offerPrice : 0)}
+            offerPrice={initialOfferPrice ?? intake?.offerPrice ?? 0}
             currencyCode={intake?.currencyCode}
             userData={userData}
             isRecalculationsLimitReached={
@@ -383,51 +308,35 @@ export const OperatorPage = () => {
         <div className={styles.rightColumn}>
           <CustomerDetails
             customerPhone={formData.customerPhone}
-            onPhoneChange={(val) => handleInputChange("customerPhone", val)}
-            phoneError={hasTriedSubmit && !isPhoneValid}
+            onPhoneChange={(v) =>
+              setFormData((p) => ({ ...p, customerPhone: v }))
+            }
+            phoneError={uiState.hasTriedSubmit && !formData.customerPhone}
             onSuccess={handleResetForm}
           />
-          <div className={styles.cashRegisterContainer}>
-            <div className={styles.fieldWithLeftIcon}>
-              <div className={styles.leftIcon}>
-                <Banknote size={20} />
-              </div>
-              <TextField
-                label={t("operatorPage.cashAmount")}
-                type="text"
-                name="cash-amount-display"
-                autoComplete="off"
-                placeholder={t("operatorPage.cashAmountPlaceholder")}
-                value={cashError ? t("common.error") : displayBalance}
-                className={styles.textField}
-                error={!!cashError}
-                style={{ paddingLeft: "44px" }}
-                readOnly
-                icon={
-                  <button
-                    type="button"
-                    onClick={() => setShowCashAmount(!showCashAmount)}
-                    className={styles.passwordToggle}
-                  >
-                    {showCashAmount ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                }
-              />
-            </div>
-          </div>
+          <CashRegisterField
+            displayBalance={displayBalance || ""}
+            showCashAmount={uiState.showCashAmount}
+            onToggleVisibility={() =>
+              setUiState((p) => ({ ...p, showCashAmount: !p.showCashAmount }))
+            }
+            hasError={!!cashError}
+          />
         </div>
       </div>
 
-      {isCloseSessionModalOpen && (
+      {uiState.isCloseSessionModalOpen && (
         <ConfirmationModal
-          open={isCloseSessionModalOpen}
-          onOpenChange={setIsCloseSessionModalOpen}
+          open={uiState.isCloseSessionModalOpen}
+          onOpenChange={(v) =>
+            setUiState((p) => ({ ...p, isCloseSessionModalOpen: v }))
+          }
           title={t("operatorPage.closeSession")}
           description={t("common.areYouSure")}
-          confirmText={t("common.yes")}
-          cancelText={t("common.cancel")}
           onConfirm={() => handleToggleSession("close")}
-          onCancel={() => setIsCloseSessionModalOpen(false)}
+          onCancel={() =>
+            setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }))
+          }
         />
       )}
     </div>
