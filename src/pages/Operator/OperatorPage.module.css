@@ -18,30 +18,13 @@
   margin-bottom: 8px;
   flex-wrap: wrap;
   gap: 16px;
-}
 
-.languageSelect {
-  background-color: var(--color-black-3);
-  color: var(--color-white);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-}
-
-.languageSelectContainer {
-  height: 36px;
-}
-
-.languageSelectWrapper {
-  width: 160px;
-}
-
-.pageTitle {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-white);
-  margin: 0;
+  .pageTitle {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-white);
+    margin: 0;
+  }
 }
 
 .headerActions {
@@ -51,60 +34,6 @@
   flex-wrap: wrap;
 }
 
-.sessionGroup {
-  display: flex;
-  gap: 10px;
-}
-
-/* --- Session Button States --- */
-.sessionBtnActive {
-  background-color: #22c55e !important;
-  color: white !important;
-  border: 1px solid #22c55e !important;
-}
-
-.sessionBtnInactive {
-  background-color: transparent !important;
-  color: #22c55e !important;
-  border: 1px solid #22c55e !important;
-}
-
-.sessionBtnActiveClose {
-  background-color: #ef4444 !important;
-  color: white !important;
-  border: 1px solid #ef4444 !important;
-}
-
-.sessionBtnInactiveClose {
-  background-color: transparent !important;
-  color: #ef4444 !important;
-  border: 1px solid #ef4444 !important;
-}
-
-.logoutBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* --- Layout Grid --- */
-.topRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.leftColumn,
-.centerColumn,
-.rightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* --- Card Bases --- */
 .powderCard,
 .pricingCard,
 .finalOfferCard,
@@ -119,28 +48,110 @@
   box-sizing: border-box;
 }
 
-/* --- Powder Extraction Card --- */
-.powderCard {
-  gap: 16px;
+.divider {
+  height: 2px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.powderHeader {
+.languageSelectWrapper {
+  width: 160px;
+}
+
+.languageSelectContainer {
+  height: 36px;
+}
+
+.languageSelect {
+  background-color: var(--color-black-3);
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.sessionGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.logoutBtn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
 }
 
-.powderContent {
+.sessionBtnActive,
+.sessionBtnInactive,
+.sessionBtnActiveClose,
+.sessionBtnInactiveClose {
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+
+.sessionBtnActive {
+  background-color: #22c55e !important;
+  color: white !important;
+  border-color: #22c55e !important;
+}
+
+.sessionBtnInactive {
+  background-color: transparent !important;
+  color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+.sessionBtnActiveClose {
+  background-color: #ef4444 !important;
+  color: white !important;
+  border-color: #ef4444 !important;
+}
+
+.sessionBtnInactiveClose {
+  background-color: transparent !important;
+  color: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+.topRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.leftColumn,
+.centerColumn,
+.rightColumn {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
-.powderAmount {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--color-white);
-  text-align: center;
+
+.powderCard {
+  gap: 16px;
+
+  .powderHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .powderContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .powderAmount {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-white);
+    text-align: center;
+  }
 }
 
 .powderScale {
@@ -150,82 +161,74 @@
   border-radius: 4px;
   overflow: hidden;
   position: relative;
-}
 
-.scaleBar {
-  height: 100%;
-  width: 70%;
-  background: linear-gradient(
-    to right,
-    var(--color-primary-500),
-    var(--color-primary-400)
-  );
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  .scaleBar {
+    height: 100%;
+    width: 70%;
+    background: linear-gradient(
+      to right,
+      var(--color-primary-500),
+      var(--color-primary-400)
+    );
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
 }
 
 .powderDetails {
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  .powderDetailRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .detailLabel {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .detailValue {
+    color: var(--color-white);
+    font-weight: 500;
+  }
 }
 
-.powderDetailRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-}
-
-.detailLabel {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.detailValue {
-  color: var(--color-white);
-  font-weight: 500;
-}
-
-/* --- Pricing Breakdown Card --- */
 .pricingCard {
   gap: 18px;
-}
 
-.cardTitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-white);
-  margin: 0;
-}
+  .cardTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-white);
+    margin: 0;
+  }
 
-.pricingContent {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  .pricingContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 .pricingRow {
   display: flex;
   flex-direction: row;
   gap: 20px;
-}
 
-.pricingMetal {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-}
+  .pricingMetal {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+  }
 
-.pricingCalculation {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-left: 8px;
-}
-
-.divider {
-  height: 2px;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.1);
+  .pricingCalculation {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 8px;
+  }
 }
 
 .pricingSummary {
@@ -233,57 +236,55 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
+
+  .summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .summaryValue {
+    font-weight: 600;
+    color: var(--color-white);
+  }
+
+  .finalOfferLabelSummary {
+    font-weight: 600;
+    color: var(--color-primary-500);
+  }
+
+  .finalOfferValue {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-primary-500);
+  }
 }
 
-.summaryRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.summaryValue {
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-.finalOfferLabelSummary {
-  font-weight: 600;
-  color: var(--color-primary-500);
-}
-
-.finalOfferValue {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-primary-500);
-}
-
-/* --- Final Offer Card --- */
 .finalOfferCard {
   padding: 24px;
   align-items: center;
   justify-content: center;
+
+  .finalOfferContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .finalOfferLabel {
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
 
-.finalOfferContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-}
-
-.finalOfferLabel {
-  font-size: 16px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* --- Updated Price Styling Magic --- */
 .priceContainer {
   display: flex;
   flex-direction: column;
@@ -296,9 +297,7 @@
   font-size: 18px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.65);
-  text-decoration: line-through;
-  text-decoration-color: #ef4444;
-  text-decoration-thickness: 2px;
+  text-decoration: line-through #ef4444 2px;
   margin-bottom: -4px;
   animation: slideInDown 0.3s ease-out;
 }
@@ -309,22 +308,11 @@
   color: var(--color-primary-500);
   text-align: center;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
 
-.newPriceHighlight {
-  color: var(--color-success, #22c55e);
-  transform: scale(1.1);
-  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  &.newPriceHighlight {
+    color: var(--color-success, #22c55e);
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
   }
 }
 
@@ -334,30 +322,24 @@
   gap: 12px;
   width: 100%;
   margin-top: 20px;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
 }
 
-.finalOfferActions button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* --- Customer Details Card --- */
 .customerCard {
   gap: 16px;
-}
 
-.customerHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.customerContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  .customerHeader,
+  .customerContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 .customerProfile {
@@ -367,42 +349,41 @@
   padding: 16px;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-}
 
-.profileAvatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: var(--color-black-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-white);
-  flex-shrink: 0;
-}
+  .profileAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-black-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    flex-shrink: 0;
+  }
 
-.profileInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
+  .profileInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
 }
 
 .profileField {
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
 
-.profileLabel {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.profileValue {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-white);
+  .profileLabel {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .profileValue {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-white);
+  }
 }
 
 .customerActions {
@@ -412,38 +393,36 @@
   margin-top: 16px;
 }
 
-/* --- Live Market Prices --- */
 .marketPricesCard {
   gap: 16px;
-}
 
-.marketPricesHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  .marketPricesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .liveIndicator {
   display: flex;
   align-items: center;
   gap: 6px;
-}
 
-.liveDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--color-success);
-  display: inline-block;
-  flex-shrink: 0;
-}
+  .liveDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    flex-shrink: 0;
+  }
 
-.liveText {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-success);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  .liveText {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-success);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
 
 .metalsList {
@@ -466,44 +445,38 @@
   height: 32px;
   border-radius: 50%;
   flex-shrink: 0;
-  isolation: isolate;
-  -webkit-mask-image: radial-gradient(circle, white 100%, transparent 100%);
-  mask-image: radial-gradient(circle, white 100%, transparent 100%);
   overflow: hidden;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-}
 
-.metalIcon.platinum {
-  background: linear-gradient(135deg, #ffffff 0%, #e5e4e2 40%, #a6a6a6 100%);
-}
-.metalIcon.palladium {
-  background: linear-gradient(135deg, #cba68b 0%, #6e6259 50%, #2b2724 100%);
-}
-.metalIcon.rhodium {
-  background: linear-gradient(135deg, #ffffff 0%, #c4d7f5 45%, #53698c 100%);
+  &.platinum {
+    background: linear-gradient(135deg, #ffffff 0%, #e5e4e2 40%, #a6a6a6 100%);
+  }
+  &.palladium {
+    background: linear-gradient(135deg, #cba68b 0%, #6e6259 50%, #2b2724 100%);
+  }
+  &.rhodium {
+    background: linear-gradient(135deg, #ffffff 0%, #c4d7f5 45%, #53698c 100%);
+  }
 }
 
 .metalInfo {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   flex: 1;
-}
 
-.metalName {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-.metalPrice {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.metalSource {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
+  .metalName {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-white);
+  }
+  .metalPrice {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .metalSource {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+  }
 }
 
 .marketPricesFooter {
@@ -514,13 +487,12 @@
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 11px;
+
+  .updateTime {
+    color: rgba(255, 255, 255, 0.6);
+  }
 }
 
-.updateTime {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* --- Cash Register Section --- */
 .cashRegisterContainer {
   margin-top: 8px;
   width: 100%;
@@ -529,88 +501,88 @@
 .fieldWithLeftIcon {
   position: relative;
   width: 100%;
-}
 
-.leftIcon {
-  position: absolute;
-  left: 16px;
-  top: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
-  z-index: 2;
-  pointer-events: none;
+  .leftIcon {
+    position: absolute;
+    left: 16px;
+    top: 40px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+    pointer-events: none;
+  }
 }
 
 .textField {
   width: 100%;
-}
+  :global(.textFieldInput) {
+    padding-left: 44px;
+  }
 
-.textField :global(.textFieldInput) {
-  padding-left: 44px;
-}
-
-/* Logic for masking the balance display without using type="password" */
-.textField input[value="••••••••"] {
-  letter-spacing: 2px;
-  font-family: monospace;
-  font-size: 18px;
+  & input[value="••••••••"] {
+    letter-spacing: 2px;
+    font-family: monospace;
+    font-size: 18px;
+  }
 }
 
 .passwordToggle {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
   color: rgba(255, 255, 255, 0.7);
   transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-white);
+  }
 }
 
-.passwordToggle:hover {
-  color: var(--color-white);
-}
-
-/* --- Customer Phone Section --- */
 .phoneSection {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
-}
 
-.phoneLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-white);
-  user-select: none;
-  text-align: left;
+  .phoneLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-white);
+    text-align: left;
+  }
 }
 
 .phoneInputRow {
   display: flex;
-  align-items: flex-start;
   gap: 8px;
   width: 100%;
+
+  .countrySelectWrapper {
+    width: 115px;
+    flex-shrink: 0;
+  }
+  .phoneFieldWrapper {
+    flex: 1;
+  }
+  .countrySelectInner {
+    margin-bottom: 0 !important;
+  }
 }
 
-.countrySelectWrapper {
-  width: 115px;
-  flex-shrink: 0;
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.phoneFieldWrapper {
-  flex: 1;
-}
-
-.countrySelectInner {
-  margin-bottom: 0 !important;
-}
-
-/* --- Responsive Design --- */
 @media (max-width: 1200px) {
   .topRow {
     grid-template-columns: 1fr 1fr;
@@ -625,7 +597,6 @@
     flex-direction: column;
     align-items: flex-start;
   }
-
   .headerActions {
     width: 100%;
     justify-content: space-between;
@@ -649,23 +620,15 @@
 }
 
 @media (max-width: 600px) {
-  .headerActions {
+  .headerActions,
+  .finalOfferActions {
     flex-direction: column;
     align-items: stretch;
   }
-
-  .finalOfferActions {
-    flex-wrap: wrap;
-  }
-
   .sessionGroup {
     justify-content: space-between;
   }
-
-  .sessionGroup button {
-    flex: 1;
-  }
-
+  .sessionGroup button,
   .languageSelectWrapper,
   .logoutBtn {
     width: 100%;
