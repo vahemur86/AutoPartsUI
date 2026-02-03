@@ -1,19 +1,19 @@
 import { useLocation } from "react-router-dom";
 
 export const useActiveRoute = () => {
-  const location = useLocation();
+  const { pathname } = useLocation();
 
   const isActive = (path: string, options?: { exact?: boolean }) => {
-    const { pathname } = location;
-
-    const isNestedModule = path === "/settings" || path === "/reports";
-
-    if (options?.exact || !isNestedModule) {
+    if (options?.exact) {
       return pathname === path;
     }
 
-    return pathname.startsWith(path);
+    if (path === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
-  return { isActive, pathname: location.pathname };
+  return { isActive, pathname };
 };

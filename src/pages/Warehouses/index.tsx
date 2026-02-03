@@ -1,19 +1,40 @@
-import { SectionHeader } from "@/components/common/SectionHeader";
-import productIcon from "@/assets/icons/Vector (3).svg";
-import styles from "./Warehouses.module.css";
+import { useTranslation } from "react-i18next";
+
+import { Boxes, Tag, ClipboardCheck, Warehouse } from "lucide-react";
+
+// components
+import { ModuleLayout, type NavItem } from "@/components/common/ModuleLayout";
 
 export const Warehouses = () => {
-  return (
-    <>
-      <SectionHeader
-        title="Warehouses"
-        icon={<img src={productIcon} alt="Warehouse icon" />}
-      />
+  const { t } = useTranslation();
 
-      <div className={styles.warehousesPage}>
-        <h1>Warehouses</h1>
-        {/* Warehouses page content and child components will go here */}
-      </div>
-    </>
+  const navigationItems: NavItem[] = [
+    {
+      path: "/total-batches",
+      label: t("warehouses.navigation.totalBatches"),
+      icon: Boxes,
+      showCheckmark: true,
+    },
+    {
+      path: "/batches-to-sale",
+      label: t("warehouses.navigation.batchesToSale"),
+      icon: Tag,
+      showCheckmark: true,
+    },
+    {
+      path: "/sold-batches",
+      label: t("warehouses.navigation.soldBatches"),
+      icon: ClipboardCheck,
+      showCheckmark: true,
+    },
+  ];
+
+  return (
+    <ModuleLayout
+      basePath="/warehouses"
+      navigationItems={navigationItems}
+      defaultTitle={t("header.warehouses")}
+      defaultIcon={Warehouse}
+    />
   );
 };

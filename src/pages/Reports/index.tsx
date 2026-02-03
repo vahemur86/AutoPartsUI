@@ -1,126 +1,60 @@
-import { useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-// ui-kit
-import { Tab, Stepper, type StepperStep } from "@/ui-kit";
-
 // icons
-import { FileText, Layers, History, Package, Banknote } from "lucide-react";
+import {
+  FileCheck,
+  BarChart3,
+  Clock,
+  FlaskRound,
+  Wallet,
+  ClipboardList,
+} from "lucide-react";
 
 // components
-import { SectionHeader } from "@/components/common/SectionHeader";
-
-// styles
-import styles from "./Reports.module.css";
+import { ModuleLayout, type NavItem } from "@/components/common/ModuleLayout";
 
 export const Reports = () => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const navigate = useNavigate();
 
-  const isActive = (path: string) => {
-    return location.pathname === `/reports${path}`;
-  };
-
-  const handleTabClick = (path: string) => {
-    navigate(`/reports${path}`);
-  };
-
-  const navigationItems = [
+  const navigationItems: NavItem[] = [
     {
       path: "/z-reports",
       label: t("reports.navigation.zReports"),
-      icon: FileText,
+      icon: FileCheck,
       showCheckmark: true,
     },
     {
       path: "/batch-reports",
       label: t("reports.navigation.batchReports"),
-      icon: Layers,
+      icon: BarChart3,
       showCheckmark: true,
     },
     {
       path: "/open-sessions",
       label: t("reports.navigation.openSessions"),
-      icon: History,
+      icon: Clock,
       showCheckmark: true,
     },
     {
       path: "/powder-batches",
       label: t("reports.navigation.powderBatches"),
-      icon: Package,
+      icon: FlaskRound,
       showCheckmark: true,
     },
     {
       path: "/cashbox-sessions-reports",
       label: t("reports.navigation.cashboxSessionsReports"),
-      icon: Banknote,
+      icon: Wallet,
       showCheckmark: true,
     },
   ];
 
-  const activeItem = navigationItems.find((item) => isActive(item.path));
-
-  const activeSectionTitle = activeItem?.label ?? t("header.reports");
-  const ActiveIcon = activeItem?.icon ?? FileText;
-
-  const activeStepIndex = navigationItems.findIndex((item) =>
-    isActive(item.path),
-  );
-  const activeIndex = activeStepIndex >= 0 ? activeStepIndex : 0;
-
-  const stepperSteps: StepperStep[] = navigationItems.map((item, index) => ({
-    id: item.path,
-    label: item.label,
-    completed: index < activeIndex,
-  }));
-
-  const handleStepperStepClick = (stepIndex: number) => {
-    if (stepIndex < navigationItems.length) {
-      handleTabClick(navigationItems[stepIndex].path);
-    }
-  };
-
   return (
-    <>
-      <SectionHeader
-        icon={<ActiveIcon size={24} />}
-        title={activeSectionTitle}
-      />
-
-      <div className={styles.reportsContainer}>
-        <div className={styles.reportsLayout}>
-          <div className={styles.reportsSidebar}>
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Tab
-                  key={item.path}
-                  variant="vertical"
-                  active={isActive(item.path)}
-                  text={item.label}
-                  icon={<Icon size={20} color="#ffffff" />}
-                  showCheckmark={item.showCheckmark}
-                  onClick={() => handleTabClick(item.path)}
-                />
-              );
-            })}
-          </div>
-
-          <div className={styles.reportsContent}>
-            <div className={styles.reportsMobileStepper}>
-              <Stepper
-                steps={stepperSteps}
-                activeStepIndex={activeIndex}
-                onStepClick={handleStepperStepClick}
-              />
-            </div>
-            <div className={styles.reportsContentWrapper}>
-              <Outlet />
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+    <ModuleLayout
+      basePath="/reports"
+      navigationItems={navigationItems}
+      defaultTitle={t("header.reports")}
+      defaultIcon={ClipboardList}
+    />
   );
 };

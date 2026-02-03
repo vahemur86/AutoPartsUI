@@ -1,6 +1,5 @@
-.settingsContainer {
+.container {
   display: flex;
-  gap: 0;
   background-color: var(--color-black-1);
   border-radius: 8px;
   margin-top: 24px;
@@ -8,7 +7,7 @@
   min-height: calc(100vh - 270px);
 }
 
-.mainCard {
+.layout {
   background-color: var(--color-black-2);
   display: flex;
   flex-direction: row;
@@ -19,10 +18,6 @@
   overflow: hidden;
 }
 
-.mobileStepper {
-  display: none;
-}
-
 .sidebar {
   width: 280px;
   min-width: 280px;
@@ -31,7 +26,6 @@
   padding: 16px 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
   overflow-y: auto;
   flex-shrink: 0;
 }
@@ -46,27 +40,24 @@
   position: relative;
 }
 
+.mobileStepper {
+  display: none;
+}
+
 .contentWrapper {
   flex: 1;
   overflow-y: auto;
-  /* Desktop: no padding needed, parent has padding */
 }
 
 @media (max-width: 768px) {
-  .settingsContainer {
+  .container {
     margin-top: 16px;
     min-height: calc(100vh - 200px);
   }
 
-  .mainCard {
+  .layout {
     flex-direction: column;
     margin: 16px;
-    border-radius: 8px;
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
   }
 
   .mobileStepper {
@@ -83,49 +74,22 @@
   .content {
     padding: 0;
     width: 100%;
-    flex: 1;
-    overflow: hidden;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
   }
 
   .contentWrapper {
     padding: 16px;
-    flex: 1;
-    overflow-y: auto;
   }
 }
 
 @media (max-width: 480px) {
-  .settingsContainer {
+  .container {
     margin-top: 12px;
     min-height: calc(100vh - 180px);
   }
-
-  .mainCard {
+  .layout {
     margin: 12px;
   }
-
-  .mobileStepper {
-    padding: 12px;
-  }
-
-  .contentWrapper {
-    padding: 12px;
-  }
-}
-
-/* Landscape orientation for mobile */
-@media (max-width: 768px) and (orientation: landscape) {
-  .settingsContainer {
-    min-height: calc(100vh - 150px);
-  }
-
-  .mobileStepper {
-    padding: 12px;
-  }
-
+  .mobileStepper,
   .contentWrapper {
     padding: 12px;
   }
