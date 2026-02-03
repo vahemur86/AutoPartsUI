@@ -1,5 +1,3 @@
-import type { BaseLot } from "./salesLots";
-
 export interface GetProfitReportParams {
   warehouseId?: number;
   fromUtc?: string;
