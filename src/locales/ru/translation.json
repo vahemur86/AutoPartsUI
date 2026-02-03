@@ -198,7 +198,9 @@
     },
     "form": {
       "warehouseKey": "Код склада",
-      "type": "Тип"
+      "type": "Тип",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад"
     },
     "validation": {
       "enterWarehouseCode": "Пожалуйста, введите код склада"
@@ -214,7 +216,25 @@
       "failedToDelete": "Не удалось удалить склад"
     },
     "loading": "Загрузка складов...",
-    "emptyState": "Склады не найдены."
+    "emptyState": "Склады не найдены.",
+    "totalBatches": {
+      "loading": "Загрузка партий...",
+      "emptyState": "Партии не найдены.",
+      "columns": {
+        "id": "ID",
+        "powderBatchId": "ID партии порошка",
+        "remainingPowderKg": "Остаток порошка (кг)",
+        "remainingCostAmd": "Остаточная стоимость (AMD)",
+        "remainingPt_g": "Остаток Pt (г)",
+        "remainingPd_g": "Остаток Pd (г)",
+        "remainingRh_g": "Остаток Rh (г)",
+        "initialPowderKg": "Начальный порошок (кг)",
+        "initialCostAmd": "Начальная стоимость (AMD)",
+        "status": "Статус",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено"
+      }
+    }
   },
   "vehicles": {
     "tabs": {

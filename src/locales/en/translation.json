@@ -198,7 +198,9 @@
     },
     "form": {
       "warehouseKey": "Warehouse key",
-      "type": "Type"
+      "type": "Type",
+      "warehouse": "Warehouse",
+      "selectWarehouse": "Select warehouse"
     },
     "validation": {
       "enterWarehouseCode": "Please enter a warehouse code"
@@ -214,7 +216,25 @@
       "failedToDelete": "Failed to delete warehouse"
     },
     "loading": "Loading warehouses...",
-    "emptyState": "No warehouses found."
+    "emptyState": "No warehouses found.",
+    "totalBatches": {
+      "loading": "Loading batches...",
+      "emptyState": "No batches found.",
+      "columns": {
+        "id": "ID",
+        "powderBatchId": "Powder Batch ID",
+        "remainingPowderKg": "Remaining Powder (kg)",
+        "remainingCostAmd": "Remaining Cost (AMD)",
+        "remainingPt_g": "Remaining Pt (g)",
+        "remainingPd_g": "Remaining Pd (g)",
+        "remainingRh_g": "Remaining Rh (g)",
+        "initialPowderKg": "Initial Powder (kg)",
+        "initialCostAmd": "Initial Cost (AMD)",
+        "status": "Status",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      }
+    }
   },
   "vehicles": {
     "tabs": {

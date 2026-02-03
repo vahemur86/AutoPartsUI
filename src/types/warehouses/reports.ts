@@ -20,4 +20,22 @@ export interface ProfitReportResponse {
   soldPowderKg: number;
 }
 
-export type InventoryLotsReportResponse = BaseLot[];
+export interface InventoryLot {
+  id: number;
+  powderBatchId: number;
+  remainingPowderKg: number;
+  remainingCostAmd: number;
+  remainingPt_g: number;
+  remainingPd_g: number;
+  remainingRh_g: number;
+  initialPowderKg: number;
+  initialCostAmd: number;
+  initialPt_g: number;
+  initialPd_g: number;
+  initialRh_g: number;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type InventoryLotsReportResponse = InventoryLot[];

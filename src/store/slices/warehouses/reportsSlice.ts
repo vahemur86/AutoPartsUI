@@ -90,14 +90,18 @@ const adminReportsSlice = createSlice({
       )
 
       .addMatcher(
-        (action) => action.type.endsWith("/pending"),
+        (action) =>
+          action.type.startsWith("adminReports/") &&
+          action.type.endsWith("/pending"),
         (state) => {
           state.isLoading = true;
           state.error = null;
         },
       )
       .addMatcher(
-        (action) => action.type.endsWith("/rejected"),
+        (action) =>
+          action.type.startsWith("adminReports/") &&
+          action.type.endsWith("/rejected"),
         (state, action: PayloadAction<string | undefined>) => {
           state.isLoading = false;
           state.error = action.payload ?? "An unexpected error occurred";

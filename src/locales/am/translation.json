@@ -198,7 +198,9 @@
     },
     "form": {
       "warehouseKey": "Պահեստի կոդ",
-      "type": "Տեսակ"
+      "type": "Տեսակ",
+      "warehouse": "Պահեստ",
+      "selectWarehouse": "Ընտրեք պահեստ"
     },
     "validation": {
       "enterWarehouseCode": "Խնդրում ենք մուտքագրել պահեստի կոդ"
@@ -214,7 +216,25 @@
       "failedToDelete": "Պահեստի ջնջումը ձախողվեց"
     },
     "loading": "Պահեստների բեռնում...",
-    "emptyState": "Պահեստներ չեն գտնվել:"
+    "emptyState": "Պահեստներ չեն գտնվել:",
+    "totalBatches": {
+      "loading": "Խմբաքանակների բեռնում...",
+      "emptyState": "Խմբաքանակներ չեն գտնվել:",
+      "columns": {
+        "id": "ID",
+        "powderBatchId": "Պոդերի խմբաքանակի ID",
+        "remainingPowderKg": "Մնացած պոդեր (կգ)",
+        "remainingCostAmd": "Մնացած արժեք (AMD)",
+        "remainingPt_g": "Մնացած Pt (գ)",
+        "remainingPd_g": "Մնացած Pd (գ)",
+        "remainingRh_g": "Մնացած Rh (գ)",
+        "initialPowderKg": "Սկզբնական պոդեր (կգ)",
+        "initialCostAmd": "Սկզբնական արժեք (AMD)",
+        "status": "Կարգավիճակ",
+        "createdAt": "Ստեղծվել է",
+        "updatedAt": "Թարմացվել է"
+      }
+    }
   },
   "vehicles": {
     "tabs": {
