@@ -4,10 +4,22 @@ import i18next from "i18next";
 // types
 import type { InventoryLot } from "@/types/warehouses/reports";
 
+// utils
+import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
+
+// styles
+import styles from "./TotalBatches.module.css";
+
 const columnHelper = createColumnHelper<InventoryLot>();
+
+const STATUS_MAP = createStatusMap(styles);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
+  columnHelper.accessor("id", {
+    header: "ID",
+    cell: (info) => `#${info.getValue()}`,
+  }),
   columnHelper.accessor("remainingPowderKg", {
     header: i18next.t("warehouses.totalBatches.columns.remainingPowderKg"),
     cell: (info) => `${info.getValue()} kg`,
@@ -38,6 +50,13 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
   }),
   columnHelper.accessor("status", {
     header: i18next.t("warehouses.totalBatches.columns.status"),
+    cell: (info) => {
+      const statusValue = info.getValue();
+      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
+      return (
+        <span className={statusConfig.className}>{statusConfig.label}</span>
+      );
+    },
   }),
   columnHelper.accessor("createdAt", {
     header: i18next.t("warehouses.totalBatches.columns.createdAt"),

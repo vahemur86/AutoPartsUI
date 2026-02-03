@@ -13,6 +13,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchInventoryLotsReport } from "@/store/slices/warehouses/reportsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
+// utils
+import { checkIsToday } from "@/utils/checkIsToday.utils";
+
 // styles
 import styles from "./TotalBatches.module.css";
 
@@ -113,7 +116,14 @@ export const TotalBatches = () => {
             {t("warehouses.totalBatches.emptyState")}
           </div>
         ) : (
-          <DataTable data={inventoryLots} columns={columns} pageSize={10} />
+          <DataTable
+            data={inventoryLots}
+            columns={columns}
+            pageSize={10}
+            getRowClassName={(row) =>
+              checkIsToday(row.createdAt) ? styles.todayRow : ""
+            }
+          />
         )}
       </div>
     </div>

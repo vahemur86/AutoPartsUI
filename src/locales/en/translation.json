@@ -250,6 +250,32 @@
         "createdAt": "Created At",
         "soldAt": "Sold At"
       }
+    },
+    "soldBatches": {
+      "title": "Sold Batches",
+      "loading": "Loading sold batches...",
+      "emptyState": "No sold batches found.",
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "selectFromDate": "Select from date",
+        "selectToDate": "Select to date"
+      },
+      "columns": {
+        "id": "ID",
+        "salesLotId": "Sales Lot ID",
+        "warehouseId": "Warehouse ID",
+        "currencyCode": "Currency",
+        "revenueTotal": "Revenue Total",
+        "revenueTotalAmd": "Revenue Total (AMD)",
+        "costAmd": "Cost (AMD)",
+        "profitAmd": "Profit (AMD)",
+        "soldPowderKg": "Sold Powder (kg)",
+        "createdAt": "Created At"
+      },
+      "errors": {
+        "failedToFetch": "Failed to fetch sold batches"
+      }
     }
   },
   "vehicles": {

@@ -4,12 +4,31 @@ import i18next from "i18next";
 // types
 import type { BaseLot } from "@/types/warehouses/salesLots";
 
+// utils
+import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
+
+// styles
+import styles from "./BatchesToSale.module.css";
+
 const columnHelper = createColumnHelper<BaseLot>();
+
+const STATUS_MAP = createStatusMap(styles);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSalesLotColumns = (): ColumnDef<BaseLot, any>[] => [
+  columnHelper.accessor("id", {
+    header: "ID",
+    cell: (info) => `#${info.getValue()}`,
+  }),
   columnHelper.accessor("status", {
     header: i18next.t("warehouses.batchesToSale.columns.status"),
+    cell: (info) => {
+      const statusValue = info.getValue();
+      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
+      return (
+        <span className={statusConfig.className}>{statusConfig.label}</span>
+      );
+    },
   }),
   columnHelper.accessor("totalPowderKg", {
     header: i18next.t("warehouses.batchesToSale.columns.totalPowderKg"),

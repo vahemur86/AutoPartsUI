@@ -1,0 +1,59 @@
+.header {
+  padding: 19px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.dropdownContentOverride {
+  overflow: visible !important;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px 24px 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.datePickerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.primaryActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .content {
+    padding: 12px;
+  }
+}
+

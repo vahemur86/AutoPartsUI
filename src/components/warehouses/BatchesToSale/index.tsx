@@ -13,6 +13,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchSalesLots } from "@/store/slices/warehouses/salesLotsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
+// utils
+import { checkIsToday } from "@/utils/checkIsToday.utils";
+
 // styles
 import styles from "./BatchesToSale.module.css";
 
@@ -32,18 +35,17 @@ export const BatchesToSale = () => {
   );
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
-  // const cashRegisterId = useMemo(() => {
-  //   try {
-  //     const rawData = localStorage.getItem("user_data");
-  //     const userData = rawData ? JSON.parse(rawData) : {};
-  //     return userData.cashRegisterId
-  //       ? Number(userData.cashRegisterId)
-  //       : undefined;
-  //   } catch {
-  //     return undefined;
-  //   }
-  // }, []);
-  const cashRegisterId = 1;
+  const cashRegisterId = useMemo(() => {
+    try {
+      const rawData = localStorage.getItem("user_data");
+      const userData = rawData ? JSON.parse(rawData) : {};
+      return userData.cashRegisterId
+        ? Number(userData.cashRegisterId)
+        : undefined;
+    } catch {
+      return undefined;
+    }
+  }, []);
 
   useEffect(() => {
     dispatch(fetchWarehouses());
@@ -57,8 +59,6 @@ export const BatchesToSale = () => {
 
   useEffect(() => {
     if (selectedWarehouseId) {
-      console.log("Cash Register ID:", cashRegisterId); // Debug log
-
       dispatch(
         fetchSalesLots({
           warehouseId: selectedWarehouseId,
@@ -136,6 +136,9 @@ export const BatchesToSale = () => {
             manualPagination={true}
             pageCount={pageCount}
             pageIndex={currentPageIndex}
+            getRowClassName={(row) =>
+              checkIsToday(row.createdAt) ? styles.todayRow : ""
+            }
             onPaginationChange={handlePaginationChange}
           />
         )}

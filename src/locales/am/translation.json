@@ -250,6 +250,32 @@
         "createdAt": "Ստեղծվել է",
         "soldAt": "Վաճառվել է"
       }
+    },
+    "soldBatches": {
+      "title": "Վաճառված խմբաքանակներ",
+      "loading": "Վաճառված խմբաքանակների բեռնում...",
+      "emptyState": "Վաճառված խմբաքանակներ չեն գտնվել:",
+      "filters": {
+        "fromDate": "Սկսած ամսաթվից",
+        "toDate": "Մինչև ամսաթիվ",
+        "selectFromDate": "Ընտրեք սկզբնական ամսաթիվ",
+        "selectToDate": "Ընտրեք ավարտական ամսաթիվ"
+      },
+      "columns": {
+        "id": "ID",
+        "salesLotId": "Վաճառքի խմբաքանակի ID",
+        "warehouseId": "Պահեստի ID",
+        "currencyCode": "Արժույթ",
+        "revenueTotal": "Ընդհանուր եկամուտ",
+        "revenueTotalAmd": "Ընդհանուր եկամուտ (AMD)",
+        "costAmd": "Արժեք (AMD)",
+        "profitAmd": "Շահույթ (AMD)",
+        "soldPowderKg": "Վաճառված պոդեր (կգ)",
+        "createdAt": "Ստեղծվել է"
+      },
+      "errors": {
+        "failedToFetch": "Վաճառված խմբաքանակների բեռնումը ձախողվեց"
+      }
     }
   },
   "vehicles": {

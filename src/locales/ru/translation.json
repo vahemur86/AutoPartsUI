@@ -250,6 +250,32 @@
         "createdAt": "Создано",
         "soldAt": "Продано"
       }
+    },
+    "soldBatches": {
+      "title": "Проданные партии",
+      "loading": "Загрузка проданных партий...",
+      "emptyState": "Проданные партии не найдены.",
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "По дату",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания"
+      },
+      "columns": {
+        "id": "ID",
+        "salesLotId": "ID партии продажи",
+        "warehouseId": "ID склада",
+        "currencyCode": "Валюта",
+        "revenueTotal": "Общий доход",
+        "revenueTotalAmd": "Общий доход (AMD)",
+        "costAmd": "Стоимость (AMD)",
+        "profitAmd": "Прибыль (AMD)",
+        "soldPowderKg": "Проданный порошок (кг)",
+        "createdAt": "Создано"
+      },
+      "errors": {
+        "failedToFetch": "Не удалось загрузить проданные партии"
+      }
     }
   },
   "vehicles": {
