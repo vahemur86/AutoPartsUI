@@ -220,6 +220,8 @@
     "totalBatches": {
       "loading": "Загрузка партий...",
       "emptyState": "Партии не найдены.",
+      "createSale": "Создать продажу",
+      "creating": "Создание...",
       "columns": {
         "id": "ID",
         "powderBatchId": "ID партии порошка",
@@ -232,7 +234,16 @@
         "initialCostAmd": "Начальная стоимость (AMD)",
         "status": "Статус",
         "createdAt": "Создано",
-        "updatedAt": "Обновлено"
+        "updatedAt": "Обновлено",
+        "selectedKg": "Выбранный кг"
+      },
+      "success": {
+        "itemAdded": "Партия #{{id}} добавлена с {{kg}} кг",
+        "saleCreated": "Партия продажи успешно создана"
+      },
+      "error": {
+        "noItemsSelected": "Пожалуйста, добавьте хотя бы одну партию перед созданием продажи",
+        "failedToCreateSale": "Не удалось создать партию продажи"
       }
     },
     "batchesToSale": {

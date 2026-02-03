@@ -9,8 +9,26 @@ export const getApiErrorMessage = (
   fallback: string,
 ): string => {
   if (error && typeof error === "object") {
+    // Handle AxiosError with response data
     const axiosError = error as AxiosError<ApiErrorResponse>;
-    return axiosError.response?.data?.error || axiosError.message || fallback;
+    if (axiosError.response?.data?.error) {
+      return axiosError.response.data.error;
+    }
+    
+    // Handle Error objects (including those thrown by services)
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+    
+    // Handle AxiosError message
+    if (axiosError.message) {
+      return axiosError.message;
+    }
+  }
+  
+  // Handle string errors (from rejectWithValue)
+  if (typeof error === "string") {
+    return error;
   }
 
   return fallback;

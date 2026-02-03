@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Select } from "@/ui-kit";
+import { DataTable, Select, Button } from "@/ui-kit";
 
 // components
 import { getInventoryLotColumns } from "./columns";
@@ -12,10 +12,11 @@ import { getInventoryLotColumns } from "./columns";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchInventoryLotsReport } from "@/store/slices/warehouses/reportsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
+import { createNewSalesLot } from "@/store/slices/warehouses/salesLotsSlice";
 
 // utils
 import { checkIsToday } from "@/utils/checkIsToday.utils";
-import { getCashRegisterId } from "@/utils";
+import { getCashRegisterId, getApiErrorMessage } from "@/utils";
 
 // styles
 import styles from "./TotalBatches.module.css";
@@ -28,10 +29,17 @@ export const TotalBatches = () => {
     (state) => state.warehousesReports,
   );
   const { warehouses } = useAppSelector((state) => state.warehouses);
+  const { isLoading: isCreatingSalesLot } = useAppSelector(
+    (state) => state.salesLots,
+  );
 
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
     null,
   );
+  const [selectedKg, setSelectedKg] = useState<Record<number, number>>({});
+  const [selectedItems, setSelectedItems] = useState<
+    Array<{ inventoryLotId: number; powderKg: number }>
+  >([]);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
@@ -62,11 +70,88 @@ export const TotalBatches = () => {
     }
   }, [error]);
 
-  const columns = useMemo(() => getInventoryLotColumns(), []);
+  const handleKgChange = useCallback(
+    (inventoryLotId: number, powderKg: number) => {
+      setSelectedKg((prev) => ({
+        ...prev,
+        [inventoryLotId]: powderKg,
+      }));
+    },
+    [],
+  );
+
+  const handleAdd = useCallback(
+    (inventoryLotId: number, powderKg: number) => {
+      if (powderKg > 0) {
+        setSelectedItems((prev) => {
+          const existingIndex = prev.findIndex(
+            (item) => item.inventoryLotId === inventoryLotId,
+          );
+          if (existingIndex >= 0) {
+            const updated = [...prev];
+            updated[existingIndex] = { inventoryLotId, powderKg };
+            return updated;
+          }
+          return [...prev, { inventoryLotId, powderKg }];
+        });
+        toast.success(
+          t("warehouses.totalBatches.success.itemAdded", {
+            id: inventoryLotId,
+            kg: powderKg,
+          }),
+        );
+      }
+    },
+    [t],
+  );
+
+  const handleCreateSale = async () => {
+    if (!selectedWarehouseId) {
+      toast.error(t("warehouses.form.selectWarehouse"));
+      return;
+    }
+
+    if (selectedItems.length === 0) {
+      toast.error(t("warehouses.totalBatches.error.noItemsSelected"));
+      return;
+    }
+
+    try {
+      await dispatch(
+        createNewSalesLot({
+          warehouseId: selectedWarehouseId,
+          items: selectedItems,
+          cashRegisterId,
+        }),
+      ).unwrap();
+
+      toast.success(t("warehouses.totalBatches.success.saleCreated"));
+      setSelectedItems([]);
+      setSelectedKg({});
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(
+        error,
+        t("warehouses.totalBatches.error.failedToCreateSale"),
+      );
+      toast.error(errorMessage);
+    }
+  };
+
+  const columns = useMemo(
+    () =>
+      getInventoryLotColumns({
+        onKgChange: handleKgChange,
+        onAdd: handleAdd,
+        selectedKg,
+      }),
+    [selectedKg, handleKgChange, handleAdd],
+  );
 
   const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const warehouseId = Number(e.target.value);
     setSelectedWarehouseId(warehouseId || null);
+    setSelectedItems([]);
+    setSelectedKg({});
   };
 
   return (
@@ -107,14 +192,32 @@ export const TotalBatches = () => {
             {t("warehouses.totalBatches.emptyState")}
           </div>
         ) : (
-          <DataTable
-            data={inventoryLots}
-            columns={columns}
-            pageSize={10}
-            getRowClassName={(row) =>
-              checkIsToday(row.createdAt) ? styles.todayRow : ""
-            }
-          />
+          <>
+            <DataTable
+              data={inventoryLots}
+              columns={columns}
+              pageSize={10}
+              getRowClassName={(row) =>
+                checkIsToday(row.createdAt) ? styles.todayRow : ""
+              }
+            />
+            <div className={styles.createSaleSection}>
+              <Button
+                variant="primary"
+                size="medium"
+                onClick={handleCreateSale}
+                disabled={
+                  isCreatingSalesLot ||
+                  selectedItems.length === 0 ||
+                  !selectedWarehouseId
+                }
+              >
+                {isCreatingSalesLot
+                  ? t("warehouses.totalBatches.creating")
+                  : t("warehouses.totalBatches.createSale")}
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </div>

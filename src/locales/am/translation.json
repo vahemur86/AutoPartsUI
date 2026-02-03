@@ -220,6 +220,8 @@
     "totalBatches": {
       "loading": "Խմբաքանակների բեռնում...",
       "emptyState": "Խմբաքանակներ չեն գտնվել:",
+      "createSale": "Ստեղծել վաճառք",
+      "creating": "Ստեղծվում է...",
       "columns": {
         "id": "ID",
         "powderBatchId": "Պոդերի խմբաքանակի ID",
@@ -232,7 +234,16 @@
         "initialCostAmd": "Սկզբնական արժեք (AMD)",
         "status": "Կարգավիճակ",
         "createdAt": "Ստեղծվել է",
-        "updatedAt": "Թարմացվել է"
+        "updatedAt": "Թարմացվել է",
+        "selectedKg": "Ընտրված կգ"
+      },
+      "success": {
+        "itemAdded": "Խմբաքանակ #{{id}} ավելացվեց {{kg}} կգ-ով",
+        "saleCreated": "Վաճառքի խմբաքանակը հաջողությամբ ստեղծվեց"
+      },
+      "error": {
+        "noItemsSelected": "Խնդրում ենք ավելացնել առնվազն մեկ խմբաքանակ վաճառք ստեղծելուց առաջ",
+        "failedToCreateSale": "Չհաջողվեց ստեղծել վաճառքի խմբաքանակ"
       }
     },
     "batchesToSale": {

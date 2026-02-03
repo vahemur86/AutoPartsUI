@@ -220,6 +220,8 @@
     "totalBatches": {
       "loading": "Loading batches...",
       "emptyState": "No batches found.",
+      "createSale": "Create Sale",
+      "creating": "Creating...",
       "columns": {
         "id": "ID",
         "powderBatchId": "Powder Batch ID",
@@ -232,7 +234,16 @@
         "initialCostAmd": "Initial Cost (AMD)",
         "status": "Status",
         "createdAt": "Created At",
-        "updatedAt": "Updated At"
+        "updatedAt": "Updated At",
+        "selectedKg": "Selected kg"
+      },
+      "success": {
+        "itemAdded": "Batch #{{id}} added with {{kg}} kg",
+        "saleCreated": "Sales lot created successfully"
+      },
+      "error": {
+        "noItemsSelected": "Please add at least one batch before creating a sale",
+        "failedToCreateSale": "Failed to create sales lot"
       }
     },
     "batchesToSale": {
