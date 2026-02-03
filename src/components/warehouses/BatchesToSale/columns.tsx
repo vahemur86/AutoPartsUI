@@ -5,14 +5,14 @@ import i18next from "i18next";
 import type { BaseLot } from "@/types/warehouses/salesLots";
 
 // utils
-import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
+import { createStatusMapForSale, getStatusConfig } from "@/utils/statusMapping";
 
 // styles
 import styles from "./BatchesToSale.module.css";
 
 const columnHelper = createColumnHelper<BaseLot>();
 
-const STATUS_MAP = createStatusMap(styles);
+const STATUS_MAP = createStatusMapForSale(styles);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSalesLotColumns = (): ColumnDef<BaseLot, any>[] => [

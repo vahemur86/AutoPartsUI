@@ -12,6 +12,14 @@ export const createStatusMap = (styles: Record<string, string>): StatusMap => ({
   4: { label: "Empty", className: styles.statusEmpty },
 });
 
+export const createStatusMapForSale = (
+  styles: Record<string, string>,
+): StatusMap => ({
+  1: { label: "Open", className: styles.statusAvailable },
+  2: { label: "Sold", className: styles.statusDepleted },
+  3: { label: "Cancelled", className: styles.statusCancelled },
+});
+
 export const getStatusConfig = (
   statusValue: number,
   statusMap: StatusMap,
@@ -23,4 +31,3 @@ export const getStatusConfig = (
     }
   );
 };
-
