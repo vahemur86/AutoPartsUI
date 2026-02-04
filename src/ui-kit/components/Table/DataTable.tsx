@@ -13,6 +13,7 @@ import {
   type GroupingState,
   type ExpandedState,
   type Row,
+  type TableMeta,
 } from "@tanstack/react-table";
 
 // ui-kit
@@ -33,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange?: (pageIndex: number) => void;
   renderBottomLeft?: () => ReactNode;
   groupBy?: string[];
+  meta?: TableMeta<TData>;
   getRowClassName?: (row: TData) => string;
   renderSubComponent?: (props: { row: Row<TData> }) => ReactNode;
 }
@@ -40,6 +42,7 @@ interface DataTableProps<TData, TValue> {
 export const DataTable = <TData, TValue>({
   columns,
   data,
+  meta,
   pageSize = 10,
   enableSelection = false,
   manualPagination = false,
@@ -97,6 +100,9 @@ export const DataTable = <TData, TValue>({
   const table = useReactTable({
     data,
     columns: tableColumns,
+    meta,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getRowId: (row: any) => row.id,
     state: {
       sorting,
       rowSelection: enableSelection ? rowSelection : {},

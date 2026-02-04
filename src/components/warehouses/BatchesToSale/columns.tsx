@@ -21,9 +21,9 @@ interface SalesLotColumnHandlers {
   onSell: (lot: BaseLot) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSalesLotColumns = ({
   onSell,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: SalesLotColumnHandlers): ColumnDef<BaseLot, any>[] => [
   columnHelper.accessor("id", {
     header: "ID",
