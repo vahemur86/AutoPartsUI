@@ -66,3 +66,21 @@
   background-color: rgba(34, 197, 94, 0.1) !important;
 }
 
+.actionButtonsCell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.saleForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saleFormRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+

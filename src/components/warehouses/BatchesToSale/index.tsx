@@ -3,19 +3,25 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Select } from "@/ui-kit";
+import { DataTable, Select, TextField, ConfirmationModal } from "@/ui-kit";
 
 // components
 import { getSalesLotColumns } from "./columns";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchSalesLots } from "@/store/slices/warehouses/salesLotsSlice";
+import {
+  fetchSalesLots,
+  processLotSale,
+} from "@/store/slices/warehouses/salesLotsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
 // utils
 import { checkIsToday } from "@/utils/checkIsToday.utils";
-import { getCashRegisterId } from "@/utils";
+import { getApiErrorMessage, getCashRegisterId } from "@/utils";
+
+// types
+import type { BaseLot } from "@/types/warehouses/salesLots";
 
 // styles
 import styles from "./BatchesToSale.module.css";
@@ -35,6 +41,12 @@ export const BatchesToSale = () => {
     null,
   );
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+  const [lotToSell, setLotToSell] = useState<BaseLot | null>(null);
+  const [isProcessingSale, setIsProcessingSale] = useState(false);
+  const [sellForm, setSellForm] = useState({
+    currencyCode: "USD",
+  });
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
@@ -68,7 +80,80 @@ export const BatchesToSale = () => {
     }
   }, [error]);
 
-  const columns = useMemo(() => getSalesLotColumns(), []);
+  const handleOpenSellModal = (lot: BaseLot) => {
+    setLotToSell(lot);
+    setIsSellModalOpen(true);
+  };
+
+  const handleCloseSellModal = () => {
+    if (isProcessingSale) return;
+    setIsSellModalOpen(false);
+    setLotToSell(null);
+  };
+
+  const handleSellFieldChange = (
+    field: "currencyCode",
+    value: string,
+  ) => {
+    setSellForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleConfirmSale = async () => {
+    if (!lotToSell) return;
+
+    const { currencyCode } = sellForm;
+
+    if (!currencyCode) {
+      toast.error(t("warehouses.batchesToSale.error.currencyRequired"));
+      return;
+    }
+
+    try {
+      setIsProcessingSale(true);
+
+      await dispatch(
+        processLotSale({
+          id: lotToSell.id,
+          cashRegisterId,
+          body: {
+            currencyCode,
+          },
+        }),
+      ).unwrap();
+
+      toast.success(t("warehouses.batchesToSale.success.saleCompleted"));
+      setIsSellModalOpen(false);
+      setLotToSell(null);
+
+      if (selectedWarehouseId) {
+        dispatch(
+          fetchSalesLots({
+            warehouseId: selectedWarehouseId,
+            cashRegisterId,
+          }),
+        );
+      }
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(
+        error,
+        t("warehouses.batchesToSale.error.failedToSell"),
+      );
+      toast.error(errorMessage);
+    } finally {
+      setIsProcessingSale(false);
+    }
+  };
+
+  const columns = useMemo(
+    () =>
+      getSalesLotColumns({
+        onSell: handleOpenSellModal,
+      }),
+    [],
+  );
 
   const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const warehouseId = Number(e.target.value);
@@ -134,6 +219,35 @@ export const BatchesToSale = () => {
           />
         )}
       </div>
+
+      {isSellModalOpen && (
+        <ConfirmationModal
+          open={isSellModalOpen}
+          onOpenChange={(open) => {
+            if (!open) handleCloseSellModal();
+          }}
+          title={t("warehouses.batchesToSale.saleModal.title")}
+          description={t("warehouses.batchesToSale.saleModal.description", {
+            id: lotToSell?.id,
+          })}
+          confirmText={t("warehouses.batchesToSale.saleModal.confirm")}
+          cancelText={t("common.cancel")}
+          onConfirm={handleConfirmSale}
+          onCancel={handleCloseSellModal}
+          confirmDisabled={isProcessingSale}
+          confirmLoading={isProcessingSale}
+        >
+          <div className={styles.saleForm}>
+            <TextField
+              label={t("warehouses.batchesToSale.saleForm.currencyCode")}
+              value={sellForm.currencyCode}
+              onChange={(e) =>
+                handleSellFieldChange("currencyCode", e.target.value)
+              }
+            />
+          </div>
+        </ConfirmationModal>
+      )}
     </div>
   );
 };

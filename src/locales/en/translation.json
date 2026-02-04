@@ -249,6 +249,22 @@
     "batchesToSale": {
       "loading": "Loading batches to sale...",
       "emptyState": "No batches available for sale.",
+      "sale": "Sale",
+      "saleModal": {
+        "title": "Complete Sale",
+        "description": "Set metal prices for sales lot #{{id}}.",
+        "confirm": "Confirm sale"
+      },
+      "saleForm": {
+        "currencyCode": "Currency code"
+      },
+      "success": {
+        "saleCompleted": "Sales lot sold successfully"
+      },
+      "error": {
+        "currencyRequired": "Please provide a currency code",
+        "failedToSell": "Failed to complete sales lot transaction"
+      },
       "columns": {
         "id": "ID",
         "warehouseId": "Warehouse ID",

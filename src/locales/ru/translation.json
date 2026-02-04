@@ -249,6 +249,22 @@
     "batchesToSale": {
       "loading": "Загрузка партий к продаже...",
       "emptyState": "Партии для продажи не найдены.",
+      "sale": "Продать",
+      "saleModal": {
+        "title": "Завершить продажу",
+        "description": "Укажите цены металлов для партии продажи #{{id}}.",
+        "confirm": "Подтвердить продажу"
+      },
+      "saleForm": {
+        "currencyCode": "Код валюты"
+      },
+      "success": {
+        "saleCompleted": "Партия продажи успешно продана"
+      },
+      "error": {
+        "currencyRequired": "Пожалуйста, укажите код валюты",
+        "failedToSell": "Не удалось завершить продажу партии"
+      },
       "columns": {
         "id": "ID",
         "warehouseId": "ID склада",

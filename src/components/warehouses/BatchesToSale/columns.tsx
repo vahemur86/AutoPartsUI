@@ -1,6 +1,9 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
 
+// ui-kit
+import { Button } from "@/ui-kit";
+
 // types
 import type { BaseLot } from "@/types/warehouses/salesLots";
 
@@ -14,8 +17,14 @@ const columnHelper = createColumnHelper<BaseLot>();
 
 const STATUS_MAP = createStatusMapForSale(styles);
 
+interface SalesLotColumnHandlers {
+  onSell: (lot: BaseLot) => void;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getSalesLotColumns = (): ColumnDef<BaseLot, any>[] => [
+export const getSalesLotColumns = ({
+  onSell,
+}: SalesLotColumnHandlers): ColumnDef<BaseLot, any>[] => [
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
@@ -59,6 +68,27 @@ export const getSalesLotColumns = (): ColumnDef<BaseLot, any>[] => [
     cell: (info) => {
       const value = info.getValue();
       return value ? new Date(value).toLocaleString() : "-";
+    },
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: i18next.t("common.actions"),
+    cell: ({ row }) => {
+      const lot = row.original;
+      const isOpen = lot.status === 1; // 1 = Open
+
+      return (
+        <div className={styles.actionButtonsCell}>
+          <Button
+            variant="primary"
+            size="small"
+            onClick={() => onSell(lot)}
+            disabled={!isOpen}
+          >
+            {i18next.t("warehouses.batchesToSale.sale")}
+          </Button>
+        </div>
+      );
     },
   }),
 ];

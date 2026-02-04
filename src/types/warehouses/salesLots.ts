@@ -45,9 +45,6 @@ export interface SellSalesLotRequest {
   cashRegisterId: number;
   body: {
     currencyCode: string;
-    ptPricePerGram: number;
-    pdPricePerGram: number;
-    rhPricePerGram: number;
   };
 }
 
