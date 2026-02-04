@@ -190,7 +190,8 @@
     "navigation": {
       "totalBatches": "Total Batches",
       "batchesToSale": "Batches To Sale",
-      "soldBatches": "Sold Batches"
+      "soldBatches": "Sold Batches",
+      "profit": "Profit"
     },
     "tabs": {
       "addNew": "Add New Warehouse",
@@ -302,6 +303,27 @@
       },
       "errors": {
         "failedToFetch": "Failed to fetch sold batches"
+      }
+    },
+    "profit": {
+      "title": "Warehouse Profit",
+      "loading": "Loading profit report...",
+      "emptyState": "No profit data available. Adjust filters and try again.",
+      "loadReport": "Load report",
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "selectFromDate": "Select from date",
+        "selectToDate": "Select to date"
+      },
+      "summary": {
+        "revenueAmd": "Revenue (AMD)",
+        "costAmd": "Cost (AMD)",
+        "profitAmd": "Profit (AMD)",
+        "soldPowderKg": "Sold Powder (kg)"
+      },
+      "errors": {
+        "failedToFetch": "Failed to fetch profit report"
       }
     }
   },

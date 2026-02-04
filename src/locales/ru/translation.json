@@ -190,7 +190,8 @@
     "navigation": {
       "totalBatches": "Всего партий",
       "batchesToSale": "Партии к продаже",
-      "soldBatches": "Проданные партии"
+      "soldBatches": "Проданные партии",
+      "profit": "Прибыль"
     },
     "tabs": {
       "addNew": "Добавить новый склад",
@@ -302,6 +303,27 @@
       },
       "errors": {
         "failedToFetch": "Не удалось загрузить проданные партии"
+      }
+    },
+    "profit": {
+      "title": "Прибыль склада",
+      "loading": "Загрузка отчета о прибыли...",
+      "emptyState": "Данные о прибыли отсутствуют. Измените фильтры и попробуйте снова.",
+      "loadReport": "Загрузить отчет",
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "По дату",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания"
+      },
+      "summary": {
+        "revenueAmd": "Выручка (AMD)",
+        "costAmd": "Себестоимость (AMD)",
+        "profitAmd": "Прибыль (AMD)",
+        "soldPowderKg": "Проданный порошок (кг)"
+      },
+      "errors": {
+        "failedToFetch": "Не удалось загрузить отчет о прибыли"
       }
     }
   },

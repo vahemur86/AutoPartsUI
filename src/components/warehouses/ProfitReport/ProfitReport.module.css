@@ -1,0 +1,97 @@
+.profitWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin-top: 20px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+  padding: 16px;
+  background-color: var(--color-black-2);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filterItem {
+  min-width: 220px;
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--color-secondary-500);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  background-color: var(--color-black-2);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading,
+.emptyState {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 32px 0;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background-color: var(--color-black-3);
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card::before {
+  content: "";
+  width: 32px;
+  height: 3px;
+  background-color: var(--color-primary-500);
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.cardLabel {
+  font-size: 12px;
+  color: var(--color-secondary-500);
+}
+
+.cardValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-white);
+  font-variant-numeric: tabular-nums;
+}
