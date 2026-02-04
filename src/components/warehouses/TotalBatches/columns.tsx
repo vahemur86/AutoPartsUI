@@ -79,11 +79,14 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
       const meta = table.options.meta as any;
       const inventoryLotId = row.original.id;
 
+      const isEmpty = row.original.status === 4;
+
       return (
         <SelectedKgCell
           inventoryLotId={inventoryLotId}
           initialValue={meta?.selectedKg?.[inventoryLotId]}
           onKgChange={meta?.onKgChange}
+          disabled={isEmpty}
         />
       );
     },
@@ -97,13 +100,15 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
       const inventoryLotId = row.original.id;
       const powderKg = meta?.selectedKg?.[inventoryLotId] || 0;
 
+      const isEmpty = row.original.status === 4;
+
       return (
         <div className={styles.actionButtonsCell}>
           <Button
             variant="primary"
             size="small"
             onClick={() => meta?.onAdd(inventoryLotId, powderKg)}
-            disabled={!powderKg || powderKg <= 0}
+            disabled={isEmpty || !powderKg || powderKg <= 0}
           >
             {i18next.t("common.add")}
           </Button>

@@ -9,8 +9,9 @@ import styles from "./TotalBatches.module.css";
 export const SelectedKgCell: FC<{
   inventoryLotId: number;
   initialValue: number | undefined;
+  disabled?: boolean;
   onKgChange: (id: number, val: number) => void;
-}> = ({ inventoryLotId, initialValue, onKgChange }) => {
+}> = ({ inventoryLotId, initialValue, disabled = false, onKgChange }) => {
   const [localValue, setLocalValue] = useState<string>(
     initialValue !== undefined && initialValue !== 0
       ? initialValue.toString()
@@ -36,6 +37,7 @@ export const SelectedKgCell: FC<{
       <TextField
         type="number"
         value={localValue}
+        disabled={disabled}
         onChange={handleChange}
         placeholder="0"
         min="0"
