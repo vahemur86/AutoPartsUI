@@ -52,6 +52,7 @@
   height: 2px;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
 }
 
 .languageSelectWrapper {
@@ -129,7 +130,6 @@
   flex-direction: column;
   gap: 24px;
 }
-
 
 .powderCard {
   gap: 16px;
@@ -334,12 +334,38 @@
 .customerCard {
   gap: 16px;
 
-  .customerHeader,
-  .customerContent {
+  .customerHeader {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
+
+  .customerContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.phoneSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+
+  .phoneLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-white);
+    text-align: left;
+  }
+}
+
+.additionalFields {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 12px;
+  width: 100%;
 }
 
 .customerProfile {
@@ -349,6 +375,7 @@
   padding: 16px;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+  margin-top: 8px;
 
   .profileAvatar {
     width: 48px;
@@ -390,7 +417,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .marketPricesCard {
@@ -541,37 +568,6 @@
   }
 }
 
-.phoneSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-
-  .phoneLabel {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-white);
-    text-align: left;
-  }
-}
-
-.phoneInputRow {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-
-  .countrySelectWrapper {
-    width: 115px;
-    flex-shrink: 0;
-  }
-  .phoneFieldWrapper {
-    flex: 1;
-  }
-  .countrySelectInner {
-    margin-bottom: 0 !important;
-  }
-}
-
 @keyframes slideInDown {
   from {
     opacity: 0;
@@ -616,6 +612,9 @@
   .centerColumn,
   .rightColumn {
     grid-column: 1;
+  }
+  .additionalFields {
+    grid-template-columns: 1fr;
   }
 }
 

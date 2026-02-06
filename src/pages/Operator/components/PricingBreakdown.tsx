@@ -1,6 +1,12 @@
 import { useTranslation } from "react-i18next";
+
+// ui-kit
 import { TextField, Button } from "@/ui-kit";
+
+// icons
 import { Send } from "lucide-react";
+
+// styles
 import styles from "../OperatorPage.module.css";
 
 interface PricingRowProps {
@@ -15,28 +21,50 @@ const PricingRow = ({
   priceValue,
   onPriceChange,
   error,
-}: PricingRowProps) => (
-  <div
-    className={styles.pricingRow}
-    style={{ display: "flex", alignItems: "center" }}
-  >
+}: PricingRowProps) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+
+    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
+      return;
+    }
+
+    if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
+      val = val.replace(/^0+/, "");
+      if (val === "") val = "0";
+    }
+
+    if (val === ".") {
+      val = "0.";
+    }
+
+    onPriceChange(val);
+  };
+
+  return (
     <div
-      className={styles.pricingMetal}
-      style={{ width: "120px", flexShrink: 0 }}
+      className={styles.pricingRow}
+      style={{ display: "flex", alignItems: "center" }}
     >
-      {weightLabel}
+      <div
+        className={styles.pricingMetal}
+        style={{ width: "120px", flexShrink: 0 }}
+      >
+        {weightLabel}
+      </div>
+      <div className={styles.pricingCalculation} style={{ flex: 1, margin: 0 }}>
+        <TextField
+          type="text"
+          inputMode="decimal"
+          value={priceValue}
+          onChange={handleInputChange}
+          placeholder="0.00"
+          error={error}
+        />
+      </div>
     </div>
-    <div className={styles.pricingCalculation} style={{ flex: 1, margin: 0 }}>
-      <TextField
-        type="number"
-        value={priceValue}
-        onChange={(e) => onPriceChange(e.target.value)}
-        placeholder="0.00"
-        error={error}
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 interface PricingBreakdownProps {
   formData: {
@@ -58,6 +86,7 @@ export const PricingBreakdown = ({
   hasTriedSubmit,
 }: PricingBreakdownProps) => {
   const { t } = useTranslation();
+
   const isInvalid = (val: string) => val.trim() === "" || isNaN(Number(val));
 
   return (

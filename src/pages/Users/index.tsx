@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 // components
-import { SectionHeader } from "@/components/common/SectionHeader";
+import { SectionHeader } from "@/components/common";
 
 // icons
 import userIcon from "@/assets/icons/userVector.svg";

@@ -1,0 +1,29 @@
+.phoneInputRow {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.countrySelectWrapper {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.phoneFieldWrapper {
+  flex: 1;
+}
+
+.countrySelectWrapper :global(.selectContainer) {
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 480px) {
+  .phoneInputRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .countrySelectWrapper {
+    width: 100%;
+  }
+}

@@ -25,7 +25,7 @@ import { getApiErrorMessage } from "@/utils";
 
 interface IntakeState {
   intake: IntakeResponse | null;
-  newPropose?: NewPropose | null; // Added for new method
+  newPropose?: NewPropose | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -145,7 +145,6 @@ const operatorSlice = createSlice({
       state.error = null;
     });
 
-    // Exact matches to the OLD logic
     builder
       .addCase(fetchIntake.pending, (state) => {
         state.isLoading = true;
@@ -153,7 +152,7 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchIntake.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.intake = action.payload; // Direct overwrite
+        state.intake = action.payload;
       })
       .addCase(fetchIntake.rejected, (state, action) => {
         state.isLoading = false;
@@ -171,7 +170,6 @@ const operatorSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload ?? "Failed to create intake";
       })
-
       .addCase(proposeNewOffer.pending, (state) => {
         state.isLoading = true;
         state.error = null;

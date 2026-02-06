@@ -5,7 +5,7 @@ import type { LucideIcon } from "lucide-react";
 import { Tab, Stepper, type StepperStep } from "@/ui-kit";
 
 // components
-import { SectionHeader } from "@/components/common/SectionHeader";
+import { SectionHeader } from "../SectionHeader";
 
 // styles
 import styles from "./ModuleLayout.module.css";
