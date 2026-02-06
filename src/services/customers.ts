@@ -4,58 +4,57 @@ import api from ".";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { Customer } from "@/types/operator";
-
-export interface GetOrCreateCustomerRequest {
-  phone: string;
-}
-
-export interface UpdateCustomerTypeRequest {
-  customerTypeId: number;
-}
+import type {
+  Customer,
+  CreateCustomerRequest,
+  CustomersResponse,
+} from "@/types/operator";
 
 export interface GetCustomersParams {
   phone?: string;
   customerTypeId?: number;
+  gender?: number;
   page?: number;
   pageSize?: number;
 }
 
-export interface CustomersResponse {
-  items: Customer[];
-  totalItems: number;
-  page: number;
-  pageSize: number;
-}
+export const getCustomers = async (
+  params?: GetCustomersParams,
+): Promise<CustomersResponse> => {
+  try {
+    const response = await api.get<CustomersResponse>(`/catalyst/customers`, {
+      params,
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get customers."));
+  }
+};
 
-export type CustomersApiResponse = Customer[] | CustomersResponse;
-
-export const getOrCreateCustomer = async (
-  phone: string,
-): Promise<Customer> => {
+export const getOrCreateCustomer = async ({
+  data,
+  cashRegisterId,
+}: {
+  data: CreateCustomerRequest;
+  cashRegisterId?: number;
+}): Promise<Customer> => {
   try {
     const response = await api.post<Customer>(
       `/catalyst/customers/get-or-create`,
-      { phone },
+      data,
+      {
+        headers: {
+          ...(cashRegisterId && {
+            "X-CashRegister-Id": cashRegisterId,
+          }),
+        },
+      },
     );
     return response.data;
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to get or create customer."),
     );
-  }
-};
-
-export const getCustomers = async (
-  params?: GetCustomersParams,
-): Promise<CustomersApiResponse> => {
-  try {
-    const response = await api.get<CustomersApiResponse>(`/catalyst/customers`, {
-      params,
-    });
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to get customers."));
   }
 };
 
@@ -66,7 +65,9 @@ export const updateCustomerType = async (
   try {
     const response = await api.put<Customer>(
       `/catalyst/customers/${customerId}/type`,
-      { customerTypeId },
+      {
+        customerTypeId,
+      },
     );
     return response.data;
   } catch (error: unknown) {
@@ -75,4 +76,3 @@ export const updateCustomerType = async (
     );
   }
 };
-
