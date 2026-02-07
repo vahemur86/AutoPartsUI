@@ -58,7 +58,7 @@ export const Customers = () => {
   // Filters State
   const [filterPhone, setFilterPhone] = useState<string>("");
   const [filterCustomerTypeId, setFilterCustomerTypeId] = useState<string>("");
-  const [filterGender, setFilterGender] = useState<number>(0); // Changed to number
+  const [filterGender, setFilterGender] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   const addBtnRef = useRef<HTMLDivElement>(null);
@@ -73,7 +73,7 @@ export const Customers = () => {
         customerTypeId: filterCustomerTypeId
           ? parseInt(filterCustomerTypeId)
           : undefined,
-        gender: filterGender, // Always a number now (0, 1, or 2)
+        gender: filterGender !== null ? filterGender : undefined,
       }),
     );
   }, [currentPage, filterPhone, filterCustomerTypeId, filterGender, dispatch]);
@@ -100,7 +100,7 @@ export const Customers = () => {
   const handleApplyFilters = (filters: {
     phone: string;
     customerTypeId: string;
-    gender: number; // Expecting number
+    gender: number | null;
   }) => {
     setFilterPhone(filters.phone);
     setFilterCustomerTypeId(filters.customerTypeId);
@@ -111,13 +111,12 @@ export const Customers = () => {
   const handleResetFilters = useCallback(() => {
     setFilterPhone("");
     setFilterCustomerTypeId("");
-    setFilterGender(0); // Reset to Unknown (0)
+    setFilterGender(null);
     setCurrentPage(0);
   }, []);
 
   const handleSaveEdit = async () => {
     if (!editingCustomer || !selectedCustomerTypeId) return;
-
     try {
       await dispatch(
         updateCustomerType({
@@ -125,7 +124,6 @@ export const Customers = () => {
           customerTypeId: parseInt(selectedCustomerTypeId),
         }),
       ).unwrap();
-
       toast.success(t("customers.success.customerUpdated"));
       setIsEditModalOpen(false);
       setEditingCustomer(null);
@@ -146,6 +144,9 @@ export const Customers = () => {
     [handleOpenEdit, t],
   );
 
+  const hasActiveFilters =
+    filterPhone !== "" || filterCustomerTypeId !== "" || filterGender !== null;
+
   return (
     <>
       <SectionHeader title={t("header.customers")} />
@@ -157,6 +158,17 @@ export const Customers = () => {
               {t("customers.customersList")}
             </h3>
             <div className={styles.headerActions}>
+              {hasActiveFilters && (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={handleResetFilters}
+                  className={styles.resetBtn}
+                >
+                  {t("common.reset")}
+                </Button>
+              )}
+
               <div
                 ref={filterBtnRef}
                 className={styles.addButtonContainer}
@@ -225,7 +237,7 @@ export const Customers = () => {
         filters={{
           phone: filterPhone,
           customerTypeId: filterCustomerTypeId,
-          gender: filterGender, // Now passing numeric state
+          gender: filterGender,
         }}
         onApply={handleApplyFilters}
         onReset={handleResetFilters}

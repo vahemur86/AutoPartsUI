@@ -22,12 +22,12 @@ interface FilterCustomersDropdownProps {
   filters: {
     phone: string;
     customerTypeId: string;
-    gender: number;
+    gender: number | null;
   };
   onApply: (filters: {
     phone: string;
     customerTypeId: string;
-    gender: number;
+    gender: number | null;
   }) => void;
   onReset: () => void;
 }
@@ -45,7 +45,9 @@ export const FilterCustomersDropdown = ({
 
   const [localPhone, setLocalPhone] = useState(filters.phone);
   const [localType, setLocalType] = useState(filters.customerTypeId);
-  const [localGender, setLocalGender] = useState<number>(filters.gender);
+  const [localGender, setLocalGender] = useState<number | null>(
+    filters?.gender ?? null,
+  );
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
 
   useEffect(() => {
@@ -66,6 +68,9 @@ export const FilterCustomersDropdown = ({
   };
 
   const handleReset = () => {
+    setLocalPhone("");
+    setLocalType("");
+    setLocalGender(null);
     onReset();
     onOpenChange(false);
   };

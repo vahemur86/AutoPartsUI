@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Select } from "@/ui-kit";
 
 interface GenderSelectProps {
-  value: number;
+  value: number | null;
   onChange: (value: number) => void;
   disabled?: boolean;
   label?: string;
@@ -31,7 +31,7 @@ export const GenderSelect = ({
   return (
     <Select
       label={label ?? t("customerDetails.gender")}
-      value={value.toString()}
+      value={value?.toString?.()}
       onChange={(e) => onChange(Number(e.target.value))}
       disabled={disabled}
     >
