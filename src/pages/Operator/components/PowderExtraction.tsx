@@ -26,6 +26,25 @@ export const PowderExtraction = ({
   const username = userData.username || "—";
   const cashRegisterName = userData.cashRegisterName || "—";
 
+  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+
+    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
+      return;
+    }
+
+    if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
+      val = val.replace(/^0+/, "");
+      if (val === "") val = "0";
+    }
+
+    if (val === ".") {
+      val = "0.";
+    }
+
+    onWeightChange(val);
+  };
+
   return (
     <div className={styles.powderCard}>
       <div className={styles.powderHeader}>
@@ -36,9 +55,10 @@ export const PowderExtraction = ({
         <TextField
           label={t("powderExtraction.extractionWeight")}
           placeholder="0.00"
-          type="number"
+          type="text"
+          inputMode="decimal"
           value={weight}
-          onChange={(e) => onWeightChange(e.target.value)}
+          onChange={handleWeightChange}
           error={error}
         />
         <div className={styles.powderDetails}>
