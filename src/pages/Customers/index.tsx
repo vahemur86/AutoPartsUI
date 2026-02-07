@@ -3,15 +3,14 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // icons
-import { Plus, Filter } from "lucide-react";
+import { Plus, Filter, RotateCcw } from "lucide-react";
 
 // ui-kit
 import { DataTable, Button, Select, IconButton } from "@/ui-kit";
 
 // components
 import { SectionHeader } from "@/components/common";
-import { AddCustomerDropdown } from "./customersActions/AddCustomerDropdown";
-import { FilterCustomersDropdown } from "./customersActions/FiltersCustomersDropdown";
+import { CustomersDropdown } from "./customersActions/CustomersDropdown";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -159,14 +158,20 @@ export const Customers = () => {
             </h3>
             <div className={styles.headerActions}>
               {hasActiveFilters && (
-                <Button
-                  variant="secondary"
-                  size="small"
+                <div
+                  className={styles.addButtonContainer}
                   onClick={handleResetFilters}
-                  className={styles.resetBtn}
                 >
-                  {t("common.reset")}
-                </Button>
+                  <IconButton
+                    ariaLabel="Reset filters"
+                    variant="secondary"
+                    size="small"
+                    icon={<RotateCcw size={12} color="#fff" />}
+                  />
+                  <span className={styles.addButtonLabel}>
+                    {t("common.reset")}
+                  </span>
+                </div>
               )}
 
               <div
@@ -221,7 +226,8 @@ export const Customers = () => {
         </div>
       </div>
 
-      <AddCustomerDropdown
+      <CustomersDropdown
+        type="add"
         open={isAddDropdownOpen}
         anchorRef={addBtnRef}
         onOpenChange={setIsAddDropdownOpen}
@@ -229,7 +235,8 @@ export const Customers = () => {
         isSubmitting={isSubmitting}
       />
 
-      <FilterCustomersDropdown
+      <CustomersDropdown
+        type="filter"
         open={isFilterDropdownOpen}
         anchorRef={filterBtnRef}
         onOpenChange={setIsFilterDropdownOpen}
