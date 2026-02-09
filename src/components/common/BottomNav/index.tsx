@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 // icons
@@ -17,7 +18,7 @@ import { useActiveRoute } from "@/hooks/useIsActive";
 // styles
 import styles from "./BottomNav.module.css";
 
-export const BottomNav = () => {
+export const BottomNav: FC = () => {
   const navigate = useNavigate();
 
   const { isActive } = useActiveRoute();

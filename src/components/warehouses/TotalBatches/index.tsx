@@ -197,6 +197,9 @@ export const TotalBatches = () => {
               getRowClassName={(row) =>
                 checkIsToday(row.createdAt) ? styles.todayRow : ""
               }
+              frozenConfig={{
+                right: ["actions"],
+              }}
             />
             <div className={styles.createSaleSection}>
               <Button

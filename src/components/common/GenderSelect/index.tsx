@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
@@ -11,12 +11,12 @@ interface GenderSelectProps {
   label?: string;
 }
 
-export const GenderSelect = ({
+export const GenderSelect: FC<GenderSelectProps> = ({
   value,
   onChange,
   disabled,
   label,
-}: GenderSelectProps) => {
+}) => {
   const { t } = useTranslation();
 
   const genderOptions = useMemo(

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import {
   getCountries,
@@ -30,7 +30,7 @@ const getFlagEmoji = (countryCode: string) =>
     .toUpperCase()
     .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
 
-export const CountryPhoneInput = ({
+export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
   phone,
   selectedCountry,
   onCountryChange,
@@ -38,7 +38,7 @@ export const CountryPhoneInput = ({
   onSearch,
   error,
   disabled,
-}: CountryPhoneInputProps) => {
+}) => {
   const { t, i18n } = useTranslation();
 
   const allCountryOptions = useMemo(() => {

@@ -1,4 +1,7 @@
+import type { FC } from "react";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
+
+// icons
 import type { LucideIcon } from "lucide-react";
 
 // ui-kit
@@ -24,12 +27,12 @@ interface ModuleLayoutProps {
   defaultIcon: LucideIcon;
 }
 
-export const ModuleLayout = ({
+export const ModuleLayout: FC<ModuleLayoutProps> = ({
   basePath,
   navigationItems,
   defaultTitle,
   defaultIcon: DefaultIcon,
-}: ModuleLayoutProps) => {
+}) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 

@@ -219,6 +219,9 @@ export const Customers = () => {
                 manualPagination
                 pageCount={Math.ceil((totalItems ?? 0) / PAGE_SIZE)}
                 pageIndex={currentPage}
+                frozenConfig={{
+                  right: ["actions"],
+                }}
                 onPaginationChange={setCurrentPage}
               />
             )}
