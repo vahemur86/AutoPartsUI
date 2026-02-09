@@ -1,14 +1,24 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type { CreateExchangeRate, ExchangeRate } from "@/types/settings";
 
-export const getExchangeRates = async () => {
+export const getExchangeRates = async (
+  params: { isActive?: boolean; cashRegisterId?: number } | void,
+) => {
   try {
-    const response = await api.get("/admin/exchange-rates");
+    const { isActive, cashRegisterId } = params ?? {};
+    const response = await api.get("/admin/exchange-rates", {
+      params: {
+        ...(isActive && {
+          isActive,
+        }),
+      },
+      headers: getHeaders(cashRegisterId),
+    });
     return response.data;
   } catch (error: unknown) {
     throw new Error(

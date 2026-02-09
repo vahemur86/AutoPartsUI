@@ -94,6 +94,11 @@ const customersSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearCustomersState: (state) => {
+      state.items = [];
+      state.totalItems = 0;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -157,5 +162,5 @@ const customersSlice = createSlice({
   },
 });
 
-export const { clearError } = customersSlice.actions;
+export const { clearError, clearCustomersState } = customersSlice.actions;
 export default customersSlice.reducer;

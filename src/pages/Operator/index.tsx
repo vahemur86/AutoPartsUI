@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -33,6 +33,11 @@ import {
 } from "@/store/slices/cash/sessionsSlice";
 import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchOfferOptions } from "@/store/slices/offerOptionsSlice";
+import {
+  fetchExchangeRates,
+  clearExchangeRatesState,
+} from "@/store/slices/exchangeRatesSlice";
+import { clearCustomersState } from "@/store/slices/customersSlice";
 
 // ui-kit
 import { ConfirmationModal } from "@/ui-kit";
@@ -84,6 +89,10 @@ export const OperatorPage = () => {
   const { options: offerOptions } = useAppSelector(
     (state) => state.offerOptions,
   );
+  const { exchangeRates } = useAppSelector((state) => state.exchangeRates);
+  const { items: searchedCustomers } = useAppSelector(
+    (state) => state.customers,
+  );
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
@@ -114,6 +123,39 @@ export const OperatorPage = () => {
       notes: "",
     },
   });
+
+  useEffect(() => {
+    const searchedCustomerType = searchedCustomers[0]?.customerType?.code;
+    const linkedCustomerType = intake?.customer?.customerType?.code;
+
+    const currentType = (
+      linkedCustomerType || searchedCustomerType
+    )?.toLowerCase();
+
+    const crId = userData?.cashRegisterId;
+
+    if (crId && currentType && currentType !== "standard") {
+      dispatch(
+        fetchExchangeRates({
+          isActive: true,
+          cashRegisterId: crId,
+        }),
+      );
+    } else {
+      dispatch(clearExchangeRatesState());
+    }
+  }, [
+    dispatch,
+    intake?.customer?.customerType?.code,
+    searchedCustomers,
+    userData?.cashRegisterId,
+  ]);
+
+  const usdAmdRate = useMemo(() => {
+    return exchangeRates.find(
+      (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
+    )?.rate;
+  }, [exchangeRates]);
 
   useEffect(() => {
     if (intake?.offerPrice && initialOfferPrice === null)
@@ -179,7 +221,10 @@ export const OperatorPage = () => {
     setUiState((p) => ({ ...p, hasTriedSubmit: false, showCashAmount: false }));
     setInitialOfferPrice(null);
     setRecalculationsAmount(0);
+
     dispatch(clearIntakeState());
+    dispatch(clearCustomersState());
+    dispatch(clearExchangeRatesState());
   }, [dispatch]);
 
   const handleSubmit = async () => {
@@ -307,6 +352,7 @@ export const OperatorPage = () => {
             rhPricePerGram={activeMetalRate?.rhPricePerGram}
             currencyCode={activeMetalRate?.currencyCode}
             updatedAt={activeMetalRate?.effectiveFrom}
+            usdAmdRate={usdAmdRate}
           />
         </div>
 

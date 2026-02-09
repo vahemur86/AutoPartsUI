@@ -33,11 +33,11 @@ const initialState: ExchangeRatesState = {
 // Async thunk for fetching exchange rates
 export const fetchExchangeRates = createAsyncThunk<
   ExchangeRate[],
-  void,
+  { isActive?: boolean; cashRegisterId?: number } | void,
   { rejectValue: string }
->("exchangeRates/fetchExchangeRates", async (_, { rejectWithValue }) => {
+>("exchangeRates/fetchExchangeRates", async (params, { rejectWithValue }) => {
   try {
-    const data = await getExchangeRates();
+    const data = await getExchangeRates(params);
     return data;
   } catch (error: unknown) {
     return rejectWithValue(
@@ -103,6 +103,11 @@ const exchangeRatesSlices = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    clearExchangeRatesState: (state) => {
+      state.exchangeRates = [];
+      state.error = null;
+      state.isLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -194,5 +199,6 @@ const exchangeRatesSlices = createSlice({
   },
 });
 
-export const { clearError } = exchangeRatesSlices.actions;
+export const { clearError, clearExchangeRatesState } =
+  exchangeRatesSlices.actions;
 export default exchangeRatesSlices.reducer;
