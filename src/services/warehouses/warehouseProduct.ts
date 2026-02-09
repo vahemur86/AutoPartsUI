@@ -1,0 +1,55 @@
+// services
+import api from "@/services";
+
+// utils
+import { getApiErrorMessage } from "@/utils";
+
+// types
+import type {
+  AddProductToWarehouseRequest,
+  AddProductToWarehouseResponse,
+  TransferProductRequest,
+  TransferProductResponse,
+} from "@/types/warehouses/warehouseProduct";
+
+const performRequest = async <T>(
+  requestFn: (headers: { "X-CashRegister-Id": number }) => Promise<{ data: T }>,
+  cashRegisterId: number,
+  defaultErrorMessage: string,
+): Promise<T> => {
+  try {
+    const response = await requestFn({ "X-CashRegister-Id": cashRegisterId });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, defaultErrorMessage));
+  }
+};
+
+export const addProductToWarehouse = ({
+  cashRegisterId,
+  ...body
+}: AddProductToWarehouseRequest) =>
+  performRequest(
+    (headers) =>
+      api.post<AddProductToWarehouseResponse>(
+        `/WarehouseProduct/add-product`,
+        body,
+        { headers },
+      ),
+    cashRegisterId,
+    "Failed to add product to warehouse.",
+  );
+
+export const transferProduct = ({
+  cashRegisterId,
+  ...body
+}: TransferProductRequest) =>
+  performRequest(
+    (headers) =>
+      api.post<TransferProductResponse>(`/WarehouseProduct/transfer`, body, {
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to transfer product.",
+  );
+

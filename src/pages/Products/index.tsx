@@ -87,12 +87,12 @@ export const Products = () => {
           }),
         ).unwrap();
 
-        toast.success("Product created successfully");
+        toast.success(t("products.success.productCreated"));
         dispatch(fetchProducts());
         handleCloseAddDropdown();
       } catch (error: unknown) {
         console.error(error);
-        toast.error(getErrorMessage(error, "Failed to create product"));
+        toast.error(getErrorMessage(error, t("products.error.failedToCreate")));
       }
     },
     [dispatch, handleCloseAddDropdown],
@@ -125,12 +125,12 @@ export const Products = () => {
           }),
         ).unwrap();
 
-        toast.success("Product updated successfully");
+        toast.success(t("products.success.productUpdated"));
         dispatch(fetchProducts());
         handleCloseEditDropdown();
       } catch (error: unknown) {
         console.error(error);
-        toast.error(getErrorMessage(error, "Failed to update product"));
+        toast.error(getErrorMessage(error, t("products.error.failedToUpdate")));
       }
     },
     [dispatch, editingProduct, handleCloseEditDropdown],
@@ -148,14 +148,14 @@ export const Products = () => {
                 variant="primary"
                 size="small"
                 icon={<Plus size={12} color="#0e0f11" />}
-                ariaLabel="Add New"
+                ariaLabel={t("products.addNew")}
                 onClick={() =>
                   handleAddButtonClick(
                     buttonWrapperRef as RefObject<HTMLElement>,
                   )
                 }
               />
-              <span className={styles.addButtonText}>Add New</span>
+              <span className={styles.addButtonText}>{t("products.addNew")}</span>
             </div>
           </div>
         }

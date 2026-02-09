@@ -11,9 +11,19 @@ import {
   updateWarehouse,
   deleteWarehouse,
 } from "@/services/settings/warehouses";
+import {
+  addProductToWarehouse as addProductToWarehouseService,
+  transferProduct as transferProductService,
+} from "@/services/warehouses/warehouseProduct";
 
 // types
 import type { Warehouse } from "@/types/settings";
+import type {
+  AddProductToWarehouseRequest,
+  AddProductToWarehouseResponse,
+  TransferProductRequest,
+  TransferProductResponse,
+} from "@/types/warehouses/warehouseProduct";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
@@ -95,6 +105,38 @@ export const removeWarehouse = createAsyncThunk<
   } catch (error: unknown) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to delete warehouse"),
+    );
+  }
+});
+
+// Async thunk for adding product to warehouse
+export const addProductToWarehouse = createAsyncThunk<
+  AddProductToWarehouseResponse,
+  AddProductToWarehouseRequest,
+  { rejectValue: string }
+>("warehouses/addProductToWarehouse", async (request, { rejectWithValue }) => {
+  try {
+    const data = await addProductToWarehouseService(request);
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to add product to warehouse"),
+    );
+  }
+});
+
+// Async thunk for transferring product
+export const transferProduct = createAsyncThunk<
+  TransferProductResponse,
+  TransferProductRequest,
+  { rejectValue: string }
+>("warehouses/transferProduct", async (request, { rejectWithValue }) => {
+  try {
+    const data = await transferProductService(request);
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to transfer product"),
     );
   }
 });
@@ -189,6 +231,36 @@ const warehousesSlice = createSlice({
       .addCase(removeWarehouse.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to delete warehouse";
+      });
+
+    // Add product to warehouse
+    builder
+      .addCase(addProductToWarehouse.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(addProductToWarehouse.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(addProductToWarehouse.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to add product to warehouse";
+      });
+
+    // Transfer product
+    builder
+      .addCase(transferProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(transferProduct.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(transferProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to transfer product";
       });
   },
 });

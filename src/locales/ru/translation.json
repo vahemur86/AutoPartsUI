@@ -191,7 +191,8 @@
       "totalBatches": "Всего партий",
       "batchesToSale": "Партии к продаже",
       "soldBatches": "Проданные партии",
-      "profit": "Прибыль"
+      "profit": "Прибыль",
+      "addProduct": "Добавить товар"
     },
     "tabs": {
       "addNew": "Добавить новый склад",
@@ -324,6 +325,27 @@
       },
       "errors": {
         "failedToFetch": "Не удалось загрузить отчет о прибыли"
+      }
+    },
+    "addProduct": {
+      "loading": "Загрузка товаров...",
+      "emptyState": "Товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "code": "Код",
+        "sku": "SKU",
+        "brand": "Бренд",
+        "category": "Категория",
+        "originalPrice": "Первоначальная цена",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество"
+      },
+      "success": {
+        "productAdded": "Товар {{code}} успешно добавлен на склад"
+      },
+      "error": {
+        "invalidInputs": "Пожалуйста, заполните все поля (первоначальная цена, цена продажи и количество)",
+        "failedToAdd": "Не удалось добавить товар на склад"
       }
     }
   },
@@ -726,7 +748,62 @@
     }
   },
   "products": {
-    "iconAlt": "Иконка товаров"
+    "iconAlt": "Иконка товаров",
+    "addNew": "Добавить новый",
+    "loading": "Загрузка товаров...",
+    "emptyState": "Товары не найдены. Нажмите \"Добавить новый\", чтобы создать первый товар.",
+    "loadingGeneric": "Загрузка...",
+    "columns": {
+      "productKey": "Код товара",
+      "sku": "SKU",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "actions": "Действия"
+    },
+    "mobile": {
+      "actions": "Действия",
+      "sku": "SKU",
+      "code": "Код",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "viewMore": "Показать больше",
+      "viewLess": "Показать меньше"
+    },
+    "form": {
+      "addProduct": "Добавить товар",
+      "addNewProduct": "Добавить новый товар",
+      "editProduct": "Редактировать товар",
+      "productKey": "Код товара",
+      "sku": "SKU",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "type": "Введите",
+      "select": "Выберите"
+    },
+    "success": {
+      "productCreated": "Товар успешно создан",
+      "productUpdated": "Товар успешно обновлен",
+      "productDeleted": "Товар успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать товар",
+      "failedToUpdate": "Не удалось обновить товар",
+      "failedToDelete": "Не удалось удалить товар"
+    },
+    "pagination": {
+      "previous": "Предыдущая",
+      "next": "Следующая"
+    },
+    "idPrefix": "ID: "
   },
   "translation": {
     "tabs": {

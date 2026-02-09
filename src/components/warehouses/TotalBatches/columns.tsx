@@ -1,5 +1,6 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
+import { useRef, useEffect, memo } from "react";
 
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
@@ -12,6 +13,7 @@ import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
 
 // styles
 import styles from "./TotalBatches.module.css";
+import type { RefObject } from "react";
 
 const columnHelper = createColumnHelper<InventoryLot>();
 
@@ -21,13 +23,79 @@ interface ColumnHandlers {
   onKgChange: (inventoryLotId: number, powderKg: number) => void;
   onAdd: (inventoryLotId: number, powderKg: number) => void;
   selectedKg: Record<number, number>;
+  focusedInputRef: RefObject<number | null>;
 }
+
+interface SelectedKgInputCellProps {
+  inventoryLotId: number;
+  value: number | undefined;
+  onKgChange: (inventoryLotId: number, powderKg: number) => void;
+  focusedInputRef: RefObject<number | null>;
+}
+
+const SelectedKgInputCell = memo(
+  ({
+    inventoryLotId,
+    value,
+    onKgChange,
+    focusedInputRef,
+  }: SelectedKgInputCellProps) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const shouldRestoreFocus = useRef(false);
+
+    useEffect(() => {
+      if (focusedInputRef.current === inventoryLotId && inputRef.current) {
+        shouldRestoreFocus.current = true;
+        // Use double requestAnimationFrame to ensure focus happens after DOM update
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (inputRef.current && shouldRestoreFocus.current) {
+              inputRef.current.focus();
+              // Set cursor to end of input
+              const length = inputRef.current.value.length;
+              inputRef.current.setSelectionRange(length, length);
+              // Clear the focus tracking
+              focusedInputRef.current = null;
+              shouldRestoreFocus.current = false;
+            }
+          });
+        });
+      }
+    }, [inventoryLotId, focusedInputRef, value]);
+
+    return (
+      <div className={styles.selectedKgInput}>
+        <TextField
+          ref={inputRef}
+          type="number"
+          value={value ? value.toString() : ""}
+          onChange={(e) => {
+            if (document.activeElement === inputRef.current) {
+              focusedInputRef.current = inventoryLotId;
+            }
+            const newValue = parseFloat(e.target.value) || 0;
+            onKgChange(inventoryLotId, newValue);
+          }}
+          onFocus={() => {
+            focusedInputRef.current = inventoryLotId;
+          }}
+          placeholder="0"
+          min="0"
+          step="0.01"
+        />
+      </div>
+    );
+  },
+);
+
+SelectedKgInputCell.displayName = "SelectedKgInputCell";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getInventoryLotColumns = ({
   onKgChange,
   onAdd,
   selectedKg,
+  focusedInputRef,
 }: ColumnHandlers): ColumnDef<InventoryLot, any>[] => [
   columnHelper.accessor("id", {
     header: "ID",
@@ -86,19 +154,12 @@ export const getInventoryLotColumns = ({
       const inventoryLotId = row.original.id;
       const currentValue = selectedKg[inventoryLotId];
       return (
-        <div className={styles.selectedKgInput}>
-          <TextField
-            type="number"
-            value={currentValue ? currentValue.toString() : ""}
-            onChange={(e) => {
-              const value = parseFloat(e.target.value) || 0;
-              onKgChange(inventoryLotId, value);
-            }}
-            placeholder="0"
-            min="0"
-            step="0.01"
-          />
-        </div>
+        <SelectedKgInputCell
+          inventoryLotId={inventoryLotId}
+          value={currentValue}
+          onKgChange={onKgChange}
+          focusedInputRef={focusedInputRef}
+        />
       );
     },
   }),

@@ -47,6 +47,7 @@ import { TotalBatches } from "@/components/warehouses/TotalBatches";
 import { BatchesToSale } from "@/components/warehouses/BatchesToSale";
 import { SoldBatches } from "@/components/warehouses/SoldBatches";
 import { ProfitReport } from "@/components/warehouses/ProfitReport";
+import { AddProduct } from "@/components/warehouses/AddProduct";
 
 // Stores
 import { store } from "@/store/store";
@@ -146,6 +147,7 @@ export const App = () => {
                 <Route path="batches-to-sale" element={<BatchesToSale />} />
                 <Route path="sold-batches" element={<SoldBatches />} />
                 <Route path="profit" element={<ProfitReport />} />
+                <Route path="add-product" element={<AddProduct />} />
               </Route>
 
               <Route path="products" element={<Products />} />

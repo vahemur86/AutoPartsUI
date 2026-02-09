@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -42,6 +42,7 @@ export const TotalBatches = () => {
   >([]);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+  const focusedInputRef = useRef<number | null>(null);
 
   useEffect(() => {
     dispatch(fetchWarehouses());
@@ -143,6 +144,7 @@ export const TotalBatches = () => {
         onKgChange: handleKgChange,
         onAdd: handleAdd,
         selectedKg,
+        focusedInputRef,
       }),
     [selectedKg, handleKgChange, handleAdd],
   );

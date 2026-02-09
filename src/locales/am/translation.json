@@ -191,7 +191,8 @@
       "totalBatches": "Խմբաքանակների քանակը",
       "batchesToSale": "Վաճառքի ենթակա խմբաքանակներ",
       "soldBatches": "Վաճառված խմբաքանակներ",
-      "profit": "Շահույթ"
+      "profit": "Շահույթ",
+      "addProduct": "Ավելացնել ապրանք"
     },
     "tabs": {
       "addNew": "Ավելացնել նոր պահեստ",
@@ -324,6 +325,27 @@
       },
       "errors": {
         "failedToFetch": "Շահույթի հաշվետվության բեռնումը ձախողվեց"
+      }
+    },
+    "addProduct": {
+      "loading": "Ապրանքների բեռնում...",
+      "emptyState": "Ապրանքներ չեն գտնվել:",
+      "columns": {
+        "id": "ID",
+        "code": "Կոդ",
+        "sku": "SKU",
+        "brand": "Բրենդ",
+        "category": "Կատեգորիա",
+        "originalPrice": "Սկզբնական գին",
+        "salePrice": "Վաճառքի գին",
+        "quantity": "Քանակ"
+      },
+      "success": {
+        "productAdded": "{{code}} ապրանքը հաջողությամբ ավելացվեց պահեստ"
+      },
+      "error": {
+        "invalidInputs": "Խնդրում ենք լրացնել բոլոր դաշտերը (սկզբնական գին, վաճառքի գին և քանակ)",
+        "failedToAdd": "Չհաջողվեց ավելացնել ապրանքը պահեստ"
       }
     }
   },
@@ -726,7 +748,62 @@
     }
   },
   "products": {
-    "iconAlt": "Ապրանքների պատկերակ"
+    "iconAlt": "Ապրանքների պատկերակ",
+    "addNew": "Ավելացնել նորը",
+    "loading": "Ապրանքների բեռնում...",
+    "emptyState": "Ապրանքներ չեն գտնվել: Կտտացրեք \"Ավելացնել նորը\" ձեր առաջին ապրանքը ստեղծելու համար:",
+    "loadingGeneric": "Բեռնվում է...",
+    "columns": {
+      "productKey": "Ապրանքի կոդ",
+      "sku": "SKU",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "unitType": "Միավորի տեսակ",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է տրանսպորտից",
+      "actions": "Գործողություններ"
+    },
+    "mobile": {
+      "actions": "Գործողություններ",
+      "sku": "SKU",
+      "code": "Կոդ",
+      "brand": "ԲՐԵՆԴ",
+      "category": "ԿԱՏԵԳՈՐԻԱ",
+      "unitType": "ՄԻԱՎՈՐԻ ՏԵՍԱԿ",
+      "boxSize": "ՏՈՒՓԻ ՉԱՓ",
+      "vehicleDependent": "ԿԱԽՎԱԾ Է ՏՐԱՆՍՊՈՐՏԻՑ",
+      "viewMore": "Տեսնել ավելին",
+      "viewLess": "Տեսնել պակաս"
+    },
+    "form": {
+      "addProduct": "Ավելացնել ապրանք",
+      "addNewProduct": "Ավելացնել նոր ապրանք",
+      "editProduct": "Խմբագրել ապրանք",
+      "productKey": "Ապրանքի կոդ",
+      "sku": "SKU",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "unitType": "Միավորի տեսակ",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է տրանսպորտից",
+      "type": "Մուտքագրել",
+      "select": "Ընտրել"
+    },
+    "success": {
+      "productCreated": "Ապրանքը հաջողությամբ ստեղծվեց",
+      "productUpdated": "Ապրանքը հաջողությամբ թարմացվեց",
+      "productDeleted": "Ապրանքը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել ապրանք",
+      "failedToUpdate": "Չհաջողվեց թարմացնել ապրանք",
+      "failedToDelete": "Չհաջողվեց ջնջել ապրանք"
+    },
+    "pagination": {
+      "previous": "Նախորդ",
+      "next": "Հաջորդ"
+    },
+    "idPrefix": "ID: "
   },
   "translation": {
     "tabs": {
