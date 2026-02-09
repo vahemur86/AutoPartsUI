@@ -65,6 +65,8 @@ export const CustomerDetails = ({
   const [isAccepting, setIsAccepting] = useState(false);
   const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
 
+  const [hasSearched, setHasSearched] = useState(false);
+
   const activeCustomer = useMemo(
     () => searchedCustomers[0],
     [searchedCustomers],
@@ -104,6 +106,8 @@ export const CustomerDetails = ({
           cashRegisterId: Number(cashRegisterId),
         }),
       ).unwrap();
+
+      setHasSearched(true);
 
       if (response.results && response.results.length > 0) {
         const foundCustomer = response.results[0];
@@ -153,6 +157,7 @@ export const CustomerDetails = ({
       dispatch(fetchBalance(userData.cashRegisterId));
       onSuccess?.();
       setLocalHasTriedAccept(false);
+      setHasSearched(false);
     } catch {
       // Handled globally
     } finally {
@@ -161,8 +166,11 @@ export const CustomerDetails = ({
   }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
 
   const isGlobalLoading = isIntakeLoading || isAccepting || isSearching;
+
   const isFormLocked =
-    isGlobalLoading || (!!customerData.fullName && !isSearching);
+    isGlobalLoading ||
+    !hasSearched ||
+    (!!activeCustomer && !!customerData.fullName && !isSearching);
 
   return (
     <div className={styles.customerCard}>
@@ -183,10 +191,12 @@ export const CustomerDetails = ({
             onCountryChange={(country) => {
               setSelectedCountry(country);
               onCustomerChange({ ...customerData, phone: "" });
+              setHasSearched(false); // Reset lock on country change
             }}
             onPhoneChange={(fullNumber) => {
               setLocalHasTriedAccept(false);
               onCustomerChange({ ...customerData, phone: fullNumber });
+              setHasSearched(false); // Reset lock on phone edit
             }}
             onSearch={handleSearch}
             error={phoneError || (localHasTriedAccept && !isPhoneValid)}
@@ -247,7 +257,7 @@ export const CustomerDetails = ({
             size="small"
             fullWidth
             onClick={handleAccept}
-            disabled={isGlobalLoading || !intake}
+            disabled={isGlobalLoading || !intake || !hasSearched}
           >
             <Check size={20} style={{ marginRight: "8px" }} />
             {t("customerDetails.acceptAndPurchase")}
