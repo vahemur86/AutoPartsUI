@@ -31,10 +31,20 @@
     "next": "Հաջորդ",
     "page": "Էջ",
     "of": "ից",
+    "close": "Փակել",
     "areYouSure": "Համոզվա՞ծ եք, որ ցանկանում եք շարունակել:",
     "loading": "Բեռնվում է...",
     "noData": "Տվյալներ չկան",
-    "select": "Ընտրեք"
+    "select": "Ընտրեք",
+    "apply": "Կիրառել",
+    "gender": {
+      "unknown": "Անհայտ",
+      "male": "Արական",
+      "female": "Իգական"
+    },
+    "error": {
+      "missingData": "Անհրաժեշտ տվյալները բացակայում են (Դրամարկղի ID)"
+    }
   },
   "currencies": {
     "USD": "ԱՄՆ դոլար",
@@ -58,9 +68,9 @@
       "offerIncreaseOptions": "Առաջարկի ավելացման տարբերակներ",
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
-      "customerTypes": "Հաճախորդների տեսակներ",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կատալիզատորի բաքեր",
+      "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
       "cashRegisters": "Դրամարկղեր"
     }
@@ -68,7 +78,7 @@
   "offers": {
     "selectShop": "Ընտրել խանութը",
     "shop": "Խանութ",
-    "addOption": "Ավելացնել տարբերակ",
+    "addOption": "Ավելացնել",
     "addNew": "Ավելացնել նորը",
     "editOption": "Խմբագրել տարբերակը",
     "deleteOption": "Ջնջել տարբերակը",
@@ -229,9 +239,9 @@
         "powderBatchId": "Պոդերի խմբաքանակի ID",
         "remainingPowderKg": "Մնացած պոդեր (կգ)",
         "remainingCostAmd": "Մնացած արժեք (AMD)",
-        "remainingPt_g": "Մնացած Pt (գ)",
-        "remainingPd_g": "Մնացած Pd (գ)",
-        "remainingRh_g": "Մնացած Rh (գ)",
+        "remainingPt_g": "Pt (գ)",
+        "remainingPd_g": "Pd (գ)",
+        "remainingRh_g": "Rh (գ)",
         "initialPowderKg": "Սկզբնական պոդեր (կգ)",
         "initialCostAmd": "Սկզբնական արժեք (AMD)",
         "status": "Կարգավիճակ",
@@ -471,7 +481,7 @@
       "weight": "Քաշ (գ)",
       "ptWeight": "Պլատինի քաշ (գ)",
       "pdWeight": "Պալադիումի քաշ (գ)",
-      "rhWeight": "Ռոդիումի քաշ (գ)",
+      "rhodiumWeight": "Ռոդիումի քաշ (գ)",
       "enterValidWeight": "Մուտքագրեք վավեր քաշ",
       "enabled": "Միացված"
     },
@@ -898,6 +908,9 @@
     "acceptAndPurchase": "Գնել",
     "search": "Որոնել հաճախորդ",
     "searchByCountryCode": "Որոնել ըստ կոդի",
+    "fullName": "Ամբողջական անուն",
+    "fullNamePlaceholder": "Մուտքագրեք անունը",
+    "gender": "Սեռ",
     "clientType": {
       "label": "Հաճախորդի տեսակ",
       "regular": "Սովորական"
@@ -914,15 +927,20 @@
     "error": {
       "failedToSearch": "Հաճախորդ որոնելը ձախողվեց",
       "missingData": "Տվյալները բացակայում են"
+    },
+    "info": {
+      "newCustomer": "Հաճախորդը չի գտնվել։ Դուք կարող եք գրանցել նոր հաճախորդ:"
     }
   },
   "liveMarketPrices": {
     "title": "Շուկայական գներ",
     "live": "ՈՒՂՂԱԿԻ",
+    "exchangeRate": "Փոխարժեք",
     "platinum": "Պլատին",
     "palladium": "Պալադիում",
     "rhodium": "Ռոդիում",
     "source": "Kitco",
+    "bankSource": "Փոխարժեք (USD / AMD)",
     "loading": "Բեռնվում է...",
     "updated": "Թարմացվել է {{time}}"
   },
@@ -990,9 +1008,12 @@
       "phone": "Հեռախոս",
       "phonePlaceholder": "Ավելացնել հեռախոսահամար",
       "fullName": "Ամբողջական անուն",
+      "fullNamePlaceholder": "Մուտքագրեք անունը",
+      "gender": "Սեռ",
       "customerType": "Հաճախորդի տեսակ",
       "selectCustomerType": "Ընտրեք հաճախորդի տեսակ",
-      "allTypes": "Բոլոր տեսակները"
+      "allTypes": "Բոլոր տեսակները",
+      "notes": "Նշումներ"
     },
     "validation": {
       "phoneRequired": "Հեռախոսահամարը պարտադիր է",

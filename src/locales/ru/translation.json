@@ -31,10 +31,20 @@
     "next": "Следующая",
     "page": "Страница",
     "of": "из",
+    "close": "Закрыть",
     "areYouSure": "Вы уверены, что хотите продолжить?",
     "loading": "Загрузка...",
     "noData": "Данные отсутствуют",
-    "select": "Выберите"
+    "select": "Выберите",
+    "apply": "Применить",
+    "gender": {
+      "unknown": "Неизвестно",
+      "male": "Мужской",
+      "female": "Женский"
+    },
+    "error": {
+      "missingData": "Отсутствуют необходимые данные (ID кассы)"
+    }
   },
   "currencies": {
     "USD": "Доллар США",
@@ -58,7 +68,7 @@
       "offerIncreaseOptions": "Варианты увеличения предложения",
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
-      "metalRates": "Металлические ставки",
+      "metalRates": "Курсы металлов",
       "catalystBuckets": "Катализаторные баки",
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
@@ -68,7 +78,7 @@
   "offers": {
     "selectShop": "Выберите магазин",
     "shop": "Магазин",
-    "addOption": "Добавить вариант",
+    "addOption": "Добавить",
     "addNew": "Добавить новый",
     "editOption": "Редактировать вариант",
     "deleteOption": "Удалить вариант",
@@ -155,7 +165,7 @@
       "userCreated": "Пользователь успешно создан"
     },
     "error": {
-      "failedToCreate": "Не удалось создать пользователь"
+      "failedToCreate": "Не удалось создать пользователя"
     }
   },
   "shops": {
@@ -229,9 +239,9 @@
         "powderBatchId": "ID партии порошка",
         "remainingPowderKg": "Остаток порошка (кг)",
         "remainingCostAmd": "Остаточная стоимость (AMD)",
-        "remainingPt_g": "Остаток Pt (г)",
-        "remainingPd_g": "Остаток Pd (г)",
-        "remainingRh_g": "Остаток Rh (г)",
+        "remainingPt_g": "Pt (г)",
+        "remainingPd_g": "Pd (г)",
+        "remainingRh_g": "Rh (г)",
         "initialPowderKg": "Начальный порошок (кг)",
         "initialCostAmd": "Начальная стоимость (AMD)",
         "status": "Статус",
@@ -482,7 +492,7 @@
       "weight": "Вес",
       "ptWeight": "Вес платины",
       "pdWeight": "Вес палладия",
-      "rhodiumWeight": "Вес родия",
+      "rhWeight": "Вес родия",
       "status": "Статус",
       "active": "Активен",
       "inactive": "Неактивен"
@@ -544,7 +554,7 @@
   "cashRegisters": {
     "addCashRegister": "Добавить кассовый аппарат",
     "editCashRegister": "Редактировать кассовый аппарат",
-    "fetchingBalance": "Загрузка...",
+    "fetchingBalance": "Загрузка баланса...",
     "form": {
       "shop": "Магазин",
       "selectShop": "Выберите магазин",
@@ -605,7 +615,7 @@
       "columns": {
         "openedAt": "Открыт в",
         "closedAt": "Закрыт в",
-        "intakeCount": "Операции",
+        "intakeCount": "Кол-во заявок",
         "totalPurchases": "Всего покупок",
         "cashIn": "Наличные вх.",
         "cashOut": "Наличные исх.",
@@ -620,8 +630,8 @@
         "finalDiff": "Итоговая разница"
       },
       "filters": {
-        "fromDate": "От",
-        "toDate": "До",
+        "fromDate": "С даты",
+        "toDate": "По дату",
         "selectFromDate": "Выберите дату начала",
         "selectToDate": "Выберите дату окончания"
       }
@@ -676,7 +686,7 @@
       },
       "summary": {
         "title": "Сводка по порошку",
-        "button": "Показать сводку",
+        "button": "Сводка",
         "tooltip": "Показать общий порошок и металлы по всем партиям",
         "empty": "Нет доступных сводных данных.",
         "totalPowderKg": "Всего порошка (кг)",
@@ -704,11 +714,11 @@
         "pd": "Палладий (Pd)",
         "rh": "Родий (Rh)",
         "individualIntakes": "Отдельные заявки",
-        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация о товарах доступна в сводке партии выше."
+        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация доступна в сводке партии выше."
       },
       "filters": {
-        "fromDate": "От",
-        "toDate": "До",
+        "fromDate": "С даты",
+        "toDate": "По дату",
         "cashRegisterId": "ID кассового аппарата",
         "selectFromDate": "Выберите дату начала",
         "selectToDate": "Выберите дату окончания",
@@ -898,6 +908,9 @@
     "acceptAndPurchase": "Купить",
     "search": "Найти клиента",
     "searchByCountryCode": "Поиск по коду",
+    "fullName": "ФИО",
+    "fullNamePlaceholder": "Введите полное имя",
+    "gender": "Пол",
     "clientType": {
       "label": "Тип клиента",
       "regular": "Обычный"
@@ -914,15 +927,20 @@
     "error": {
       "failedToSearch": "Не удалось найти клиента",
       "missingData": "Необходимые данные отсутствуют"
+    },
+    "info": {
+      "newCustomer": "Клиент не найден. Вы можете зарегистрировать нового."
     }
   },
   "liveMarketPrices": {
-    "title": "Рыночные цены в реальном времени",
+    "title": "Рыночные цены",
     "live": "В ЭФИРЕ",
+    "exchangeRate": "Курс валют",
     "platinum": "Платина",
     "palladium": "Палладий",
     "rhodium": "Родий",
     "source": "Kitco",
+    "bankSource": "Курс (USD / AMD)",
     "loading": "Загрузка...",
     "updated": "Обновлено {{time}}"
   },
@@ -963,15 +981,15 @@
     "extractionWeight": "Вес извлечения (кг)",
     "shopId": "ID магазина:",
     "username": "Имя пользователя:",
-    "cashRegisterName": "Имя кассы:"
+    "cashRegisterName": "ID кассы:"
   },
   "operatorPage": {
-    "title": "Операторский терминал",
+    "title": "Терминал оператора",
     "languageLoading": "Загрузка языков...",
     "openSession": "Открыть смену",
     "closeSession": "Закрыть смену",
     "cashAmount": "Наличные в кассе",
-    "cashAmountPlaceholder": "Введите сумму наличных",
+    "cashAmountPlaceholder": "Введите текущую сумму наличных",
     "success": {
       "sessionOpened": "Смена успешно открыта",
       "sessionClosed": "Смена успешно закрыта",
@@ -979,20 +997,23 @@
     }
   },
   "customers": {
-    "createOrGet": "Получить клиента",
+    "createOrGet": "Найти клиента",
     "createOrGetButton": "Поиск клиента",
     "editCustomer": "Редактировать клиента",
     "customersList": "Список клиентов",
     "loading": "Загрузка клиентов...",
     "emptyState": "Клиенты не найдены.",
-    "createCustomer": "Создать Клиент",
+    "createCustomer": "Создать клиента",
     "form": {
       "phone": "Телефон",
       "phonePlaceholder": "Добавить номер телефона",
-      "fullName": "Полное имя",
+      "fullName": "ФИО",
+      "fullNamePlaceholder": "Введите ФИО",
+      "gender": "Пол",
       "customerType": "Тип клиента",
       "selectCustomerType": "Выберите тип клиента",
-      "allTypes": "Все типы"
+      "allTypes": "Все типы",
+      "notes": "Заметки"
     },
     "validation": {
       "phoneRequired": "Номер телефона обязателен",
@@ -1007,12 +1028,12 @@
     },
     "success": {
       "customerCreated": "Клиент успешно создан или получен",
-      "customerUpdated": "Клиент успешно обновлен"
+      "customerUpdated": "Тип клиента успешно обновлен"
     },
     "error": {
       "failedToLoad": "Не удалось загрузить клиентов",
-      "failedToCreate": "Не удалось создать или получить клиента",
-      "failedToUpdate": "Не удалось обновить клиента"
+      "failedToCreate": "Не удалось создать или найти клиента",
+      "failedToUpdate": "Не удалось обновить данные клиента"
     }
   }
 }

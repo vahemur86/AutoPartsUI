@@ -1,3 +1,4 @@
+import type { MouseEvent } from "react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 // ui-kit
@@ -12,48 +13,50 @@ export const getCustomerColumns = ({
   onEdit,
   t,
 }: {
-  onEdit: (
-    customer: Customer,
-    e: React.MouseEvent<HTMLElement>,
-  ) => void;
+  onEdit: (customer: Customer, e: MouseEvent<HTMLElement>) => void;
   t: (key: string) => string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): ColumnDef<Customer, any>[] => [
   columnHelper.accessor("id", {
     header: t("customers.columns.id"),
+    cell: (info) => info.getValue(),
   }),
+
   columnHelper.accessor("phone", {
     header: t("customers.columns.phone"),
+    cell: (info) => info.getValue() || "-",
   }),
-  columnHelper.accessor("customerType", {
+
+  columnHelper.accessor("fullName", {
+    header: t("customers.form.fullName"),
+    cell: (info) => info.getValue() || "-",
+  }),
+
+  columnHelper.accessor("customerType.code", {
+    id: "customerType",
     header: t("customers.columns.customerType"),
-    cell: (info) => {
-      const customerType = info.getValue();
-      return customerType?.code || "-";
-    },
+    cell: (info) => info.getValue() || "-",
   }),
-  columnHelper.accessor("customerType", {
+
+  columnHelper.accessor("customerType.bonusPercent", {
     id: "bonusPercent",
     header: t("customers.columns.bonusPercent"),
     cell: (info) => {
-      const customerType = info.getValue();
-      return customerType?.bonusPercent !== undefined
-        ? `${customerType.bonusPercent}%`
-        : "-";
+      const value = info.getValue();
+      return value !== undefined ? `${value * 100}%` : "-";
     },
   }),
-  columnHelper.accessor("customerType", {
+
+  columnHelper.accessor("customerType.isActive", {
     id: "isActive",
     header: t("customers.columns.isActive"),
     cell: (info) => {
-      const customerType = info.getValue();
-      return customerType?.isActive !== undefined
-        ? customerType.isActive
-          ? t("common.active")
-          : t("common.inactive")
-        : "-";
+      const isActive = info.getValue();
+      if (isActive === undefined) return "-";
+      return isActive ? t("common.active") : t("common.inactive");
     },
   }),
+
   columnHelper.display({
     id: "actions",
     header: t("common.actions"),
@@ -70,4 +73,3 @@ export const getCustomerColumns = ({
     ),
   }),
 ];
-

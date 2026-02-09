@@ -2,92 +2,80 @@ import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
+// icons
+import { Plus, Filter, RotateCcw } from "lucide-react";
+
 // ui-kit
-import { DataTable, Button, TextField, Select } from "@/ui-kit";
+import { DataTable, Button, Select, IconButton } from "@/ui-kit";
 
 // components
-import { SectionHeader } from "@/components/common/SectionHeader";
-
-// services
-import {
-  getOrCreateCustomer,
-  getCustomers,
-  updateCustomerType,
-  type GetCustomersParams,
-} from "@/services/customers";
+import { SectionHeader } from "@/components/common";
+import { CustomersDropdown } from "./customersActions/CustomersDropdown";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
-
-// types
-import type { Customer } from "@/types/operator";
+import {
+  fetchCustomers,
+  createCustomer,
+  updateCustomerType,
+} from "@/store/slices/customersSlice";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getCustomerColumns } from "./columns";
+
+// types
+import type { Customer, CreateCustomerRequest } from "@/types/operator";
 
 // styles
 import styles from "./Customers.module.css";
-
-// columns
-import { getCustomerColumns } from "./columns";
 
 const PAGE_SIZE = 20;
 
 export const Customers = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  // Redux Selectors
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
+  const {
+    items: customers = [],
+    isLoading,
+    isSubmitting,
+    totalItems = 0,
+  } = useAppSelector((state) => state.customers);
 
-  // State management
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Edit modal state
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // UI State
+  const [isAddDropdownOpen, setIsAddDropdownOpen] = useState<boolean>(false);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] =
+    useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-  const [selectedCustomerTypeId, setSelectedCustomerTypeId] = useState("");
+  const [selectedCustomerTypeId, setSelectedCustomerTypeId] =
+    useState<string>("");
 
-  // Filter and pagination state
-  const [filterPhone, setFilterPhone] = useState("");
-  const [filterCustomerTypeId, setFilterCustomerTypeId] = useState("");
-  const [currentPage, setCurrentPage] = useState(0); // 0-indexed for DataTable
-  const [totalItems, setTotalItems] = useState(0);
+  // Filters State
+  const [filterPhone, setFilterPhone] = useState<string>("");
+  const [filterCustomerTypeId, setFilterCustomerTypeId] = useState<string>("");
+  const [filterGender, setFilterGender] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
-  const anchorRef = useRef<HTMLElement | null>(null);
+  const addBtnRef = useRef<HTMLDivElement>(null);
+  const filterBtnRef = useRef<HTMLDivElement>(null);
 
-  const loadCustomers = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const params: GetCustomersParams = {
-        page: currentPage + 1, // API uses 1-indexed pages
+  const loadCustomers = useCallback(() => {
+    dispatch(
+      fetchCustomers({
+        page: currentPage + 1,
         pageSize: PAGE_SIZE,
-      };
-
-      if (filterPhone.trim()) {
-        params.phone = filterPhone.trim();
-      }
-
-      if (filterCustomerTypeId) {
-        params.customerTypeId = parseInt(filterCustomerTypeId);
-      }
-
-      const response = await getCustomers(params);
-
-      if (Array.isArray(response)) {
-        setCustomers(response);
-        setTotalItems(response.length);
-      } else {
-        setCustomers(response.items || []);
-        setTotalItems(response.totalItems || 0);
-      }
-    } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error, t("customers.error.failedToLoad")));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, filterPhone, filterCustomerTypeId, t]);
+        phone: filterPhone.trim() || undefined,
+        customerTypeId: filterCustomerTypeId
+          ? parseInt(filterCustomerTypeId)
+          : undefined,
+        gender: filterGender !== null ? filterGender : undefined,
+      }),
+    );
+  }, [currentPage, filterPhone, filterCustomerTypeId, filterGender, dispatch]);
 
   useEffect(() => {
     dispatch(fetchCustomerTypes());
@@ -97,263 +85,230 @@ export const Customers = () => {
     loadCustomers();
   }, [loadCustomers]);
 
-  const handleCreateCustomer = useCallback(async () => {
-    if (!filterPhone.trim()) {
-      return;
-    }
-
-    setIsSubmitting(true);
+  const handleCreateSubmit = async (data: CreateCustomerRequest) => {
     try {
-      const customer = await getOrCreateCustomer(filterPhone.trim());
-
+      await dispatch(createCustomer({ data })).unwrap();
       toast.success(t("customers.success.customerCreated"));
-
-      setCustomers((prev) => {
-        const existingIndex = prev.findIndex((c) => c.id === customer.id);
-        if (existingIndex >= 0) {
-          const updated = [...prev];
-          updated[existingIndex] = customer;
-          return updated;
-        }
-        return [customer, ...prev];
-      });
-
-      await loadCustomers();
-    } catch (error: unknown) {
-      toast.error(
-        getApiErrorMessage(error, t("customers.error.failedToCreate"))
-      );
-    } finally {
-      setIsSubmitting(false);
+      setIsAddDropdownOpen(false);
+      loadCustomers();
+    } catch (error) {
+      console.error("Failed to create customer:", error);
     }
-  }, [filterPhone, loadCustomers, t]);
+  };
 
-  const handleOpenEdit = useCallback(
-    (customer: Customer, e: React.MouseEvent<HTMLElement>) => {
-      anchorRef.current = e.currentTarget;
-      setEditingCustomer(customer);
-      setSelectedCustomerTypeId(customer.customerTypeId?.toString() || "");
-      setIsEditModalOpen(true);
-    },
-    []
-  );
-
-  const handleCloseEdit = useCallback(() => {
-    setIsEditModalOpen(false);
-    setEditingCustomer(null);
-    setSelectedCustomerTypeId("");
-  }, []);
-
-  const handleSaveEdit = useCallback(async () => {
-    if (!editingCustomer || !selectedCustomerTypeId) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await updateCustomerType(
-        editingCustomer.id!,
-        parseInt(selectedCustomerTypeId)
-      );
-      toast.success(t("customers.success.customerUpdated"));
-      handleCloseEdit();
-      await loadCustomers();
-    } catch (error: unknown) {
-      toast.error(
-        getApiErrorMessage(error, t("customers.error.failedToUpdate"))
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [
-    editingCustomer,
-    selectedCustomerTypeId,
-    t,
-    handleCloseEdit,
-    loadCustomers,
-  ]);
+  const handleApplyFilters = (filters: {
+    phone: string;
+    customerTypeId: string;
+    gender: number | null;
+  }) => {
+    setFilterPhone(filters.phone);
+    setFilterCustomerTypeId(filters.customerTypeId);
+    setFilterGender(filters.gender);
+    setCurrentPage(0);
+  };
 
   const handleResetFilters = useCallback(() => {
     setFilterPhone("");
     setFilterCustomerTypeId("");
+    setFilterGender(null);
     setCurrentPage(0);
   }, []);
 
-  const handlePaginationChange = useCallback((pageIndex: number) => {
-    setCurrentPage(pageIndex);
+  const handleSaveEdit = async () => {
+    if (!editingCustomer || !selectedCustomerTypeId) return;
+    try {
+      await dispatch(
+        updateCustomerType({
+          customerId: editingCustomer.id,
+          customerTypeId: parseInt(selectedCustomerTypeId),
+        }),
+      ).unwrap();
+      toast.success(t("customers.success.customerUpdated"));
+      setIsEditModalOpen(false);
+      setEditingCustomer(null);
+      loadCustomers();
+    } catch (error) {
+      console.error("Failed to update customer type:", error);
+    }
+  };
+
+  const handleOpenEdit = useCallback((customer: Customer) => {
+    setEditingCustomer(customer);
+    setSelectedCustomerTypeId(customer.customerTypeId.toString());
+    setIsEditModalOpen(true);
   }, []);
-
-  const handlePhoneFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFilterPhone(e.target.value);
-      setCurrentPage(0);
-    },
-    []
-  );
-
-  const handleTypeFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setFilterCustomerTypeId(e.target.value);
-      setCurrentPage(0);
-    },
-    []
-  );
 
   const columns = useMemo(
     () => getCustomerColumns({ onEdit: handleOpenEdit, t }),
-    [handleOpenEdit, t]
+    [handleOpenEdit, t],
   );
 
-  const hasCustomers = customers.length > 0;
-  const hasPhoneFilter = filterPhone.trim().length > 0;
-  const showCreateButton = !hasCustomers && hasPhoneFilter && !isLoading;
+  const hasActiveFilters =
+    filterPhone !== "" || filterCustomerTypeId !== "" || filterGender !== null;
 
   return (
     <>
       <SectionHeader title={t("header.customers")} />
 
       <div className={styles.customersContainer}>
-        {/* Filters */}
-        <div className={styles.filtersSection}>
-          <div className={styles.filtersHeader}>
-            <h3 className={styles.filtersTitle}>{t("common.filters")}</h3>
-            <Button
-              variant="secondary"
-              size="small"
-              onClick={handleResetFilters}
-            >
-              {t("common.reset")}
-            </Button>
-          </div>
-          <div className={styles.filtersContent}>
-            <TextField
-              label={t("customers.form.phone")}
-              placeholder={t("customers.form.phonePlaceholder")}
-              value={filterPhone}
-              onChange={handlePhoneFilterChange}
-            />
-            <Select
-              label={t("customers.form.customerType")}
-              placeholder={t("customers.form.selectCustomerType")}
-              value={filterCustomerTypeId}
-              onChange={handleTypeFilterChange}
-            >
-              <option value="">{t("customers.form.allTypes")}</option>
-              {customerTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.code}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
-
-        {/* Edit Modal */}
-        {isEditModalOpen && editingCustomer && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-              <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>
-                  {t("customers.editCustomer")}
-                </h3>
-                <button
-                  className={styles.modalClose}
-                  onClick={handleCloseEdit}
-                  aria-label={t("common.close")}
-                >
-                  ×
-                </button>
-              </div>
-              <div className={styles.modalBody}>
-                <div className={styles.modalInfo}>
-                  <p>
-                    <strong>{t("customers.form.phone")}:</strong>{" "}
-                    {editingCustomer.phone}
-                  </p>
-                  {editingCustomer.fullName && (
-                    <p>
-                      <strong>{t("customers.form.fullName")}:</strong>{" "}
-                      {editingCustomer.fullName}
-                    </p>
-                  )}
-                </div>
-                <Select
-                  label={t("customers.form.customerType")}
-                  placeholder={t("customers.form.selectCustomerType")}
-                  value={selectedCustomerTypeId}
-                  onChange={(e) => setSelectedCustomerTypeId(e.target.value)}
-                  error={!selectedCustomerTypeId}
-                  helperText={
-                    !selectedCustomerTypeId
-                      ? t("customers.validation.customerTypeRequired")
-                      : ""
-                  }
-                  disabled={isSubmitting}
-                >
-                  {customerTypes.map((type) => (
-                    <option key={type.id} value={type.id}>
-                      {type.code}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className={styles.modalActions}>
-                <Button
-                  variant="secondary"
-                  onClick={handleCloseEdit}
-                  disabled={isSubmitting}
-                >
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSaveEdit}
-                  disabled={isSubmitting || !selectedCustomerTypeId}
-                >
-                  {t("common.save")}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Table */}
         <div className={styles.tableSection}>
           <div className={styles.tableHeader}>
             <h3 className={styles.tableTitle}>
               {t("customers.customersList")}
             </h3>
+            <div className={styles.headerActions}>
+              {hasActiveFilters && (
+                <div
+                  className={styles.addButtonContainer}
+                  onClick={handleResetFilters}
+                >
+                  <IconButton
+                    ariaLabel="Reset filters"
+                    variant="secondary"
+                    size="small"
+                    icon={<RotateCcw size={12} color="#fff" />}
+                  />
+                  <span className={styles.addButtonLabel}>
+                    {t("common.reset")}
+                  </span>
+                </div>
+              )}
+
+              <div
+                ref={filterBtnRef}
+                className={styles.addButtonContainer}
+                onClick={() => setIsFilterDropdownOpen(true)}
+              >
+                <IconButton
+                  ariaLabel="Open filters"
+                  variant="secondary"
+                  size="small"
+                  icon={<Filter size={12} color="#fff" />}
+                />
+                <span className={styles.addButtonLabel}>
+                  {t("common.filters")}
+                </span>
+              </div>
+
+              <div
+                ref={addBtnRef}
+                className={styles.addButtonContainer}
+                onClick={() => setIsAddDropdownOpen(true)}
+              >
+                <IconButton
+                  ariaLabel="Add customer"
+                  variant="primary"
+                  size="small"
+                  icon={<Plus size={12} color="#0e0f11" />}
+                />
+                <span className={styles.addButtonLabel}>
+                  {t("offers.addOption")}
+                </span>
+              </div>
+            </div>
           </div>
+
           <div className={styles.tableWrapper}>
             {isLoading ? (
               <div className={styles.loading}>{t("customers.loading")}</div>
-            ) : !hasCustomers ? (
-              <div className={styles.emptyState}>
-                <p>{t("customers.emptyState")}</p>
-                {showCreateButton && (
-                  <Button
-                    variant="primary"
-                    onClick={handleCreateCustomer}
-                    disabled={isSubmitting}
-                  >
-                    {t("customers.createCustomer")}
-                  </Button>
-                )}
-              </div>
             ) : (
               <DataTable
-                data={customers}
+                data={customers ?? []}
                 columns={columns}
                 pageSize={PAGE_SIZE}
-                manualPagination={true}
-                pageCount={Math.ceil(totalItems / PAGE_SIZE)}
+                manualPagination
+                pageCount={Math.ceil((totalItems ?? 0) / PAGE_SIZE)}
                 pageIndex={currentPage}
-                onPaginationChange={handlePaginationChange}
+                frozenConfig={{
+                  right: ["actions"],
+                }}
+                onPaginationChange={setCurrentPage}
               />
             )}
           </div>
         </div>
       </div>
+
+      <CustomersDropdown
+        type="add"
+        open={isAddDropdownOpen}
+        anchorRef={addBtnRef}
+        onOpenChange={setIsAddDropdownOpen}
+        onSave={handleCreateSubmit}
+        isSubmitting={isSubmitting}
+      />
+
+      <CustomersDropdown
+        type="filter"
+        open={isFilterDropdownOpen}
+        anchorRef={filterBtnRef}
+        onOpenChange={setIsFilterDropdownOpen}
+        customerTypes={customerTypes}
+        filters={{
+          phone: filterPhone,
+          customerTypeId: filterCustomerTypeId,
+          gender: filterGender,
+        }}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
+      {isEditModalOpen && editingCustomer && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>
+                {t("customers.editCustomer")}
+              </h3>
+              <button
+                className={styles.modalClose}
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.modalInfo}>
+                <p>
+                  <strong>{t("customers.form.phone")}:</strong>{" "}
+                  {editingCustomer.phone}
+                </p>
+                <p>
+                  <strong>{t("customers.form.fullName")}:</strong>{" "}
+                  {editingCustomer.fullName || "-"}
+                </p>
+              </div>
+              <Select
+                label={t("customers.form.customerType")}
+                value={selectedCustomerTypeId}
+                onChange={(e) => setSelectedCustomerTypeId(e.target.value)}
+              >
+                {customerTypes.map((type) => (
+                  <option key={type.id} value={type.id.toString()}>
+                    {type.code}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className={styles.modalActions}>
+              <Button
+                variant="secondary"
+                onClick={() => setIsEditModalOpen(false)}
+                disabled={isSubmitting}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSaveEdit}
+                disabled={isSubmitting || !selectedCustomerTypeId}
+              >
+                {t("common.save")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

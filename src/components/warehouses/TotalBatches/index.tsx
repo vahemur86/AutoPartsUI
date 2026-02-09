@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -42,7 +42,6 @@ export const TotalBatches = () => {
   >([]);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
-  const focusedInputRef = useRef<number | null>(null);
 
   useEffect(() => {
     dispatch(fetchWarehouses());
@@ -138,16 +137,7 @@ export const TotalBatches = () => {
     }
   };
 
-  const columns = useMemo(
-    () =>
-      getInventoryLotColumns({
-        onKgChange: handleKgChange,
-        onAdd: handleAdd,
-        selectedKg,
-        focusedInputRef,
-      }),
-    [selectedKg, handleKgChange, handleAdd],
-  );
+  const columns = useMemo(() => getInventoryLotColumns(), []);
 
   const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const warehouseId = Number(e.target.value);
@@ -199,9 +189,17 @@ export const TotalBatches = () => {
               data={inventoryLots}
               columns={columns}
               pageSize={10}
+              meta={{
+                selectedKg,
+                onKgChange: handleKgChange,
+                onAdd: handleAdd,
+              }}
               getRowClassName={(row) =>
                 checkIsToday(row.createdAt) ? styles.todayRow : ""
               }
+              frozenConfig={{
+                right: ["actions"],
+              }}
             />
             <div className={styles.createSaleSection}>
               <Button

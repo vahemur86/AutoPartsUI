@@ -31,10 +31,20 @@
     "next": "Next",
     "page": "Page",
     "of": "of",
+    "close": "Close",
     "areYouSure": "Are you sure you want to proceed?",
     "loading": "Loading...",
     "noData": "No data available.",
-    "select": "Select"
+    "select": "Select",
+    "apply": "Apply",
+    "gender": {
+      "unknown": "Unknown",
+      "male": "Male",
+      "female": "Female"
+    },
+    "error": {
+      "missingData": "Necessary data is missing (Cash Register ID)"
+    }
   },
   "currencies": {
     "USD": "US Dollar",
@@ -68,7 +78,7 @@
   "offers": {
     "selectShop": "Select shop",
     "shop": "Shop",
-    "addOption": "Add option",
+    "addOption": "Add",
     "addNew": "Add New",
     "editOption": "Edit Option",
     "deleteOption": "Delete option",
@@ -229,9 +239,9 @@
         "powderBatchId": "Powder Batch ID",
         "remainingPowderKg": "Remaining Powder (kg)",
         "remainingCostAmd": "Remaining Cost (AMD)",
-        "remainingPt_g": "Remaining Pt (g)",
-        "remainingPd_g": "Remaining Pd (g)",
-        "remainingRh_g": "Remaining Rh (g)",
+        "remainingPt_g": "Pt (g)",
+        "remainingPd_g": "Pd (g)",
+        "remainingRh_g": "Rh (g)",
         "initialPowderKg": "Initial Powder (kg)",
         "initialCostAmd": "Initial Cost (AMD)",
         "status": "Status",
@@ -899,6 +909,9 @@
     "acceptAndPurchase": "Purchase",
     "search": "Search customer",
     "searchByCountryCode": "Search by code",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter full name",
+    "gender": "Gender",
     "clientType": {
       "label": "Client Type",
       "regular": "Regular"
@@ -915,15 +928,20 @@
     "error": {
       "failedToSearch": "Failed to search customer",
       "missingData": "Missing required data"
+    },
+    "info": {
+      "newCustomer": "Customer not found. You can register a new one."
     }
   },
   "liveMarketPrices": {
     "title": "Live Market Prices",
     "live": "LIVE",
+    "exchangeRate": "Exchange Rate",
     "platinum": "Platinum",
     "palladium": "Palladium",
     "rhodium": "Rhodium",
     "source": "Kitco",
+    "bankSource": "Rate (USD / AMD)",
     "loading": "Loading...",
     "updated": "Updated {{time}}"
   },
@@ -991,9 +1009,12 @@
       "phone": "Phone",
       "phonePlaceholder": "Add phone number",
       "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter full name",
+      "gender": "Gender",
       "customerType": "Customer Type",
       "selectCustomerType": "Select customer type",
-      "allTypes": "All Types"
+      "allTypes": "All Types",
+      "notes": "Notes"
     },
     "validation": {
       "phoneRequired": "Phone number is required",
@@ -1007,8 +1028,8 @@
       "isActive": "Status"
     },
     "success": {
-      "customerCreated": "Customer created or retrieved successfully",
-      "customerUpdated": "Customer updated successfully"
+      "customerCreated": "Customer created successfully",
+      "customerUpdated": "Customer type updated successfully"
     },
     "error": {
       "failedToLoad": "Failed to load customers",

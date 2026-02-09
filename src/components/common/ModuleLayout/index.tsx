@@ -1,11 +1,14 @@
+import type { FC } from "react";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
+
+// icons
 import type { LucideIcon } from "lucide-react";
 
 // ui-kit
 import { Tab, Stepper, type StepperStep } from "@/ui-kit";
 
 // components
-import { SectionHeader } from "@/components/common/SectionHeader";
+import { SectionHeader } from "../SectionHeader";
 
 // styles
 import styles from "./ModuleLayout.module.css";
@@ -24,12 +27,12 @@ interface ModuleLayoutProps {
   defaultIcon: LucideIcon;
 }
 
-export const ModuleLayout = ({
+export const ModuleLayout: FC<ModuleLayoutProps> = ({
   basePath,
   navigationItems,
   defaultTitle,
   defaultIcon: DefaultIcon,
-}: ModuleLayoutProps) => {
+}) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 

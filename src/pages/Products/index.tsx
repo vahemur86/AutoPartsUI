@@ -18,7 +18,7 @@ import { Plus } from "lucide-react";
 import { IconButton } from "@/ui-kit";
 
 // components
-import { SectionHeader } from "@/components/common/SectionHeader";
+import { SectionHeader } from "@/components/common";
 import { AddProductDropdown } from "./ProductActions/AddProductDropdown";
 import { EditProductDropdown } from "./ProductActions/EditProductDropdown";
 import { ProductsContent } from "./ProductsContent";

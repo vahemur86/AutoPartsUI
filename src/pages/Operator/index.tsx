@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -33,6 +33,11 @@ import {
 } from "@/store/slices/cash/sessionsSlice";
 import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchOfferOptions } from "@/store/slices/offerOptionsSlice";
+import {
+  fetchExchangeRates,
+  clearExchangeRatesState,
+} from "@/store/slices/exchangeRatesSlice";
+import { clearCustomersState } from "@/store/slices/customersSlice";
 
 // ui-kit
 import { ConfirmationModal } from "@/ui-kit";
@@ -84,6 +89,10 @@ export const OperatorPage = () => {
   const { options: offerOptions } = useAppSelector(
     (state) => state.offerOptions,
   );
+  const { exchangeRates } = useAppSelector((state) => state.exchangeRates);
+  const { items: searchedCustomers } = useAppSelector(
+    (state) => state.customers,
+  );
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
@@ -96,17 +105,57 @@ export const OperatorPage = () => {
     showCashAmount: false,
     isCloseSessionModalOpen: false,
   });
+
   const [recalculationsAmount, setRecalculationsAmount] = useState(0);
   const [initialOfferPrice, setInitialOfferPrice] = useState<number | null>(
     null,
   );
+
   const [formData, setFormData] = useState({
     powderWeight: "0",
     platinumPrice: "0",
     palladiumPrice: "0",
     rhodiumPrice: "0",
-    customerPhone: "",
+    customer: {
+      phone: "",
+      fullName: "",
+      gender: 0,
+      notes: "",
+    },
   });
+
+  useEffect(() => {
+    const searchedCustomerType = searchedCustomers[0]?.customerType?.code;
+    const linkedCustomerType = intake?.customer?.customerType?.code;
+
+    const currentType = (
+      linkedCustomerType || searchedCustomerType
+    )?.toLowerCase();
+
+    const crId = userData?.cashRegisterId;
+
+    if (crId && currentType && currentType !== "standard") {
+      dispatch(
+        fetchExchangeRates({
+          isActive: true,
+          cashRegisterId: crId,
+        }),
+      );
+    } else {
+      dispatch(clearExchangeRatesState());
+    }
+  }, [
+    dispatch,
+    intake?.customer?.customerType?.code,
+    searchedCustomers,
+    userData?.cashRegisterId,
+  ]);
+
+  const usdAmdRate = useMemo(() => {
+    return exchangeRates.find(
+      (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
+    )?.rate;
+  }, [exchangeRates]);
 
   useEffect(() => {
     if (intake?.offerPrice && initialOfferPrice === null)
@@ -167,33 +216,48 @@ export const OperatorPage = () => {
       platinumPrice: "0",
       palladiumPrice: "0",
       rhodiumPrice: "0",
-      customerPhone: "",
+      customer: { phone: "", fullName: "", gender: 0, notes: "" },
     });
     setUiState((p) => ({ ...p, hasTriedSubmit: false, showCashAmount: false }));
     setInitialOfferPrice(null);
     setRecalculationsAmount(0);
+
     dispatch(clearIntakeState());
+    dispatch(clearCustomersState());
+    dispatch(clearExchangeRatesState());
   }, [dispatch]);
 
   const handleSubmit = async () => {
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
+
     const isValid =
-      !isNaN(Number(formData.powderWeight)) && formData.customerPhone.trim();
+      !isNaN(Number(formData.powderWeight)) &&
+      formData.customer.phone.length > 3 &&
+      !isNaN(Number(formData.platinumPrice)) &&
+      !isNaN(Number(formData.palladiumPrice)) &&
+      !isNaN(Number(formData.rhodiumPrice));
+
     if (!isValid) return;
 
     setUiState((p) => ({ ...p, isSubmitting: true }));
     try {
       const crId = userData?.cashRegisterId;
+
       const response = await dispatch(
         addIntake({
           intake: {
-            currencyCode: "USD",
+            shopId: userData?.shopId,
+            customer: {
+              phone: formData.customer.phone,
+              fullName: formData.customer.fullName,
+              gender: formData.customer.gender,
+              notes: formData.customer.notes,
+            },
+            powderWeightTotal: Number(formData.powderWeight),
             ptWeight: Number(formData.platinumPrice),
             pdWeight: Number(formData.palladiumPrice),
             rhWeight: Number(formData.rhodiumPrice),
-            powderWeightTotal: Number(formData.powderWeight),
-            customerPhone: formData.customerPhone,
-            shopId: userData?.shopId,
+            currencyCode: "USD",
           },
           cashRegisterId: crId,
         }),
@@ -217,21 +281,27 @@ export const OperatorPage = () => {
       const crId = userData?.cashRegisterId;
       if (!crId) return;
 
-      if (action === "open") {
-        await dispatch(openSession(crId)).unwrap();
-        dispatch(fetchRegisterSession(crId));
-      } else if (sessionDetails?.sessionId) {
-        await dispatch(
-          closeSession({
-            sessionId: sessionDetails.sessionId,
-            cashRegisterId: crId,
-          }),
-        ).unwrap();
-        dispatch(resetSessionState());
-        setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }));
+      try {
+        if (action === "open") {
+          await dispatch(openSession(crId)).unwrap();
+          dispatch(fetchRegisterSession(crId));
+          toast.success(t("operatorPage.success.sessionOpened"));
+        } else if (sessionDetails?.sessionId) {
+          await dispatch(
+            closeSession({
+              sessionId: sessionDetails.sessionId,
+              cashRegisterId: crId,
+            }),
+          ).unwrap();
+          dispatch(resetSessionState());
+          setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }));
+          toast.success(t("operatorPage.success.sessionClosed"));
+        }
+      } catch (error) {
+        console.error("Session action failed", error);
       }
     },
-    [dispatch, sessionDetails, userData?.cashRegisterId],
+    [dispatch, sessionDetails, userData?.cashRegisterId, t],
   );
 
   const displayBalance = isBalanceLoading
@@ -282,6 +352,7 @@ export const OperatorPage = () => {
             rhPricePerGram={activeMetalRate?.rhPricePerGram}
             currencyCode={activeMetalRate?.currencyCode}
             updatedAt={activeMetalRate?.effectiveFrom}
+            usdAmdRate={usdAmdRate}
           />
         </div>
 
@@ -307,11 +378,11 @@ export const OperatorPage = () => {
 
         <div className={styles.rightColumn}>
           <CustomerDetails
-            customerPhone={formData.customerPhone}
-            onPhoneChange={(v) =>
-              setFormData((p) => ({ ...p, customerPhone: v }))
+            customerData={formData.customer}
+            onCustomerChange={(customer) =>
+              setFormData((prev) => ({ ...prev, customer }))
             }
-            phoneError={uiState.hasTriedSubmit && !formData.customerPhone}
+            phoneError={uiState.hasTriedSubmit && !formData.customer.phone}
             onSuccess={handleResetForm}
           />
           <CashRegisterField

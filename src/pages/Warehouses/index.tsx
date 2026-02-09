@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 // components
-import { ModuleLayout, type NavItem } from "@/components/common/ModuleLayout";
+import { ModuleLayout, type NavItem } from "@/components/common";
 
 export const Warehouses = () => {
   const { t } = useTranslation();
