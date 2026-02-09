@@ -1,7 +1,7 @@
 import api from ".";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type {
@@ -16,14 +16,18 @@ export interface GetCustomersParams {
   gender?: number;
   page?: number;
   pageSize?: number;
+  cashRegisterId?: number;
 }
 
 export const getCustomers = async (
   params?: GetCustomersParams,
 ): Promise<CustomersResponse> => {
   try {
+    const { cashRegisterId, ...queryParams } = params || {};
+
     const response = await api.get<CustomersResponse>(`/catalyst/customers`, {
-      params,
+      params: queryParams,
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {

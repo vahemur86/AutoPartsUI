@@ -22,6 +22,7 @@ import {
   acceptIntake as acceptIntakeThunk,
 } from "@/store/slices/operatorSlice";
 import { fetchBalance } from "@/store/slices/cash/registersSlice";
+import { fetchCustomers } from "@/store/slices/customersSlice";
 
 // styles
 import styles from "../OperatorPage.module.css";
@@ -51,11 +52,23 @@ export const CustomerDetails = ({
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { intake, isLoading } = useAppSelector((state) => state.operator);
+
+  const { intake, isLoading: isIntakeLoading } = useAppSelector(
+    (state) => state.operator,
+  );
+
+  const { items: searchedCustomers, isLoading: isSearching } = useAppSelector(
+    (state) => state.customers,
+  );
 
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [isAccepting, setIsAccepting] = useState(false);
   const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
+
+  const activeCustomer = useMemo(
+    () => searchedCustomers[0],
+    [searchedCustomers],
+  );
 
   const isPhoneValid = useMemo(() => {
     if (!customerData.phone) return false;
@@ -83,25 +96,43 @@ export const CustomerDetails = ({
     if (!userDataRaw) return;
 
     try {
-      const parsed = JSON.parse(userDataRaw);
-      const cashRegisterId = Number(parsed.cashRegisterId);
+      const { cashRegisterId } = JSON.parse(userDataRaw);
 
-      if (!intake?.id || !cashRegisterId) {
-        throw new Error(t("customerDetails.error.missingData"));
-      }
-
-      await dispatch(
-        fetchIntake({ intakeId: intake.id, cashRegisterId }),
+      const response = await dispatch(
+        fetchCustomers({
+          phone: customerData.phone,
+          cashRegisterId: Number(cashRegisterId),
+        }),
       ).unwrap();
-      toast.success(t("customerDetails.success.customerFound"));
-    } catch (error: unknown) {
-      toast.error(
-        typeof error === "string"
-          ? error
-          : t("customerDetails.error.failedToSearch"),
-      );
+
+      if (response.results && response.results.length > 0) {
+        const foundCustomer = response.results[0];
+
+        onCustomerChange({
+          phone: foundCustomer.phone,
+          fullName: foundCustomer.fullName || "",
+          gender: foundCustomer.gender ?? 0,
+          notes: foundCustomer.notes || "",
+        });
+
+        toast.success(t("customerDetails.success.customerFound"));
+
+        if (intake?.id) {
+          dispatch(fetchIntake({ intakeId: intake.id, cashRegisterId }));
+        }
+      } else {
+        onCustomerChange({
+          ...customerData,
+          fullName: "",
+          gender: 0,
+          notes: "",
+        });
+        toast.info(t("customerDetails.info.newCustomer"));
+      }
+    } catch {
+      toast.error(t("customerDetails.error.failedToSearch"));
     }
-  }, [customerData.phone, isPhoneValid, t, intake?.id, dispatch]);
+  }, [customerData, isPhoneValid, t, dispatch, onCustomerChange, intake?.id]);
 
   const handleAccept = useCallback(async () => {
     setLocalHasTriedAccept(true);
@@ -123,11 +154,15 @@ export const CustomerDetails = ({
       onSuccess?.();
       setLocalHasTriedAccept(false);
     } catch {
-      /* Handled by global watcher */
+      // Handled globally
     } finally {
       setIsAccepting(false);
     }
   }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
+
+  const isGlobalLoading = isIntakeLoading || isAccepting || isSearching;
+  const isFormLocked =
+    isGlobalLoading || (!!customerData.fullName && !isSearching);
 
   return (
     <div className={styles.customerCard}>
@@ -155,7 +190,7 @@ export const CustomerDetails = ({
             }}
             onSearch={handleSearch}
             error={phoneError || (localHasTriedAccept && !isPhoneValid)}
-            disabled={isLoading || isAccepting}
+            disabled={isGlobalLoading}
           />
         </div>
 
@@ -167,18 +202,18 @@ export const CustomerDetails = ({
               onCustomerChange({ ...customerData, fullName: e.target.value })
             }
             placeholder={t("customerDetails.fullNamePlaceholder")}
-            disabled={isLoading || isAccepting}
+            disabled={isFormLocked}
           />
           <GenderSelect
             value={customerData.gender}
             onChange={(val) =>
               onCustomerChange({ ...customerData, gender: val })
             }
-            disabled={isLoading || isAccepting}
+            disabled={isFormLocked}
           />
         </div>
 
-        {intake && (
+        {activeCustomer && (
           <div className={styles.customerProfile}>
             <div className={styles.profileAvatar}>
               <User size={32} />
@@ -189,7 +224,7 @@ export const CustomerDetails = ({
                   {t("customerDetails.clientType.label")}:{" "}
                 </span>
                 <span className={styles.profileValue}>
-                  {intake.customer?.customerType?.code ?? "-"}
+                  {activeCustomer.customerType?.code ?? "-"}
                 </span>
               </div>
               <div className={styles.profileField}>
@@ -197,8 +232,8 @@ export const CustomerDetails = ({
                   {t("customerDetails.discount")}:{" "}
                 </span>
                 <span className={styles.profileValue}>
-                  {intake.customer?.customerType?.bonusPercent != null
-                    ? `${(intake.customer.customerType.bonusPercent * 100).toFixed(0)}%`
+                  {activeCustomer.customerType?.bonusPercent != null
+                    ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
                     : "0%"}
                 </span>
               </div>
@@ -212,7 +247,7 @@ export const CustomerDetails = ({
             size="small"
             fullWidth
             onClick={handleAccept}
-            disabled={isAccepting || !intake || isLoading}
+            disabled={isGlobalLoading || !intake}
           >
             <Check size={20} style={{ marginRight: "8px" }} />
             {t("customerDetails.acceptAndPurchase")}

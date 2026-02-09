@@ -851,15 +851,20 @@
     "error": {
       "failedToSearch": "Failed to search customer",
       "missingData": "Missing required data"
+    },
+    "info": {
+      "newCustomer": "Customer not found. You can register a new one."
     }
   },
   "liveMarketPrices": {
     "title": "Live Market Prices",
     "live": "LIVE",
+    "exchangeRate": "Exchange Rate",
     "platinum": "Platinum",
     "palladium": "Palladium",
     "rhodium": "Rhodium",
     "source": "Kitco",
+    "bankSource": "Rate (USD / AMD)",
     "loading": "Loading...",
     "updated": "Updated {{time}}"
   },

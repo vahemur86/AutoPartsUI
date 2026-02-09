@@ -850,15 +850,20 @@
     "error": {
       "failedToSearch": "Հաճախորդ որոնելը ձախողվեց",
       "missingData": "Տվյալները բացակայում են"
+    },
+    "info": {
+      "newCustomer": "Հաճախորդը չի գտնվել։ Դուք կարող եք գրանցել նոր հաճախորդ:"
     }
   },
   "liveMarketPrices": {
     "title": "Շուկայական գներ",
     "live": "ՈՒՂՂԱԿԻ",
+    "exchangeRate": "Փոխարժեք",
     "platinum": "Պլատին",
     "palladium": "Պալադիում",
     "rhodium": "Ռոդիում",
     "source": "Kitco",
+    "bankSource": "Փոխարժեք (USD / AMD)",
     "loading": "Բեռնվում է...",
     "updated": "Թարմացվել է {{time}}"
   },

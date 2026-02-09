@@ -850,15 +850,20 @@
     "error": {
       "failedToSearch": "Не удалось найти клиента",
       "missingData": "Необходимые данные отсутствуют"
+    },
+    "info": {
+      "newCustomer": "Клиент не найден. Вы можете зарегистрировать нового."
     }
   },
   "liveMarketPrices": {
     "title": "Рыночные цены",
     "live": "В ЭФИРЕ",
+    "exchangeRate": "Курс валют",
     "platinum": "Платина",
     "palladium": "Палладий",
     "rhodium": "Родий",
     "source": "Kitco",
+    "bankSource": "Курс (USD / AMD)",
     "loading": "Загрузка...",
     "updated": "Обновлено {{time}}"
   },
