@@ -1,16 +1,19 @@
 .dataTableContainer {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .tableWrapper {
   width: 100%;
-  border-radius: 8px;
-  overflow-x: auto;
+  flex: 1;
+  overflow: auto; 
+  position: relative;
   -webkit-overflow-scrolling: touch;
   background-color: var(--color-black-2);
+  border-radius: 8px;
 }
 
 .table {
@@ -22,12 +25,15 @@
   color: var(--color-white);
 }
 
-.tableHeader {
-  background-color: rgba(255, 255, 255, 0.04);
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--color-black-2);
 }
 
-.tableHeader .tableRow {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.tableHeader {
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .tableHeader .tableCell {
@@ -35,6 +41,18 @@
   padding: 12px 16px;
   text-align: left;
   white-space: nowrap;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.frozenCell {
+  position: sticky;
+  background-color: #1a1a1a;
+  z-index: 2;
+}
+
+.stickyHeader .frozenCell {
+  z-index: 11;
 }
 
 .headerCellContent {
@@ -49,17 +67,23 @@
 }
 
 .tableRow {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   transition: background-color 0.2s ease-in-out;
+}
+
+.tableRow .tableCell {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tableRow:hover {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+.tableRow:hover .frozenCell {
+  background-color: #262626;
+}
+
 .tableRow[data-state="expanded"] {
   background-color: rgba(255, 255, 255, 0.05);
-  border-bottom: none;
 }
 
 .tableCell {
@@ -72,11 +96,6 @@
 
 .expandedDetailRow {
   background-color: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.expandedDetailRow:hover {
-  background-color: rgba(255, 255, 255, 0.02) !important;
 }
 
 .expandedDetailContent {
@@ -130,10 +149,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 4px 12px;
+  padding: 12px; 
   color: var(--color-white);
   font-family: "Manrope", sans-serif;
   font-size: 14px;
+  background-color: var(--color-black-2);
+  flex-shrink: 0; 
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footerLeft {

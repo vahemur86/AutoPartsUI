@@ -25,51 +25,14 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
   }),
-  columnHelper.accessor("remainingPowderKg", {
-    header: i18next.t("warehouses.totalBatches.columns.remainingPowderKg"),
-    cell: (info) => `${info.getValue()} kg`,
-  }),
-  columnHelper.accessor("remainingCostAmd", {
-    header: i18next.t("warehouses.totalBatches.columns.remainingCostAmd"),
-    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
-  }),
-  columnHelper.accessor("remainingPt_g", {
-    header: i18next.t("warehouses.totalBatches.columns.remainingPt_g"),
-    cell: (info) => `${info.getValue()} g`,
-  }),
-  columnHelper.accessor("remainingPd_g", {
-    header: i18next.t("warehouses.totalBatches.columns.remainingPd_g"),
-    cell: (info) => `${info.getValue()} g`,
-  }),
-  columnHelper.accessor("remainingRh_g", {
-    header: i18next.t("warehouses.totalBatches.columns.remainingRh_g"),
-    cell: (info) => `${info.getValue()} g`,
-  }),
+
   columnHelper.accessor("initialPowderKg", {
     header: i18next.t("warehouses.totalBatches.columns.initialPowderKg"),
     cell: (info) => `${info.getValue()} kg`,
   }),
-  columnHelper.accessor("initialCostAmd", {
-    header: i18next.t("warehouses.totalBatches.columns.initialCostAmd"),
-    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
-  }),
-  columnHelper.accessor("status", {
-    header: i18next.t("warehouses.totalBatches.columns.status"),
-    cell: (info) => {
-      const statusValue = info.getValue();
-      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
-      return (
-        <span className={statusConfig.className}>{statusConfig.label}</span>
-      );
-    },
-  }),
-  columnHelper.accessor("createdAt", {
-    header: i18next.t("warehouses.totalBatches.columns.createdAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
-  }),
-  columnHelper.accessor("updatedAt", {
-    header: i18next.t("warehouses.totalBatches.columns.updatedAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+  columnHelper.accessor("remainingPowderKg", {
+    header: i18next.t("warehouses.totalBatches.columns.remainingPowderKg"),
+    cell: (info) => `${info.getValue()} kg`,
   }),
   columnHelper.display({
     id: "selectedKg",
@@ -91,6 +54,49 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
       );
     },
   }),
+
+  columnHelper.accessor("remainingCostAmd", {
+    header: i18next.t("warehouses.totalBatches.columns.remainingCostAmd"),
+    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
+  }),
+  columnHelper.accessor("initialCostAmd", {
+    header: i18next.t("warehouses.totalBatches.columns.initialCostAmd"),
+    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
+  }),
+
+  columnHelper.accessor("remainingPt_g", {
+    header: i18next.t("warehouses.totalBatches.columns.remainingPt_g"),
+    cell: (info) => `${info.getValue()} g`,
+  }),
+  columnHelper.accessor("remainingPd_g", {
+    header: i18next.t("warehouses.totalBatches.columns.remainingPd_g"),
+    cell: (info) => `${info.getValue()} g`,
+  }),
+  columnHelper.accessor("remainingRh_g", {
+    header: i18next.t("warehouses.totalBatches.columns.remainingRh_g"),
+    cell: (info) => `${info.getValue()} g`,
+  }),
+
+  columnHelper.accessor("status", {
+    header: i18next.t("warehouses.totalBatches.columns.status"),
+    cell: (info) => {
+      const statusValue = info.getValue();
+      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
+      return (
+        <span className={statusConfig.className}>{statusConfig.label}</span>
+      );
+    },
+  }),
+
+  columnHelper.accessor("createdAt", {
+    header: i18next.t("warehouses.totalBatches.columns.createdAt"),
+    cell: (info) => new Date(info.getValue()).toLocaleString(),
+  }),
+  columnHelper.accessor("updatedAt", {
+    header: i18next.t("warehouses.totalBatches.columns.updatedAt"),
+    cell: (info) => new Date(info.getValue()).toLocaleString(),
+  }),
+
   columnHelper.display({
     id: "actions",
     header: i18next.t("common.actions"),

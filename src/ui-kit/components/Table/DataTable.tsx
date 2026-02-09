@@ -14,6 +14,7 @@ import {
   type ExpandedState,
   type Row,
   type TableMeta,
+  type Column,
 } from "@tanstack/react-table";
 
 // ui-kit
@@ -37,6 +38,8 @@ interface DataTableProps<TData, TValue> {
   meta?: TableMeta<TData>;
   getRowClassName?: (row: TData) => string;
   renderSubComponent?: (props: { row: Row<TData> }) => ReactNode;
+  frozenConfig?: { left?: string[]; right?: string[] };
+  freezeHeader?: boolean;
 }
 
 export const DataTable = <TData, TValue>({
@@ -53,6 +56,8 @@ export const DataTable = <TData, TValue>({
   groupBy = [],
   getRowClassName,
   renderSubComponent,
+  frozenConfig,
+  freezeHeader = true,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -150,32 +155,59 @@ export const DataTable = <TData, TValue>({
       : getPaginationRowModel(),
   });
 
+  const getStickyStyles = (
+    column: Column<TData, unknown>,
+  ): React.CSSProperties => {
+    const isLeft = frozenConfig?.left?.includes(column.id);
+    const isRight = frozenConfig?.right?.includes(column.id);
+
+    if (isLeft) {
+      return {
+        position: "sticky",
+        left: `${column.getStart("left")}px`,
+        zIndex: 3,
+      };
+    }
+    if (isRight) {
+      return {
+        position: "sticky",
+        right: `${column.getAfter("right")}px`,
+        zIndex: 3,
+      };
+    }
+    return {};
+  };
+
   return (
     <div className={styles.dataTableContainer}>
       <div className={styles.tableWrapper}>
         <Table className={styles.table}>
-          <TableHeader className={styles.tableHeader}>
+          <TableHeader
+            className={`${styles.tableHeader} ${freezeHeader ? styles.stickyHeader : ""}`}
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className={styles.tableRow}>
                 {headerGroup.headers.map((header) => {
                   const isSelect = header.id === "select";
+                  const stickyStyles = getStickyStyles(header.column);
+                  const isFrozen = !!stickyStyles.position;
+
                   return (
                     <TableCell
                       key={header.id}
                       asHeader
-                      className={
-                        isSelect ? styles.selectionCell : styles.tableCell
-                      }
+                      className={`${isSelect ? styles.selectionCell : styles.tableCell} ${isFrozen ? styles.frozenCell : ""}`}
                       onClick={
                         !isSelect
                           ? header.column.getToggleSortingHandler()
                           : undefined
                       }
                       style={{
+                        ...stickyStyles,
                         cursor: header.column.getCanSort()
                           ? "pointer"
                           : "default",
-                        width: isSelect ? "48px" : "auto",
+                        width: isSelect ? "48px" : header.getSize(),
                       }}
                     >
                       <div
@@ -218,6 +250,8 @@ export const DataTable = <TData, TValue>({
                     >
                       {row.getVisibleCells().map((cell) => {
                         const isSelect = cell.column.id === "select";
+                        const stickyStyles = getStickyStyles(cell.column);
+                        const isFrozen = !!stickyStyles.position;
 
                         if (
                           cell.getIsGrouped() ||
@@ -230,9 +264,8 @@ export const DataTable = <TData, TValue>({
                         return (
                           <TableCell
                             key={cell.id}
-                            className={
-                              isSelect ? styles.selectionCell : styles.tableCell
-                            }
+                            style={stickyStyles}
+                            className={`${isSelect ? styles.selectionCell : styles.tableCell} ${isFrozen ? styles.frozenCell : ""}`}
                           >
                             <div
                               className={

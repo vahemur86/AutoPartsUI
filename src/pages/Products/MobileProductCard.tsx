@@ -1,8 +1,16 @@
 import { useRef, useState, type RefObject } from "react";
-import styles from "./ProductsContent.module.css";
-import { Button, IconButton } from "@/ui-kit";
+
+// icons
 import { Pencil, Trash2 } from "lucide-react";
+
+// ui-kit
+import { Button, IconButton } from "@/ui-kit";
+
+// types
 import type { Product } from "@/types/products";
+
+// styles
+import styles from "./ProductsContent.module.css";
 
 interface ProductCardProps {
   product: Product;
@@ -28,7 +36,7 @@ export const ProductCard = ({
 
   const getNameById = (
     id: number,
-    items: Array<{ id: number; code: string }>
+    items: Array<{ id: number; code: string }>,
   ): string => {
     const item = items.find((i) => i.id === id);
     return item?.code || `ID: ${id}`;
