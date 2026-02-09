@@ -1,9 +1,11 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
-import { useRef, useEffect, memo } from "react";
 
 // ui-kit
-import { TextField, Button } from "@/ui-kit";
+import { Button } from "@/ui-kit";
+
+// components
+import { ProductInputCell } from "./ProductInputCell";
 
 // types
 import type { Product } from "@/types/products";
@@ -19,83 +21,6 @@ interface ProductInputs {
   salePrice: string;
   quantity: string;
 }
-
-interface ProductInputCellProps {
-  productId: number;
-  field: keyof ProductInputs;
-  value: string;
-  onInputChange: (
-    productId: number,
-    field: keyof ProductInputs,
-    value: string,
-  ) => void;
-  focusedInputRef: RefObject<{
-    productId: number;
-    field: keyof ProductInputs;
-  } | null>;
-  isLoading: boolean;
-}
-
-const ProductInputCell = memo(
-  ({
-    productId,
-    field,
-    value,
-    onInputChange,
-    focusedInputRef,
-    isLoading,
-  }: ProductInputCellProps) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-    const shouldRestoreFocus = useRef(false);
-
-    useEffect(() => {
-      if (
-        focusedInputRef.current?.productId === productId &&
-        focusedInputRef.current?.field === field &&
-        inputRef.current
-      ) {
-        shouldRestoreFocus.current = true;
-        // Use double requestAnimationFrame to ensure focus happens after DOM update
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            if (inputRef.current && shouldRestoreFocus.current) {
-              inputRef.current.focus();
-              const length = inputRef.current.value.length;
-              inputRef.current.setSelectionRange(length, length);
-              focusedInputRef.current = null;
-              shouldRestoreFocus.current = false;
-            }
-          });
-        });
-      }
-    }, [productId, field, focusedInputRef, value]);
-
-    return (
-      <div className={styles.inputCell}>
-        <TextField
-          ref={inputRef}
-          type="number"
-          value={value}
-          onChange={(e) => {
-            if (document.activeElement === inputRef.current) {
-              focusedInputRef.current = { productId, field };
-            }
-            onInputChange(productId, field, e.target.value);
-          }}
-          onFocus={() => {
-            focusedInputRef.current = { productId, field };
-          }}
-          placeholder="0"
-          min="0"
-          step="1"
-          disabled={isLoading}
-        />
-      </div>
-    );
-  },
-);
-
-ProductInputCell.displayName = "ProductInputCell";
 
 interface ColumnHandlers {
   onInputChange: (
@@ -144,15 +69,15 @@ export const getProductColumns = ({
     header: i18next.t("warehouses.addProduct.columns.originalPrice"),
     cell: ({ row }) => {
       const productId = row.original.id;
-      const currentValue = productInputs[productId]?.originalPrice ?? "";
+      const currentValue = productInputs[productId]?.originalPrice;
       return (
         <ProductInputCell
           productId={productId}
           field="originalPrice"
-          value={currentValue}
+          initialValue={currentValue}
           onInputChange={onInputChange}
           focusedInputRef={focusedInputRef}
-          isLoading={isLoading}
+          disabled={isLoading}
         />
       );
     },
@@ -162,15 +87,15 @@ export const getProductColumns = ({
     header: i18next.t("warehouses.addProduct.columns.salePrice"),
     cell: ({ row }) => {
       const productId = row.original.id;
-      const currentValue = productInputs[productId]?.salePrice ?? "";
+      const currentValue = productInputs[productId]?.salePrice;
       return (
         <ProductInputCell
           productId={productId}
           field="salePrice"
-          value={currentValue}
+          initialValue={currentValue}
           onInputChange={onInputChange}
           focusedInputRef={focusedInputRef}
-          isLoading={isLoading}
+          disabled={isLoading}
         />
       );
     },
@@ -180,15 +105,15 @@ export const getProductColumns = ({
     header: i18next.t("warehouses.addProduct.columns.quantity"),
     cell: ({ row }) => {
       const productId = row.original.id;
-      const currentValue = productInputs[productId]?.quantity ?? "";
+      const currentValue = productInputs[productId]?.quantity;
       return (
         <ProductInputCell
           productId={productId}
           field="quantity"
-          value={currentValue}
+          initialValue={currentValue}
           onInputChange={onInputChange}
           focusedInputRef={focusedInputRef}
-          isLoading={isLoading}
+          disabled={isLoading}
         />
       );
     },
