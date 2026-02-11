@@ -28,3 +28,21 @@ export interface TransferProductResponse {
   success: boolean;
   message?: string;
 }
+
+export interface WarehouseProductItem {
+  id: number;
+  warehouseId: number;
+  productId: number;
+  originalPrice: number;
+  salePrice: number;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GetWarehouseProductsParams {
+  warehouseId: number;
+  cashRegisterId: number;
+}
+
+export type GetWarehouseProductsResponse = WarehouseProductItem[];

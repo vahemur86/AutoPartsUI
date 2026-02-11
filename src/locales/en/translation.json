@@ -202,7 +202,8 @@
       "batchesToSale": "Batches To Sale",
       "soldBatches": "Sold Batches",
       "profit": "Profit",
-      "addProduct": "Add Product"
+      "addProduct": "Add Product",
+      "products": "Products"
     },
     "tabs": {
       "addNew": "Add New Warehouse",
@@ -356,6 +357,19 @@
       "error": {
         "invalidInputs": "Please fill in all fields (original price, sale price, and quantity)",
         "failedToAdd": "Failed to add product to warehouse"
+      }
+    },
+    "products": {
+      "loading": "Loading warehouse products...",
+      "emptyState": "No products found in this warehouse.",
+      "columns": {
+        "id": "ID",
+        "productId": "Product ID",
+        "originalPrice": "Original Price",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
       }
     }
   },

@@ -7,6 +7,8 @@ import {
   Warehouse,
   Coins,
   Package,
+  Box,
+  Store,
 } from "lucide-react";
 
 // components
@@ -44,6 +46,18 @@ export const Warehouses = () => {
       path: "/add-product",
       label: t("warehouses.navigation.addProduct"),
       icon: Package,
+      showCheckmark: true,
+    },
+    {
+      path: "/products",
+      label: t("warehouses.navigation.products"),
+      icon: Box,
+      showCheckmark: true,
+    },
+    {
+      path: "/transfer-to-shop",
+      label: t("warehouses.navigation.transferToShop"),
+      icon: Store,
       showCheckmark: true,
     },
   ];

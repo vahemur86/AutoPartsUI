@@ -48,12 +48,14 @@ import { BatchesToSale } from "@/components/warehouses/BatchesToSale";
 import { SoldBatches } from "@/components/warehouses/SoldBatches";
 import { ProfitReport } from "@/components/warehouses/ProfitReport";
 import { AddProduct } from "@/components/warehouses/AddProduct";
+import { WarehouseProducts } from "@/components/warehouses/WarehouseProducts";
 
 // Stores
 import { store } from "@/store/store";
 
 // Styles
 import "@/index.css";
+import { TransferToShop } from "./components/warehouses/TransferToShop";
 
 const toastOptions = {
   position: "top-right",
@@ -148,6 +150,8 @@ export const App = () => {
                 <Route path="sold-batches" element={<SoldBatches />} />
                 <Route path="profit" element={<ProfitReport />} />
                 <Route path="add-product" element={<AddProduct />} />
+                <Route path="products" element={<WarehouseProducts />} />
+                <Route path="transfer-to-shop" element={<TransferToShop />} />
               </Route>
 
               <Route path="products" element={<Products />} />
