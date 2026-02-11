@@ -623,12 +623,19 @@
         "status": "Status"
       },
       "details": {
+        "individualIntakes": "Individual Intakes",
         "analysis": "Batch Items Analysis",
         "intakeId": "Intake",
         "powder": "Powder",
         "pt": "Platinum (Pt)",
         "pd": "Palladium (Pd)",
-        "rh": "Rhodium (Rh)"
+        "rh": "Rhodium (Rh)",
+        "cost": "Cost",
+        "totalCost": "Total Cost",
+        "sales": "Est. Sales",
+        "profit": "Expected Profit",
+        "percent": "Bonus Percent",
+        "fxRate": "FX Rate (AMD)"
       }
     },
     "openSessions": {
