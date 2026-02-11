@@ -103,7 +103,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 200px;
+  min-width: 240px;
 }
 
 .sectionTitle {
@@ -167,23 +167,26 @@
   flex-direction: column;
   gap: 16px;
 }
+
 .subTitle {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-white);
   margin: 0;
 }
+
 .itemsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .itemCard {
   background-color: rgba(255, 255, 255, 0.03);
-  padding: 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
   transition: all 0.2s ease;
 }
 
@@ -193,43 +196,131 @@
 }
 
 .itemCardHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.itemCardHeader span {
-  font-size: 12px;
+.intakeMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.intakeMain span {
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-primary-500);
 }
-.itemCardHeader strong {
+
+.intakeMain strong {
   font-size: 13px;
   color: var(--color-white);
 }
 
-.itemCardStats {
+.supplierTag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-primary-500);
+}
+
+.itemCardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.infoRow strong {
+  color: var(--color-white);
+}
+
+.metalConcentrationGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.metalItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.metalItem span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.metalItem strong {
+  font-size: 13px;
+  color: var(--color-white);
+}
+
+.metalItem small {
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+.financialStats {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .statLine {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
 }
+
 .statLine span {
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  font-size: 10px;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
 }
+
 .statLine strong {
   color: var(--color-white);
+}
+
+.profitLine {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profitLine strong {
+  color: #22c55e;
+}
+
+.fxRate {
+  align-self: flex-end;
+  font-size: 12px;
+  color: white;
+  margin-top: 4px;
 }
 
 .detailLoading,
@@ -239,14 +330,9 @@
   color: rgba(255, 255, 255, 0.4);
   font-style: italic;
 }
+
 .detailError {
   color: #ef4444;
-}
-.negativeText {
-  color: #ef4444;
-}
-.positiveText {
-  color: #22c55e;
 }
 
 @media (max-width: 1024px) {

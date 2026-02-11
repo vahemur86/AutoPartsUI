@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { DataTable, IconButton } from "@/ui-kit";
 
 // icons
-import { Filter } from "lucide-react";
+import { Filter, User, Phone } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -76,6 +76,10 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
             <span>
               Session ID: <strong>#{batchDetails.sessionId}</strong>
             </span>
+            <span>
+              {t("cashbox.batches.details.totalCost")}:{" "}
+              <strong>{batchDetails.costTotalAmd.toLocaleString()} AMD</strong>
+            </span>
           </div>
         </div>
 
@@ -104,26 +108,74 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
 
       <div className={styles.itemsSection}>
         <h5 className={styles.subTitle}>
-          Individual Intakes ({batchDetails.items.length})
+          {t("cashbox.batches.details.individualIntakes")} (
+          {batchDetails.items.length})
         </h5>
         <div className={styles.itemsGrid}>
           {batchDetails.items.map((item) => (
             <div key={item.id} className={styles.itemCard}>
               <div className={styles.itemCardHeader}>
-                <span>
-                  {t("cashbox.batches.details.intakeId")} #{item.intakeId}
-                </span>
-                <strong>{item.powderKg} kg</strong>
+                <div className={styles.intakeMain}>
+                  <span>#{item.intakeId}</span>
+                  <strong>{item.powderKg} kg</strong>
+                </div>
+                <div className={styles.supplierTag}>
+                  <User size={10} />
+                  <span>
+                    {item.supplierClientName} ({item.supplierClientType})
+                  </span>
+                </div>
               </div>
-              <div className={styles.itemCardStats}>
-                <div className={styles.statLine}>
-                  <span>Pt</span> <strong>{item.ptTotal_g} g</strong>
+
+              <div className={styles.itemCardContent}>
+                <div className={styles.contactInfo}>
+                  <div className={styles.infoRow}>
+                    <Phone size={10} />
+                    <span>{item.supplierClientPhone}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span>{t("cashbox.batches.details.percent")}:</span>
+                    <strong>{item.supplierClientTypePercent}%</strong>
+                  </div>
                 </div>
-                <div className={styles.statLine}>
-                  <span>Pd</span> <strong>{item.pdTotal_g} g</strong>
+
+                <div className={styles.metalConcentrationGrid}>
+                  <div className={styles.metalItem}>
+                    <span>Pt</span>
+                    <strong>
+                      {item.ptPerKg_g} <small>g/kg</small>
+                    </strong>
+                  </div>
+                  <div className={styles.metalItem}>
+                    <span>Pd</span>
+                    <strong>
+                      {item.pdPerKg_g} <small>g/kg</small>
+                    </strong>
+                  </div>
+                  <div className={styles.metalItem}>
+                    <span>Rh</span>
+                    <strong>
+                      {item.rhPerKg_g} <small>g/kg</small>
+                    </strong>
+                  </div>
                 </div>
-                <div className={styles.statLine}>
-                  <span>Rh</span> <strong>{item.rhTotal_g} g</strong>
+
+                <div className={styles.financialStats}>
+                  <div className={styles.statLine}>
+                    <span>{t("cashbox.batches.details.cost")}</span>
+                    <strong>{item.costAmd.toLocaleString()} AMD</strong>
+                  </div>
+                  <div className={styles.statLine}>
+                    <span>{t("cashbox.batches.details.sales")}</span>
+                    <span>{item.estimatedSalesAmd.toLocaleString()} AMD</span>
+                  </div>
+                  <div className={`${styles.statLine} ${styles.profitLine}`}>
+                    <span>{t("cashbox.batches.details.profit")}</span>
+                    <strong>
+                      {item.expectedProfitAmd.toLocaleString()} AMD
+                    </strong>
+                  </div>
+                  <div className={styles.fxRate}>Rate: {item.fxRateToAmd} AMD</div>
                 </div>
               </div>
             </div>
