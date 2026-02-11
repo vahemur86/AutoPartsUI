@@ -203,7 +203,8 @@
       "soldBatches": "Sold Batches",
       "profit": "Profit",
       "addProduct": "Add Product",
-      "products": "Products"
+      "products": "Products",
+      "transferToShop": "Transfer to Shop"
     },
     "tabs": {
       "addNew": "Add New Warehouse",
@@ -371,6 +372,17 @@
         "createdAt": "Created At",
         "updatedAt": "Updated At"
       }
+    },
+    "transfer": {
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "quantity": "Transfer Quantity",
+      "transfer": "Transfer",
+      "transferring": "Transferring...",
+      "success": "Products transferred successfully",
+      "error": "Failed to transfer products",
+      "validationError": "Please select a warehouse, shop, and at least one product with valid quantity",
+      "noValidProducts": "No valid products selected for transfer"
     }
   },
   "vehicles": {
