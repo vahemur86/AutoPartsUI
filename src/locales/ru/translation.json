@@ -194,7 +194,22 @@
       "failedToDelete": "Не удалось удалить магазин"
     },
     "loading": "Загрузка магазинов...",
-    "emptyState": "Магазины не найдены."
+    "emptyState": "Магазины не найдены.",
+    "products": {
+      "title": "Товары магазина",
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "loading": "Загрузка товаров магазина...",
+      "emptyState": "В этом магазине товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "productId": "ID товара",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено"
+      }
+    }
   },
   "warehouses": {
     "navigation": {

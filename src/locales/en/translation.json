@@ -194,7 +194,22 @@
       "failedToDelete": "Failed to delete shop"
     },
     "loading": "Loading shops...",
-    "emptyState": "No shops found."
+    "emptyState": "No shops found.",
+    "products": {
+      "title": "Shop Products",
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "loading": "Loading shop products...",
+      "emptyState": "No products found in this shop.",
+      "columns": {
+        "id": "ID",
+        "productId": "Product ID",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      }
+    }
   },
   "warehouses": {
     "navigation": {

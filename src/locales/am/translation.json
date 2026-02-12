@@ -194,7 +194,22 @@
       "failedToDelete": "Խանութի ջնջումը ձախողվեց"
     },
     "loading": "Խանութների բեռնում...",
-    "emptyState": "Խանութներ չեն գտնվել:"
+    "emptyState": "Խանութներ չեն գտնվել:",
+    "products": {
+      "title": "Խանութի ապրանքներ",
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութ",
+      "loading": "Խանութի ապրանքների բեռնում...",
+      "emptyState": "Այս խանութում ապրանքներ չեն գտնվել։",
+      "columns": {
+        "id": "ID",
+        "productId": "Ապրանքի ID",
+        "salePrice": "Վաճառքի գին",
+        "quantity": "Քանակ",
+        "createdAt": "Ստեղծվել է",
+        "updatedAt": "Թարմացվել է"
+      }
+    }
   },
   "warehouses": {
     "navigation": {

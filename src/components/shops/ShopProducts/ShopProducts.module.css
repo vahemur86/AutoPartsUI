@@ -1,0 +1,43 @@
+.wrapper {
+  padding: 24px;
+  width: 100%;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.tableTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shopSelector {
+  min-width: 200px;
+}
+
+.loadingContainer,
+.emptyContainer {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-white);
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 16px;
+    overflow-x: auto;
+  }
+}
+

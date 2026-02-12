@@ -46,3 +46,20 @@ export interface GetWarehouseProductsParams {
 }
 
 export type GetWarehouseProductsResponse = WarehouseProductItem[];
+
+export interface ShopProductItem {
+  id: number;
+  shopId: number;
+  productId: number;
+  quantity: number;
+  salePrice: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GetShopProductsParams {
+  shopId: number;
+  cashRegisterId: number;
+}
+
+export type GetShopProductsResponse = ShopProductItem[];

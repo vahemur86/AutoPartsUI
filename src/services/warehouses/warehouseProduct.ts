@@ -12,6 +12,8 @@ import type {
   TransferProductResponse,
   GetWarehouseProductsParams,
   GetWarehouseProductsResponse,
+  GetShopProductsParams,
+  GetShopProductsResponse,
 } from "@/types/warehouses/warehouseProduct";
 
 const performRequest = async <T>(
@@ -69,6 +71,22 @@ export const getWarehouseProducts = ({
       ),
     cashRegisterId,
     "Failed to fetch warehouse products.",
+  );
+
+export const getShopProducts = ({
+  shopId,
+  cashRegisterId,
+}: GetShopProductsParams) =>
+  performRequest(
+    (headers) =>
+      api.get<GetShopProductsResponse>(
+        `/WarehouseProduct/shop/${shopId}/products`,
+        {
+          headers,
+        },
+      ),
+    cashRegisterId,
+    "Failed to fetch shop products.",
   );
 
 

@@ -202,7 +202,16 @@ export const AddProduct = () => {
       );
     }
 
-    return <DataTable data={products} columns={columns} pageSize={10} />;
+    return (
+      <DataTable
+        data={products}
+        columns={columns}
+        pageSize={10}
+        frozenConfig={{
+          right: ["actions"],
+        }}
+      />
+    );
   };
 
   return (
