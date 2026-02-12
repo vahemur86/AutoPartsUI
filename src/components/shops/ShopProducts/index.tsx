@@ -64,36 +64,10 @@ export const ShopProducts = () => {
 
   const columns = useMemo(() => getShopProductColumns(), []);
 
-  if (isLoadingProducts && shopProducts.length === 0) {
-    return (
-      <div className={styles.loadingContainer}>
-        <p>{t("shops.products.loading")}</p>
-      </div>
-    );
-  }
-
-  if (!selectedShopId) {
-    return (
-      <div className={styles.emptyContainer}>
-        <p>{t("shops.products.selectShop")}</p>
-      </div>
-    );
-  }
-
-  if (shopProducts.length === 0) {
-    return (
-      <div className={styles.emptyContainer}>
-        <p>{t("shops.products.emptyState")}</p>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.tableHeader}>
-        <h3 className={styles.tableTitle}>
-          {t("shops.products.title")}
-        </h3>
+        <h3 className={styles.tableTitle}>{t("shops.products.title")}</h3>
         <div className={styles.headerActions}>
           <div className={styles.shopSelector}>
             <Select
@@ -114,12 +88,26 @@ export const ShopProducts = () => {
         </div>
       </div>
 
-      <DataTable
-        data={shopProducts}
-        columns={columns}
-        pageSize={10}
-        freezeHeader
-      />
+      {isLoadingProducts && shopProducts.length === 0 ? (
+        <div className={styles.contentContainer}>
+          <p>{t("shops.products.loading")}</p>
+        </div>
+      ) : !selectedShopId ? (
+        <div className={styles.contentContainer}>
+          <p>{t("shops.products.selectShop")}</p>
+        </div>
+      ) : shopProducts.length === 0 ? (
+        <div className={styles.contentContainer}>
+          <p>{t("shops.products.emptyState")}</p>
+        </div>
+      ) : (
+        <DataTable
+          data={shopProducts}
+          columns={columns}
+          pageSize={10}
+          freezeHeader
+        />
+      )}
     </div>
   );
 };

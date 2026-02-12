@@ -11,7 +11,7 @@ export const Shops = () => {
 
   return (
     <>
-      <SectionHeader title={t("header.shop")} icon={<Store />} />
+      <SectionHeader title={t("header.shops")} icon={<Store />} />
       <div className={styles.shopsPage}>
         <ShopProducts />
       </div>

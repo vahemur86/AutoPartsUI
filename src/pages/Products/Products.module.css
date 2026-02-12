@@ -36,4 +36,9 @@
   .productsPage {
     padding: 24px 16px;
   }
+
+  .productsContainer {
+    margin-top: 16px;
+    overflow: visible;
+  }
 }
