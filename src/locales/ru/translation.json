@@ -37,6 +37,7 @@
     "noData": "Данные отсутствуют",
     "select": "Выберите",
     "apply": "Применить",
+    "buy": "Купить",
     "gender": {
       "unknown": "Неизвестно",
       "male": "Мужской",
@@ -1038,10 +1039,14 @@
     "closeSession": "Закрыть смену",
     "cashAmount": "Наличные в кассе",
     "cashAmountPlaceholder": "Введите текущую сумму наличных",
+    "buyIron": "Купить железо",
+    "ironType": "Тип железа",
+    "weightKg": "Вес (кг)",
     "success": {
       "sessionOpened": "Смена успешно открыта",
       "sessionClosed": "Смена успешно закрыта",
-      "intakeCreated": "Заявка успешно создана"
+      "intakeCreated": "Заявка успешно создана",
+      "ironSold": "Железо успешно куплено"
     }
   },
   "customers": {
