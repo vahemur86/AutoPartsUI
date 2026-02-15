@@ -14,20 +14,15 @@ import {
   getIronProducts,
 } from "@/services/adminProducts";
 
+// types
+import type {
+  IronDropdownItem,
+  IronPurchaseResponse,
+} from "@/types/adminProducts";
+
 // utils
 import { getApiErrorMessage } from "@/utils";
 
-// types
-import type {
-  IronPurchase,
-  IronDropdownItem,
-  GetIronPurchasesParams,
-  BuyIronPayload,
-  UpdateProductPricePayload,
-  OrderLinePayload,
-} from "@/types/adminProducts";
-
-// Assuming standard structure for Iron Product list based on your UI needs
 export interface IronProduct {
   id: number;
   name: string;
@@ -36,7 +31,7 @@ export interface IronProduct {
 }
 
 interface AdminProductsState {
-  purchases: IronPurchase[];
+  purchases: IronPurchaseResponse | null;
   dropdownItems: IronDropdownItem[];
   ironProducts: IronProduct[];
   isLoading: boolean;
@@ -45,7 +40,7 @@ interface AdminProductsState {
 }
 
 const initialState: AdminProductsState = {
-  purchases: [],
+  purchases: null,
   dropdownItems: [],
   ironProducts: [],
   isLoading: false,
@@ -53,22 +48,18 @@ const initialState: AdminProductsState = {
   error: null,
 };
 
-interface FetchPurchasesArgs {
-  params: GetIronPurchasesParams;
-  cashRegisterId: number;
-}
+// --- Async Thunks ---
 
-// GET Endpoints
 export const fetchIronPurchases = createAsyncThunk<
-  IronPurchase[],
-  FetchPurchasesArgs,
+  IronPurchaseResponse,
+  { params: Parameters<typeof getIronPurchases>[0]; cashRegisterId?: number },
   { rejectValue: string }
 >(
   "adminProducts/fetchPurchases",
   async ({ params, cashRegisterId }, { rejectWithValue }) => {
     try {
-      return await getIronPurchases(params, cashRegisterId);
-    } catch (error: unknown) {
+      return await getIronPurchases(params, cashRegisterId as number);
+    } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch purchases"),
       );
@@ -78,15 +69,12 @@ export const fetchIronPurchases = createAsyncThunk<
 
 export const fetchIronDropdown = createAsyncThunk<
   IronDropdownItem[],
-  {
-    cashRegisterId: number;
-    lang: string;
-  },
+  Parameters<typeof getIronDropdown>[0],
   { rejectValue: string }
 >("adminProducts/fetchDropdown", async (payload, { rejectWithValue }) => {
   try {
     return await getIronDropdown(payload);
-  } catch (error: unknown) {
+  } catch (error) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to fetch dropdown"),
     );
@@ -95,14 +83,14 @@ export const fetchIronDropdown = createAsyncThunk<
 
 export const fetchIronProducts = createAsyncThunk<
   IronProduct[],
-  number,
+  Parameters<typeof getIronProducts>[0],
   { rejectValue: string }
 >(
   "adminProducts/fetchIronProducts",
   async (cashRegisterId, { rejectWithValue }) => {
     try {
       return await getIronProducts(cashRegisterId);
-    } catch (error: unknown) {
+    } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch iron products"),
       );
@@ -110,18 +98,16 @@ export const fetchIronProducts = createAsyncThunk<
   },
 );
 
-// POST Endpoints
 export const addIronEntry = createAsyncThunk<
-  void, // Assuming the API returns a simple success or empty body
-  { payload: BuyIronPayload; cashRegisterId: number },
+  void,
+  { payload: Parameters<typeof buyIron>[0]; cashRegisterId: number },
   { rejectValue: string }
 >(
   "adminProducts/addIronEntry",
   async ({ payload, cashRegisterId }, { rejectWithValue }) => {
     try {
       await buyIron(payload, cashRegisterId);
-    } catch (error: unknown) {
-      console.log(error);
+    } catch (error) {
       return rejectWithValue(getApiErrorMessage(error, "Failed to buy iron"));
     }
   },
@@ -131,7 +117,7 @@ export const changeProductPrice = createAsyncThunk<
   void,
   {
     productId: number;
-    payload: UpdateProductPricePayload;
+    payload: Parameters<typeof updateProductPrice>[1];
     cashRegisterId: number;
   },
   { rejectValue: string }
@@ -140,7 +126,7 @@ export const changeProductPrice = createAsyncThunk<
   async ({ productId, payload, cashRegisterId }, { rejectWithValue }) => {
     try {
       await updateProductPrice(productId, payload, cashRegisterId);
-    } catch (error: unknown) {
+    } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to update price"),
       );
@@ -150,20 +136,22 @@ export const changeProductPrice = createAsyncThunk<
 
 export const addOrderLine = createAsyncThunk<
   void,
-  { payload: OrderLinePayload; cashRegisterId: number },
+  { payload: Parameters<typeof createOrderLine>[0]; cashRegisterId: number },
   { rejectValue: string }
 >(
   "adminProducts/addOrderLine",
   async ({ payload, cashRegisterId }, { rejectWithValue }) => {
     try {
       await createOrderLine(payload, cashRegisterId);
-    } catch (error: unknown) {
+    } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to create order line"),
       );
     }
   },
 );
+
+// --- Slice ---
 
 const adminProductsSlice = createSlice({
   name: "adminProducts",
@@ -172,58 +160,46 @@ const adminProductsSlice = createSlice({
     clearAdminError: (state) => {
       state.error = null;
     },
+    resetAdminProductsState: () => initialState,
   },
   extraReducers: (builder) => {
-    // 1. Specific Case Handlers ALWAYS go first
     builder
-      .addCase(
-        fetchIronPurchases.fulfilled,
-        (state, action: PayloadAction<IronPurchase[]>) => {
-          state.isLoading = false;
-          state.purchases = action.payload;
-        },
-      )
-      .addCase(
-        fetchIronDropdown.fulfilled,
-        (state, action: PayloadAction<IronDropdownItem[]>) => {
-          state.isLoading = false;
-          state.dropdownItems = action.payload;
-        },
-      )
-      .addCase(
-        fetchIronProducts.fulfilled,
-        (state, action: PayloadAction<IronProduct[]>) => {
-          state.isLoading = false;
-          state.ironProducts = action.payload;
-        },
-      );
+      // GET Fulfillment
+      .addCase(fetchIronPurchases.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.purchases = action.payload;
+      })
+      .addCase(fetchIronDropdown.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.dropdownItems = action.payload;
+      })
+      .addCase(fetchIronProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.ironProducts = action.payload;
+      })
+      // POST Fulfillment
+      .addCase(addIronEntry.fulfilled, (state) => {
+        state.isSubmitting = false;
+      })
+      .addCase(changeProductPrice.fulfilled, (state) => {
+        state.isSubmitting = false;
+      })
+      .addCase(addOrderLine.fulfilled, (state) => {
+        state.isSubmitting = false;
+      })
 
-    // 2. Matchers go after all .addCase calls
-    builder
+      // Global Matchers
       .addMatcher(
-        (action) =>
-          action.type.endsWith("/pending") &&
-          !action.type.includes("add") &&
-          !action.type.includes("change"),
-        (state) => {
-          state.isLoading = true;
+        (action) => action.type.endsWith("/pending"),
+        (state, action) => {
+          const isPost =
+            action.type.includes("add") || action.type.includes("change");
+          if (isPost) {
+            state.isSubmitting = true;
+          } else {
+            state.isLoading = true;
+          }
           state.error = null;
-        },
-      )
-      .addMatcher(
-        (action) =>
-          action.type.endsWith("/pending") &&
-          (action.type.includes("add") || action.type.includes("change")),
-        (state) => {
-          state.isSubmitting = true;
-          state.error = null;
-        },
-      )
-      .addMatcher(
-        (action) => action.type.endsWith("/fulfilled"),
-        (state) => {
-          state.isSubmitting = false;
-          state.isLoading = false;
         },
       )
       .addMatcher(
@@ -231,11 +207,12 @@ const adminProductsSlice = createSlice({
         (state, action: PayloadAction<string | undefined>) => {
           state.isLoading = false;
           state.isSubmitting = false;
-          state.error = action.payload ?? "An error occurred";
+          state.error = action.payload ?? "An unexpected error occurred";
         },
       );
   },
 });
 
-export const { clearAdminError } = adminProductsSlice.actions;
+export const { clearAdminError, resetAdminProductsState } =
+  adminProductsSlice.actions;
 export default adminProductsSlice.reducer;

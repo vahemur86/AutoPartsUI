@@ -37,6 +37,9 @@
     "noData": "Տվյալներ չկան",
     "select": "Ընտրեք",
     "apply": "Կիրառել",
+    "all": "Բոլորը",
+    "createdAt": "Ստեղծման ամսաթիվ",
+    "details": "Մանրամասներ",
     "buy": "Գնել",
     "gender": {
       "unknown": "Անհայտ",
@@ -115,7 +118,23 @@
       "batchReports": "Խմբաքանակի հաշվետվություններ",
       "openSessions": "Բաց հերթափոխեր",
       "powderBatches": "Փոշու խմբաքանակներ",
-      "cashboxSessionsReports": "Դրամարկղի հերթափոխի հաշվետվություններ"
+      "cashboxSessionsReports": "Դրամարկղի հերթափոխի հաշվետվություններ",
+      "ironProducts": "Երկաթի ապրանքներ"
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "Ապրանքի ID"
+      }
+    },
+    "filters": {
+      "fromUtc": "Սկսած (UTC)",
+      "toUtc": "Մինչև (UTC)",
+      "selectDate": "Ընտրել ամսաթիվը",
+      "operatorUserId": "Օպերատորի ID",
+      "cashRegisterId": "Դրամարկղի ID"
+    },
+    "errors": {
+      "failedToFetch": "Չհաջողվեց բեռնել հաշվետվությունները"
     }
   },
   "exchangeRates": {

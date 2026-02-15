@@ -64,10 +64,6 @@
   position: relative;
 }
 
-.todayRow td:nth-child(2) {
-  border-left: 3px solid #22c55e;
-}
-
 .todayRow:hover {
   background-color: rgba(34, 197, 94, 0.1) !important;
 }

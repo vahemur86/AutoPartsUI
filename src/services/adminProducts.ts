@@ -1,7 +1,7 @@
 import api from ".";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type {
@@ -12,10 +12,6 @@ import type {
 } from "@/types/adminProducts";
 
 const BASE_URL = "/admin";
-
-const getHeaders = (cashRegisterId: number) => ({
-  "X-CashRegister-Id": cashRegisterId,
-});
 
 export const buyIron = async (
   payload: BuyIronPayload,
@@ -109,7 +105,7 @@ export const createOrderLine = async (
 
 export const getIronPurchases = async (
   params: GetIronPurchasesParams,
-  cashRegisterId: number,
+  cashRegisterId?: number,
 ) => {
   try {
     const response = await api.get(`${BASE_URL}/products/GetIronPurchases`, {

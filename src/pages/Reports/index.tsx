@@ -8,6 +8,7 @@ import {
   FlaskRound,
   Wallet,
   ClipboardList,
+  Database,
 } from "lucide-react";
 
 // components
@@ -45,6 +46,12 @@ export const Reports = () => {
       path: "/cashbox-sessions-reports",
       label: t("reports.navigation.cashboxSessionsReports"),
       icon: Wallet,
+      showCheckmark: true,
+    },
+    {
+      path: "/iron-products-reports",
+      label: t("reports.navigation.ironProducts"),
+      icon: Database,
       showCheckmark: true,
     },
   ];
