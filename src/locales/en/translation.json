@@ -37,6 +37,7 @@
     "noData": "No data available.",
     "select": "Select",
     "apply": "Apply",
+    "buy": "Buy",
     "gender": {
       "unknown": "Unknown",
       "male": "Male",
@@ -1039,10 +1040,14 @@
     "closeSession": "Close Session",
     "cashAmount": "Cash in Cash Register",
     "cashAmountPlaceholder": "Enter current cash amount",
+    "buyIron": "Buy Iron",
+    "ironType": "Iron Type",
+    "weightKg": "Weight (kg)",
     "success": {
       "sessionOpened": "Session opened successfully",
       "sessionClosed": "Session closed successfully",
-      "intakeCreated": "Intake created successfully"
+      "intakeCreated": "Intake created successfully",
+      "ironSold": "Iron purchased successfully"
     }
   },
   "customers": {

@@ -38,9 +38,14 @@ import {
   clearExchangeRatesState,
 } from "@/store/slices/exchangeRatesSlice";
 import { clearCustomersState } from "@/store/slices/customersSlice";
+import {
+  fetchIronDropdown,
+  addIronEntry,
+  clearAdminError,
+} from "@/store/slices/adminProductsSlice";
 
 // ui-kit
-import { ConfirmationModal } from "@/ui-kit";
+import { ConfirmationModal, TextField, Select, Button } from "@/ui-kit";
 
 // components
 import {
@@ -94,11 +99,19 @@ export const OperatorPage = () => {
     (state) => state.customers,
   );
 
+  const {
+    dropdownItems: ironOptions,
+    isLoading: isIronLoading,
+    isSubmitting: isIronSubmitting,
+    error: adminError,
+  } = useAppSelector((state) => state.adminProducts);
+
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
   const [userData] = useState(() =>
     JSON.parse(localStorage.getItem("user_data") ?? "null"),
   );
+
   const [uiState, setUiState] = useState({
     isSubmitting: false,
     hasTriedSubmit: false,
@@ -122,6 +135,11 @@ export const OperatorPage = () => {
       gender: 0,
       notes: "",
     },
+  });
+
+  const [ironFormData, setIronFormData] = useState({
+    productId: "" as string | number,
+    weight: "0",
   });
 
   useEffect(() => {
@@ -170,6 +188,7 @@ export const OperatorPage = () => {
       { msg: languagesError, clear: clearLangError },
       { msg: cashError, clear: clearCashError },
       { msg: sessionError, clear: clearSessionError },
+      { msg: adminError, clear: clearAdminError },
     ];
     errors.forEach(({ msg, clear }) => {
       if (msg) {
@@ -183,6 +202,7 @@ export const OperatorPage = () => {
     languagesError,
     cashError,
     sessionError,
+    adminError,
     dispatch,
   ]);
 
@@ -197,6 +217,21 @@ export const OperatorPage = () => {
       dispatch(fetchBalance(crId));
     }
   }, [dispatch, userData?.cashRegisterId]);
+
+  useEffect(() => {
+    const crId = userData?.cashRegisterId;
+    if (crId) {
+      const currentLng = i18n.language;
+
+      dispatch(
+        fetchIronDropdown({
+          cashRegisterId: crId,
+          lang: currentLng,
+        }),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, userData?.cashRegisterId, i18n.language]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -276,6 +311,32 @@ export const OperatorPage = () => {
     }
   };
 
+  const handleBuyIron = async () => {
+    const crId = userData?.cashRegisterId;
+    if (!crId || !ironFormData.productId || Number(ironFormData.weight) <= 0) {
+      return;
+    }
+
+    try {
+      const finalForm = {
+        productId: Number(ironFormData.productId),
+        weight: Number(ironFormData.weight),
+      };
+
+      await dispatch(
+        addIronEntry({
+          payload: finalForm,
+          cashRegisterId: crId,
+        }),
+      ).unwrap();
+
+      toast.success(t("operatorPage.success.ironSold"));
+      setIronFormData({ productId: "", weight: "0" });
+    } catch (e) {
+      console.error("Iron buy failed", e);
+    }
+  };
+
   const handleToggleSession = useCallback(
     async (action: "open" | "close") => {
       const crId = userData?.cashRegisterId;
@@ -309,6 +370,25 @@ export const OperatorPage = () => {
     : uiState.showCashAmount
       ? activeBalance?.balance.toString()
       : "••••••••";
+
+  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+
+    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
+      return;
+    }
+
+    if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
+      val = val.replace(/^0+/, "");
+      if (val === "") val = "0";
+    }
+
+    if (val === ".") {
+      val = "0.";
+    }
+
+    setIronFormData((p) => ({ ...p, weight: val }));
+  };
 
   return (
     <div className={styles.operatorPage}>
@@ -385,6 +465,51 @@ export const OperatorPage = () => {
             phoneError={uiState.hasTriedSubmit && !formData.customer.phone}
             onSuccess={handleResetForm}
           />
+
+          <div className={styles.customerCard}>
+            <div className={styles.customerHeader}>
+              <h3 className={styles.cardTitle}>{t("operatorPage.buyIron")}</h3>
+            </div>
+            <div className={styles.customerContent}>
+              <Select
+                label={t("operatorPage.ironType")}
+                value={ironFormData.productId}
+                onChange={(e) =>
+                  setIronFormData((p) => ({ ...p, productId: e.target.value }))
+                }
+                disabled={isIronLoading || isIronSubmitting}
+              >
+                <option value="" disabled>
+                  {t("common.select")}
+                </option>
+                {ironOptions.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.displayName}
+                  </option>
+                ))}
+              </Select>
+
+              <TextField
+                label={t("operatorPage.weightKg")}
+                type="text"
+                inputMode="decimal"
+                value={ironFormData.weight}
+                onChange={handleWeightChange}
+                disabled={isIronSubmitting}
+              />
+
+              <Button
+                onClick={handleBuyIron}
+                disabled={
+                  !ironFormData.productId || Number(ironFormData.weight) <= 0
+                }
+                fullWidth
+              >
+                {t("common.buy")}
+              </Button>
+            </div>
+          </div>
+
           <CashRegisterField
             displayBalance={displayBalance || ""}
             showCashAmount={uiState.showCashAmount}

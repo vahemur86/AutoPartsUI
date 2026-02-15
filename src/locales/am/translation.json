@@ -37,6 +37,7 @@
     "noData": "Տվյալներ չկան",
     "select": "Ընտրեք",
     "apply": "Կիրառել",
+    "buy": "Գնել",
     "gender": {
       "unknown": "Անհայտ",
       "male": "Արական",
@@ -1038,10 +1039,14 @@
     "closeSession": "Փակել հերթափոխը",
     "cashAmount": "Կանխիկը դրամարկղում",
     "cashAmountPlaceholder": "Մուտքագրեք կանխիկ գումարը",
+    "buyIron": "Գնել երկաթ",
+    "ironType": "Երկաթի տեսակ",
+    "weightKg": "Քաշ (կգ)",
     "success": {
       "sessionOpened": "Հերթափոխը հաջողությամբ բացվեց",
       "sessionClosed": "Հերթափոխը հաջողությամբ փակվեց",
-      "intakeCreated": "Հարցումը հաջողությամբ ստեղծվեց"
+      "intakeCreated": "Հարցումը հաջողությամբ ստեղծվեց",
+      "ironSold": "Երկաթը հաջողությամբ գնվել է"
     }
   },
   "customers": {
