@@ -1,13 +1,21 @@
+export interface PaginatedResponse<T> {
+  totalItems: number;
+  page: number;
+  pageSize: number;
+  results: T[];
+}
+
 export interface IronPurchase {
   id: number;
   productId: number;
+  name: string; // Matches "name" in JSON
   weight: number;
-  unitPrice: number;
-  totalPrice: number;
+  unitPricePerKg: number; // Matches "unitPricePerKg" in JSON
+  totalAmount: number; // Matches "totalAmount" in JSON
+  purchasedAt: string; // Matches "purchasedAt" in JSON
   operatorUserId: number;
   cashRegisterId: number;
-  createdAt: string;
-  productName?: string;
+  remark?: string; // Matches "remark" in JSON
 }
 
 export interface IronDropdownItem {
@@ -41,3 +49,6 @@ export interface GetIronPurchasesParams {
   PageSize?: number;
   lang?: string;
 }
+
+// Added for consistency with your Batch/ZReport patterns
+export type IronPurchaseResponse = PaginatedResponse<IronPurchase>;

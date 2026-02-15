@@ -38,6 +38,9 @@
     "select": "Select",
     "apply": "Apply",
     "buy": "Buy",
+    "all": "All",
+    "createdAt": "Created At",
+    "details": "Details",
     "gender": {
       "unknown": "Unknown",
       "male": "Male",
@@ -115,7 +118,23 @@
       "batchReports": "Batch Reports",
       "openSessions": "Open Sessions",
       "powderBatches": "Powder Batches",
-      "cashboxSessionsReports": "Cashbox Sessions Reports"
+      "cashboxSessionsReports": "Cashbox Sessions Reports",
+      "ironProducts": "Iron Products"
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "Product ID"
+      }
+    },
+    "filters": {
+      "fromUtc": "From Date (UTC)",
+      "toUtc": "To Date (UTC)",
+      "selectDate": "Select date",
+      "operatorUserId": "Operator User ID",
+      "cashRegisterId": "Cash Register ID"
+    },
+    "errors": {
+      "failedToFetch": "Failed to fetch reports"
     }
   },
   "exchangeRates": {

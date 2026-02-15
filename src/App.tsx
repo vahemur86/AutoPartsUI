@@ -36,11 +36,12 @@ import { CashRegisters } from "@/components/settings/CashRegisters";
 import { OfferIncreaseOptions } from "@/components/settings/OfferOptions";
 
 // Reports components
-import { ZReports } from "./components/reports/ZReports";
-import { BatchReports } from "./components/reports/BatchReports";
-import { OpenSessions } from "./components/reports/OpenSessions";
-import { PowderBatches } from "./components/reports/PowderBatches";
-import { CashboxSessionsReports } from "./components/reports/CashboxSessionsReports";
+import { ZReports } from "@/components/reports/ZReports";
+import { BatchReports } from "@/components/reports/BatchReports";
+import { OpenSessions } from "@/components/reports/OpenSessions";
+import { PowderBatches } from "@/components/reports/PowderBatches";
+import { CashboxSessionsReports } from "@/components/reports/CashboxSessionsReports";
+import { IronProductsReport } from "@/components/reports/IronProductsReport";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -49,13 +50,13 @@ import { SoldBatches } from "@/components/warehouses/SoldBatches";
 import { ProfitReport } from "@/components/warehouses/ProfitReport";
 import { AddProduct } from "@/components/warehouses/AddProduct";
 import { WarehouseProducts } from "@/components/warehouses/WarehouseProducts";
+import { TransferToShop } from "@/components/warehouses/TransferToShop";
 
 // Stores
 import { store } from "@/store/store";
 
 // Styles
 import "@/index.css";
-import { TransferToShop } from "./components/warehouses/TransferToShop";
 
 const toastOptions = {
   position: "top-right",
@@ -137,6 +138,10 @@ export const App = () => {
                 <Route
                   path="cashbox-sessions-reports"
                   element={<CashboxSessionsReports />}
+                />
+                <Route
+                  path="iron-products-reports"
+                  element={<IronProductsReport />}
                 />
               </Route>
 

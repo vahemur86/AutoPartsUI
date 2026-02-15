@@ -37,6 +37,9 @@
     "noData": "Данные отсутствуют",
     "select": "Выберите",
     "apply": "Применить",
+    "all": "Все",
+    "createdAt": "Дата создания",
+    "details": "Детали",
     "buy": "Купить",
     "gender": {
       "unknown": "Неизвестно",
@@ -115,7 +118,23 @@
       "batchReports": "Отчеты по партиям",
       "openSessions": "Открытые сессии",
       "powderBatches": "Партии порошка",
-      "cashboxSessionsReports": "Отчеты сессий кассы"
+      "cashboxSessionsReports": "Отчеты сессий кассы",
+      "ironProducts": "Железные изделия"
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "ID Продукта"
+      }
+    },
+    "filters": {
+      "fromUtc": "С даты (UTC)",
+      "toUtc": "По дату (UTC)",
+      "selectDate": "Выберите дату",
+      "operatorUserId": "ID Оператора",
+      "cashRegisterId": "ID Кассы"
+    },
+    "errors": {
+      "failedToFetch": "Не удалось загрузить отчеты"
     }
   },
   "exchangeRates": {
