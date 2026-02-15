@@ -190,12 +190,14 @@ export const OperatorPage = () => {
       { msg: sessionError, clear: clearSessionError },
       { msg: adminError, clear: clearAdminError },
     ];
+
     errors.forEach(({ msg, clear }) => {
       if (msg) {
-        toast.error(msg);
+        toast.error(msg, { toastId: msg });
         dispatch(clear());
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     metalRatesError,
     intakeError,
@@ -203,7 +205,6 @@ export const OperatorPage = () => {
     cashError,
     sessionError,
     adminError,
-    dispatch,
   ]);
 
   useEffect(() => {

@@ -83,18 +83,15 @@ export const fetchIronDropdown = createAsyncThunk<
     lang: string;
   },
   { rejectValue: string }
->(
-  "adminProducts/fetchDropdown",
-  async (payload, { rejectWithValue }) => {
-    try {
-      return await getIronDropdown(payload);
-    } catch (error: unknown) {
-      return rejectWithValue(
-        getApiErrorMessage(error, "Failed to fetch dropdown"),
-      );
-    }
-  },
-);
+>("adminProducts/fetchDropdown", async (payload, { rejectWithValue }) => {
+  try {
+    return await getIronDropdown(payload);
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch dropdown"),
+    );
+  }
+});
 
 export const fetchIronProducts = createAsyncThunk<
   IronProduct[],
@@ -124,6 +121,7 @@ export const addIronEntry = createAsyncThunk<
     try {
       await buyIron(payload, cashRegisterId);
     } catch (error: unknown) {
+      console.log(error);
       return rejectWithValue(getApiErrorMessage(error, "Failed to buy iron"));
     }
   },
