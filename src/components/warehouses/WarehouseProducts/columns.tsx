@@ -16,6 +16,7 @@ const formatDate = (dateString: string): string => {
 };
 
 export const getWarehouseProductColumns =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (): ColumnDef<WarehouseProductItem, any>[] => [
     columnHelper.accessor("id", {
       header: "ID",
@@ -46,5 +47,3 @@ export const getWarehouseProductColumns =
       cell: (info) => formatDate(info.getValue()),
     }),
   ];
-
-

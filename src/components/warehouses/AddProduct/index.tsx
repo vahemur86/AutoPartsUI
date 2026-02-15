@@ -141,6 +141,7 @@ export const AddProduct = () => {
         );
 
         setProductInputs((prev) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [productId]: _, ...rest } = prev;
           return rest;
         });

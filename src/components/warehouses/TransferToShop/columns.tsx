@@ -33,6 +33,7 @@ interface TransferColumnsMeta {
 
 export const getTransferToShopColumns = (
   meta: TransferColumnsMeta,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<WarehouseProductItem, any>[] => [
   columnHelper.display({
     id: "select",

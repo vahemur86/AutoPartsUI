@@ -95,7 +95,7 @@ export const Products = () => {
         toast.error(getErrorMessage(error, t("products.error.failedToCreate")));
       }
     },
-    [dispatch, handleCloseAddDropdown],
+    [dispatch, handleCloseAddDropdown, t],
   );
 
   const handleEditProduct = useCallback(
@@ -133,7 +133,7 @@ export const Products = () => {
         toast.error(getErrorMessage(error, t("products.error.failedToUpdate")));
       }
     },
-    [dispatch, editingProduct, handleCloseEditDropdown],
+    [dispatch, editingProduct, handleCloseEditDropdown, t],
   );
 
   return (
@@ -155,7 +155,9 @@ export const Products = () => {
                   )
                 }
               />
-              <span className={styles.addButtonText}>{t("products.addNew")}</span>
+              <span className={styles.addButtonText}>
+                {t("products.addNew")}
+              </span>
             </div>
           </div>
         }

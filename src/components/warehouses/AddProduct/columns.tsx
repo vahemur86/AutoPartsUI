@@ -43,6 +43,7 @@ export const getProductColumns = ({
   productInputs,
   focusedInputRef,
   isLoading,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: ColumnHandlers): ColumnDef<Product, any>[] => [
   columnHelper.accessor("id", {
     header: "ID",

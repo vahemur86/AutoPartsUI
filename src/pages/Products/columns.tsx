@@ -20,10 +20,7 @@ interface ColumnHandlers {
   categories: Array<{ id: number; code: string }>;
   unitTypes: Array<{ id: number; code: string }>;
   boxSizes: Array<{ id: number; code: string }>;
-  onEdit: (
-    product: Product,
-    buttonRef: React.RefObject<HTMLElement>,
-  ) => void;
+  onEdit: (product: Product, buttonRef: React.RefObject<HTMLElement>) => void;
   onDelete: (productId: number) => void;
 }
 
@@ -35,7 +32,6 @@ const getNameById = (
   return item?.code || `${i18next.t("products.idPrefix")}${id}`;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getProductColumns = ({
   brands,
   categories,
@@ -43,6 +39,7 @@ export const getProductColumns = ({
   boxSizes,
   onEdit,
   onDelete,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: ColumnHandlers): ColumnDef<Product, any>[] => {
   return [
     columnHelper.accessor("id", {
@@ -76,9 +73,7 @@ export const getProductColumns = ({
     columnHelper.accessor("vehicleDependent", {
       header: i18next.t("products.columns.vehicleDependent"),
       cell: (info) =>
-        info.getValue()
-          ? i18next.t("common.yes")
-          : i18next.t("common.no"),
+        info.getValue() ? i18next.t("common.yes") : i18next.t("common.no"),
     }),
     columnHelper.display({
       id: "actions",
@@ -93,7 +88,9 @@ export const getProductColumns = ({
               icon={<Pencil size={14} color="#ffffff" />}
               ariaLabel={i18next.t("common.edit")}
               onClick={(e) => {
-                const buttonRef = { current: e.currentTarget } as React.RefObject<HTMLElement>;
+                const buttonRef = {
+                  current: e.currentTarget,
+                } as React.RefObject<HTMLElement>;
                 onEdit(product, buttonRef);
               }}
             />
@@ -110,4 +107,3 @@ export const getProductColumns = ({
     }),
   ];
 };
-
