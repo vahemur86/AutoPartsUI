@@ -1,12 +1,6 @@
-import {
-  useEffect,
-  useRef,
-  useCallback,
-  useState,
-  useMemo,
-  type RefObject,
-} from "react";
+import { useEffect, useRef, useCallback, useMemo, type RefObject } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 // hooks
 import { useIsMobile } from "@/hooks/isMobile";
@@ -22,24 +16,13 @@ import {
 } from "@/store/slices/productSettingsSlice";
 
 // ui-kit
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableCell,
-  IconButton,
-  Button,
-} from "@/ui-kit";
-
-// icons
-import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { DataTable } from "@/ui-kit";
 
 // types
 import type { Product } from "@/types/products";
 
 // components
-import { ProductCard } from "./MobileProductCard";
+import { getProductColumns } from "./columns";
 
 // utils
 import { getErrorMessage } from "@/utils";
@@ -51,79 +34,14 @@ interface ProductsContentProps {
   onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
 }
 
-interface ProductRowProps {
-  product: Product;
-  brands: Array<{ id: number; code: string }>;
-  categories: Array<{ id: number; code: string }>;
-  unitTypes: Array<{ id: number; code: string }>;
-  boxSizes: Array<{ id: number; code: string }>;
-  onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
-  onDelete: (productId: number) => void;
-}
-
-const ProductRow = ({
-  product,
-  brands,
-  categories,
-  unitTypes,
-  boxSizes,
-  onEdit,
-  onDelete,
-}: ProductRowProps) => {
-  const editButtonRef = useRef<HTMLButtonElement>(null);
-
-  const getNameById = (
-    id: number,
-    items: Array<{ id: number; code: string }>,
-  ): string => {
-    const item = items.find((i) => i.id === id);
-    return item?.code || `ID: ${id}`;
-  };
-
-  return (
-    <TableRow>
-      <TableCell>{product.code}</TableCell>
-      <TableCell>{product.sku}</TableCell>
-      <TableCell>{getNameById(product.brandId, brands)}</TableCell>
-      <TableCell>{getNameById(product.categoryId, categories)}</TableCell>
-      <TableCell>{getNameById(product.unitTypeId, unitTypes)}</TableCell>
-      <TableCell>{getNameById(product.boxSizeId, boxSizes)}</TableCell>
-      <TableCell>{product.vehicleDependent ? "Yes" : "No"}</TableCell>
-      <TableCell>
-        <div className={styles.actionsCell}>
-          <IconButton
-            ref={editButtonRef}
-            variant="secondary"
-            size="small"
-            icon={<Pencil size={14} color="#ffffff" />}
-            ariaLabel="Edit"
-            onClick={() =>
-              onEdit(product, editButtonRef as RefObject<HTMLElement>)
-            }
-          />
-          <IconButton
-            variant="secondary"
-            size="small"
-            icon={<Trash2 size={14} color="#ffffff" />}
-            ariaLabel="Delete"
-            onClick={() => onDelete(product.id)}
-          />
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-};
-
-const ITEMS_PER_PAGE = 10;
-
 export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
-  const { isMobile, mounted } = useIsMobile();
+  const { t } = useTranslation();
+  const { mounted } = useIsMobile();
   const dispatch = useAppDispatch();
   const { products, isLoading } = useAppSelector((state) => state.products);
   const { brands, categories, unitTypes, boxSizes, fetchedData } =
     useAppSelector((state) => state.productSettings);
   const fetchInitiatedRef = useRef(false);
-  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (fetchInitiatedRef.current) return;
@@ -150,54 +68,32 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
     async (productId: number) => {
       try {
         await dispatch(removeProduct(productId)).unwrap();
-        toast.success("Product deleted successfully");
+        toast.success(t("products.success.productDeleted"));
         dispatch(fetchProducts());
-        // Reset to first page if current page becomes empty
-        const totalPages = Math.ceil((products.length - 1) / ITEMS_PER_PAGE);
-        if (currentPage > totalPages && totalPages > 0) {
-          setCurrentPage(totalPages);
-        }
       } catch (error: unknown) {
-        toast.error(getErrorMessage(error, "Failed to delete product"));
+        toast.error(getErrorMessage(error, t("products.error.failedToDelete")));
       }
     },
-    [dispatch, products.length, currentPage],
+    [dispatch, t],
   );
 
-  const totalPages = useMemo(
-    () => Math.ceil(products.length / ITEMS_PER_PAGE),
-    [products.length],
+  const columns = useMemo(
+    () =>
+      getProductColumns({
+        brands,
+        categories,
+        unitTypes,
+        boxSizes,
+        onEdit,
+        onDelete: handleDelete,
+      }),
+    [brands, categories, unitTypes, boxSizes, onEdit, handleDelete],
   );
-
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return products.slice(startIndex, endIndex);
-  }, [products, currentPage]);
-
-  const handlePreviousPage = useCallback(() => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  }, [currentPage]);
-
-  const handleNextPage = useCallback(() => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  }, [currentPage, totalPages]);
-
-  // Reset to page 1 when products change
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(1);
-    }
-  }, [totalPages, currentPage]);
 
   if (isLoading && products.length === 0) {
     return (
       <div className={styles.loadingContainer}>
-        <p>Loading products...</p>
+        <p>{t("products.loading")}</p>
       </div>
     );
   }
@@ -205,7 +101,7 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
   if (products.length === 0) {
     return (
       <div className={styles.emptyContainer}>
-        <p>No products found. Click "Add New" to create your first product.</p>
+        <p>{t("products.emptyState")}</p>
       </div>
     );
   }
@@ -213,86 +109,14 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
   if (!mounted) {
     return (
       <div className={styles.loadingContainer}>
-        <p>Loading...</p>
+        <p>{t("products.loadingGeneric")}</p>
       </div>
     );
   }
 
-  // Mobile: Show cards
-  if (isMobile) {
-    return (
-      <div className={styles.productsContentMobile}>
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            brands={brands}
-            categories={categories}
-            unitTypes={unitTypes}
-            boxSizes={boxSizes}
-            onEdit={onEdit}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  // Desktop: Show table
   return (
     <div className={styles.productsContent}>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableCell asHeader>Product Key</TableCell>
-            <TableCell asHeader>SKU</TableCell>
-            <TableCell asHeader>Brand</TableCell>
-            <TableCell asHeader>Category</TableCell>
-            <TableCell asHeader>Unit Type</TableCell>
-            <TableCell asHeader>Box Size</TableCell>
-            <TableCell asHeader>Vehicle Dependent</TableCell>
-            <TableCell asHeader>Actions</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedProducts.map((product) => (
-            <ProductRow
-              key={product.id}
-              product={product}
-              brands={brands}
-              categories={categories}
-              unitTypes={unitTypes}
-              boxSizes={boxSizes}
-              onEdit={onEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </TableBody>
-      </Table>
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className={styles.paginationButton}
-          >
-            <ChevronLeft size={16} />
-            <span>Previous</span>
-          </Button>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className={styles.paginationButton}
-          >
-            <span>Next</span>
-            <ChevronRight size={16} />
-          </Button>
-        </div>
-      )}
+      <DataTable data={products} columns={columns} pageSize={10} />
     </div>
   );
 };

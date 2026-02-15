@@ -8,8 +8,7 @@
 
 .tableWrapper {
   width: 100%;
-  flex: 1;
-  overflow: auto; 
+  overflow: auto;
   position: relative;
   -webkit-overflow-scrolling: touch;
   background-color: var(--color-black-2);
@@ -149,12 +148,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px; 
+  padding: 12px;
   color: var(--color-white);
   font-family: "Manrope", sans-serif;
   font-size: 14px;
   background-color: var(--color-black-2);
-  flex-shrink: 0; 
+  flex-shrink: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 

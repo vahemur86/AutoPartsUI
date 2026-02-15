@@ -1,6 +1,15 @@
 import { useTranslation } from "react-i18next";
 
-import { Boxes, Tag, ClipboardCheck, Warehouse, Coins } from "lucide-react";
+import {
+  Boxes,
+  Tag,
+  ClipboardCheck,
+  Warehouse,
+  Coins,
+  Package,
+  Box,
+  Store,
+} from "lucide-react";
 
 // components
 import { ModuleLayout, type NavItem } from "@/components/common";
@@ -31,6 +40,24 @@ export const Warehouses = () => {
       path: "/profit",
       label: t("warehouses.navigation.profit"),
       icon: Coins,
+      showCheckmark: true,
+    },
+    {
+      path: "/add-product",
+      label: t("warehouses.navigation.addProduct"),
+      icon: Package,
+      showCheckmark: true,
+    },
+    {
+      path: "/products",
+      label: t("warehouses.navigation.products"),
+      icon: Box,
+      showCheckmark: true,
+    },
+    {
+      path: "/transfer-to-shop",
+      label: t("warehouses.navigation.transferToShop"),
+      icon: Store,
       showCheckmark: true,
     },
   ];

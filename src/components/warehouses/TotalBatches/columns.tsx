@@ -96,7 +96,6 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
     header: i18next.t("warehouses.totalBatches.columns.updatedAt"),
     cell: (info) => new Date(info.getValue()).toLocaleString(),
   }),
-
   columnHelper.display({
     id: "actions",
     header: i18next.t("common.actions"),

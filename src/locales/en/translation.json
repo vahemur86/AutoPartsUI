@@ -194,14 +194,32 @@
       "failedToDelete": "Failed to delete shop"
     },
     "loading": "Loading shops...",
-    "emptyState": "No shops found."
+    "emptyState": "No shops found.",
+    "products": {
+      "title": "Shop Products",
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "loading": "Loading shop products...",
+      "emptyState": "No products found in this shop.",
+      "columns": {
+        "id": "ID",
+        "productId": "Product ID",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      }
+    }
   },
   "warehouses": {
     "navigation": {
       "totalBatches": "Total Batches",
       "batchesToSale": "Batches To Sale",
       "soldBatches": "Sold Batches",
-      "profit": "Profit"
+      "profit": "Profit",
+      "addProduct": "Add Product",
+      "products": "Products",
+      "transferToShop": "Transfer to Shop"
     },
     "tabs": {
       "addNew": "Add New Warehouse",
@@ -335,6 +353,51 @@
       "errors": {
         "failedToFetch": "Failed to fetch profit report"
       }
+    },
+    "addProduct": {
+      "loading": "Loading products...",
+      "emptyState": "No products found.",
+      "columns": {
+        "id": "ID",
+        "code": "Code",
+        "sku": "SKU",
+        "brand": "Brand",
+        "category": "Category",
+        "originalPrice": "Original Price",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity"
+      },
+      "success": {
+        "productAdded": "Product {{code}} successfully added to warehouse"
+      },
+      "error": {
+        "invalidInputs": "Please fill in all fields (original price, sale price, and quantity)",
+        "failedToAdd": "Failed to add product to warehouse"
+      }
+    },
+    "products": {
+      "loading": "Loading warehouse products...",
+      "emptyState": "No products found in this warehouse.",
+      "columns": {
+        "id": "ID",
+        "productId": "Product ID",
+        "originalPrice": "Original Price",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      }
+    },
+    "transfer": {
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "quantity": "Transfer Quantity",
+      "transfer": "Transfer",
+      "transferring": "Transferring...",
+      "success": "Products transferred successfully",
+      "error": "Failed to transfer products",
+      "validationError": "Please select a warehouse, shop, and at least one product with valid quantity",
+      "noValidProducts": "No valid products selected for transfer"
     }
   },
   "vehicles": {
@@ -744,7 +807,62 @@
     }
   },
   "products": {
-    "iconAlt": "Products icon"
+    "iconAlt": "Products icon",
+    "addNew": "Add New",
+    "loading": "Loading products...",
+    "emptyState": "No products found. Click \"Add New\" to create your first product.",
+    "loadingGeneric": "Loading...",
+    "columns": {
+      "productKey": "Product Key",
+      "sku": "SKU",
+      "brand": "Brand",
+      "category": "Category",
+      "unitType": "Unit Type",
+      "boxSize": "Box Size",
+      "vehicleDependent": "Vehicle Dependent",
+      "actions": "Actions"
+    },
+    "mobile": {
+      "actions": "Actions",
+      "sku": "SKU",
+      "code": "Code",
+      "brand": "BRAND",
+      "category": "CATEGORY",
+      "unitType": "UNIT TYPE",
+      "boxSize": "BOX SIZE",
+      "vehicleDependent": "VEHICLE DEPENDENT",
+      "viewMore": "View more",
+      "viewLess": "View less"
+    },
+    "form": {
+      "addProduct": "Add Product",
+      "addNewProduct": "Add New Product",
+      "editProduct": "Edit Product",
+      "productKey": "Product Key",
+      "sku": "SKU",
+      "brand": "Brand",
+      "category": "Category",
+      "unitType": "Unit Type",
+      "boxSize": "Box size",
+      "vehicleDependent": "Vehicle Dependent",
+      "type": "Type",
+      "select": "Select"
+    },
+    "success": {
+      "productCreated": "Product created successfully",
+      "productUpdated": "Product updated successfully",
+      "productDeleted": "Product deleted successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create product",
+      "failedToUpdate": "Failed to update product",
+      "failedToDelete": "Failed to delete product"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "idPrefix": "ID: "
   },
   "translation": {
     "tabs": {
