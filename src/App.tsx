@@ -15,11 +15,11 @@ import { Settings } from "@/pages/Settings/index";
 import { Warehouses } from "@/pages/Warehouses/index";
 import { Shops } from "@/pages/Shops/index";
 import { Login } from "@/pages/Login/index";
-import { Products } from "@/pages/Products";
 import { UserManagement } from "@/pages/Users";
 import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { Reports } from "@/pages/Reports";
+import { Products } from "@/pages/Products";
 
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -51,6 +51,10 @@ import { ProfitReport } from "@/components/warehouses/ProfitReport";
 import { AddProduct } from "@/components/warehouses/AddProduct";
 import { WarehouseProducts } from "@/components/warehouses/WarehouseProducts";
 import { TransferToShop } from "@/components/warehouses/TransferToShop";
+
+// Products components
+import { GeneralProducts } from "@/components/products/General";
+import { IronProducts } from "@/components/products/IronProducts";
 
 // Stores
 import { store } from "@/store/store";
@@ -159,7 +163,15 @@ export const App = () => {
                 <Route path="transfer-to-shop" element={<TransferToShop />} />
               </Route>
 
-              <Route path="products" element={<Products />} />
+              <Route path="products" element={<Products />}>
+                <Route
+                  index
+                  element={<Navigate to="products-list" replace />}
+                />
+                <Route path="products-list" element={<GeneralProducts />} />
+                <Route path="iron-products" element={<IronProducts />} />
+              </Route>
+
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="customers" element={<Customers />} />

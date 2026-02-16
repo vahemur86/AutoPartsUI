@@ -69,7 +69,6 @@ export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
 
-    // Armenian business logic: remove leading zero
     if (selectedCountry === "AM" && value.startsWith("0")) {
       value = value.substring(1);
     }

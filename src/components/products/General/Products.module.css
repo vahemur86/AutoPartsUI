@@ -1,0 +1,45 @@
+.productsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+}
+
+.tableContainer {
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.languagesHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.addButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.addButtonText {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-secondary-500);
+}
+
+.detailContainer {
+  padding: 24px 32px 32px 64px;
+  background-color: rgba(255, 255, 255, 0.015);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .productsWrapper {
+    padding: 16px;
+  }
+}

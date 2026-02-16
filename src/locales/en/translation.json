@@ -832,6 +832,10 @@
     "loading": "Loading products...",
     "emptyState": "No products found. Click \"Add New\" to create your first product.",
     "loadingGeneric": "Loading...",
+    "navigation": {
+      "products": "Products",
+      "ironProducts": "Iron Products"
+    },
     "columns": {
       "productKey": "Product Key",
       "sku": "SKU",
@@ -840,6 +844,9 @@
       "unitType": "Unit Type",
       "boxSize": "Box Size",
       "vehicleDependent": "Vehicle Dependent",
+      "code": "Code",
+      "name": "Name",
+      "price": "Unit Price",
       "actions": "Actions"
     },
     "mobile": {
@@ -866,17 +873,21 @@
       "boxSize": "Box size",
       "vehicleDependent": "Vehicle Dependent",
       "type": "Type",
+      "editPrice": "Edit Price",
+      "unitPrice": "Unit Price",
       "select": "Select"
     },
     "success": {
       "productCreated": "Product created successfully",
       "productUpdated": "Product updated successfully",
-      "productDeleted": "Product deleted successfully"
+      "productDeleted": "Product deleted successfully",
+      "priceUpdated": "Product price updated successfully"
     },
     "error": {
       "failedToCreate": "Failed to create product",
       "failedToUpdate": "Failed to update product",
-      "failedToDelete": "Failed to delete product"
+      "failedToDelete": "Failed to delete product",
+      "failedToUpdatePrice": "Failed to update product price"
     },
     "pagination": {
       "previous": "Previous",

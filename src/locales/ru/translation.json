@@ -831,6 +831,10 @@
     "loading": "Загрузка товаров...",
     "emptyState": "Товары не найдены. Нажмите \"Добавить новый\", чтобы создать первый товар.",
     "loadingGeneric": "Загрузка...",
+    "navigation": {
+      "products": "Продукты",
+      "ironProducts": "Железные изделия"
+    },
     "columns": {
       "productKey": "Код товара",
       "sku": "SKU",
@@ -839,6 +843,9 @@
       "unitType": "Тип единицы",
       "boxSize": "Размер коробки",
       "vehicleDependent": "Зависит от транспорта",
+      "code": "Код",
+      "name": "Наименование",
+      "price": "Цена за единицу",
       "actions": "Действия"
     },
     "mobile": {
@@ -865,17 +872,21 @@
       "boxSize": "Размер коробки",
       "vehicleDependent": "Зависит от транспорта",
       "type": "Введите",
+      "editPrice": "Изменить цену",
+      "unitPrice": "Цена за единицу",
       "select": "Выберите"
     },
     "success": {
       "productCreated": "Товар успешно создан",
       "productUpdated": "Товар успешно обновлен",
-      "productDeleted": "Товар успешно удален"
+      "productDeleted": "Товар успешно удален",
+      "priceUpdated": "Цена товара успешно обновлена"
     },
     "error": {
       "failedToCreate": "Не удалось создать товар",
       "failedToUpdate": "Не удалось обновить товар",
-      "failedToDelete": "Не удалось удалить товар"
+      "failedToDelete": "Не удалось удалить товар",
+      "failedToUpdatePrice": "Не удалось обновить цену товара"
     },
     "pagination": {
       "previous": "Предыдущая",

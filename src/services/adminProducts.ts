@@ -30,7 +30,7 @@ export const buyIron = async (
 export const updateProductPrice = async (
   productId: number,
   payload: UpdateProductPricePayload,
-  cashRegisterId: number,
+  cashRegisterId?: number,
 ) => {
   try {
     const response = await api.post(
@@ -46,10 +46,13 @@ export const updateProductPrice = async (
   }
 };
 
-export const getIronProducts = async (
-  cashRegisterId: number,
-  lang: string = "en",
-) => {
+export const getIronProducts = async ({
+  cashRegisterId,
+  lang = "en",
+}: {
+  cashRegisterId?: number;
+  lang: string;
+}) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron`, {
       params: { lang: lang === "am" ? "hy" : lang },
