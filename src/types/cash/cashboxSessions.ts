@@ -12,6 +12,9 @@ export interface BatchItem {
   ptPerKg_g: number;
   pdPerKg_g: number;
   rhPerKg_g: number;
+  ptPricePerKg: number;
+  pdPricePerKg: number;
+  rhPricePerKg: number;
   supplierClientId: number;
   supplierClientName: string;
   supplierClientPhone: string;

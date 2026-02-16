@@ -335,6 +335,19 @@
   color: #ef4444;
 }
 
+.metalPricesFooter {
+  display: flex;
+  justify-content: flex-end; 
+  gap: 10px;
+  font-size: 11px;
+  color: white;
+  margin-top: 2px;
+}
+
+.metalPricesFooter span {
+  white-space: nowrap;
+}
+
 @media (max-width: 1024px) {
   .detailHeaderSection {
     flex-direction: column;
