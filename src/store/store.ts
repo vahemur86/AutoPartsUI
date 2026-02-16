@@ -20,6 +20,10 @@ import offerOptionsReducer from "./slices/offerOptionsSlice";
 import salesLotsReducer from "./slices/warehouses/salesLotsSlice";
 import reportsReducer from "./slices/warehouses/reportsSlice";
 import powderSalesReducer from "./slices/warehouses/powderSalesSlice";
+import warehouseProductsReducer from "./slices/warehouses/productsSlice";
+import shopProductsReducer from "./slices/shops/productsSlice";
+import customersReducer from "./slices/customersSlice";
+import adminProductsReducer from "./slices/adminProductsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -44,6 +48,10 @@ export const store = configureStore({
     salesLots: salesLotsReducer,
     warehousesReports: reportsReducer,
     powderSales: powderSalesReducer,
+    warehouseProducts: warehouseProductsReducer,
+    shopProducts: shopProductsReducer,
+    customers: customersReducer,
+    adminProducts: adminProductsReducer,
   },
 });
 

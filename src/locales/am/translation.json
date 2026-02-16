@@ -31,10 +31,24 @@
     "next": "Հաջորդ",
     "page": "Էջ",
     "of": "ից",
+    "close": "Փակել",
     "areYouSure": "Համոզվա՞ծ եք, որ ցանկանում եք շարունակել:",
     "loading": "Բեռնվում է...",
     "noData": "Տվյալներ չկան",
-    "select": "Ընտրեք"
+    "select": "Ընտրեք",
+    "apply": "Կիրառել",
+    "all": "Բոլորը",
+    "createdAt": "Ստեղծման ամսաթիվ",
+    "details": "Մանրամասներ",
+    "buy": "Գնել",
+    "gender": {
+      "unknown": "Անհայտ",
+      "male": "Արական",
+      "female": "Իգական"
+    },
+    "error": {
+      "missingData": "Անհրաժեշտ տվյալները բացակայում են (Դրամարկղի ID)"
+    }
   },
   "currencies": {
     "USD": "ԱՄՆ դոլար",
@@ -58,9 +72,9 @@
       "offerIncreaseOptions": "Առաջարկի ավելացման տարբերակներ",
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
-      "customerTypes": "Հաճախորդների տեսակներ",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կատալիզատորի բաքեր",
+      "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
       "cashRegisters": "Դրամարկղեր"
     }
@@ -68,7 +82,7 @@
   "offers": {
     "selectShop": "Ընտրել խանութը",
     "shop": "Խանութ",
-    "addOption": "Ավելացնել տարբերակ",
+    "addOption": "Ավելացնել",
     "addNew": "Ավելացնել նորը",
     "editOption": "Խմբագրել տարբերակը",
     "deleteOption": "Ջնջել տարբերակը",
@@ -104,7 +118,23 @@
       "batchReports": "Խմբաքանակի հաշվետվություններ",
       "openSessions": "Բաց հերթափոխեր",
       "powderBatches": "Փոշու խմբաքանակներ",
-      "cashboxSessionsReports": "Դրամարկղի հերթափոխի հաշվետվություններ"
+      "cashboxSessionsReports": "Դրամարկղի հերթափոխի հաշվետվություններ",
+      "ironProducts": "Երկաթի ապրանքներ"
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "Ապրանքի ID"
+      }
+    },
+    "filters": {
+      "fromUtc": "Սկսած (UTC)",
+      "toUtc": "Մինչև (UTC)",
+      "selectDate": "Ընտրել ամսաթիվը",
+      "operatorUserId": "Օպերատորի ID",
+      "cashRegisterId": "Դրամարկղի ID"
+    },
+    "errors": {
+      "failedToFetch": "Չհաջողվեց բեռնել հաշվետվությունները"
     }
   },
   "exchangeRates": {
@@ -184,14 +214,32 @@
       "failedToDelete": "Խանութի ջնջումը ձախողվեց"
     },
     "loading": "Խանութների բեռնում...",
-    "emptyState": "Խանութներ չեն գտնվել:"
+    "emptyState": "Խանութներ չեն գտնվել:",
+    "products": {
+      "title": "Խանութի ապրանքներ",
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութ",
+      "loading": "Խանութի ապրանքների բեռնում...",
+      "emptyState": "Այս խանութում ապրանքներ չեն գտնվել։",
+      "columns": {
+        "id": "ID",
+        "productId": "Ապրանքի ID",
+        "salePrice": "Վաճառքի գին",
+        "quantity": "Քանակ",
+        "createdAt": "Ստեղծվել է",
+        "updatedAt": "Թարմացվել է"
+      }
+    }
   },
   "warehouses": {
     "navigation": {
       "totalBatches": "Խմբաքանակների քանակը",
       "batchesToSale": "Վաճառքի ենթակա խմբաքանակներ",
       "soldBatches": "Վաճառված խմբաքանակներ",
-      "profit": "Շահույթ"
+      "profit": "Շահույթ",
+      "addProduct": "Ավելացնել ապրանք",
+      "products": "Ապրանքներ պահեստում",
+      "transferToShop": "Փոխանցել խանութ"
     },
     "tabs": {
       "addNew": "Ավելացնել նոր պահեստ",
@@ -228,9 +276,9 @@
         "powderBatchId": "Պոդերի խմբաքանակի ID",
         "remainingPowderKg": "Մնացած պոդեր (կգ)",
         "remainingCostAmd": "Մնացած արժեք (AMD)",
-        "remainingPt_g": "Մնացած Pt (գ)",
-        "remainingPd_g": "Մնացած Pd (գ)",
-        "remainingRh_g": "Մնացած Rh (գ)",
+        "remainingPt_g": "Pt (գ)",
+        "remainingPd_g": "Pd (գ)",
+        "remainingRh_g": "Rh (գ)",
         "initialPowderKg": "Սկզբնական պոդեր (կգ)",
         "initialCostAmd": "Սկզբնական արժեք (AMD)",
         "status": "Կարգավիճակ",
@@ -325,6 +373,51 @@
       "errors": {
         "failedToFetch": "Շահույթի հաշվետվության բեռնումը ձախողվեց"
       }
+    },
+    "addProduct": {
+      "loading": "Ապրանքների բեռնում...",
+      "emptyState": "Ապրանքներ չեն գտնվել:",
+      "columns": {
+        "id": "ID",
+        "code": "Կոդ",
+        "sku": "SKU",
+        "brand": "Բրենդ",
+        "category": "Կատեգորիա",
+        "originalPrice": "Սկզբնական գին",
+        "salePrice": "Վաճառքի գին",
+        "quantity": "Քանակ"
+      },
+      "success": {
+        "productAdded": "{{code}} ապրանքը հաջողությամբ ավելացվեց պահեստ"
+      },
+      "error": {
+        "invalidInputs": "Խնդրում ենք լրացնել բոլոր դաշտերը (սկզբնական գին, վաճառքի գին և քանակ)",
+        "failedToAdd": "Չհաջողվեց ավելացնել ապրանքը պահեստ"
+      }
+    },
+    "products": {
+      "loading": "Պահեստի ապրանքների բեռնում...",
+      "emptyState": "Այս պահեստում ապրանքներ չեն գտնվել։",
+      "columns": {
+        "id": "ID",
+        "productId": "Ապրանքի ID",
+        "originalPrice": "Սկզբնական գին",
+        "salePrice": "Վաճառքի գին",
+        "quantity": "Քանակ",
+        "createdAt": "Ստեղծվել է",
+        "updatedAt": "Թարմացվել է"
+      }
+    },
+    "transfer": {
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութ",
+      "quantity": "Փոխանցման քանակ",
+      "transfer": "Փոխանցել",
+      "transferring": "Փոխանցվում է...",
+      "success": "Ապրանքները հաջողությամբ փոխանցվեցին",
+      "error": "Ապրանքների փոխանցումը ձախողվեց",
+      "validationError": "Խնդրում ենք ընտրել պահեստ, խանութ և առնվազն մեկ ապրանք վավեր քանակով",
+      "noValidProducts": "Փոխանցման համար վավեր ապրանքներ չկան"
     }
   },
   "vehicles": {
@@ -449,7 +542,7 @@
       "weight": "Քաշ (գ)",
       "ptWeight": "Պլատինի քաշ (գ)",
       "pdWeight": "Պալադիումի քաշ (գ)",
-      "rhWeight": "Ռոդիումի քաշ (գ)",
+      "rhodiumWeight": "Ռոդիումի քաշ (գ)",
       "enterValidWeight": "Մուտքագրեք վավեր քաշ",
       "enabled": "Միացված"
     },
@@ -613,12 +706,19 @@
         "status": "Կարգավիճակ"
       },
       "details": {
+        "individualIntakes": "Առանձին Հարցումներ",
         "analysis": "Խմբաքանակի տարրերի վերլուծություն",
         "intakeId": "Հարցում",
         "powder": "Փոշի",
         "pt": "Պլատին (Pt)",
         "pd": "Պալադիում (Pd)",
-        "rh": "Ռոդիում (Rh)"
+        "rh": "Ռոդիում (Rh)",
+        "cost": "Ինքնարժեք",
+        "totalCost": "Ընդհանուր ինքնարժեք",
+        "sales": "Կանխատեսվող վաճառք",
+        "profit": "Սպասվող շահույթ",
+        "percent": "Բոնուսային տոկոս",
+        "fxRate": "Փոխարժեք (AMD)"
       }
     },
     "openSessions": {
@@ -726,7 +826,73 @@
     }
   },
   "products": {
-    "iconAlt": "Ապրանքների պատկերակ"
+    "iconAlt": "Ապրանքների պատկերակ",
+    "addNew": "Ավելացնել նորը",
+    "loading": "Ապրանքների բեռնում...",
+    "emptyState": "Ապրանքներ չեն գտնվել: Կտտացրեք \"Ավելացնել նորը\" ձեր առաջին ապրանքը ստեղծելու համար:",
+    "loadingGeneric": "Բեռնվում է...",
+    "navigation": {
+      "products": "Ապրանքներ",
+      "ironProducts": "Երկաթի ապրանքներ"
+    },
+    "columns": {
+      "productKey": "Ապրանքի կոդ",
+      "sku": "SKU",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "unitType": "Միավորի տեսակ",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է տրանսպորտից",
+      "code": "Կոդ",
+      "name": "Անվանում",
+      "price": "Միավորի գին",
+      "actions": "Գործողություններ"
+    },
+    "mobile": {
+      "actions": "Գործողություններ",
+      "sku": "SKU",
+      "code": "Կոդ",
+      "brand": "ԲՐԵՆԴ",
+      "category": "ԿԱՏԵԳՈՐԻԱ",
+      "unitType": "ՄԻԱՎՈՐԻ ՏԵՍԱԿ",
+      "boxSize": "ՏՈՒՓԻ ՉԱՓ",
+      "vehicleDependent": "ԿԱԽՎԱԾ Է ՏՐԱՆՍՊՈՐՏԻՑ",
+      "viewMore": "Տեսնել ավելին",
+      "viewLess": "Տեսնել պակաս"
+    },
+    "form": {
+      "addProduct": "Ավելացնել ապրանք",
+      "addNewProduct": "Ավելացնել նոր ապրանք",
+      "editProduct": "Խմբագրել ապրանք",
+      "productKey": "Ապրանքի կոդ",
+      "sku": "SKU",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "unitType": "Միավորի տեսակ",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է տրանսպորտից",
+      "type": "Մուտքագրել",
+      "editPrice": "Խմբագրել գինը",
+      "unitPrice": "Միավորի գին",
+      "select": "Ընտրել"
+    },
+    "success": {
+      "productCreated": "Ապրանքը հաջողությամբ ստեղծվեց",
+      "productUpdated": "Ապրանքը հաջողությամբ թարմացվեց",
+      "productDeleted": "Ապրանքը հաջողությամբ ջնջվեց",
+      "priceUpdated": "Ապրանքի գինը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել ապրանք",
+      "failedToUpdate": "Չհաջողվեց թարմացնել ապրանք",
+      "failedToDelete": "Չհաջողվեց ջնջել ապրանք",
+      "failedToUpdatePrice": "Չհաջողվեց թարմացնել ապրանքի գինը"
+    },
+    "pagination": {
+      "previous": "Նախորդ",
+      "next": "Հաջորդ"
+    },
+    "idPrefix": "ID: "
   },
   "translation": {
     "tabs": {
@@ -821,6 +987,9 @@
     "acceptAndPurchase": "Գնել",
     "search": "Որոնել հաճախորդ",
     "searchByCountryCode": "Որոնել ըստ կոդի",
+    "fullName": "Ամբողջական անուն",
+    "fullNamePlaceholder": "Մուտքագրեք անունը",
+    "gender": "Սեռ",
     "clientType": {
       "label": "Հաճախորդի տեսակ",
       "regular": "Սովորական"
@@ -837,15 +1006,20 @@
     "error": {
       "failedToSearch": "Հաճախորդ որոնելը ձախողվեց",
       "missingData": "Տվյալները բացակայում են"
+    },
+    "info": {
+      "newCustomer": "Հաճախորդը չի գտնվել։ Դուք կարող եք գրանցել նոր հաճախորդ:"
     }
   },
   "liveMarketPrices": {
     "title": "Շուկայական գներ",
     "live": "ՈՒՂՂԱԿԻ",
+    "exchangeRate": "Փոխարժեք",
     "platinum": "Պլատին",
     "palladium": "Պալադիում",
     "rhodium": "Ռոդիում",
     "source": "Kitco",
+    "bankSource": "Փոխարժեք (USD / AMD)",
     "loading": "Բեռնվում է...",
     "updated": "Թարմացվել է {{time}}"
   },
@@ -895,10 +1069,14 @@
     "closeSession": "Փակել հերթափոխը",
     "cashAmount": "Կանխիկը դրամարկղում",
     "cashAmountPlaceholder": "Մուտքագրեք կանխիկ գումարը",
+    "buyIron": "Գնել երկաթ",
+    "ironType": "Երկաթի տեսակ",
+    "weightKg": "Քաշ (կգ)",
     "success": {
       "sessionOpened": "Հերթափոխը հաջողությամբ բացվեց",
       "sessionClosed": "Հերթափոխը հաջողությամբ փակվեց",
-      "intakeCreated": "Հարցումը հաջողությամբ ստեղծվեց"
+      "intakeCreated": "Հարցումը հաջողությամբ ստեղծվեց",
+      "ironSold": "Երկաթը հաջողությամբ գնվել է"
     }
   },
   "customers": {
@@ -913,9 +1091,12 @@
       "phone": "Հեռախոս",
       "phonePlaceholder": "Ավելացնել հեռախոսահամար",
       "fullName": "Ամբողջական անուն",
+      "fullNamePlaceholder": "Մուտքագրեք անունը",
+      "gender": "Սեռ",
       "customerType": "Հաճախորդի տեսակ",
       "selectCustomerType": "Ընտրեք հաճախորդի տեսակ",
-      "allTypes": "Բոլոր տեսակները"
+      "allTypes": "Բոլոր տեսակները",
+      "notes": "Նշումներ"
     },
     "validation": {
       "phoneRequired": "Հեռախոսահամարը պարտադիր է",

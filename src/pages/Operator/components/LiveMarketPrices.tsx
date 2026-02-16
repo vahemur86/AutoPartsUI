@@ -1,19 +1,26 @@
 import { useTranslation } from "react-i18next";
+
+// icons
+import { Coins } from "lucide-react";
+
+// styles
 import styles from "../OperatorPage.module.css";
 
 interface MetalPriceProps {
   name: string;
   price: string;
   source: string;
-  iconColor: "platinum" | "palladium" | "rhodium";
+  iconColor: "platinum" | "palladium" | "rhodium" | "exchange";
 }
 
 const MetalPrice = ({ name, price, source, iconColor }: MetalPriceProps) => (
   <div className={styles.metalRow}>
-    <div className={`${styles.metalIcon} ${styles[iconColor]}`} />
+    <div className={`${styles.metalIcon} ${styles[iconColor]}`}>
+      {iconColor === "exchange" && <Coins size={16} color="white" />}
+    </div>
     <div className={styles.metalInfo}>
       <span className={styles.metalName}>{name}</span>
-      <span className={styles.metalPrice}>{price} / g</span>
+      <span className={styles.metalPrice}>{price}</span>
       <span className={styles.metalSource}>{source}</span>
     </div>
   </div>
@@ -25,6 +32,7 @@ interface LiveMarketPricesProps {
   rhPricePerGram?: number;
   currencyCode?: string;
   updatedAt?: string;
+  usdAmdRate?: number;
 }
 
 export const LiveMarketPrices = ({
@@ -33,6 +41,7 @@ export const LiveMarketPrices = ({
   rhPricePerGram,
   currencyCode = "USD",
   updatedAt,
+  usdAmdRate,
 }: LiveMarketPricesProps) => {
   const { t } = useTranslation();
 
@@ -44,32 +53,23 @@ export const LiveMarketPrices = ({
     return `${currencySymbol} ${pricePerGram.toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    })}`;
+    })} / g`;
   };
 
   const formatUpdateTime = (dateString?: string): string => {
-    if (!dateString) {
-      return t("liveMarketPrices.updated", {
-        time: new Date().toLocaleTimeString(),
-      });
-    }
-    try {
-      const date = new Date(dateString);
-      return t("liveMarketPrices.updated", {
-        time: date.toLocaleTimeString(),
-      });
-    } catch {
-      return t("liveMarketPrices.updated", {
-        time: new Date().toLocaleTimeString(),
-      });
-    }
+    const date = dateString ? new Date(dateString) : new Date();
+    const isValidDate = !isNaN(date.getTime());
+    const finalDate = isValidDate ? date : new Date();
+
+    return t("liveMarketPrices.updated", {
+      time: finalDate.toLocaleTimeString(),
+    });
   };
 
   return (
     <div className={styles.marketPricesCard}>
       <div className={styles.marketPricesHeader}>
         <h2 className={styles.cardTitle}>{t("liveMarketPrices.title")}</h2>
-
         <div className={styles.liveIndicator}>
           <span className={styles.liveDot} />
           <span className={styles.liveText}>{t("liveMarketPrices.live")}</span>
@@ -79,6 +79,15 @@ export const LiveMarketPrices = ({
       <div className={styles.divider} />
 
       <div className={styles.metalsList}>
+        {usdAmdRate && (
+          <MetalPrice
+            name={t("liveMarketPrices.exchangeRate")}
+            price={`$ 1 / ${usdAmdRate.toLocaleString()} AMD`}
+            source={t("liveMarketPrices.bankSource")}
+            iconColor="exchange"
+          />
+        )}
+
         <MetalPrice
           name={t("liveMarketPrices.platinum")}
           price={formatPrice(ptPricePerGram)}

@@ -7,24 +7,47 @@ export interface CustomerType {
 }
 
 export interface Customer {
-  id?: number;
-  phone?: string;
-  fullName?: string | null;
-  notes?: string | null;
-  customerTypeId?: number;
-  customerType?: CustomerType;
+  id: number;
+  phone: string;
+  fullName: string | null;
+  gender: number;
+  notes: string | null;
+  customerTypeId: number;
+  customerType: CustomerType;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IntakeCustomer {
+  phone: string;
+  fullName: string;
+  gender: number;
+  notes?: string;
+}
+
+export interface CreateCustomerRequest {
+  phone: string;
+  fullName: string;
+  gender: number;
+  notes?: string;
+}
+
+export interface CustomersResponse {
+  results: Customer[];
+  totalItems: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface Intake {
   id?: number;
   shopId: number;
-  customerPhone: string;
+  customer: IntakeCustomer;
   powderWeightTotal: number;
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;
   currencyCode: string;
-  customer?: Customer;
 }
 
 export interface IntakeResponse {
@@ -35,6 +58,7 @@ export interface IntakeResponse {
   customer: {
     id: number;
     phone: string;
+    gender: number;
     customerTypeId: number;
     customerType: {
       id: number;

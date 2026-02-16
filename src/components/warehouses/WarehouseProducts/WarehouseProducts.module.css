@@ -1,0 +1,36 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.warehouseSelector {
+  min-width: 200px;
+}
+
+.tableSection {
+  width: 100%;
+}
+
+.loading,
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+

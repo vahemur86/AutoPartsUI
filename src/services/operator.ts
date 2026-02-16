@@ -4,7 +4,7 @@ import api from ".";
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { Intake, NewPropose } from "@/types/operator";
+import type { Intake, IntakeResponse, NewPropose } from "@/types/operator";
 
 export const createIntake = async ({
   intake,
@@ -12,7 +12,7 @@ export const createIntake = async ({
 }: {
   intake: Intake;
   cashRegisterId: number;
-}) => {
+}): Promise<IntakeResponse> => {
   try {
     const response = await api.post(`/catalyst/intakes`, intake, {
       headers: {
@@ -24,13 +24,14 @@ export const createIntake = async ({
     throw new Error(getApiErrorMessage(error, "Failed to create intake."));
   }
 };
+
 export const getIntake = async ({
   intakeId,
   cashRegisterId,
 }: {
   intakeId: number;
   cashRegisterId: number;
-}) => {
+}): Promise<IntakeResponse> => {
   try {
     const response = await api.get(`/catalyst/intakes/${intakeId}`, {
       headers: {

@@ -91,10 +91,7 @@ export const BatchesToSale = () => {
     setLotToSell(null);
   };
 
-  const handleSellFieldChange = (
-    field: "currencyCode",
-    value: string,
-  ) => {
+  const handleSellFieldChange = (field: "currencyCode", value: string) => {
     setSellForm((prev) => ({
       ...prev,
       [field]: value,
@@ -212,6 +209,9 @@ export const BatchesToSale = () => {
             manualPagination={true}
             pageCount={pageCount}
             pageIndex={currentPageIndex}
+            frozenConfig={{
+              right: ["actions"],
+            }}
             getRowClassName={(row) =>
               checkIsToday(row.createdAt) ? styles.todayRow : ""
             }

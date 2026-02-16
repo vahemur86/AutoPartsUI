@@ -1,0 +1,53 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.selectors {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.selector {
+  min-width: 200px;
+}
+
+.tableSection {
+  width: 100%;
+}
+
+.transferSection {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading,
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.inputCell {
+  min-width: 120px;
+}

@@ -9,9 +9,21 @@ export interface BatchItem {
   id: number;
   intakeId: number;
   powderKg: number;
-  ptTotal_g: number;
-  pdTotal_g: number;
-  rhTotal_g: number;
+  ptPerKg_g: number;
+  pdPerKg_g: number;
+  rhPerKg_g: number;
+  ptPricePerKg: number;
+  pdPricePerKg: number;
+  rhPricePerKg: number;
+  supplierClientId: number;
+  supplierClientName: string;
+  supplierClientPhone: string;
+  supplierClientType: string;
+  supplierClientTypePercent: number;
+  fxRateToAmd: number;
+  costAmd: number;
+  estimatedSalesAmd: number;
+  expectedProfitAmd: number;
 }
 
 export interface Batch {
@@ -26,6 +38,7 @@ export interface Batch {
   ptPerKg_g: number;
   pdPerKg_g: number;
   rhPerKg_g: number;
+  costTotalAmd: number;
   status: number;
   createdAt: string;
 }

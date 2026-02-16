@@ -1,10 +1,20 @@
+// components
+import { SectionHeader } from "@/components/common";
+import { ShopProducts } from "@/components/shops/ShopProducts";
+import { useTranslation } from "react-i18next";
+import { Store } from "lucide-react";
+// styles
 import styles from "./Shops.module.css";
 
 export const Shops = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className={styles.shopsPage}>
-      <h1>Shops</h1>
-      {/* Shops page content and child components will go here */}
-    </div>
+    <>
+      <SectionHeader title={t("header.shops")} icon={<Store />} />
+      <div className={styles.shopsPage}>
+        <ShopProducts />
+      </div>
+    </>
   );
 };

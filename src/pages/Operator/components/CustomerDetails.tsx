@@ -3,16 +3,17 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
   parsePhoneNumberFromString,
-  getCountries,
-  getCountryCallingCode,
   type CountryCode,
 } from "libphonenumber-js";
 
 // ui-kit
-import { TextField, Button, Select } from "@/ui-kit";
+import { TextField, Button } from "@/ui-kit";
 
 // icons
-import { Search, User, Check } from "lucide-react";
+import { User, Check } from "lucide-react";
+
+// components
+import { CountryPhoneInput, GenderSelect } from "@/components/common";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -21,78 +22,67 @@ import {
   acceptIntake as acceptIntakeThunk,
 } from "@/store/slices/operatorSlice";
 import { fetchBalance } from "@/store/slices/cash/registersSlice";
+import { fetchCustomers } from "@/store/slices/customersSlice";
 
 // styles
 import styles from "../OperatorPage.module.css";
 
 interface CustomerDetailsProps {
-  customerPhone?: string;
-  onPhoneChange?: (val: string) => void;
+  customerData: {
+    phone: string;
+    fullName: string;
+    gender: number;
+    notes: string;
+  };
+  onCustomerChange: (data: {
+    phone: string;
+    fullName: string;
+    gender: number;
+    notes: string;
+  }) => void;
   phoneError?: boolean;
   onSuccess?: () => void;
 }
 
-const getFlagEmoji = (countryCode: string) =>
-  countryCode
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
-
 export const CustomerDetails = ({
-  customerPhone = "",
-  onPhoneChange,
+  customerData,
+  onCustomerChange,
   phoneError,
   onSuccess,
 }: CustomerDetailsProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { intake, isLoading } = useAppSelector((state) => state.operator);
+
+  const { intake, isLoading: isIntakeLoading } = useAppSelector(
+    (state) => state.operator,
+  );
+
+  const { items: searchedCustomers, isLoading: isSearching } = useAppSelector(
+    (state) => state.customers,
+  );
 
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [isAccepting, setIsAccepting] = useState(false);
-
   const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
 
-  const allCountryOptions = useMemo(() => {
-    const regionNames = new Intl.DisplayNames([i18n.language], {
-      type: "region",
-    });
+  const [hasSearched, setHasSearched] = useState(false);
 
-    const list = getCountries().map((country) => ({
-      code: country,
-      label: `${getFlagEmoji(country)} +${getCountryCallingCode(country)}`,
-      dialCode: `+${getCountryCallingCode(country)}`,
-      name: regionNames.of(country) || country,
-    }));
-
-    return list.sort((a, b) => {
-      if (a.code === "AM") return -1;
-      if (b.code === "AM") return 1;
-      return a.name.localeCompare(b.name);
-    });
-  }, [i18n.language]);
-
-  const dialCode = useMemo(
-    () =>
-      allCountryOptions.find((c) => c.code === selectedCountry)?.dialCode || "",
-    [selectedCountry, allCountryOptions],
+  const activeCustomer = useMemo(
+    () => searchedCustomers[0],
+    [searchedCustomers],
   );
 
-  const getIsValid = useCallback(
-    (phone: string) => {
-      const fullNumber = phone.startsWith("+") ? phone : `${dialCode}${phone}`;
-      const phoneNumber = parsePhoneNumberFromString(
-        fullNumber,
-        selectedCountry,
-      );
-      return phoneNumber?.isValid() ?? false;
-    },
-    [dialCode, selectedCountry],
-  );
-
-  const isPhoneValid = getIsValid(customerPhone);
+  const isPhoneValid = useMemo(() => {
+    if (!customerData.phone) return false;
+    const phoneNumber = parsePhoneNumberFromString(
+      customerData.phone,
+      selectedCountry,
+    );
+    return phoneNumber?.isValid() ?? false;
+  }, [customerData.phone, selectedCountry]);
 
   const handleSearch = useCallback(async () => {
-    if (!customerPhone?.trim()) {
+    if (!customerData.phone?.trim()) {
       setLocalHasTriedAccept(true);
       toast.error(t("customerDetails.validation.enterCustomerPhone"));
       return;
@@ -108,25 +98,45 @@ export const CustomerDetails = ({
     if (!userDataRaw) return;
 
     try {
-      const parsed = JSON.parse(userDataRaw);
-      const cashRegisterId = Number(parsed.cashRegisterId);
+      const { cashRegisterId } = JSON.parse(userDataRaw);
 
-      if (!intake?.id || !cashRegisterId) {
-        throw new Error(t("customerDetails.error.missingData"));
-      }
-
-      await dispatch(
-        fetchIntake({ intakeId: intake.id, cashRegisterId }),
+      const response = await dispatch(
+        fetchCustomers({
+          phone: customerData.phone,
+          cashRegisterId: Number(cashRegisterId),
+        }),
       ).unwrap();
-      toast.success(t("customerDetails.success.customerFound"));
-    } catch (error: unknown) {
-      toast.error(
-        typeof error === "string"
-          ? error
-          : t("customerDetails.error.failedToSearch"),
-      );
+
+      setHasSearched(true);
+
+      if (response.results && response.results.length > 0) {
+        const foundCustomer = response.results[0];
+
+        onCustomerChange({
+          phone: foundCustomer.phone,
+          fullName: foundCustomer.fullName || "",
+          gender: foundCustomer.gender ?? 0,
+          notes: foundCustomer.notes || "",
+        });
+
+        toast.success(t("customerDetails.success.customerFound"));
+
+        if (intake?.id) {
+          dispatch(fetchIntake({ intakeId: intake.id, cashRegisterId }));
+        }
+      } else {
+        onCustomerChange({
+          ...customerData,
+          fullName: "",
+          gender: 0,
+          notes: "",
+        });
+        toast.info(t("customerDetails.info.newCustomer"));
+      }
+    } catch {
+      toast.error(t("customerDetails.error.failedToSearch"));
     }
-  }, [customerPhone, isPhoneValid, t, intake?.id, dispatch]);
+  }, [customerData, isPhoneValid, t, dispatch, onCustomerChange, intake?.id]);
 
   const handleAccept = useCallback(async () => {
     setLocalHasTriedAccept(true);
@@ -136,7 +146,6 @@ export const CustomerDetails = ({
       setIsAccepting(true);
       const userData = JSON.parse(localStorage.getItem("user_data") ?? "{}");
 
-      // This will update state.operator.error, which OperatorPage is already watching
       await dispatch(
         acceptIntakeThunk({
           intakeId: intake.id,
@@ -148,19 +157,20 @@ export const CustomerDetails = ({
       dispatch(fetchBalance(userData.cashRegisterId));
       onSuccess?.();
       setLocalHasTriedAccept(false);
+      setHasSearched(false);
     } catch {
-      /* Handled by global watcher */
+      // Handled globally
     } finally {
       setIsAccepting(false);
     }
   }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
 
-  const handleInternalPhoneChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setLocalHasTriedAccept(false);
-    onPhoneChange?.(e.target.value);
-  };
+  const isGlobalLoading = isIntakeLoading || isAccepting || isSearching;
+
+  const isFormLocked =
+    isGlobalLoading ||
+    !hasSearched ||
+    (!!activeCustomer && !!customerData.fullName && !isSearching);
 
   return (
     <div className={styles.customerCard}>
@@ -175,50 +185,45 @@ export const CustomerDetails = ({
           <span className={styles.phoneLabel}>
             {t("customerDetails.phone")}
           </span>
-
-          <div className={styles.phoneInputRow}>
-            <div className={styles.countrySelectWrapper}>
-              <Select
-                searchable
-                searchPlaceholder={t("customerDetails.searchByCountryCode")}
-                label={undefined}
-                value={selectedCountry}
-                onChange={(e) => {
-                  setSelectedCountry(e.target.value as CountryCode);
-                  setLocalHasTriedAccept(false);
-                }}
-                containerClassName={styles.countrySelectInner}
-              >
-                {allCountryOptions.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.label}
-                  </option>
-                ))}
-              </Select>
-            </div>
-
-            <div className={styles.phoneFieldWrapper}>
-              <TextField
-                label={undefined}
-                placeholder="91 123456"
-                value={customerPhone}
-                onChange={handleInternalPhoneChange}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                error={phoneError || (localHasTriedAccept && !isPhoneValid)}
-                disabled={isLoading || isAccepting}
-                icon={
-                  <Search
-                    size={16}
-                    onClick={handleSearch}
-                    style={{ cursor: "pointer" }}
-                  />
-                }
-              />
-            </div>
-          </div>
+          <CountryPhoneInput
+            phone={customerData.phone}
+            selectedCountry={selectedCountry}
+            onCountryChange={(country) => {
+              setSelectedCountry(country);
+              onCustomerChange({ ...customerData, phone: "" });
+              setHasSearched(false); // Reset lock on country change
+            }}
+            onPhoneChange={(fullNumber) => {
+              setLocalHasTriedAccept(false);
+              onCustomerChange({ ...customerData, phone: fullNumber });
+              setHasSearched(false); // Reset lock on phone edit
+            }}
+            onSearch={handleSearch}
+            error={phoneError || (localHasTriedAccept && !isPhoneValid)}
+            disabled={isGlobalLoading}
+          />
         </div>
 
-        {intake && (
+        <div className={styles.additionalFields}>
+          <TextField
+            label={t("customerDetails.fullName")}
+            value={customerData.fullName}
+            onChange={(e) =>
+              onCustomerChange({ ...customerData, fullName: e.target.value })
+            }
+            placeholder={t("customerDetails.fullNamePlaceholder")}
+            disabled={isFormLocked}
+          />
+          <GenderSelect
+            value={customerData.gender}
+            onChange={(val) =>
+              onCustomerChange({ ...customerData, gender: val })
+            }
+            disabled={isFormLocked}
+          />
+        </div>
+
+        {activeCustomer && (
           <div className={styles.customerProfile}>
             <div className={styles.profileAvatar}>
               <User size={32} />
@@ -229,7 +234,7 @@ export const CustomerDetails = ({
                   {t("customerDetails.clientType.label")}:{" "}
                 </span>
                 <span className={styles.profileValue}>
-                  {intake.customer?.customerType?.code ?? "-"}
+                  {activeCustomer.customerType?.code ?? "-"}
                 </span>
               </div>
               <div className={styles.profileField}>
@@ -237,8 +242,8 @@ export const CustomerDetails = ({
                   {t("customerDetails.discount")}:{" "}
                 </span>
                 <span className={styles.profileValue}>
-                  {intake.customer?.customerType?.bonusPercent != null
-                    ? `${(intake.customer.customerType.bonusPercent * 100).toFixed(0)}%`
+                  {activeCustomer.customerType?.bonusPercent != null
+                    ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
                     : "0%"}
                 </span>
               </div>
@@ -252,7 +257,7 @@ export const CustomerDetails = ({
             size="small"
             fullWidth
             onClick={handleAccept}
-            disabled={isAccepting || !intake || isLoading}
+            disabled={isGlobalLoading || !intake || !hasSearched}
           >
             <Check size={20} style={{ marginRight: "8px" }} />
             {t("customerDetails.acceptAndPurchase")}

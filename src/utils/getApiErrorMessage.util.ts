@@ -9,24 +9,32 @@ export const getApiErrorMessage = (
   fallback: string,
 ): string => {
   if (error && typeof error === "object") {
-    // Handle AxiosError with response data
-    const axiosError = error as AxiosError<ApiErrorResponse>;
-    if (axiosError.response?.data?.error) {
+    const axiosError = error as AxiosError<ApiErrorResponse | string>;
+
+    // 1. Check if response data is an object with an 'error' property
+    if (
+      typeof axiosError.response?.data === "object" &&
+      axiosError.response?.data?.error
+    ) {
       return axiosError.response.data.error;
     }
-    
-    // Handle Error objects (including those thrown by services)
+
+    // 2. Check if response data is just a plain string (Your current issue)
+    if (typeof axiosError.response?.data === "string") {
+      return axiosError.response.data;
+    }
+
+    // 3. Handle Error objects (including those thrown by services)
     if (error instanceof Error && error.message) {
       return error.message;
     }
-    
-    // Handle AxiosError message
+
+    // 4. Handle Axios default message (e.g., "Network Error")
     if (axiosError.message) {
       return axiosError.message;
     }
   }
-  
-  // Handle string errors (from rejectWithValue)
+
   if (typeof error === "string") {
     return error;
   }

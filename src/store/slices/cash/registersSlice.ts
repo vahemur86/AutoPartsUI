@@ -140,6 +140,7 @@ export const openSession = createAsyncThunk<
     return rejectWithValue(getApiErrorMessage(error, "Failed to open session"));
   }
 });
+
 export const assignOperator = createAsyncThunk<
   void,
   { cashRegisterId: number; userId: number },

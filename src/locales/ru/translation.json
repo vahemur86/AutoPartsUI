@@ -31,10 +31,24 @@
     "next": "Следующая",
     "page": "Страница",
     "of": "из",
+    "close": "Закрыть",
     "areYouSure": "Вы уверены, что хотите продолжить?",
     "loading": "Загрузка...",
     "noData": "Данные отсутствуют",
-    "select": "Выберите"
+    "select": "Выберите",
+    "apply": "Применить",
+    "all": "Все",
+    "createdAt": "Дата создания",
+    "details": "Детали",
+    "buy": "Купить",
+    "gender": {
+      "unknown": "Неизвестно",
+      "male": "Мужской",
+      "female": "Женский"
+    },
+    "error": {
+      "missingData": "Отсутствуют необходимые данные (ID кассы)"
+    }
   },
   "currencies": {
     "USD": "Доллар США",
@@ -58,7 +72,7 @@
       "offerIncreaseOptions": "Варианты увеличения предложения",
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
-      "metalRates": "Металлические ставки",
+      "metalRates": "Курсы металлов",
       "catalystBuckets": "Катализаторные баки",
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
@@ -68,7 +82,7 @@
   "offers": {
     "selectShop": "Выберите магазин",
     "shop": "Магазин",
-    "addOption": "Добавить вариант",
+    "addOption": "Добавить",
     "addNew": "Добавить новый",
     "editOption": "Редактировать вариант",
     "deleteOption": "Удалить вариант",
@@ -104,7 +118,23 @@
       "batchReports": "Отчеты по партиям",
       "openSessions": "Открытые сессии",
       "powderBatches": "Партии порошка",
-      "cashboxSessionsReports": "Отчеты сессий кассы"
+      "cashboxSessionsReports": "Отчеты сессий кассы",
+      "ironProducts": "Железные изделия"
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "ID Продукта"
+      }
+    },
+    "filters": {
+      "fromUtc": "С даты (UTC)",
+      "toUtc": "По дату (UTC)",
+      "selectDate": "Выберите дату",
+      "operatorUserId": "ID Оператора",
+      "cashRegisterId": "ID Кассы"
+    },
+    "errors": {
+      "failedToFetch": "Не удалось загрузить отчеты"
     }
   },
   "exchangeRates": {
@@ -155,7 +185,7 @@
       "userCreated": "Пользователь успешно создан"
     },
     "error": {
-      "failedToCreate": "Не удалось создать пользователь"
+      "failedToCreate": "Не удалось создать пользователя"
     }
   },
   "shops": {
@@ -184,14 +214,32 @@
       "failedToDelete": "Не удалось удалить магазин"
     },
     "loading": "Загрузка магазинов...",
-    "emptyState": "Магазины не найдены."
+    "emptyState": "Магазины не найдены.",
+    "products": {
+      "title": "Товары магазина",
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "loading": "Загрузка товаров магазина...",
+      "emptyState": "В этом магазине товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "productId": "ID товара",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено"
+      }
+    }
   },
   "warehouses": {
     "navigation": {
       "totalBatches": "Всего партий",
       "batchesToSale": "Партии к продаже",
       "soldBatches": "Проданные партии",
-      "profit": "Прибыль"
+      "profit": "Прибыль",
+      "addProduct": "Добавить товар",
+      "products": "Товары",
+      "transferToShop": "Передать в магазин"
     },
     "tabs": {
       "addNew": "Добавить новый склад",
@@ -228,9 +276,9 @@
         "powderBatchId": "ID партии порошка",
         "remainingPowderKg": "Остаток порошка (кг)",
         "remainingCostAmd": "Остаточная стоимость (AMD)",
-        "remainingPt_g": "Остаток Pt (г)",
-        "remainingPd_g": "Остаток Pd (г)",
-        "remainingRh_g": "Остаток Rh (г)",
+        "remainingPt_g": "Pt (г)",
+        "remainingPd_g": "Pd (г)",
+        "remainingRh_g": "Rh (г)",
         "initialPowderKg": "Начальный порошок (кг)",
         "initialCostAmd": "Начальная стоимость (AMD)",
         "status": "Статус",
@@ -325,6 +373,51 @@
       "errors": {
         "failedToFetch": "Не удалось загрузить отчет о прибыли"
       }
+    },
+    "addProduct": {
+      "loading": "Загрузка товаров...",
+      "emptyState": "Товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "code": "Код",
+        "sku": "SKU",
+        "brand": "Бренд",
+        "category": "Категория",
+        "originalPrice": "Первоначальная цена",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество"
+      },
+      "success": {
+        "productAdded": "Товар {{code}} успешно добавлен на склад"
+      },
+      "error": {
+        "invalidInputs": "Пожалуйста, заполните все поля (первоначальная цена, цена продажи и количество)",
+        "failedToAdd": "Не удалось добавить товар на склад"
+      }
+    },
+    "products": {
+      "loading": "Загрузка товаров на складе...",
+      "emptyState": "На этом складе товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "productId": "ID товара",
+        "originalPrice": "Первоначальная цена",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено"
+      }
+    },
+    "transfer": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "quantity": "Количество для передачи",
+      "transfer": "Передать",
+      "transferring": "Передача...",
+      "success": "Товары успешно переданы",
+      "error": "Не удалось передать товары",
+      "validationError": "Пожалуйста, выберите склад, магазин и хотя бы один товар с действительным количеством",
+      "noValidProducts": "Нет действительных товаров для передачи"
     }
   },
   "vehicles": {
@@ -460,7 +553,7 @@
       "weight": "Вес",
       "ptWeight": "Вес платины",
       "pdWeight": "Вес палладия",
-      "rhodiumWeight": "Вес родия",
+      "rhWeight": "Вес родия",
       "status": "Статус",
       "active": "Активен",
       "inactive": "Неактивен"
@@ -522,7 +615,7 @@
   "cashRegisters": {
     "addCashRegister": "Добавить кассовый аппарат",
     "editCashRegister": "Редактировать кассовый аппарат",
-    "fetchingBalance": "Загрузка...",
+    "fetchingBalance": "Загрузка баланса...",
     "form": {
       "shop": "Магазин",
       "selectShop": "Выберите магазин",
@@ -583,7 +676,7 @@
       "columns": {
         "openedAt": "Открыт в",
         "closedAt": "Закрыт в",
-        "intakeCount": "Операции",
+        "intakeCount": "Кол-во заявок",
         "totalPurchases": "Всего покупок",
         "cashIn": "Наличные вх.",
         "cashOut": "Наличные исх.",
@@ -598,8 +691,8 @@
         "finalDiff": "Итоговая разница"
       },
       "filters": {
-        "fromDate": "От",
-        "toDate": "До",
+        "fromDate": "С даты",
+        "toDate": "По дату",
         "selectFromDate": "Выберите дату начала",
         "selectToDate": "Выберите дату окончания"
       }
@@ -613,12 +706,19 @@
         "status": "Статус"
       },
       "details": {
+        "individualIntakes": "Индивидуальные Заявки",
         "analysis": "Анализ элементов партии",
         "intakeId": "Заявка",
         "powder": "Порошок",
         "pt": "Платина (Pt)",
         "pd": "Палладий (Pd)",
-        "rh": "Родий (Rh)"
+        "rh": "Родий (Rh)",
+        "cost": "Себестоимость",
+        "totalCost": "Общая себестоимость",
+        "sales": "Оценочные продажи",
+        "profit": "Ожидаемая прибыль",
+        "percent": "Бонусный процент",
+        "fxRate": "Курс валют (AMD)"
       }
     },
     "openSessions": {
@@ -654,7 +754,7 @@
       },
       "summary": {
         "title": "Сводка по порошку",
-        "button": "Показать сводку",
+        "button": "Сводка",
         "tooltip": "Показать общий порошок и металлы по всем партиям",
         "empty": "Нет доступных сводных данных.",
         "totalPowderKg": "Всего порошка (кг)",
@@ -682,11 +782,11 @@
         "pd": "Палладий (Pd)",
         "rh": "Родий (Rh)",
         "individualIntakes": "Отдельные заявки",
-        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация о товарах доступна в сводке партии выше."
+        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация доступна в сводке партии выше."
       },
       "filters": {
-        "fromDate": "От",
-        "toDate": "До",
+        "fromDate": "С даты",
+        "toDate": "По дату",
         "cashRegisterId": "ID кассового аппарата",
         "selectFromDate": "Выберите дату начала",
         "selectToDate": "Выберите дату окончания",
@@ -726,7 +826,73 @@
     }
   },
   "products": {
-    "iconAlt": "Иконка товаров"
+    "iconAlt": "Иконка товаров",
+    "addNew": "Добавить новый",
+    "loading": "Загрузка товаров...",
+    "emptyState": "Товары не найдены. Нажмите \"Добавить новый\", чтобы создать первый товар.",
+    "loadingGeneric": "Загрузка...",
+    "navigation": {
+      "products": "Продукты",
+      "ironProducts": "Железные изделия"
+    },
+    "columns": {
+      "productKey": "Код товара",
+      "sku": "SKU",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "code": "Код",
+      "name": "Наименование",
+      "price": "Цена за единицу",
+      "actions": "Действия"
+    },
+    "mobile": {
+      "actions": "Действия",
+      "sku": "SKU",
+      "code": "Код",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "viewMore": "Показать больше",
+      "viewLess": "Показать меньше"
+    },
+    "form": {
+      "addProduct": "Добавить товар",
+      "addNewProduct": "Добавить новый товар",
+      "editProduct": "Редактировать товар",
+      "productKey": "Код товара",
+      "sku": "SKU",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "type": "Введите",
+      "editPrice": "Изменить цену",
+      "unitPrice": "Цена за единицу",
+      "select": "Выберите"
+    },
+    "success": {
+      "productCreated": "Товар успешно создан",
+      "productUpdated": "Товар успешно обновлен",
+      "productDeleted": "Товар успешно удален",
+      "priceUpdated": "Цена товара успешно обновлена"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать товар",
+      "failedToUpdate": "Не удалось обновить товар",
+      "failedToDelete": "Не удалось удалить товар",
+      "failedToUpdatePrice": "Не удалось обновить цену товара"
+    },
+    "pagination": {
+      "previous": "Предыдущая",
+      "next": "Следующая"
+    },
+    "idPrefix": "ID: "
   },
   "translation": {
     "tabs": {
@@ -821,6 +987,9 @@
     "acceptAndPurchase": "Купить",
     "search": "Найти клиента",
     "searchByCountryCode": "Поиск по коду",
+    "fullName": "ФИО",
+    "fullNamePlaceholder": "Введите полное имя",
+    "gender": "Пол",
     "clientType": {
       "label": "Тип клиента",
       "regular": "Обычный"
@@ -837,15 +1006,20 @@
     "error": {
       "failedToSearch": "Не удалось найти клиента",
       "missingData": "Необходимые данные отсутствуют"
+    },
+    "info": {
+      "newCustomer": "Клиент не найден. Вы можете зарегистрировать нового."
     }
   },
   "liveMarketPrices": {
-    "title": "Рыночные цены в реальном времени",
+    "title": "Рыночные цены",
     "live": "В ЭФИРЕ",
+    "exchangeRate": "Курс валют",
     "platinum": "Платина",
     "palladium": "Палладий",
     "rhodium": "Родий",
     "source": "Kitco",
+    "bankSource": "Курс (USD / AMD)",
     "loading": "Загрузка...",
     "updated": "Обновлено {{time}}"
   },
@@ -886,36 +1060,43 @@
     "extractionWeight": "Вес извлечения (кг)",
     "shopId": "ID магазина:",
     "username": "Имя пользователя:",
-    "cashRegisterName": "Имя кассы:"
+    "cashRegisterName": "ID кассы:"
   },
   "operatorPage": {
-    "title": "Операторский терминал",
+    "title": "Терминал оператора",
     "languageLoading": "Загрузка языков...",
     "openSession": "Открыть смену",
     "closeSession": "Закрыть смену",
     "cashAmount": "Наличные в кассе",
-    "cashAmountPlaceholder": "Введите сумму наличных",
+    "cashAmountPlaceholder": "Введите текущую сумму наличных",
+    "buyIron": "Купить железо",
+    "ironType": "Тип железа",
+    "weightKg": "Вес (кг)",
     "success": {
       "sessionOpened": "Смена успешно открыта",
       "sessionClosed": "Смена успешно закрыта",
-      "intakeCreated": "Заявка успешно создана"
+      "intakeCreated": "Заявка успешно создана",
+      "ironSold": "Железо успешно куплено"
     }
   },
   "customers": {
-    "createOrGet": "Получить клиента",
+    "createOrGet": "Найти клиента",
     "createOrGetButton": "Поиск клиента",
     "editCustomer": "Редактировать клиента",
     "customersList": "Список клиентов",
     "loading": "Загрузка клиентов...",
     "emptyState": "Клиенты не найдены.",
-    "createCustomer": "Создать Клиент",
+    "createCustomer": "Создать клиента",
     "form": {
       "phone": "Телефон",
       "phonePlaceholder": "Добавить номер телефона",
-      "fullName": "Полное имя",
+      "fullName": "ФИО",
+      "fullNamePlaceholder": "Введите ФИО",
+      "gender": "Пол",
       "customerType": "Тип клиента",
       "selectCustomerType": "Выберите тип клиента",
-      "allTypes": "Все типы"
+      "allTypes": "Все типы",
+      "notes": "Заметки"
     },
     "validation": {
       "phoneRequired": "Номер телефона обязателен",
@@ -930,12 +1111,12 @@
     },
     "success": {
       "customerCreated": "Клиент успешно создан или получен",
-      "customerUpdated": "Клиент успешно обновлен"
+      "customerUpdated": "Тип клиента успешно обновлен"
     },
     "error": {
       "failedToLoad": "Не удалось загрузить клиентов",
-      "failedToCreate": "Не удалось создать или получить клиента",
-      "failedToUpdate": "Не удалось обновить клиента"
+      "failedToCreate": "Не удалось создать или найти клиента",
+      "failedToUpdate": "Не удалось обновить данные клиента"
     }
   }
 }

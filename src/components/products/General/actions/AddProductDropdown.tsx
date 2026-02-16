@@ -1,4 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -31,6 +32,7 @@ export const AddProductDropdown = ({
   onOpenChange,
   onSave,
 }: AddProductDropdownProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { brands, categories, unitTypes, boxSizes, fetchedData } =
     useAppSelector((state) => state.productSettings);
@@ -102,34 +104,34 @@ export const AddProductDropdown = ({
       anchorRef={anchorRef}
       align="start"
       side="left"
-      title="Add Product"
+      title={t("products.form.addProduct")}
     >
       {/* Desktop header */}
       <div className={styles.header}>
-        <span className={styles.title}>Add New Product</span>
+        <span className={styles.title}>{t("products.form.addNewProduct")}</span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.fields}>
           <TextField
-            label="Product Key"
+            label={t("products.form.productKey")}
             value={productKey}
             onChange={(e) => setProductKey(e.target.value)}
-            placeholder="Type"
+            placeholder={t("products.form.type")}
           />
           <TextField
-            label="SKU"
+            label={t("products.form.sku")}
             value={sku}
             onChange={(e) => setSku(e.target.value)}
-            placeholder="Type"
+            placeholder={t("products.form.type")}
           />
           <Select
-            label="Brand"
+            label={t("products.form.brand")}
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
-            placeholder="Select"
+            placeholder={t("products.form.select")}
           >
-            <option value="">Select</option>
+            <option value="">{t("products.form.select")}</option>
             {brands.map((brandItem) => (
               <option key={brandItem.id} value={brandItem.id}>
                 {brandItem.code}
@@ -137,12 +139,12 @@ export const AddProductDropdown = ({
             ))}
           </Select>
           <Select
-            label="Category"
+            label={t("products.form.category")}
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            placeholder="Select"
+            placeholder={t("products.form.select")}
           >
-            <option value="">Select</option>
+            <option value="">{t("products.form.select")}</option>
             {categories.map((categoryItem) => (
               <option key={categoryItem.id} value={categoryItem.id}>
                 {categoryItem.code}
@@ -150,12 +152,12 @@ export const AddProductDropdown = ({
             ))}
           </Select>
           <Select
-            label="Unit Type"
+            label={t("products.form.unitType")}
             value={unitType}
             onChange={(e) => setUnitType(e.target.value)}
-            placeholder="Select"
+            placeholder={t("products.form.select")}
           >
-            <option value="">Select</option>
+            <option value="">{t("products.form.select")}</option>
             {unitTypes.map((unitTypeItem) => (
               <option key={unitTypeItem.id} value={unitTypeItem.id}>
                 {unitTypeItem.code}
@@ -163,12 +165,12 @@ export const AddProductDropdown = ({
             ))}
           </Select>
           <Select
-            label="Box size"
+            label={t("products.form.boxSize")}
             value={boxSize}
             onChange={(e) => setBoxSize(e.target.value)}
-            placeholder="Select"
+            placeholder={t("products.form.select")}
           >
-            <option value="">Select</option>
+            <option value="">{t("products.form.select")}</option>
             {boxSizes.map((boxSizeItem) => (
               <option key={boxSizeItem.id} value={boxSizeItem.id}>
                 {boxSizeItem.code}
@@ -180,7 +182,7 @@ export const AddProductDropdown = ({
         <Switch
           checked={vehicleDependent}
           onCheckedChange={setVehicleDependent}
-          label="Vehicle Dependent"
+          label={t("products.form.vehicleDependent")}
         />
 
         <div className={styles.actionswithoutDelete}>
@@ -190,10 +192,10 @@ export const AddProductDropdown = ({
               size="medium"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button variant="primary" size="medium" onClick={handleSaveClick}>
-              Save
+              {t("common.save")}
             </Button>
           </div>
         </div>

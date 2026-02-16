@@ -31,10 +31,24 @@
     "next": "Next",
     "page": "Page",
     "of": "of",
+    "close": "Close",
     "areYouSure": "Are you sure you want to proceed?",
     "loading": "Loading...",
     "noData": "No data available.",
-    "select": "Select"
+    "select": "Select",
+    "apply": "Apply",
+    "buy": "Buy",
+    "all": "All",
+    "createdAt": "Created At",
+    "details": "Details",
+    "gender": {
+      "unknown": "Unknown",
+      "male": "Male",
+      "female": "Female"
+    },
+    "error": {
+      "missingData": "Necessary data is missing (Cash Register ID)"
+    }
   },
   "currencies": {
     "USD": "US Dollar",
@@ -68,7 +82,7 @@
   "offers": {
     "selectShop": "Select shop",
     "shop": "Shop",
-    "addOption": "Add option",
+    "addOption": "Add",
     "addNew": "Add New",
     "editOption": "Edit Option",
     "deleteOption": "Delete option",
@@ -104,7 +118,23 @@
       "batchReports": "Batch Reports",
       "openSessions": "Open Sessions",
       "powderBatches": "Powder Batches",
-      "cashboxSessionsReports": "Cashbox Sessions Reports"
+      "cashboxSessionsReports": "Cashbox Sessions Reports",
+      "ironProducts": "Iron Products"
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "Product ID"
+      }
+    },
+    "filters": {
+      "fromUtc": "From Date (UTC)",
+      "toUtc": "To Date (UTC)",
+      "selectDate": "Select date",
+      "operatorUserId": "Operator User ID",
+      "cashRegisterId": "Cash Register ID"
+    },
+    "errors": {
+      "failedToFetch": "Failed to fetch reports"
     }
   },
   "exchangeRates": {
@@ -184,14 +214,32 @@
       "failedToDelete": "Failed to delete shop"
     },
     "loading": "Loading shops...",
-    "emptyState": "No shops found."
+    "emptyState": "No shops found.",
+    "products": {
+      "title": "Shop Products",
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "loading": "Loading shop products...",
+      "emptyState": "No products found in this shop.",
+      "columns": {
+        "id": "ID",
+        "productId": "Product ID",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      }
+    }
   },
   "warehouses": {
     "navigation": {
       "totalBatches": "Total Batches",
       "batchesToSale": "Batches To Sale",
       "soldBatches": "Sold Batches",
-      "profit": "Profit"
+      "profit": "Profit",
+      "addProduct": "Add Product",
+      "products": "Products",
+      "transferToShop": "Transfer to Shop"
     },
     "tabs": {
       "addNew": "Add New Warehouse",
@@ -228,9 +276,9 @@
         "powderBatchId": "Powder Batch ID",
         "remainingPowderKg": "Remaining Powder (kg)",
         "remainingCostAmd": "Remaining Cost (AMD)",
-        "remainingPt_g": "Remaining Pt (g)",
-        "remainingPd_g": "Remaining Pd (g)",
-        "remainingRh_g": "Remaining Rh (g)",
+        "remainingPt_g": "Pt (g)",
+        "remainingPd_g": "Pd (g)",
+        "remainingRh_g": "Rh (g)",
         "initialPowderKg": "Initial Powder (kg)",
         "initialCostAmd": "Initial Cost (AMD)",
         "status": "Status",
@@ -325,6 +373,51 @@
       "errors": {
         "failedToFetch": "Failed to fetch profit report"
       }
+    },
+    "addProduct": {
+      "loading": "Loading products...",
+      "emptyState": "No products found.",
+      "columns": {
+        "id": "ID",
+        "code": "Code",
+        "sku": "SKU",
+        "brand": "Brand",
+        "category": "Category",
+        "originalPrice": "Original Price",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity"
+      },
+      "success": {
+        "productAdded": "Product {{code}} successfully added to warehouse"
+      },
+      "error": {
+        "invalidInputs": "Please fill in all fields (original price, sale price, and quantity)",
+        "failedToAdd": "Failed to add product to warehouse"
+      }
+    },
+    "products": {
+      "loading": "Loading warehouse products...",
+      "emptyState": "No products found in this warehouse.",
+      "columns": {
+        "id": "ID",
+        "productId": "Product ID",
+        "originalPrice": "Original Price",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      }
+    },
+    "transfer": {
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "quantity": "Transfer Quantity",
+      "transfer": "Transfer",
+      "transferring": "Transferring...",
+      "success": "Products transferred successfully",
+      "error": "Failed to transfer products",
+      "validationError": "Please select a warehouse, shop, and at least one product with valid quantity",
+      "noValidProducts": "No valid products selected for transfer"
     }
   },
   "vehicles": {
@@ -613,12 +706,19 @@
         "status": "Status"
       },
       "details": {
+        "individualIntakes": "Individual Intakes",
         "analysis": "Batch Items Analysis",
         "intakeId": "Intake",
         "powder": "Powder",
         "pt": "Platinum (Pt)",
         "pd": "Palladium (Pd)",
-        "rh": "Rhodium (Rh)"
+        "rh": "Rhodium (Rh)",
+        "cost": "Cost",
+        "totalCost": "Total Cost",
+        "sales": "Est. Sales",
+        "profit": "Expected Profit",
+        "percent": "Bonus Percent",
+        "fxRate": "FX Rate (AMD)"
       }
     },
     "openSessions": {
@@ -727,7 +827,73 @@
     }
   },
   "products": {
-    "iconAlt": "Products icon"
+    "iconAlt": "Products icon",
+    "addNew": "Add New",
+    "loading": "Loading products...",
+    "emptyState": "No products found. Click \"Add New\" to create your first product.",
+    "loadingGeneric": "Loading...",
+    "navigation": {
+      "products": "Products",
+      "ironProducts": "Iron Products"
+    },
+    "columns": {
+      "productKey": "Product Key",
+      "sku": "SKU",
+      "brand": "Brand",
+      "category": "Category",
+      "unitType": "Unit Type",
+      "boxSize": "Box Size",
+      "vehicleDependent": "Vehicle Dependent",
+      "code": "Code",
+      "name": "Name",
+      "price": "Unit Price",
+      "actions": "Actions"
+    },
+    "mobile": {
+      "actions": "Actions",
+      "sku": "SKU",
+      "code": "Code",
+      "brand": "BRAND",
+      "category": "CATEGORY",
+      "unitType": "UNIT TYPE",
+      "boxSize": "BOX SIZE",
+      "vehicleDependent": "VEHICLE DEPENDENT",
+      "viewMore": "View more",
+      "viewLess": "View less"
+    },
+    "form": {
+      "addProduct": "Add Product",
+      "addNewProduct": "Add New Product",
+      "editProduct": "Edit Product",
+      "productKey": "Product Key",
+      "sku": "SKU",
+      "brand": "Brand",
+      "category": "Category",
+      "unitType": "Unit Type",
+      "boxSize": "Box size",
+      "vehicleDependent": "Vehicle Dependent",
+      "type": "Type",
+      "editPrice": "Edit Price",
+      "unitPrice": "Unit Price",
+      "select": "Select"
+    },
+    "success": {
+      "productCreated": "Product created successfully",
+      "productUpdated": "Product updated successfully",
+      "productDeleted": "Product deleted successfully",
+      "priceUpdated": "Product price updated successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create product",
+      "failedToUpdate": "Failed to update product",
+      "failedToDelete": "Failed to delete product",
+      "failedToUpdatePrice": "Failed to update product price"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "idPrefix": "ID: "
   },
   "translation": {
     "tabs": {
@@ -822,6 +988,9 @@
     "acceptAndPurchase": "Purchase",
     "search": "Search customer",
     "searchByCountryCode": "Search by code",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter full name",
+    "gender": "Gender",
     "clientType": {
       "label": "Client Type",
       "regular": "Regular"
@@ -838,15 +1007,20 @@
     "error": {
       "failedToSearch": "Failed to search customer",
       "missingData": "Missing required data"
+    },
+    "info": {
+      "newCustomer": "Customer not found. You can register a new one."
     }
   },
   "liveMarketPrices": {
     "title": "Live Market Prices",
     "live": "LIVE",
+    "exchangeRate": "Exchange Rate",
     "platinum": "Platinum",
     "palladium": "Palladium",
     "rhodium": "Rhodium",
     "source": "Kitco",
+    "bankSource": "Rate (USD / AMD)",
     "loading": "Loading...",
     "updated": "Updated {{time}}"
   },
@@ -896,10 +1070,14 @@
     "closeSession": "Close Session",
     "cashAmount": "Cash in Cash Register",
     "cashAmountPlaceholder": "Enter current cash amount",
+    "buyIron": "Buy Iron",
+    "ironType": "Iron Type",
+    "weightKg": "Weight (kg)",
     "success": {
       "sessionOpened": "Session opened successfully",
       "sessionClosed": "Session closed successfully",
-      "intakeCreated": "Intake created successfully"
+      "intakeCreated": "Intake created successfully",
+      "ironSold": "Iron purchased successfully"
     }
   },
   "customers": {
@@ -914,9 +1092,12 @@
       "phone": "Phone",
       "phonePlaceholder": "Add phone number",
       "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter full name",
+      "gender": "Gender",
       "customerType": "Customer Type",
       "selectCustomerType": "Select customer type",
-      "allTypes": "All Types"
+      "allTypes": "All Types",
+      "notes": "Notes"
     },
     "validation": {
       "phoneRequired": "Phone number is required",
@@ -930,8 +1111,8 @@
       "isActive": "Status"
     },
     "success": {
-      "customerCreated": "Customer created or retrieved successfully",
-      "customerUpdated": "Customer updated successfully"
+      "customerCreated": "Customer created successfully",
+      "customerUpdated": "Customer type updated successfully"
     },
     "error": {
       "failedToLoad": "Failed to load customers",

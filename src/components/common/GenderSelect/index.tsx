@@ -1,0 +1,45 @@
+import { useMemo, type FC } from "react";
+import { useTranslation } from "react-i18next";
+
+// ui-kit
+import { Select } from "@/ui-kit";
+
+interface GenderSelectProps {
+  value: number | null;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+  label?: string;
+}
+
+export const GenderSelect: FC<GenderSelectProps> = ({
+  value,
+  onChange,
+  disabled,
+  label,
+}) => {
+  const { t } = useTranslation();
+
+  const genderOptions = useMemo(
+    () => [
+      { label: t("common.gender.unknown"), value: 0 },
+      { label: t("common.gender.male"), value: 1 },
+      { label: t("common.gender.female"), value: 2 },
+    ],
+    [t],
+  );
+
+  return (
+    <Select
+      label={label ?? t("customerDetails.gender")}
+      value={value?.toString?.()}
+      onChange={(e) => onChange(Number(e.target.value))}
+      disabled={disabled}
+    >
+      {genderOptions.map((opt) => (
+        <option key={opt.value} value={opt.value.toString()}>
+          {opt.label}
+        </option>
+      ))}
+    </Select>
+  );
+};

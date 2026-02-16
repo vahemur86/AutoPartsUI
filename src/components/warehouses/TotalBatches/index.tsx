@@ -137,15 +137,7 @@ export const TotalBatches = () => {
     }
   };
 
-  const columns = useMemo(
-    () =>
-      getInventoryLotColumns({
-        onKgChange: handleKgChange,
-        onAdd: handleAdd,
-        selectedKg,
-      }),
-    [selectedKg, handleKgChange, handleAdd],
-  );
+  const columns = useMemo(() => getInventoryLotColumns(), []);
 
   const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const warehouseId = Number(e.target.value);
@@ -197,9 +189,17 @@ export const TotalBatches = () => {
               data={inventoryLots}
               columns={columns}
               pageSize={10}
+              meta={{
+                selectedKg,
+                onKgChange: handleKgChange,
+                onAdd: handleAdd,
+              }}
               getRowClassName={(row) =>
                 checkIsToday(row.createdAt) ? styles.todayRow : ""
               }
+              frozenConfig={{
+                right: ["actions"],
+              }}
             />
             <div className={styles.createSaleSection}>
               <Button

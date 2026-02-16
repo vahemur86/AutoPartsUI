@@ -15,11 +15,11 @@ import { Settings } from "@/pages/Settings/index";
 import { Warehouses } from "@/pages/Warehouses/index";
 import { Shops } from "@/pages/Shops/index";
 import { Login } from "@/pages/Login/index";
-import { Products } from "@/pages/Products";
 import { UserManagement } from "@/pages/Users";
 import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { Reports } from "@/pages/Reports";
+import { Products } from "@/pages/Products";
 
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -36,17 +36,25 @@ import { CashRegisters } from "@/components/settings/CashRegisters";
 import { OfferIncreaseOptions } from "@/components/settings/OfferOptions";
 
 // Reports components
-import { ZReports } from "./components/reports/ZReports";
-import { BatchReports } from "./components/reports/BatchReports";
-import { OpenSessions } from "./components/reports/OpenSessions";
-import { PowderBatches } from "./components/reports/PowderBatches";
-import { CashboxSessionsReports } from "./components/reports/CashboxSessionsReports";
+import { ZReports } from "@/components/reports/ZReports";
+import { BatchReports } from "@/components/reports/BatchReports";
+import { OpenSessions } from "@/components/reports/OpenSessions";
+import { PowderBatches } from "@/components/reports/PowderBatches";
+import { CashboxSessionsReports } from "@/components/reports/CashboxSessionsReports";
+import { IronProductsReport } from "@/components/reports/IronProductsReport";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
 import { BatchesToSale } from "@/components/warehouses/BatchesToSale";
 import { SoldBatches } from "@/components/warehouses/SoldBatches";
 import { ProfitReport } from "@/components/warehouses/ProfitReport";
+import { AddProduct } from "@/components/warehouses/AddProduct";
+import { WarehouseProducts } from "@/components/warehouses/WarehouseProducts";
+import { TransferToShop } from "@/components/warehouses/TransferToShop";
+
+// Products components
+import { GeneralProducts } from "@/components/products/General";
+import { IronProducts } from "@/components/products/IronProducts";
 
 // Stores
 import { store } from "@/store/store";
@@ -135,6 +143,10 @@ export const App = () => {
                   path="cashbox-sessions-reports"
                   element={<CashboxSessionsReports />}
                 />
+                <Route
+                  path="iron-products-reports"
+                  element={<IronProductsReport />}
+                />
               </Route>
 
               <Route path="warehouses" element={<Warehouses />}>
@@ -146,9 +158,20 @@ export const App = () => {
                 <Route path="batches-to-sale" element={<BatchesToSale />} />
                 <Route path="sold-batches" element={<SoldBatches />} />
                 <Route path="profit" element={<ProfitReport />} />
+                <Route path="add-product" element={<AddProduct />} />
+                <Route path="products" element={<WarehouseProducts />} />
+                <Route path="transfer-to-shop" element={<TransferToShop />} />
               </Route>
 
-              <Route path="products" element={<Products />} />
+              <Route path="products" element={<Products />}>
+                <Route
+                  index
+                  element={<Navigate to="products-list" replace />}
+                />
+                <Route path="products-list" element={<GeneralProducts />} />
+                <Route path="iron-products" element={<IronProducts />} />
+              </Route>
+
               <Route path="shops" element={<Shops />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="customers" element={<Customers />} />

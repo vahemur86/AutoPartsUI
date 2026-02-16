@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +19,7 @@ import { useActiveRoute } from "@/hooks/useIsActive";
 // styles
 import styles from "./Header.module.css";
 
-export const Header = () => {
+export const Header: FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
