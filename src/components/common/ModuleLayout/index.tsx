@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
 
 // icons
@@ -25,6 +25,7 @@ interface ModuleLayoutProps {
   navigationItems: NavItem[];
   defaultTitle: string;
   defaultIcon: LucideIcon;
+  actions?: ReactNode;
 }
 
 export const ModuleLayout: FC<ModuleLayoutProps> = ({
@@ -32,6 +33,7 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
   navigationItems,
   defaultTitle,
   defaultIcon: DefaultIcon,
+  actions,
 }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -67,7 +69,11 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
 
   return (
     <>
-      <SectionHeader icon={<ActiveIcon size={24} />} title={activeTitle} />
+      <SectionHeader
+        icon={<ActiveIcon size={24} />}
+        title={activeTitle}
+        actions={actions}
+      />
 
       <div className={styles.container}>
         <div className={styles.layout}>

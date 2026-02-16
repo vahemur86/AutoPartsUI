@@ -831,6 +831,10 @@
     "loading": "Ապրանքների բեռնում...",
     "emptyState": "Ապրանքներ չեն գտնվել: Կտտացրեք \"Ավելացնել նորը\" ձեր առաջին ապրանքը ստեղծելու համար:",
     "loadingGeneric": "Բեռնվում է...",
+    "navigation": {
+      "products": "Ապրանքներ",
+      "ironProducts": "Երկաթի ապրանքներ"
+    },
     "columns": {
       "productKey": "Ապրանքի կոդ",
       "sku": "SKU",
@@ -839,6 +843,9 @@
       "unitType": "Միավորի տեսակ",
       "boxSize": "Տուփի չափ",
       "vehicleDependent": "Կախված է տրանսպորտից",
+      "code": "Կոդ",
+      "name": "Անվանում",
+      "price": "Միավորի գին",
       "actions": "Գործողություններ"
     },
     "mobile": {
@@ -865,17 +872,21 @@
       "boxSize": "Տուփի չափ",
       "vehicleDependent": "Կախված է տրանսպորտից",
       "type": "Մուտքագրել",
+      "editPrice": "Խմբագրել գինը",
+      "unitPrice": "Միավորի գին",
       "select": "Ընտրել"
     },
     "success": {
       "productCreated": "Ապրանքը հաջողությամբ ստեղծվեց",
       "productUpdated": "Ապրանքը հաջողությամբ թարմացվեց",
-      "productDeleted": "Ապրանքը հաջողությամբ ջնջվեց"
+      "productDeleted": "Ապրանքը հաջողությամբ ջնջվեց",
+      "priceUpdated": "Ապրանքի գինը հաջողությամբ թարմացվեց"
     },
     "error": {
       "failedToCreate": "Չհաջողվեց ստեղծել ապրանք",
       "failedToUpdate": "Չհաջողվեց թարմացնել ապրանք",
-      "failedToDelete": "Չհաջողվեց ջնջել ապրանք"
+      "failedToDelete": "Չհաջողվեց ջնջել ապրանք",
+      "failedToUpdatePrice": "Չհաջողվեց թարմացնել ապրանքի գինը"
     },
     "pagination": {
       "previous": "Նախորդ",

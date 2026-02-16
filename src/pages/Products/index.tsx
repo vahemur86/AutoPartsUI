@@ -1,75 +1,60 @@
 import { useState, useRef, useCallback, type RefObject } from "react";
-import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 // stores
 import { useAppDispatch } from "@/store/hooks";
-import {
-  addProduct,
-  updateProductInStore,
-  fetchProducts,
-} from "@/store/slices/productsSlice";
+import { addProduct, fetchProducts } from "@/store/slices/productsSlice";
+import { fetchIronProducts } from "@/store/slices/adminProductsSlice";
 
 // icons
-import productIcon from "@/assets/icons/Vector (3).svg";
-import { Plus } from "lucide-react";
+import { FileCheck, BarChart3, ClipboardList, Plus } from "lucide-react";
+
+// components
+import { ModuleLayout, type NavItem } from "@/components/common";
+import { AddProductDropdown } from "@/components/products/General/actions/AddProductDropdown";
 
 // ui-kit
 import { IconButton } from "@/ui-kit";
-
-// components
-import { SectionHeader } from "@/components/common";
-import { AddProductDropdown } from "./ProductActions/AddProductDropdown";
-import { EditProductDropdown } from "./ProductActions/EditProductDropdown";
-import { ProductsContent } from "./ProductsContent";
 
 // utils
 import { getErrorMessage } from "@/utils";
 
 // types
-import type { Product } from "@/types/products";
-import type { ProductFormData } from "./types";
+import type { ProductFormData } from "@/components/products/General/types";
 
 // styles
-import styles from "./Products.module.css";
+import styles from "@/components/products/General/Products.module.css";
 
 export const Products = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const currentLang = i18n.language;
 
   const [isAddingProduct, setIsAddingProduct] = useState(false);
-  const [isEditingProduct, setIsEditingProduct] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
   const [addButtonRef, setAddButtonRef] = useState<
     RefObject<HTMLElement> | undefined
   >(undefined);
-
-  const [editButtonRef, setEditButtonRef] = useState<
-    RefObject<HTMLElement> | undefined
-  >(undefined);
-
   const buttonWrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleAddButtonClick = useCallback(
-    (buttonRef: RefObject<HTMLElement>) => {
-      if (buttonRef.current) {
-        setAddButtonRef(buttonRef);
-        setIsAddingProduct(true);
-      }
+  const navigationItems: NavItem[] = [
+    {
+      path: "/products-list",
+      label: t("products.navigation.products"),
+      icon: FileCheck,
+      showCheckmark: true,
     },
-    [],
-  );
+    {
+      path: "/iron-products",
+      label: t("products.navigation.ironProducts"),
+      icon: BarChart3,
+      showCheckmark: true,
+    },
+  ];
 
   const handleCloseAddDropdown = useCallback(() => {
     setIsAddingProduct(false);
     setAddButtonRef(undefined);
-  }, []);
-
-  const handleCloseEditDropdown = useCallback(() => {
-    setIsEditingProduct(false);
-    setEditingProduct(null);
-    setEditButtonRef(undefined);
   }, []);
 
   const handleSaveProduct = useCallback(
@@ -88,59 +73,26 @@ export const Products = () => {
         ).unwrap();
 
         toast.success(t("products.success.productCreated"));
+
         dispatch(fetchProducts());
+        dispatch(fetchIronProducts({ lang: currentLang }));
+
         handleCloseAddDropdown();
       } catch (error: unknown) {
         console.error(error);
         toast.error(getErrorMessage(error, t("products.error.failedToCreate")));
       }
     },
-    [dispatch, handleCloseAddDropdown, t],
-  );
-
-  const handleEditProduct = useCallback(
-    (product: Product, buttonRef: RefObject<HTMLElement>) => {
-      setEditingProduct(product);
-      setEditButtonRef(buttonRef);
-      setIsEditingProduct(true);
-    },
-    [],
-  );
-
-  const handleUpdateProduct = useCallback(
-    async (data: ProductFormData) => {
-      if (!editingProduct) return;
-
-      try {
-        await dispatch(
-          updateProductInStore({
-            id: editingProduct.id,
-            code: data.productKey,
-            sku: data.sku,
-            brandId: data.brand,
-            categoryId: data.category,
-            unitTypeId: data.unitType,
-            boxSizeId: data.boxSize,
-            vehicleDependent: data.vehicleDependent,
-          }),
-        ).unwrap();
-
-        toast.success(t("products.success.productUpdated"));
-        dispatch(fetchProducts());
-        handleCloseEditDropdown();
-      } catch (error: unknown) {
-        console.error(error);
-        toast.error(getErrorMessage(error, t("products.error.failedToUpdate")));
-      }
-    },
-    [dispatch, editingProduct, handleCloseEditDropdown, t],
+    [dispatch, handleCloseAddDropdown, t, currentLang],
   );
 
   return (
     <>
-      <SectionHeader
-        title={t("header.products")}
-        icon={<img src={productIcon} alt={t("products.iconAlt")} />}
+      <ModuleLayout
+        basePath="/products"
+        navigationItems={navigationItems}
+        defaultTitle={t("header.products")}
+        defaultIcon={ClipboardList}
         actions={
           <div className={styles.languagesHeader}>
             <div className={styles.addButtonWrapper} ref={buttonWrapperRef}>
@@ -149,11 +101,10 @@ export const Products = () => {
                 size="small"
                 icon={<Plus size={12} color="#0e0f11" />}
                 ariaLabel={t("products.addNew")}
-                onClick={() =>
-                  handleAddButtonClick(
-                    buttonWrapperRef as RefObject<HTMLElement>,
-                  )
-                }
+                onClick={() => {
+                  setAddButtonRef(buttonWrapperRef as RefObject<HTMLElement>);
+                  setIsAddingProduct(true);
+                }}
               />
               <span className={styles.addButtonText}>
                 {t("products.addNew")}
@@ -163,24 +114,12 @@ export const Products = () => {
         }
       />
 
-      <div className={styles.productsContainer}>
-        <ProductsContent onEdit={handleEditProduct} />
-
-        <AddProductDropdown
-          open={isAddingProduct}
-          anchorRef={addButtonRef}
-          onOpenChange={handleCloseAddDropdown}
-          onSave={handleSaveProduct}
-        />
-
-        <EditProductDropdown
-          open={isEditingProduct}
-          anchorRef={editButtonRef}
-          onOpenChange={handleCloseEditDropdown}
-          onSave={handleUpdateProduct}
-          product={editingProduct}
-        />
-      </div>
+      <AddProductDropdown
+        open={isAddingProduct}
+        anchorRef={addButtonRef}
+        onOpenChange={handleCloseAddDropdown}
+        onSave={handleSaveProduct}
+      />
     </>
   );
 };

@@ -28,7 +28,7 @@ import { getProductColumns } from "./columns";
 import { getErrorMessage } from "@/utils";
 
 // styles
-import styles from "./ProductsContent.module.css";
+import styles from "./Content.module.css";
 
 interface ProductsContentProps {
   onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;

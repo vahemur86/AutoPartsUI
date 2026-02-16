@@ -11,7 +11,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import type { Product } from "@/types/products";
 
 // styles
-import styles from "./ProductsContent.module.css";
+import styles from "./Content.module.css";
 
 const columnHelper = createColumnHelper<Product>();
 
@@ -43,7 +43,7 @@ export const getProductColumns = ({
 }: ColumnHandlers): ColumnDef<Product, any>[] => {
   return [
     columnHelper.accessor("id", {
-      header: i18next.t("products.columns.id"),
+      header: "ID",
       cell: (info) => `#${info.getValue()}`,
     }),
     columnHelper.accessor("code", {

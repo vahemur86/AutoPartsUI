@@ -83,13 +83,16 @@ export const fetchIronDropdown = createAsyncThunk<
 
 export const fetchIronProducts = createAsyncThunk<
   IronProduct[],
-  Parameters<typeof getIronProducts>[0],
+  {
+    cashRegisterId?: number;
+    lang: string;
+  },
   { rejectValue: string }
 >(
   "adminProducts/fetchIronProducts",
-  async (cashRegisterId, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      return await getIronProducts(cashRegisterId);
+      return await getIronProducts(payload);
     } catch (error) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch iron products"),
@@ -118,7 +121,7 @@ export const changeProductPrice = createAsyncThunk<
   {
     productId: number;
     payload: Parameters<typeof updateProductPrice>[1];
-    cashRegisterId: number;
+    cashRegisterId?: number;
   },
   { rejectValue: string }
 >(
