@@ -338,7 +338,7 @@
 .metalPricesFooter {
   display: flex;
   justify-content: flex-end; 
-  gap: 10px;
+  gap: 12px;
   font-size: 11px;
   color: white;
   margin-top: 2px;

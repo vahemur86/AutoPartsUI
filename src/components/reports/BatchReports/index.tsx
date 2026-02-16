@@ -137,7 +137,15 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
                     <span>{t("cashbox.batches.details.percent")}:</span>
                     <strong>{item.supplierClientTypePercent}%</strong>
                   </div>
+                  {/* Added Offer Increase Step Order here */}
+                  <div className={styles.infoRow}>
+                    <span>
+                      {t("cashbox.batches.details.offerIncreaseStepOrder")}:
+                    </span>
+                    <strong>{item.offerIncreaseStepOrder}</strong>
+                  </div>
                 </div>
+
                 <div className={styles.metalConcentrationGrid}>
                   <div className={styles.metalItem}>
                     <span>Pt</span>
@@ -158,6 +166,7 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
                     </strong>
                   </div>
                 </div>
+
                 <div className={styles.financialStats}>
                   <div className={styles.statLine}>
                     <span>{t("cashbox.batches.details.cost")}</span>
@@ -178,6 +187,7 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
                     Rate: {item.fxRateToAmd} AMD
                   </div>
 
+                  {/* Metal Prices displayed under the Rate */}
                   <div className={styles.metalPricesFooter}>
                     <span>Pt: {item.ptPricePerKg.toLocaleString()} $</span>
                     <span>Pd: {item.pdPricePerKg.toLocaleString()} $</span>
