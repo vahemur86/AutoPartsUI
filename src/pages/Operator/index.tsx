@@ -473,6 +473,7 @@ export const OperatorPage = () => {
             </div>
             <div className={styles.customerContent}>
               <Select
+                searchable
                 label={t("operatorPage.ironType")}
                 value={ironFormData.productId}
                 onChange={(e) =>
