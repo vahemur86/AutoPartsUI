@@ -20,8 +20,8 @@
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
   align-items: flex-end;
+  gap: 16px;
   padding: 16px;
   background-color: var(--color-black-2);
   border-radius: 10px;
@@ -29,20 +29,26 @@
 }
 
 .filterItem {
-  min-width: 220px;
+  flex: 0 1 auto;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
-  margin-bottom: 6px;
-  color: var(--color-secondary-500);
+  margin-bottom: 0;
+  color: var(--color-white);
+  user-select: none;
 }
 
 .actions {
   display: flex;
   align-items: center;
+  margin-bottom: 2px;
 }
 
 .content {

@@ -34,7 +34,8 @@ export const CashboxSessionsReports: FC = () => {
 
   const [selectedShopId, setSelectedShopId] = useState<number | "">("");
   const [selectedRegisterId, setSelectedRegisterId] = useState<number | "">("");
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
+  const [selectedDateTo, setSelectedDateTo] = useState<Date | null>(null);
   const [shopError, setShopError] = useState(false);
   const [registerError, setRegisterError] = useState(false);
 
@@ -84,7 +85,8 @@ export const CashboxSessionsReports: FC = () => {
   const handleResetFilters = () => {
     setSelectedShopId("");
     setSelectedRegisterId("");
-    setSelectedDate(null);
+    setSelectedDateFrom(null);
+    setSelectedDateTo(null);
     setShopError(false);
     setRegisterError(false);
     dispatch(clearSelection());
@@ -105,23 +107,27 @@ export const CashboxSessionsReports: FC = () => {
 
     if (hasError) return;
 
-    const dateParam =
-      selectedDate != null
-        ? new Date(
-            Date.UTC(
-              selectedDate.getFullYear(),
-              selectedDate.getMonth(),
-              selectedDate.getDate(),
-            ),
-          )
-            .toISOString()
-            .split("T")[0]
-        : undefined;
+    const formatDate = (date: Date | null) => {
+      if (date == null) return undefined;
+      return new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+        ),
+      )
+        .toISOString()
+        .split("T")[0];
+    };
+
+    const dateFromParam = formatDate(selectedDateFrom);
+    const dateToParam = formatDate(selectedDateTo);
 
     dispatch(
       fetchCashboxReport({
         cashRegisterId: selectedRegisterId as number,
-        date: dateParam,
+        dateFrom: dateFromParam,
+        dateTo: dateToParam,
       }),
     )
       .unwrap()
@@ -207,24 +213,46 @@ export const CashboxSessionsReports: FC = () => {
         </div>
 
         <div className={styles.actionsRow}>
-          <div className={styles.dateFilter}>
-            <label className={styles.dateLabel}>
-              {t("cashbox.cashboxReport.dateLabel", { defaultValue: "Date" })}
-            </label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date: Date | null) => setSelectedDate(date)}
-              dateFormat="MM/dd/yyyy"
-              placeholderText={t(
-                "cashbox.cashboxReport.selectDatePlaceholder",
-                { defaultValue: "Select date (optional)" },
-              )}
-              isClearable
-              showTimeSelect={false}
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-            />
+          <div className={styles.dateFilters}>
+            <div className={styles.dateFilter}>
+              <label className={styles.dateLabel}>
+                {t("cashbox.cashboxReport.dateFromLabel", { defaultValue: "Date From" })}
+              </label>
+              <DatePicker
+                selected={selectedDateFrom}
+                onChange={(date: Date | null) => setSelectedDateFrom(date)}
+                dateFormat="MM/dd/yyyy"
+                placeholderText={t(
+                  "cashbox.cashboxReport.selectDateFromPlaceholder",
+                  { defaultValue: "Select date from (optional)" },
+                )}
+                isClearable
+                showTimeSelect={false}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+              />
+            </div>
+            <div className={styles.dateFilter}>
+              <label className={styles.dateLabel}>
+                {t("cashbox.cashboxReport.dateToLabel", { defaultValue: "Date To" })}
+              </label>
+              <DatePicker
+                selected={selectedDateTo}
+                onChange={(date: Date | null) => setSelectedDateTo(date)}
+                dateFormat="MM/dd/yyyy"
+                placeholderText={t(
+                  "cashbox.cashboxReport.selectDateToPlaceholder",
+                  { defaultValue: "Select date to (optional)" },
+                )}
+                isClearable
+                showTimeSelect={false}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                minDate={selectedDateFrom || undefined}
+              />
+            </div>
           </div>
 
           <div className={styles.actionsButtons}>

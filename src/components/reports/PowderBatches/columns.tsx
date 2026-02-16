@@ -46,6 +46,29 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
     header: i18next.t("cashbox.powderBatches.columns.rhPerKg_g"),
     cell: (info) => `${info.getValue().toLocaleString()} g`,
   }),
+  columnHelper.accessor("avgFxRateToAmd", {
+    header: "Avg FX",
+    cell: (info) =>
+      info.getValue().toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 4,
+      }),
+  }),
+  columnHelper.accessor("avgPdPricePerKg", {
+    header: "Avg Pd",
+    cell: (info) =>
+      `${info.getValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} AMD`,
+  }),
+  columnHelper.accessor("avgPtPricePerKg", {
+    header: "Avg Pt",
+    cell: (info) =>
+      `${info.getValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} AMD`,
+  }),
+  columnHelper.accessor("avgRhPricePerKg", {
+    header: "Avg Rh",
+    cell: (info) =>
+      `${info.getValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} AMD`,
+  }),
   columnHelper.accessor("status", {
     header: i18next.t("cashbox.powderBatches.columns.status"),
     cell: (info) => {
