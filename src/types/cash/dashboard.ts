@@ -50,6 +50,10 @@ export interface PowderBatch {
   ptPerKg_g: number;
   pdPerKg_g: number;
   rhPerKg_g: number;
+  avgFxRateToAmd: number;
+  avgPdPricePerKg: number;
+  avgPtPricePerKg: number;
+  avgRhPricePerKg: number;
   status: number;
   createdAt: string;
 }

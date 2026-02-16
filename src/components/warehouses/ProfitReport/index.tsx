@@ -54,10 +54,7 @@ export const ProfitReport = () => {
         ).unwrap();
       } catch (err) {
         toast.error(
-          getApiErrorMessage(
-            err,
-            t("warehouses.profit.errors.failedToFetch"),
-          ),
+          getApiErrorMessage(err, t("warehouses.profit.errors.failedToFetch")),
         );
       }
     };
