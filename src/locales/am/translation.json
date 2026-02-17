@@ -751,7 +751,12 @@
         "ptPerKg_g": "Պլատին 1 կգ-ում (գ)",
         "pdPerKg_g": "Պալադիում 1 կգ-ում (գ)",
         "rhPerKg_g": "Ռոդիում 1 կգ-ում (գ)",
-        "status": "Կարգավիճակ"
+        "status": "Կարգավիճակ",
+        "avgPdPricePerKg": "Միջին Pd",
+        "avgPtPricePerKg": "Միջին Pt",
+        "avgRhPricePerKg": "Միջին Rh",
+        "avgFxRateToAmd": "Միջին փոխարժեք",
+        "avgCustomerPercent": "Հաճախորդի միջին %"
       },
       "summary": {
         "title": "Փոշու ամփոփում",
@@ -764,6 +769,7 @@
         "rhTotal": "Ռոդիում ընդհանուր (գ)",
         "batchCount": "Խմբաքանակների քանակ",
         "metalsTitle": "Թանկարժեք մետաղներ",
+        "averagesTitle": "Շուկայական միջիններ",
         "metals": {
           "pt": "Պլատին",
           "pd": "Պալադիում",

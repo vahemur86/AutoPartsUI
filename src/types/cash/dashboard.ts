@@ -36,6 +36,11 @@ export interface PowderBatchesSummary {
   pdPerKg_g: number;
   rhPerKg_g: number;
   batchCount: number;
+  avgCustomerPercent: number;
+  avgFxRateToAmd: number;
+  avgPdPricePerKg: number;
+  avgPtPricePerKg: number;
+  avgRhPricePerKg: number;
 }
 
 export interface PowderBatch {
@@ -50,6 +55,7 @@ export interface PowderBatch {
   ptPerKg_g: number;
   pdPerKg_g: number;
   rhPerKg_g: number;
+  avgCustomerPercent: number;
   avgFxRateToAmd: number;
   avgPdPricePerKg: number;
   avgPtPricePerKg: number;

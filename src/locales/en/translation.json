@@ -751,7 +751,12 @@
         "ptPerKg_g": "Platinum per kg (g)",
         "pdPerKg_g": "Palladium per kg (g)",
         "rhPerKg_g": "Rhodium per kg (g)",
-        "status": "Status"
+        "status": "Status",
+        "avgPdPricePerKg": "Avg Pd",
+        "avgPtPricePerKg": "Avg Pt",
+        "avgRhPricePerKg": "Avg Rh",
+        "avgFxRateToAmd": "Avg FX Rate",
+        "avgCustomerPercent": "Avg Customer %"
       },
       "summary": {
         "title": "Powder summary",
@@ -764,6 +769,7 @@
         "rhTotal": "Total rhodium (g)",
         "batchCount": "Batch count",
         "metalsTitle": "Precious metals",
+        "averagesTitle": "Market Averages",
         "metals": {
           "pt": "Platinum",
           "pd": "Palladium",
