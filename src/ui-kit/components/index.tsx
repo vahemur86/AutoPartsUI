@@ -55,7 +55,9 @@ export {
 } from "./MultiSelect";
 export {
   ConfirmationModal,
+  Modal,
   type ConfirmationModalProps,
+  type ModalProps,
 } from "./ConfirmationModal";
 export { Tooltip, type TooltipProps } from "./Tooltip";
 export { DatePicker } from "./DatePicker";

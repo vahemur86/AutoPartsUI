@@ -271,6 +271,13 @@
       "emptyState": "Խմբաքանակներ չեն գտնվել:",
       "createSale": "Ստեղծել վաճառք",
       "creating": "Ստեղծվում է...",
+      "previewAndCreateSale": "Նախադիտել և ստեղծել վաճառք",
+      "previewTitle": "Վաճառքի նախադիտում",
+      "totalPowder": "Ընդհանուր փոշի",
+      "totalCost": "Ընդհանուր արժեք",
+      "details": {
+        "individualIntakes": "Առանձին ընդունումներ"
+      },
       "columns": {
         "id": "ID",
         "powderBatchId": "Պոդերի խմբաքանակի ID",
@@ -284,7 +291,8 @@
         "status": "Կարգավիճակ",
         "createdAt": "Ստեղծվել է",
         "updatedAt": "Թարմացվել է",
-        "selectedKg": "Ընտրված կգ"
+        "selectedKg": "Ընտրված կգ",
+        "totalPowderKg": "Ընդհանուր պոդեր (կգ)"
       },
       "success": {
         "itemAdded": "Խմբաքանակ #{{id}} ավելացվեց {{kg}} կգ-ով",

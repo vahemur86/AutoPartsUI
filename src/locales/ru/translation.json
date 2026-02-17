@@ -271,6 +271,13 @@
       "emptyState": "Партии не найдены.",
       "createSale": "Создать продажу",
       "creating": "Создание...",
+      "previewAndCreateSale": "Предпросмотр и создание продажи",
+      "previewTitle": "Предпросмотр продажи",
+      "totalPowder": "Всего порошка",
+      "totalCost": "Общая стоимость",
+      "details": {
+        "individualIntakes": "Индивидуальные приемы"
+      },
       "columns": {
         "id": "ID",
         "powderBatchId": "ID партии порошка",
@@ -284,7 +291,8 @@
         "status": "Статус",
         "createdAt": "Создано",
         "updatedAt": "Обновлено",
-        "selectedKg": "Выбранный кг"
+        "selectedKg": "Выбранный кг",
+        "totalPowderKg": "Общий порошок (кг)"
       },
       "success": {
         "itemAdded": "Партия #{{id}} добавлена с {{kg}} кг",

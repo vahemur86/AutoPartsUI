@@ -98,3 +98,31 @@ export interface PowderSale {
 }
 
 export type GetPowderSalesResponse = PaginatedResponse<PowderSale>;
+
+export interface SalesLotPreviewItem {
+  inventoryLotId: number;
+  powderKg: number;
+  costPartAmd: number;
+  ptPerKg_g: number;
+  pdPerKg_g: number;
+  rhPerKg_g: number;
+}
+
+export interface SalesLotPreviewRequest {
+  warehouseId: number;
+  items: Array<{
+    inventoryLotId: number;
+    powderKg: number;
+  }>;
+  cashRegisterId: number;
+}
+
+export interface SalesLotPreviewResponse {
+  items: SalesLotPreviewItem[];
+  totalPowderKg: number;
+  totalCostAmd: number;
+  ptTotal_g: number;
+  pdTotal_g: number;
+  rhTotal_g: number;
+  createdLotId: number | null;
+}

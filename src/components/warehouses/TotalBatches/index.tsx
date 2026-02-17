@@ -7,12 +7,16 @@ import { DataTable, Select, Button } from "@/ui-kit";
 
 // components
 import { getInventoryLotColumns } from "./columns";
+import { SalesLotPreviewModal } from "./actions/SalesLotPreviewModal";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchInventoryLotsReport } from "@/store/slices/warehouses/reportsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
-import { createNewSalesLot } from "@/store/slices/warehouses/salesLotsSlice";
+import {
+  createNewSalesLot,
+  clearPreviewData,
+} from "@/store/slices/warehouses/salesLotsSlice";
 
 // utils
 import { checkIsToday } from "@/utils/checkIsToday.utils";
@@ -40,6 +44,7 @@ export const TotalBatches = () => {
   const [selectedItems, setSelectedItems] = useState<
     Array<{ inventoryLotId: number; powderKg: number }>
   >([]);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
@@ -105,29 +110,30 @@ export const TotalBatches = () => {
     [t],
   );
 
-  const handleCreateSale = async () => {
-    if (!selectedWarehouseId) {
-      toast.error(t("warehouses.form.selectWarehouse"));
-      return;
-    }
-
-    if (selectedItems.length === 0) {
-      toast.error(t("warehouses.totalBatches.error.noItemsSelected"));
-      return;
-    }
+  const handleConfirmSale = async (
+    updatedItems: Array<{ inventoryLotId: number; powderKg: number }>,
+  ) => {
+    if (!selectedWarehouseId) return;
 
     try {
       await dispatch(
         createNewSalesLot({
           warehouseId: selectedWarehouseId,
-          items: selectedItems,
+          items: updatedItems,
           cashRegisterId,
         }),
       ).unwrap();
 
       toast.success(t("warehouses.totalBatches.success.saleCreated"));
+
+      setIsPreviewModalOpen(false);
       setSelectedItems([]);
       setSelectedKg({});
+      dispatch(clearPreviewData());
+
+      dispatch(
+        fetchInventoryLotsReport({ id: selectedWarehouseId, cashRegisterId }),
+      );
     } catch (error) {
       const errorMessage = getApiErrorMessage(
         error,
@@ -137,14 +143,15 @@ export const TotalBatches = () => {
     }
   };
 
-  const columns = useMemo(() => getInventoryLotColumns(), []);
-
   const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const warehouseId = Number(e.target.value);
     setSelectedWarehouseId(warehouseId || null);
     setSelectedItems([]);
     setSelectedKg({});
+    setIsPreviewModalOpen(false);
   };
+
+  const columns = useMemo(() => getInventoryLotColumns(), []);
 
   return (
     <div className={styles.totalBatchesWrapper}>
@@ -205,7 +212,7 @@ export const TotalBatches = () => {
               <Button
                 variant="primary"
                 size="medium"
-                onClick={handleCreateSale}
+                onClick={() => setIsPreviewModalOpen(true)}
                 disabled={
                   isCreatingSalesLot ||
                   selectedItems.length === 0 ||
@@ -214,12 +221,24 @@ export const TotalBatches = () => {
               >
                 {isCreatingSalesLot
                   ? t("warehouses.totalBatches.creating")
-                  : t("warehouses.totalBatches.createSale")}
+                  : t("warehouses.totalBatches.previewAndCreateSale")}
               </Button>
             </div>
           </>
         )}
       </div>
+
+      {isPreviewModalOpen && selectedWarehouseId && (
+        <SalesLotPreviewModal
+          open={isPreviewModalOpen}
+          onOpenChange={setIsPreviewModalOpen}
+          warehouseId={selectedWarehouseId}
+          items={selectedItems}
+          cashRegisterId={cashRegisterId}
+          onConfirm={handleConfirmSale}
+          isCreating={isCreatingSalesLot}
+        />
+      )}
     </div>
   );
 };
