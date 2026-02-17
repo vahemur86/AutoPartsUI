@@ -229,6 +229,45 @@
   font-style: italic;
 }
 
+.summaryAveragesSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.summarySectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.05em;
+  margin: 0 0 12px 0;
+}
+
+.summaryAveragesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.summaryAverageRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.summaryAverageRow span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.summaryAverageRow strong {
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
 /* Responsive adjustments for summary dropdown */
 @media (max-width: 480px) {
   .summaryDropdownContent {

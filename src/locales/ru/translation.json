@@ -751,7 +751,12 @@
         "ptPerKg_g": "Платина на кг (г)",
         "pdPerKg_g": "Палладий на кг (г)",
         "rhPerKg_g": "Родий на кг (г)",
-        "status": "Статус"
+        "status": "Статус",
+        "avgPdPricePerKg": "Сред. Pd",
+        "avgPtPricePerKg": "Сред. Pt",
+        "avgRhPricePerKg": "Сред. Rh",
+        "avgFxRateToAmd": "Сред. курс",
+        "avgCustomerPercent": "Сред. % клиента"
       },
       "summary": {
         "title": "Сводка по порошку",
@@ -764,6 +769,7 @@
         "rhTotal": "Всего родия (г)",
         "batchCount": "Количество партий",
         "metalsTitle": "Драгоценные металлы",
+        "averagesTitle": "Средние показатели",
         "metals": {
           "pt": "Платина",
           "pd": "Палладий",

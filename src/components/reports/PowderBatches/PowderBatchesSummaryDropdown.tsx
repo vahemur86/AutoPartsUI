@@ -23,6 +23,12 @@ export const PowderBatchesSummaryDropdown: FC<
 > = ({ open, anchorRef, onOpenChange, summary, isLoading }) => {
   const { t } = useTranslation();
 
+  const formatValue = (val: number, decimals = 2) =>
+    val.toLocaleString(undefined, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
   return (
     <Dropdown
       open={open}
@@ -116,6 +122,46 @@ export const PowderBatchesSummaryDropdown: FC<
                     {summary.rhTotal_g}{" "}
                     {t("cashbox.powderBatches.summary.units.g")}
                   </strong>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.summaryDivider} />
+
+            <div className={styles.summaryAveragesSection}>
+              <h4 className={styles.summaryAveragesTitle}>
+                {t("cashbox.powderBatches.summary.averagesTitle")}
+              </h4>
+              <div className={styles.summaryAveragesList}>
+                <div className={styles.summaryAverageRow}>
+                  <span>
+                    {t("cashbox.powderBatches.columns.avgCustomerPercent")}
+                  </span>
+                  <strong>{summary.avgCustomerPercent}%</strong>
+                </div>
+                <div className={styles.summaryAverageRow}>
+                  <span>
+                    {t("cashbox.powderBatches.columns.avgFxRateToAmd")}
+                  </span>
+                  <strong>{formatValue(summary.avgFxRateToAmd, 2)}</strong>
+                </div>
+                <div className={styles.summaryAverageRow}>
+                  <span>
+                    {t("cashbox.powderBatches.columns.avgPtPricePerKg")}
+                  </span>
+                  <strong>{formatValue(summary.avgPtPricePerKg, 0)} AMD</strong>
+                </div>
+                <div className={styles.summaryAverageRow}>
+                  <span>
+                    {t("cashbox.powderBatches.columns.avgPdPricePerKg")}
+                  </span>
+                  <strong>{formatValue(summary.avgPdPricePerKg, 0)} AMD</strong>
+                </div>
+                <div className={styles.summaryAverageRow}>
+                  <span>
+                    {t("cashbox.powderBatches.columns.avgRhPricePerKg")}
+                  </span>
+                  <strong>{formatValue(summary.avgRhPricePerKg, 0)} AMD</strong>
                 </div>
               </div>
             </div>
