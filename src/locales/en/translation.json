@@ -271,6 +271,13 @@
       "emptyState": "No batches found.",
       "createSale": "Create Sale",
       "creating": "Creating...",
+      "previewAndCreateSale": "Preview & Create Sale",
+      "previewTitle": "Sale Preview",
+      "totalPowder": "Total Powder",
+      "totalCost": "Total Cost",
+      "details": {
+        "individualIntakes": "Individual Intakes"
+      },
       "columns": {
         "id": "ID",
         "powderBatchId": "Powder Batch ID",
@@ -284,7 +291,8 @@
         "status": "Status",
         "createdAt": "Created At",
         "updatedAt": "Updated At",
-        "selectedKg": "Selected kg"
+        "selectedKg": "Selected kg",
+        "totalPowderKg": "Total Powder (kg)"
       },
       "success": {
         "itemAdded": "Batch #{{id}} added with {{kg}} kg",

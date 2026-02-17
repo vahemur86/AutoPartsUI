@@ -12,6 +12,8 @@ import type {
   GetPowderSalesResponse,
   GetSalesLotsParams,
   GetSalesLotsResponse,
+  SalesLotPreviewRequest,
+  SalesLotPreviewResponse,
   SellSalesLotRequest,
   SellSalesLotResponse,
 } from "@/types/warehouses/salesLots";
@@ -84,4 +86,17 @@ export const getPowderSales = ({
       }),
     cashRegisterId,
     "Failed to get powder sales.",
+  );
+
+export const previewSalesLot = ({
+  cashRegisterId,
+  ...body
+}: SalesLotPreviewRequest) =>
+  performRequest(
+    (headers) =>
+      api.post<SalesLotPreviewResponse>(`/admin/sales-lots/preview`, body, {
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to preview sales lot calculations.",
   );

@@ -24,6 +24,7 @@ export {
   ConfirmationModal,
   Tooltip,
   DatePicker,
+  Modal,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
@@ -56,6 +57,5 @@ export {
   type MultiSelectOption,
   type ConfirmationModalProps,
   type TooltipProps,
+  type ModalProps,
 } from "./components";
-
-// Add other components here as you create them
