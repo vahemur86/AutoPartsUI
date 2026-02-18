@@ -34,6 +34,7 @@ import { CustomerTypes } from "@/components/settings/CustomerTypes";
 import { ExchangeRates } from "@/components/settings/ExchangeRates";
 import { CashRegisters } from "@/components/settings/CashRegisters";
 import { OfferIncreaseOptions } from "@/components/settings/OfferOptions";
+import { SalePercentages } from "@/components/settings/SalePercentages";
 
 // Reports components
 import { ZReports } from "@/components/reports/ZReports";
@@ -131,6 +132,7 @@ export const App = () => {
                   path="offer-increase-options"
                   element={<OfferIncreaseOptions />}
                 />
+                <Route path="sale-percentages" element={<SalePercentages />} />
               </Route>
 
               <Route path="reports" element={<Reports />}>

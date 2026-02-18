@@ -76,7 +76,8 @@
       "catalystBuckets": "Կատալիզատորի բաքեր",
       "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
-      "cashRegisters": "Դրամարկղեր"
+      "cashRegisters": "Դրամարկղեր",
+      "salePercentages": "Վաճառքի տոկոսներ"
     }
   },
   "offers": {
@@ -944,6 +945,33 @@
       "failedToUpdate": "Լեզվի թարմացումը ձախողվեց",
       "failedToDelete": "Լեզվի ջնջումը ձախողվեց",
       "failedToUpdateDefault": "Լռելյայն լեզվի թարմացումը ձախողվեց"
+    }
+  },
+  "salePercentages": {
+    "addNew": "Ավելացնել նոր",
+    "addSalePercentage": "Ավելացնել տոկոս",
+    "editSalePercentageTitle": "Խմբագրել տոկոս",
+    "deleteSalePercentage": "Ջնջել տոկոս",
+    "editSalePercentage": "Խմբագրել {{percent}}%",
+    "loading": "Վաճառքի տոկոսների բեռնում...",
+    "emptyState": "Վաճառքի տոկոսներ չեն գտնվել: Ավելացրեք ձեր առաջինը:",
+    "form": {
+      "percent": "Տոկոս",
+      "enabled": "Միացված",
+      "activePercentage": "Ակտիվ տոկոս",
+      "useAsActive": "Օգտագործել որպես ակտիվ տոկոս"
+    },
+    "success": {
+      "salePercentageCreated": "Վաճառքի տոկոսը հաջողությամբ ստեղծվեց",
+      "salePercentageUpdated": "Վաճառքի տոկոսը հաջողությամբ թարմացվեց",
+      "salePercentageDeleted": "Վաճառքի տոկոսը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToLoad": "Վաճառքի տոկոսների բեռնումը ձախողվեց",
+      "failedToCreate": "Վաճառքի տոկոսի ստեղծումը ձախողվեց",
+      "failedToUpdate": "Վաճառքի տոկոսի թարմացումը ձախողվեց",
+      "failedToDelete": "Վաճառքի տոկոսի ջնջումը ձախողվեց",
+      "failedToUpdateActive": "Ակտիվ վաճառքի տոկոսի թարմացումը ձախողվեց"
     }
   },
   "productSettings": {
