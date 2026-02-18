@@ -47,7 +47,6 @@ export const AddSalePercentageDropdown = ({
       percentage: Number(percentageValue),
       isActive: isActiveValue,
     });
-    // Parent closes dropdown on success.
   };
 
   const handleClose = () => onOpenChange(false);
@@ -111,4 +110,3 @@ export const AddSalePercentageDropdown = ({
     </Dropdown>
   );
 };
-

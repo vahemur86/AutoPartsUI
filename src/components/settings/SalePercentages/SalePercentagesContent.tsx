@@ -84,7 +84,6 @@ export const SalePercentagesContent: FC<SalePercentagesContentProps> = ({
 
   return (
     <>
-      {/* Desktop header */}
       <div className={styles.salePercentagesHeader}>
         <div
           ref={addButtonDesktopWrapperRef}
