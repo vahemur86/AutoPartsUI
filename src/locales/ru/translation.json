@@ -727,7 +727,8 @@
         "profit": "Ожидаемая прибыль",
         "percent": "Бонусный процент",
         "fxRate": "Курс валют (AMD)",
-        "offerIncreaseStepOrder": "Порядок шага увеличения предложения"
+        "offerIncreaseStepOrder": "Порядок шага увеличения предложения",
+        "offerIncreasePercent": "Процент увеличения предложения"
       }
     },
     "openSessions": {

@@ -727,7 +727,8 @@
         "profit": "Expected Profit",
         "percent": "Bonus Percent",
         "fxRate": "FX Rate (AMD)",
-        "offerIncreaseStepOrder": "Offer Increase Step Order"
+        "offerIncreaseStepOrder": "Offer Increase Step Order",
+        "offerIncreasePercent": "Offer Increase Percent"
       }
     },
     "openSessions": {

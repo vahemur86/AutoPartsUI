@@ -57,12 +57,39 @@
 .previewContainer {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .editableItemsList {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 320px;
+  overflow-y: scroll;
+  padding-right: 12px;
+  margin-bottom: 4px;
+}
+
+.editableItemsList::-webkit-scrollbar {
+  width: 8px;
+  display: block;
+}
+
+.editableItemsList::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+.editableItemsList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.editableItemsList::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+  background-clip: content-box;
 }
 
 .editableItemRow {
@@ -89,13 +116,15 @@
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
   margin: 16px 0;
+  flex-shrink: 0;
 }
 
 .stableSummaryWrapper {
   position: relative;
-  min-height: 380px;
+  min-height: 320px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .loadingOverlay {
@@ -106,7 +135,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(26, 27, 30, 0.4);
+  background-color: rgba(26, 27, 30, 0.6);
   backdrop-filter: blur(2px);
   border-radius: 12px;
   color: #ffffff;
@@ -114,13 +143,12 @@
   gap: 12px;
 }
 
-/* Error UI Styles */
 .errorContainer {
   padding: 16px;
   background-color: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 8px;
-  margin: 10px 0;
+  margin-bottom: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -160,7 +188,7 @@
 .summaryDropdownInner {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   transition: all 0.2s ease-in-out;
 }
 
@@ -195,7 +223,7 @@
 }
 
 .summaryCardValue {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-primary-500);
   line-height: 1.2;
@@ -226,7 +254,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  padding: 10px 12px;
   background-color: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -242,21 +270,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background: linear-gradient(
     135deg,
     var(--color-primary-500) 0%,
     #d4af37 100%
   );
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #000;
 }
 
 .summaryMetalValue {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #ffffff;
+}
+
+.selectedKgCellContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectedKgInput {
+  flex: 1;
+  min-width: 100px;
+}
+
+.kgInput > div {
+  height: 32px;
+  padding-block: 0;
 }

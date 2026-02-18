@@ -727,7 +727,8 @@
         "profit": "Սպասվող շահույթ",
         "percent": "Բոնուսային տոկոս",
         "fxRate": "Փոխարժեք (AMD)",
-        "offerIncreaseStepOrder": "Առաջարկի բարձրացման քայլերի հերթականություն"
+        "offerIncreaseStepOrder": "Առաջարկի բարձրացման քայլերի հերթականություն",
+        "offerIncreasePercent": "Առաջարկի աճի տոկոս"
       }
     },
     "openSessions": {

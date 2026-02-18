@@ -1,9 +1,6 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
 
-// ui-kit
-import { Button } from "@/ui-kit";
-
 // components
 import { SelectedKgCell } from "./SelectedKg";
 
@@ -41,7 +38,6 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const meta = table.options.meta as any;
       const inventoryLotId = row.original.id;
-
       const isEmpty = row.original.status === 4;
 
       return (
@@ -49,6 +45,7 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
           inventoryLotId={inventoryLotId}
           initialValue={meta?.selectedKg?.[inventoryLotId]}
           onKgChange={meta?.onKgChange}
+          onAdd={meta?.onAdd}
           disabled={isEmpty}
         />
       );
@@ -95,30 +92,5 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
   columnHelper.accessor("updatedAt", {
     header: i18next.t("warehouses.totalBatches.columns.updatedAt"),
     cell: (info) => new Date(info.getValue()).toLocaleString(),
-  }),
-  columnHelper.display({
-    id: "actions",
-    header: i18next.t("common.actions"),
-    cell: ({ row, table }) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const meta = table.options.meta as any;
-      const inventoryLotId = row.original.id;
-      const powderKg = meta?.selectedKg?.[inventoryLotId] || 0;
-
-      const isEmpty = row.original.status === 4;
-
-      return (
-        <div className={styles.actionButtonsCell}>
-          <Button
-            variant="primary"
-            size="small"
-            onClick={() => meta?.onAdd(inventoryLotId, powderKg)}
-            disabled={isEmpty || !powderKg || powderKg <= 0}
-          >
-            {i18next.t("common.add")}
-          </Button>
-        </div>
-      );
-    },
   }),
 ];
