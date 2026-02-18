@@ -1,0 +1,149 @@
+.salePercentages {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.salePercentagesSettings {
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.salePercentagesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.addButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addButtonText {
+  font-size: 13px;
+  color: var(--color-secondary-500);
+  font-weight: 400;
+}
+
+.salePercentagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.salePercentageItem {
+  width: 100%;
+  position: relative;
+}
+
+/* Card */
+.salePercentageField {
+  position: relative;
+  background-color: var(--color-black-3);
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
+}
+
+/* Green bar for active percentage */
+.salePercentageItem.activePercentage .salePercentageField::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 11px;
+  background-color: var(--color-success);
+  border-radius: 12px 0 0 12px;
+}
+
+.salePercentageText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.salePercentageValue {
+  font-size: 13px;
+  color: var(--color-white);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Override InteractiveField displayIcon border */
+.salePercentageField > div:first-child {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.salePercentageField button {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  color: var(--color-secondary-500) !important;
+}
+
+.salePercentageField button:hover {
+  opacity: 0.9;
+}
+
+.salePercentageField button:active,
+.salePercentageField button:focus-visible {
+  color: var(--color-primary-500) !important;
+}
+
+/* Active state - dropdown open */
+.salePercentageItem.active .salePercentageField button {
+  color: var(--color-primary-500) !important;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  padding-bottom: 24px;
+}
+
+/* Desktop: Hide mobile button */
+.addButtonMobile {
+  display: none;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .salePercentagesHeader {
+    display: none;
+  }
+
+  .addButtonMobile {
+    display: flex;
+    margin-top: 16px;
+    border: 1px solid var(--color-primary-400);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .addButtonMobile .addButtonWrapper {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actionButtons {
+    padding-top: 16px;
+    gap: 8px;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+}
+

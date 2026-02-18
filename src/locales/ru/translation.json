@@ -76,7 +76,8 @@
       "catalystBuckets": "Катализаторные баки",
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
-      "cashRegisters": "Кассовые аппараты"
+      "cashRegisters": "Кассовые аппараты",
+      "salePercentages": "Проценты продаж"
     }
   },
   "offers": {
@@ -960,6 +961,33 @@
       "failedToUpdate": "Не удалось обновить язык",
       "failedToDelete": "Не удалось удалить язык",
       "failedToUpdateDefault": "Не удалось обновить язык по умолчанию"
+    }
+  },
+  "salePercentages": {
+    "addNew": "Добавить новый",
+    "addSalePercentage": "Добавить продажи",
+    "editSalePercentageTitle": "Редактировать продажи",
+    "deleteSalePercentage": "Удалить продажи",
+    "editSalePercentage": "Редактировать {{percent}}%",
+    "loading": "Загрузка процентов продаж...",
+    "emptyState": "Проценты продаж не найдены. Добавьте первый.",
+    "form": {
+      "percent": "Процент",
+      "enabled": "Включено",
+      "activePercentage": "Активный процент",
+      "useAsActive": "Использовать как активный процент"
+    },
+    "success": {
+      "salePercentageCreated": "Процент продажи успешно создан",
+      "salePercentageUpdated": "Процент продажи успешно обновлен",
+      "salePercentageDeleted": "Процент продажи успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить проценты продаж",
+      "failedToCreate": "Не удалось создать процент продажи",
+      "failedToUpdate": "Не удалось обновить процент продажи",
+      "failedToDelete": "Не удалось удалить процент продажи",
+      "failedToUpdateActive": "Не удалось обновить активный процент продажи"
     }
   },
   "productSettings": {

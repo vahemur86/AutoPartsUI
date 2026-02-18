@@ -14,6 +14,7 @@ import {
   Currency,
   CreditCard,
   Percent,
+  Tag,
 } from "lucide-react";
 
 // components
@@ -93,6 +94,12 @@ export const Settings = () => {
       path: "/offer-increase-options",
       label: t("settings.navigation.offerIncreaseOptions"),
       icon: Percent,
+      showCheckmark: true,
+    },
+    {
+      path: "/sale-percentages",
+      label: t("settings.navigation.salePercentages"),
+      icon: Tag,
       showCheckmark: true,
     },
   ];

@@ -199,3 +199,10 @@ export interface OfferIncreaseOption {
   createdAt: string;
   updatedAt: string;
 }
+
+// Sale Percentages
+export interface SalePercentage {
+  id: number;
+  percentage: number;
+  isActive: boolean;
+}

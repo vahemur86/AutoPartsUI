@@ -76,7 +76,8 @@
       "catalystBuckets": "Catalyst Buckets",
       "customerTypes": "Customer Types",
       "exchangeRates": "Exchange Rates",
-      "cashRegisters": "Cash Registers"
+      "cashRegisters": "Cash Registers",
+      "salePercentages": "Sale Percentages"
     }
   },
   "offers": {
@@ -961,6 +962,33 @@
       "failedToUpdate": "Failed to update language",
       "failedToDelete": "Failed to delete language",
       "failedToUpdateDefault": "Failed to update default language"
+    }
+  },
+  "salePercentages": {
+    "addNew": "Add New",
+    "addSalePercentage": "Add percentage",
+    "editSalePercentageTitle": "Edit Percentage",
+    "deleteSalePercentage": "Delete percentage",
+    "editSalePercentage": "Edit {{percent}}%",
+    "loading": "Loading sale percentages...",
+    "emptyState": "No sale percentages found. Add your first one.",
+    "form": {
+      "percent": "Percent",
+      "enabled": "Enabled",
+      "activePercentage": "Active Percentage",
+      "useAsActive": "Use as Active percentage"
+    },
+    "success": {
+      "salePercentageCreated": "Sale percentage created successfully",
+      "salePercentageUpdated": "Sale percentage updated successfully",
+      "salePercentageDeleted": "Sale percentage deleted successfully"
+    },
+    "error": {
+      "failedToLoad": "Failed to load sale percentages",
+      "failedToCreate": "Failed to create sale percentage",
+      "failedToUpdate": "Failed to update sale percentage",
+      "failedToDelete": "Failed to delete sale percentage",
+      "failedToUpdateActive": "Failed to update active sale percentage"
     }
   },
   "productSettings": {
