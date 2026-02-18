@@ -135,14 +135,19 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
                   </div>
                   <div className={styles.infoRow}>
                     <span>{t("cashbox.batches.details.percent")}:</span>
-                    <strong>{item.supplierClientTypePercent}%</strong>
+                    <strong>{item.supplierClientTypePercent * 100}%</strong>
                   </div>
-                  {/* Added Offer Increase Step Order here */}
                   <div className={styles.infoRow}>
                     <span>
                       {t("cashbox.batches.details.offerIncreaseStepOrder")}:
                     </span>
                     <strong>{item.offerIncreaseStepOrder}</strong>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span>
+                      {t("cashbox.batches.details.offerIncreasePercent")}:
+                    </span>
+                    <strong>{item.offerIncreasePercent}%</strong>
                   </div>
                 </div>
 

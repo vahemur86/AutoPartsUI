@@ -25,6 +25,7 @@ export interface BatchItem {
   estimatedSalesAmd: number;
   expectedProfitAmd: number;
   offerIncreaseStepOrder: number;
+  offerIncreasePercent: number;
 }
 
 export interface Batch {
