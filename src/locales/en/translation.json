@@ -48,7 +48,12 @@
     },
     "error": {
       "missingData": "Necessary data is missing (Cash Register ID)"
-    }
+    },
+    "amount": "Amount",
+    "comment": "Comment",
+    "noComment": "No comment",
+    "date": "Date",
+    "confirm": "Confirm"
   },
   "currencies": {
     "USD": "US Dollar",
@@ -1117,11 +1122,18 @@
     "buyIron": "Buy Iron",
     "ironType": "Iron Type",
     "weightKg": "Weight (kg)",
+    "modals": {
+      "pendingTopUpTitle": "Confirm Pending Top-Up"
+    },
+    "notifications": {
+      "cashUpdated": "Cash register balance has been updated"
+    },
     "success": {
       "sessionOpened": "Session opened successfully",
       "sessionClosed": "Session closed successfully",
       "intakeCreated": "Intake created successfully",
-      "ironSold": "Iron purchased successfully"
+      "ironSold": "Iron purchased successfully",
+      "transactionConfirmed": "Transaction confirmed successfully"
     }
   },
   "customers": {

@@ -585,6 +585,47 @@
   color: var(--color-white);
 }
 
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.summaryCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.amountRow {
+  text-align: center;
+  margin-bottom: 8px;
+  background: none;
+}
+
+.summaryCardLabel {
+  font-size: 14px;
+  color: #a0a0a0;
+  text-transform: capitalize;
+}
+
+.summaryCardValue {
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 500;
+  margin: 0;
+}
+
+.amountHighlight {
+  font-size: 28px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
 @keyframes slideInDown {
   from {
     opacity: 0;

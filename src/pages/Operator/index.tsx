@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "react-toastify";
 import i18n from "i18next";
+import {
+  HttpTransportType,
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from "@microsoft/signalr";
 
 // stores
 import { logout } from "@/store/slices/authSlice";
@@ -25,6 +31,9 @@ import {
   fetchBalance,
   openSession,
   clearError as clearCashError,
+  fetchPendingTransaction,
+  confirmTransaction,
+  clearPendingData,
 } from "@/store/slices/cash/registersSlice";
 import {
   fetchRegisterSession,
@@ -40,12 +49,12 @@ import {
 import { clearCustomersState } from "@/store/slices/customersSlice";
 import {
   fetchIronDropdown,
-  addIronEntry,
-  clearAdminError,
+  // addIronEntry,
+  // clearAdminError,
 } from "@/store/slices/adminProductsSlice";
 
 // ui-kit
-import { ConfirmationModal, TextField, Select, Button } from "@/ui-kit";
+import { ConfirmationModal } from "@/ui-kit";
 
 // components
 import {
@@ -56,18 +65,23 @@ import {
   LiveMarketPrices,
   OperatorHeader,
   CashRegisterField,
+  TopUpConfirmationModal,
 } from "./components";
 
 // utils
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
-
-// styles
 import styles from "./OperatorPage.module.css";
 
 export const OperatorPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [, setConnection] = useState<HubConnection | null>(null);
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+
+  const [userData] = useState(() =>
+    JSON.parse(localStorage.getItem("user_data") ?? "null"),
+  );
 
   // Redux Selectors
   const { activeMetalRate, error: metalRatesError } = useAppSelector(
@@ -85,6 +99,8 @@ export const OperatorPage = () => {
     activeBalance,
     error: cashError,
     isBalanceLoading,
+    pendingDetails,
+    isPendingLoading,
   } = useAppSelector((state) => state.cashRegisters);
   const {
     hasOpenSession,
@@ -98,32 +114,93 @@ export const OperatorPage = () => {
   const { items: searchedCustomers } = useAppSelector(
     (state) => state.customers,
   );
-
-  const {
-    dropdownItems: ironOptions,
-    isLoading: isIronLoading,
-    isSubmitting: isIronSubmitting,
-    error: adminError,
-  } = useAppSelector((state) => state.adminProducts);
+  // const {
+  //   dropdownItems: ironOptions,
+  //   isLoading: isIronLoading,
+  //   isSubmitting: isIronSubmitting,
+  //   error: adminError,
+  // } = useAppSelector((state) => state.adminProducts);
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
-  const [userData] = useState(() =>
-    JSON.parse(localStorage.getItem("user_data") ?? "null"),
-  );
+  // --- 1. Sticky Modal Logic ---
+  useEffect(() => {
+    setIsTopUpModalOpen(!!pendingDetails);
+  }, [pendingDetails]);
 
+  // --- 2. SignalR Connection Logic ---
+  useEffect(() => {
+    const crId = userData?.cashRegisterId;
+    const token = userData?.token;
+    if (!crId || !token) return;
+
+    const url = `https://autoparts-ambpc7hjbqhxeebx.canadacentral-01.azurewebsites.net/hubs/cash?cashRegisterId=${crId}`;
+
+    const newConnection = new HubConnectionBuilder()
+      .withUrl(url, {
+        accessTokenFactory: () => token,
+        headers: {
+          "X-CashRegister-Id": crId.toString(),
+        },
+        transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
+      })
+      .withAutomaticReconnect()
+      .configureLogging(LogLevel.Warning)
+      .build();
+
+    newConnection.on("PendingCashInCreated", (data) => {
+      console.log("PendingCashInCreated received!", data);
+      dispatch(fetchPendingTransaction(crId));
+    });
+
+    newConnection.on("ReceivePendingCashIn", () => {
+      console.log("Pending update received!");
+      dispatch(fetchPendingTransaction(crId));
+    });
+
+    newConnection.onreconnected(() => {
+      dispatch(fetchBalance(crId));
+      dispatch(fetchPendingTransaction(crId));
+    });
+
+    setConnection(newConnection);
+
+    const startHub = async () => {
+      try {
+        await newConnection.start();
+        console.log("Connected to SignalR!");
+        await newConnection.invoke("JoinCashBox", crId);
+        dispatch(fetchBalance(crId));
+        dispatch(fetchPendingTransaction(crId));
+      } catch (err) {
+        console.error("SignalR Connection Error: ", err);
+      }
+    };
+
+    newConnection.onreconnected(async () => {
+      await newConnection.invoke("JoinCashBox", crId);
+      dispatch(fetchBalance(crId));
+      dispatch(fetchPendingTransaction(crId));
+    });
+
+    startHub();
+
+    return () => {
+      newConnection.stop();
+    };
+  }, [userData?.cashRegisterId, userData?.token, dispatch, t]);
+
+  // --- UI Handlers ---
   const [uiState, setUiState] = useState({
     isSubmitting: false,
     hasTriedSubmit: false,
     showCashAmount: false,
     isCloseSessionModalOpen: false,
   });
-
   const [recalculationsAmount, setRecalculationsAmount] = useState(0);
   const [initialOfferPrice, setInitialOfferPrice] = useState<number | null>(
     null,
   );
-
   const [formData, setFormData] = useState({
     powderWeight: "0",
     platinumPrice: "0",
@@ -137,10 +214,10 @@ export const OperatorPage = () => {
     },
   });
 
-  const [ironFormData, setIronFormData] = useState({
-    productId: "" as string | number,
-    weight: "0",
-  });
+  // const [ironFormData, setIronFormData] = useState({
+  //   productId: "" as string | number,
+  //   weight: "0",
+  // });
 
   useEffect(() => {
     const searchedCustomerType = searchedCustomers[0]?.customerType?.code;
@@ -169,11 +246,13 @@ export const OperatorPage = () => {
     userData?.cashRegisterId,
   ]);
 
-  const usdAmdRate = useMemo(() => {
-    return exchangeRates.find(
-      (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
-    )?.rate;
-  }, [exchangeRates]);
+  const usdAmdRate = useMemo(
+    () =>
+      exchangeRates.find(
+        (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
+      )?.rate,
+    [exchangeRates],
+  );
 
   useEffect(() => {
     if (intake?.offerPrice && initialOfferPrice === null)
@@ -188,7 +267,7 @@ export const OperatorPage = () => {
       { msg: languagesError, clear: clearLangError },
       { msg: cashError, clear: clearCashError },
       { msg: sessionError, clear: clearSessionError },
-      { msg: adminError, clear: clearAdminError },
+      // { msg: adminError, clear: clearAdminError },
     ];
 
     errors.forEach(({ msg, clear }) => {
@@ -204,7 +283,7 @@ export const OperatorPage = () => {
     languagesError,
     cashError,
     sessionError,
-    adminError,
+    // adminError,
   ]);
 
   useEffect(() => {
@@ -223,7 +302,6 @@ export const OperatorPage = () => {
     const crId = userData?.cashRegisterId;
     if (crId) {
       const currentLng = i18n.language;
-
       dispatch(
         fetchIronDropdown({
           cashRegisterId: crId,
@@ -312,31 +390,31 @@ export const OperatorPage = () => {
     }
   };
 
-  const handleBuyIron = async () => {
-    const crId = userData?.cashRegisterId;
-    if (!crId || !ironFormData.productId || Number(ironFormData.weight) <= 0) {
-      return;
-    }
+  // const handleBuyIron = async () => {
+  //   const crId = userData?.cashRegisterId;
+  //   if (!crId || !ironFormData.productId || Number(ironFormData.weight) <= 0) {
+  //     return;
+  //   }
 
-    try {
-      const finalForm = {
-        productId: Number(ironFormData.productId),
-        weight: Number(ironFormData.weight),
-      };
+  //   try {
+  //     const finalForm = {
+  //       productId: Number(ironFormData.productId),
+  //       weight: Number(ironFormData.weight),
+  //     };
 
-      await dispatch(
-        addIronEntry({
-          payload: finalForm,
-          cashRegisterId: crId,
-        }),
-      ).unwrap();
+  //     await dispatch(
+  //       addIronEntry({
+  //         payload: finalForm,
+  //         cashRegisterId: crId,
+  //       }),
+  //     ).unwrap();
 
-      toast.success(t("operatorPage.success.ironSold"));
-      setIronFormData({ productId: "", weight: "0" });
-    } catch (e) {
-      console.error("Iron buy failed", e);
-    }
-  };
+  //     toast.success(t("operatorPage.success.ironSold"));
+  //     setIronFormData({ productId: "", weight: "0" });
+  //   } catch (e) {
+  //     console.error("Iron buy failed", e);
+  //   }
+  // };
 
   const handleToggleSession = useCallback(
     async (action: "open" | "close") => {
@@ -366,30 +444,43 @@ export const OperatorPage = () => {
     [dispatch, sessionDetails, userData?.cashRegisterId, t],
   );
 
+  const handleConfirmTopUp = async () => {
+    if (!userData?.cashRegisterId) return;
+    try {
+      await dispatch(confirmTransaction(userData.cashRegisterId)).unwrap();
+      toast.success(t("operatorPage.success.transactionConfirmed"));
+      dispatch(clearPendingData());
+      dispatch(fetchBalance(userData.cashRegisterId));
+      dispatch(fetchPendingTransaction(userData.cashRegisterId));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const displayBalance = isBalanceLoading
     ? t("cashRegisters.fetchingBalance")
     : uiState.showCashAmount
       ? activeBalance?.balance.toString()
       : "••••••••";
 
-  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value;
+  // const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   let val = e.target.value;
 
-    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
-      return;
-    }
+  //   if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
+  //     return;
+  //   }
 
-    if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
-      val = val.replace(/^0+/, "");
-      if (val === "") val = "0";
-    }
+  //   if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
+  //     val = val.replace(/^0+/, "");
+  //     if (val === "") val = "0";
+  //   }
 
-    if (val === ".") {
-      val = "0.";
-    }
+  //   if (val === ".") {
+  //     val = "0.";
+  //   }
 
-    setIronFormData((p) => ({ ...p, weight: val }));
-  };
+  //   setIronFormData((p) => ({ ...p, weight: val }));
+  // };
 
   return (
     <div className={styles.operatorPage}>
@@ -467,7 +558,7 @@ export const OperatorPage = () => {
             onSuccess={handleResetForm}
           />
 
-          <div className={styles.customerCard}>
+          {/* <div className={styles.customerCard}>
             <div className={styles.customerHeader}>
               <h3 className={styles.cardTitle}>{t("operatorPage.buyIron")}</h3>
             </div>
@@ -510,7 +601,7 @@ export const OperatorPage = () => {
                 {t("common.buy")}
               </Button>
             </div>
-          </div>
+          </div> */}
 
           <CashRegisterField
             displayBalance={displayBalance || ""}
@@ -522,6 +613,15 @@ export const OperatorPage = () => {
           />
         </div>
       </div>
+
+      {isTopUpModalOpen && (
+        <TopUpConfirmationModal
+          open={isTopUpModalOpen}
+          data={pendingDetails}
+          onConfirm={handleConfirmTopUp}
+          isLoading={isPendingLoading}
+        />
+      )}
 
       {uiState.isCloseSessionModalOpen && (
         <ConfirmationModal

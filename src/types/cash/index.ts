@@ -26,4 +26,6 @@ export type {
   CashRegister,
   CashRegisterBalance,
   TopUpRequest,
+  Operator,
+  PendingTransaction,
 } from "./registers";

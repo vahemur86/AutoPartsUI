@@ -14,6 +14,9 @@ import {
   topUpCashRegister,
   openCashRegisterSession,
   assignOperatorToCashRegister,
+  checkPendingStatus,
+  getPendingTransaction,
+  confirmCashRegister,
 } from "@/services/settings/cash/registers";
 
 // utils
@@ -24,14 +27,18 @@ import type {
   CashRegister,
   CashRegisterBalance,
   TopUpRequest,
+  PendingTransaction,
 } from "@/types/cash";
 
 interface CashRegistersState {
   cashRegisters: CashRegister[];
   activeBalance: CashRegisterBalance | null;
   currentSessionId: number | null;
+  isPending: boolean;
+  pendingDetails: PendingTransaction | null;
   isLoading: boolean;
   isBalanceLoading: boolean;
+  isPendingLoading: boolean;
   error: string | null;
 }
 
@@ -39,8 +46,11 @@ const initialState: CashRegistersState = {
   cashRegisters: [],
   activeBalance: null,
   currentSessionId: null,
+  isPending: false,
+  pendingDetails: null,
   isLoading: false,
   isBalanceLoading: false,
+  isPendingLoading: false,
   error: null,
 };
 
@@ -158,6 +168,52 @@ export const assignOperator = createAsyncThunk<
   },
 );
 
+export const checkPending = createAsyncThunk<
+  boolean,
+  number,
+  { rejectValue: string }
+>("cashRegisters/checkPending", async (cashBoxId, { rejectWithValue }) => {
+  try {
+    return await checkPendingStatus(cashBoxId);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to check pending status"),
+    );
+  }
+});
+
+export const fetchPendingTransaction = createAsyncThunk<
+  PendingTransaction,
+  number,
+  { rejectValue: string }
+>(
+  "cashRegisters/fetchPendingTransaction",
+  async (cashBoxId, { rejectWithValue }) => {
+    try {
+      return await getPendingTransaction(cashBoxId);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch pending details"),
+      );
+    }
+  },
+);
+
+// New Confirm Transaction Thunk
+export const confirmTransaction = createAsyncThunk<
+  void,
+  number,
+  { rejectValue: string }
+>("cashRegisters/confirm", async (cashBoxId, { rejectWithValue }) => {
+  try {
+    await confirmCashRegister(cashBoxId);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to confirm transaction"),
+    );
+  }
+});
+
 // --- Slice ---
 
 const cashRegistersSlice = createSlice({
@@ -166,6 +222,10 @@ const cashRegistersSlice = createSlice({
   reducers: {
     clearActiveBalance: (state) => {
       state.activeBalance = null;
+    },
+    clearPendingData: (state) => {
+      state.isPending = false;
+      state.pendingDetails = null;
     },
     resetRegistersState: () => initialState,
     clearError: (state) => {
@@ -186,6 +246,39 @@ const cashRegistersSlice = createSlice({
       .addCase(fetchBalance.rejected, (state, action) => {
         state.isBalanceLoading = false;
         state.error = action.payload ?? "Failed to fetch balance";
+      })
+
+      /* Pending Status Cases */
+      .addCase(checkPending.pending, (state) => {
+        state.isPendingLoading = true;
+      })
+      .addCase(checkPending.fulfilled, (state, action) => {
+        state.isPendingLoading = false;
+        state.isPending = action.payload;
+      })
+      .addCase(checkPending.rejected, (state, action) => {
+        state.isPendingLoading = false;
+        state.error = action.payload ?? "Failed to check pending status";
+      })
+
+      /* Pending Details Cases */
+      .addCase(fetchPendingTransaction.pending, (state) => {
+        state.isPendingLoading = true;
+      })
+      .addCase(fetchPendingTransaction.fulfilled, (state, action) => {
+        state.isPendingLoading = false;
+        state.pendingDetails = action.payload;
+      })
+      .addCase(fetchPendingTransaction.rejected, (state, action) => {
+        state.isPendingLoading = false;
+        state.error = action.payload ?? "Failed to fetch pending details";
+      })
+
+      /* Confirm Transaction Case */
+      .addCase(confirmTransaction.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isPending = false;
+        state.pendingDetails = null;
       })
 
       /* Standard fulfilled cases */
@@ -225,7 +318,8 @@ const cashRegistersSlice = createSlice({
       .addMatcher(
         (action) =>
           action.type.endsWith("/pending") &&
-          !action.type.includes("fetchBalance"),
+          !action.type.includes("fetchBalance") &&
+          !action.type.includes("Pending"),
         (state) => {
           state.isLoading = true;
           state.error = null;
@@ -234,7 +328,8 @@ const cashRegistersSlice = createSlice({
       .addMatcher(
         (action) =>
           action.type.endsWith("/rejected") &&
-          !action.type.includes("fetchBalance"),
+          !action.type.includes("fetchBalance") &&
+          !action.type.includes("Pending"),
         (state, action: PayloadAction<string | undefined>) => {
           state.isLoading = false;
           state.error = action.payload ?? "An unexpected error occurred";
@@ -243,6 +338,11 @@ const cashRegistersSlice = createSlice({
   },
 });
 
-export const { clearError, clearActiveBalance, resetRegistersState } =
-  cashRegistersSlice.actions;
+export const {
+  clearError,
+  clearActiveBalance,
+  clearPendingData,
+  resetRegistersState,
+} = cashRegistersSlice.actions;
+
 export default cashRegistersSlice.reducer;

@@ -5,3 +5,4 @@ export { PowderExtraction } from "./PowderExtraction";
 export { LiveMarketPrices } from "./LiveMarketPrices";
 export { OperatorHeader } from "./OperatorHeader";
 export { CashRegisterField } from "./CashRegisterField";
+export { TopUpConfirmationModal } from "./TopUpConfirmationModal";
