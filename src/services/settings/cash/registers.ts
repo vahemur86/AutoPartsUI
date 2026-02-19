@@ -1,11 +1,12 @@
 import api from "@/services";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 import type {
   CashRegister,
   CashRegisterBalance,
   TopUpRequest,
+  PendingTransaction,
 } from "@/types/cash";
 
 export const getCashRegisters = async (shopId?: number) => {
@@ -64,9 +65,7 @@ export const getCashRegisterBalance = async (cashRegisterId: number) => {
     const response = await api.get<CashRegisterBalance>(
       `/cash-registers/${cashRegisterId}/balance`,
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -88,9 +87,7 @@ export const getCashRegisterOperators = async (cashRegisterId: number) => {
     const response = await api.get<CashRegisterOperatorLink[]>(
       `/cash-registers/${cashRegisterId}/operators`,
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -126,9 +123,7 @@ export const openCashRegisterSession = async (cashRegisterId: number) => {
       `/cash-registers/${cashRegisterId}/sessions/open`,
       {},
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -149,15 +144,62 @@ export const assignOperatorToCashRegister = async ({
       `/cash-registers/${cashRegisterId}/operators`,
       { userId },
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to assign operator to register."),
+    );
+  }
+};
+
+export const checkPendingStatus = async (cashBoxId: number) => {
+  try {
+    const response = await api.get(
+      `/cash-registers/${cashBoxId}/check-pending`,
+      {
+        headers: getHeaders(cashBoxId),
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to check pending status."),
+    );
+  }
+};
+
+export const getPendingTransaction = async (cashBoxId: number) => {
+  try {
+    const response = await api.get<PendingTransaction>(
+      `/cash-registers/${cashBoxId}/pending`,
+      {
+        headers: getHeaders(cashBoxId),
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get pending transaction details."),
+    );
+  }
+};
+
+export const confirmCashRegister = async (cashBoxId: number) => {
+  try {
+    const response = await api.post(
+      `/cash-registers/${cashBoxId}/confirm`,
+      {},
+      {
+        headers: getHeaders(cashBoxId),
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to confirm cash register transaction."),
     );
   }
 };

@@ -12,6 +12,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@microsoft/signalr": "^10.0.0",
     "@reduxjs/toolkit": "^2.9.2",
     "@tanstack/react-table": "^8.21.3",
     "@types/lodash": "^4.17.23",

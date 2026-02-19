@@ -48,7 +48,12 @@
     },
     "error": {
       "missingData": "Отсутствуют необходимые данные (ID кассы)"
-    }
+    },
+    "amount": "Сумма",
+    "comment": "Комментарий",
+    "noComment": "Нет комментария",
+    "date": "Дата",
+    "confirm": "Подтвердить"
   },
   "currencies": {
     "USD": "Доллар США",
@@ -1116,11 +1121,18 @@
     "buyIron": "Купить железо",
     "ironType": "Тип железа",
     "weightKg": "Вес (кг)",
+    "modals": {
+      "pendingTopUpTitle": "Подтверждение ожидаемого пополнения"
+    },
+    "notifications": {
+      "cashUpdated": "Баланс кассы был обновлен"
+    },
     "success": {
       "sessionOpened": "Смена успешно открыта",
       "sessionClosed": "Смена успешно закрыта",
       "intakeCreated": "Заявка успешно создана",
-      "ironSold": "Железо успешно куплено"
+      "ironSold": "Железо успешно куплено",
+      "transactionConfirmed": "Транзакция успешно подтверждена"
     }
   },
   "customers": {

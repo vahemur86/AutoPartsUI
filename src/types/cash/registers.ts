@@ -22,3 +22,11 @@ export interface Operator {
   id: number;
   username: string;
 }
+
+export interface PendingTransaction {
+  amount: number;
+  currencyCode: string;
+  createdAt: string;
+  adminUserId: number;
+  comment: string;
+}
