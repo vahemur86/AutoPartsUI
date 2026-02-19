@@ -773,6 +773,7 @@
         "button": "Summary",
         "tooltip": "Show total powder and metals for all batches",
         "empty": "No summary data available.",
+        "thisMonth": "This month",
         "totalPowderKg": "Total powder (kg)",
         "ptTotal": "Total platinum (g)",
         "pdTotal": "Total palladium (g)",

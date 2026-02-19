@@ -1,8 +1,8 @@
-import { type FC, type RefObject } from "react";
+import { type FC, type RefObject, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Dropdown } from "@/ui-kit";
+import { Dropdown, DatePicker, Button } from "@/ui-kit";
 
 // types
 import type { PowderBatchesSummary } from "@/types/cash";
@@ -16,18 +16,61 @@ interface PowderBatchesSummaryDropdownProps {
   onOpenChange: (open: boolean) => void;
   summary: PowderBatchesSummary | null;
   isLoading: boolean;
+  onFetchSummaryByDate: (dateFrom: string, dateTo: string) => void;
+  onFetchDefaultSummary: () => void;
 }
 
 export const PowderBatchesSummaryDropdown: FC<
   PowderBatchesSummaryDropdownProps
-> = ({ open, anchorRef, onOpenChange, summary, isLoading }) => {
+> = ({
+  open,
+  anchorRef,
+  onOpenChange,
+  summary,
+  isLoading,
+  onFetchSummaryByDate,
+  onFetchDefaultSummary,
+}) => {
   const { t } = useTranslation();
+
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
+  const [dateTo, setDateTo] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      setDateFrom(null);
+      setDateTo(null);
+    }
+  }, [open]);
 
   const formatValue = (val: number, decimals = 2) =>
     val.toLocaleString(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     });
+
+  const toSafeISO = (date: Date | null) => {
+    if (!date) return null;
+    const safeDate = new Date(date);
+    safeDate.setHours(12, 0, 0, 0);
+    return safeDate.toISOString();
+  };
+
+  useEffect(() => {
+    if (dateFrom && dateTo) {
+      const fromISO = toSafeISO(dateFrom);
+      const toISO = toSafeISO(dateTo);
+      if (fromISO && toISO) {
+        onFetchSummaryByDate(fromISO, toISO);
+      }
+    }
+  }, [dateFrom, dateTo, onFetchSummaryByDate]);
+
+  const handleThisMonth = () => {
+    setDateFrom(null);
+    setDateTo(null);
+    onFetchDefaultSummary();
+  };
 
   return (
     <Dropdown
@@ -40,6 +83,64 @@ export const PowderBatchesSummaryDropdown: FC<
       contentClassName={styles.summaryDropdownContent}
     >
       <div className={styles.summaryDropdownInner}>
+        {/* Date Filters Section */}
+        <div className={styles.summaryFiltersSection}>
+          <div className={styles.dateFiltersRow}>
+            <div className={styles.datePickerWrapper}>
+              <label className={styles.dateLabel}>
+                {t("cashbox.powderBatches.filters.fromDate")}
+              </label>
+              <DatePicker
+                selected={dateFrom}
+                onChange={(date: Date | null) => {
+                  setDateFrom(date);
+                }}
+                dateFormat="MM/dd/yyyy"
+                placeholderText={t(
+                  "cashbox.powderBatches.filters.selectFromDate",
+                )}
+                isClearable
+                showTimeSelect={false}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                maxDate={dateTo || undefined}
+              />
+            </div>
+            <div className={styles.datePickerWrapper}>
+              <label className={styles.dateLabel}>
+                {t("cashbox.powderBatches.filters.toDate")}
+              </label>
+              <DatePicker
+                selected={dateTo}
+                onChange={(date: Date | null) => {
+                  setDateTo(date);
+                }}
+                dateFormat="MM/dd/yyyy"
+                placeholderText={t(
+                  "cashbox.powderBatches.filters.selectToDate",
+                )}
+                isClearable
+                showTimeSelect={false}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                minDate={dateFrom || undefined}
+              />
+            </div>
+          </div>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handleThisMonth}
+            className={styles.thisMonthButton}
+          >
+            {t("cashbox.powderBatches.summary.thisMonth")}
+          </Button>
+        </div>
+
+        <div className={styles.summaryDivider} />
+
         {isLoading && (
           <div className={styles.summaryRowMuted}>{t("common.loading")}</div>
         )}
@@ -89,7 +190,7 @@ export const PowderBatchesSummaryDropdown: FC<
                   <div className={styles.summaryMetalInfo}>
                     <span className={styles.summaryMetalSymbol}>Pt</span>
                     <span className={styles.summaryMetalName}>
-                      {t("cashbox.powderBatches.summary.metals.pt")}
+                      {formatValue(summary.avgPtPricePerKg, 0)} AMD
                     </span>
                   </div>
                   <strong className={styles.summaryMetalValue}>
@@ -102,7 +203,7 @@ export const PowderBatchesSummaryDropdown: FC<
                   <div className={styles.summaryMetalInfo}>
                     <span className={styles.summaryMetalSymbol}>Pd</span>
                     <span className={styles.summaryMetalName}>
-                      {t("cashbox.powderBatches.summary.metals.pd")}
+                      {formatValue(summary.avgPdPricePerKg, 0)} AMD
                     </span>
                   </div>
                   <strong className={styles.summaryMetalValue}>
@@ -115,7 +216,7 @@ export const PowderBatchesSummaryDropdown: FC<
                   <div className={styles.summaryMetalInfo}>
                     <span className={styles.summaryMetalSymbol}>Rh</span>
                     <span className={styles.summaryMetalName}>
-                      {t("cashbox.powderBatches.summary.metals.rh")}
+                      {formatValue(summary.avgRhPricePerKg, 0)} AMD
                     </span>
                   </div>
                   <strong className={styles.summaryMetalValue}>
@@ -123,48 +224,34 @@ export const PowderBatchesSummaryDropdown: FC<
                     {t("cashbox.powderBatches.summary.units.g")}
                   </strong>
                 </div>
+
+                <div className={styles.summaryMetalRow}>
+                  <div className={styles.summaryMetalInfo}>
+                    <span className={styles.summaryMetalSymbol}>%</span>
+                    <span className={styles.summaryMetalName}>
+                      {t("cashbox.powderBatches.columns.avgCustomerPercent")}
+                    </span>
+                  </div>
+                  <strong className={styles.summaryMetalValue}>
+                    {summary.avgCustomerPercent}%
+                  </strong>
+                </div>
+
+                <div className={styles.summaryMetalRow}>
+                  <div className={styles.summaryMetalInfo}>
+                    <span className={styles.summaryMetalSymbol}>FX</span>
+                    <span className={styles.summaryMetalName}>
+                      {t("cashbox.powderBatches.columns.avgFxRateToAmd")}
+                    </span>
+                  </div>
+                  <strong className={styles.summaryMetalValue}>
+                    {formatValue(summary.avgFxRateToAmd, 2)}
+                  </strong>
+                </div>
               </div>
             </div>
 
             <div className={styles.summaryDivider} />
-
-            <div className={styles.summaryAveragesSection}>
-              <h4 className={styles.summaryAveragesTitle}>
-                {t("cashbox.powderBatches.summary.averagesTitle")}
-              </h4>
-              <div className={styles.summaryAveragesList}>
-                <div className={styles.summaryAverageRow}>
-                  <span>
-                    {t("cashbox.powderBatches.columns.avgCustomerPercent")}
-                  </span>
-                  <strong>{summary.avgCustomerPercent}%</strong>
-                </div>
-                <div className={styles.summaryAverageRow}>
-                  <span>
-                    {t("cashbox.powderBatches.columns.avgFxRateToAmd")}
-                  </span>
-                  <strong>{formatValue(summary.avgFxRateToAmd, 2)}</strong>
-                </div>
-                <div className={styles.summaryAverageRow}>
-                  <span>
-                    {t("cashbox.powderBatches.columns.avgPtPricePerKg")}
-                  </span>
-                  <strong>{formatValue(summary.avgPtPricePerKg, 0)} AMD</strong>
-                </div>
-                <div className={styles.summaryAverageRow}>
-                  <span>
-                    {t("cashbox.powderBatches.columns.avgPdPricePerKg")}
-                  </span>
-                  <strong>{formatValue(summary.avgPdPricePerKg, 0)} AMD</strong>
-                </div>
-                <div className={styles.summaryAverageRow}>
-                  <span>
-                    {t("cashbox.powderBatches.columns.avgRhPricePerKg")}
-                  </span>
-                  <strong>{formatValue(summary.avgRhPricePerKg, 0)} AMD</strong>
-                </div>
-              </div>
-            </div>
           </>
         )}
       </div>

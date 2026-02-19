@@ -99,3 +99,34 @@ export const getPowderBatchesSummary = async () => {
     );
   }
 };
+
+export const getPowderBatchesSummaryByDate = async ({
+  dateFrom,
+  dateTo,
+  cashRegisterId,
+}: {
+  dateFrom: string;
+  dateTo: string;
+  cashRegisterId: number;
+}) => {
+  try {
+    const { data } = await api.get<PowderBatchesSummary>(
+      `/cashbox-sessions/powder/summary-by-date`,
+      {
+        params: {
+          dateFrom,
+          dateTo,
+        },
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        "Failed to get powder batches summary by date.",
+      ),
+    );
+  }
+};

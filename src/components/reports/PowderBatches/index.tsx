@@ -1,4 +1,4 @@
-import { type FC, useEffect, useMemo, useState, useRef } from "react";
+import { type FC, useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -14,6 +14,7 @@ import {
   fetchPowderBatches,
   clearPowderBatchSelection,
   fetchPowderBatchesSummary,
+  fetchPowderBatchesSummaryByDate,
 } from "@/store/slices/cash/dashboardSlice";
 
 // columns
@@ -24,7 +25,7 @@ import { FilterPowderBatchesDropdown } from "./FilterPowderBatchesDropdown";
 import { PowderBatchesSummaryDropdown } from "./PowderBatchesSummaryDropdown";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getCashRegisterId } from "@/utils";
 import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // types
@@ -50,6 +51,8 @@ export const PowderBatches: FC = () => {
   >({});
   const filterAnchorRef = useRef<HTMLDivElement>(null);
   const summaryAnchorRef = useRef<HTMLDivElement>(null);
+
+  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
     dispatch(
@@ -93,6 +96,41 @@ export const PowderBatches: FC = () => {
         });
     }
   };
+
+  const handleFetchSummaryByDate = useCallback(
+    (dateFrom: string, dateTo: string) => {
+      dispatch(
+        fetchPowderBatchesSummaryByDate({
+          dateFrom,
+          dateTo,
+          cashRegisterId,
+        }),
+      )
+        .unwrap()
+        .catch((error) => {
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("cashbox.errors.failedToFetchPowderBatchesSummary"),
+            ),
+          );
+        });
+    },
+    [dispatch, cashRegisterId, t],
+  );
+
+  const handleFetchDefaultSummary = useCallback(() => {
+    dispatch(fetchPowderBatchesSummary())
+      .unwrap()
+      .catch((error) => {
+        toast.error(
+          getApiErrorMessage(
+            error,
+            t("cashbox.errors.failedToFetchPowderBatchesSummary"),
+          ),
+        );
+      });
+  }, [dispatch, t]);
 
   const handleApplyFilters = (filters: Partial<GetPowderBatchesParams>) => {
     setActiveFilters(filters);
@@ -157,6 +195,8 @@ export const PowderBatches: FC = () => {
         onOpenChange={setIsSummaryDropdownOpen}
         summary={powderBatchesSummary}
         isLoading={isLoading}
+        onFetchSummaryByDate={handleFetchSummaryByDate}
+        onFetchDefaultSummary={handleFetchDefaultSummary}
       />
 
       <FilterPowderBatchesDropdown
