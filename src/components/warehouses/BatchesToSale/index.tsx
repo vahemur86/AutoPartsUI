@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Select, TextField, ConfirmationModal } from "@/ui-kit";
+import { DataTable, Select, ConfirmationModal } from "@/ui-kit";
 
 // components
 import { getSalesLotColumns } from "./columns";
@@ -19,6 +19,9 @@ import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 // utils
 import { checkIsToday } from "@/utils/checkIsToday.utils";
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
+
+// constants
+import { CURRENCIES } from "@/constants/settings";
 
 // types
 import type { BaseLot } from "@/types/warehouses/salesLots";
@@ -238,13 +241,22 @@ export const BatchesToSale = () => {
           confirmLoading={isProcessingSale}
         >
           <div className={styles.saleForm}>
-            <TextField
+            <Select
               label={t("warehouses.batchesToSale.saleForm.currencyCode")}
               value={sellForm.currencyCode}
               onChange={(e) =>
                 handleSellFieldChange("currencyCode", e.target.value)
               }
-            />
+            >
+              {CURRENCIES.filter(
+                (currency) =>
+                  currency.value === "AMD" || currency.value === "USD",
+              ).map((currency) => (
+                <option key={currency.value} value={currency.value}>
+                  {currency.label}
+                </option>
+              ))}
+            </Select>
           </div>
         </ConfirmationModal>
       )}

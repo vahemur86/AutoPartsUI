@@ -33,8 +33,9 @@
     0 20px 25px -5px rgba(0, 0, 0, 0.3),
     0 10px 10px -5px rgba(0, 0, 0, 0.2);
 
-  overflow: hidden;
+  overflow: visible;
   animation: fadeIn 0.15s ease-out;
+  isolation: isolate;
 
   display: flex;
   flex-direction: column;
@@ -48,6 +49,7 @@
   justify-content: space-between;
   gap: 12px;
   background-color: #2c2c2c;
+  border-radius: 16px 16px 0 0;
 }
 
 .title {
@@ -62,6 +64,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow: visible;
+  position: relative;
 }
 
 .description {
@@ -78,6 +82,7 @@
   justify-content: flex-end;
   gap: 12px;
   background-color: #2c2c2c;
+  border-radius: 0 0 16px 16px;
 }
 
 @media (max-width: 768px) {

@@ -10,6 +10,7 @@ import {
   getOpenSessionsSummary,
   getPowderBatches,
   getPowderBatchesSummary,
+  getPowderBatchesSummaryByDate,
 } from "@/services/settings/cash/dashboard";
 
 // types
@@ -105,6 +106,26 @@ export const fetchPowderBatchesSummary = createAsyncThunk<
   }
 });
 
+export const fetchPowderBatchesSummaryByDate = createAsyncThunk<
+  PowderBatchesSummary,
+  { dateFrom: string; dateTo: string; cashRegisterId: number },
+  { rejectValue: string }
+>(
+  "cashDashboard/fetchPowderBatchesSummaryByDate",
+  async (params, { rejectWithValue }) => {
+    try {
+      return await getPowderBatchesSummaryByDate(params);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(
+          error,
+          "Failed to fetch powder batches summary by date",
+        ),
+      );
+    }
+  },
+);
+
 // --- Slice ---
 
 const cashDashboardSlice = createSlice({
@@ -134,6 +155,10 @@ const cashDashboardSlice = createSlice({
         state.powderBatches = action.payload;
       })
       .addCase(fetchPowderBatchesSummary.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.powderBatchesSummary = action.payload;
+      })
+      .addCase(fetchPowderBatchesSummaryByDate.fulfilled, (state, action) => {
         state.isLoading = false;
         state.powderBatchesSummary = action.payload;
       })
