@@ -1,13 +1,9 @@
 import { useTranslation } from "react-i18next";
-
-// ui-kit
 import { TextField, Button } from "@/ui-kit";
-
-// icons
 import { Send } from "lucide-react";
 
-// styles
-import styles from "../OperatorPage.module.css";
+import styles from "./PricingBreakdown.module.css";
+import sharedStyles from "../../OperatorPage.module.css";
 
 interface PricingRowProps {
   weightLabel: string;
@@ -24,20 +20,12 @@ const PricingRow = ({
 }: PricingRowProps) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-
-    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
-      return;
-    }
-
+    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) return;
     if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
       val = val.replace(/^0+/, "");
       if (val === "") val = "0";
     }
-
-    if (val === ".") {
-      val = "0.";
-    }
-
+    if (val === ".") val = "0.";
     onPriceChange(val);
   };
 
@@ -86,13 +74,12 @@ export const PricingBreakdown = ({
   hasTriedSubmit,
 }: PricingBreakdownProps) => {
   const { t } = useTranslation();
-
   const isInvalid = (val: string) => val.trim() === "" || isNaN(Number(val));
 
   return (
     <div className={styles.pricingCard}>
-      <h2 className={styles.cardTitle}>{t("pricingBreakdown.title")}</h2>
-      <div className={styles.divider} />
+      <h2 className={sharedStyles.cardTitle}>{t("pricingBreakdown.title")}</h2>
+      <div className={sharedStyles.divider} />
       <div className={styles.pricingContent}>
         <PricingRow
           weightLabel={t("pricingBreakdown.platinumWeight")}
@@ -112,7 +99,7 @@ export const PricingBreakdown = ({
           onPriceChange={(val) => onPriceChange("rhodiumPrice", val)}
           error={hasTriedSubmit && isInvalid(formData.rhodiumPrice)}
         />
-        <div className={styles.divider} />
+        <div className={sharedStyles.divider} />
         <div style={{ marginTop: "8px" }}>
           <Button
             variant="primary"

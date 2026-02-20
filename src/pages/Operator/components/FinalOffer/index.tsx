@@ -7,14 +7,8 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-
-// icons
 import { Check, X, RotateCcw } from "lucide-react";
-
-// ui-kit
 import { Button } from "@/ui-kit";
-
-// stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   offerIntake,
@@ -22,8 +16,9 @@ import {
   proposeNewOffer,
 } from "@/store/slices/operatorSlice";
 
-// styles
-import styles from "../OperatorPage.module.css";
+// Separate styles
+import styles from "./FinalOffer.module.css";
+import sharedStyles from "../../OperatorPage.module.css";
 
 export const FinalOffer: FC<{
   offerPrice: number;
@@ -43,7 +38,6 @@ export const FinalOffer: FC<{
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
   const { intake, newPropose } = useAppSelector((state) => state.operator);
 
   const [isOffering, setIsOffering] = useState(false);
@@ -53,14 +47,10 @@ export const FinalOffer: FC<{
   const handleOffer = useCallback(async () => {
     const intakeId = intake?.id;
     if (!intakeId) return;
-
     try {
       setIsOffering(true);
       await dispatch(
-        offerIntake({
-          intakeId,
-          cashRegisterId: userData?.cashRegisterId,
-        }),
+        offerIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
       toast.success(t("finalOffer.success.offered"));
     } catch (error) {
@@ -73,13 +63,11 @@ export const FinalOffer: FC<{
   const handleReject = useCallback(async () => {
     const intakeId = intake?.id;
     if (!intakeId) return;
-
     try {
       setIsRejecting(true);
       await dispatch(
         rejectIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
-
       toast.success(t("finalOffer.success.rejected"));
       onReset?.();
     } catch (error) {
@@ -92,18 +80,12 @@ export const FinalOffer: FC<{
   const handleRecalculate = useCallback(async () => {
     const intakeId = intake?.id;
     if (!intakeId) return;
-
     try {
       setIsRecalculating(true);
       await dispatch(
-        proposeNewOffer({
-          intakeId,
-          cashRegisterId: userData?.cashRegisterId,
-        }),
+        proposeNewOffer({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
-
       setRecalculationsAmount?.((prev) => prev + 1);
-
       toast.success(t("finalOffer.success.recalculated"));
     } catch (error) {
       console.error("Recalculate failed:", error);
@@ -113,7 +95,6 @@ export const FinalOffer: FC<{
   }, [dispatch, intake, t, userData?.cashRegisterId, setRecalculationsAmount]);
 
   const isAnyActionLoading = isOffering || isRejecting || isRecalculating;
-
   const hasNewOffer = !!newPropose;
   const displayPrice = hasNewOffer ? newPropose.offeredAmountAmd : offerPrice;
 
@@ -121,7 +102,6 @@ export const FinalOffer: FC<{
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
         <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
-
         <div className={styles.priceContainer}>
           {hasNewOffer && (
             <div className={styles.oldPriceStruck}>
@@ -129,16 +109,12 @@ export const FinalOffer: FC<{
             </div>
           )}
           <div
-            className={`${styles.finalOfferAmount} ${
-              hasNewOffer ? styles.newPriceHighlight : ""
-            }`}
+            className={`${styles.finalOfferAmount} ${hasNewOffer ? styles.newPriceHighlight : ""}`}
           >
             {displayPrice} {currencyCode}
           </div>
         </div>
-
-        <div className={styles.divider} />
-
+        <div className={sharedStyles.divider} />
         <div className={styles.finalOfferActions}>
           <Button
             variant="primary"
@@ -150,7 +126,6 @@ export const FinalOffer: FC<{
             <Check size={20} />
             {t("finalOffer.offerButton")}
           </Button>
-
           <Button
             variant="secondary"
             size="small"
@@ -163,7 +138,6 @@ export const FinalOffer: FC<{
             <RotateCcw size={20} />
             {t("finalOffer.recalculateButton")}
           </Button>
-
           <Button
             variant="danger"
             size="small"

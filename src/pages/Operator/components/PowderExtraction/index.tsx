@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { TextField } from "@/ui-kit";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "./PowderExtraction.module.css";
+import sharedStyles from "../../OperatorPage.module.css";
 
 interface PowderExtractionProps {
   weight: string;
@@ -28,29 +29,23 @@ export const PowderExtraction = ({
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-
-    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
-      return;
-    }
-
+    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) return;
     if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
       val = val.replace(/^0+/, "");
       if (val === "") val = "0";
     }
-
-    if (val === ".") {
-      val = "0.";
-    }
-
+    if (val === ".") val = "0.";
     onWeightChange(val);
   };
 
   return (
     <div className={styles.powderCard}>
       <div className={styles.powderHeader}>
-        <h2 className={styles.cardTitle}>{t("powderExtraction.title")}</h2>
+        <h2 className={sharedStyles.cardTitle}>
+          {t("powderExtraction.title")}
+        </h2>
       </div>
-      <div className={styles.divider} />
+      <div className={sharedStyles.divider} />
       <div className={styles.powderContent}>
         <TextField
           label={t("powderExtraction.extractionWeight")}
@@ -68,14 +63,12 @@ export const PowderExtraction = ({
             </span>
             <span className={styles.detailValue}>{shopId}</span>
           </div>
-
           <div className={styles.powderDetailRow}>
             <span className={styles.detailLabel}>
               {t("powderExtraction.username")}
             </span>
             <span className={styles.detailValue}>{username}</span>
           </div>
-
           <div className={styles.powderDetailRow}>
             <span className={styles.detailLabel}>
               {t("powderExtraction.cashRegisterName")}

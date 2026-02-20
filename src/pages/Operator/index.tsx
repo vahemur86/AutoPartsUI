@@ -47,11 +47,7 @@ import {
   clearExchangeRatesState,
 } from "@/store/slices/exchangeRatesSlice";
 import { clearCustomersState } from "@/store/slices/customersSlice";
-import {
-  fetchIronDropdown,
-  // addIronEntry,
-  // clearAdminError,
-} from "@/store/slices/adminProductsSlice";
+import { fetchIronDropdown } from "@/store/slices/adminProductsSlice";
 
 // ui-kit
 import { ConfirmationModal } from "@/ui-kit";
@@ -70,6 +66,8 @@ import {
 
 // utils
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+
+// styles
 import styles from "./OperatorPage.module.css";
 
 export const OperatorPage = () => {
@@ -114,21 +112,14 @@ export const OperatorPage = () => {
   const { items: searchedCustomers } = useAppSelector(
     (state) => state.customers,
   );
-  // const {
-  //   dropdownItems: ironOptions,
-  //   isLoading: isIronLoading,
-  //   isSubmitting: isIronSubmitting,
-  //   error: adminError,
-  // } = useAppSelector((state) => state.adminProducts);
 
   const languages = allLanguages.filter((lang) => lang.isEnabled);
 
-  // --- 1. Sticky Modal Logic ---
+  // --- Logic Hooks ---
   useEffect(() => {
     setIsTopUpModalOpen(!!pendingDetails);
   }, [pendingDetails]);
 
-  // --- 2. SignalR Connection Logic ---
   useEffect(() => {
     const crId = userData?.cashRegisterId;
     const token = userData?.token;
@@ -139,9 +130,7 @@ export const OperatorPage = () => {
     const newConnection = new HubConnectionBuilder()
       .withUrl(url, {
         accessTokenFactory: () => token,
-        headers: {
-          "X-CashRegister-Id": crId.toString(),
-        },
+        headers: { "X-CashRegister-Id": crId.toString() },
         transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
       })
       .withAutomaticReconnect()
@@ -154,7 +143,6 @@ export const OperatorPage = () => {
     });
 
     newConnection.on("ReceivePendingCashIn", () => {
-      console.log("Pending update received!");
       dispatch(fetchPendingTransaction(crId));
     });
 
@@ -168,7 +156,6 @@ export const OperatorPage = () => {
     const startHub = async () => {
       try {
         await newConnection.start();
-        console.log("Connected to SignalR!");
         await newConnection.invoke("JoinCashBox", crId);
         dispatch(fetchBalance(crId));
         dispatch(fetchPendingTransaction(crId));
@@ -177,20 +164,14 @@ export const OperatorPage = () => {
       }
     };
 
-    newConnection.onreconnected(async () => {
-      await newConnection.invoke("JoinCashBox", crId);
-      dispatch(fetchBalance(crId));
-      dispatch(fetchPendingTransaction(crId));
-    });
-
     startHub();
 
     return () => {
       newConnection.stop();
     };
-  }, [userData?.cashRegisterId, userData?.token, dispatch, t]);
+  }, [userData?.cashRegisterId, userData?.token, dispatch]);
 
-  // --- UI Handlers ---
+  // --- UI State ---
   const [uiState, setUiState] = useState({
     isSubmitting: false,
     hasTriedSubmit: false,
@@ -206,36 +187,19 @@ export const OperatorPage = () => {
     platinumPrice: "0",
     palladiumPrice: "0",
     rhodiumPrice: "0",
-    customer: {
-      phone: "",
-      fullName: "",
-      gender: 0,
-      notes: "",
-    },
+    customer: { phone: "", fullName: "", gender: 0, notes: "" },
   });
-
-  // const [ironFormData, setIronFormData] = useState({
-  //   productId: "" as string | number,
-  //   weight: "0",
-  // });
 
   useEffect(() => {
     const searchedCustomerType = searchedCustomers[0]?.customerType?.code;
     const linkedCustomerType = intake?.customer?.customerType?.code;
-
     const currentType = (
       linkedCustomerType || searchedCustomerType
     )?.toLowerCase();
-
     const crId = userData?.cashRegisterId;
 
     if (crId && currentType && currentType !== "standard") {
-      dispatch(
-        fetchExchangeRates({
-          isActive: true,
-          cashRegisterId: crId,
-        }),
-      );
+      dispatch(fetchExchangeRates({ isActive: true, cashRegisterId: crId }));
     } else {
       dispatch(clearExchangeRatesState());
     }
@@ -267,7 +231,6 @@ export const OperatorPage = () => {
       { msg: languagesError, clear: clearLangError },
       { msg: cashError, clear: clearCashError },
       { msg: sessionError, clear: clearSessionError },
-      // { msg: adminError, clear: clearAdminError },
     ];
 
     errors.forEach(({ msg, clear }) => {
@@ -276,14 +239,13 @@ export const OperatorPage = () => {
         dispatch(clear());
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     metalRatesError,
     intakeError,
     languagesError,
     cashError,
     sessionError,
-    // adminError,
+    dispatch,
   ]);
 
   useEffect(() => {
@@ -301,12 +263,8 @@ export const OperatorPage = () => {
   useEffect(() => {
     const crId = userData?.cashRegisterId;
     if (crId) {
-      const currentLng = i18n.language;
       dispatch(
-        fetchIronDropdown({
-          cashRegisterId: crId,
-          lang: currentLng,
-        }),
+        fetchIronDropdown({ cashRegisterId: crId, lang: i18n.language }),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -343,30 +301,19 @@ export const OperatorPage = () => {
 
   const handleSubmit = async () => {
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
-
     const isValid =
       !isNaN(Number(formData.powderWeight)) &&
-      formData.customer.phone.length > 3 &&
-      !isNaN(Number(formData.platinumPrice)) &&
-      !isNaN(Number(formData.palladiumPrice)) &&
-      !isNaN(Number(formData.rhodiumPrice));
-
+      formData.customer.phone.length > 3;
     if (!isValid) return;
 
     setUiState((p) => ({ ...p, isSubmitting: true }));
     try {
       const crId = userData?.cashRegisterId;
-
       const response = await dispatch(
         addIntake({
           intake: {
             shopId: userData?.shopId,
-            customer: {
-              phone: formData.customer.phone,
-              fullName: formData.customer.fullName,
-              gender: formData.customer.gender,
-              notes: formData.customer.notes,
-            },
+            customer: formData.customer,
             powderWeightTotal: Number(formData.powderWeight),
             ptWeight: Number(formData.platinumPrice),
             pdWeight: Number(formData.palladiumPrice),
@@ -389,32 +336,6 @@ export const OperatorPage = () => {
       setUiState((p) => ({ ...p, isSubmitting: false }));
     }
   };
-
-  // const handleBuyIron = async () => {
-  //   const crId = userData?.cashRegisterId;
-  //   if (!crId || !ironFormData.productId || Number(ironFormData.weight) <= 0) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const finalForm = {
-  //       productId: Number(ironFormData.productId),
-  //       weight: Number(ironFormData.weight),
-  //     };
-
-  //     await dispatch(
-  //       addIronEntry({
-  //         payload: finalForm,
-  //         cashRegisterId: crId,
-  //       }),
-  //     ).unwrap();
-
-  //     toast.success(t("operatorPage.success.ironSold"));
-  //     setIronFormData({ productId: "", weight: "0" });
-  //   } catch (e) {
-  //     console.error("Iron buy failed", e);
-  //   }
-  // };
 
   const handleToggleSession = useCallback(
     async (action: "open" | "close") => {
@@ -462,25 +383,6 @@ export const OperatorPage = () => {
     : uiState.showCashAmount
       ? activeBalance?.balance.toString()
       : "••••••••";
-
-  // const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   let val = e.target.value;
-
-  //   if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
-  //     return;
-  //   }
-
-  //   if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
-  //     val = val.replace(/^0+/, "");
-  //     if (val === "") val = "0";
-  //   }
-
-  //   if (val === ".") {
-  //     val = "0.";
-  //   }
-
-  //   setIronFormData((p) => ({ ...p, weight: val }));
-  // };
 
   return (
     <div className={styles.operatorPage}>
@@ -557,51 +459,6 @@ export const OperatorPage = () => {
             phoneError={uiState.hasTriedSubmit && !formData.customer.phone}
             onSuccess={handleResetForm}
           />
-
-          {/* <div className={styles.customerCard}>
-            <div className={styles.customerHeader}>
-              <h3 className={styles.cardTitle}>{t("operatorPage.buyIron")}</h3>
-            </div>
-            <div className={styles.customerContent}>
-              <Select
-                searchable
-                label={t("operatorPage.ironType")}
-                value={ironFormData.productId}
-                onChange={(e) =>
-                  setIronFormData((p) => ({ ...p, productId: e.target.value }))
-                }
-                disabled={isIronLoading || isIronSubmitting}
-              >
-                <option value="" disabled>
-                  {t("common.select")}
-                </option>
-                {ironOptions.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.displayName}
-                  </option>
-                ))}
-              </Select>
-
-              <TextField
-                label={t("operatorPage.weightKg")}
-                type="text"
-                inputMode="decimal"
-                value={ironFormData.weight}
-                onChange={handleWeightChange}
-                disabled={isIronSubmitting}
-              />
-
-              <Button
-                onClick={handleBuyIron}
-                disabled={
-                  !ironFormData.productId || Number(ironFormData.weight) <= 0
-                }
-                fullWidth
-              >
-                {t("common.buy")}
-              </Button>
-            </div>
-          </div> */}
 
           <CashRegisterField
             displayBalance={displayBalance || ""}

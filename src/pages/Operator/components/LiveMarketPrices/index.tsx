@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
 
-// icons
+// ui-kit
 import { Coins } from "lucide-react";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "./LiveMarketPrices.module.css";
+import sharedStyles from "../../OperatorPage.module.css";
 
 interface MetalPriceProps {
   name: string;
@@ -46,9 +47,7 @@ export const LiveMarketPrices = ({
   const { t } = useTranslation();
 
   const formatPrice = (pricePerGram: number | undefined): string => {
-    if (pricePerGram === undefined) {
-      return t("liveMarketPrices.loading");
-    }
+    if (pricePerGram === undefined) return t("liveMarketPrices.loading");
     const currencySymbol = currencyCode === "USD" ? "$" : currencyCode;
     return `${currencySymbol} ${pricePerGram.toLocaleString("en-US", {
       minimumFractionDigits: 0,
@@ -58,9 +57,7 @@ export const LiveMarketPrices = ({
 
   const formatUpdateTime = (dateString?: string): string => {
     const date = dateString ? new Date(dateString) : new Date();
-    const isValidDate = !isNaN(date.getTime());
-    const finalDate = isValidDate ? date : new Date();
-
+    const finalDate = !isNaN(date.getTime()) ? date : new Date();
     return t("liveMarketPrices.updated", {
       time: finalDate.toLocaleTimeString(),
     });
@@ -69,14 +66,16 @@ export const LiveMarketPrices = ({
   return (
     <div className={styles.marketPricesCard}>
       <div className={styles.marketPricesHeader}>
-        <h2 className={styles.cardTitle}>{t("liveMarketPrices.title")}</h2>
+        <h2 className={sharedStyles.cardTitle}>
+          {t("liveMarketPrices.title")}
+        </h2>
         <div className={styles.liveIndicator}>
           <span className={styles.liveDot} />
           <span className={styles.liveText}>{t("liveMarketPrices.live")}</span>
         </div>
       </div>
 
-      <div className={styles.divider} />
+      <div className={sharedStyles.divider} />
 
       <div className={styles.metalsList}>
         {usdAmdRate && (
@@ -87,7 +86,6 @@ export const LiveMarketPrices = ({
             iconColor="exchange"
           />
         )}
-
         <MetalPrice
           name={t("liveMarketPrices.platinum")}
           price={formatPrice(ptPricePerGram)}
