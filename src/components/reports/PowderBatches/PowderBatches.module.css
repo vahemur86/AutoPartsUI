@@ -45,7 +45,6 @@
   overflow: hidden;
 }
 
-/* Today row highlight */
 .todayRow {
   background-color: rgba(34, 197, 94, 0.05);
   position: relative;
@@ -55,16 +54,16 @@
   background-color: rgba(34, 197, 94, 0.1) !important;
 }
 
-/* Enhanced Summary Dropdown Styles */
 .summaryDropdownContent {
-  min-width: 320px;
+  min-width: 360px;
+  max-width: 440px;
 }
 
 .summaryDropdownInner {
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .summaryFiltersSection {
@@ -76,79 +75,43 @@
 .dateFiltersRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .datePickerWrapper {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .dateLabel {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.09em;
 }
 
 .thisMonthButton {
-  width: 100%;
-  margin-top: 4px;
-}
-
-.summaryCardsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.summaryCard {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.02) 100%
-  );
-  padding: 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: all 0.2s ease;
-}
-
-.summaryCard:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.04) 100%
-  );
-  transform: translateY(-2px);
-}
-
-.summaryCardLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.summaryCardValue {
-  font-size: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 10px 16px;
+  background: rgba(var(--color-primary-500-rgb, 212, 175, 55), 0.08);
+  border: 1px solid rgba(var(--color-primary-500-rgb, 212, 175, 55), 0.3);
+  border-radius: 8px;
+  color: var(--color-primary-500, #d4af37);
+  font-size: 12px;
   font-weight: 700;
-  color: var(--color-primary-500);
-  line-height: 1;
-  margin-top: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
-.summaryCardUnit {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
+.thisMonthButton:hover {
+  background: rgba(var(--color-primary-500-rgb, 212, 175, 55), 0.15);
+  border-color: rgba(var(--color-primary-500-rgb, 212, 175, 55), 0.55);
 }
 
 .summaryDivider {
@@ -156,47 +119,155 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.08) 30%,
+    rgba(255, 255, 255, 0.08) 70%,
     transparent 100%
   );
-  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+.summaryLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 28px;
+}
+
+.loadingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-primary-500, #d4af37);
+  opacity: 0.3;
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+
+.loadingDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loadingDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+.summaryEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.summaryEmptyIcon {
+  font-size: 30px;
+  opacity: 0.18;
+  line-height: 1;
+}
+
+.summaryEmpty p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.6;
+}
+
+.summaryCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.summaryCard {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryCard:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.summaryCardLabel {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+
+.summaryCardValueRow {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.summaryCardValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-primary-500, #d4af37);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.summaryCardUnit {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
 }
 
 .summaryMetalsSection {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .summaryMetalsTitle {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.09em;
   margin: 0;
 }
 
 .summaryMetalsList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .summaryMetalRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.2s ease;
 }
 
 .summaryMetalRow:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.11);
 }
 
 .summaryMetalInfo {
@@ -209,36 +280,98 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500) 0%,
-    var(--color-primary-600, #d4af37) 100%
-  );
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-black-2);
-  box-shadow: 0 2px 8px rgba(var(--color-primary-500-rgb, 255, 215, 0), 0.3);
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 800;
+  background: rgba(var(--color-primary-500-rgb, 212, 175, 55), 0.1);
+  border: 1px solid rgba(var(--color-primary-500-rgb, 212, 175, 55), 0.22);
+  color: var(--metal-color, var(--color-primary-500, #d4af37));
+}
+
+.summaryMetalMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .summaryMetalName {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.summaryMetalPrice {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.75);
   font-weight: 500;
 }
 
 .summaryMetalValue {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-white);
-  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.summaryMetalUnit {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  margin-left: 1px;
+}
+
+.summaryAveragesRow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: 2px;
+}
+
+.summaryAvgItem {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.summaryAvgItem:last-child {
+  text-align: right;
+}
+
+.summaryAvgDivider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.09);
+  margin: 0 18px;
+  flex-shrink: 0;
+}
+
+.summaryAvgLabel {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.summaryAvgValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary-500, #d4af37);
+  letter-spacing: -0.02em;
 }
 
 .summaryRowMuted {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.4);
   text-align: center;
   padding: 20px;
   font-style: italic;
@@ -255,54 +388,28 @@
 .summaryInfo p {
   margin: 0;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.45);
   line-height: 1.5;
   font-style: italic;
 }
 
-.summaryAveragesSection {
-  display: flex;
-  flex-direction: column;
-}
-
-.summarySectionTitle {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.05em;
-  margin: 0 0 12px 0;
-}
-
-.summaryAveragesList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.summaryAverageRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-}
-
-.summaryAverageRow span {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.summaryAverageRow strong {
-  color: var(--color-primary-500);
-  font-weight: 600;
-}
-
-/* Responsive adjustments for summary dropdown */
 @media (max-width: 480px) {
   .summaryDropdownContent {
-    min-width: 280px;
+    min-width: 290px;
+  }
+
+  .dateFiltersRow {
+    grid-template-columns: 1fr;
+  }
+
+  .datePickerWrapper {
+    width: 100%;
+  }
+
+  .datePickerWrapper :global(.react-datepicker-wrapper),
+  .datePickerWrapper :global(.react-datepicker__input-container input) {
+    width: 96%;
+    display: block;
   }
 
   .summaryCardsGrid {
@@ -311,5 +418,9 @@
 
   .summaryCardValue {
     font-size: 24px;
+  }
+
+  .summaryAvgValue {
+    font-size: 18px;
   }
 }

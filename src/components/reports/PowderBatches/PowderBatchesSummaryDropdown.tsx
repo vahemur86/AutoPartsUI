@@ -2,7 +2,7 @@ import { type FC, type RefObject, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Dropdown, DatePicker, Button } from "@/ui-kit";
+import { Dropdown, DatePicker } from "@/ui-kit";
 
 // types
 import type { PowderBatchesSummary } from "@/types/cash";
@@ -49,6 +49,12 @@ export const PowderBatchesSummaryDropdown: FC<
       maximumFractionDigits: decimals,
     });
 
+  const formatPrice = (val: number) =>
+    val.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+
   const toSafeISO = (date: Date | null) => {
     if (!date) return null;
     const safeDate = new Date(date);
@@ -72,6 +78,32 @@ export const PowderBatchesSummaryDropdown: FC<
     onFetchDefaultSummary();
   };
 
+  const metals = summary
+    ? [
+        {
+          symbol: "Pt",
+          label: "Platinum",
+          price: summary.avgPtPricePerKg,
+          total: summary.ptTotal_g,
+          color: "#e5e4e2",
+        },
+        {
+          symbol: "Pd",
+          label: "Palladium",
+          price: summary.avgPdPricePerKg,
+          total: summary.pdTotal_g,
+          color: "#cba135",
+        },
+        {
+          symbol: "Rh",
+          label: "Rhodium",
+          price: summary.avgRhPricePerKg,
+          total: summary.rhTotal_g,
+          color: "#b9d4e8",
+        },
+      ]
+    : [];
+
   return (
     <Dropdown
       open={open}
@@ -83,7 +115,7 @@ export const PowderBatchesSummaryDropdown: FC<
       contentClassName={styles.summaryDropdownContent}
     >
       <div className={styles.summaryDropdownInner}>
-        {/* Date Filters Section */}
+        {/* Date Filters */}
         <div className={styles.summaryFiltersSection}>
           <div className={styles.dateFiltersRow}>
             <div className={styles.datePickerWrapper}>
@@ -92,9 +124,7 @@ export const PowderBatchesSummaryDropdown: FC<
               </label>
               <DatePicker
                 selected={dateFrom}
-                onChange={(date: Date | null) => {
-                  setDateFrom(date);
-                }}
+                onChange={(date: Date | null) => setDateFrom(date)}
                 dateFormat="MM/dd/yyyy"
                 placeholderText={t(
                   "cashbox.powderBatches.filters.selectFromDate",
@@ -113,9 +143,7 @@ export const PowderBatchesSummaryDropdown: FC<
               </label>
               <DatePicker
                 selected={dateTo}
-                onChange={(date: Date | null) => {
-                  setDateTo(date);
-                }}
+                onChange={(date: Date | null) => setDateTo(date)}
                 dateFormat="MM/dd/yyyy"
                 placeholderText={t(
                   "cashbox.powderBatches.filters.selectToDate",
@@ -129,129 +157,123 @@ export const PowderBatchesSummaryDropdown: FC<
               />
             </div>
           </div>
-          <Button
-            variant="secondary"
-            size="small"
-            onClick={handleThisMonth}
+          <button
             className={styles.thisMonthButton}
+            onClick={handleThisMonth}
+            type="button"
           >
             {t("cashbox.powderBatches.summary.thisMonth")}
-          </Button>
+          </button>
         </div>
 
         <div className={styles.summaryDivider} />
 
         {isLoading && (
-          <div className={styles.summaryRowMuted}>{t("common.loading")}</div>
+          <div className={styles.summaryLoading}>
+            <span className={styles.loadingDot} />
+            <span className={styles.loadingDot} />
+            <span className={styles.loadingDot} />
+          </div>
         )}
 
         {!isLoading && !summary && (
-          <div className={styles.summaryInfo}>
+          <div className={styles.summaryEmpty}>
+            <span className={styles.summaryEmptyIcon}>◎</span>
             <p>{t("cashbox.powderBatches.summary.empty")}</p>
           </div>
         )}
 
         {!isLoading && summary && (
           <>
+            {/* Stats Cards */}
             <div className={styles.summaryCardsGrid}>
               <div className={styles.summaryCard}>
                 <span className={styles.summaryCardLabel}>
                   {t("cashbox.powderBatches.summary.totalPowderKg")}
                 </span>
-                <strong className={styles.summaryCardValue}>
-                  {summary.totalPowderKg}
-                </strong>
-                <small className={styles.summaryCardUnit}>
-                  {t("cashbox.powderBatches.summary.units.kg")}
-                </small>
+                <div className={styles.summaryCardValueRow}>
+                  <strong className={styles.summaryCardValue}>
+                    {formatValue(summary.totalPowderKg, 2)}
+                  </strong>
+                  <span className={styles.summaryCardUnit}>
+                    {t("cashbox.powderBatches.summary.units.kg")}
+                  </span>
+                </div>
               </div>
 
               <div className={styles.summaryCard}>
                 <span className={styles.summaryCardLabel}>
                   {t("cashbox.powderBatches.summary.batchCount")}
                 </span>
-                <strong className={styles.summaryCardValue}>
-                  {summary.batchCount}
-                </strong>
-                <small className={styles.summaryCardUnit}>
-                  {t("cashbox.powderBatches.summary.units.batches")}
-                </small>
+                <div className={styles.summaryCardValueRow}>
+                  <strong className={styles.summaryCardValue}>
+                    {summary.batchCount}
+                  </strong>
+                  <span className={styles.summaryCardUnit}>
+                    {t("cashbox.powderBatches.summary.units.batches")}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className={styles.summaryDivider} />
 
+            {/* Precious Metals */}
             <div className={styles.summaryMetalsSection}>
               <h4 className={styles.summaryMetalsTitle}>
                 {t("cashbox.powderBatches.summary.metalsTitle")}
               </h4>
               <div className={styles.summaryMetalsList}>
-                <div className={styles.summaryMetalRow}>
-                  <div className={styles.summaryMetalInfo}>
-                    <span className={styles.summaryMetalSymbol}>Pt</span>
-                    <span className={styles.summaryMetalName}>
-                      {formatValue(summary.avgPtPricePerKg, 0)} AMD
-                    </span>
+                {metals.map(({ symbol, price, total, color }) => (
+                  <div key={symbol} className={styles.summaryMetalRow}>
+                    <div className={styles.summaryMetalInfo}>
+                      <span
+                        className={styles.summaryMetalSymbol}
+                        style={
+                          { "--metal-color": color } as React.CSSProperties
+                        }
+                      >
+                        {symbol}
+                      </span>
+                      <div className={styles.summaryMetalMeta}>
+                        <span className={styles.summaryMetalPrice}>
+                          {formatPrice(price)} AMD / kg
+                        </span>
+                      </div>
+                    </div>
+                    <strong className={styles.summaryMetalValue}>
+                      {formatValue(total, 3)}{" "}
+                      <span className={styles.summaryMetalUnit}>
+                        {t("cashbox.powderBatches.summary.units.g")}
+                      </span>
+                    </strong>
                   </div>
-                  <strong className={styles.summaryMetalValue}>
-                    {summary.ptTotal_g}{" "}
-                    {t("cashbox.powderBatches.summary.units.g")}
-                  </strong>
-                </div>
+                ))}
 
-                <div className={styles.summaryMetalRow}>
-                  <div className={styles.summaryMetalInfo}>
-                    <span className={styles.summaryMetalSymbol}>Pd</span>
-                    <span className={styles.summaryMetalName}>
-                      {formatValue(summary.avgPdPricePerKg, 0)} AMD
-                    </span>
-                  </div>
-                  <strong className={styles.summaryMetalValue}>
-                    {summary.pdTotal_g}{" "}
-                    {t("cashbox.powderBatches.summary.units.g")}
-                  </strong>
-                </div>
+                <div className={styles.summaryDivider} />
 
-                <div className={styles.summaryMetalRow}>
-                  <div className={styles.summaryMetalInfo}>
-                    <span className={styles.summaryMetalSymbol}>Rh</span>
-                    <span className={styles.summaryMetalName}>
-                      {formatValue(summary.avgRhPricePerKg, 0)} AMD
-                    </span>
-                  </div>
-                  <strong className={styles.summaryMetalValue}>
-                    {summary.rhTotal_g}{" "}
-                    {t("cashbox.powderBatches.summary.units.g")}
-                  </strong>
-                </div>
-
-                <div className={styles.summaryMetalRow}>
-                  <div className={styles.summaryMetalInfo}>
-                    <span className={styles.summaryMetalSymbol}>%</span>
-                    <span className={styles.summaryMetalName}>
+                {/* Averages row */}
+                <div className={styles.summaryAveragesRow}>
+                  <div className={styles.summaryAvgItem}>
+                    <span className={styles.summaryAvgLabel}>
                       {t("cashbox.powderBatches.columns.avgCustomerPercent")}
                     </span>
+                    <strong className={styles.summaryAvgValue}>
+                      {formatValue(summary.avgCustomerPercent, 3)}%
+                    </strong>
                   </div>
-                  <strong className={styles.summaryMetalValue}>
-                    {summary.avgCustomerPercent}%
-                  </strong>
-                </div>
-
-                <div className={styles.summaryMetalRow}>
-                  <div className={styles.summaryMetalInfo}>
-                    <span className={styles.summaryMetalSymbol}>FX</span>
-                    <span className={styles.summaryMetalName}>
+                  <div className={styles.summaryAvgDivider} />
+                  <div className={styles.summaryAvgItem}>
+                    <span className={styles.summaryAvgLabel}>
                       {t("cashbox.powderBatches.columns.avgFxRateToAmd")}
                     </span>
+                    <strong className={styles.summaryAvgValue}>
+                      {formatValue(summary.avgFxRateToAmd, 2)}
+                    </strong>
                   </div>
-                  <strong className={styles.summaryMetalValue}>
-                    {formatValue(summary.avgFxRateToAmd, 2)}
-                  </strong>
                 </div>
               </div>
             </div>
-
-            <div className={styles.summaryDivider} />
           </>
         )}
       </div>

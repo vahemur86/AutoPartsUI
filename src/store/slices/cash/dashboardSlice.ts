@@ -158,6 +158,10 @@ const cashDashboardSlice = createSlice({
         state.isLoading = false;
         state.powderBatchesSummary = action.payload;
       })
+      .addCase(fetchPowderBatchesSummaryByDate.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.powderBatchesSummary = action.payload;
+      })
 
       // Global Matchers for clean Loading/Error handling
       .addMatcher(
