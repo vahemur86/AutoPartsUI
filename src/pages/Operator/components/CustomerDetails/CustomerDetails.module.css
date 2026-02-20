@@ -1,0 +1,101 @@
+.customerCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.customerHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.phoneSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.phoneSection .phoneLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-white);
+  text-align: left;
+}
+
+.additionalFields {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.customerProfile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.customerProfile .profileAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-black-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  flex-shrink: 0;
+}
+
+.customerProfile .profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.profileField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profileField .profileLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.profileField .profileValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.customerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .additionalFields {
+    grid-template-columns: 1fr;
+  }
+}

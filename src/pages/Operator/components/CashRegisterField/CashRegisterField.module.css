@@ -1,0 +1,34 @@
+.cashRegisterContainer {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.fieldWithLeftIcon {
+  position: relative;
+  width: 100%;
+}
+
+.fieldWithLeftIcon .leftIcon {
+  position: absolute;
+  left: 16px;
+  top: 40px;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.passwordToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
+}
+
+.passwordToggle:hover {
+  color: var(--color-white);
+}

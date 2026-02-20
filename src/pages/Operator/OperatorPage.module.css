@@ -11,6 +11,39 @@
   overflow-x: hidden;
 }
 
+/* --- Shared / Common Classes --- */
+.cardTitle {
+  font-size: 20px; /* Restored to original small card title size */
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.divider {
+  height: 2px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
+}
+
+/* --- Layout Columns --- */
+.topRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.leftColumn,
+.centerColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- OperatorHeader CSS (Restored to exact original) --- */
 .headerSection {
   display: flex;
   align-items: center;
@@ -34,42 +67,12 @@
   flex-wrap: wrap;
 }
 
-.powderCard,
-.pricingCard,
-.finalOfferCard,
-.customerCard,
-.marketPricesCard {
-  background-color: var(--color-black-1);
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.divider {
-  height: 2px;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.1);
-  margin: 4px 0;
-}
-
 .languageSelectWrapper {
   width: 160px;
 }
 
 .languageSelectContainer {
   height: 36px;
-}
-
-.languageSelect {
-  background-color: var(--color-black-3);
-  color: var(--color-white);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
 }
 
 .sessionGroup {
@@ -115,476 +118,7 @@
   border-color: #ef4444 !important;
 }
 
-.topRow {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.leftColumn,
-.centerColumn,
-.rightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.powderCard {
-  gap: 16px;
-}
-
-.powderCard .powderHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.powderCard .powderContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.powderCard .powderAmount {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--color-white);
-  text-align: center;
-}
-
-.powderScale {
-  width: 100%;
-  height: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-}
-
-.powderScale .scaleBar {
-  height: 100%;
-  width: 70%;
-  background: linear-gradient(
-    to right,
-    var(--color-primary-500),
-    var(--color-primary-400)
-  );
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.powderDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.powderDetails .powderDetailRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-}
-
-.powderDetails .detailLabel {
-  color: rgba(255, 255, 255, 0.6);
-}
-.powderDetails .detailValue {
-  color: var(--color-white);
-  font-weight: 500;
-}
-
-.pricingCard {
-  gap: 18px;
-}
-
-.pricingCard .cardTitle,
-.customerCard .cardTitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-white);
-  margin: 0;
-}
-
-.pricingCard .pricingContent {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.pricingRow {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-}
-
-.pricingRow .pricingMetal {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.pricingRow .pricingCalculation {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-left: 8px;
-}
-
-.pricingSummary {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.pricingSummary .summaryRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.pricingSummary .summaryValue {
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-.pricingSummary .finalOfferLabelSummary {
-  font-weight: 600;
-  color: var(--color-primary-500);
-}
-
-.pricingSummary .finalOfferValue {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-primary-500);
-}
-
-.finalOfferCard {
-  padding: 24px;
-  align-items: center;
-  justify-content: center;
-}
-
-.finalOfferCard .finalOfferContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-}
-
-.finalOfferCard .finalOfferLabel {
-  font-size: 16px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.priceContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-}
-
-.oldPriceStruck {
-  font-size: 18px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.65);
-  text-decoration: line-through #ef4444 2px;
-  margin-bottom: -4px;
-  animation: slideInDown 0.3s ease-out;
-}
-
-.finalOfferAmount {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--color-primary-500);
-  text-align: center;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.finalOfferAmount.newPriceHighlight {
-  color: var(--color-success, #22c55e);
-  transform: scale(1.1);
-  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-}
-
-.finalOfferActions {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  width: 100%;
-  margin-top: 20px;
-}
-
-.finalOfferActions button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.customerCard {
-  gap: 16px;
-}
-
-.customerCard .customerHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.customerCard .customerContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.phoneSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-.phoneSection .phoneLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-white);
-  text-align: left;
-}
-
-.additionalFields {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 12px;
-  width: 100%;
-}
-
-.customerProfile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-.customerProfile .profileAvatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: var(--color-black-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-white);
-  flex-shrink: 0;
-}
-
-.customerProfile .profileInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-}
-
-.profileField {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.profileField .profileLabel {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
-}
-.profileField .profileValue {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-white);
-}
-
-.customerActions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.marketPricesCard {
-  gap: 16px;
-}
-
-.marketPricesCard .marketPricesHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.liveIndicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.liveIndicator .liveDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--color-success);
-  flex-shrink: 0;
-}
-
-.liveIndicator .liveText {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-success);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.metalsList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.metalRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-}
-
-.metalIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-}
-
-.metalIcon.exchange {
-  background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.metalIcon.platinum {
-  background: linear-gradient(135deg, #ffffff 0%, #e5e4e2 40%, #a6a6a6 100%);
-}
-.metalIcon.palladium {
-  background: linear-gradient(135deg, #cba68b 0%, #6e6259 50%, #2b2724 100%);
-}
-.metalIcon.rhodium {
-  background: linear-gradient(135deg, #ffffff 0%, #c4d7f5 45%, #53698c 100%);
-}
-
-.metalInfo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex: 1;
-  gap: 16px;
-}
-
-.metalInfo .metalName {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-white);
-  min-width: 75px;
-}
-
-.metalInfo .metalPrice {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.metalInfo .metalSource {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: right;
-}
-
-.marketPricesFooter {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 11px;
-}
-
-.marketPricesFooter .updateTime {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.cashRegisterContainer {
-  margin-top: 8px;
-  width: 100%;
-}
-
-.fieldWithLeftIcon {
-  position: relative;
-  width: 100%;
-}
-
-.fieldWithLeftIcon .leftIcon {
-  position: absolute;
-  left: 16px;
-  top: 40px;
-  display: flex;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.7);
-  z-index: 2;
-  pointer-events: none;
-}
-
-.textField {
-  width: 100%;
-}
-
-.textField :global(.textFieldInput) {
-  padding-left: 44px;
-}
-
-.textField input[value="••••••••"] {
-  letter-spacing: 2px;
-  font-family: monospace;
-  font-size: 18px;
-}
-
-.passwordToggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.2s ease;
-}
-
-.passwordToggle:hover {
-  color: var(--color-white);
-}
-
+/* --- Modals / Misc --- */
 .previewContainer {
   display: flex;
   flex-direction: column;
@@ -601,42 +135,7 @@
   gap: 4px;
 }
 
-.amountRow {
-  text-align: center;
-  margin-bottom: 8px;
-  background: none;
-}
-
-.summaryCardLabel {
-  font-size: 14px;
-  color: #a0a0a0;
-  text-transform: capitalize;
-}
-
-.summaryCardValue {
-  font-size: 16px;
-  color: #ffffff;
-  font-weight: 500;
-  margin: 0;
-}
-
-.amountHighlight {
-  font-size: 28px !important;
-  color: #ffffff !important;
-  font-weight: 700 !important;
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* --- Responsive Queries --- */
 @media (max-width: 1200px) {
   .topRow {
     grid-template-columns: 1fr 1fr;
@@ -666,19 +165,10 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  .leftColumn,
-  .centerColumn,
-  .rightColumn {
-    grid-column: 1;
-  }
-  .additionalFields {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 600px) {
-  .headerActions,
-  .finalOfferActions {
+  .headerActions {
     flex-direction: column;
     align-items: stretch;
   }

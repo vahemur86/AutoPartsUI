@@ -7,7 +7,7 @@ import { Banknote, Eye, EyeOff } from "lucide-react";
 import { TextField } from "@/ui-kit";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "./CashRegisterField.module.css";
 
 interface CashRegisterFieldProps {
   displayBalance: string;
@@ -33,9 +33,7 @@ export const CashRegisterField = ({
         <TextField
           label={t("operatorPage.cashAmount")}
           value={hasError ? t("common.error") : displayBalance}
-          className={styles.textField}
           error={hasError}
-          style={{ paddingLeft: "44px" }}
           readOnly
           icon={
             <button
@@ -46,6 +44,9 @@ export const CashRegisterField = ({
               {showCashAmount ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           }
+          style={{
+            paddingLeft: "44px",
+          }}
         />
       </div>
     </div>

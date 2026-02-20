@@ -8,7 +8,7 @@ import { LogOut } from "lucide-react";
 import { Button, Select } from "@/ui-kit";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "../../OperatorPage.module.css";
 
 interface OperatorHeaderProps {
   hasOpenSession: boolean;
