@@ -250,7 +250,9 @@ export const BatchesToSale = () => {
             >
               {CURRENCIES.filter(
                 (currency) =>
-                  currency.value === "AMD" || currency.value === "USD",
+                  currency.value === "AMD" ||
+                  currency.value === "USD" ||
+                  currency.value === "RUB",
               ).map((currency) => (
                 <option key={currency.value} value={currency.value}>
                   {currency.label}
