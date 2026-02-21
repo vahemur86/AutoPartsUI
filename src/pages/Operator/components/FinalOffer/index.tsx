@@ -7,16 +7,18 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Check, X, RotateCcw } from "lucide-react";
-import { Button } from "@/ui-kit";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  offerIntake,
-  rejectIntake,
-  proposeNewOffer,
-} from "@/store/slices/operatorSlice";
 
-// Separate styles
+// icons
+import { Check, X, RotateCcw } from "lucide-react";
+
+// ui-kit
+import { Button } from "@/ui-kit";
+
+// stores
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { offerIntake, proposeNewOffer } from "@/store/slices/operatorSlice";
+
+// styles
 import styles from "./FinalOffer.module.css";
 import sharedStyles from "../../OperatorPage.module.css";
 
@@ -26,14 +28,20 @@ export const FinalOffer: FC<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userData: any;
   isRecalculationsLimitReached?: boolean;
+  withRecalculate?: boolean;
   onReset?: () => void;
+  onAccept?: () => Promise<void>;
+  isLoading?: boolean;
   setRecalculationsAmount?: Dispatch<SetStateAction<number>>;
 }> = ({
   isRecalculationsLimitReached = false,
+  withRecalculate = false,
   offerPrice = 0,
   currencyCode = "AMD",
   userData = {},
   onReset,
+  onAccept,
+  isLoading = false,
   setRecalculationsAmount,
 }) => {
   const { t } = useTranslation();
@@ -41,10 +49,14 @@ export const FinalOffer: FC<{
   const { intake, newPropose } = useAppSelector((state) => state.operator);
 
   const [isOffering, setIsOffering] = useState(false);
-  const [isRejecting, setIsRejecting] = useState(false);
   const [isRecalculating, setIsRecalculating] = useState(false);
 
   const handleOffer = useCallback(async () => {
+    if (onAccept) {
+      await onAccept();
+      return;
+    }
+
     const intakeId = intake?.id;
     if (!intakeId) return;
     try {
@@ -58,24 +70,7 @@ export const FinalOffer: FC<{
     } finally {
       setIsOffering(false);
     }
-  }, [dispatch, intake, t, userData?.cashRegisterId]);
-
-  const handleReject = useCallback(async () => {
-    const intakeId = intake?.id;
-    if (!intakeId) return;
-    try {
-      setIsRejecting(true);
-      await dispatch(
-        rejectIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
-      ).unwrap();
-      toast.success(t("finalOffer.success.rejected"));
-      onReset?.();
-    } catch (error) {
-      console.error("Reject failed:", error);
-    } finally {
-      setIsRejecting(false);
-    }
-  }, [intake?.id, dispatch, userData?.cashRegisterId, t, onReset]);
+  }, [dispatch, intake, t, userData?.cashRegisterId, onAccept]);
 
   const handleRecalculate = useCallback(async () => {
     const intakeId = intake?.id;
@@ -94,7 +89,7 @@ export const FinalOffer: FC<{
     }
   }, [dispatch, intake, t, userData?.cashRegisterId, setRecalculationsAmount]);
 
-  const isAnyActionLoading = isOffering || isRejecting || isRecalculating;
+  const isAnyActionLoading = isOffering || isRecalculating || isLoading;
   const hasNewOffer = !!newPropose;
   const displayPrice = hasNewOffer ? newPropose.offeredAmountAmd : offerPrice;
 
@@ -105,13 +100,13 @@ export const FinalOffer: FC<{
         <div className={styles.priceContainer}>
           {hasNewOffer && (
             <div className={styles.oldPriceStruck}>
-              {offerPrice} {currencyCode}
+              {offerPrice.toLocaleString()} {currencyCode}
             </div>
           )}
           <div
             className={`${styles.finalOfferAmount} ${hasNewOffer ? styles.newPriceHighlight : ""}`}
           >
-            {displayPrice} {currencyCode}
+            {displayPrice.toLocaleString()} {currencyCode}
           </div>
         </div>
         <div className={sharedStyles.divider} />
@@ -121,29 +116,33 @@ export const FinalOffer: FC<{
             size="small"
             fullWidth
             onClick={handleOffer}
-            disabled={isAnyActionLoading || !intake}
+            disabled={isAnyActionLoading || (!intake && offerPrice === 0)}
           >
             <Check size={20} />
             {t("finalOffer.offerButton")}
           </Button>
-          <Button
-            variant="secondary"
-            size="small"
-            fullWidth
-            onClick={handleRecalculate}
-            disabled={
-              isRecalculationsLimitReached || isAnyActionLoading || !intake
-            }
-          >
-            <RotateCcw size={20} />
-            {t("finalOffer.recalculateButton")}
-          </Button>
+
+          {withRecalculate && (
+            <Button
+              variant="secondary"
+              size="small"
+              fullWidth
+              onClick={handleRecalculate}
+              disabled={
+                isRecalculationsLimitReached || isAnyActionLoading || !intake
+              }
+            >
+              <RotateCcw size={20} />
+              {t("finalOffer.recalculateButton")}
+            </Button>
+          )}
+
           <Button
             variant="danger"
             size="small"
             fullWidth
-            onClick={handleReject}
-            disabled={isAnyActionLoading || !intake}
+            onClick={onReset}
+            disabled={isAnyActionLoading || (!intake && offerPrice === 0)}
           >
             <X size={20} />
             {t("finalOffer.rejectButton")}

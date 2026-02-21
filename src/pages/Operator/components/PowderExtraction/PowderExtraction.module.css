@@ -20,24 +20,3 @@
   flex-direction: column;
   gap: 16px;
 }
-
-.powderDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.powderDetailRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-}
-
-.detailLabel {
-  color: rgba(255, 255, 255, 0.6);
-}
-.detailValue {
-  color: var(--color-white);
-  font-weight: 500;
-}
