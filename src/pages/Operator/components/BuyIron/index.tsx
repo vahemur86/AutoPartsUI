@@ -61,6 +61,20 @@ export const BuyIron: FC<BuyIronProps> = ({
     return 0;
   }, [intake, searchedCustomers]);
 
+  const isCalculateDisabled = useMemo(() => {
+    const selectedEntries = Object.values(ironRows).filter(
+      (row) => row.isSelected,
+    );
+
+    if (isLoading || !selectedModelId || selectedEntries.length === 0) {
+      return true;
+    }
+
+    return selectedEntries.some(
+      (row) => !row.weight || row.weight === "." || parseFloat(row.weight) <= 0,
+    );
+  }, [ironRows, selectedModelId, isLoading]);
+
   useEffect(() => {
     if (cashRegisterId) {
       dispatch(fetchCarModels({ cashRegisterId, lang: i18n.language }));
@@ -132,15 +146,14 @@ export const BuyIron: FC<BuyIronProps> = ({
   };
 
   const handleGlobalCalculate = () => {
+    if (isCalculateDisabled || !isCustomerFound) return;
+
     onCalculateAttempt();
 
     const selectedEntries = Object.entries(ironRows).filter(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ([_, data]) => data.isSelected && parseFloat(data.weight) > 0,
+      ([_, data]) => data.isSelected,
     );
-
-    if (selectedEntries.length === 0 || !selectedModelId || !isCustomerFound)
-      return;
 
     const weightsMap: Record<string, number> = {};
     selectedEntries.forEach(([id, data]) => {
@@ -239,7 +252,7 @@ export const BuyIron: FC<BuyIronProps> = ({
             fullWidth
             variant="primary"
             onClick={handleGlobalCalculate}
-            disabled={isLoading}
+            disabled={isCalculateDisabled}
           >
             <Calculator size={18} style={{ marginRight: "8px" }} />
             {t("operatorPage.ironCarShop.calculate")}
