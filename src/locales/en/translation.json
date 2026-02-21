@@ -6,7 +6,7 @@
     "products": "Products",
     "users": "User Management",
     "customers": "Customers",
-    "logout": "Log Out",
+    "logout": "Logout",
     "userMenu": "User menu",
     "reports": "Reports"
   },
@@ -53,7 +53,8 @@
     "comment": "Comment",
     "noComment": "No comment",
     "date": "Date",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "warning": "Warning"
   },
   "currencies": {
     "USD": "US Dollar",
@@ -1123,6 +1124,10 @@
     "buyIron": "Buy Iron",
     "ironType": "Iron Type",
     "weightKg": "Weight (kg)",
+    "tabs": {
+      "catalyst": "Catalyst",
+      "iron": "Iron"
+    },
     "modals": {
       "pendingTopUpTitle": "Confirm Pending Top-Up"
     },
@@ -1134,8 +1139,15 @@
       "sessionClosed": "Session closed successfully",
       "intakeCreated": "Intake created successfully",
       "ironSold": "Iron purchased successfully",
-      "transactionConfirmed": "Transaction confirmed successfully"
-    }
+      "transactionConfirmed": "Transaction confirmed successfully",
+      "purchaseCompleted": "Purchase completed successfully"
+    },
+    "ironCarShop": {
+      "carModel": "Car Model",
+      "price": "Price",
+      "calculate": "Calculate"
+    },
+    "tabSwitchWarning": "Switching tabs will reset all current forms and clear entered data. Are you sure you want to continue?"
   },
   "customers": {
     "createOrGet": "Get customer",

@@ -1,60 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { toast } from "react-toastify";
 import i18n from "i18next";
-import {
-  HttpTransportType,
-  HubConnection,
-  HubConnectionBuilder,
-  LogLevel,
-} from "@microsoft/signalr";
-
-// stores
-import { logout } from "@/store/slices/authSlice";
-import {
-  fetchActiveMetalRate,
-  clearError as clearMetalError,
-} from "@/store/slices/metalRatesSlice";
-import {
-  fetchIntake,
-  clearError as clearIntakeError,
-  clearIntakeState,
-  addIntake,
-} from "@/store/slices/operatorSlice";
-import {
-  fetchLanguages,
-  clearError as clearLangError,
-} from "@/store/slices/languagesSlice";
-import {
-  fetchBalance,
-  openSession,
-  clearError as clearCashError,
-  fetchPendingTransaction,
-  confirmTransaction,
-  clearPendingData,
-} from "@/store/slices/cash/registersSlice";
-import {
-  fetchRegisterSession,
-  resetSessionState,
-  clearError as clearSessionError,
-} from "@/store/slices/cash/sessionsSlice";
-import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
-import { fetchOfferOptions } from "@/store/slices/offerOptionsSlice";
-import {
-  fetchExchangeRates,
-  clearExchangeRatesState,
-} from "@/store/slices/exchangeRatesSlice";
-import { clearCustomersState } from "@/store/slices/customersSlice";
-import {
-  fetchIronDropdown,
-  // addIronEntry,
-  // clearAdminError,
-} from "@/store/slices/adminProductsSlice";
 
 // ui-kit
-import { ConfirmationModal } from "@/ui-kit";
+import { ConfirmationModal, Tab } from "@/ui-kit";
 
 // components
 import {
@@ -64,431 +12,82 @@ import {
   PowderExtraction,
   LiveMarketPrices,
   OperatorHeader,
-  CashRegisterField,
   TopUpConfirmationModal,
+  BuyIron,
 } from "./components";
+
+// stores
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
+
+// hooks
+import { useOperator, type TabType } from "./hooks";
 
 // utils
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+
+// styles
 import styles from "./OperatorPage.module.css";
 
 export const OperatorPage = () => {
-  const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [, setConnection] = useState<HubConnection | null>(null);
-  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
-
-  const [userData] = useState(() =>
-    JSON.parse(localStorage.getItem("user_data") ?? "null"),
-  );
-
-  // Redux Selectors
-  const { activeMetalRate, error: metalRatesError } = useAppSelector(
-    (state) => state.metalRates,
-  );
-  const { intake, error: intakeError } = useAppSelector(
-    (state) => state.operator,
-  );
+  const dispatch = useAppDispatch();
   const {
-    languages: allLanguages,
-    error: languagesError,
-    isLoading: isLangLoading,
-  } = useAppSelector((state) => state.languages);
-  const {
-    activeBalance,
-    error: cashError,
-    isBalanceLoading,
-    pendingDetails,
-    isPendingLoading,
-  } = useAppSelector((state) => state.cashRegisters);
-  const {
-    hasOpenSession,
-    sessionDetails,
-    error: sessionError,
-  } = useAppSelector((state) => state.cashSessions);
-  const { options: offerOptions } = useAppSelector(
-    (state) => state.offerOptions,
-  );
-  const { exchangeRates } = useAppSelector((state) => state.exchangeRates);
-  const { items: searchedCustomers } = useAppSelector(
-    (state) => state.customers,
-  );
-  // const {
-  //   dropdownItems: ironOptions,
-  //   isLoading: isIronLoading,
-  //   isSubmitting: isIronSubmitting,
-  //   error: adminError,
-  // } = useAppSelector((state) => state.adminProducts);
+    activeTab,
+    setActiveTab,
+    uiState,
+    setUiState,
+    userData,
+    formData,
+    setFormData,
+    initialOfferPrice,
+    recalculationsAmount,
+    setRecalculationsAmount,
+    hasTriedCalculateIron,
+    setHasTriedCalculateIron,
+    pendingTab,
+    setPendingTab,
+    languages,
+    usdAmdRate,
+    selectors,
+    actions,
+  } = useOperator();
 
-  const languages = allLanguages.filter((lang) => lang.isEnabled);
+  const isIron = activeTab === "iron";
 
-  // --- 1. Sticky Modal Logic ---
-  useEffect(() => {
-    setIsTopUpModalOpen(!!pendingDetails);
-  }, [pendingDetails]);
-
-  // --- 2. SignalR Connection Logic ---
-  useEffect(() => {
-    const crId = userData?.cashRegisterId;
-    const token = userData?.token;
-    if (!crId || !token) return;
-
-    const url = `https://autoparts-ambpc7hjbqhxeebx.canadacentral-01.azurewebsites.net/hubs/cash?cashRegisterId=${crId}`;
-
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(url, {
-        accessTokenFactory: () => token,
-        headers: {
-          "X-CashRegister-Id": crId.toString(),
-        },
-        transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
-      })
-      .withAutomaticReconnect()
-      .configureLogging(LogLevel.Warning)
-      .build();
-
-    newConnection.on("PendingCashInCreated", (data) => {
-      console.log("PendingCashInCreated received!", data);
-      dispatch(fetchPendingTransaction(crId));
-    });
-
-    newConnection.on("ReceivePendingCashIn", () => {
-      console.log("Pending update received!");
-      dispatch(fetchPendingTransaction(crId));
-    });
-
-    newConnection.onreconnected(() => {
-      dispatch(fetchBalance(crId));
-      dispatch(fetchPendingTransaction(crId));
-    });
-
-    setConnection(newConnection);
-
-    const startHub = async () => {
-      try {
-        await newConnection.start();
-        console.log("Connected to SignalR!");
-        await newConnection.invoke("JoinCashBox", crId);
-        dispatch(fetchBalance(crId));
-        dispatch(fetchPendingTransaction(crId));
-      } catch (err) {
-        console.error("SignalR Connection Error: ", err);
-      }
-    };
-
-    newConnection.onreconnected(async () => {
-      await newConnection.invoke("JoinCashBox", crId);
-      dispatch(fetchBalance(crId));
-      dispatch(fetchPendingTransaction(crId));
-    });
-
-    startHub();
-
-    return () => {
-      newConnection.stop();
-    };
-  }, [userData?.cashRegisterId, userData?.token, dispatch, t]);
-
-  // --- UI Handlers ---
-  const [uiState, setUiState] = useState({
-    isSubmitting: false,
-    hasTriedSubmit: false,
-    showCashAmount: false,
-    isCloseSessionModalOpen: false,
-  });
-  const [recalculationsAmount, setRecalculationsAmount] = useState(0);
-  const [initialOfferPrice, setInitialOfferPrice] = useState<number | null>(
-    null,
-  );
-  const [formData, setFormData] = useState({
-    powderWeight: "0",
-    platinumPrice: "0",
-    palladiumPrice: "0",
-    rhodiumPrice: "0",
-    customer: {
-      phone: "",
-      fullName: "",
-      gender: 0,
-      notes: "",
-    },
-  });
-
-  // const [ironFormData, setIronFormData] = useState({
-  //   productId: "" as string | number,
-  //   weight: "0",
-  // });
-
-  useEffect(() => {
-    const searchedCustomerType = searchedCustomers[0]?.customerType?.code;
-    const linkedCustomerType = intake?.customer?.customerType?.code;
-
-    const currentType = (
-      linkedCustomerType || searchedCustomerType
-    )?.toLowerCase();
-
-    const crId = userData?.cashRegisterId;
-
-    if (crId && currentType && currentType !== "standard") {
-      dispatch(
-        fetchExchangeRates({
-          isActive: true,
-          cashRegisterId: crId,
-        }),
-      );
+  const handleTabClick = (targetTab: TabType) => {
+    if (activeTab === targetTab) return;
+    const isFormDirty =
+      formData.powderWeight !== "0" ||
+      formData.customer.phone !== "" ||
+      selectors.operator.intake !== null ||
+      selectors.ironCarShop.ironPrices.length > 0;
+    if (isFormDirty) {
+      setPendingTab(targetTab);
+      setUiState((prev) => ({ ...prev, isTabConfirmModalOpen: true }));
     } else {
-      dispatch(clearExchangeRatesState());
-    }
-  }, [
-    dispatch,
-    intake?.customer?.customerType?.code,
-    searchedCustomers,
-    userData?.cashRegisterId,
-  ]);
-
-  const usdAmdRate = useMemo(
-    () =>
-      exchangeRates.find(
-        (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
-      )?.rate,
-    [exchangeRates],
-  );
-
-  useEffect(() => {
-    if (intake?.offerPrice && initialOfferPrice === null)
-      setInitialOfferPrice(intake.offerPrice);
-    if (!intake) setInitialOfferPrice(null);
-  }, [intake, initialOfferPrice]);
-
-  useEffect(() => {
-    const errors = [
-      { msg: metalRatesError, clear: clearMetalError },
-      { msg: intakeError, clear: clearIntakeError },
-      { msg: languagesError, clear: clearLangError },
-      { msg: cashError, clear: clearCashError },
-      { msg: sessionError, clear: clearSessionError },
-      // { msg: adminError, clear: clearAdminError },
-    ];
-
-    errors.forEach(({ msg, clear }) => {
-      if (msg) {
-        toast.error(msg, { toastId: msg });
-        dispatch(clear());
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    metalRatesError,
-    intakeError,
-    languagesError,
-    cashError,
-    sessionError,
-    // adminError,
-  ]);
-
-  useEffect(() => {
-    const crId = userData?.cashRegisterId;
-    if (crId) {
-      dispatch(
-        fetchActiveMetalRate({ cashRegisterId: crId, currencyCode: "USD" }),
-      );
-      dispatch(fetchLanguages(crId));
-      dispatch(fetchRegisterSession(crId));
-      dispatch(fetchBalance(crId));
-    }
-  }, [dispatch, userData?.cashRegisterId]);
-
-  useEffect(() => {
-    const crId = userData?.cashRegisterId;
-    if (crId) {
-      const currentLng = i18n.language;
-      dispatch(
-        fetchIronDropdown({
-          cashRegisterId: crId,
-          lang: currentLng,
-        }),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, userData?.cashRegisterId, i18n.language]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (uiState.showCashAmount && userData?.cashRegisterId) {
-      dispatch(fetchBalance(userData.cashRegisterId));
-      timer = setTimeout(
-        () => setUiState((p) => ({ ...p, showCashAmount: false })),
-        10000,
-      );
-    }
-    return () => clearTimeout(timer);
-  }, [uiState.showCashAmount, dispatch, userData?.cashRegisterId]);
-
-  const handleResetForm = useCallback(() => {
-    setFormData({
-      powderWeight: "0",
-      platinumPrice: "0",
-      palladiumPrice: "0",
-      rhodiumPrice: "0",
-      customer: { phone: "", fullName: "", gender: 0, notes: "" },
-    });
-    setUiState((p) => ({ ...p, hasTriedSubmit: false, showCashAmount: false }));
-    setInitialOfferPrice(null);
-    setRecalculationsAmount(0);
-
-    dispatch(clearIntakeState());
-    dispatch(clearCustomersState());
-    dispatch(clearExchangeRatesState());
-  }, [dispatch]);
-
-  const handleSubmit = async () => {
-    setUiState((p) => ({ ...p, hasTriedSubmit: true }));
-
-    const isValid =
-      !isNaN(Number(formData.powderWeight)) &&
-      formData.customer.phone.length > 3 &&
-      !isNaN(Number(formData.platinumPrice)) &&
-      !isNaN(Number(formData.palladiumPrice)) &&
-      !isNaN(Number(formData.rhodiumPrice));
-
-    if (!isValid) return;
-
-    setUiState((p) => ({ ...p, isSubmitting: true }));
-    try {
-      const crId = userData?.cashRegisterId;
-
-      const response = await dispatch(
-        addIntake({
-          intake: {
-            shopId: userData?.shopId,
-            customer: {
-              phone: formData.customer.phone,
-              fullName: formData.customer.fullName,
-              gender: formData.customer.gender,
-              notes: formData.customer.notes,
-            },
-            powderWeightTotal: Number(formData.powderWeight),
-            ptWeight: Number(formData.platinumPrice),
-            pdWeight: Number(formData.palladiumPrice),
-            rhWeight: Number(formData.rhodiumPrice),
-            currencyCode: "USD",
-          },
-          cashRegisterId: crId,
-        }),
-      ).unwrap();
-
-      toast.success(t("operatorPage.success.intakeCreated"));
-      dispatch(fetchIntake({ intakeId: response.id, cashRegisterId: crId }));
-      dispatch(
-        fetchOfferOptions({ shopId: userData?.shopId, cashRegisterId: crId }),
-      );
-      setUiState((p) => ({ ...p, hasTriedSubmit: false }));
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setUiState((p) => ({ ...p, isSubmitting: false }));
+      setActiveTab(targetTab);
     }
   };
 
-  // const handleBuyIron = async () => {
-  //   const crId = userData?.cashRegisterId;
-  //   if (!crId || !ironFormData.productId || Number(ironFormData.weight) <= 0) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const finalForm = {
-  //       productId: Number(ironFormData.productId),
-  //       weight: Number(ironFormData.weight),
-  //     };
-
-  //     await dispatch(
-  //       addIronEntry({
-  //         payload: finalForm,
-  //         cashRegisterId: crId,
-  //       }),
-  //     ).unwrap();
-
-  //     toast.success(t("operatorPage.success.ironSold"));
-  //     setIronFormData({ productId: "", weight: "0" });
-  //   } catch (e) {
-  //     console.error("Iron buy failed", e);
-  //   }
-  // };
-
-  const handleToggleSession = useCallback(
-    async (action: "open" | "close") => {
-      const crId = userData?.cashRegisterId;
-      if (!crId) return;
-
-      try {
-        if (action === "open") {
-          await dispatch(openSession(crId)).unwrap();
-          dispatch(fetchRegisterSession(crId));
-          toast.success(t("operatorPage.success.sessionOpened"));
-        } else if (sessionDetails?.sessionId) {
-          await dispatch(
-            closeSession({
-              sessionId: sessionDetails.sessionId,
-              cashRegisterId: crId,
-            }),
-          ).unwrap();
-          dispatch(resetSessionState());
-          setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }));
-          toast.success(t("operatorPage.success.sessionClosed"));
-        }
-      } catch (error) {
-        console.error("Session action failed", error);
-      }
-    },
-    [dispatch, sessionDetails, userData?.cashRegisterId, t],
-  );
-
-  const handleConfirmTopUp = async () => {
-    if (!userData?.cashRegisterId) return;
-    try {
-      await dispatch(confirmTransaction(userData.cashRegisterId)).unwrap();
-      toast.success(t("operatorPage.success.transactionConfirmed"));
-      dispatch(clearPendingData());
-      dispatch(fetchBalance(userData.cashRegisterId));
-      dispatch(fetchPendingTransaction(userData.cashRegisterId));
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const displayBalance = isBalanceLoading
-    ? t("cashRegisters.fetchingBalance")
+  const displayBalance = selectors.cashRegisters.isBalanceLoading
+    ? i18n.t("cashRegisters.fetchingBalance")
     : uiState.showCashAmount
-      ? activeBalance?.balance.toString()
+      ? Number(
+          selectors.cashRegisters.activeBalance?.balance || 0,
+        ).toLocaleString()
       : "••••••••";
-
-  // const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   let val = e.target.value;
-
-  //   if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) {
-  //     return;
-  //   }
-
-  //   if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
-  //     val = val.replace(/^0+/, "");
-  //     if (val === "") val = "0";
-  //   }
-
-  //   if (val === ".") {
-  //     val = "0.";
-  //   }
-
-  //   setIronFormData((p) => ({ ...p, weight: val }));
-  // };
 
   return (
     <div className={styles.operatorPage}>
       <OperatorHeader
-        hasOpenSession={hasOpenSession}
-        onToggleSession={handleToggleSession}
+        hasOpenSession={selectors.cashSessions.hasOpenSession}
+        onToggleSession={actions.handleToggleSession}
         onOpenCloseModal={() =>
           setUiState((p) => ({ ...p, isCloseSessionModalOpen: true }))
+        }
+        onOpenLogoutModal={() =>
+          setUiState((p) => ({ ...p, isLogoutModalOpen: true }))
         }
         languages={languages}
         selectedApiCode={
@@ -500,53 +99,120 @@ export const OperatorPage = () => {
           i18n.changeLanguage(code);
           localStorage.setItem("i18nextLng", code);
         }}
-        onLogout={() => {
-          dispatch(logout());
-          navigate("/login");
-        }}
-        isLangLoading={isLangLoading}
+        isLangLoading={selectors.languagesState.isLoading}
+        displayBalance={displayBalance}
+        userData={userData}
+        showCashAmount={uiState.showCashAmount}
+        onToggleVisibility={() =>
+          setUiState((p) => ({ ...p, showCashAmount: !uiState.showCashAmount }))
+        }
+        hasError={!!selectors.cashRegisters.error}
       />
 
-      <div className={styles.topRow}>
-        <div className={styles.leftColumn}>
-          <PowderExtraction
-            weight={formData.powderWeight}
-            onWeightChange={(v) =>
-              setFormData((p) => ({ ...p, powderWeight: v }))
-            }
-            error={
-              uiState.hasTriedSubmit && isNaN(Number(formData.powderWeight))
-            }
-          />
-          <LiveMarketPrices
-            ptPricePerGram={activeMetalRate?.ptPricePerGram}
-            pdPricePerGram={activeMetalRate?.pdPricePerGram}
-            rhPricePerGram={activeMetalRate?.rhPricePerGram}
-            currencyCode={activeMetalRate?.currencyCode}
-            updatedAt={activeMetalRate?.effectiveFrom}
-            usdAmdRate={usdAmdRate}
-          />
-        </div>
+      <div className={styles.tabWrapper}>
+        <Tab
+          variant="underline"
+          active={activeTab === "catalyst"}
+          text={i18n.t("operatorPage.tabs.catalyst")}
+          onClick={() => handleTabClick("catalyst")}
+        />
+        <Tab
+          variant="underline"
+          active={activeTab === "iron"}
+          text={i18n.t("operatorPage.tabs.iron")}
+          onClick={() => handleTabClick("iron")}
+        />
+      </div>
 
-        <div className={styles.centerColumn}>
-          <PricingBreakdown
-            formData={formData}
-            onPriceChange={(f, v) => setFormData((p) => ({ ...p, [f]: v }))}
-            onSubmit={handleSubmit}
-            isLoading={uiState.isSubmitting}
-            hasTriedSubmit={uiState.hasTriedSubmit}
-          />
-          <FinalOffer
-            offerPrice={initialOfferPrice ?? intake?.offerPrice ?? 0}
-            currencyCode={intake?.currencyCode}
-            userData={userData}
-            isRecalculationsLimitReached={
-              recalculationsAmount >= offerOptions.length
-            }
-            onReset={handleResetForm}
-            setRecalculationsAmount={setRecalculationsAmount}
-          />
-        </div>
+      <div className={!isIron ? styles.topRow : styles.ironLayout}>
+        {!isIron ? (
+          <>
+            <div className={styles.leftColumn}>
+              <PowderExtraction
+                weight={formData.powderWeight}
+                onWeightChange={(v) =>
+                  setFormData((p) => ({ ...p, powderWeight: v }))
+                }
+                error={
+                  uiState.hasTriedSubmit && isNaN(Number(formData.powderWeight))
+                }
+              />
+              <LiveMarketPrices
+                ptPricePerGram={
+                  selectors.metalRates.activeMetalRate?.ptPricePerGram
+                }
+                pdPricePerGram={
+                  selectors.metalRates.activeMetalRate?.pdPricePerGram
+                }
+                rhPricePerGram={
+                  selectors.metalRates.activeMetalRate?.rhPricePerGram
+                }
+                currencyCode={
+                  selectors.metalRates.activeMetalRate?.currencyCode
+                }
+                updatedAt={selectors.metalRates.activeMetalRate?.effectiveFrom}
+                usdAmdRate={usdAmdRate}
+              />
+            </div>
+            <div className={styles.centerColumn}>
+              <PricingBreakdown
+                formData={formData}
+                onPriceChange={(f, v) => setFormData((p) => ({ ...p, [f]: v }))}
+                onSubmit={actions.handleSubmit}
+                isLoading={uiState.isSubmitting}
+                hasTriedSubmit={uiState.hasTriedSubmit}
+              />
+              <FinalOffer
+                withRecalculate
+                offerPrice={
+                  initialOfferPrice ??
+                  selectors.operator.intake?.offerPrice ??
+                  0
+                }
+                currencyCode={selectors.operator.intake?.currencyCode}
+                userData={userData}
+                isRecalculationsLimitReached={
+                  recalculationsAmount >= selectors.offerOptions.options.length
+                }
+                onReset={() =>
+                  setUiState((prev) => ({
+                    ...prev,
+                    isRejectConfirmationOpen: true,
+                  }))
+                }
+                setRecalculationsAmount={setRecalculationsAmount}
+              />
+            </div>
+          </>
+        ) : (
+          /* IRON TAB: 3-Column Visual Flow */
+          <>
+            <div className={styles.leftColumn}>
+              <BuyIron
+                cashRegisterId={userData?.cashRegisterId}
+                onCalculateAttempt={() => setHasTriedCalculateIron(true)}
+              />
+            </div>
+            <div className={styles.centerColumn}>
+              <FinalOffer
+                offerPrice={
+                  selectors.ironCarShop.ironTotals?.totalAmountTotal ?? 0
+                }
+                currencyCode="AMD"
+                userData={userData}
+                isRecalculationsLimitReached={true}
+                onReset={() =>
+                  setUiState((prev) => ({
+                    ...prev,
+                    isRejectConfirmationOpen: true,
+                  }))
+                }
+                onAccept={actions.handleBulkPurchase}
+                isLoading={selectors.ironCarShop.isSubmitting}
+              />
+            </div>
+          </>
+        )}
 
         <div className={styles.rightColumn}>
           <CustomerDetails
@@ -554,72 +220,38 @@ export const OperatorPage = () => {
             onCustomerChange={(customer) =>
               setFormData((prev) => ({ ...prev, customer }))
             }
-            phoneError={uiState.hasTriedSubmit && !formData.customer.phone}
-            onSuccess={handleResetForm}
-          />
-
-          {/* <div className={styles.customerCard}>
-            <div className={styles.customerHeader}>
-              <h3 className={styles.cardTitle}>{t("operatorPage.buyIron")}</h3>
-            </div>
-            <div className={styles.customerContent}>
-              <Select
-                searchable
-                label={t("operatorPage.ironType")}
-                value={ironFormData.productId}
-                onChange={(e) =>
-                  setIronFormData((p) => ({ ...p, productId: e.target.value }))
-                }
-                disabled={isIronLoading || isIronSubmitting}
-              >
-                <option value="" disabled>
-                  {t("common.select")}
-                </option>
-                {ironOptions.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.displayName}
-                  </option>
-                ))}
-              </Select>
-
-              <TextField
-                label={t("operatorPage.weightKg")}
-                type="text"
-                inputMode="decimal"
-                value={ironFormData.weight}
-                onChange={handleWeightChange}
-                disabled={isIronSubmitting}
-              />
-
-              <Button
-                onClick={handleBuyIron}
-                disabled={
-                  !ironFormData.productId || Number(ironFormData.weight) <= 0
-                }
-                fullWidth
-              >
-                {t("common.buy")}
-              </Button>
-            </div>
-          </div> */}
-
-          <CashRegisterField
-            displayBalance={displayBalance || ""}
-            showCashAmount={uiState.showCashAmount}
-            onToggleVisibility={() =>
-              setUiState((p) => ({ ...p, showCashAmount: !p.showCashAmount }))
+            phoneError={
+              (uiState.hasTriedSubmit || hasTriedCalculateIron) &&
+              !formData.customer.phone
             }
-            hasError={!!cashError}
+            onSuccess={actions.handleResetForm}
+            wide={isIron}
+            activeTab={activeTab}
           />
         </div>
       </div>
 
-      {isTopUpModalOpen && (
+      {!!selectors.cashRegisters.pendingDetails && (
         <TopUpConfirmationModal
-          open={isTopUpModalOpen}
-          data={pendingDetails}
-          onConfirm={handleConfirmTopUp}
-          isLoading={isPendingLoading}
+          open={!!selectors.cashRegisters.pendingDetails}
+          data={selectors.cashRegisters.pendingDetails}
+          onConfirm={actions.handleConfirmTopUp}
+          isLoading={selectors.cashRegisters.isPendingLoading}
+        />
+      )}
+
+      {uiState.isRejectConfirmationOpen && (
+        <ConfirmationModal
+          open={uiState.isRejectConfirmationOpen}
+          onOpenChange={(v) =>
+            setUiState((p) => ({ ...p, isRejectConfirmationOpen: v }))
+          }
+          title={i18n.t("finalOffer.rejectButton")}
+          description={i18n.t("common.areYouSure")}
+          onConfirm={actions.handleConfirmReject}
+          onCancel={() =>
+            setUiState((p) => ({ ...p, isRejectConfirmationOpen: false }))
+          }
         />
       )}
 
@@ -629,12 +261,53 @@ export const OperatorPage = () => {
           onOpenChange={(v) =>
             setUiState((p) => ({ ...p, isCloseSessionModalOpen: v }))
           }
-          title={t("operatorPage.closeSession")}
-          description={t("common.areYouSure")}
-          onConfirm={() => handleToggleSession("close")}
+          title={i18n.t("operatorPage.closeSession")}
+          description={i18n.t("common.areYouSure")}
+          onConfirm={() => actions.handleToggleSession("close")}
           onCancel={() =>
             setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }))
           }
+        />
+      )}
+
+      {uiState.isLogoutModalOpen && (
+        <ConfirmationModal
+          open={uiState.isLogoutModalOpen}
+          onOpenChange={(v) =>
+            setUiState((p) => ({ ...p, isLogoutModalOpen: v }))
+          }
+          title={i18n.t("header.logout")}
+          description={i18n.t("common.areYouSure")}
+          onConfirm={() => {
+            dispatch(logout());
+            navigate("/login");
+          }}
+          onCancel={() =>
+            setUiState((p) => ({ ...p, isLogoutModalOpen: false }))
+          }
+        />
+      )}
+
+      {uiState.isTabConfirmModalOpen && (
+        <ConfirmationModal
+          open={uiState.isTabConfirmModalOpen}
+          onOpenChange={(v) =>
+            setUiState((p) => ({ ...p, isTabConfirmModalOpen: v }))
+          }
+          title={i18n.t("common.warning")}
+          description={i18n.t("operatorPage.tabSwitchWarning")}
+          onConfirm={() => {
+            if (pendingTab) {
+              actions.handleResetForm();
+              setActiveTab(pendingTab);
+            }
+            setUiState((p) => ({ ...p, isTabConfirmModalOpen: false }));
+            setPendingTab(null);
+          }}
+          onCancel={() => {
+            setUiState((p) => ({ ...p, isTabConfirmModalOpen: false }));
+            setPendingTab(null);
+          }}
         />
       )}
     </div>

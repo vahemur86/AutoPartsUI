@@ -16,14 +16,11 @@ import { Button } from "@/ui-kit";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  offerIntake,
-  rejectIntake,
-  proposeNewOffer,
-} from "@/store/slices/operatorSlice";
+import { offerIntake, proposeNewOffer } from "@/store/slices/operatorSlice";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "./FinalOffer.module.css";
+import sharedStyles from "../../OperatorPage.module.css";
 
 export const FinalOffer: FC<{
   offerPrice: number;
@@ -31,36 +28,41 @@ export const FinalOffer: FC<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userData: any;
   isRecalculationsLimitReached?: boolean;
+  withRecalculate?: boolean;
   onReset?: () => void;
+  onAccept?: () => Promise<void>;
+  isLoading?: boolean;
   setRecalculationsAmount?: Dispatch<SetStateAction<number>>;
 }> = ({
   isRecalculationsLimitReached = false,
+  withRecalculate = false,
   offerPrice = 0,
   currencyCode = "AMD",
   userData = {},
   onReset,
+  onAccept,
+  isLoading = false,
   setRecalculationsAmount,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
   const { intake, newPropose } = useAppSelector((state) => state.operator);
 
   const [isOffering, setIsOffering] = useState(false);
-  const [isRejecting, setIsRejecting] = useState(false);
   const [isRecalculating, setIsRecalculating] = useState(false);
 
   const handleOffer = useCallback(async () => {
+    if (onAccept) {
+      await onAccept();
+      return;
+    }
+
     const intakeId = intake?.id;
     if (!intakeId) return;
-
     try {
       setIsOffering(true);
       await dispatch(
-        offerIntake({
-          intakeId,
-          cashRegisterId: userData?.cashRegisterId,
-        }),
+        offerIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
       toast.success(t("finalOffer.success.offered"));
     } catch (error) {
@@ -68,42 +70,17 @@ export const FinalOffer: FC<{
     } finally {
       setIsOffering(false);
     }
-  }, [dispatch, intake, t, userData?.cashRegisterId]);
-
-  const handleReject = useCallback(async () => {
-    const intakeId = intake?.id;
-    if (!intakeId) return;
-
-    try {
-      setIsRejecting(true);
-      await dispatch(
-        rejectIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
-      ).unwrap();
-
-      toast.success(t("finalOffer.success.rejected"));
-      onReset?.();
-    } catch (error) {
-      console.error("Reject failed:", error);
-    } finally {
-      setIsRejecting(false);
-    }
-  }, [intake?.id, dispatch, userData?.cashRegisterId, t, onReset]);
+  }, [dispatch, intake, t, userData?.cashRegisterId, onAccept]);
 
   const handleRecalculate = useCallback(async () => {
     const intakeId = intake?.id;
     if (!intakeId) return;
-
     try {
       setIsRecalculating(true);
       await dispatch(
-        proposeNewOffer({
-          intakeId,
-          cashRegisterId: userData?.cashRegisterId,
-        }),
+        proposeNewOffer({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
-
       setRecalculationsAmount?.((prev) => prev + 1);
-
       toast.success(t("finalOffer.success.recalculated"));
     } catch (error) {
       console.error("Recalculate failed:", error);
@@ -112,8 +89,7 @@ export const FinalOffer: FC<{
     }
   }, [dispatch, intake, t, userData?.cashRegisterId, setRecalculationsAmount]);
 
-  const isAnyActionLoading = isOffering || isRejecting || isRecalculating;
-
+  const isAnyActionLoading = isOffering || isRecalculating || isLoading;
   const hasNewOffer = !!newPropose;
   const displayPrice = hasNewOffer ? newPropose.offeredAmountAmd : offerPrice;
 
@@ -121,55 +97,52 @@ export const FinalOffer: FC<{
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
         <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
-
         <div className={styles.priceContainer}>
           {hasNewOffer && (
             <div className={styles.oldPriceStruck}>
-              {offerPrice} {currencyCode}
+              {offerPrice.toLocaleString()} {currencyCode}
             </div>
           )}
           <div
-            className={`${styles.finalOfferAmount} ${
-              hasNewOffer ? styles.newPriceHighlight : ""
-            }`}
+            className={`${styles.finalOfferAmount} ${hasNewOffer ? styles.newPriceHighlight : ""}`}
           >
-            {displayPrice} {currencyCode}
+            {displayPrice.toLocaleString()} {currencyCode}
           </div>
         </div>
-
-        <div className={styles.divider} />
-
+        <div className={sharedStyles.divider} />
         <div className={styles.finalOfferActions}>
           <Button
             variant="primary"
             size="small"
             fullWidth
             onClick={handleOffer}
-            disabled={isAnyActionLoading || !intake}
+            disabled={isAnyActionLoading || (!intake && offerPrice === 0)}
           >
             <Check size={20} />
             {t("finalOffer.offerButton")}
           </Button>
 
-          <Button
-            variant="secondary"
-            size="small"
-            fullWidth
-            onClick={handleRecalculate}
-            disabled={
-              isRecalculationsLimitReached || isAnyActionLoading || !intake
-            }
-          >
-            <RotateCcw size={20} />
-            {t("finalOffer.recalculateButton")}
-          </Button>
+          {withRecalculate && (
+            <Button
+              variant="secondary"
+              size="small"
+              fullWidth
+              onClick={handleRecalculate}
+              disabled={
+                isRecalculationsLimitReached || isAnyActionLoading || !intake
+              }
+            >
+              <RotateCcw size={20} />
+              {t("finalOffer.recalculateButton")}
+            </Button>
+          )}
 
           <Button
             variant="danger"
             size="small"
             fullWidth
-            onClick={handleReject}
-            disabled={isAnyActionLoading || !intake}
+            onClick={onReset}
+            disabled={isAnyActionLoading || (!intake && offerPrice === 0)}
           >
             <X size={20} />
             {t("finalOffer.rejectButton")}

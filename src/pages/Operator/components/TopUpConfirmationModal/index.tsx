@@ -7,7 +7,7 @@ import { Modal, Button } from "@/ui-kit";
 import type { PendingTransaction } from "@/types/cash";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "../../OperatorPage.module.css";
 
 interface TopUpConfirmationModalProps {
   open: boolean;

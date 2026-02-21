@@ -1,0 +1,22 @@
+.powderCard {
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.powderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.powderContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

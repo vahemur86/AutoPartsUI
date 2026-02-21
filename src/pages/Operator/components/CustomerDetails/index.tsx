@@ -6,11 +6,11 @@ import {
   type CountryCode,
 } from "libphonenumber-js";
 
-// ui-kit
-import { TextField, Button } from "@/ui-kit";
-
 // icons
 import { User, Check } from "lucide-react";
+
+// ui-kit
+import { TextField, Button } from "@/ui-kit";
 
 // components
 import { CountryPhoneInput, GenderSelect } from "@/components/common";
@@ -25,7 +25,8 @@ import { fetchBalance } from "@/store/slices/cash/registersSlice";
 import { fetchCustomers } from "@/store/slices/customersSlice";
 
 // styles
-import styles from "../OperatorPage.module.css";
+import styles from "./CustomerDetails.module.css";
+import sharedStyles from "../../OperatorPage.module.css";
 
 interface CustomerDetailsProps {
   customerData: {
@@ -42,6 +43,8 @@ interface CustomerDetailsProps {
   }) => void;
   phoneError?: boolean;
   onSuccess?: () => void;
+  wide?: boolean;
+  activeTab: "catalyst" | "iron";
 }
 
 export const CustomerDetails = ({
@@ -49,14 +52,17 @@ export const CustomerDetails = ({
   onCustomerChange,
   phoneError,
   onSuccess,
+  wide = false,
+  activeTab = "catalyst",
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  const isIronTab = activeTab === "iron";
+
   const { intake, isLoading: isIntakeLoading } = useAppSelector(
     (state) => state.operator,
   );
-
   const { items: searchedCustomers, isLoading: isSearching } = useAppSelector(
     (state) => state.customers,
   );
@@ -64,7 +70,6 @@ export const CustomerDetails = ({
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [isAccepting, setIsAccepting] = useState(false);
   const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
-
   const [hasSearched, setHasSearched] = useState(false);
 
   const activeCustomer = useMemo(
@@ -87,7 +92,6 @@ export const CustomerDetails = ({
       toast.error(t("customerDetails.validation.enterCustomerPhone"));
       return;
     }
-
     if (!isPhoneValid) {
       setLocalHasTriedAccept(true);
       toast.error(t("customerDetails.validation.invalidPhone"));
@@ -99,31 +103,25 @@ export const CustomerDetails = ({
 
     try {
       const { cashRegisterId } = JSON.parse(userDataRaw);
-
       const response = await dispatch(
         fetchCustomers({
           phone: customerData.phone,
           cashRegisterId: Number(cashRegisterId),
         }),
       ).unwrap();
-
       setHasSearched(true);
 
       if (response.results && response.results.length > 0) {
         const foundCustomer = response.results[0];
-
         onCustomerChange({
           phone: foundCustomer.phone,
           fullName: foundCustomer.fullName || "",
           gender: foundCustomer.gender ?? 0,
           notes: foundCustomer.notes || "",
         });
-
         toast.success(t("customerDetails.success.customerFound"));
-
-        if (intake?.id) {
+        if (intake?.id)
           dispatch(fetchIntake({ intakeId: intake.id, cashRegisterId }));
-        }
       } else {
         onCustomerChange({
           ...customerData,
@@ -141,45 +139,39 @@ export const CustomerDetails = ({
   const handleAccept = useCallback(async () => {
     setLocalHasTriedAccept(true);
     if (!intake?.id || !isPhoneValid) return;
-
     try {
       setIsAccepting(true);
       const userData = JSON.parse(localStorage.getItem("user_data") ?? "{}");
-
       await dispatch(
         acceptIntakeThunk({
           intakeId: intake.id,
           cashRegisterId: userData.cashRegisterId,
         }),
       ).unwrap();
-
       toast.success(t("customerDetails.success.customerAccepted"));
       dispatch(fetchBalance(userData.cashRegisterId));
       onSuccess?.();
       setLocalHasTriedAccept(false);
       setHasSearched(false);
     } catch {
-      // Handled globally
+      /* Handled globally */
     } finally {
       setIsAccepting(false);
     }
   }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
 
   const isGlobalLoading = isIntakeLoading || isAccepting || isSearching;
-
   const isFormLocked =
     isGlobalLoading ||
     !hasSearched ||
     (!!activeCustomer && !!customerData.fullName && !isSearching);
 
   return (
-    <div className={styles.customerCard}>
+    <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""}`}>
       <div className={styles.customerHeader}>
-        <h2 className={styles.cardTitle}>{t("customerDetails.title")}</h2>
+        <h2 className={sharedStyles.cardTitle}>{t("customerDetails.title")}</h2>
       </div>
-
-      <div className={styles.divider} />
-
+      <div className={sharedStyles.divider} />
       <div className={styles.customerContent}>
         <div className={styles.phoneSection}>
           <span className={styles.phoneLabel}>
@@ -191,20 +183,21 @@ export const CustomerDetails = ({
             onCountryChange={(country) => {
               setSelectedCountry(country);
               onCustomerChange({ ...customerData, phone: "" });
-              setHasSearched(false); // Reset lock on country change
+              setHasSearched(false);
             }}
             onPhoneChange={(fullNumber) => {
               setLocalHasTriedAccept(false);
               onCustomerChange({ ...customerData, phone: fullNumber });
-              setHasSearched(false); // Reset lock on phone edit
+              setHasSearched(false);
             }}
             onSearch={handleSearch}
             error={phoneError || (localHasTriedAccept && !isPhoneValid)}
             disabled={isGlobalLoading}
           />
         </div>
-
-        <div className={styles.additionalFields}>
+        <div
+          className={`${styles.additionalFields} ${wide ? styles.wideFields : ""}`}
+        >
           <TextField
             label={t("customerDetails.fullName")}
             value={customerData.fullName}
@@ -237,32 +230,38 @@ export const CustomerDetails = ({
                   {activeCustomer.customerType?.code ?? "-"}
                 </span>
               </div>
-              <div className={styles.profileField}>
-                <span className={styles.profileLabel}>
-                  {t("customerDetails.discount")}:{" "}
-                </span>
-                <span className={styles.profileValue}>
-                  {activeCustomer.customerType?.bonusPercent != null
-                    ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
-                    : "0%"}
-                </span>
-              </div>
+
+              {!isIronTab && (
+                <div className={styles.profileField}>
+                  <span className={styles.profileLabel}>
+                    {t("customerDetails.discount")}:{" "}
+                  </span>
+                  <span className={styles.profileValue}>
+                    {activeCustomer.customerType?.bonusPercent != null
+                      ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
+                      : "0%"}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
-
-        <div className={styles.customerActions}>
-          <Button
-            variant="primary"
-            size="small"
-            fullWidth
-            onClick={handleAccept}
-            disabled={isGlobalLoading || !intake || !hasSearched}
-          >
-            <Check size={20} style={{ marginRight: "8px" }} />
-            {t("customerDetails.acceptAndPurchase")}
-          </Button>
-        </div>
+        {activeTab === "catalyst" && (
+          <div className={styles.customerActions}>
+            <Button
+              variant="primary"
+              size="small"
+              fullWidth
+              onClick={handleAccept}
+              disabled={
+                isGlobalLoading || (!intake && !isIronTab) || !hasSearched
+              }
+            >
+              <Check size={20} style={{ marginRight: "8px" }} />
+              {t("customerDetails.acceptAndPurchase")}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
