@@ -226,6 +226,7 @@ export const OperatorPage = () => {
             }
             onSuccess={actions.handleResetForm}
             wide={isIron}
+            activeTab={activeTab}
           />
         </div>
       </div>

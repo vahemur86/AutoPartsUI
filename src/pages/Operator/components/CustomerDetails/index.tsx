@@ -43,7 +43,8 @@ interface CustomerDetailsProps {
   }) => void;
   phoneError?: boolean;
   onSuccess?: () => void;
-  wide?: boolean; // Added Prop
+  wide?: boolean;
+  activeTab: "catalyst" | "iron";
 }
 
 export const CustomerDetails = ({
@@ -51,10 +52,14 @@ export const CustomerDetails = ({
   onCustomerChange,
   phoneError,
   onSuccess,
-  wide = false, // Default to false
+  wide = false,
+  activeTab = "catalyst",
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  const isIronTab = activeTab === "iron";
+
   const { intake, isLoading: isIntakeLoading } = useAppSelector(
     (state) => state.operator,
   );
@@ -225,31 +230,38 @@ export const CustomerDetails = ({
                   {activeCustomer.customerType?.code ?? "-"}
                 </span>
               </div>
-              <div className={styles.profileField}>
-                <span className={styles.profileLabel}>
-                  {t("customerDetails.discount")}:{" "}
-                </span>
-                <span className={styles.profileValue}>
-                  {activeCustomer.customerType?.bonusPercent != null
-                    ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
-                    : "0%"}
-                </span>
-              </div>
+
+              {!isIronTab && (
+                <div className={styles.profileField}>
+                  <span className={styles.profileLabel}>
+                    {t("customerDetails.discount")}:{" "}
+                  </span>
+                  <span className={styles.profileValue}>
+                    {activeCustomer.customerType?.bonusPercent != null
+                      ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
+                      : "0%"}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
-        <div className={styles.customerActions}>
-          <Button
-            variant="primary"
-            size="small"
-            fullWidth
-            onClick={handleAccept}
-            disabled={isGlobalLoading || !intake || !hasSearched}
-          >
-            <Check size={20} style={{ marginRight: "8px" }} />
-            {t("customerDetails.acceptAndPurchase")}
-          </Button>
-        </div>
+        {activeTab === "catalyst" && (
+          <div className={styles.customerActions}>
+            <Button
+              variant="primary"
+              size="small"
+              fullWidth
+              onClick={handleAccept}
+              disabled={
+                isGlobalLoading || (!intake && !isIronTab) || !hasSearched
+              }
+            >
+              <Check size={20} style={{ marginRight: "8px" }} />
+              {t("customerDetails.acceptAndPurchase")}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
