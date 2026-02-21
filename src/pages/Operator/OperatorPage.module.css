@@ -241,6 +241,13 @@
 }
 
 /* --- Modals / Misc --- */
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
 .summaryCard {
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
