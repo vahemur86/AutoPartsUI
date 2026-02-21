@@ -26,14 +26,16 @@ import { checkIsToday } from "@/utils/checkIsToday.utils";
 // styles
 import styles from "./IronSaleReport.module.css";
 
+const PAGE_SIZE = 20;
+
 export const IronSaleReport: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { sales, isLoading } = useAppSelector((state) => state.ironSaleReports);
+  const { sales } = useAppSelector((state) => state.ironSaleReports);
 
+  const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
   const [activeFilters, setActiveFilters] = useState<{
     customerId: number | null;
   }>({
@@ -41,7 +43,6 @@ export const IronSaleReport: FC = () => {
   });
 
   const filterAnchorRef = useRef<HTMLDivElement>(null);
-
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
@@ -68,10 +69,24 @@ export const IronSaleReport: FC = () => {
 
   const handleApplyFilters = (filters: typeof activeFilters) => {
     setActiveFilters(filters);
+    setCurrentPage(0);
     setIsFilterOpen(false);
   };
 
   const columns = useMemo(() => getIronSaleColumns(), []);
+
+  // Client-side pagination if API returns all items
+  const paginatedData = useMemo(() => {
+    if (!sales || sales.length === 0) return [];
+    const startIndex = currentPage * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    return sales.slice(startIndex, endIndex);
+  }, [sales, currentPage]);
+
+  const totalPages = useMemo(
+    () => Math.ceil((sales?.length || 0) / PAGE_SIZE),
+    [sales?.length],
+  );
 
   return (
     <div className={styles.reportWrapper}>
@@ -104,22 +119,19 @@ export const IronSaleReport: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        {isLoading ? (
-          <div className={styles.loading}>
-            {t("reports.ironSale.loading")}
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={sales || []}
-            pageSize={sales.length || 10}
-            getRowClassName={(row) =>
-              checkIsToday(row.purchasedAt) ? styles.todayRow : ""
-            }
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={paginatedData}
+          pageSize={PAGE_SIZE}
+          manualPagination
+          pageCount={totalPages}
+          pageIndex={currentPage}
+          getRowClassName={(row) =>
+            checkIsToday(row.purchasedAt) ? styles.todayRow : ""
+          }
+          onPaginationChange={setCurrentPage}
+        />
       </div>
     </div>
   );
 };
-
