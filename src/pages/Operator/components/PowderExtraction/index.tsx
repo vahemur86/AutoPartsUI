@@ -20,13 +20,6 @@ export const PowderExtraction = ({
 }: PowderExtractionProps) => {
   const { t } = useTranslation();
 
-  const rawData = localStorage.getItem("user_data");
-  const userData = rawData ? JSON.parse(rawData) : {};
-
-  const shopId = userData.shopId || "—";
-  const username = userData.username || "—";
-  const cashRegisterName = userData.cashRegisterName || "—";
-
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
     if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) return;
@@ -56,26 +49,6 @@ export const PowderExtraction = ({
           onChange={handleWeightChange}
           error={error}
         />
-        <div className={styles.powderDetails}>
-          <div className={styles.powderDetailRow}>
-            <span className={styles.detailLabel}>
-              {t("powderExtraction.shopId")}
-            </span>
-            <span className={styles.detailValue}>{shopId}</span>
-          </div>
-          <div className={styles.powderDetailRow}>
-            <span className={styles.detailLabel}>
-              {t("powderExtraction.username")}
-            </span>
-            <span className={styles.detailValue}>{username}</span>
-          </div>
-          <div className={styles.powderDetailRow}>
-            <span className={styles.detailLabel}>
-              {t("powderExtraction.cashRegisterName")}
-            </span>
-            <span className={styles.detailValue}>{cashRegisterName}</span>
-          </div>
-        </div>
       </div>
     </div>
   );

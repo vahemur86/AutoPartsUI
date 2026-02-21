@@ -13,7 +13,7 @@
 
 /* --- Shared / Common Classes --- */
 .cardTitle {
-  font-size: 20px; /* Restored to original small card title size */
+  font-size: 20px;
   font-weight: 600;
   color: var(--color-white);
   margin: 0;
@@ -26,6 +26,12 @@
   margin: 4px 0;
 }
 
+.tabWrapper {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+
 /* --- Layout Columns --- */
 .topRow {
   display: grid;
@@ -35,27 +41,46 @@
   box-sizing: border-box;
 }
 
+.ironLayout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .leftColumn,
 .centerColumn,
-.rightColumn {
+.rightColumn,
+.ironCenterColumn {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-/* --- OperatorHeader CSS (Restored to exact original) --- */
+.ironCenterColumn {
+  width: 100%;
+}
+
+.wideCard,
+.wideContainer {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* --- Enhanced OperatorHeader CSS --- */
 .headerSection {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   gap: 16px;
 }
 
 .headerSection .pageTitle {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
   color: var(--color-white);
   margin: 0;
 }
@@ -65,25 +90,124 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* --- User Info Widget --- */
+.userInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 44px;
+  white-space: nowrap;
+}
+
+.userInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.userInfoItem span {
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+/* --- Header Balance Widget --- */
+.headerBalanceContainer {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 14px;
+  gap: 12px;
+  height: 44px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.headerBalanceContainer:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.balanceError {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.05) !important;
+}
+
+.balanceIcon {
+  display: flex;
+  align-items: center;
+  color: #22c55e;
+}
+
+.balanceInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.balanceLabel {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.balanceValue {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-white);
+  line-height: 1.2;
+}
+
+.balanceToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.balanceToggle:hover {
+  color: var(--color-white);
 }
 
 .languageSelectWrapper {
-  width: 160px;
+  width: 140px;
 }
 
 .languageSelectContainer {
-  height: 36px;
+  height: 38px;
 }
 
 .sessionGroup {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .logoutBtn {
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 38px;
 }
 
 .sessionBtnActive,
@@ -92,6 +216,7 @@
 .sessionBtnInactiveClose {
   border-width: 1px !important;
   border-style: solid !important;
+  height: 38px;
 }
 
 .sessionBtnActive {
@@ -99,19 +224,16 @@
   color: white !important;
   border-color: #22c55e !important;
 }
-
 .sessionBtnInactive {
   background-color: transparent !important;
   color: #22c55e !important;
   border-color: #22c55e !important;
 }
-
 .sessionBtnActiveClose {
   background-color: #ef4444 !important;
   color: white !important;
   border-color: #ef4444 !important;
 }
-
 .sessionBtnInactiveClose {
   background-color: transparent !important;
   color: #ef4444 !important;
@@ -119,13 +241,6 @@
 }
 
 /* --- Modals / Misc --- */
-.previewContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 8px 0;
-}
-
 .summaryCard {
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
@@ -136,34 +251,54 @@
 }
 
 /* --- Responsive Queries --- */
+@media (max-width: 1400px) {
+  .ironLayout {
+    grid-template-columns: 1.8fr 1.2fr;
+  }
+}
+
 @media (max-width: 1200px) {
   .topRow {
     grid-template-columns: 1fr 1fr;
   }
-  .rightColumn {
-    grid-column: 1 / -1;
+  .ironLayout {
+    grid-template-columns: 1.6fr 1.4fr;
+    gap: 20px;
+  }
+  .headerActions {
+    justify-content: flex-start;
+    margin-top: 10px;
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
+  .ironLayout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .topRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .operatorPage {
+    padding: 16px;
+    gap: 16px;
+  }
   .headerSection {
     flex-direction: column;
     align-items: flex-start;
   }
   .headerActions {
     width: 100%;
-    justify-content: space-between;
+    gap: 10px;
   }
-}
 
-@media (max-width: 768px) {
-  .operatorPage {
-    gap: 16px;
-    padding: 16px;
-  }
-  .topRow {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .userInfoContainer {
+    justify-content: space-between;
+    height: auto;
+    padding: 10px 16px;
   }
 }
 
@@ -173,11 +308,31 @@
     align-items: stretch;
   }
   .sessionGroup {
-    justify-content: space-between;
-  }
-  .sessionGroup button,
-  .languageSelectWrapper,
-  .logoutBtn {
     width: 100%;
+  }
+  .sessionGroup button {
+    flex: 1;
+  }
+  .languageSelectWrapper,
+  .logoutBtn,
+  .headerBalanceContainer {
+    width: 100%;
+  }
+
+  .userInfoContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .userInfoItem {
+    font-size: 11px;
+  }
+
+  .headerBalanceContainer {
+    min-width: 0;
+    justify-content: space-between;
   }
 }

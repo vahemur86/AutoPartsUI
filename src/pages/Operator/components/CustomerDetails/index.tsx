@@ -43,6 +43,7 @@ interface CustomerDetailsProps {
   }) => void;
   phoneError?: boolean;
   onSuccess?: () => void;
+  wide?: boolean; // Added Prop
 }
 
 export const CustomerDetails = ({
@@ -50,6 +51,7 @@ export const CustomerDetails = ({
   onCustomerChange,
   phoneError,
   onSuccess,
+  wide = false, // Default to false
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -160,7 +162,7 @@ export const CustomerDetails = ({
     (!!activeCustomer && !!customerData.fullName && !isSearching);
 
   return (
-    <div className={styles.customerCard}>
+    <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""}`}>
       <div className={styles.customerHeader}>
         <h2 className={sharedStyles.cardTitle}>{t("customerDetails.title")}</h2>
       </div>
@@ -188,7 +190,9 @@ export const CustomerDetails = ({
             disabled={isGlobalLoading}
           />
         </div>
-        <div className={styles.additionalFields}>
+        <div
+          className={`${styles.additionalFields} ${wide ? styles.wideFields : ""}`}
+        >
           <TextField
             label={t("customerDetails.fullName")}
             value={customerData.fullName}
