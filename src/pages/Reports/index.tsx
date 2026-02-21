@@ -9,6 +9,7 @@ import {
   Wallet,
   ClipboardList,
   Database,
+  ShoppingCart,
 } from "lucide-react";
 
 // components
@@ -52,6 +53,12 @@ export const Reports = () => {
       path: "/iron-products-reports",
       label: t("reports.navigation.ironProducts"),
       icon: Database,
+      showCheckmark: true,
+    },
+    {
+      path: "/iron-sale",
+      label: t("reports.navigation.ironSale"),
+      icon: ShoppingCart,
       showCheckmark: true,
     },
   ];

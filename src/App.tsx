@@ -43,6 +43,7 @@ import { OpenSessions } from "@/components/reports/OpenSessions";
 import { PowderBatches } from "@/components/reports/PowderBatches";
 import { CashboxSessionsReports } from "@/components/reports/CashboxSessionsReports";
 import { IronProductsReport } from "@/components/reports/IronProductsReport";
+import { IronSaleReport } from "@/components/reports/IronSaleReport";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -149,6 +150,7 @@ export const App = () => {
                   path="iron-products-reports"
                   element={<IronProductsReport />}
                 />
+                <Route path="iron-sale" element={<IronSaleReport />} />
               </Route>
 
               <Route path="warehouses" element={<Warehouses />}>

@@ -126,11 +126,23 @@
       "openSessions": "Открытые сессии",
       "powderBatches": "Партии порошка",
       "cashboxSessionsReports": "Отчеты сессий кассы",
-      "ironProducts": "Железные изделия"
+      "ironProducts": "Железные изделия",
+      "ironSale": "Продажа железа"
     },
     "ironProducts": {
       "columns": {
         "productId": "ID Продукта"
+      }
+    },
+    "ironSale": {
+      "loading": "Загрузка продаж железа...",
+      "filters": {
+        "customerId": "ID Клиента"
+      },
+      "columns": {
+        "customerId": "ID Клиента",
+        "ironTypeName": "Тип железа",
+        "pricePerKg": "Цена"
       }
     },
     "filters": {
@@ -1122,7 +1134,7 @@
     "cashAmountPlaceholder": "Введите текущую сумму наличных",
     "buyIron": "Купить железо",
     "ironType": "Тип железа",
-    "weightKg": "Вес (кг)",
+    "weightKg": "Вес",
     "tabs": {
       "catalyst": "Катализатор",
       "iron": "Железо"

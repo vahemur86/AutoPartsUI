@@ -86,3 +86,26 @@ export const bulkPurchaseIron = async (
     throw new Error(getApiErrorMessage(error, "Failed bulk purchase."));
   }
 };
+
+export interface GetIronSalesParams {
+  customerId?: number;
+  lang?: string;
+}
+
+export const getIronSales = async (
+  params: GetIronSalesParams,
+  cashRegisterId: number,
+): Promise<PurchaseIronResponse[]> => {
+  try {
+    const response = await api.get(`${BASE_URL}/GetPurchases`, {
+      params: {
+        customerId: params.customerId,
+        lang: formatLang(params.lang || "en"),
+      },
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch iron sales."));
+  }
+};

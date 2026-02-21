@@ -126,11 +126,23 @@
       "openSessions": "Open Sessions",
       "powderBatches": "Powder Batches",
       "cashboxSessionsReports": "Cashbox Sessions Reports",
-      "ironProducts": "Iron Products"
+      "ironProducts": "Iron Products",
+      "ironSale": "Iron Sale"
     },
     "ironProducts": {
       "columns": {
         "productId": "Product ID"
+      }
+    },
+    "ironSale": {
+      "loading": "Loading iron sales...",
+      "filters": {
+        "customerId": "Customer ID"
+      },
+      "columns": {
+        "customerId": "Customer ID",
+        "ironTypeName": "Iron Type",
+        "pricePerKg": "Price"
       }
     },
     "filters": {
@@ -1123,7 +1135,7 @@
     "cashAmountPlaceholder": "Enter current cash amount",
     "buyIron": "Buy Iron",
     "ironType": "Iron Type",
-    "weightKg": "Weight (kg)",
+    "weightKg": "Weight",
     "tabs": {
       "catalyst": "Catalyst",
       "iron": "Iron"

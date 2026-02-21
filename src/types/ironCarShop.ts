@@ -41,7 +41,8 @@ export interface BulkPurchasePayload {
 }
 
 export interface PurchaseIronResponse {
-  purchaseId: number;
+  purchaseId?: number;
+  id?: number;
   customerId: number;
   ironTypeId: number;
   ironTypeName: string;

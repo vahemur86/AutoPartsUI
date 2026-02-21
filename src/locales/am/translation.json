@@ -126,11 +126,23 @@
       "openSessions": "Բաց հերթափոխեր",
       "powderBatches": "Փոշու խմբաքանակներ",
       "cashboxSessionsReports": "Դրամարկղի հերթափոխի հաշվետվություններ",
-      "ironProducts": "Երկաթի ապրանքներ"
+      "ironProducts": "Երկաթի ապրանքներ",
+      "ironSale": "Երկաթի վաճառք"
     },
     "ironProducts": {
       "columns": {
         "productId": "Ապրանքի ID"
+      }
+    },
+    "ironSale": {
+      "loading": "Բեռնվում են երկաթի վաճառքները...",
+      "filters": {
+        "customerId": "Հաճախորդի ID"
+      },
+      "columns": {
+        "customerId": "Հաճախորդի ID",
+        "ironTypeName": "Երկաթի տեսակ",
+        "pricePerKg": "Գին"
       }
     },
     "filters": {
@@ -1122,7 +1134,7 @@
     "cashAmountPlaceholder": "Մուտքագրեք կանխիկ գումարը",
     "buyIron": "Գնել երկաթ",
     "ironType": "Երկաթի տեսակ",
-    "weightKg": "Քաշ (կգ)",
+    "weightKg": "Քաշ",
     "tabs": {
       "catalyst": "Կատալիզատոր",
       "iron": "Երկաթ"
