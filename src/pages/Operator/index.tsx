@@ -185,7 +185,6 @@ export const OperatorPage = () => {
             </div>
           </>
         ) : (
-          /* IRON TAB: 3-Column Visual Flow */
           <>
             <div className={styles.leftColumn}>
               <BuyIron

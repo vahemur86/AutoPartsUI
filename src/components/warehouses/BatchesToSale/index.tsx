@@ -17,8 +17,7 @@ import {
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
 // utils
-import { checkIsToday } from "@/utils/checkIsToday.utils";
-import { getApiErrorMessage, getCashRegisterId } from "@/utils";
+import { getApiErrorMessage, getCashRegisterId, checkIsToday } from "@/utils";
 
 // constants
 import { CURRENCIES } from "@/constants/settings";

@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-height: 100%;
 }
 
 .wideSelect {
@@ -21,6 +22,7 @@
   gap: 12px;
   flex: 1;
   overflow-y: auto;
+  max-height: 400px;
   padding-right: 8px;
 }
 
@@ -129,5 +131,18 @@
   }
   .weightInput {
     width: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ironRow {
+    flex-wrap: wrap;
+  }
+  .priceDisplay {
+    order: 3;
+    min-width: 100%;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
   }
 }

@@ -25,9 +25,7 @@ export const getOpenSessions = async ({ shopId, cashRegisterId }: Params) => {
         params: {
           shopId,
         },
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -47,9 +45,7 @@ export const getOpenSessionsSummary = async ({
         params: {
           shopId,
         },
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;

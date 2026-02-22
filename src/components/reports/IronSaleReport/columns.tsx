@@ -9,16 +9,16 @@ import styles from "./IronSaleReport.module.css";
 
 const columnHelper = createColumnHelper<PurchaseIronResponse>();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronSaleColumns = (): ColumnDef<
   PurchaseIronResponse,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any
 >[] => [
   columnHelper.display({
     id: "id",
     header: "ID",
     cell: (info) => {
-      const row = info.row.original as any;
+      const row = info.row.original;
       const value = row.id ?? row.purchaseId;
       return value ? `#${value}` : "-";
     },

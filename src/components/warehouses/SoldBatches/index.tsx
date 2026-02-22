@@ -15,10 +15,11 @@ import { fetchPowderSales } from "@/store/slices/warehouses/powderSalesSlice";
 // components
 import { FilterSoldBatchesDropdown } from "./FilterSoldBatchesDropdown";
 
-// columns & utils
+// columns
 import { getSoldBatchesColumns } from "./columns";
-import { getApiErrorMessage, getCashRegisterId } from "@/utils";
-import { checkIsToday } from "@/utils/checkIsToday.utils";
+
+// utils
+import { getApiErrorMessage, getCashRegisterId, checkIsToday } from "@/utils";
 
 // styles
 import styles from "./SoldBatches.module.css";

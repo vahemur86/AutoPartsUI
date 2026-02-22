@@ -81,13 +81,12 @@ export const BuyIron: FC<BuyIronProps> = ({
     }
   }, [dispatch, cashRegisterId]);
 
-  // Handle Price Updates from Redux
   useEffect(() => {
     if (ironPrices && ironPrices.length > 0) {
       setIronRows((prev) => {
         const next = { ...prev };
         Object.keys(next).forEach((id) => {
-          next[Number(id)].price = 0;
+          if (next[Number(id)]) next[Number(id)].price = 0;
         });
         ironPrices.forEach((item) => {
           if (next[item.ironTypeId]) {
@@ -175,25 +174,27 @@ export const BuyIron: FC<BuyIronProps> = ({
 
   return (
     <div className={styles.buyIronCard}>
-      <h2 className={sharedStyles.cardTitle}>{t("operatorPage.buyIron")}</h2>
-      <div className={sharedStyles.divider} />
+      <div className={styles.headerSection}>
+        <h2 className={sharedStyles.cardTitle}>{t("operatorPage.buyIron")}</h2>
+        <div className={sharedStyles.divider} />
 
-      <div className={styles.modelSelectWrapper}>
-        <Select
-          searchable
-          label={t("operatorPage.ironCarShop.carModel")}
-          value={selectedModelId}
-          onChange={handleModelChange}
-          placeholder={t("common.select")}
-          disabled={isLoading}
-          containerClassName={styles.wideSelect}
-        >
-          {carModels.map((model) => (
-            <option key={model.id} value={model.id}>
-              {model.name}
-            </option>
-          ))}
-        </Select>
+        <div className={styles.modelSelectWrapper}>
+          <Select
+            searchable
+            label={t("operatorPage.ironCarShop.carModel")}
+            value={selectedModelId}
+            onChange={handleModelChange}
+            placeholder={t("common.select")}
+            disabled={isLoading}
+            containerClassName={styles.wideSelect}
+          >
+            {carModels.map((model) => (
+              <option key={model.id} value={model.id}>
+                {model.name}
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
 
       <div className={styles.ironList}>
