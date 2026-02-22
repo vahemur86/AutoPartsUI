@@ -1157,7 +1157,8 @@
     "ironCarShop": {
       "carModel": "Car Model",
       "price": "Price",
-      "calculate": "Calculate"
+      "calculate": "Calculate",
+      "selectCustomerToCalculate": "Please search for or create a customer before calculating"
     },
     "tabSwitchWarning": "Switching tabs will reset all current forms and clear entered data. Are you sure you want to continue?"
   },
