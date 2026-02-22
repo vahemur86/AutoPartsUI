@@ -44,6 +44,7 @@ export interface PurchaseIronResponse {
   purchaseId?: number;
   id?: number;
   customerId: number;
+  customerPhone?: string;
   ironTypeId: number;
   ironTypeName: string;
   customerTypeId: number;
@@ -57,4 +58,32 @@ export interface IronPrice {
   id: number;
   customerTypeId: number;
   pricePerKg: number;
+}
+
+export interface IronTypePriceByCustomer {
+  customerTypeId: number;
+  customerTypeName: string;
+  pricePerKg: number;
+}
+
+export interface IronTypeByCar {
+  ironTypeId: number;
+  name: string;
+  prices: IronTypePriceByCustomer[];
+}
+
+export interface AddIronPricePayload {
+  id: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}
+
+export interface CarModelPayload {
+  code: string;
+  translations: Record<string, string>;
+}
+
+export interface GetIronSalesParams {
+  customerId?: number;
+  lang?: string;
 }

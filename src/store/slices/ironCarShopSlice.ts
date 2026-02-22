@@ -8,15 +8,13 @@ import {
 import {
   getCarModels,
   getIronTypesByModel,
+  getIronTypesByCar,
   getIronTypesPrices,
   bulkPurchaseIron,
   addCarModel,
   addIronType,
   addIronPrice,
   getIronPrices,
-  type AddCarModelPayload,
-  type AddIronTypePayload,
-  type AddIronPricePayload,
 } from "@/services/ironCarShop";
 
 // utils
@@ -26,16 +24,20 @@ import { getApiErrorMessage } from "@/utils";
 import type {
   CarModel,
   IronType,
+  IronTypeByCar,
   IronTypePrice,
   IronPricesResponse,
   PurchaseIronResponse,
   BulkPurchasePayload,
   IronPrice,
+  CarModelPayload,
+  AddIronPricePayload,
 } from "@/types/ironCarShop";
 
 interface IronCarShopState {
   carModels: CarModel[];
   ironTypes: IronType[];
+  ironTypesByCar: IronTypeByCar[];
   ironPrices: IronTypePrice[];
   ironPriceList: IronPrice[];
   // Store the overall totals from the calculation response
@@ -52,6 +54,7 @@ interface IronCarShopState {
 const initialState: IronCarShopState = {
   carModels: [],
   ironTypes: [],
+  ironTypesByCar: [],
   ironPrices: [],
   ironPriceList: [],
   ironTotals: null,
@@ -95,6 +98,23 @@ export const fetchIronTypes = createAsyncThunk<
   },
 );
 
+export const fetchIronTypesByCar = createAsyncThunk<
+  IronTypeByCar[],
+  { carModelId: number; cashRegisterId: number; lang: string },
+  { rejectValue: string }
+>(
+  "ironCarShop/fetchIronTypesByCar",
+  async ({ carModelId, cashRegisterId, lang }, { rejectWithValue }) => {
+    try {
+      return await getIronTypesByCar(carModelId, cashRegisterId, lang);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Error loading iron types by car"),
+      );
+    }
+  },
+);
+
 export const calculateIronPrices = createAsyncThunk<
   IronPricesResponse,
   { params: Parameters<typeof getIronTypesPrices>[0]; cashRegisterId: number },
@@ -129,7 +149,7 @@ export const submitBulkPurchase = createAsyncThunk<
 
 export const createCarModel = createAsyncThunk<
   CarModel,
-  { payload: AddCarModelPayload; cashRegisterId: number; lang: string },
+  { payload: CarModelPayload; cashRegisterId: number; lang: string },
   { rejectValue: string }
 >(
   "ironCarShop/createCarModel",
@@ -148,7 +168,7 @@ export const createIronType = createAsyncThunk<
   IronType,
   {
     carModelId: number;
-    payload: AddIronTypePayload;
+    payload: CarModelPayload;
     cashRegisterId: number;
     lang: string;
   },
@@ -252,6 +272,10 @@ const ironCarShopSlice = createSlice({
       .addCase(fetchIronTypes.fulfilled, (state, action) => {
         state.isLoading = false;
         state.ironTypes = action.payload;
+      })
+      .addCase(fetchIronTypesByCar.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.ironTypesByCar = action.payload;
       })
       .addCase(calculateIronPrices.fulfilled, (state, action) => {
         state.isLoading = false;

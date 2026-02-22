@@ -2,11 +2,18 @@ import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import i18next from "i18next";
 
 // types
-import type { CarModel, IronType, IronPrice } from "@/types/ironCarShop";
+import type {
+  CarModel,
+  IronType,
+  IronPrice,
+  IronTypePriceByCustomer,
+} from "@/types/ironCarShop";
 
 const columnHelper = createColumnHelper<CarModel>();
 const ironTypeColumnHelper = createColumnHelper<IronType>();
 const ironPriceColumnHelper = createColumnHelper<IronPrice & { customerTypeName?: string }>();
+const ironTypePriceByCustomerHelper =
+  createColumnHelper<IronTypePriceByCustomer>();
 
 export const getCarModelColumns = (): ColumnDef<CarModel, any>[] => [
   columnHelper.accessor("id", {
@@ -34,6 +41,16 @@ export const getIronPriceColumns = (): ColumnDef<IronPrice & { customerTypeName?
     header: i18next.t("ironManagement.columns.customerType"),
   }),
   ironPriceColumnHelper.accessor("pricePerKg", {
+    header: i18next.t("ironManagement.columns.pricePerKg"),
+    cell: (info) => info.getValue().toLocaleString(),
+  }),
+];
+
+export const getIronTypePriceByCustomerColumns = (): ColumnDef<IronTypePriceByCustomer, any>[] => [
+  ironTypePriceByCustomerHelper.accessor("customerTypeName", {
+    header: i18next.t("ironManagement.columns.customerType"),
+  }),
+  ironTypePriceByCustomerHelper.accessor("pricePerKg", {
     header: i18next.t("ironManagement.columns.pricePerKg"),
     cell: (info) => info.getValue().toLocaleString(),
   }),

@@ -141,7 +141,7 @@
         "customerId": "Հաճախորդի ID"
       },
       "columns": {
-        "customerId": "Հաճախորդի ID",
+        "customerPhone": "Հաճախորդի հեռախոս",
         "ironTypeName": "Երկաթի տեսակ",
         "pricePerKg": "Գին"
       }
@@ -644,6 +644,7 @@
     "tabs": {
       "carModels": "Ավտոմեքենաների մոդելներ",
       "ironTypes": "Մետաղի տեսակներ",
+      "ironTypesAndPrices": "Մետաղի տեսակներ և գներ",
       "prices": "Գներ"
     },
     "ariaLabels": {
@@ -652,8 +653,12 @@
     "addCarModel": "Ավելացնել ավտոմոդել",
     "addIronType": "Ավելացնել մետաղի տեսակ",
     "addIronPrice": "Ավելացնել մետաղի գին",
+    "addPrice": "Ավելացնել գին",
     "selectCarModel": "Ընտրեք ավտոմոդել",
     "selectIronType": "Ընտրեք մետաղի տեսակ",
+    "loading": "Բեռնվում է…",
+    "noIronTypesForCarModel": "Այս ավտոմոդելի համար մետաղի տեսակներ չկան: Ավելացրեք վերևում:",
+    "noPricesYet": "Գներ դեռ չկան: Սեղմեք + ավելացնելու համար:",
     "form": {
       "code": "Կոդ",
       "enterCode": "Մուտքագրեք կոդ...",

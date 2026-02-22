@@ -16,7 +16,7 @@ const LANGUAGE_CODE_MAP: Record<string, string> = {
 const I18N_TO_API_MAP: Record<string, string> = {
   en: "en",
   ru: "ru",
-  am: "hy", // i18n uses "am", API uses "hy" for Armenian
+  am: "am", // i18n uses "am", API uses "hy" for Armenian
   fr: "fr",
 };
 

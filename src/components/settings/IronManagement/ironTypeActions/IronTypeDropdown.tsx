@@ -12,7 +12,6 @@ import styles from "./IronTypeDropdown.module.css";
 
 export type IronTypeForm = {
   code: string;
-  pricePerKg: number;
   translations: Record<string, string>;
 };
 
@@ -35,14 +34,12 @@ export const IronTypeDropdown = ({
   const { languages } = useAppSelector((state) => state.languages);
 
   const [code, setCode] = useState("");
-  const [pricePerKg, setPricePerKg] = useState("");
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
   useEffect(() => {
     if (open) {
       setCode("");
-      setPricePerKg("");
       setTranslations({});
       setHasTriedSave(false);
     }
@@ -58,13 +55,11 @@ export const IronTypeDropdown = ({
     }
   }, [open, languages]);
 
-  const numPricePerKg = parseFloat(pricePerKg);
-
   const isCodeValid = code.trim().length > 0;
-  const isPriceValid = !isNaN(numPricePerKg) && numPricePerKg >= 0;
-  const areTranslationsValid =
-    Object.values(translations).some((val) => val.trim().length > 0);
-  const isValid = isCodeValid && isPriceValid && areTranslationsValid;
+  const areTranslationsValid = Object.values(translations).some(
+    (val) => val.trim().length > 0,
+  );
+  const isValid = isCodeValid && areTranslationsValid;
 
   const handleTranslationChange = (langCode: string, value: string) => {
     setTranslations((prev) => ({
@@ -79,9 +74,10 @@ export const IronTypeDropdown = ({
 
     onSave({
       code: code.trim(),
-      pricePerKg: numPricePerKg,
       translations: Object.fromEntries(
-        Object.entries(translations).filter(([_, val]) => val.trim().length > 0),
+        Object.entries(translations).filter(
+          ([_, val]) => val.trim().length > 0,
+        ),
       ),
     });
   };
@@ -109,16 +105,6 @@ export const IronTypeDropdown = ({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             error={hasTriedSave && !isCodeValid}
-            disabled={isLoading}
-          />
-
-          <TextField
-            label={t("ironManagement.form.pricePerKg")}
-            placeholder="0"
-            type="number"
-            value={pricePerKg}
-            onChange={(e) => setPricePerKg(e.target.value)}
-            error={hasTriedSave && !isPriceValid}
             disabled={isLoading}
           />
 
@@ -165,4 +151,3 @@ export const IronTypeDropdown = ({
     </Dropdown>
   );
 };
-

@@ -141,7 +141,7 @@
         "customerId": "ID Клиента"
       },
       "columns": {
-        "customerId": "ID Клиента",
+        "customerPhone": "Телефон клиента",
         "ironTypeName": "Тип железа",
         "pricePerKg": "Цена"
       }
@@ -644,6 +644,7 @@
     "tabs": {
       "carModels": "Модели автомобилей",
       "ironTypes": "Типы металла",
+      "ironTypesAndPrices": "Типы металла и цены",
       "prices": "Цены"
     },
     "ariaLabels": {
@@ -652,8 +653,12 @@
     "addCarModel": "Добавить модель автомобиля",
     "addIronType": "Добавить тип металла",
     "addIronPrice": "Добавить цену металла",
+    "addPrice": "Добавить цену",
     "selectCarModel": "Выберите модель автомобиля",
     "selectIronType": "Выберите тип металла",
+    "loading": "Загрузка…",
+    "noIronTypesForCarModel": "Нет типов металла для этой модели. Добавьте выше.",
+    "noPricesYet": "Нет цен. Нажмите +, чтобы добавить.",
     "form": {
       "code": "Код",
       "enterCode": "Введите код...",

@@ -141,7 +141,7 @@
         "customerId": "Customer ID"
       },
       "columns": {
-        "customerId": "Customer ID",
+        "customerPhone": "Customer Phone",
         "ironTypeName": "Iron Type",
         "pricePerKg": "Price"
       }
@@ -644,6 +644,7 @@
     "tabs": {
       "carModels": "Car Models",
       "ironTypes": "Iron Types",
+      "ironTypesAndPrices": "Iron Types & Prices",
       "prices": "Prices"
     },
     "ariaLabels": {
@@ -652,8 +653,12 @@
     "addCarModel": "Add Car Model",
     "addIronType": "Add Iron Type",
     "addIronPrice": "Add Iron Price",
+    "addPrice": "Add price",
     "selectCarModel": "Select Car Model",
     "selectIronType": "Select Iron Type",
+    "loading": "Loading…",
+    "noIronTypesForCarModel": "No iron types for this car model. Add one above.",
+    "noPricesYet": "No prices yet. Click + to add.",
     "form": {
       "code": "Code",
       "enterCode": "Enter code...",

@@ -8,15 +8,19 @@ import { getApiErrorMessage, getHeaders } from "@/utils";
 import type {
   CarModel,
   IronType,
+  IronTypeByCar,
   IronPricesResponse,
   BulkPurchasePayload,
   PurchaseIronResponse,
   IronPrice,
+  AddIronPricePayload,
+  CarModelPayload,
+  GetIronSalesParams,
 } from "@/types/ironCarShop";
 
 const BASE_URL = "/admin/carmodels";
 
-const formatLang = (lang: string) => (lang === "am" ? "hy" : lang);
+const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
 
 export const getCarModels = async (
   cashRegisterId: number,
@@ -49,6 +53,24 @@ export const getIronTypesByModel = async (
     return response.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch iron types."));
+  }
+};
+
+export const getIronTypesByCar = async (
+  carModelId: number,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<IronTypeByCar[]> => {
+  try {
+    const response = await api.get(`${BASE_URL}/GetIronTypesByCar`, {
+      params: { carModelId, lang: formatLang(lang) },
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data ?? [];
+  } catch (error) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch iron types by car."),
+    );
   }
 };
 
@@ -88,11 +110,6 @@ export const bulkPurchaseIron = async (
   }
 };
 
-export interface GetIronSalesParams {
-  customerId?: number;
-  lang?: string;
-}
-
 export const getIronSales = async (
   params: GetIronSalesParams,
   cashRegisterId: number,
@@ -111,13 +128,8 @@ export const getIronSales = async (
   }
 };
 
-export interface AddCarModelPayload {
-  code: string;
-  translations: Record<string, string>;
-}
-
 export const addCarModel = async (
-  payload: AddCarModelPayload,
+  payload: CarModelPayload,
   cashRegisterId: number,
   lang: string = "en",
 ): Promise<CarModel> => {
@@ -132,15 +144,9 @@ export const addCarModel = async (
   }
 };
 
-export interface AddIronTypePayload {
-  code: string;
-  pricePerKg: number;
-  translations: Record<string, string>;
-}
-
 export const addIronType = async (
   carModelId: number,
-  payload: AddIronTypePayload,
+  payload: CarModelPayload,
   cashRegisterId: number,
   lang: string = "en",
 ): Promise<IronType> => {
@@ -158,12 +164,6 @@ export const addIronType = async (
     throw new Error(getApiErrorMessage(error, "Failed to add iron type."));
   }
 };
-
-export interface AddIronPricePayload {
-  id: number;
-  customerTypeId: number;
-  pricePerKg: number;
-}
 
 export const addIronPrice = async (
   ironTypeId: number,

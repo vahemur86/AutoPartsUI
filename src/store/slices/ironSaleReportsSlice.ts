@@ -5,13 +5,16 @@ import {
 } from "@reduxjs/toolkit";
 
 // services
-import { getIronSales, type GetIronSalesParams } from "@/services/ironCarShop";
+import { getIronSales } from "@/services/ironCarShop";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
 
 // types
-import type { PurchaseIronResponse } from "@/types/ironCarShop";
+import type {
+  GetIronSalesParams,
+  PurchaseIronResponse,
+} from "@/types/ironCarShop";
 
 interface IronSaleReportsState {
   sales: PurchaseIronResponse[];

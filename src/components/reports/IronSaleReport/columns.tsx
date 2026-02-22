@@ -23,9 +23,9 @@ export const getIronSaleColumns = (): ColumnDef<
       return value ? `#${value}` : "-";
     },
   }),
-  columnHelper.accessor("customerId", {
-    header: i18next.t("reports.ironSale.columns.customerId"),
-    cell: (info) => `#${info.getValue()}`,
+  columnHelper.accessor("customerPhone", {
+    header: i18next.t("reports.ironSale.columns.customerPhone"),
+    cell: (info) => info.getValue() ?? "-",
   }),
   columnHelper.accessor("ironTypeName", {
     header: i18next.t("reports.ironSale.columns.ironTypeName"),
