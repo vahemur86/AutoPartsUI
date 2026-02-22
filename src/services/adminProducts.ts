@@ -55,7 +55,7 @@ export const getIronProducts = async ({
 }) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron`, {
-      params: { lang: lang === "am" ? "hy" : lang },
+      params: { lang },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -75,7 +75,7 @@ export const getIronDropdown = async ({
 }) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron-dropdown`, {
-      params: { lang: lang === "am" ? "hy" : lang },
+      params: { lang },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;

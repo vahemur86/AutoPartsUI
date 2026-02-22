@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import i18n from "i18next";
 
 // ui-kit
@@ -77,9 +78,15 @@ export const BuyIron: FC<BuyIronProps> = ({
 
   useEffect(() => {
     if (cashRegisterId) {
-      dispatch(fetchCarModels({ cashRegisterId, lang: i18n.language }));
+      dispatch(
+        fetchCarModels({
+          cashRegisterId,
+          lang: i18n.language,
+        }),
+      );
     }
-  }, [dispatch, cashRegisterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, cashRegisterId, i18n.language]);
 
   useEffect(() => {
     if (ironPrices && ironPrices.length > 0) {
@@ -145,7 +152,12 @@ export const BuyIron: FC<BuyIronProps> = ({
   };
 
   const handleGlobalCalculate = () => {
-    if (isCalculateDisabled || !isCustomerFound) return;
+    if (isCalculateDisabled) return;
+
+    if (!isCustomerFound) {
+      toast.error(t("operatorPage.ironCarShop.selectCustomerToCalculate"));
+      return;
+    }
 
     onCalculateAttempt();
 

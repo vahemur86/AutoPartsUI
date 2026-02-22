@@ -28,7 +28,7 @@ export const getCarModels = async (
 ): Promise<CarModel[]> => {
   try {
     const response = await api.get(`${BASE_URL}/GetCarModels`, {
-      params: { lang: formatLang(lang) },
+      params: { lang },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -46,7 +46,7 @@ export const getIronTypesByModel = async (
     const response = await api.get(
       `${BASE_URL}/GetIronTypes/${carModelId}/irontypes`,
       {
-        params: { lang: formatLang(lang) },
+        params: { lang },
         headers: getHeaders(cashRegisterId),
       },
     );
@@ -85,7 +85,7 @@ export const getIronTypesPrices = async (
 ): Promise<IronPricesResponse> => {
   try {
     const response = await api.get(`${BASE_URL}/irontypes-prices`, {
-      params: { ...params, lang: formatLang(params.lang || "en") },
+      params,
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -101,7 +101,7 @@ export const bulkPurchaseIron = async (
 ): Promise<PurchaseIronResponse[]> => {
   try {
     const response = await api.post(`${BASE_URL}/BulkPurchase`, payload, {
-      params: { lang: formatLang(lang) },
+      params: { lang },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -118,7 +118,7 @@ export const getIronSales = async (
     const response = await api.get(`${BASE_URL}/GetPurchases`, {
       params: {
         customerId: params.customerId,
-        lang: formatLang(params.lang || "en"),
+        lang: params.lang,
       },
       headers: getHeaders(cashRegisterId),
     });
@@ -135,7 +135,7 @@ export const addCarModel = async (
 ): Promise<CarModel> => {
   try {
     const response = await api.post(`${BASE_URL}/AddCarModel`, payload, {
-      params: { lang: formatLang(lang) },
+      params: { lang },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -155,7 +155,7 @@ export const addIronType = async (
       `${BASE_URL}/AddIronType/${carModelId}/irontypes`,
       payload,
       {
-        params: { lang: formatLang(lang) },
+        params: { lang },
         headers: getHeaders(cashRegisterId),
       },
     );
@@ -173,7 +173,7 @@ export const addIronPrice = async (
 ): Promise<void> => {
   try {
     await api.post(`${BASE_URL}/AddIronPrice/${ironTypeId}/prices`, payload, {
-      params: { lang: formatLang(lang) },
+      params: { lang },
       headers: getHeaders(cashRegisterId),
     });
   } catch (error) {
@@ -194,7 +194,7 @@ export const getIronPrices = async (
     }
 
     const params: Record<string, string | number> = {
-      lang: formatLang(lang),
+      lang,
     };
 
     if (carModelId !== undefined && carModelId !== null && !isNaN(carModelId)) {

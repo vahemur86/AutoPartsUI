@@ -223,7 +223,10 @@ export const OperatorPage = () => {
               (uiState.hasTriedSubmit || hasTriedCalculateIron) &&
               !formData.customer.phone
             }
-            onSuccess={actions.handleResetForm}
+            onSuccess={() => {
+              actions.handleResetForm();
+              setHasTriedCalculateIron(false);
+            }}
             wide={isIron}
             activeTab={activeTab}
           />
@@ -247,7 +250,11 @@ export const OperatorPage = () => {
           }
           title={i18n.t("finalOffer.rejectButton")}
           description={i18n.t("common.areYouSure")}
-          onConfirm={actions.handleConfirmReject}
+          onConfirm={() => {
+            actions.handleConfirmReject();
+            actions.handleResetForm();
+            setHasTriedCalculateIron(false);
+          }}
           onCancel={() =>
             setUiState((p) => ({ ...p, isRejectConfirmationOpen: false }))
           }
@@ -298,6 +305,7 @@ export const OperatorPage = () => {
           onConfirm={() => {
             if (pendingTab) {
               actions.handleResetForm();
+              setHasTriedCalculateIron(false);
               setActiveTab(pendingTab);
             }
             setUiState((p) => ({ ...p, isTabConfirmModalOpen: false }));

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -7,7 +7,7 @@ import {
 } from "libphonenumber-js";
 
 // icons
-import { User, Check } from "lucide-react";
+import { User, Check, Plus } from "lucide-react";
 
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
@@ -22,7 +22,7 @@ import {
   acceptIntake as acceptIntakeThunk,
 } from "@/store/slices/operatorSlice";
 import { fetchBalance } from "@/store/slices/cash/registersSlice";
-import { fetchCustomers } from "@/store/slices/customersSlice";
+import { fetchCustomers, createCustomer } from "@/store/slices/customersSlice";
 
 // styles
 import styles from "./CustomerDetails.module.css";
@@ -63,19 +63,30 @@ export const CustomerDetails = ({
   const { intake, isLoading: isIntakeLoading } = useAppSelector(
     (state) => state.operator,
   );
-  const { items: searchedCustomers, isLoading: isSearching } = useAppSelector(
-    (state) => state.customers,
-  );
+  const {
+    items: searchedCustomers,
+    isLoading: isSearching,
+    isSubmitting: isCreating,
+  } = useAppSelector((state) => state.customers);
 
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [isAccepting, setIsAccepting] = useState(false);
   const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  useEffect(() => {
+    if (!customerData.phone) {
+      setHasSearched(false);
+      setLocalHasTriedAccept(false);
+    }
+  }, [customerData.phone]);
+
   const activeCustomer = useMemo(
     () => searchedCustomers[0],
     [searchedCustomers],
   );
+
+  const customerNotFound = hasSearched && !activeCustomer;
 
   const isPhoneValid = useMemo(() => {
     if (!customerData.phone) return false;
@@ -136,6 +147,37 @@ export const CustomerDetails = ({
     }
   }, [customerData, isPhoneValid, t, dispatch, onCustomerChange, intake?.id]);
 
+  const handleCreateNewCustomer = useCallback(async () => {
+    if (!customerData.fullName) {
+      toast.error(t("customerDetails.validation.enterFullName"));
+      return;
+    }
+
+    const userDataRaw = localStorage.getItem("user_data");
+    if (!userDataRaw) return;
+
+    try {
+      const { cashRegisterId } = JSON.parse(userDataRaw);
+
+      await dispatch(
+        createCustomer({
+          data: {
+            phone: customerData.phone,
+            fullName: customerData.fullName,
+            gender: customerData.gender,
+            notes: customerData.notes,
+          },
+          cashRegisterId: Number(cashRegisterId),
+        }),
+      ).unwrap();
+
+      toast.success(t("customers.success.customerCreated"));
+      handleSearch();
+    } catch (error) {
+      console.error("Failed to create customer:", error);
+    }
+  }, [customerData, dispatch, t, handleSearch]);
+
   const handleAccept = useCallback(async () => {
     setLocalHasTriedAccept(true);
     if (!intake?.id || !isPhoneValid) return;
@@ -160,7 +202,9 @@ export const CustomerDetails = ({
     }
   }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
 
-  const isGlobalLoading = isIntakeLoading || isAccepting || isSearching;
+  const isGlobalLoading =
+    isIntakeLoading || isAccepting || isSearching || isCreating;
+
   const isFormLocked =
     isGlobalLoading ||
     !hasSearched ||
@@ -246,8 +290,22 @@ export const CustomerDetails = ({
             </div>
           </div>
         )}
-        {activeTab === "catalyst" && (
-          <div className={styles.customerActions}>
+
+        <div className={styles.customerActions}>
+          {isIronTab && (
+            <Button
+              variant="primary"
+              size="small"
+              fullWidth
+              onClick={handleCreateNewCustomer}
+              disabled={isGlobalLoading || !customerNotFound}
+            >
+              <Plus size={20} style={{ marginRight: "8px" }} />
+              {t("customers.createCustomer")}
+            </Button>
+          )}
+
+          {activeTab === "catalyst" && (
             <Button
               variant="primary"
               size="small"
@@ -260,8 +318,8 @@ export const CustomerDetails = ({
               <Check size={20} style={{ marginRight: "8px" }} />
               {t("customerDetails.acceptAndPurchase")}
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
