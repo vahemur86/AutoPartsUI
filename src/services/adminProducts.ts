@@ -13,6 +13,8 @@ import type {
 
 const BASE_URL = "/admin";
 
+const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
+
 export const buyIron = async (
   payload: BuyIronPayload,
   cashRegisterId: number,
@@ -55,7 +57,7 @@ export const getIronProducts = async ({
 }) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron`, {
-      params: { lang },
+      params: { lang: formatLang(lang) },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -75,7 +77,7 @@ export const getIronDropdown = async ({
 }) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron-dropdown`, {
-      params: { lang },
+      params: { lang: formatLang(lang) },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -96,7 +98,7 @@ export const createOrderLine = async (
       `${BASE_URL}/products/order-line`,
       payload,
       {
-        params: { lang },
+        params: { lang: formatLang(lang) },
         headers: getHeaders(cashRegisterId),
       },
     );
@@ -112,7 +114,10 @@ export const getIronPurchases = async (
 ) => {
   try {
     const response = await api.get(`${BASE_URL}/products/GetIronPurchases`, {
-      params,
+      params: {
+        ...params,
+        ...(params.lang != null && { lang: formatLang(params.lang) }),
+      },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
