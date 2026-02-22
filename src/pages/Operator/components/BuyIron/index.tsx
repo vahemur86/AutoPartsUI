@@ -78,9 +78,15 @@ export const BuyIron: FC<BuyIronProps> = ({
 
   useEffect(() => {
     if (cashRegisterId) {
-      dispatch(fetchCarModels({ cashRegisterId, lang: i18n.language }));
+      dispatch(
+        fetchCarModels({
+          cashRegisterId,
+          lang: i18n.language,
+        }),
+      );
     }
-  }, [dispatch, cashRegisterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, cashRegisterId, i18n.language]);
 
   useEffect(() => {
     if (ironPrices && ironPrices.length > 0) {
