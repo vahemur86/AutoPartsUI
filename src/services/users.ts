@@ -1,7 +1,7 @@
 import api from ".";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type { Operator } from "@/types/cash/registers";
@@ -85,10 +85,7 @@ export const getOperators = async ({
         role,
         shopId,
       },
-      headers:
-        cashRegisterId !== undefined
-          ? { "X-CashRegister-Id": cashRegisterId }
-          : undefined,
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {

@@ -1,7 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 export const createLanguage = async (
   code: string,
@@ -26,11 +26,7 @@ export const createLanguage = async (
 export const getLanguages = async (cashRegisterId?: number) => {
   try {
     const response = await api.get(`/Languages`, {
-      headers: {
-        ...(cashRegisterId && {
-          "X-CashRegister-Id": cashRegisterId,
-        }),
-      },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {

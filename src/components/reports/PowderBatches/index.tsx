@@ -25,8 +25,7 @@ import { FilterPowderBatchesDropdown } from "./FilterPowderBatchesDropdown";
 import { PowderBatchesSummaryDropdown } from "./PowderBatchesSummaryDropdown";
 
 // utils
-import { getApiErrorMessage, getCashRegisterId } from "@/utils";
-import { checkIsToday } from "@/utils/checkIsToday.utils";
+import { getApiErrorMessage, getCashRegisterId, checkIsToday } from "@/utils";
 
 // types
 import type { GetPowderBatchesParams } from "@/types/cash";

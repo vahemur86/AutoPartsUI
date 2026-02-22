@@ -1,7 +1,7 @@
 import api from ".";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type { Intake, IntakeResponse, NewPropose } from "@/types/operator";
@@ -15,9 +15,7 @@ export const createIntake = async ({
 }): Promise<IntakeResponse> => {
   try {
     const response = await api.post(`/catalyst/intakes`, intake, {
-      headers: {
-        "X-CashRegister-Id": cashRegisterId,
-      },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {
@@ -34,9 +32,7 @@ export const getIntake = async ({
 }): Promise<IntakeResponse> => {
   try {
     const response = await api.get(`/catalyst/intakes/${intakeId}`, {
-      headers: {
-        "X-CashRegister-Id": cashRegisterId,
-      },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {
@@ -61,9 +57,7 @@ export const acceptIntake = async ({
         paymentType,
       },
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -84,9 +78,7 @@ export const rejectIntake = async ({
       `/catalyst/intakes/${intakeId}/reject`,
       {},
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -107,9 +99,7 @@ export const proposeNewOffer = async ({
       `/catalyst/intakes/${intakeId}/new-offer`,
       {},
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
@@ -130,9 +120,7 @@ export const offerIntake = async ({
       `/catalyst/intakes/${intakeId}/offer`,
       {},
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;

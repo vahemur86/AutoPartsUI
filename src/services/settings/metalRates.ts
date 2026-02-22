@@ -1,7 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type { MetalRate } from "@/types/settings";
@@ -18,11 +18,7 @@ export const createMetalRate = async (metalRate: Omit<MetalRate, "id">) => {
 export const getMetalRates = async (cashRegisterId?: number) => {
   try {
     const response = await api.get("/metal-rates", {
-      headers: {
-        ...(cashRegisterId && {
-          "X-CashRegister-Id": cashRegisterId,
-        }),
-      },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {
@@ -47,11 +43,12 @@ export const getActiveMetalRate = async ({
   cashRegisterId: number;
 }) => {
   try {
-    const response = await api.get<MetalRate>(`/metal-rates/active/${currencyCode}`, {
-      headers: {
-        "X-CashRegister-Id": cashRegisterId,
+    const response = await api.get<MetalRate>(
+      `/metal-rates/active/${currencyCode}`,
+      {
+        headers: getHeaders(cashRegisterId),
       },
-    });
+    );
     return response.data;
   } catch (error: unknown) {
     throw new Error(

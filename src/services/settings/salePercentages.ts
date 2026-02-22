@@ -1,8 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
-import { getCashRegisterId } from "@/utils/getCashRegisterId.util";
+import { getApiErrorMessage, getHeaders, getCashRegisterId } from "@/utils";
 
 export const createSalePercentage = async (
   percentage: number,
@@ -17,9 +16,7 @@ export const createSalePercentage = async (
         isActive,
       },
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
 
@@ -35,9 +32,7 @@ export const getSalePercentages = async () => {
   try {
     const cashRegisterId = getCashRegisterId();
     const response = await api.get(`/SalePercentages`, {
-      headers: {
-        "X-CashRegister-Id": cashRegisterId,
-      },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {
@@ -51,9 +46,7 @@ export const deleteSalePercentage = async (id: number) => {
   try {
     const cashRegisterId = getCashRegisterId();
     const response = await api.delete(`/SalePercentages/${id}`, {
-      headers: {
-        "X-CashRegister-Id": cashRegisterId,
-      },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {
@@ -78,9 +71,7 @@ export const updateSalePercentage = async (
         isActive,
       },
       {
-        headers: {
-          "X-CashRegister-Id": cashRegisterId,
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
 
@@ -91,4 +82,3 @@ export const updateSalePercentage = async (
     );
   }
 };
-

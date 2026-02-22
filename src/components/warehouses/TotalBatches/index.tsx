@@ -19,8 +19,7 @@ import {
 } from "@/store/slices/warehouses/salesLotsSlice";
 
 // utils
-import { checkIsToday } from "@/utils/checkIsToday.utils";
-import { getCashRegisterId, getApiErrorMessage } from "@/utils";
+import { getCashRegisterId, getApiErrorMessage, checkIsToday } from "@/utils";
 
 // styles
 import styles from "./TotalBatches.module.css";

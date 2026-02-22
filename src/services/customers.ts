@@ -47,11 +47,7 @@ export const getOrCreateCustomer = async ({
       `/catalyst/customers/get-or-create`,
       data,
       {
-        headers: {
-          ...(cashRegisterId && {
-            "X-CashRegister-Id": cashRegisterId,
-          }),
-        },
+        headers: getHeaders(cashRegisterId),
       },
     );
     return response.data;
