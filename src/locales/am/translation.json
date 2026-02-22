@@ -668,7 +668,7 @@
       "id": "ID",
       "name": "Անուն",
       "customerType": "Հաճախորդի տեսակ",
-      "pricePerKg": "Գին կգ-ի համար"
+      "pricePerKg": "Գին"
     },
     "success": {
       "carModelCreated": "Ավտոմոդելը հաջողությամբ ստեղծվեց",

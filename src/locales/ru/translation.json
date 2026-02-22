@@ -668,7 +668,7 @@
       "id": "ID",
       "name": "Название",
       "customerType": "Тип клиента",
-      "pricePerKg": "Цена за кг"
+      "pricePerKg": "Цена"
     },
     "success": {
       "carModelCreated": "Модель автомобиля успешно создана",
