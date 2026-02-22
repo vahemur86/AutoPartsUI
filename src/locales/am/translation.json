@@ -83,6 +83,7 @@
       "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
       "cashRegisters": "Դրամարկղեր",
+      "ironManagement": "Մետաղի կառավարում",
       "salePercentages": "Վաճառքի տոկոսներ"
     }
   },
@@ -637,6 +638,49 @@
     "error": {
       "failedToCreate": "Հաճախորդի տեսակի ստեղծումը ձախողվեց",
       "failedToUpdate": "Հաճախորդի տեսակի թարմացումը ձախողվեց"
+    }
+  },
+  "ironManagement": {
+    "tabs": {
+      "carModels": "Ավտոմեքենաների մոդելներ",
+      "ironTypes": "Մետաղի տեսակներ",
+      "prices": "Գներ"
+    },
+    "ariaLabels": {
+      "ironManagementSections": "Մետաղի կառավարման բաժիններ"
+    },
+    "addCarModel": "Ավելացնել ավտոմոդել",
+    "addIronType": "Ավելացնել մետաղի տեսակ",
+    "addIronPrice": "Ավելացնել մետաղի գին",
+    "selectCarModel": "Ընտրեք ավտոմոդել",
+    "selectIronType": "Ընտրեք մետաղի տեսակ",
+    "form": {
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդ...",
+      "name": "Անուն",
+      "enterName": "Մուտքագրեք անուն...",
+      "language": "Լեզու",
+      "pricePerKg": "Գին",
+      "customerType": "Հաճախորդի տեսակ",
+      "selectCustomerType": "Ընտրեք հաճախորդի տեսակ..."
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Անուն",
+      "customerType": "Հաճախորդի տեսակ",
+      "pricePerKg": "Գին կգ-ի համար"
+    },
+    "success": {
+      "carModelCreated": "Ավտոմոդելը հաջողությամբ ստեղծվեց",
+      "ironTypeCreated": "Մետաղի տեսակը հաջողությամբ ստեղծվեց",
+      "ironPriceCreated": "Մետաղի գինը հաջողությամբ ստեղծվեց"
+    },
+    "error": {
+      "failedToCreateCarModel": "Ավտոմոդելի ստեղծումը ձախողվեց",
+      "failedToCreateIronType": "Մետաղի տեսակի ստեղծումը ձախողվեց",
+      "failedToCreateIronPrice": "Մետաղի գնի ստեղծումը ձախողվեց",
+      "selectCarModel": "Նախ ընտրեք ավտոմոդել",
+      "selectIronType": "Նախ ընտրեք մետաղի տեսակ"
     }
   },
   "cashRegisters": {

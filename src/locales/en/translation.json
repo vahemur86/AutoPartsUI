@@ -83,7 +83,8 @@
       "customerTypes": "Customer Types",
       "exchangeRates": "Exchange Rates",
       "cashRegisters": "Cash Registers",
-      "salePercentages": "Sale Percentages"
+      "salePercentages": "Sale Percentages",
+      "ironManagement": "Iron Management"
     }
   },
   "offers": {
@@ -637,6 +638,49 @@
     "error": {
       "failedToCreate": "Failed to create customer type",
       "failedToUpdate": "Failed to update customer type"
+    }
+  },
+  "ironManagement": {
+    "tabs": {
+      "carModels": "Car Models",
+      "ironTypes": "Iron Types",
+      "prices": "Prices"
+    },
+    "ariaLabels": {
+      "ironManagementSections": "Iron Management Sections"
+    },
+    "addCarModel": "Add Car Model",
+    "addIronType": "Add Iron Type",
+    "addIronPrice": "Add Iron Price",
+    "selectCarModel": "Select Car Model",
+    "selectIronType": "Select Iron Type",
+    "form": {
+      "code": "Code",
+      "enterCode": "Enter code...",
+      "name": "Name",
+      "enterName": "Enter name...",
+      "language": "Language",
+      "pricePerKg": "Price",
+      "customerType": "Customer Type",
+      "selectCustomerType": "Select customer type..."
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "customerType": "Customer Type",
+      "pricePerKg": "Price Per Kg"
+    },
+    "success": {
+      "carModelCreated": "Car model created successfully",
+      "ironTypeCreated": "Iron type created successfully",
+      "ironPriceCreated": "Iron price created successfully"
+    },
+    "error": {
+      "failedToCreateCarModel": "Failed to create car model",
+      "failedToCreateIronType": "Failed to create iron type",
+      "failedToCreateIronPrice": "Failed to create iron price",
+      "selectCarModel": "Please select a car model first",
+      "selectIronType": "Please select an iron type first"
     }
   },
   "cashRegisters": {

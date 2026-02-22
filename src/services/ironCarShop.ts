@@ -11,6 +11,7 @@ import type {
   IronPricesResponse,
   BulkPurchasePayload,
   PurchaseIronResponse,
+  IronPrice,
 } from "@/types/ironCarShop";
 
 const BASE_URL = "/admin/carmodels";
@@ -107,5 +108,116 @@ export const getIronSales = async (
     return response.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch iron sales."));
+  }
+};
+
+export interface AddCarModelPayload {
+  code: string;
+  translations: Record<string, string>;
+}
+
+export const addCarModel = async (
+  payload: AddCarModelPayload,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<CarModel> => {
+  try {
+    const response = await api.post(`${BASE_URL}/AddCarModel`, payload, {
+      params: { lang: formatLang(lang) },
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to add car model."));
+  }
+};
+
+export interface AddIronTypePayload {
+  code: string;
+  pricePerKg: number;
+  translations: Record<string, string>;
+}
+
+export const addIronType = async (
+  carModelId: number,
+  payload: AddIronTypePayload,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<IronType> => {
+  try {
+    const response = await api.post(
+      `${BASE_URL}/AddIronType/${carModelId}/irontypes`,
+      payload,
+      {
+        params: { lang: formatLang(lang) },
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to add iron type."));
+  }
+};
+
+export interface AddIronPricePayload {
+  id: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}
+
+export const addIronPrice = async (
+  ironTypeId: number,
+  payload: AddIronPricePayload,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<void> => {
+  try {
+    await api.post(`${BASE_URL}/AddIronPrice/${ironTypeId}/prices`, payload, {
+      params: { lang: formatLang(lang) },
+      headers: getHeaders(cashRegisterId),
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to add iron price."));
+  }
+};
+
+export const getIronPrices = async (
+  ironTypeId: number,
+  cashRegisterId: number,
+  lang: string = "en",
+  carModelId?: number,
+  customerTypeId?: number,
+): Promise<IronPrice[]> => {
+  try {
+    if (!ironTypeId) {
+      throw new Error("ironTypeId is required");
+    }
+
+    const params: Record<string, string | number> = {
+      lang: formatLang(lang),
+    };
+
+    if (carModelId !== undefined && carModelId !== null && !isNaN(carModelId)) {
+      params.carModelId = carModelId;
+    }
+
+    if (
+      customerTypeId !== undefined &&
+      customerTypeId !== null &&
+      !isNaN(customerTypeId)
+    ) {
+      params.customerTypeId = customerTypeId;
+    }
+    const response = await api.get(`${BASE_URL}/irontypes-prices`, {
+      params: {
+        ...params,
+      },
+      headers: getHeaders(cashRegisterId),
+    });
+    return Array.isArray(response.data)
+      ? response.data
+      : (response.data.items ?? []);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch iron prices."));
   }
 };

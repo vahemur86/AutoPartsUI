@@ -83,6 +83,7 @@
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
       "cashRegisters": "Кассовые аппараты",
+      "ironManagement": "Управление металлоломом",
       "salePercentages": "Проценты продаж"
     }
   },
@@ -637,6 +638,49 @@
     "error": {
       "failedToCreate": "Не удалось создать тип клиента",
       "failedToUpdate": "Не удалось обновить тип клиента"
+    }
+  },
+  "ironManagement": {
+    "tabs": {
+      "carModels": "Модели автомобилей",
+      "ironTypes": "Типы металла",
+      "prices": "Цены"
+    },
+    "ariaLabels": {
+      "ironManagementSections": "Разделы управления металлоломом"
+    },
+    "addCarModel": "Добавить модель автомобиля",
+    "addIronType": "Добавить тип металла",
+    "addIronPrice": "Добавить цену металла",
+    "selectCarModel": "Выберите модель автомобиля",
+    "selectIronType": "Выберите тип металла",
+    "form": {
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "name": "Название",
+      "enterName": "Введите название...",
+      "language": "Язык",
+      "pricePerKg": "Цена",
+      "customerType": "Тип клиента",
+      "selectCustomerType": "Выберите тип клиента..."
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Название",
+      "customerType": "Тип клиента",
+      "pricePerKg": "Цена за кг"
+    },
+    "success": {
+      "carModelCreated": "Модель автомобиля успешно создана",
+      "ironTypeCreated": "Тип металла успешно создан",
+      "ironPriceCreated": "Цена металла успешно создана"
+    },
+    "error": {
+      "failedToCreateCarModel": "Не удалось создать модель автомобиля",
+      "failedToCreateIronType": "Не удалось создать тип металла",
+      "failedToCreateIronPrice": "Не удалось создать цену металла",
+      "selectCarModel": "Сначала выберите модель автомобиля",
+      "selectIronType": "Сначала выберите тип металла"
     }
   },
   "cashRegisters": {

@@ -52,3 +52,9 @@ export interface PurchaseIronResponse {
   totalAmount: number;
   purchasedAt: string;
 }
+
+export interface IronPrice {
+  id: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}

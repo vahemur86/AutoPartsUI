@@ -15,6 +15,7 @@ import {
   CreditCard,
   Percent,
   Tag,
+  Wrench,
 } from "lucide-react";
 
 // components
@@ -100,6 +101,12 @@ export const Settings = () => {
       path: "/sale-percentages",
       label: t("settings.navigation.salePercentages"),
       icon: Tag,
+      showCheckmark: true,
+    },
+    {
+      path: "/iron-management",
+      label: t("settings.navigation.ironManagement"),
+      icon: Wrench,
       showCheckmark: true,
     },
   ];
