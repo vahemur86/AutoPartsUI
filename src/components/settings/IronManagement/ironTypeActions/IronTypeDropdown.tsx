@@ -76,6 +76,7 @@ export const IronTypeDropdown = ({
       code: code.trim(),
       translations: Object.fromEntries(
         Object.entries(translations).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           ([_, val]) => val.trim().length > 0,
         ),
       ),

@@ -47,6 +47,10 @@ export const TotalBatches = () => {
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
+  const totalKgCount = useMemo(() => {
+    return selectedItems.reduce((acc, item) => acc + item.powderKg, 0);
+  }, [selectedItems]);
+
   useEffect(() => {
     dispatch(fetchWarehouses());
   }, [dispatch]);
@@ -80,6 +84,12 @@ export const TotalBatches = () => {
         ...prev,
         [inventoryLotId]: powderKg,
       }));
+
+      if (powderKg <= 0) {
+        setSelectedItems((prev) =>
+          prev.filter((item) => item.inventoryLotId !== inventoryLotId),
+        );
+      }
     },
     [],
   );
@@ -108,6 +118,17 @@ export const TotalBatches = () => {
     },
     [t],
   );
+
+  const handleRemoveItem = useCallback((inventoryLotId: number) => {
+    setSelectedItems((prev) =>
+      prev.filter((item) => item.inventoryLotId !== inventoryLotId),
+    );
+    setSelectedKg((prev) => {
+      const next = { ...prev };
+      delete next[inventoryLotId];
+      return next;
+    });
+  }, []);
 
   const handleConfirmSale = async (
     updatedItems: Array<{ inventoryLotId: number; powderKg: number }>,
@@ -158,9 +179,30 @@ export const TotalBatches = () => {
         <h2 className={styles.title}>
           {t("warehouses.navigation.totalBatches")}
         </h2>
+
+        <div className={styles.headerActions}>
+          <div className={styles.totalCounter}>
+            {t("common.total")}: <span>{totalKgCount} kg</span>
+          </div>
+
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={() => setIsPreviewModalOpen(true)}
+            disabled={
+              isCreatingSalesLot ||
+              selectedItems.length === 0 ||
+              !selectedWarehouseId
+            }
+          >
+            {isCreatingSalesLot
+              ? t("warehouses.totalBatches.creating")
+              : t("warehouses.totalBatches.previewAndCreateSale")}
+          </Button>
+        </div>
+
         <div className={styles.warehouseSelector}>
           <Select
-            label={t("warehouses.form.warehouse")}
             placeholder={t("warehouses.form.selectWarehouse")}
             value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
             onChange={handleWarehouseChange}
@@ -190,40 +232,22 @@ export const TotalBatches = () => {
             {t("warehouses.totalBatches.emptyState")}
           </div>
         ) : (
-          <>
-            <DataTable
-              data={inventoryLots}
-              columns={columns}
-              pageSize={10}
-              meta={{
-                selectedKg,
-                onKgChange: handleKgChange,
-                onAdd: handleAdd,
-              }}
-              getRowClassName={(row) =>
-                checkIsToday(row.createdAt) ? styles.todayRow : ""
-              }
-              frozenConfig={{
-                right: ["actions"],
-              }}
-            />
-            <div className={styles.createSaleSection}>
-              <Button
-                variant="primary"
-                size="medium"
-                onClick={() => setIsPreviewModalOpen(true)}
-                disabled={
-                  isCreatingSalesLot ||
-                  selectedItems.length === 0 ||
-                  !selectedWarehouseId
-                }
-              >
-                {isCreatingSalesLot
-                  ? t("warehouses.totalBatches.creating")
-                  : t("warehouses.totalBatches.previewAndCreateSale")}
-              </Button>
-            </div>
-          </>
+          <DataTable
+            data={inventoryLots}
+            columns={columns}
+            pageSize={10}
+            meta={{
+              selectedKg,
+              onKgChange: handleKgChange,
+              onAdd: handleAdd,
+            }}
+            getRowClassName={(row) =>
+              checkIsToday(row.createdAt) ? styles.todayRow : ""
+            }
+            frozenConfig={{
+              right: ["actions"],
+            }}
+          />
         )}
       </div>
 
@@ -235,6 +259,7 @@ export const TotalBatches = () => {
           items={selectedItems}
           cashRegisterId={cashRegisterId}
           onConfirm={handleConfirmSale}
+          onRemoveItem={handleRemoveItem}
           isCreating={isCreatingSalesLot}
         />
       )}
