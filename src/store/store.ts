@@ -27,6 +27,7 @@ import adminProductsReducer from "./slices/adminProductsSlice";
 import salePercentagesReducer from "./slices/salePercentagesSlice";
 import ironCarShopReducer from "./slices/ironCarShopSlice";
 import ironSaleReportsReducer from "./slices/ironSaleReportsSlice";
+import metalPricesReducer from "./slices/metalPricesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -58,6 +59,7 @@ export const store = configureStore({
     salePercentages: salePercentagesReducer,
     ironCarShop: ironCarShopReducer,
     ironSaleReports: ironSaleReportsReducer,
+    metalPrices: metalPricesReducer,
   },
 });
 

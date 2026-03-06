@@ -70,6 +70,11 @@ export interface MetalRate {
   isActive: boolean;
 }
 
+export interface MetalPrice {
+  metalName: string;
+  price: number;
+}
+
 export interface ExistingItem {
   id: string;
   name: string;

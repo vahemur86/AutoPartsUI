@@ -34,6 +34,7 @@ interface LiveMarketPricesProps {
   currencyCode?: string;
   updatedAt?: string;
   usdAmdRate?: number;
+  isMarketData?: boolean;
 }
 
 export const LiveMarketPrices = ({
@@ -43,15 +44,19 @@ export const LiveMarketPrices = ({
   currencyCode = "USD",
   updatedAt,
   usdAmdRate,
+  isMarketData = false,
 }: LiveMarketPricesProps) => {
   const { t } = useTranslation();
 
   const formatPrice = (pricePerGram: number | undefined): string => {
     if (pricePerGram === undefined) return t("liveMarketPrices.loading");
     const currencySymbol = currencyCode === "USD" ? "$" : currencyCode;
+
+    const fractionDigits = isMarketData ? 2 : 0;
+
     return `${currencySymbol} ${pricePerGram.toLocaleString("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
     })} / g`;
   };
 
