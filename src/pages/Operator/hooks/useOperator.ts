@@ -13,6 +13,10 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchActiveMetalRate } from "@/store/slices/metalRatesSlice";
 import {
+  fetchMetalPrices,
+  clearPricesError,
+} from "@/store/slices/metalPricesSlice";
+import {
   fetchIntake,
   clearIntakeState,
   addIntake,
@@ -57,6 +61,7 @@ export const useOperator = () => {
   );
 
   const metalRates = useAppSelector((state) => state.metalRates);
+  const metalPrices = useAppSelector((state) => state.metalPrices);
   const operator = useAppSelector((state) => state.operator);
   const languagesState = useAppSelector((state) => state.languages);
   const cashRegisters = useAppSelector((state) => state.cashRegisters);
@@ -94,6 +99,7 @@ export const useOperator = () => {
     () => languagesState.languages.filter((lang) => lang.isEnabled),
     [languagesState.languages],
   );
+
   const usdAmdRate = useMemo(
     () =>
       exchangeRates.find(
@@ -101,6 +107,16 @@ export const useOperator = () => {
       )?.rate,
     [exchangeRates],
   );
+
+  const isNonStandardCustomer = useMemo(() => {
+    const searchedCustomerType = customers.items[0]?.customerType?.code;
+    const linkedCustomerType = operator.intake?.customer?.customerType?.code;
+    const currentType = (
+      linkedCustomerType || searchedCustomerType
+    )?.toLowerCase();
+
+    return !!(currentType && currentType !== "standard");
+  }, [operator.intake?.customer?.customerType?.code, customers.items]);
 
   useEffect(() => {
     const crId = userData?.cashRegisterId;
@@ -172,24 +188,14 @@ export const useOperator = () => {
   }, [dispatch, userData?.cashRegisterId]);
 
   useEffect(() => {
-    const searchedCustomerType = customers.items[0]?.customerType?.code;
-    const linkedCustomerType = operator.intake?.customer?.customerType?.code;
-    const currentType = (
-      linkedCustomerType || searchedCustomerType
-    )?.toLowerCase();
     const crId = userData?.cashRegisterId;
-
-    if (crId && currentType && currentType !== "standard") {
+    if (crId && isNonStandardCustomer) {
       dispatch(fetchExchangeRates({ isActive: true, cashRegisterId: crId }));
+      dispatch(fetchMetalPrices(crId));
     } else {
       dispatch(clearExchangeRatesState());
     }
-  }, [
-    dispatch,
-    operator.intake?.customer?.customerType?.code,
-    customers.items,
-    userData?.cashRegisterId,
-  ]);
+  }, [dispatch, isNonStandardCustomer, userData?.cashRegisterId]);
 
   useEffect(() => {
     const crId = userData?.cashRegisterId;
@@ -239,6 +245,10 @@ export const useOperator = () => {
         msg: metalRates.error,
         clear: () => dispatch({ type: "metalRates/clearError" }),
       },
+      {
+        msg: metalPrices.error,
+        clear: () => dispatch(clearPricesError()),
+      },
       { msg: operator.error, clear: () => dispatch(clearIntakeState()) },
       { msg: languagesState.error, clear: () => {} },
       { msg: cashRegisters.error, clear: () => {} },
@@ -253,6 +263,7 @@ export const useOperator = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     metalRates.error,
+    metalPrices.error,
     operator.error,
     languagesState.error,
     cashRegisters.error,
@@ -425,8 +436,10 @@ export const useOperator = () => {
     setPendingTab,
     languages,
     usdAmdRate,
+    isNonStandardCustomer,
     selectors: {
       metalRates,
+      metalPrices,
       operator,
       languagesState,
       cashRegisters,

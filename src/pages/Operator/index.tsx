@@ -49,6 +49,7 @@ export const OperatorPage = () => {
     setPendingTab,
     languages,
     usdAmdRate,
+    isNonStandardCustomer,
     selectors,
     actions,
   } = useOperator();
@@ -77,6 +78,12 @@ export const OperatorPage = () => {
           selectors.cashRegisters.activeBalance?.balance || 0,
         ).toLocaleString()
       : "••••••••";
+
+  const getMarketPrice = (name: string) => {
+    return selectors.metalPrices.prices.find(
+      (p) => p.metalName.toLowerCase() === name.toLowerCase(),
+    )?.price;
+  };
 
   return (
     <div className={styles.operatorPage}>
@@ -139,19 +146,26 @@ export const OperatorPage = () => {
               />
               <LiveMarketPrices
                 ptPricePerGram={
-                  selectors.metalRates.activeMetalRate?.ptPricePerGram
+                  isNonStandardCustomer
+                    ? getMarketPrice("Platinum")
+                    : selectors.metalRates.activeMetalRate?.ptPricePerGram
                 }
                 pdPricePerGram={
-                  selectors.metalRates.activeMetalRate?.pdPricePerGram
+                  isNonStandardCustomer
+                    ? getMarketPrice("Palladium")
+                    : selectors.metalRates.activeMetalRate?.pdPricePerGram
                 }
                 rhPricePerGram={
-                  selectors.metalRates.activeMetalRate?.rhPricePerGram
+                  isNonStandardCustomer
+                    ? getMarketPrice("Rhodium")
+                    : selectors.metalRates.activeMetalRate?.rhPricePerGram
                 }
                 currencyCode={
                   selectors.metalRates.activeMetalRate?.currencyCode
                 }
                 updatedAt={selectors.metalRates.activeMetalRate?.effectiveFrom}
                 usdAmdRate={usdAmdRate}
+                isMarketData={isNonStandardCustomer}
               />
             </div>
             <div className={styles.centerColumn}>
