@@ -6,8 +6,11 @@ import type { CarModel, IronType, IronPrice } from "@/types/ironCarShop";
 
 const columnHelper = createColumnHelper<CarModel>();
 const ironTypeColumnHelper = createColumnHelper<IronType>();
-const ironPriceColumnHelper = createColumnHelper<IronPrice & { customerTypeName?: string }>();
+const ironPriceColumnHelper = createColumnHelper<
+  IronPrice & { customerTypeName?: string }
+>();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCarModelColumns = (): ColumnDef<CarModel, any>[] => [
   columnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
@@ -17,6 +20,7 @@ export const getCarModelColumns = (): ColumnDef<CarModel, any>[] => [
   }),
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronTypeColumns = (): ColumnDef<IronType, any>[] => [
   ironTypeColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
@@ -26,7 +30,11 @@ export const getIronTypeColumns = (): ColumnDef<IronType, any>[] => [
   }),
 ];
 
-export const getIronPriceColumns = (): ColumnDef<IronPrice & { customerTypeName?: string }, any>[] => [
+export const getIronPriceColumns = (): ColumnDef<
+  IronPrice & { customerTypeName?: string },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
+>[] => [
   ironPriceColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
   }),
@@ -38,4 +46,3 @@ export const getIronPriceColumns = (): ColumnDef<IronPrice & { customerTypeName?
     cell: (info) => info.getValue().toLocaleString(),
   }),
 ];
-

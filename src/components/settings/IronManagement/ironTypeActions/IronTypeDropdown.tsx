@@ -62,8 +62,9 @@ export const IronTypeDropdown = ({
 
   const isCodeValid = code.trim().length > 0;
   const isPriceValid = !isNaN(numPricePerKg) && numPricePerKg >= 0;
-  const areTranslationsValid =
-    Object.values(translations).some((val) => val.trim().length > 0);
+  const areTranslationsValid = Object.values(translations).some(
+    (val) => val.trim().length > 0,
+  );
   const isValid = isCodeValid && isPriceValid && areTranslationsValid;
 
   const handleTranslationChange = (langCode: string, value: string) => {
@@ -81,7 +82,10 @@ export const IronTypeDropdown = ({
       code: code.trim(),
       pricePerKg: numPricePerKg,
       translations: Object.fromEntries(
-        Object.entries(translations).filter(([_, val]) => val.trim().length > 0),
+        Object.entries(translations).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ([_, val]) => val.trim().length > 0,
+        ),
       ),
     });
   };
@@ -165,4 +169,3 @@ export const IronTypeDropdown = ({
     </Dropdown>
   );
 };
-

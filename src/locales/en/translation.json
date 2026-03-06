@@ -41,6 +41,7 @@
     "all": "All",
     "createdAt": "Created At",
     "details": "Details",
+    "total": "Total",
     "gender": {
       "unknown": "Unknown",
       "male": "Male",

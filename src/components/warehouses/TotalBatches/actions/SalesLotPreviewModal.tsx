@@ -9,6 +9,9 @@ import { fetchSalesLotPreview } from "@/store/slices/warehouses/salesLotsSlice";
 // ui-kit
 import { Modal, Button, TextField } from "@/ui-kit";
 
+// icons
+import { Trash2 } from "lucide-react";
+
 // styles
 import styles from "../TotalBatches.module.css";
 
@@ -21,6 +24,7 @@ interface SalesLotPreviewModalProps {
   onConfirm: (
     updatedItems: Array<{ inventoryLotId: number; powderKg: number }>,
   ) => void;
+  onRemoveItem: (id: number) => void;
   isCreating: boolean;
 }
 
@@ -31,12 +35,12 @@ export const SalesLotPreviewModal = ({
   items,
   cashRegisterId,
   onConfirm,
+  onRemoveItem,
   isCreating,
 }: SalesLotPreviewModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  // Extract previewData, isLoading, and error from Redux state
   const { previewData, isLoading, error } = useAppSelector(
     (state) => state.salesLots,
   );
@@ -46,6 +50,7 @@ export const SalesLotPreviewModal = ({
   const debouncedFetch = useMemo(
     () =>
       debounce((updatedItems) => {
+        if (updatedItems.length === 0) return;
         dispatch(
           fetchSalesLotPreview({
             warehouseId,
@@ -99,6 +104,27 @@ export const SalesLotPreviewModal = ({
     debouncedFetch(updatedItemsForApi);
   };
 
+  const handleRemove = (id: number) => {
+    onRemoveItem(id);
+    const updatedItems = items.filter((item) => item.inventoryLotId !== id);
+
+    if (updatedItems.length === 0) {
+      onOpenChange(false);
+      return;
+    }
+
+    dispatch(
+      fetchSalesLotPreview({
+        warehouseId,
+        items: updatedItems.map((item) => ({
+          ...item,
+          powderKg: parseFloat(localWeights[item.inventoryLotId]) || 0,
+        })),
+        cashRegisterId,
+      }),
+    );
+  };
+
   const formatValue = (val: number, decimals = 2) =>
     val.toLocaleString(undefined, {
       minimumFractionDigits: decimals,
@@ -126,7 +152,8 @@ export const SalesLotPreviewModal = ({
         disabled={
           isCreating ||
           isLoading ||
-          !!error || // Disable button if there's an error
+          !!error ||
+          items.length === 0 ||
           getFinalItems().some((i) => i.powderKg <= 0)
         }
       >
@@ -151,7 +178,15 @@ export const SalesLotPreviewModal = ({
           </h4>
           {items.map((item) => (
             <div key={item.inventoryLotId} className={styles.editableItemRow}>
-              <span className={styles.itemId}>#{item.inventoryLotId}</span>
+              <div className={styles.itemHeaderGroup}>
+                <span className={styles.itemId}>#{item.inventoryLotId}</span>
+                <button
+                  className={styles.deleteIconButton}
+                  onClick={() => handleRemove(item.inventoryLotId)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
               <div className={styles.inputWrapper}>
                 <TextField
                   type="text"
@@ -176,7 +211,6 @@ export const SalesLotPreviewModal = ({
             </div>
           )}
 
-          {/* Error Message Display */}
           {error && !isLoading && (
             <div className={styles.errorContainer}>
               <p className={styles.errorMessage}>{error}</p>
@@ -184,7 +218,9 @@ export const SalesLotPreviewModal = ({
           )}
 
           <div
-            className={`${styles.summaryDropdownInner} ${isLoading || error ? styles.dimmed : ""}`}
+            className={`${styles.summaryDropdownInner} ${
+              isLoading || error ? styles.dimmed : ""
+            }`}
           >
             {previewData && !error && (
               <>

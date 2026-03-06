@@ -70,7 +70,7 @@ export const IronPrices: FC = () => {
     const apiLang = mapI18nCodeToApiCode(i18n.language);
     dispatch(fetchCarModels({ cashRegisterId, lang: apiLang }));
     dispatch(fetchCustomerTypes());
-  }, [dispatch, cashRegisterId, i18n.language]);
+  }, [dispatch, cashRegisterId]);
 
   useEffect(() => {
     if (carModels.length > 0 && selectedCarModelId === null) {
@@ -89,7 +89,7 @@ export const IronPrices: FC = () => {
         }),
       );
     }
-  }, [dispatch, selectedCarModelId, cashRegisterId, i18n.language]);
+  }, [dispatch, selectedCarModelId, cashRegisterId]);
 
   useEffect(() => {
     if (ironTypes.length > 0 && selectedIronTypeId === null) {
@@ -120,7 +120,6 @@ export const IronPrices: FC = () => {
     selectedIronTypeId,
     selectedCarModelId,
     cashRegisterId,
-    i18n.language,
     customerTypes,
   ]);
 

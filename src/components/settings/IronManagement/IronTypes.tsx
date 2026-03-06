@@ -17,7 +17,11 @@ import { DataTable, IconButton, Select } from "@/ui-kit";
 import { Plus } from "lucide-react";
 
 // utils
-import { getApiErrorMessage, getCashRegisterId, mapI18nCodeToApiCode } from "@/utils";
+import {
+  getApiErrorMessage,
+  getCashRegisterId,
+  mapI18nCodeToApiCode,
+} from "@/utils";
 
 // components
 import {
@@ -63,7 +67,7 @@ export const IronTypes: FC = () => {
     if (languages.length === 0) {
       dispatch(fetchLanguages());
     }
-  }, [dispatch, cashRegisterId, languages.length, i18n.language]);
+  }, [dispatch, cashRegisterId, languages.length]);
 
   useEffect(() => {
     if (carModels.length > 0 && selectedCarModelId === null) {
@@ -82,7 +86,7 @@ export const IronTypes: FC = () => {
         }),
       );
     }
-  }, [dispatch, selectedCarModelId, cashRegisterId, i18n.language]);
+  }, [dispatch, selectedCarModelId, cashRegisterId]);
 
   const handleOpenAdd = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -210,4 +214,3 @@ export const IronTypes: FC = () => {
     </div>
   );
 };
-
