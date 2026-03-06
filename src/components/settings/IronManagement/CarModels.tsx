@@ -17,7 +17,11 @@ import { DataTable, IconButton } from "@/ui-kit";
 import { Plus } from "lucide-react";
 
 // utils
-import { getApiErrorMessage, getCashRegisterId, mapI18nCodeToApiCode } from "@/utils";
+import {
+  getApiErrorMessage,
+  getCashRegisterId,
+  mapI18nCodeToApiCode,
+} from "@/utils";
 
 // components
 import {
@@ -58,7 +62,7 @@ export const CarModels: FC = () => {
     if (languages.length === 0) {
       dispatch(fetchLanguages());
     }
-  }, [dispatch, cashRegisterId, languages.length, i18n.language]);
+  }, [dispatch, cashRegisterId, languages.length]);
 
   const handleOpenAdd = useCallback((e: React.MouseEvent<HTMLElement>) => {
     anchorRef.current = e.currentTarget;
@@ -78,7 +82,9 @@ export const CarModels: FC = () => {
           }),
         ).unwrap();
         toast.success(t("ironManagement.success.carModelCreated"));
-        await dispatch(fetchCarModels({ cashRegisterId, lang: apiLang })).unwrap();
+        await dispatch(
+          fetchCarModels({ cashRegisterId, lang: apiLang }),
+        ).unwrap();
         setIsDropdownOpen(false);
       } catch (error: unknown) {
         console.error("Failed to save car model:", error);

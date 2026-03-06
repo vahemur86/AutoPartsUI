@@ -30,6 +30,8 @@ export const SelectedKgCell: FC<{
   useEffect(() => {
     if (initialValue === 0 || initialValue === undefined) {
       setLocalValue("");
+    } else {
+      setLocalValue(initialValue.toString());
     }
   }, [initialValue]);
 
@@ -39,7 +41,7 @@ export const SelectedKgCell: FC<{
     const val = e.target.value;
     setLocalValue(val);
 
-    const numericVal = parseFloat(val);
+    const numericVal = val === "" ? 0 : parseFloat(val);
     onKgChange(inventoryLotId, isNaN(numericVal) ? 0 : numericVal);
   };
 

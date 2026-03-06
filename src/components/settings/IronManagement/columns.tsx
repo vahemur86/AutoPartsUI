@@ -11,10 +11,13 @@ import type {
 
 const columnHelper = createColumnHelper<CarModel>();
 const ironTypeColumnHelper = createColumnHelper<IronType>();
-const ironPriceColumnHelper = createColumnHelper<IronPrice & { customerTypeName?: string }>();
+const ironPriceColumnHelper = createColumnHelper<
+  IronPrice & { customerTypeName?: string }
+>();
 const ironTypePriceByCustomerHelper =
   createColumnHelper<IronTypePriceByCustomer>();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCarModelColumns = (): ColumnDef<CarModel, any>[] => [
   columnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
@@ -24,6 +27,7 @@ export const getCarModelColumns = (): ColumnDef<CarModel, any>[] => [
   }),
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronTypeColumns = (): ColumnDef<IronType, any>[] => [
   ironTypeColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
@@ -33,7 +37,11 @@ export const getIronTypeColumns = (): ColumnDef<IronType, any>[] => [
   }),
 ];
 
-export const getIronPriceColumns = (): ColumnDef<IronPrice & { customerTypeName?: string }, any>[] => [
+export const getIronPriceColumns = (): ColumnDef<
+  IronPrice & { customerTypeName?: string },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
+>[] => [
   ironPriceColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
   }),
@@ -46,7 +54,11 @@ export const getIronPriceColumns = (): ColumnDef<IronPrice & { customerTypeName?
   }),
 ];
 
-export const getIronTypePriceByCustomerColumns = (): ColumnDef<IronTypePriceByCustomer, any>[] => [
+export const getIronTypePriceByCustomerColumns = (): ColumnDef<
+  IronTypePriceByCustomer,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
+>[] => [
   ironTypePriceByCustomerHelper.accessor("customerTypeName", {
     header: i18next.t("ironManagement.columns.customerType"),
   }),
@@ -55,4 +67,3 @@ export const getIronTypePriceByCustomerColumns = (): ColumnDef<IronTypePriceByCu
     cell: (info) => info.getValue().toLocaleString(),
   }),
 ];
-

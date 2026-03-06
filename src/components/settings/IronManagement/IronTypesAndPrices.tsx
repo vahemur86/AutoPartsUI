@@ -86,7 +86,7 @@ export const IronTypesAndPrices: FC = () => {
     if (languages.length === 0) {
       dispatch(fetchLanguages());
     }
-  }, [dispatch, cashRegisterId, languages.length, i18n.language]);
+  }, [dispatch, cashRegisterId, languages.length]);
 
   useEffect(() => {
     if (carModels.length > 0 && selectedCarModelId === null) {
@@ -112,7 +112,7 @@ export const IronTypesAndPrices: FC = () => {
         }),
       );
     }
-  }, [dispatch, selectedCarModelId, cashRegisterId, i18n.language]);
+  }, [dispatch, selectedCarModelId, cashRegisterId]);
 
   const handleCarModelChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -241,13 +241,14 @@ export const IronTypesAndPrices: FC = () => {
       .filter((ct): ct is NonNullable<typeof ct> => ct != null);
   }, [ironTypesByCar, customerTypes]);
 
-  const flatColumns = useMemo((): ColumnDef<FlatIronTypeRow, any>[] => {
+  const flatColumns = useMemo((): ColumnDef<FlatIronTypeRow, unknown>[] => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cols: ColumnDef<FlatIronTypeRow, any>[] = [
       flatRowHelper.accessor("name", {
         header: t("ironManagement.columns.name"),
       }),
       ...customerTypesWithData.map(
-        (ct): ColumnDef<FlatIronTypeRow, any> =>
+        (ct): ColumnDef<FlatIronTypeRow, unknown> =>
           flatRowHelper.display({
             id: `price_${ct.id}`,
             header: ct.code,
@@ -279,7 +280,7 @@ export const IronTypesAndPrices: FC = () => {
       }),
     ];
     return cols;
-  }, [customerTypesWithData, t, handleOpenAddPrice]);
+  }, [flatRowHelper, t, customerTypesWithData, handleOpenAddPrice]);
 
   const flatData = useMemo((): FlatIronTypeRow[] => {
     return ironTypesByCar.map((item) => ({
