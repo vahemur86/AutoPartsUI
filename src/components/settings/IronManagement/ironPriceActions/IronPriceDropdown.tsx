@@ -77,6 +77,7 @@ export const IronPriceDropdown = ({
       align="start"
       side="left"
       title={titleText}
+      contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
         <span className={styles.title}>{titleText}</span>
