@@ -40,6 +40,13 @@
   margin-top: 16px;
 }
 
+.actionsCellWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .addButtonWrapper {
   display: flex;
   align-items: center;

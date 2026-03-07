@@ -655,6 +655,7 @@
     "addIronType": "Добавить тип металла",
     "addIronPrice": "Добавить цену металла",
     "addPrice": "Добавить цену",
+    "addRecalculationPrice": "Добавить цену перерасчёта",
     "selectCarModel": "Выберите модель автомобиля",
     "selectIronType": "Выберите тип металла",
     "loading": "Загрузка…",
@@ -679,12 +680,14 @@
     "success": {
       "carModelCreated": "Модель автомобиля успешно создана",
       "ironTypeCreated": "Тип металла успешно создан",
-      "ironPriceCreated": "Цена металла успешно создана"
+      "ironPriceCreated": "Цена металла успешно создана",
+      "recalculationPriceCreated": "Цена перерасчёта успешно добавлена"
     },
     "error": {
       "failedToCreateCarModel": "Не удалось создать модель автомобиля",
       "failedToCreateIronType": "Не удалось создать тип металла",
       "failedToCreateIronPrice": "Не удалось создать цену металла",
+      "failedToCreateRecalculationPrice": "Не удалось добавить цену перерасчёта",
       "selectCarModel": "Сначала выберите модель автомобиля",
       "selectIronType": "Сначала выберите тип металла"
     }

@@ -655,6 +655,7 @@
     "addIronType": "Ավելացնել մետաղի տեսակ",
     "addIronPrice": "Ավելացնել մետաղի գին",
     "addPrice": "Ավելացնել գին",
+    "addRecalculationPrice": "Ավելացնել վերահաշվարկման գին",
     "selectCarModel": "Ընտրեք ավտոմոդել",
     "selectIronType": "Ընտրեք մետաղի տեսակ",
     "loading": "Բեռնվում է…",
@@ -679,12 +680,14 @@
     "success": {
       "carModelCreated": "Ավտոմոդելը հաջողությամբ ստեղծվեց",
       "ironTypeCreated": "Մետաղի տեսակը հաջողությամբ ստեղծվեց",
-      "ironPriceCreated": "Մետաղի գինը հաջողությամբ ստեղծվեց"
+      "ironPriceCreated": "Մետաղի գինը հաջողությամբ ստեղծվեց",
+      "recalculationPriceCreated": "Վերահաշվարկման գինը հաջողությամբ ավելացվեց"
     },
     "error": {
       "failedToCreateCarModel": "Ավտոմոդելի ստեղծումը ձախողվեց",
       "failedToCreateIronType": "Մետաղի տեսակի ստեղծումը ձախողվեց",
       "failedToCreateIronPrice": "Մետաղի գնի ստեղծումը ձախողվեց",
+      "failedToCreateRecalculationPrice": "Վերահաշվարկման գնի ավելացումը ձախողվեց",
       "selectCarModel": "Նախ ընտրեք ավտոմոդել",
       "selectIronType": "Նախ ընտրեք մետաղի տեսակ"
     }

@@ -33,12 +33,14 @@ import {
   IronPriceDropdown,
   type IronPriceForm,
 } from "./ironPriceActions/IronPriceDropdown";
+import { AddRecalculationPriceDropdown } from "./ironPriceActions/AddRecalculationPriceDropdown";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   createIronType,
   createIronPrice,
+  createRecalculationPrice,
   fetchCarModels,
   fetchIronTypes,
   fetchIronTypesByCar,
@@ -73,10 +75,16 @@ export const IronTypesAndPrices: FC = () => {
   const [priceDropdownIronTypeId, setPriceDropdownIronTypeId] = useState<
     number | null
   >(null);
+  const [isRecalculationDropdownOpen, setIsRecalculationDropdownOpen] =
+    useState(false);
+  const [recalculationIronTypeId, setRecalculationIronTypeId] = useState<
+    number | null
+  >(null);
   const [isMutating, setIsMutating] = useState(false);
 
   const typeAnchorRef = useRef<HTMLElement | null>(null);
   const priceAnchorRef = useRef<HTMLElement | null>(null);
+  const recalculationAnchorRef = useRef<HTMLElement | null>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
@@ -179,6 +187,15 @@ export const IronTypesAndPrices: FC = () => {
     [],
   );
 
+  const handleOpenAddRecalculationPrice = useCallback(
+    (e: React.MouseEvent<HTMLElement>, ironTypeId: number) => {
+      recalculationAnchorRef.current = e.currentTarget;
+      setRecalculationIronTypeId(ironTypeId);
+      setIsRecalculationDropdownOpen(true);
+    },
+    [],
+  );
+
   const handleSaveIronPrice = useCallback(
     async (data: IronPriceForm) => {
       if (!priceDropdownIronTypeId) return;
@@ -222,6 +239,53 @@ export const IronTypesAndPrices: FC = () => {
     [dispatch, priceDropdownIronTypeId, selectedCarModelId, cashRegisterId, t],
   );
 
+  const handleSaveRecalculationPrice = useCallback(
+    async (data: IronPriceForm) => {
+      if (!recalculationIronTypeId) return;
+      try {
+        setIsMutating(true);
+        await dispatch(
+          createRecalculationPrice({
+            payload: {
+              ironTypeId: recalculationIronTypeId,
+              customerTypeId: data.customerTypeId,
+              pricePerKg: data.pricePerKg,
+            },
+            cashRegisterId,
+          }),
+        ).unwrap();
+        toast.success(t("ironManagement.success.recalculationPriceCreated"));
+        if (selectedCarModelId) {
+          const apiLang = mapI18nCodeToApiCode(i18n.language);
+          await dispatch(
+            fetchIronTypesByCar({
+              carModelId: selectedCarModelId,
+              cashRegisterId,
+              lang: apiLang,
+            }),
+          ).unwrap();
+        }
+        setIsRecalculationDropdownOpen(false);
+        setRecalculationIronTypeId(null);
+      } catch (error: unknown) {
+        const errorMessage = getApiErrorMessage(
+          error,
+          t("ironManagement.error.failedToCreateRecalculationPrice"),
+        );
+        toast.error(errorMessage);
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [
+      dispatch,
+      recalculationIronTypeId,
+      selectedCarModelId,
+      cashRegisterId,
+      t,
+    ],
+  );
+
   const flatRowHelper = createColumnHelper<FlatIronTypeRow>();
 
   /** Only customer types that have at least one price in the current data (no empty columns) */
@@ -263,24 +327,48 @@ export const IronTypesAndPrices: FC = () => {
         header: t("common.actions"),
         cell: ({ row }) => {
           return (
-            <div className={styles.addButtonWrapper}>
-              <IconButton
-                ariaLabel={t("ironManagement.addIronPrice")}
-                size="small"
-                variant="primary"
-                icon={<Plus size={12} color="#0e0f11" />}
-                onClick={(e) => handleOpenAddPrice(e, row.original.ironTypeId)}
-              />
-              <span className={styles.addButtonText}>
-                {t("ironManagement.addPrice")}
-              </span>
+            <div className={styles.actionsCellWrapper}>
+              <div className={styles.addButtonWrapper}>
+                <IconButton
+                  ariaLabel={t("ironManagement.addIronPrice")}
+                  size="small"
+                  variant="primary"
+                  icon={<Plus size={12} color="#0e0f11" />}
+                  onClick={(e) =>
+                    handleOpenAddPrice(e, row.original.ironTypeId)
+                  }
+                />
+                <span className={styles.addButtonText}>
+                  {t("ironManagement.addPrice")}
+                </span>
+              </div>
+              <div className={styles.addButtonWrapper}>
+                <IconButton
+                  ariaLabel={t("ironManagement.addRecalculationPrice")}
+                  size="small"
+                  variant="primary"
+                  icon={<Plus size={12} color="#0e0f11" />}
+                  onClick={(e) =>
+                    handleOpenAddRecalculationPrice(e, row.original.ironTypeId)
+                  }
+                />
+                <span className={styles.addButtonText}>
+                  {t("ironManagement.addRecalculationPrice")}
+                </span>
+              </div>
             </div>
           );
         },
       }),
     ];
     return cols;
-  }, [flatRowHelper, t, customerTypesWithData, handleOpenAddPrice]);
+  }, [
+    flatRowHelper,
+    t,
+    customerTypesWithData,
+    handleOpenAddPrice,
+    handleOpenAddRecalculationPrice,
+  ]);
 
   const flatData = useMemo((): FlatIronTypeRow[] => {
     return ironTypesByCar.map((item) => ({
@@ -393,6 +481,18 @@ export const IronTypesAndPrices: FC = () => {
           if (!open) setPriceDropdownIronTypeId(null);
         }}
         onSave={handleSaveIronPrice}
+      />
+
+      <AddRecalculationPriceDropdown
+        open={isRecalculationDropdownOpen}
+        anchorRef={recalculationAnchorRef}
+        customerTypes={customerTypes}
+        isLoading={isMutating}
+        onOpenChange={(open) => {
+          setIsRecalculationDropdownOpen(open);
+          if (!open) setRecalculationIronTypeId(null);
+        }}
+        onSave={handleSaveRecalculationPrice}
       />
 
       {renderTableContent()}
