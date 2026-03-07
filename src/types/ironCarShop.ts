@@ -87,3 +87,9 @@ export interface GetIronSalesParams {
   customerId?: number;
   lang?: string;
 }
+
+export interface RecalculateStepPayload {
+  ironTypeId: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}

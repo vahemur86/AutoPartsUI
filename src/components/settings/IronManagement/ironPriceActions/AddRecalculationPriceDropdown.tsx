@@ -7,16 +7,12 @@ import type { AnchorRect } from "@/ui-kit";
 
 // types
 import type { CustomerType } from "@/types/settings";
+import type { IronPriceForm } from "./IronPriceDropdown";
 
 // styles
 import styles from "./IronPriceDropdown.module.css";
 
-export type IronPriceForm = {
-  customerTypeId: number;
-  pricePerKg: number;
-};
-
-interface IronPriceDropdownProps {
+interface AddRecalculationPriceDropdownProps {
   open: boolean;
   anchorRef?: RefObject<HTMLElement | null>;
   /** Pass when opening from table cell so dropdown positions correctly (avoids stale ref) */
@@ -27,7 +23,7 @@ interface IronPriceDropdownProps {
   onSave: (data: IronPriceForm) => void;
 }
 
-export const IronPriceDropdown = ({
+export const AddRecalculationPriceDropdown = ({
   open,
   anchorRef,
   anchorRect,
@@ -35,7 +31,7 @@ export const IronPriceDropdown = ({
   isLoading = false,
   onOpenChange,
   onSave,
-}: IronPriceDropdownProps) => {
+}: AddRecalculationPriceDropdownProps) => {
   const { t } = useTranslation();
 
   const [customerTypeId, setCustomerTypeId] = useState<number | "">("");
@@ -66,7 +62,7 @@ export const IronPriceDropdown = ({
     });
   };
 
-  const titleText = t("ironManagement.addIronPrice");
+  const titleText = t("ironManagement.addRecalculationPrice");
 
   return (
     <Dropdown
@@ -136,4 +132,3 @@ export const IronPriceDropdown = ({
     </Dropdown>
   );
 };
-

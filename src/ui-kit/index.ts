@@ -31,6 +31,7 @@ export {
   type CheckboxProps,
   type CheckboxShape,
   type DropdownProps,
+  type AnchorRect,
   type IconButtonProps,
   type IconButtonSize,
   type IconButtonVariant,

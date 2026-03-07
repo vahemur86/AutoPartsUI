@@ -655,6 +655,7 @@
     "addIronType": "Ավելացնել մետաղի տեսակ",
     "addIronPrice": "Ավելացնել մետաղի գին",
     "addPrice": "Ավելացնել գին",
+    "addRecalculationPrice": "Ավելացնել վերահաշվարկման գին",
     "selectCarModel": "Ընտրեք ավտոմոդել",
     "selectIronType": "Ընտրեք մետաղի տեսակ",
     "loading": "Բեռնվում է…",
@@ -679,12 +680,14 @@
     "success": {
       "carModelCreated": "Ավտոմոդելը հաջողությամբ ստեղծվեց",
       "ironTypeCreated": "Մետաղի տեսակը հաջողությամբ ստեղծվեց",
-      "ironPriceCreated": "Մետաղի գինը հաջողությամբ ստեղծվեց"
+      "ironPriceCreated": "Մետաղի գինը հաջողությամբ ստեղծվեց",
+      "recalculationPriceCreated": "Վերահաշվարկման գինը հաջողությամբ ավելացվեց"
     },
     "error": {
       "failedToCreateCarModel": "Ավտոմոդելի ստեղծումը ձախողվեց",
       "failedToCreateIronType": "Մետաղի տեսակի ստեղծումը ձախողվեց",
       "failedToCreateIronPrice": "Մետաղի գնի ստեղծումը ձախողվեց",
+      "failedToCreateRecalculationPrice": "Վերահաշվարկման գնի ավելացումը ձախողվեց",
       "selectCarModel": "Նախ ընտրեք ավտոմոդել",
       "selectIronType": "Նախ ընտրեք մետաղի տեսակ"
     }
@@ -776,6 +779,18 @@
     },
     "batches": {
       "title": "Խմբաքանակի հաշվետվություններ",
+      "filters": {
+        "fromDate": "Սկզբի ամսաթիվ",
+        "toDate": "Վերջի ամսաթիվ",
+        "selectFromDate": "Ընտրել սկզբի ամսաթիվ",
+        "selectToDate": "Ընտրել վերջի ամսաթիվ",
+        "clientName": "Կլիենտի անուն",
+        "clientPhone": "Կլիենտի հեռախոս",
+        "clientTypeId": "Կլիենտի տեսակի ID",
+        "placeholderClientName": "Ըստ կլիենտի անվան",
+        "placeholderClientPhone": "Ըստ կլիենտի հեռախոսի",
+        "placeholderClientTypeId": "Ըստ կլիենտի տեսակի ID"
+      },
       "columns": {
         "createdAt": "Ստեղծվել է",
         "intakes": "Հարցումների քանակ",

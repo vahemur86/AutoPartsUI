@@ -17,7 +17,10 @@ import {
 } from "@/store/slices/cash/cashboxSessionsSlice";
 
 // components
-import { FilterBatchesDropdown } from "./FilterBatchesDropdown";
+import {
+  FilterBatchesDropdown,
+  type BatchReportFilters,
+} from "./FilterBatchesDropdown";
 
 // columns & utils
 import { getBatchReportColumns } from "./columns";
@@ -215,12 +218,12 @@ export const BatchReports: FC = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<{
-    fromDate: string | null;
-    toDate: string | null;
-  }>({
+  const [activeFilters, setActiveFilters] = useState<BatchReportFilters>({
     fromDate: null,
     toDate: null,
+    clientName: null,
+    clientPhone: null,
+    clientTypeId: null,
   });
   const filterAnchorRef = useRef<HTMLDivElement>(null);
 
@@ -229,8 +232,11 @@ export const BatchReports: FC = () => {
       fetchBatches({
         page: currentPage + 1,
         pageSize: PAGE_SIZE,
-        fromDate: activeFilters.fromDate || undefined,
-        toDate: activeFilters.toDate || undefined,
+        fromDate: activeFilters.fromDate ?? undefined,
+        toDate: activeFilters.toDate ?? undefined,
+        clientName: activeFilters.clientName ?? undefined,
+        clientPhone: activeFilters.clientPhone ?? undefined,
+        clientTypeId: activeFilters.clientTypeId ?? undefined,
       }),
     )
       .unwrap()
@@ -245,10 +251,7 @@ export const BatchReports: FC = () => {
     };
   }, [dispatch, activeFilters, currentPage, t]);
 
-  const handleApplyFilters = (filters: {
-    fromDate: string | null;
-    toDate: string | null;
-  }) => {
+  const handleApplyFilters = (filters: BatchReportFilters) => {
     setActiveFilters(filters);
     setCurrentPage(0);
     setIsFilterOpen(false);
@@ -285,6 +288,7 @@ export const BatchReports: FC = () => {
         anchorRef={filterAnchorRef}
         onOpenChange={setIsFilterOpen}
         onSave={handleApplyFilters}
+        initialFilters={activeFilters}
       />
 
       <div className={styles.tableContainer}>

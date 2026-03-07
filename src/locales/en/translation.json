@@ -655,6 +655,7 @@
     "addIronType": "Add Iron Type",
     "addIronPrice": "Add Iron Price",
     "addPrice": "Add price",
+    "addRecalculationPrice": "Add recalculation price",
     "selectCarModel": "Select Car Model",
     "selectIronType": "Select Iron Type",
     "loading": "Loading…",
@@ -679,12 +680,14 @@
     "success": {
       "carModelCreated": "Car model created successfully",
       "ironTypeCreated": "Iron type created successfully",
-      "ironPriceCreated": "Iron price created successfully"
+      "ironPriceCreated": "Iron price created successfully",
+      "recalculationPriceCreated": "Recalculation price added successfully"
     },
     "error": {
       "failedToCreateCarModel": "Failed to create car model",
       "failedToCreateIronType": "Failed to create iron type",
       "failedToCreateIronPrice": "Failed to create iron price",
+      "failedToCreateRecalculationPrice": "Failed to add recalculation price",
       "selectCarModel": "Please select a car model first",
       "selectIronType": "Please select an iron type first"
     }
@@ -776,6 +779,18 @@
     },
     "batches": {
       "title": "Batch Reports",
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "selectFromDate": "Select from date",
+        "selectToDate": "Select to date",
+        "clientName": "Client Name",
+        "clientPhone": "Client Phone",
+        "clientTypeId": "Client Type ID",
+        "placeholderClientName": "By client name",
+        "placeholderClientPhone": "By client phone",
+        "placeholderClientTypeId": "By client type ID"
+      },
       "columns": {
         "createdAt": "Created At",
         "intakes": "Intake Count",

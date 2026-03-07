@@ -16,6 +16,7 @@ import type {
   AddIronPricePayload,
   CarModelPayload,
   GetIronSalesParams,
+  RecalculateStepPayload,
 } from "@/types/ironCarShop";
 
 const BASE_URL = "/admin/carmodels";
@@ -181,6 +182,21 @@ export const addIronPrice = async (
     });
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to add iron price."));
+  }
+};
+
+export const recalculateStep = async (
+  payload: RecalculateStepPayload,
+  cashRegisterId: number,
+): Promise<void> => {
+  try {
+    await api.post(`${BASE_URL}/admin/recalculate-step`, payload, {
+      headers: getHeaders(cashRegisterId),
+    });
+  } catch (error) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to add recalculation price."),
+    );
   }
 };
 

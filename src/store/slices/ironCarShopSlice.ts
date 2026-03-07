@@ -14,6 +14,7 @@ import {
   addCarModel,
   addIronType,
   addIronPrice,
+  recalculateStep,
   getIronPrices,
 } from "@/services/ironCarShop";
 
@@ -32,6 +33,7 @@ import type {
   IronPrice,
   CarModelPayload,
   AddIronPricePayload,
+  RecalculateStepPayload,
 } from "@/types/ironCarShop";
 
 interface IronCarShopState {
@@ -214,6 +216,23 @@ export const createIronPrice = createAsyncThunk<
   },
 );
 
+export const createRecalculationPrice = createAsyncThunk<
+  void,
+  { payload: RecalculateStepPayload; cashRegisterId: number },
+  { rejectValue: string }
+>(
+  "ironCarShop/createRecalculationPrice",
+  async ({ payload, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      await recalculateStep(payload, cashRegisterId);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to add recalculation price"),
+      );
+    }
+  },
+);
+
 export const fetchIronPriceList = createAsyncThunk<
   IronPrice[],
   {
@@ -300,6 +319,9 @@ const ironCarShopSlice = createSlice({
         state.ironTypes.push(action.payload);
       })
       .addCase(createIronPrice.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(createRecalculationPrice.fulfilled, (state) => {
         state.isLoading = false;
       })
       .addCase(fetchIronPriceList.fulfilled, (state, action) => {
