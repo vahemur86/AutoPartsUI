@@ -779,6 +779,18 @@
     },
     "batches": {
       "title": "Batch Reports",
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "selectFromDate": "Select from date",
+        "selectToDate": "Select to date",
+        "clientName": "Client Name",
+        "clientPhone": "Client Phone",
+        "clientTypeId": "Client Type ID",
+        "placeholderClientName": "By client name",
+        "placeholderClientPhone": "By client phone",
+        "placeholderClientTypeId": "By client type ID"
+      },
       "columns": {
         "createdAt": "Created At",
         "intakes": "Intake Count",

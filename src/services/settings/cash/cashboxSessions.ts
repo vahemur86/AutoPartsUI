@@ -81,6 +81,9 @@ export const getBatches = async ({
 }: {
   fromDate?: string;
   toDate?: string;
+  clientName?: string;
+  clientPhone?: string;
+  clientTypeId?: number;
   cashRegisterId?: number;
   page?: number;
   pageSize?: number;

@@ -26,6 +26,18 @@
   gap: 16px;
 }
 
+.filtersRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .datePickerWrapper {
   display: flex;
   flex-direction: column;
@@ -50,6 +62,9 @@
 
 @media (max-width: 767px) {
   .grid {
+    grid-template-columns: 1fr;
+  }
+  .filtersRow {
     grid-template-columns: 1fr;
   }
   .content {

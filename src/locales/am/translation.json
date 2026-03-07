@@ -779,6 +779,18 @@
     },
     "batches": {
       "title": "Խմբաքանակի հաշվետվություններ",
+      "filters": {
+        "fromDate": "Սկզբի ամսաթիվ",
+        "toDate": "Վերջի ամսաթիվ",
+        "selectFromDate": "Ընտրել սկզբի ամսաթիվ",
+        "selectToDate": "Ընտրել վերջի ամսաթիվ",
+        "clientName": "Կլիենտի անուն",
+        "clientPhone": "Կլիենտի հեռախոս",
+        "clientTypeId": "Կլիենտի տեսակի ID",
+        "placeholderClientName": "Ըստ կլիենտի անվան",
+        "placeholderClientPhone": "Ըստ կլիենտի հեռախոսի",
+        "placeholderClientTypeId": "Ըստ կլիենտի տեսակի ID"
+      },
       "columns": {
         "createdAt": "Ստեղծվել է",
         "intakes": "Հարցումների քանակ",

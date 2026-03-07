@@ -779,6 +779,18 @@
     },
     "batches": {
       "title": "Отчеты по партиям",
+      "filters": {
+        "fromDate": "Дата от",
+        "toDate": "Дата до",
+        "selectFromDate": "Выберите дату от",
+        "selectToDate": "Выберите дату до",
+        "clientName": "Имя клиента",
+        "clientPhone": "Телефон клиента",
+        "clientTypeId": "ID типа клиента",
+        "placeholderClientName": "По имени клиента",
+        "placeholderClientPhone": "По телефону клиента",
+        "placeholderClientTypeId": "По ID типа клиента"
+      },
       "columns": {
         "createdAt": "Создано в",
         "intakes": "Кол-во заявок",
