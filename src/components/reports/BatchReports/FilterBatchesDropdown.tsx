@@ -2,7 +2,10 @@ import { useState, useEffect, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Button, Dropdown, DatePicker, TextField } from "@/ui-kit";
+import { Button, Dropdown, DatePicker, TextField, Select } from "@/ui-kit";
+
+// types
+import type { CustomerType } from "@/types/settings";
 
 // styles
 import styles from "./FilterBatchesDropdown.module.css";
@@ -21,6 +24,7 @@ interface FilterBatchesDropdownProps {
   onOpenChange: (open: boolean) => void;
   onSave: (filters: BatchReportFilters) => void;
   initialFilters?: BatchReportFilters;
+  customerTypes: CustomerType[];
 }
 
 const defaultFilters: BatchReportFilters = {
@@ -43,6 +47,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   onOpenChange,
   onSave,
   initialFilters,
+  customerTypes = [],
 }) => {
   const { t } = useTranslation();
 
@@ -83,10 +88,9 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   };
 
   const handleApply = () => {
+    const clientTypeIdStr = tempValues.clientTypeId.trim();
     const clientTypeIdNum =
-      tempValues.clientTypeId.trim() === ""
-        ? null
-        : Number(tempValues.clientTypeId);
+      clientTypeIdStr === "" ? null : Number(clientTypeIdStr);
     onSave({
       fromDate: toSafeISO(tempValues.fromDate),
       toDate: toSafeISO(tempValues.toDate),
@@ -193,17 +197,28 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
             />
           </div>
           <div className={styles.inputWrapper}>
-            <TextField
-              label={t("cashbox.batches.filters.clientTypeId")}
-              type="number"
+            <Select
+              label={t("cashbox.batches.filters.customerType")}
               value={tempValues.clientTypeId}
               onChange={(e) =>
-                setTempValues((p) => ({ ...p, clientTypeId: e.target.value }))
+                setTempValues((p) => ({
+                  ...p,
+                  clientTypeId: e.target.value,
+                }))
               }
               placeholder={t(
-                "cashbox.batches.filters.placeholderClientTypeId",
+                "cashbox.batches.filters.selectCustomerType",
               )}
-            />
+            >
+              <option value="">
+                {t("cashbox.batches.filters.selectCustomerType")}
+              </option>
+              {customerTypes.map((ct) => (
+                <option key={ct.id} value={ct.id}>
+                  {ct.code}
+                </option>
+              ))}
+            </Select>
           </div>
         </div>
 

@@ -787,6 +787,8 @@
         "clientName": "Client Name",
         "clientPhone": "Client Phone",
         "clientTypeId": "Client Type ID",
+        "customerType": "Customer Type",
+        "selectCustomerType": "Select customer type",
         "placeholderClientName": "By client name",
         "placeholderClientPhone": "By client phone",
         "placeholderClientTypeId": "By client type ID"

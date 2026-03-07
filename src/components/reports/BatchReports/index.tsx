@@ -15,6 +15,7 @@ import {
   fetchBatchDetails,
   clearSelection,
 } from "@/store/slices/cash/cashboxSessionsSlice";
+import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
 
 // components
 import {
@@ -215,6 +216,7 @@ export const BatchReports: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { batches } = useAppSelector((state) => state.cashboxSessions);
+  const { customerTypes } = useAppSelector((state) => state.customerTypes);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -226,6 +228,10 @@ export const BatchReports: FC = () => {
     clientTypeId: null,
   });
   const filterAnchorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dispatch(fetchCustomerTypes());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -289,6 +295,7 @@ export const BatchReports: FC = () => {
         onOpenChange={setIsFilterOpen}
         onSave={handleApplyFilters}
         initialFilters={activeFilters}
+        customerTypes={customerTypes}
       />
 
       <div className={styles.tableContainer}>

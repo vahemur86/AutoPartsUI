@@ -787,6 +787,8 @@
         "clientName": "Имя клиента",
         "clientPhone": "Телефон клиента",
         "clientTypeId": "ID типа клиента",
+        "customerType": "Тип клиента",
+        "selectCustomerType": "Выберите тип клиента",
         "placeholderClientName": "По имени клиента",
         "placeholderClientPhone": "По телефону клиента",
         "placeholderClientTypeId": "По ID типа клиента"
