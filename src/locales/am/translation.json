@@ -787,6 +787,8 @@
         "clientName": "Կլիենտի անուն",
         "clientPhone": "Կլիենտի հեռախոս",
         "clientTypeId": "Կլիենտի տեսակի ID",
+        "customerType": "Կլիենտի տեսակ",
+        "selectCustomerType": "Ընտրել կլիենտի տեսակ",
         "placeholderClientName": "Ըստ կլիենտի անվան",
         "placeholderClientPhone": "Ըստ կլիենտի հեռախոսի",
         "placeholderClientTypeId": "Ըստ կլիենտի տեսակի ID"
