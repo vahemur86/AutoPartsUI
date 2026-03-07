@@ -11,10 +11,21 @@ import { useIsMobile } from "@/hooks/isMobile";
 import { X } from "lucide-react";
 import styles from "./Dropdown.module.css";
 
+export interface AnchorRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  right: number;
+  bottom: number;
+}
+
 export interface DropdownProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   anchorRef?: RefObject<HTMLElement | null>;
+  /** When opening from inside tables/cells, pass rect captured at click to avoid wrong position (ref can be stale after re-render) */
+  anchorRect?: AnchorRect | null;
   children: ReactNode;
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";
@@ -27,6 +38,7 @@ export const Dropdown: FC<DropdownProps> = ({
   open,
   onOpenChange,
   anchorRef,
+  anchorRect: anchorRectProp,
   children,
   align = "start",
   side = "right",
@@ -41,16 +53,35 @@ export const Dropdown: FC<DropdownProps> = ({
   } | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Desktop Positioning Logic
+  // Desktop Positioning Logic: use anchorRect (captured at click) when provided, else anchorRef
   useEffect(() => {
-    if (!mounted || isMobile || !open || !anchorRef?.current) {
+    const rectFromRef =
+      anchorRef?.current &&
+      (() => {
+        const r = anchorRef.current!.getBoundingClientRect();
+        return {
+          top: r.top,
+          left: r.left,
+          width: r.width,
+          height: r.height,
+          right: r.right,
+          bottom: r.bottom,
+        };
+      })();
+    const anchorRect = anchorRectProp ?? rectFromRef;
+
+    if (!mounted || isMobile || !open || !anchorRect) {
       setPosition(null);
       return;
     }
 
     const updatePosition = () => {
-      if (!anchorRef.current) return;
-      const anchorRect = anchorRef.current.getBoundingClientRect();
+      const rect = anchorRectProp ?? (anchorRef?.current && (() => {
+        const r = anchorRef.current!.getBoundingClientRect();
+        return { top: r.top, left: r.left, width: r.width, height: r.height, right: r.right, bottom: r.bottom };
+      })());
+      if (!rect) return;
+      const anchorRectCurrent = rect;
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
 
@@ -63,31 +94,31 @@ export const Dropdown: FC<DropdownProps> = ({
       if (side === "right" || side === "left") {
         left =
           side === "right"
-            ? anchorRect.right + sideOffset
-            : anchorRect.left - contentWidth - sideOffset;
+            ? anchorRectCurrent.right + sideOffset
+            : anchorRectCurrent.left - contentWidth - sideOffset;
         if (align === "center")
-          left = anchorRect.left + (anchorRect.width - contentWidth) / 2;
-        else if (align === "end") left = anchorRect.right - contentWidth;
+          left = anchorRectCurrent.left + (anchorRectCurrent.width - contentWidth) / 2;
+        else if (align === "end") left = anchorRectCurrent.right - contentWidth;
       } else {
-        if (align === "start") left = anchorRect.left;
+        if (align === "start") left = anchorRectCurrent.left;
         else if (align === "center")
-          left = anchorRect.left + (anchorRect.width - contentWidth) / 2;
-        else left = anchorRect.right - contentWidth;
+          left = anchorRectCurrent.left + (anchorRectCurrent.width - contentWidth) / 2;
+        else left = anchorRectCurrent.right - contentWidth;
       }
 
       // Horizontal bounds
       left = Math.max(16, Math.min(left, viewportWidth - contentWidth - 16));
 
       // Vertical Positioning
-      if (side === "bottom") top = anchorRect.bottom + sideOffset;
+      if (side === "bottom") top = anchorRectCurrent.bottom + sideOffset;
       else if (side === "top")
-        top = anchorRect.top - estimatedContentHeight - sideOffset;
+        top = anchorRectCurrent.top - estimatedContentHeight - sideOffset;
       else {
-        if (align === "start") top = anchorRect.top;
+        if (align === "start") top = anchorRectCurrent.top;
         else if (align === "center")
           top =
-            anchorRect.top + (anchorRect.height - estimatedContentHeight) / 2;
-        else top = anchorRect.bottom - estimatedContentHeight;
+            anchorRectCurrent.top + (anchorRectCurrent.height - estimatedContentHeight) / 2;
+        else top = anchorRectCurrent.bottom - estimatedContentHeight;
       }
 
       // Vertical bounds
@@ -100,25 +131,29 @@ export const Dropdown: FC<DropdownProps> = ({
     };
 
     updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition, true);
-    };
-  }, [mounted, isMobile, open, anchorRef, align, side, sideOffset]);
+    // When using anchorRectProp, skip scroll/resize updates (rect is fixed at click time)
+    if (!anchorRectProp) {
+      window.addEventListener("resize", updatePosition);
+      window.addEventListener("scroll", updatePosition, true);
+      return () => {
+        window.removeEventListener("resize", updatePosition);
+        window.removeEventListener("scroll", updatePosition, true);
+      };
+    }
+  }, [mounted, isMobile, open, anchorRef, anchorRectProp, align, side, sideOffset]);
 
   // Click Outside / Escape Logic for Desktop only
   useEffect(() => {
     if (!mounted || isMobile || !open) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        contentRef.current &&
-        !contentRef.current.contains(e.target as Node) &&
-        anchorRef?.current &&
-        !anchorRef.current.contains(e.target as Node)
-      ) {
+      if (!contentRef.current || contentRef.current.contains(e.target as Node))
+        return;
+      if (anchorRectProp) {
+        onOpenChange(false);
+        return;
+      }
+      if (anchorRef?.current && !anchorRef.current.contains(e.target as Node)) {
         onOpenChange(false);
       }
     };
@@ -132,7 +167,7 @@ export const Dropdown: FC<DropdownProps> = ({
       document.removeEventListener("mousedown", handleClickOutside, true);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [mounted, isMobile, open, onOpenChange, anchorRef]);
+  }, [mounted, isMobile, open, onOpenChange, anchorRef, anchorRectProp]);
 
   if (!mounted) return null;
 

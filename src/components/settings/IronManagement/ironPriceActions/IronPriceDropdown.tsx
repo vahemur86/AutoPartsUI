@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 // ui-kit
 import { Button, Dropdown, TextField, Select } from "@/ui-kit";
+import type { AnchorRect } from "@/ui-kit";
 
 // types
 import type { CustomerType } from "@/types/settings";
@@ -18,6 +19,8 @@ export type IronPriceForm = {
 interface IronPriceDropdownProps {
   open: boolean;
   anchorRef?: RefObject<HTMLElement | null>;
+  /** Pass when opening from table cell so dropdown positions correctly (avoids stale ref) */
+  anchorRect?: AnchorRect | null;
   customerTypes: CustomerType[];
   isLoading?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,6 +30,7 @@ interface IronPriceDropdownProps {
 export const IronPriceDropdown = ({
   open,
   anchorRef,
+  anchorRect,
   customerTypes,
   isLoading = false,
   onOpenChange,
@@ -69,6 +73,7 @@ export const IronPriceDropdown = ({
       open={open}
       onOpenChange={onOpenChange}
       anchorRef={anchorRef}
+      anchorRect={anchorRect}
       align="start"
       side="left"
       title={titleText}

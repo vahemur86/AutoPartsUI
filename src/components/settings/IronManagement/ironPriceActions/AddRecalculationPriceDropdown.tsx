@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 // ui-kit
 import { Button, Dropdown, TextField, Select } from "@/ui-kit";
+import type { AnchorRect } from "@/ui-kit";
 
 // types
 import type { CustomerType } from "@/types/settings";
@@ -14,6 +15,8 @@ import styles from "./IronPriceDropdown.module.css";
 interface AddRecalculationPriceDropdownProps {
   open: boolean;
   anchorRef?: RefObject<HTMLElement | null>;
+  /** Pass when opening from table cell so dropdown positions correctly (avoids stale ref) */
+  anchorRect?: AnchorRect | null;
   customerTypes: CustomerType[];
   isLoading?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,6 +26,7 @@ interface AddRecalculationPriceDropdownProps {
 export const AddRecalculationPriceDropdown = ({
   open,
   anchorRef,
+  anchorRect,
   customerTypes,
   isLoading = false,
   onOpenChange,
@@ -65,6 +69,7 @@ export const AddRecalculationPriceDropdown = ({
       open={open}
       onOpenChange={onOpenChange}
       anchorRef={anchorRef}
+      anchorRect={anchorRect}
       align="start"
       side="left"
       title={titleText}

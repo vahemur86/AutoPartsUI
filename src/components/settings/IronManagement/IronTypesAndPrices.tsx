@@ -13,6 +13,7 @@ import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 // ui-kit
 import { DataTable, IconButton, Select } from "@/ui-kit";
+import type { AnchorRect } from "@/ui-kit";
 
 // icons
 import { Plus } from "lucide-react";
@@ -81,6 +82,12 @@ export const IronTypesAndPrices: FC = () => {
     number | null
   >(null);
   const [isMutating, setIsMutating] = useState(false);
+  /** Captured at click when opening from table so dropdown positions correctly */
+  const [priceAnchorRect, setPriceAnchorRect] = useState<AnchorRect | null>(
+    null,
+  );
+  const [recalculationAnchorRect, setRecalculationAnchorRect] =
+    useState<AnchorRect | null>(null);
 
   const typeAnchorRef = useRef<HTMLElement | null>(null);
   const priceAnchorRef = useRef<HTMLElement | null>(null);
@@ -180,7 +187,17 @@ export const IronTypesAndPrices: FC = () => {
 
   const handleOpenAddPrice = useCallback(
     (e: React.MouseEvent<HTMLElement>, ironTypeId: number) => {
-      priceAnchorRef.current = e.currentTarget;
+      const el = e.currentTarget;
+      priceAnchorRef.current = el;
+      const r = el.getBoundingClientRect();
+      setPriceAnchorRect({
+        top: r.top,
+        left: r.left,
+        width: r.width,
+        height: r.height,
+        right: r.right,
+        bottom: r.bottom,
+      });
       setPriceDropdownIronTypeId(ironTypeId);
       setIsPriceDropdownOpen(true);
     },
@@ -189,7 +206,17 @@ export const IronTypesAndPrices: FC = () => {
 
   const handleOpenAddRecalculationPrice = useCallback(
     (e: React.MouseEvent<HTMLElement>, ironTypeId: number) => {
-      recalculationAnchorRef.current = e.currentTarget;
+      const el = e.currentTarget;
+      recalculationAnchorRef.current = el;
+      const r = el.getBoundingClientRect();
+      setRecalculationAnchorRect({
+        top: r.top,
+        left: r.left,
+        width: r.width,
+        height: r.height,
+        right: r.right,
+        bottom: r.bottom,
+      });
       setRecalculationIronTypeId(ironTypeId);
       setIsRecalculationDropdownOpen(true);
     },
@@ -226,6 +253,7 @@ export const IronTypesAndPrices: FC = () => {
         }
         setIsPriceDropdownOpen(false);
         setPriceDropdownIronTypeId(null);
+        setPriceAnchorRect(null);
       } catch (error: unknown) {
         const errorMessage = getApiErrorMessage(
           error,
@@ -267,6 +295,7 @@ export const IronTypesAndPrices: FC = () => {
         }
         setIsRecalculationDropdownOpen(false);
         setRecalculationIronTypeId(null);
+        setRecalculationAnchorRect(null);
       } catch (error: unknown) {
         const errorMessage = getApiErrorMessage(
           error,
@@ -474,11 +503,15 @@ export const IronTypesAndPrices: FC = () => {
       <IronPriceDropdown
         open={isPriceDropdownOpen}
         anchorRef={priceAnchorRef}
+        anchorRect={priceAnchorRect}
         customerTypes={customerTypes}
         isLoading={isMutating}
         onOpenChange={(open) => {
           setIsPriceDropdownOpen(open);
-          if (!open) setPriceDropdownIronTypeId(null);
+          if (!open) {
+            setPriceDropdownIronTypeId(null);
+            setPriceAnchorRect(null);
+          }
         }}
         onSave={handleSaveIronPrice}
       />
@@ -486,11 +519,15 @@ export const IronTypesAndPrices: FC = () => {
       <AddRecalculationPriceDropdown
         open={isRecalculationDropdownOpen}
         anchorRef={recalculationAnchorRef}
+        anchorRect={recalculationAnchorRect}
         customerTypes={customerTypes}
         isLoading={isMutating}
         onOpenChange={(open) => {
           setIsRecalculationDropdownOpen(open);
-          if (!open) setRecalculationIronTypeId(null);
+          if (!open) {
+            setRecalculationIronTypeId(null);
+            setRecalculationAnchorRect(null);
+          }
         }}
         onSave={handleSaveRecalculationPrice}
       />
