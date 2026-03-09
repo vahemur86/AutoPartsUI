@@ -17,6 +17,9 @@ import {
 } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
 
+// types
+import type { Batch } from "@/types/cash";
+
 // components
 import {
   FilterBatchesDropdown,
@@ -33,7 +36,17 @@ import styles from "./BatchReports.module.css";
 
 const PAGE_SIZE = 10;
 
-const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
+interface BatchDetailViewProps {
+  sessionId: number;
+  summary?: Batch;
+  disableFetchDetails?: boolean;
+}
+
+const BatchDetailView: FC<BatchDetailViewProps> = ({
+  sessionId,
+  summary,
+  disableFetchDetails,
+}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { batchDetails, isLoading } = useAppSelector(
@@ -41,6 +54,8 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
   );
 
   useEffect(() => {
+    if (disableFetchDetails) return;
+
     if (!isLoading && batchDetails?.sessionId !== sessionId) {
       dispatch(fetchBatchDetails({ sessionId }))
         .unwrap()
@@ -53,7 +68,105 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
           );
         });
     }
-  }, [sessionId, dispatch, batchDetails?.sessionId, isLoading, t]);
+  }, [
+    sessionId,
+    dispatch,
+    batchDetails?.sessionId,
+    isLoading,
+    t,
+    disableFetchDetails,
+  ]);
+
+  // When filters by client are applied we only want to show the
+  // data coming from the batches list (no separate batch-details call).
+  if (disableFetchDetails && summary) {
+    return (
+      <div className={styles.detailContainer}>
+        <div className={styles.detailHeaderSection}>
+          <div className={styles.infoGroup}>
+            <h4 className={styles.sectionTitle}>
+              {t("cashbox.batches.details.analysis")}
+            </h4>
+            <div className={styles.metaInfo}>
+              <span>
+                {t("cashbox.batches.columns.createdAt")}:{" "}
+                <strong>{new Date(summary.createdAt).toLocaleString()}</strong>
+              </span>
+              <span>
+                Session ID: <strong>#{summary.sessionId}</strong>
+              </span>
+              <span>
+                {t("cashbox.batches.details.totalCost")}:{" "}
+                <strong>
+                  {summary.costTotalAmd != null
+                    ? summary.costTotalAmd.toLocaleString()
+                    : "-"}{" "}
+                  AMD
+                </strong>
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.totalsGrid}>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.batches.columns.weight")}</span>
+              <strong>{summary.totalPowderKg} kg</strong>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.batches.details.pt")}</span>
+              <strong>{summary.ptTotal_g} g</strong>
+              <small>{summary.ptPerKg_g} g/kg</small>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.batches.details.pd")}</span>
+              <strong>{summary.pdTotal_g} g</strong>
+              <small>{summary.pdPerKg_g} g/kg</small>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.batches.details.rh")}</span>
+              <strong>{summary.rhTotal_g} g</strong>
+              <small>{summary.rhPerKg_g} g/kg</small>
+            </div>
+          </div>
+
+          {summary.avgCustomerPercent != null && (
+            <div className={styles.totalsGrid}>
+              <div className={styles.totalCard}>
+                <span>
+                  {t("cashbox.powderBatches.columns.avgCustomerPercent")}
+                </span>
+                <strong>
+                  {(summary.avgCustomerPercent * 100).toFixed(2)}%
+                </strong>
+              </div>
+              <div className={styles.totalCard}>
+                <span>{t("cashbox.powderBatches.columns.avgFxRateToAmd")}</span>
+                <strong>{summary.avgFxRateToAmd}</strong>
+              </div>
+              <div className={styles.totalCard}>
+                <span>
+                  {t("cashbox.powderBatches.columns.avgPtPricePerKg")}
+                </span>
+                <strong>{summary.avgPtPricePerKg}</strong>
+              </div>
+              <div className={styles.totalCard}>
+                <span>
+                  {t("cashbox.powderBatches.columns.avgPdPricePerKg")}
+                </span>
+                <strong>{summary.avgPdPricePerKg}</strong>
+              </div>
+              <div className={styles.totalCard}>
+                <span>
+                  {t("cashbox.powderBatches.columns.avgRhPricePerKg")}
+                </span>
+                <strong>{summary.avgRhPricePerKg}</strong>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading && batchDetails?.sessionId !== sessionId) {
     return <div className={styles.detailLoading}>{t("common.loading")}</div>;
@@ -86,6 +199,33 @@ const BatchDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
             </span>
           </div>
         </div>
+
+        {summary?.avgCustomerPercent != null && (
+          <div className={styles.totalsGrid}>
+            <div className={styles.totalCard}>
+              <span>
+                {t("cashbox.powderBatches.columns.avgCustomerPercent")}
+              </span>
+              <strong>{(summary.avgCustomerPercent * 100).toFixed(2)}%</strong>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.powderBatches.columns.avgFxRateToAmd")}</span>
+              <strong>{summary.avgFxRateToAmd}</strong>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.powderBatches.columns.avgPtPricePerKg")}</span>
+              <strong>{summary.avgPtPricePerKg}</strong>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.powderBatches.columns.avgPdPricePerKg")}</span>
+              <strong>{summary.avgPdPricePerKg}</strong>
+            </div>
+            <div className={styles.totalCard}>
+              <span>{t("cashbox.powderBatches.columns.avgRhPricePerKg")}</span>
+              <strong>{summary.avgRhPricePerKg}</strong>
+            </div>
+          </div>
+        )}
 
         <div className={styles.totalsGrid}>
           <div className={styles.totalCard}>
@@ -266,6 +406,11 @@ export const BatchReports: FC = () => {
   const columns = useMemo(() => getBatchReportColumns(), []);
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
 
+  const hasClientFilter =
+    !!activeFilters.clientName ||
+    !!activeFilters.clientPhone ||
+    activeFilters.clientTypeId != null;
+
   return (
     <div className={styles.batchReportsWrapper}>
       <header className={styles.header}>
@@ -298,23 +443,130 @@ export const BatchReports: FC = () => {
         customerTypes={customerTypes}
       />
 
-      <div className={styles.tableContainer}>
-        <DataTable
-          columns={columns}
-          data={batches?.results || []}
-          pageSize={PAGE_SIZE}
-          manualPagination
-          pageCount={totalPages}
-          pageIndex={currentPage}
-          getRowClassName={(row) =>
-            checkIsToday(row.createdAt) ? styles.todayRow : ""
-          }
-          onPaginationChange={setCurrentPage}
-          renderSubComponent={({ row }) => (
-            <BatchDetailView sessionId={row.original.sessionId} />
-          )}
-        />
-      </div>
+      {!hasClientFilter && (
+        <div className={styles.tableContainer}>
+          <DataTable
+            columns={columns}
+            data={batches?.results || []}
+            pageSize={PAGE_SIZE}
+            manualPagination
+            pageCount={totalPages}
+            pageIndex={currentPage}
+            getRowClassName={(row) =>
+              checkIsToday(row.createdAt) ? styles.todayRow : ""
+            }
+            onPaginationChange={setCurrentPage}
+            renderSubComponent={({ row }) => (
+              <BatchDetailView
+                sessionId={row.original.sessionId}
+                summary={row.original as Batch}
+              />
+            )}
+          />
+        </div>
+      )}
+
+      {hasClientFilter && (
+        <div className={styles.tableContainer}>
+          <div className={styles.detailContainer}>
+            <div className={styles.itemsSection}>
+              <h5 className={styles.subTitle}>
+                {t("cashbox.batches.title")} ({batches?.results.length || 0})
+              </h5>
+              <div className={styles.itemsGrid}>
+                {batches?.results?.map((batch) => (
+                  <div key={batch.sessionId} className={styles.itemCard}>
+                    <div className={styles.itemCardHeader}>
+                      <div className={styles.intakeMain}>
+                        <span>#{batch.sessionId}</span>
+                        <strong>{batch.totalPowderKg} kg</strong>
+                      </div>
+                    </div>
+                    <div className={styles.itemCardContent}>
+                      <div className={styles.contactInfo}>
+                        <div className={styles.infoRow}>
+                          <span>{t("cashbox.batches.columns.createdAt")}:</span>
+                          <strong>
+                            {new Date(batch.createdAt).toLocaleString()}
+                          </strong>
+                        </div>
+                        <div className={styles.infoRow}>
+                          <span>{t("cashbox.batches.details.totalCost")}:</span>
+                          <strong>
+                            {batch.costTotalAmd != null
+                              ? batch.costTotalAmd.toLocaleString()
+                              : "-"}{" "}
+                            AMD
+                          </strong>
+                        </div>
+                        {batch.avgCustomerPercent != null && (
+                          <div className={styles.infoRow}>
+                            <span>
+                              {t(
+                                "cashbox.powderBatches.columns.avgCustomerPercent",
+                              )}
+                              :
+                            </span>
+                            <strong>
+                              {(batch.avgCustomerPercent * 100).toFixed(2)}%
+                            </strong>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={styles.metalConcentrationGrid}>
+                        <div className={styles.metalItem}>
+                          <span>Pt</span>
+                          <strong>
+                            {batch.ptPerKg_g} <small>g/kg</small>
+                          </strong>
+                        </div>
+                        <div className={styles.metalItem}>
+                          <span>Pd</span>
+                          <strong>
+                            {batch.pdPerKg_g} <small>g/kg</small>
+                          </strong>
+                        </div>
+                        <div className={styles.metalItem}>
+                          <span>Rh</span>
+                          <strong>
+                            {batch.rhPerKg_g} <small>g/kg</small>
+                          </strong>
+                        </div>
+                      </div>
+
+                      {batch.avgFxRateToAmd != null && (
+                        <div className={styles.financialStats}>
+                          <div className={styles.fxRate}>
+                            Rate: {batch.avgFxRateToAmd} AMD
+                          </div>
+                          <div className={styles.metalPricesFooter}>
+                            {batch.avgPtPricePerKg != null && (
+                              <span>
+                                Pt: {batch.avgPtPricePerKg.toLocaleString()} $
+                              </span>
+                            )}
+                            {batch.avgPdPricePerKg != null && (
+                              <span>
+                                Pd: {batch.avgPdPricePerKg.toLocaleString()} $
+                              </span>
+                            )}
+                            {batch.avgRhPricePerKg != null && (
+                              <span>
+                                Rh: {batch.avgRhPricePerKg.toLocaleString()} $
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

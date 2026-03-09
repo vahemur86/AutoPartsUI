@@ -43,6 +43,15 @@ export interface Batch {
   costTotalAmd: number;
   status: number;
   createdAt: string;
+  /**
+   * Optional aggregate fields that are only returned
+   * when filtering by client name / phone / type.
+   */
+  avgCustomerPercent?: number;
+  avgFxRateToAmd?: number;
+  avgPdPricePerKg?: number;
+  avgPtPricePerKg?: number;
+  avgRhPricePerKg?: number;
 }
 
 export interface BatchDetails extends Batch {
