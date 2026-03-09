@@ -227,18 +227,30 @@ export const SalesLotPreviewModal = ({
                 <div className={styles.summaryCardsGrid}>
                   <div className={styles.summaryCard}>
                     <span className={styles.summaryCardLabel}>
-                      {t("warehouses.totalBatches.columns.totalPowderKg")}
+                      {t("warehouses.totalBatches.preview.totalPowderKg")}
                     </span>
                     <strong className={styles.summaryCardValue}>
                       {previewData.totalPowderKg} kg
                     </strong>
                   </div>
+
                   <div className={styles.summaryCard}>
                     <span className={styles.summaryCardLabel}>
-                      {t("warehouses.totalBatches.columns.initialCostAmd")}
+                      {t("warehouses.totalBatches.preview.totalCostAmd")}
                     </span>
                     <strong className={styles.summaryCardValue}>
                       {formatValue(previewData.totalCostAmd, 0)} AMD
+                    </strong>
+                  </div>
+
+                  <div className={styles.summaryCard}>
+                    <span className={styles.summaryCardLabel}>
+                      {t("warehouses.totalBatches.preview.totalRevenueAmd")}
+                    </span>
+                    <strong
+                      className={`${styles.summaryCardValue} ${styles.revenueValue}`}
+                    >
+                      {formatValue(previewData.totalRevenueAmd, 0)} AMD
                     </strong>
                   </div>
                 </div>

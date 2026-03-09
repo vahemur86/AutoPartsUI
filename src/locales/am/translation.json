@@ -315,6 +315,11 @@
         "selectedKg": "Ընտրված կգ",
         "totalPowderKg": "Ընդհանուր"
       },
+      "preview": {
+        "totalCostAmd": "Ընդհանուր արժեքը (AMD)",
+        "totalRevenueAmd": "Ընդհանուր հասույթը (AMD)",
+        "totalPowderKg": "Փոշու ընդհանուր քանակը (կգ)"
+      },
       "success": {
         "itemAdded": "Խմբաքանակ #{{id}} ավելացվեց {{kg}} կգ-ով",
         "saleCreated": "Վաճառքի խմբաքանակը հաջողությամբ ստեղծվեց"

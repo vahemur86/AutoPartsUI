@@ -315,6 +315,11 @@
         "selectedKg": "Selected kg",
         "totalPowderKg": "Total"
       },
+      "preview": {
+        "totalCostAmd": "Total Cost (AMD)",
+        "totalRevenueAmd": "Total Revenue (AMD)",
+        "totalPowderKg": "Total powder (kg)"
+      },
       "success": {
         "itemAdded": "Batch #{{id}} added with {{kg}} kg",
         "saleCreated": "Sales lot created successfully"
