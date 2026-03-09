@@ -17,6 +17,8 @@ import type {
   CarModelPayload,
   GetIronSalesParams,
   RecalculateStepPayload,
+  RecalculatePayload,
+  RecalculateResponse,
 } from "@/types/ironCarShop";
 
 const BASE_URL = "/admin/carmodels";
@@ -95,6 +97,24 @@ export const getIronTypesPrices = async (
     return response.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch iron prices."));
+  }
+};
+
+export const recalculateIron = async (
+  payload: RecalculatePayload,
+  cashRegisterId: number,
+): Promise<RecalculateResponse> => {
+  try {
+    const response = await api.post(
+      `${BASE_URL}/operator/recalculate`,
+      payload,
+      {
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Recalculation failed."));
   }
 };
 
@@ -227,12 +247,12 @@ export const getIronPrices = async (
     ) {
       params.customerTypeId = customerTypeId;
     }
+
     const response = await api.get(`${BASE_URL}/irontypes-prices`, {
-      params: {
-        ...params,
-      },
+      params,
       headers: getHeaders(cashRegisterId),
     });
+
     return Array.isArray(response.data)
       ? response.data
       : (response.data.items ?? []);

@@ -69,7 +69,11 @@ export interface IronTypePriceByCustomer {
 export interface IronTypeByCar {
   ironTypeId: number;
   name: string;
-  prices: IronTypePriceByCustomer[];
+  prices: {
+    customerTypeId: number;
+    customerTypeName: string;
+    pricePerKg: number;
+  }[];
 }
 
 export interface AddIronPricePayload {
@@ -92,4 +96,25 @@ export interface RecalculateStepPayload {
   ironTypeId: number;
   customerTypeId: number;
   pricePerKg: number;
+}
+
+export interface RecalculatePayload {
+  customerId: number;
+  customerTypeId: number;
+  currentStep: number;
+  items: Record<string, number>;
+}
+
+export interface RecalculateResponse {
+  currentStep: number;
+  nextStep: number;
+  isLastStep: boolean;
+  totalWeight: number;
+  totalAmount: number;
+  items: Array<{
+    ironTypeId: number;
+    weightKg: number;
+    pricePerKg: number;
+    totalAmount: number;
+  }>;
 }

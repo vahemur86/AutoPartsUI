@@ -177,13 +177,13 @@ export const OperatorPage = () => {
                 hasTriedSubmit={uiState.hasTriedSubmit}
               />
               <FinalOffer
-                withRecalculate
+                withRecalculate={!isNonStandardCustomer}
                 offerPrice={
                   initialOfferPrice ??
                   selectors.operator.intake?.offerPrice ??
                   0
                 }
-                currencyCode={selectors.operator.intake?.currencyCode}
+                currencyCode={selectors.operator.intake?.currencyCode || "USD"}
                 userData={userData}
                 isRecalculationsLimitReached={
                   recalculationsAmount >= selectors.offerOptions.options.length
@@ -208,12 +208,17 @@ export const OperatorPage = () => {
             </div>
             <div className={styles.centerColumn}>
               <FinalOffer
+                withRecalculate={!isNonStandardCustomer}
                 offerPrice={
-                  selectors.ironCarShop.ironTotals?.totalAmountTotal ?? 0
+                  selectors.ironCarShop.recalculationResult?.totalAmount ??
+                  selectors.ironCarShop.ironTotals?.totalAmountTotal ??
+                  0
                 }
                 currencyCode="AMD"
                 userData={userData}
-                isRecalculationsLimitReached={true}
+                isRecalculationsLimitReached={
+                  !!selectors.ironCarShop.recalculationResult?.isLastStep
+                }
                 onReset={() =>
                   setUiState((prev) => ({
                     ...prev,
@@ -221,7 +226,8 @@ export const OperatorPage = () => {
                   }))
                 }
                 onAccept={actions.handleBulkPurchase}
-                isLoading={selectors.ironCarShop.isSubmitting}
+                onRecalculate={actions.handleIronRecalculate}
+                isLoading={selectors.ironCarShop.isLoading}
               />
             </div>
           </>
