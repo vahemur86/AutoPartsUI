@@ -2,7 +2,7 @@ import { useState, useEffect, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Button, Dropdown, TextField, Select } from "@/ui-kit";
+import { Button, Dropdown, TextField } from "@/ui-kit";
 import type { AnchorRect } from "@/ui-kit";
 
 // types
@@ -40,11 +40,16 @@ export const AddRecalculationPriceDropdown = ({
 
   useEffect(() => {
     if (open) {
-      setCustomerTypeId("");
+      const standardCustomerType =
+        customerTypes.find(
+          (ct) => ct.code.toLowerCase() === "standard",
+        ) ?? customerTypes[0];
+
+      setCustomerTypeId(standardCustomerType ? standardCustomerType.id : "");
       setPricePerKg("");
       setHasTriedSave(false);
     }
-  }, [open]);
+  }, [open, customerTypes]);
 
   const numPricePerKg = parseFloat(pricePerKg);
 
@@ -81,22 +86,14 @@ export const AddRecalculationPriceDropdown = ({
 
       <div className={styles.content}>
         <div className={styles.grid}>
-          <Select
+          <TextField
             label={t("ironManagement.form.customerType")}
-            value={customerTypeId.toString()}
-            onChange={(e) =>
-              setCustomerTypeId(e.target.value ? Number(e.target.value) : "")
+            value={
+              customerTypes.find((ct) => ct.id === customerTypeId)?.code ??
+              ""
             }
-            error={hasTriedSave && !isCustomerTypeValid}
-            disabled={isLoading}
-          >
-            <option value="">{t("ironManagement.form.selectCustomerType")}</option>
-            {customerTypes.map((ct) => (
-              <option key={ct.id} value={ct.id}>
-                {ct.code}
-              </option>
-            ))}
-          </Select>
+            disabled
+          />
 
           <TextField
             label={t("ironManagement.form.pricePerKg")}
