@@ -315,6 +315,11 @@
         "selectedKg": "Выбранный кг",
         "totalPowderKg": "Общий"
       },
+      "preview": {
+        "totalCostAmd": "Общая стоимость (AMD)",
+        "totalRevenueAmd": "Общая выручка (AMD)",
+        "totalPowderKg": "Общий вес порошка (кг)"
+      },
       "success": {
         "itemAdded": "Партия #{{id}} добавлена с {{kg}} кг",
         "saleCreated": "Партия продажи успешно создана"
