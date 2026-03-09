@@ -31,6 +31,7 @@ export const FinalOffer: FC<{
   withRecalculate?: boolean;
   onReset?: () => void;
   onAccept?: () => Promise<void>;
+  onRecalculate?: () => Promise<void>;
   isLoading?: boolean;
   setRecalculationsAmount?: Dispatch<SetStateAction<number>>;
 }> = ({
@@ -41,6 +42,7 @@ export const FinalOffer: FC<{
   userData = {},
   onReset,
   onAccept,
+  onRecalculate,
   isLoading = false,
   setRecalculationsAmount,
 }) => {
@@ -49,7 +51,7 @@ export const FinalOffer: FC<{
   const { intake, newPropose } = useAppSelector((state) => state.operator);
 
   const [isOffering, setIsOffering] = useState(false);
-  const [isRecalculating, setIsRecalculating] = useState(false);
+  const [isInternalRecalculating, setIsInternalRecalculating] = useState(false);
 
   const handleOffer = useCallback(async () => {
     if (onAccept) {
@@ -72,11 +74,16 @@ export const FinalOffer: FC<{
     }
   }, [dispatch, intake, t, userData?.cashRegisterId, onAccept]);
 
-  const handleRecalculate = useCallback(async () => {
+  const handleRecalculateAction = useCallback(async () => {
+    if (onRecalculate) {
+      await onRecalculate();
+      return;
+    }
+
     const intakeId = intake?.id;
     if (!intakeId) return;
     try {
-      setIsRecalculating(true);
+      setIsInternalRecalculating(true);
       await dispatch(
         proposeNewOffer({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
@@ -85,26 +92,40 @@ export const FinalOffer: FC<{
     } catch (error) {
       console.error("Recalculate failed:", error);
     } finally {
-      setIsRecalculating(false);
+      setIsInternalRecalculating(false);
     }
-  }, [dispatch, intake, t, userData?.cashRegisterId, setRecalculationsAmount]);
+  }, [
+    dispatch,
+    intake,
+    t,
+    userData?.cashRegisterId,
+    setRecalculationsAmount,
+    onRecalculate,
+  ]);
 
-  const isAnyActionLoading = isOffering || isRecalculating || isLoading;
-  const hasNewOffer = !!newPropose;
-  const displayPrice = hasNewOffer ? newPropose.offeredAmountAmd : offerPrice;
+  const isAnyActionLoading = isOffering || isInternalRecalculating || isLoading;
+
+  const hasNewCatalystOffer = !!newPropose;
+  const displayPrice = hasNewCatalystOffer
+    ? newPropose.offeredAmountAmd
+    : offerPrice;
+
+  const isTransactionReady = onAccept ? offerPrice > 0 : !!intake;
 
   return (
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
         <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
         <div className={styles.priceContainer}>
-          {hasNewOffer && (
+          {hasNewCatalystOffer && (
             <div className={styles.oldPriceStruck}>
               {offerPrice.toLocaleString()} {currencyCode}
             </div>
           )}
           <div
-            className={`${styles.finalOfferAmount} ${hasNewOffer ? styles.newPriceHighlight : ""}`}
+            className={`${styles.finalOfferAmount} ${
+              hasNewCatalystOffer ? styles.newPriceHighlight : ""
+            }`}
           >
             {displayPrice.toLocaleString()} {currencyCode}
           </div>
@@ -116,7 +137,7 @@ export const FinalOffer: FC<{
             size="small"
             fullWidth
             onClick={handleOffer}
-            disabled={isAnyActionLoading || (!intake && offerPrice === 0)}
+            disabled={isAnyActionLoading || !isTransactionReady}
           >
             <Check size={20} />
             {t("finalOffer.offerButton")}
@@ -127,9 +148,11 @@ export const FinalOffer: FC<{
               variant="secondary"
               size="small"
               fullWidth
-              onClick={handleRecalculate}
+              onClick={handleRecalculateAction}
               disabled={
-                isRecalculationsLimitReached || isAnyActionLoading || !intake
+                isRecalculationsLimitReached ||
+                isAnyActionLoading ||
+                !isTransactionReady
               }
             >
               <RotateCcw size={20} />
@@ -142,7 +165,7 @@ export const FinalOffer: FC<{
             size="small"
             fullWidth
             onClick={onReset}
-            disabled={isAnyActionLoading || (!intake && offerPrice === 0)}
+            disabled={isAnyActionLoading || !isTransactionReady}
           >
             <X size={20} />
             {t("finalOffer.rejectButton")}
