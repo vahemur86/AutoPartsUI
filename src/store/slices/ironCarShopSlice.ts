@@ -16,6 +16,7 @@ import {
   addIronPrice,
   recalculateStep,
   getIronPrices,
+  recalculateIron,
 } from "@/services/ironCarShop";
 
 // utils
@@ -34,6 +35,8 @@ import type {
   CarModelPayload,
   AddIronPricePayload,
   RecalculateStepPayload,
+  RecalculatePayload,
+  RecalculateResponse,
 } from "@/types/ironCarShop";
 
 interface IronCarShopState {
@@ -42,11 +45,11 @@ interface IronCarShopState {
   ironTypesByCar: IronTypeByCar[];
   ironPrices: IronTypePrice[];
   ironPriceList: IronPrice[];
-  // Store the overall totals from the calculation response
   ironTotals: {
     weightKgTotal: number;
     totalAmountTotal: number;
   } | null;
+  recalculationResult: RecalculateResponse | null; // New state field
   lastPurchase: PurchaseIronResponse[] | null;
   isLoading: boolean;
   isSubmitting: boolean;
@@ -60,6 +63,7 @@ const initialState: IronCarShopState = {
   ironPrices: [],
   ironPriceList: [],
   ironTotals: null,
+  recalculationResult: null,
   lastPurchase: null,
   isLoading: false,
   isSubmitting: false,
@@ -130,6 +134,21 @@ export const calculateIronPrices = createAsyncThunk<
       return rejectWithValue(
         getApiErrorMessage(error, "Price calculation failed"),
       );
+    }
+  },
+);
+
+export const recalculatePrices = createAsyncThunk<
+  RecalculateResponse,
+  { payload: RecalculatePayload; cashRegisterId: number },
+  { rejectValue: string }
+>(
+  "ironCarShop/recalculatePrices",
+  async ({ payload, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await recalculateIron(payload, cashRegisterId);
+    } catch (error) {
+      return rejectWithValue(getApiErrorMessage(error, "Recalculation failed"));
     }
   },
 );
@@ -276,6 +295,7 @@ const ironCarShopSlice = createSlice({
     clearPrices: (state) => {
       state.ironPrices = [];
       state.ironTotals = null;
+      state.recalculationResult = null;
       state.ironTypes = [];
     },
     clearIronPriceList: (state) => {
@@ -298,13 +318,16 @@ const ironCarShopSlice = createSlice({
       })
       .addCase(calculateIronPrices.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Map the items array to ironPrices
         state.ironPrices = action.payload.items;
-        // Map the totals to the new state property
         state.ironTotals = {
           weightKgTotal: action.payload.weightKgTotal,
           totalAmountTotal: action.payload.totalAmountTotal,
         };
+      })
+      /** Handle Recalculate Prices Success **/
+      .addCase(recalculatePrices.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.recalculationResult = action.payload;
       })
       .addCase(submitBulkPurchase.fulfilled, (state, action) => {
         state.isSubmitting = false;

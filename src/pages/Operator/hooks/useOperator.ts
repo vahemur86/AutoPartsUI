@@ -46,6 +46,7 @@ import {
   submitBulkPurchase,
   clearPrices,
   fetchCarModels,
+  recalculatePrices,
 } from "@/store/slices/ironCarShopSlice";
 
 export type TabType = "catalyst" | "iron";
@@ -331,6 +332,40 @@ export const useOperator = () => {
     }
   };
 
+  const handleIronRecalculate = useCallback(async () => {
+    const customer = operator.intake?.customer || customers.items[0];
+    if (!customer || !ironCarShop.ironPrices.length) return;
+
+    try {
+      const crId = userData?.cashRegisterId;
+
+      const itemsMap: Record<string, number> = {};
+      ironCarShop.ironPrices.forEach((item) => {
+        itemsMap[String(item.ironTypeId)] = item.weightKg;
+      });
+
+      const stepToFetch = ironCarShop.recalculationResult
+        ? ironCarShop.recalculationResult.nextStep
+        : 1;
+
+      await dispatch(
+        recalculatePrices({
+          payload: {
+            customerId: customer.id,
+            customerTypeId: customer.customerTypeId,
+            currentStep: stepToFetch,
+            items: itemsMap,
+          },
+          cashRegisterId: crId,
+        }),
+      ).unwrap();
+
+      toast.success(t("finalOffer.success.recalculated"));
+    } catch (e) {
+      console.error("Iron Recalculate Error:", e);
+    }
+  }, [dispatch, operator.intake, customers.items, ironCarShop, userData, t]);
+
   const handleBulkPurchase = async () => {
     const customer = operator.intake?.customer || customers.items[0];
     if (!customer || ironCarShop.ironPrices.length === 0) return;
@@ -456,6 +491,7 @@ export const useOperator = () => {
       handleConfirmReject,
       handleToggleSession,
       handleConfirmTopUp,
+      handleIronRecalculate,
     },
   };
 };
