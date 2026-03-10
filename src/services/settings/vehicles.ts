@@ -10,10 +10,19 @@ import type {
   VehicleFilter,
 } from "@/types/settings";
 
-export const getVehicleDefinitions = async (brandId?: number) => {
+const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
+
+export const getVehicleDefinitions = async (
+  brandId?: number,
+  lang: string = "am",
+) => {
   try {
-    const params = brandId ? `?brandId=${brandId}` : "";
-    const response = await api.get(`/lookups/vehicle-definitions${params}`);
+    const response = await api.get(`/lookups/vehicle-definitions`, {
+      params: {
+        ...(brandId != null && { brandId }),
+        lang: formatLang(lang),
+      },
+    });
     return response.data as VehicleDefinition;
   } catch (error: unknown) {
     throw new Error(
