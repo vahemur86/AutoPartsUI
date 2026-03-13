@@ -578,11 +578,16 @@
       "pdWeight": "Պալադիումի քաշ (գ)",
       "rhodiumWeight": "Ռոդիումի քաշ (գ)",
       "enterValidWeight": "Մուտքագրեք վավեր քաշ",
-      "enabled": "Միացված"
+      "enabled": "Միացված",
+      "type": "Կատալիզատորի բաքի տեսակ",
+      "selectType": "Ընտրեք տեսակը...",
+      "frontType": "Առջևի բաք",
+      "backType": "Հետևի բաք"
     },
     "columns": {
       "code": "Կոդ",
       "name": "Անվանում",
+      "type": "Տեսակ",
       "price": "Գին",
       "weight": "Քաշ",
       "ptWeight": "Պլատինի քաշ",

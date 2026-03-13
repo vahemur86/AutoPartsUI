@@ -41,6 +41,7 @@ type CatalystBucketPayload = {
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;
+  catalystTypeId: number;
 };
 
 type CatalystBucketUpdatePayload = CatalystBucketPayload & {
@@ -114,6 +115,7 @@ export const editCatalystBucket = createAsyncThunk<
         pdWeight: payload.pdWeight,
         rhWeight: payload.rhWeight,
         isActive: payload.isActive,
+        catalystTypeId: payload.catalystTypeId,
       });
       return data;
     } catch (error: unknown) {

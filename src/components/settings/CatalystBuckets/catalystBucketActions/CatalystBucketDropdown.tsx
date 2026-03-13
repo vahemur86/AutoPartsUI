@@ -1,6 +1,6 @@
 import { useState, useEffect, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Dropdown, TextField, Switch } from "@/ui-kit";
+import { Button, Dropdown, TextField, Switch, Select } from "@/ui-kit";
 import styles from "./CatalystBucketDropdown.module.css";
 
 export interface CatalystBucketForm {
@@ -10,6 +10,7 @@ export interface CatalystBucketForm {
   pdWeight: number;
   rhWeight: number;
   isActive?: boolean;
+  catalystTypeId: number;
 }
 
 interface CatalystBucketDropdownProps {
@@ -36,6 +37,7 @@ export const CatalystBucketDropdown = ({
   const [pdWeightInput, setPdWeightInput] = useState("");
   const [rhWeightInput, setRhWeightInput] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [catalystTypeId, setCatalystTypeId] = useState<number>(1);
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
   const isEditMode = !!initialData;
@@ -48,6 +50,11 @@ export const CatalystBucketDropdown = ({
       setPdWeightInput(initialData ? String(initialData.pdWeight) : "");
       setRhWeightInput(initialData ? String(initialData.rhWeight) : "");
       setIsActive(initialData?.isActive ?? true);
+      setCatalystTypeId(
+        typeof initialData?.catalystTypeId === "number"
+          ? initialData.catalystTypeId
+          : 0, // default: Back
+      );
       setHasTriedSave(false);
     }
   }, [open, initialData]);
@@ -76,6 +83,7 @@ export const CatalystBucketDropdown = ({
       pdWeight: numericPdWeight,
       rhWeight: numericRhWeight,
       isActive,
+      catalystTypeId,
     });
   };
 
@@ -150,6 +158,17 @@ export const CatalystBucketDropdown = ({
             error={hasTriedSave && isNaN(numericRhWeight)}
             disabled={isLoading}
           />
+
+          <Select
+            label={t("catalystBuckets.form.type")}
+            placeholder={t("catalystBuckets.form.selectType")}
+            value={String(catalystTypeId)}
+            onChange={(e) => setCatalystTypeId(Number(e.target.value))}
+            disabled={isLoading}
+          >
+            <option value="0">{t("catalystBuckets.form.backType")}</option>
+            <option value="1">{t("catalystBuckets.form.frontType")}</option>
+          </Select>
 
           <div className={styles.switchWrapper}>
             <Switch

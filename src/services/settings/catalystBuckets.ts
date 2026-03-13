@@ -10,6 +10,7 @@ export const createCatalystBucket = async (catalystBucket: {
   ptWeight: number;
   pdWeight: number;
   rhWeight: number;
+  catalystTypeId: number;
 }) => {
   try {
     const response = await api.post(

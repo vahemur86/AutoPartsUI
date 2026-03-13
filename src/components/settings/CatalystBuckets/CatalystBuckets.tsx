@@ -304,7 +304,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
           <DataTable
             data={catalystBuckets}
             columns={bucketColumns}
-            pageSize={7}
+            pageSize={10}
           />
         ) : (
           // Nested check: even if activeTab is 'groups' (e.g. via URL or devtools), don't show for non-admins
@@ -314,7 +314,7 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
                 <DataTable
                   data={catalystBucketsByGroup.items}
                   columns={groupColumns}
-                  pageSize={7}
+                  pageSize={10}
                   renderBottomLeft={() => (
                     <div className={styles.totalPriceWrapper}>
                       <span className={styles.totalPriceLabel}>

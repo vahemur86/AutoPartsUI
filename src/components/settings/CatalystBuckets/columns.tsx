@@ -43,6 +43,15 @@ export const getCatalystBucketColumns = ({
     header: i18next.t("catalystBuckets.columns.rhWeight"),
     cell: (info) => `${info.getValue()}g`,
   }),
+  bucketHelper.accessor("catalystTypeId", {
+    header: i18next.t("catalystBuckets.columns.type"),
+    cell: (info) =>
+      i18next.t(
+        info.getValue() === 1
+          ? "catalystBuckets.form.frontType"
+          : "catalystBuckets.form.backType",
+      ),
+  }),
   bucketHelper.accessor("isActive", {
     header: i18next.t("catalystBuckets.columns.status"),
     cell: (info) =>

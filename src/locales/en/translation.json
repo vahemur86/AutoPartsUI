@@ -578,11 +578,16 @@
       "pdWeight": "Palladium Weight (g)",
       "rhWeight": "Rhodium Weight (g)",
       "enterValidWeight": "Enter a valid weight",
-      "enabled": "Enabled"
+      "enabled": "Enabled",
+      "type": "Catalyst bucket type",
+      "selectType": "Select type...",
+      "frontType": "Front bucket",
+      "backType": "Back bucket"
     },
     "columns": {
       "code": "Code",
       "name": "Name",
+      "type": "Type",
       "price": "Price",
       "weight": "Weight",
       "ptWeight": "Platinum Weight",

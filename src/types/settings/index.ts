@@ -166,6 +166,7 @@ export interface CatalystBucket {
   pdWeight: number;
   rhWeight: number;
   isActive: boolean;
+  catalystTypeId: number;
 }
 
 export interface CatalystBucketByGroupItem {
