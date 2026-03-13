@@ -26,6 +26,10 @@
     "no": "Нет",
     "filters": "Фильтры",
     "reset": "Сбросить",
+    "search": "Поиск",
+    "noName": "Без названия",
+    "front": "Передний",
+    "back": "Задний",
     "noOptionsAvailable": "Нет доступных вариантов",
     "previous": "Предыдущая",
     "next": "Следующая",
@@ -773,7 +777,9 @@
         "operations": "Операции",
         "duration": "Длительность",
         "operator": "ID оператора",
-        "finalDiff": "Итоговая разница"
+        "finalDiff": "Итоговая разница",
+        "catalystCashOut": "Выплата за катализатор",
+        "ironCashOut": "Выплата за железо"
       },
       "filters": {
         "fromDate": "С даты",
@@ -1208,6 +1214,8 @@
     "ironType": "Тип железа",
     "weightKg": "Вес",
     "tabs": {
+      "buy": "Купить",
+      "calculate": "Рассчитать",
       "catalyst": "Катализатор",
       "iron": "Железо"
     },
@@ -1230,6 +1238,37 @@
       "price": "Цена",
       "calculate": "Рассчитать",
       "selectCustomerToCalculate": "Пожалуйста, найдите или создайте клиента перед выполнением расчета"
+    },
+    "calculate": {
+      "mode": {
+        "byCode": "По коду",
+        "byAttributes": "По параметрам"
+      },
+      "label": {
+        "bucketGroupCode": "Код группы корзин",
+        "brandId": "ID Марки",
+        "modelId": "ID Модели",
+        "fuelTypeId": "ID типа топлива",
+        "engineId": "ID двигателя",
+        "marketId": "ID рынка",
+        "driveTypeId": "ID типа привода",
+        "year": "Год",
+        "hpMin": "Л.С. мин.",
+        "hpMax": "Л.С. макс."
+      },
+      "specs": {
+        "engine": "Двигатель",
+        "fuel": "Топливо",
+        "weight": "Вес",
+        "price": "Цена"
+      },
+      "summary": {
+        "totalPrice": "Общая стоимость",
+        "totalWeight": "Общий вес"
+      },
+      "linkedBuckets": "Связанные корзины",
+      "noResults": "Результаты не найдены",
+      "group": "Группа"
     },
     "tabSwitchWarning": "Переключение вкладки приведет к сбросу всех форм и очистке введенных данных. Вы уверены, что хотите продолжить?"
   },

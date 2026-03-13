@@ -10,6 +10,7 @@ import {
   createVehicle,
   getVehicleBuckets,
   updateVehicleBuckets,
+  getVehicleDefinitions,
 } from "@/services/settings/vehicles";
 
 // utils
@@ -20,21 +21,46 @@ import type {
   CreateVehiclePayload,
   Vehicle,
   VehicleFilter,
+  VehicleDefinition,
 } from "@/types/settings";
 
 interface VehiclesState {
   vehicles: Vehicle[];
   vehicleBuckets: { vehicleDefinitionId: number; bucketIds: number[] };
+  definitions: VehicleDefinition | null;
   isLoading: boolean;
+  isDefinitionsLoading: boolean;
   error: string | null;
 }
 
 const initialState: VehiclesState = {
   vehicles: [],
   vehicleBuckets: { vehicleDefinitionId: 0, bucketIds: [] },
+  definitions: null,
   isLoading: false,
+  isDefinitionsLoading: false,
   error: null,
 };
+
+// Async thunk for fetching vehicle lookups
+export const fetchVehicleDefinitions = createAsyncThunk<
+  VehicleDefinition,
+  { brandId?: number; lang?: string; cashRegisterId?: number },
+  { rejectValue: string }
+>("vehicles/fetchVehicleDefinitions", async (params, { rejectWithValue }) => {
+  try {
+    const data = await getVehicleDefinitions(
+      params.brandId,
+      params.lang,
+      params.cashRegisterId,
+    );
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch vehicle definitions"),
+    );
+  }
+});
 
 // Async thunk for fetching vehicles
 export const fetchVehicles = createAsyncThunk<
@@ -57,6 +83,7 @@ export const fetchVehicles = createAsyncThunk<
           market: item.market?.name ?? "",
           horsePower: item.horsePower ?? 0,
           driveType: item.driveType?.name ?? "",
+          bucketCodes: item.bucketCodes ?? [],
         }))
       : [];
 
@@ -126,8 +153,33 @@ const vehiclesSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearDefinitions: (state) => {
+      state.definitions = null;
+    },
+    clearVehicles: (state) => {
+      state.vehicles = [];
+    },
   },
   extraReducers: (builder) => {
+    // Fetch vehicle definitions
+    builder
+      .addCase(fetchVehicleDefinitions.pending, (state) => {
+        state.isDefinitionsLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchVehicleDefinitions.fulfilled,
+        (state, action: PayloadAction<VehicleDefinition>) => {
+          state.isDefinitionsLoading = false;
+          state.definitions = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchVehicleDefinitions.rejected, (state, action) => {
+        state.isDefinitionsLoading = false;
+        state.error = action.payload ?? "Failed to fetch lookups";
+      });
+
     // Fetch vehicles
     builder
       .addCase(fetchVehicles.pending, (state) => {
@@ -209,5 +261,6 @@ const vehiclesSlice = createSlice({
   },
 });
 
-export const { clearError } = vehiclesSlice.actions;
+export const { clearError, clearDefinitions, clearVehicles } =
+  vehiclesSlice.actions;
 export default vehiclesSlice.reducer;

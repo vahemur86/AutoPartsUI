@@ -58,6 +58,8 @@ export interface VehicleFilter {
   hpMax?: number;
   page?: number;
   pageSize?: number;
+  bucketCode?: string;
+  cashRegisterId?: number;
 }
 
 export interface MetalRate {
@@ -146,6 +148,7 @@ export type Vehicle = {
   market: string;
   horsePower: number;
   driveType: string;
+  bucketCodes?: string[];
 };
 
 export interface VehicleDefinition {
@@ -185,6 +188,24 @@ export interface CatalystBucketByGroup {
   currencyCode: string;
   items: CatalystBucketByGroupItem[];
   totals: Record<string, number>;
+}
+
+export interface CatalystBucketQuoteGroup {
+  requestedCode: string;
+  groupCode: string;
+  currencyCode: string;
+  items: Array<{
+    id: number;
+    code: string;
+    name: string | null;
+    weight: number;
+    ptWeight: number;
+    pdWeight: number;
+    rhWeight: number;
+    catalystTypeId: number;
+    price: number;
+  }>;
+  totalPrice: number;
 }
 
 export interface CustomerType {

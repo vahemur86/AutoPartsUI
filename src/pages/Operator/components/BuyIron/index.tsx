@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import i18n from "i18next";
 
 // ui-kit
 import { Select, TextField, Button, Checkbox } from "@/ui-kit";
@@ -36,7 +35,7 @@ export const BuyIron: FC<BuyIronProps> = ({
   cashRegisterId,
   onCalculateAttempt,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { carModels, ironTypes, isLoading, ironPrices } = useAppSelector(
@@ -85,7 +84,6 @@ export const BuyIron: FC<BuyIronProps> = ({
         }),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, cashRegisterId, i18n.language]);
 
   useEffect(() => {

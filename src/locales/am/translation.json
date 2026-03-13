@@ -26,6 +26,10 @@
     "no": "Ոչ",
     "filters": "Ֆիլտրեր",
     "reset": "Վերակայել",
+    "search": "Որոնել",
+    "noName": "Անուն չկա",
+    "front": "Դիմացի",
+    "back": "Հետևի",
     "noOptionsAvailable": "Տարբերակներ չկան",
     "previous": "Նախորդ",
     "next": "Հաջորդ",
@@ -773,7 +777,9 @@
         "operations": "Գործողություններ",
         "duration": "Տևողություն",
         "operator": "Օպերատորի ID",
-        "finalDiff": "Վերջնական տարբերություն"
+        "finalDiff": "Վերջնական տարբերություն",
+        "catalystCashOut": "Կատալիզատորի կանխիկացում",
+        "ironCashOut": "Երկաթի կանխիկացում"
       },
       "filters": {
         "fromDate": "Սկսած",
@@ -1208,6 +1214,8 @@
     "ironType": "Երկաթի տեսակ",
     "weightKg": "Քաշ",
     "tabs": {
+      "buy": "Գնել",
+      "calculate": "Հաշվարկել",
       "catalyst": "Կատալիզատոր",
       "iron": "Երկաթ"
     },
@@ -1230,6 +1238,37 @@
       "price": "Գին",
       "calculate": "Հաշվարկել",
       "selectCustomerToCalculate": "Խնդրում ենք որոնել կամ ստեղծել հաճախորդ նախքան հաշվարկը"
+    },
+    "calculate": {
+      "mode": {
+        "byCode": "Ըստ կոդի",
+        "byAttributes": "Ըստ պարամետրերի"
+      },
+      "label": {
+        "bucketGroupCode": "Զամբյուղի խմբի կոդը",
+        "brandId": "Մակնիշի ID",
+        "modelId": "Մոդելի ID",
+        "fuelTypeId": "Վառելիքի տեսակի ID",
+        "engineId": "Շարժիչի ID",
+        "marketId": "Շուկայի ID",
+        "driveTypeId": "Քարշակի տեսակի ID",
+        "year": "Տարեթիվ",
+        "hpMin": "Ձիաուժ (նվազ.)",
+        "hpMax": "Ձիաուժ (առավ.)"
+      },
+      "specs": {
+        "engine": "Շարժիչ",
+        "fuel": "Վառելիք",
+        "weight": "Քաշ",
+        "price": "Գին"
+      },
+      "summary": {
+        "totalPrice": "Ընդհանուր գինը",
+        "totalWeight": "Ընդհանուր քաշը"
+      },
+      "linkedBuckets": "Կապակցված զամբյուղներ",
+      "noResults": "Արդյունքներ չեն գտնվել",
+      "group": "Խումբ"
     },
     "tabSwitchWarning": "Ներդիրի փոփոխությունը կհանգեցնի ձևաչափերի վերակայմանը և մուտքագրված տվյալների ջնջմանը: Վստա՞հ եք, որ ցանկանում եք շարունակել:"
   },

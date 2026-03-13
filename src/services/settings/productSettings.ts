@@ -1,7 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // Generic CRUD factory
 export const createCrudService = (endpoint: string, entityName: string) => {
@@ -17,9 +17,11 @@ export const createCrudService = (endpoint: string, entityName: string) => {
       }
     },
 
-    getAll: async () => {
+    getAll: async (cashRegisterId?: number) => {
       try {
-        const response = await api.get(`/${endpoint}`);
+        const response = await api.get(`/${endpoint}`, {
+          headers: getHeaders(cashRegisterId),
+        });
         return response.data;
       } catch (error: unknown) {
         throw new Error(

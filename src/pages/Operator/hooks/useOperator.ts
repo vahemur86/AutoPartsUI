@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import i18n from "i18next";
+
 import {
   HttpTransportType,
   HubConnection,
@@ -49,10 +49,13 @@ import {
   recalculatePrices,
 } from "@/store/slices/ironCarShopSlice";
 
+// utils
+import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+
 export type TabType = "catalyst" | "iron";
 
 export const useOperator = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
   const [activeTab, setActiveTab] = useState<TabType>("catalyst");
@@ -61,16 +64,18 @@ export const useOperator = () => {
     JSON.parse(localStorage.getItem("user_data") ?? "null"),
   );
 
-  const metalRates = useAppSelector((state) => state.metalRates);
-  const metalPrices = useAppSelector((state) => state.metalPrices);
-  const operator = useAppSelector((state) => state.operator);
-  const languagesState = useAppSelector((state) => state.languages);
-  const cashRegisters = useAppSelector((state) => state.cashRegisters);
-  const cashSessions = useAppSelector((state) => state.cashSessions);
-  const offerOptions = useAppSelector((state) => state.offerOptions);
-  const { exchangeRates } = useAppSelector((state) => state.exchangeRates);
-  const customers = useAppSelector((state) => state.customers);
-  const ironCarShop = useAppSelector((state) => state.ironCarShop);
+  const selectors = {
+    metalRates: useAppSelector((state) => state.metalRates),
+    metalPrices: useAppSelector((state) => state.metalPrices),
+    operator: useAppSelector((state) => state.operator),
+    languagesState: useAppSelector((state) => state.languages),
+    cashRegisters: useAppSelector((state) => state.cashRegisters),
+    cashSessions: useAppSelector((state) => state.cashSessions),
+    offerOptions: useAppSelector((state) => state.offerOptions),
+    exchangeRates: useAppSelector((state) => state.exchangeRates),
+    customers: useAppSelector((state) => state.customers),
+    ironCarShop: useAppSelector((state) => state.ironCarShop),
+  };
 
   const [uiState, setUiState] = useState({
     isSubmitting: false,
@@ -96,33 +101,61 @@ export const useOperator = () => {
     customer: { phone: "", fullName: "", gender: 0, notes: "" },
   });
 
+  // --- Helpers ---
+  const refreshBalance = useCallback(() => {
+    if (userData?.cashRegisterId) {
+      dispatch(fetchBalance(userData.cashRegisterId));
+    }
+  }, [dispatch, userData?.cashRegisterId]);
+
   const languages = useMemo(
-    () => languagesState.languages.filter((lang) => lang.isEnabled),
-    [languagesState.languages],
+    () => selectors.languagesState.languages.filter((lang) => lang.isEnabled),
+    [selectors.languagesState.languages],
   );
 
   const usdAmdRate = useMemo(
     () =>
-      exchangeRates.find(
+      selectors.exchangeRates.exchangeRates.find(
         (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
       )?.rate,
-    [exchangeRates],
+    [selectors.exchangeRates.exchangeRates],
   );
 
   const isNonStandardCustomer = useMemo(() => {
-    const searchedCustomerType = customers.items[0]?.customerType?.code;
-    const linkedCustomerType = operator.intake?.customer?.customerType?.code;
+    const searchedCustomerType =
+      selectors.customers.items[0]?.customerType?.code;
+    const linkedCustomerType =
+      selectors.operator.intake?.customer?.customerType?.code;
     const currentType = (
       linkedCustomerType || searchedCustomerType
     )?.toLowerCase();
-
     return !!(currentType && currentType !== "standard");
-  }, [operator.intake?.customer?.customerType?.code, customers.items]);
+  }, [
+    selectors.operator.intake?.customer?.customerType?.code,
+    selectors.customers.items,
+  ]);
 
+  const isFormDirty = useMemo(() => {
+    return (
+      formData.powderWeight !== "0" ||
+      formData.customer.phone !== "" ||
+      selectors.operator.intake !== null ||
+      selectors.ironCarShop.ironPrices.length > 0
+    );
+  }, [formData, selectors.operator.intake, selectors.ironCarShop.ironPrices]);
+
+  const currentLanguageCode = useMemo(() => {
+    return (
+      languages.find((l) => mapApiCodeToI18nCode(l.code) === i18n.language)
+        ?.code ?? ""
+    );
+  }, [languages, i18n.language]);
+
+  // --- SignalR Logic ---
   useEffect(() => {
     const crId = userData?.cashRegisterId;
     const token = userData?.token;
-    if (!crId || !token || !cashSessions.hasOpenSession) {
+    if (!crId || !token || !selectors.cashSessions.hasOpenSession) {
       if (connection) {
         connection.stop();
         setConnection(null);
@@ -148,7 +181,7 @@ export const useOperator = () => {
       dispatch(fetchPendingTransaction(crId)),
     );
     newConnection.onreconnected(() => {
-      dispatch(fetchBalance(crId));
+      refreshBalance();
       dispatch(fetchPendingTransaction(crId));
     });
 
@@ -156,7 +189,6 @@ export const useOperator = () => {
       try {
         await newConnection.start();
         await newConnection.invoke("JoinCashBox", crId);
-        dispatch(fetchBalance(crId));
         dispatch(fetchPendingTransaction(crId));
         setConnection(newConnection);
       } catch (err) {
@@ -172,10 +204,12 @@ export const useOperator = () => {
   }, [
     userData?.cashRegisterId,
     userData?.token,
-    cashSessions.hasOpenSession,
+    selectors.cashSessions.hasOpenSession,
     dispatch,
+    refreshBalance,
   ]);
 
+  // --- Initial Data Load ---
   useEffect(() => {
     const crId = userData?.cashRegisterId;
     if (crId) {
@@ -184,9 +218,9 @@ export const useOperator = () => {
       );
       dispatch(fetchLanguages(crId));
       dispatch(fetchRegisterSession(crId));
-      dispatch(fetchBalance(crId));
+      refreshBalance();
     }
-  }, [dispatch, userData?.cashRegisterId]);
+  }, [dispatch, userData?.cashRegisterId, refreshBalance]);
 
   useEffect(() => {
     const crId = userData?.cashRegisterId;
@@ -198,19 +232,25 @@ export const useOperator = () => {
     }
   }, [dispatch, isNonStandardCustomer, userData?.cashRegisterId]);
 
+  // --- Iron Shop Data ---
   useEffect(() => {
     const crId = userData?.cashRegisterId;
-    if (activeTab === "iron" && crId && ironCarShop.carModels.length === 0) {
+    if (
+      activeTab === "iron" &&
+      crId &&
+      selectors.ironCarShop.carModels.length === 0
+    ) {
       dispatch(fetchCarModels({ cashRegisterId: crId, lang: i18n.language }));
     }
   }, [
     activeTab,
-    ironCarShop.carModels.length,
+    selectors.ironCarShop.carModels.length,
     userData?.cashRegisterId,
     dispatch,
+    i18n.language,
   ]);
 
-  // Logic: Iron Dropdown
+  // Iron Dropdown Logic
   useEffect(() => {
     const crId = userData?.cashRegisterId;
     if (crId) {
@@ -218,58 +258,61 @@ export const useOperator = () => {
         fetchIronDropdown({ cashRegisterId: crId, lang: i18n.language }),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, userData?.cashRegisterId, i18n.language]);
 
+  // --- Visibility Logic ---
   useEffect(() => {
     let timer: NodeJS.Timeout;
     const crId = userData?.cashRegisterId;
     if (uiState.showCashAmount && crId) {
-      dispatch(fetchBalance(crId));
+      refreshBalance();
       timer = setTimeout(
         () => setUiState((p) => ({ ...p, showCashAmount: false })),
         10000,
       );
     }
     return () => clearTimeout(timer);
-  }, [uiState.showCashAmount, userData?.cashRegisterId, dispatch]);
+  }, [uiState.showCashAmount, refreshBalance, userData?.cashRegisterId]);
 
+  // --- Offer Price Sync ---
   useEffect(() => {
-    if (operator.intake?.offerPrice && initialOfferPrice === null)
-      setInitialOfferPrice(operator.intake.offerPrice);
-    if (!operator.intake) setInitialOfferPrice(null);
-  }, [operator.intake, initialOfferPrice]);
+    if (selectors.operator.intake?.offerPrice && initialOfferPrice === null)
+      setInitialOfferPrice(selectors.operator.intake.offerPrice);
+    if (!selectors.operator.intake) setInitialOfferPrice(null);
+  }, [selectors.operator.intake, initialOfferPrice]);
 
+  // --- Error Handling ---
   useEffect(() => {
     const errors = [
       {
-        msg: metalRates.error,
+        msg: selectors.metalRates.error,
         clear: () => dispatch({ type: "metalRates/clearError" }),
       },
       {
-        msg: metalPrices.error,
+        msg: selectors.metalPrices.error,
         clear: () => dispatch(clearPricesError()),
       },
-      { msg: operator.error, clear: () => dispatch(clearIntakeState()) },
-      { msg: languagesState.error, clear: () => {} },
-      { msg: cashRegisters.error, clear: () => {} },
-      { msg: cashSessions.error, clear: () => {} },
-      { msg: ironCarShop.error, clear: () => {} },
+      {
+        msg: selectors.operator.error,
+        clear: () => dispatch(clearIntakeState()),
+      },
+      { msg: selectors.languagesState.error },
+      { msg: selectors.cashRegisters.error },
+      { msg: selectors.cashSessions.error },
+      { msg: selectors.ironCarShop.error },
     ];
     errors.forEach(({ msg }) => {
-      if (msg) {
-        toast.error(msg, { toastId: msg });
-      }
+      if (msg) toast.error(msg, { toastId: msg });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    metalRates.error,
-    metalPrices.error,
-    operator.error,
-    languagesState.error,
-    cashRegisters.error,
-    cashSessions.error,
-    ironCarShop.error,
+    selectors.metalRates.error,
+    selectors.metalPrices.error,
+    selectors.operator.error,
+    selectors.languagesState.error,
+    selectors.cashRegisters.error,
+    selectors.cashSessions.error,
+    selectors.ironCarShop.error,
   ]);
 
   const handleResetForm = useCallback(() => {
@@ -302,14 +345,15 @@ export const useOperator = () => {
       formData.customer.phone.length <= 3
     )
       return;
+
     setUiState((p) => ({ ...p, isSubmitting: true }));
     try {
       const crId = userData?.cashRegisterId;
       const response = await dispatch(
         addIntake({
           intake: {
+            ...formData,
             shopId: userData?.shopId,
-            customer: formData.customer,
             powderWeightTotal: Number(formData.powderWeight),
             ptWeight: Number(formData.platinumPrice),
             pdWeight: Number(formData.palladiumPrice),
@@ -319,6 +363,7 @@ export const useOperator = () => {
           cashRegisterId: crId,
         }),
       ).unwrap();
+
       toast.success(t("operatorPage.success.intakeCreated"));
       dispatch(fetchIntake({ intakeId: response.id, cashRegisterId: crId }));
       dispatch(
@@ -333,20 +378,18 @@ export const useOperator = () => {
   };
 
   const handleIronRecalculate = useCallback(async () => {
-    const customer = operator.intake?.customer || customers.items[0];
-    if (!customer || !ironCarShop.ironPrices.length) return;
+    const customer =
+      selectors.operator.intake?.customer || selectors.customers.items[0];
+    if (!customer || !selectors.ironCarShop.ironPrices.length) return;
 
     try {
-      const crId = userData?.cashRegisterId;
-
       const itemsMap: Record<string, number> = {};
-      ironCarShop.ironPrices.forEach((item) => {
+      selectors.ironCarShop.ironPrices.forEach((item) => {
         itemsMap[String(item.ironTypeId)] = item.weightKg;
       });
 
-      const stepToFetch = ironCarShop.recalculationResult
-        ? ironCarShop.recalculationResult.nextStep
-        : 1;
+      const stepToFetch =
+        selectors.ironCarShop.recalculationResult?.nextStep ?? 1;
 
       await dispatch(
         recalculatePrices({
@@ -356,37 +399,43 @@ export const useOperator = () => {
             currentStep: stepToFetch,
             items: itemsMap,
           },
-          cashRegisterId: crId,
+          cashRegisterId: userData?.cashRegisterId,
         }),
       ).unwrap();
-
       toast.success(t("finalOffer.success.recalculated"));
     } catch (e) {
       console.error("Iron Recalculate Error:", e);
     }
-  }, [dispatch, operator.intake, customers.items, ironCarShop, userData, t]);
+  }, [
+    dispatch,
+    selectors.operator.intake,
+    selectors.customers.items,
+    selectors.ironCarShop,
+    userData,
+    t,
+  ]);
 
   const handleBulkPurchase = async () => {
-    const customer = operator.intake?.customer || customers.items[0];
-    if (!customer || ironCarShop.ironPrices.length === 0) return;
+    const customer =
+      selectors.operator.intake?.customer || selectors.customers.items[0];
+    if (!customer || selectors.ironCarShop.ironPrices.length === 0) return;
     try {
-      const crId = userData?.cashRegisterId;
       await dispatch(
         submitBulkPurchase({
           payload: {
             customerId: customer.id,
             customerTypeId: customer.customerTypeId,
-            items: ironCarShop.ironPrices.map((item) => ({
+            items: selectors.ironCarShop.ironPrices.map((item) => ({
               ironTypeId: item.ironTypeId,
               weightKg: item.weightKg,
             })),
           },
-          cashRegisterId: crId,
+          cashRegisterId: userData?.cashRegisterId,
           lang: i18n.language,
         }),
       ).unwrap();
       toast.success(t("operatorPage.success.purchaseCompleted"));
-      dispatch(fetchBalance(crId));
+      refreshBalance();
       handleResetForm();
     } catch (e) {
       console.error(e);
@@ -394,11 +443,11 @@ export const useOperator = () => {
   };
 
   const handleConfirmReject = async () => {
-    if (activeTab === "catalyst" && operator.intake?.id) {
+    if (activeTab === "catalyst" && selectors.operator.intake?.id) {
       try {
         await dispatch(
           rejectIntake({
-            intakeId: operator.intake.id,
+            intakeId: selectors.operator.intake.id,
             cashRegisterId: userData?.cashRegisterId,
           }),
         ).unwrap();
@@ -422,11 +471,11 @@ export const useOperator = () => {
           await dispatch(openSession(crId)).unwrap();
           dispatch(fetchRegisterSession(crId));
           toast.success(t("operatorPage.success.sessionOpened"));
-          dispatch(fetchBalance(crId));
-        } else if (cashSessions.sessionDetails?.sessionId) {
+          refreshBalance();
+        } else if (selectors.cashSessions.sessionDetails?.sessionId) {
           await dispatch(
             closeSession({
-              sessionId: cashSessions.sessionDetails.sessionId,
+              sessionId: selectors.cashSessions.sessionDetails.sessionId,
               cashRegisterId: crId,
             }),
           ).unwrap();
@@ -438,7 +487,13 @@ export const useOperator = () => {
         console.error("Session action failed", error);
       }
     },
-    [dispatch, cashSessions.sessionDetails, userData?.cashRegisterId, t],
+    [
+      dispatch,
+      selectors.cashSessions.sessionDetails,
+      userData?.cashRegisterId,
+      t,
+      refreshBalance,
+    ],
   );
 
   const handleConfirmTopUp = async () => {
@@ -447,12 +502,21 @@ export const useOperator = () => {
       await dispatch(confirmTransaction(userData.cashRegisterId)).unwrap();
       toast.success(t("operatorPage.success.transactionConfirmed"));
       dispatch(clearPendingData());
-      dispatch(fetchBalance(userData.cashRegisterId));
+      refreshBalance();
       dispatch(fetchPendingTransaction(userData.cashRegisterId));
     } catch (e) {
       console.error(e);
     }
   };
+
+  const handleLanguageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const code = mapApiCodeToI18nCode(e.target.value);
+      i18n.changeLanguage(code); // Using instance from useTranslation
+      localStorage.setItem("i18nextLng", code);
+    },
+    [i18n], // Depend on i18n instance
+  );
 
   return {
     activeTab,
@@ -470,20 +534,11 @@ export const useOperator = () => {
     pendingTab,
     setPendingTab,
     languages,
+    currentLanguageCode,
     usdAmdRate,
     isNonStandardCustomer,
-    selectors: {
-      metalRates,
-      metalPrices,
-      operator,
-      languagesState,
-      cashRegisters,
-      cashSessions,
-      offerOptions,
-      exchangeRates,
-      customers,
-      ironCarShop,
-    },
+    isFormDirty,
+    selectors,
     actions: {
       handleResetForm,
       handleSubmit,
@@ -492,6 +547,8 @@ export const useOperator = () => {
       handleToggleSession,
       handleConfirmTopUp,
       handleIronRecalculate,
+      handleLanguageChange,
+      refreshBalance,
     },
   };
 };

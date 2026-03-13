@@ -1,7 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type {
@@ -15,6 +15,7 @@ const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
 export const getVehicleDefinitions = async (
   brandId?: number,
   lang: string = "am",
+  cashRegisterId?: number,
 ) => {
   try {
     const response = await api.get(`/lookups/vehicle-definitions`, {
@@ -22,6 +23,7 @@ export const getVehicleDefinitions = async (
         ...(brandId != null && { brandId }),
         lang: formatLang(lang),
       },
+      headers: getHeaders(cashRegisterId),
     });
     return response.data as VehicleDefinition;
   } catch (error: unknown) {
@@ -50,7 +52,13 @@ export const getVehicles = async (
       ? `${BASE_URL}/search-with-buckets`
       : BASE_URL;
 
-    const response = await api.get(FINAL_URL, { params: filters });
+    const { cashRegisterId, ...queryParams } = filters;
+
+    const response = await api.get(FINAL_URL, {
+      params: queryParams,
+      headers: getHeaders(cashRegisterId),
+    });
+
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get vehicles."));

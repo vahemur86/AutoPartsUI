@@ -11,10 +11,15 @@ import {
   updateCatalystBucket,
   getCatalystBucketsByCode,
   getCatalystBucketsByGroup,
+  getCatalystQuoteGroup,
 } from "@/services/settings/catalystBuckets";
 
 // types
-import type { CatalystBucket, CatalystBucketByGroup } from "@/types/settings";
+import type {
+  CatalystBucket,
+  CatalystBucketByGroup,
+  CatalystBucketQuoteGroup,
+} from "@/types/settings";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
@@ -23,6 +28,7 @@ interface CatalystBucketsState {
   catalystBuckets: CatalystBucket[];
   catalystBucket: CatalystBucket | null;
   catalystBucketsByGroup: CatalystBucketByGroup | null;
+  catalystQuoteGroup: CatalystBucketQuoteGroup | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -31,6 +37,7 @@ const initialState: CatalystBucketsState = {
   catalystBuckets: [],
   catalystBucket: null,
   catalystBucketsByGroup: null,
+  catalystQuoteGroup: null,
   isLoading: false,
   error: null,
 };
@@ -65,7 +72,7 @@ export const fetchCatalystBuckets = createAsyncThunk<
 });
 
 export const fetchCatalystBucketsByCode = createAsyncThunk<
-  CatalystBucket[],
+  CatalystBucket,
   string,
   { rejectValue: string }
 >(
@@ -73,7 +80,7 @@ export const fetchCatalystBucketsByCode = createAsyncThunk<
   async (code, { rejectWithValue }) => {
     try {
       const data = await getCatalystBucketsByCode(code);
-      return [data];
+      return data;
     } catch (error: unknown) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch catalyst buckets by code"),
@@ -127,17 +134,36 @@ export const editCatalystBucket = createAsyncThunk<
 // Async thunk for fetching catalyst buckets by group
 export const fetchCatalystBucketsByGroup = createAsyncThunk<
   CatalystBucketByGroup,
-  string,
+  { code: string; cashRegisterId?: number },
   { rejectValue: string }
 >(
   "catalystBuckets/fetchCatalystBucketsByGroup",
-  async (code, { rejectWithValue }) => {
+  async ({ code, cashRegisterId }, { rejectWithValue }) => {
     try {
-      const data = await getCatalystBucketsByGroup(code);
+      const data = await getCatalystBucketsByGroup(code, cashRegisterId);
       return data;
     } catch (error: unknown) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch catalyst buckets"),
+      );
+    }
+  },
+);
+
+// Async thunk for fetching catalyst quote group
+export const fetchCatalystQuoteGroup = createAsyncThunk<
+  CatalystBucketQuoteGroup,
+  { code: string; cashRegisterId?: number },
+  { rejectValue: string }
+>(
+  "catalystBuckets/fetchCatalystQuoteGroup",
+  async ({ code, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      const data = await getCatalystQuoteGroup(code, cashRegisterId);
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch catalyst quote group"),
       );
     }
   },
@@ -152,6 +178,12 @@ const catalystBucketsSlice = createSlice({
     },
     resetSearchedBucket: (state) => {
       state.catalystBucket = null;
+    },
+    resetBucketsByGroup: (state) => {
+      state.catalystBucketsByGroup = null;
+    },
+    resetQuoteGroup: (state) => {
+      state.catalystQuoteGroup = null;
     },
   },
   extraReducers: (builder) => {
@@ -182,9 +214,9 @@ const catalystBucketsSlice = createSlice({
       })
       .addCase(
         fetchCatalystBucketsByCode.fulfilled,
-        (state, action: PayloadAction<CatalystBucket[]>) => {
+        (state, action: PayloadAction<CatalystBucket>) => {
           state.isLoading = false;
-          state.catalystBuckets = action.payload;
+          state.catalystBucket = action.payload;
           state.error = null;
         },
       )
@@ -254,8 +286,33 @@ const catalystBucketsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch catalyst bucket";
       });
+
+    // Fetch catalyst quote group
+    builder
+      .addCase(fetchCatalystQuoteGroup.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchCatalystQuoteGroup.fulfilled,
+        (state, action: PayloadAction<CatalystBucketQuoteGroup>) => {
+          state.isLoading = false;
+          state.catalystQuoteGroup = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(fetchCatalystQuoteGroup.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch catalyst quote group";
+      });
   },
 });
 
-export const { clearError } = catalystBucketsSlice.actions;
+export const {
+  clearError,
+  resetSearchedBucket,
+  resetBucketsByGroup,
+  resetQuoteGroup,
+} = catalystBucketsSlice.actions;
+
 export default catalystBucketsSlice.reducer;

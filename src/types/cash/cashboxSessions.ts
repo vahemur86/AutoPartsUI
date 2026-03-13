@@ -69,6 +69,8 @@ export interface ZReport {
   totalPurchasesAmd: number;
   totalCashInAmd: number;
   totalCashOutAmd: number;
+  catalystCashOutAmd: number;
+  ironCashOutAmd: number;
   diffPurchasesVsCashOutAmd: number;
 }
 

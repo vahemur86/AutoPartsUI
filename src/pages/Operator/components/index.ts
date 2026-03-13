@@ -1,4 +1,5 @@
 export { BuyIron } from "./BuyIron";
+export { CalculateMode } from "./CalculateMode";
 export { FinalOffer } from "./FinalOffer";
 export { PricingBreakdown } from "./PricingBreakdown";
 export { CustomerDetails } from "./CustomerDetails";

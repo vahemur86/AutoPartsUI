@@ -40,6 +40,7 @@ interface CashRegistersState {
   isBalanceLoading: boolean;
   isPendingLoading: boolean;
   error: string | null;
+  balanceError: string | null;
 }
 
 const initialState: CashRegistersState = {
@@ -52,6 +53,7 @@ const initialState: CashRegistersState = {
   isBalanceLoading: false,
   isPendingLoading: false,
   error: null,
+  balanceError: null,
 };
 
 // --- Async Thunks ---
@@ -162,7 +164,7 @@ export const assignOperator = createAsyncThunk<
       await assignOperatorToCashRegister({ cashRegisterId, userId });
     } catch (error) {
       return rejectWithValue(
-        getApiErrorMessage(error, "Failed to assign operator to register"),
+        getApiErrorMessage(error, "Failed to assign operator to"),
       );
     }
   },
@@ -176,9 +178,7 @@ export const checkPending = createAsyncThunk<
   try {
     return await checkPendingStatus(cashBoxId);
   } catch (error) {
-    return rejectWithValue(
-      getApiErrorMessage(error, "Failed to check pending status"),
-    );
+    return rejectWithValue(getApiErrorMessage(error, "Failed to check status"));
   }
 });
 
@@ -193,13 +193,12 @@ export const fetchPendingTransaction = createAsyncThunk<
       return await getPendingTransaction(cashBoxId);
     } catch (error) {
       return rejectWithValue(
-        getApiErrorMessage(error, "Failed to fetch pending details"),
+        getApiErrorMessage(error, "Failed to fetch details"),
       );
     }
   },
 );
 
-// New Confirm Transaction Thunk
 export const confirmTransaction = createAsyncThunk<
   void,
   number,
@@ -222,6 +221,7 @@ const cashRegistersSlice = createSlice({
   reducers: {
     clearActiveBalance: (state) => {
       state.activeBalance = null;
+      state.balanceError = null;
     },
     clearPendingData: (state) => {
       state.isPending = false;
@@ -230,6 +230,7 @@ const cashRegistersSlice = createSlice({
     resetRegistersState: () => initialState,
     clearError: (state) => {
       state.error = null;
+      state.balanceError = null;
     },
   },
   extraReducers: (builder) => {
@@ -237,15 +238,16 @@ const cashRegistersSlice = createSlice({
       /* fetchBalance specific cases */
       .addCase(fetchBalance.pending, (state) => {
         state.isBalanceLoading = true;
-        state.error = null;
+        state.balanceError = null;
       })
       .addCase(fetchBalance.fulfilled, (state, action) => {
         state.isBalanceLoading = false;
         state.activeBalance = action.payload;
+        state.balanceError = null;
       })
       .addCase(fetchBalance.rejected, (state, action) => {
         state.isBalanceLoading = false;
-        state.error = action.payload ?? "Failed to fetch balance";
+        state.balanceError = action.payload ?? "Failed to fetch balance";
       })
 
       /* Pending Status Cases */
@@ -271,7 +273,7 @@ const cashRegistersSlice = createSlice({
       })
       .addCase(fetchPendingTransaction.rejected, (state, action) => {
         state.isPendingLoading = false;
-        state.error = action.payload ?? "Failed to fetch pending details";
+        state.error = action.payload ?? "Failed to fetch details";
       })
 
       /* Confirm Transaction Case */

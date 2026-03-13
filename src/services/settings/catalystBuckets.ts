@@ -1,8 +1,13 @@
 import api from "..";
+
 // utils
 import { getApiErrorMessage } from "@/utils";
+
 // types
-import type { CatalystBucket } from "@/types/settings";
+import type {
+  CatalystBucket,
+  CatalystBucketQuoteGroup,
+} from "@/types/settings";
 
 export const createCatalystBucket = async (catalystBucket: {
   code: string;
@@ -67,10 +72,34 @@ export const updateCatalystBucket = async (
   }
 };
 
-export const getCatalystBucketsByGroup = async (code: string) => {
+export const getCatalystQuoteGroup = async (
+  code: string,
+  cashRegisterId?: number,
+) => {
+  try {
+    const response = await api.get(`/superadmin/catalyst-buckets/quote-group`, {
+      params: { code },
+      headers: cashRegisterId ? { "X-CashRegister-Id": cashRegisterId } : {},
+    });
+    return response.data as CatalystBucketQuoteGroup;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get catalyst quote group."),
+    );
+  }
+};
+
+export const getCatalystBucketsByGroup = async (
+  code: string,
+  cashRegisterId?: number,
+) => {
   try {
     const response = await api.get(
-      `/superadmin/catalyst-buckets/quote-group-multi?code=${code}`,
+      `/superadmin/catalyst-buckets/quote-group-multi`,
+      {
+        params: { code },
+        headers: cashRegisterId ? { "X-CashRegister-Id": cashRegisterId } : {},
+      },
     );
     return response.data;
   } catch (error: unknown) {

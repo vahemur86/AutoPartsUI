@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import i18n from "i18next";
+import { useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // ui-kit
 import { ConfirmationModal, Tab } from "@/ui-kit";
@@ -14,6 +15,7 @@ import {
   OperatorHeader,
   TopUpConfirmationModal,
   BuyIron,
+  CalculateMode,
 } from "./components";
 
 // stores
@@ -23,15 +25,24 @@ import { logout } from "@/store/slices/authSlice";
 // hooks
 import { useOperator, type TabType } from "./hooks";
 
-// utils
-import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
-
 // styles
 import styles from "./OperatorPage.module.css";
 
+type MainTabType = "buy" | "calculate";
+
 export const OperatorPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const mainTab = (searchParams.get("view") as MainTabType) || "buy";
+
+  const setMainTab = (tab: MainTabType) => {
+    setSearchParams({ view: tab });
+  };
+
   const {
     activeTab,
     setActiveTab,
@@ -48,8 +59,10 @@ export const OperatorPage = () => {
     pendingTab,
     setPendingTab,
     languages,
+    currentLanguageCode,
     usdAmdRate,
     isNonStandardCustomer,
+    isFormDirty,
     selectors,
     actions,
   } = useOperator();
@@ -58,11 +71,7 @@ export const OperatorPage = () => {
 
   const handleTabClick = (targetTab: TabType) => {
     if (activeTab === targetTab) return;
-    const isFormDirty =
-      formData.powderWeight !== "0" ||
-      formData.customer.phone !== "" ||
-      selectors.operator.intake !== null ||
-      selectors.ironCarShop.ironPrices.length > 0;
+
     if (isFormDirty) {
       setPendingTab(targetTab);
       setUiState((prev) => ({ ...prev, isTabConfirmModalOpen: true }));
@@ -71,13 +80,20 @@ export const OperatorPage = () => {
     }
   };
 
-  const displayBalance = selectors.cashRegisters.isBalanceLoading
-    ? i18n.t("cashRegisters.fetchingBalance")
-    : uiState.showCashAmount
-      ? Number(
-          selectors.cashRegisters.activeBalance?.balance || 0,
-        ).toLocaleString()
-      : "••••••••";
+  const displayBalance = useMemo(() => {
+    if (selectors.cashRegisters.isBalanceLoading)
+      return t("cashRegisters.fetchingBalance");
+    if (!uiState.showCashAmount) return "••••••••";
+
+    return Number(
+      selectors.cashRegisters.activeBalance?.balance || 0,
+    ).toLocaleString();
+  }, [
+    selectors.cashRegisters.isBalanceLoading,
+    selectors.cashRegisters.activeBalance?.balance,
+    uiState.showCashAmount,
+    t,
+  ]);
 
   const getMarketPrice = (name: string) => {
     return selectors.metalPrices.prices.find(
@@ -97,15 +113,8 @@ export const OperatorPage = () => {
           setUiState((p) => ({ ...p, isLogoutModalOpen: true }))
         }
         languages={languages}
-        selectedApiCode={
-          languages.find((l) => mapApiCodeToI18nCode(l.code) === i18n.language)
-            ?.code ?? ""
-        }
-        onLanguageChange={(e) => {
-          const code = mapApiCodeToI18nCode(e.target.value);
-          i18n.changeLanguage(code);
-          localStorage.setItem("i18nextLng", code);
-        }}
+        selectedApiCode={currentLanguageCode}
+        onLanguageChange={actions.handleLanguageChange}
         isLangLoading={selectors.languagesState.isLoading}
         displayBalance={displayBalance}
         userData={userData}
@@ -113,146 +122,181 @@ export const OperatorPage = () => {
         onToggleVisibility={() =>
           setUiState((p) => ({ ...p, showCashAmount: !uiState.showCashAmount }))
         }
-        hasError={!!selectors.cashRegisters.error}
+        hasError={!!selectors.cashRegisters.balanceError}
       />
 
       <div className={styles.tabWrapper}>
         <Tab
           variant="underline"
-          active={activeTab === "catalyst"}
-          text={i18n.t("operatorPage.tabs.catalyst")}
-          onClick={() => handleTabClick("catalyst")}
+          active={mainTab === "buy"}
+          text={t("operatorPage.tabs.buy")}
+          onClick={() => setMainTab("buy")}
         />
         <Tab
           variant="underline"
-          active={activeTab === "iron"}
-          text={i18n.t("operatorPage.tabs.iron")}
-          onClick={() => handleTabClick("iron")}
+          active={mainTab === "calculate"}
+          text={t("operatorPage.tabs.calculate")}
+          onClick={() => setMainTab("calculate")}
         />
       </div>
 
-      <div className={!isIron ? styles.topRow : styles.ironLayout}>
-        {!isIron ? (
-          <>
-            <div className={styles.leftColumn}>
-              <PowderExtraction
-                weight={formData.powderWeight}
-                onWeightChange={(v) =>
-                  setFormData((p) => ({ ...p, powderWeight: v }))
-                }
-                error={
-                  uiState.hasTriedSubmit && isNaN(Number(formData.powderWeight))
-                }
-              />
-              <LiveMarketPrices
-                ptPricePerGram={
-                  isNonStandardCustomer
-                    ? getMarketPrice("Platinum")
-                    : selectors.metalRates.activeMetalRate?.ptPricePerGram
-                }
-                pdPricePerGram={
-                  isNonStandardCustomer
-                    ? getMarketPrice("Palladium")
-                    : selectors.metalRates.activeMetalRate?.pdPricePerGram
-                }
-                rhPricePerGram={
-                  isNonStandardCustomer
-                    ? getMarketPrice("Rhodium")
-                    : selectors.metalRates.activeMetalRate?.rhPricePerGram
-                }
-                currencyCode={
-                  selectors.metalRates.activeMetalRate?.currencyCode
-                }
-                updatedAt={selectors.metalRates.activeMetalRate?.effectiveFrom}
-                usdAmdRate={usdAmdRate}
-                isMarketData={isNonStandardCustomer}
-              />
-            </div>
-            <div className={styles.centerColumn}>
-              <PricingBreakdown
-                formData={formData}
-                onPriceChange={(f, v) => setFormData((p) => ({ ...p, [f]: v }))}
-                onSubmit={actions.handleSubmit}
-                isLoading={uiState.isSubmitting}
-                hasTriedSubmit={uiState.hasTriedSubmit}
-              />
-              <FinalOffer
-                withRecalculate={!isNonStandardCustomer}
-                offerPrice={
-                  initialOfferPrice ??
-                  selectors.operator.intake?.offerPrice ??
-                  0
-                }
-                currencyCode={selectors.operator.intake?.currencyCode || "USD"}
-                userData={userData}
-                isRecalculationsLimitReached={
-                  recalculationsAmount >= selectors.offerOptions.options.length
-                }
-                onReset={() =>
-                  setUiState((prev) => ({
-                    ...prev,
-                    isRejectConfirmationOpen: true,
-                  }))
-                }
-                setRecalculationsAmount={setRecalculationsAmount}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className={styles.leftColumn}>
-              <BuyIron
-                cashRegisterId={userData?.cashRegisterId}
-                onCalculateAttempt={() => setHasTriedCalculateIron(true)}
-              />
-            </div>
-            <div className={styles.centerColumn}>
-              <FinalOffer
-                withRecalculate={!isNonStandardCustomer}
-                offerPrice={
-                  selectors.ironCarShop.recalculationResult?.totalAmount ??
-                  selectors.ironCarShop.ironTotals?.totalAmountTotal ??
-                  0
-                }
-                currencyCode="AMD"
-                userData={userData}
-                isRecalculationsLimitReached={
-                  !!selectors.ironCarShop.recalculationResult?.isLastStep
-                }
-                onReset={() =>
-                  setUiState((prev) => ({
-                    ...prev,
-                    isRejectConfirmationOpen: true,
-                  }))
-                }
-                onAccept={actions.handleBulkPurchase}
-                onRecalculate={actions.handleIronRecalculate}
-                isLoading={selectors.ironCarShop.isLoading}
-              />
-            </div>
-          </>
-        )}
+      {mainTab === "buy" ? (
+        <div className={styles.buyLayoutWrapper}>
+          <div className={styles.subTabWrapper}>
+            <Tab
+              variant="underline"
+              active={activeTab === "catalyst"}
+              text={t("operatorPage.tabs.catalyst")}
+              onClick={() => handleTabClick("catalyst")}
+            />
+            <Tab
+              variant="underline"
+              active={activeTab === "iron"}
+              text={t("operatorPage.tabs.iron")}
+              onClick={() => handleTabClick("iron")}
+            />
+          </div>
 
-        <div className={styles.rightColumn}>
-          <CustomerDetails
-            customerData={formData.customer}
-            onCustomerChange={(customer) =>
-              setFormData((prev) => ({ ...prev, customer }))
-            }
-            phoneError={
-              (uiState.hasTriedSubmit || hasTriedCalculateIron) &&
-              !formData.customer.phone
-            }
-            onSuccess={() => {
-              actions.handleResetForm();
-              setHasTriedCalculateIron(false);
-            }}
-            wide={isIron}
-            activeTab={activeTab}
-          />
+          <div className={styles.contentArea}>
+            <div className={!isIron ? styles.topRow : styles.ironLayout}>
+              {!isIron ? (
+                <>
+                  <div className={styles.leftColumn}>
+                    <PowderExtraction
+                      weight={formData.powderWeight}
+                      onWeightChange={(v) =>
+                        setFormData((p) => ({ ...p, powderWeight: v }))
+                      }
+                      error={
+                        uiState.hasTriedSubmit &&
+                        isNaN(Number(formData.powderWeight))
+                      }
+                    />
+                    <LiveMarketPrices
+                      ptPricePerGram={
+                        isNonStandardCustomer
+                          ? getMarketPrice("Platinum")
+                          : selectors.metalRates.activeMetalRate?.ptPricePerGram
+                      }
+                      pdPricePerGram={
+                        isNonStandardCustomer
+                          ? getMarketPrice("Palladium")
+                          : selectors.metalRates.activeMetalRate?.pdPricePerGram
+                      }
+                      rhPricePerGram={
+                        isNonStandardCustomer
+                          ? getMarketPrice("Rhodium")
+                          : selectors.metalRates.activeMetalRate?.rhPricePerGram
+                      }
+                      currencyCode={
+                        selectors.metalRates.activeMetalRate?.currencyCode
+                      }
+                      updatedAt={
+                        selectors.metalRates.activeMetalRate?.effectiveFrom
+                      }
+                      usdAmdRate={usdAmdRate}
+                      isMarketData={isNonStandardCustomer}
+                    />
+                  </div>
+                  <div className={styles.centerColumn}>
+                    <PricingBreakdown
+                      formData={formData}
+                      onPriceChange={(f, v) =>
+                        setFormData((p) => ({ ...p, [f]: v }))
+                      }
+                      onSubmit={actions.handleSubmit}
+                      isLoading={uiState.isSubmitting}
+                      hasTriedSubmit={uiState.hasTriedSubmit}
+                    />
+                    <FinalOffer
+                      withRecalculate={!isNonStandardCustomer}
+                      offerPrice={
+                        initialOfferPrice ??
+                        selectors.operator.intake?.offerPrice ??
+                        0
+                      }
+                      currencyCode={
+                        selectors.operator.intake?.currencyCode || "USD"
+                      }
+                      userData={userData}
+                      isRecalculationsLimitReached={
+                        recalculationsAmount >=
+                        selectors.offerOptions.options.length
+                      }
+                      onReset={() =>
+                        setUiState((prev) => ({
+                          ...prev,
+                          isRejectConfirmationOpen: true,
+                        }))
+                      }
+                      setRecalculationsAmount={setRecalculationsAmount}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.leftColumn}>
+                    <BuyIron
+                      cashRegisterId={userData?.cashRegisterId}
+                      onCalculateAttempt={() => setHasTriedCalculateIron(true)}
+                    />
+                  </div>
+                  <div className={styles.centerColumn}>
+                    <FinalOffer
+                      withRecalculate={!isNonStandardCustomer}
+                      offerPrice={
+                        selectors.ironCarShop.recalculationResult
+                          ?.totalAmount ??
+                        selectors.ironCarShop.ironTotals?.totalAmountTotal ??
+                        0
+                      }
+                      currencyCode="AMD"
+                      userData={userData}
+                      isRecalculationsLimitReached={
+                        !!selectors.ironCarShop.recalculationResult?.isLastStep
+                      }
+                      onReset={() =>
+                        setUiState((prev) => ({
+                          ...prev,
+                          isRejectConfirmationOpen: true,
+                        }))
+                      }
+                      onAccept={actions.handleBulkPurchase}
+                      onRecalculate={actions.handleIronRecalculate}
+                      isLoading={selectors.ironCarShop.isLoading}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className={styles.rightColumn}>
+                <CustomerDetails
+                  customerData={formData.customer}
+                  onCustomerChange={(customer) =>
+                    setFormData((prev) => ({ ...prev, customer }))
+                  }
+                  phoneError={
+                    (uiState.hasTriedSubmit || hasTriedCalculateIron) &&
+                    !formData.customer.phone
+                  }
+                  onSuccess={() => {
+                    actions.handleResetForm();
+                    setHasTriedCalculateIron(false);
+                  }}
+                  wide={true}
+                  activeTab={activeTab}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className={styles.contentArea}>
+          <CalculateMode cashRegisterId={userData?.cashRegisterId} />
+        </div>
+      )}
 
+      {/* --- Modals --- */}
       {!!selectors.cashRegisters.pendingDetails && (
         <TopUpConfirmationModal
           open={!!selectors.cashRegisters.pendingDetails}
@@ -268,8 +312,8 @@ export const OperatorPage = () => {
           onOpenChange={(v) =>
             setUiState((p) => ({ ...p, isRejectConfirmationOpen: v }))
           }
-          title={i18n.t("finalOffer.rejectButton")}
-          description={i18n.t("common.areYouSure")}
+          title={t("finalOffer.rejectButton")}
+          description={t("common.areYouSure")}
           onConfirm={() => {
             actions.handleConfirmReject();
             actions.handleResetForm();
@@ -287,8 +331,8 @@ export const OperatorPage = () => {
           onOpenChange={(v) =>
             setUiState((p) => ({ ...p, isCloseSessionModalOpen: v }))
           }
-          title={i18n.t("operatorPage.closeSession")}
-          description={i18n.t("common.areYouSure")}
+          title={t("operatorPage.closeSession")}
+          description={t("common.areYouSure")}
           onConfirm={() => actions.handleToggleSession("close")}
           onCancel={() =>
             setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }))
@@ -302,8 +346,8 @@ export const OperatorPage = () => {
           onOpenChange={(v) =>
             setUiState((p) => ({ ...p, isLogoutModalOpen: v }))
           }
-          title={i18n.t("header.logout")}
-          description={i18n.t("common.areYouSure")}
+          title={t("header.logout")}
+          description={t("common.areYouSure")}
           onConfirm={() => {
             dispatch(logout());
             navigate("/login");
@@ -320,8 +364,8 @@ export const OperatorPage = () => {
           onOpenChange={(v) =>
             setUiState((p) => ({ ...p, isTabConfirmModalOpen: v }))
           }
-          title={i18n.t("common.warning")}
-          description={i18n.t("operatorPage.tabSwitchWarning")}
+          title={t("common.warning")}
+          description={t("operatorPage.tabSwitchWarning")}
           onConfirm={() => {
             if (pendingTab) {
               actions.handleResetForm();
