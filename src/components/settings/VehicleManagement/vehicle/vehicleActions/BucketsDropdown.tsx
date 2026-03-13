@@ -48,6 +48,23 @@ export const BucketsDropdown = ({
     [catalystBuckets],
   );
 
+  const sortedBucketOptions = useMemo(() => {
+    const selectedSet = new Set(selectedBucketIds);
+
+    return [...bucketOptions].sort((a, b) => {
+      const aSelected = selectedSet.has(a.value);
+      const bSelected = selectedSet.has(b.value);
+
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+
+      return a.label.localeCompare(b.label, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
+    });
+  }, [bucketOptions, selectedBucketIds]);
+
   useEffect(() => {
     if (open) {
       const ids = vehicleBuckets?.bucketIds;
@@ -98,7 +115,7 @@ export const BucketsDropdown = ({
               searchable
               label={t("catalystBuckets.searchBucket")}
               placeholder={t("catalystBuckets.searchBucket")}
-              options={bucketOptions}
+              options={sortedBucketOptions}
               value={selectedBucketIds}
               onChange={setSelectedBucketIds}
               disabled={isGlobalLoading}

@@ -489,7 +489,7 @@
     "vehicles": {
       "addVehicle": "Добавить транспортное средство",
       "actions": {
-        "viewBuckets": "Просмотреть баки",
+        "viewBuckets": "Баки",
         "calculatePrice": "Рассчитать цену",
         "withBuckets": "С баками"
       },
@@ -601,7 +601,7 @@
     "ariaLabels": {
       "addNewBucket": "Добавить новый катализаторный бак"
     },
-    "searchBucket": "Поиск по коду",
+    "searchBucket": "Прикрепленные баки",
     "searchGroup": "Поиск по групповому коду",
     "messages": {
       "searchToSeeResults": "Пожалуйста, выполните поиск по коду, чтобы увидеть результаты"

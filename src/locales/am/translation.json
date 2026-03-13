@@ -489,7 +489,7 @@
     "vehicles": {
       "addVehicle": "Ավելացնել տրանսպորտային միջոց",
       "actions": {
-        "viewBuckets": "Դիտել բաքերը",
+        "viewBuckets": "Բաքեր",
         "calculatePrice": "Հաշվարկել գինը",
         "withBuckets": "Բաքերով"
       },
@@ -601,7 +601,7 @@
     "ariaLabels": {
       "addNewBucket": "Ավելացնել նոր կատալիզատորի բաք"
     },
-    "searchBucket": "Որոնել ըստ կոդի",
+    "searchBucket": "Կցված բաքեր",
     "searchGroup": "Որոնել ըստ խմբային կոդի",
     "messages": {
       "searchToSeeResults": "Խնդրում ենք որոնել ըստ կոդի՝ արդյունքները տեսնելու համար"
