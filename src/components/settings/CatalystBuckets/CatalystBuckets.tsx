@@ -123,13 +123,17 @@ export const CatalystBuckets: FC<CatalystBucketsProps> = ({
       if (activeTab === "buckets") {
         await dispatch(fetchCatalystBucketsByCode(trimmedQuery)).unwrap();
       } else if (activeTab === "groups" && isSuperAdmin) {
-        await dispatch(fetchCatalystBucketsByGroup(trimmedQuery)).unwrap();
+        await dispatch(
+          fetchCatalystBucketsByGroup({
+            code: trimmedQuery,
+          }),
+        ).unwrap();
       }
       setHasActiveSearch(true);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("catalystBuckets.search.error")));
     }
-  }, [searchQuery, dispatch, handleClearSearch, activeTab, t, isSuperAdmin]);
+  }, [activeTab, dispatch, handleClearSearch, isSuperAdmin, searchQuery, t]);
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);

@@ -112,6 +112,20 @@ const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
               +{selectedZReport.totalCashInAmd.toLocaleString()} AMD
             </strong>
           </div>
+
+          <div className={styles.detailItem}>
+            <span>{t("cashbox.zReports.details.catalystCashOut")}</span>
+            <strong className={styles.negativeText}>
+              -{selectedZReport.catalystCashOutAmd.toLocaleString()} AMD
+            </strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>{t("cashbox.zReports.details.ironCashOut")}</span>
+            <strong className={styles.negativeText}>
+              -{selectedZReport.ironCashOutAmd.toLocaleString()} AMD
+            </strong>
+          </div>
+
           <div className={styles.detailItem}>
             <span>{t("cashbox.zReports.columns.cashOut")}</span>
             <strong className={styles.negativeText}>

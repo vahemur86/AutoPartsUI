@@ -1,0 +1,337 @@
+/* CalculateMode.module.css */
+
+.container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* --- Left Panel (Form) --- */
+.formPanel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.tabsContainer {
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.formScrollArea {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 8px;
+}
+
+.inputGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 16px;
+}
+
+.formFooter {
+  flex-shrink: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchBtn,
+.resetBtn {
+  height: 44px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.searchBtn {
+  background-color: #ecf15e !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.searchBtn:hover:not(:disabled) {
+  background-color: #f0f47e !important;
+}
+
+.searchBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.resetBtn {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.resetBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+/* --- Right Panel (Results) --- */
+.resultsArea {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.resultsScrollArea {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 12px 24px 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.resultsScrollArea.centered {
+  justify-content: center;
+  align-items: center;
+}
+
+.resultsContent,
+.groupSummary {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.hidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.resultsContent {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.resultsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* --- Card Styling --- */
+.vehicleCard {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  box-sizing: border-box;
+}
+
+.vehicleCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(236, 241, 94, 0.4);
+  box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5);
+}
+
+.iconCircle {
+  background: rgba(236, 241, 94, 0.15);
+  color: #ecf15e;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.headerInfo h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.positionBadge {
+  font-size: 11px;
+  background: rgba(236, 241, 94, 0.1);
+  color: #ecf15e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.specTable {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: auto;
+}
+
+.specItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.specItem span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.specItem strong {
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+/* --- Totals Summary Footer (Yellow Theme) --- */
+.groupSummary {
+  flex-shrink: 0;
+  background: rgba(236, 241, 94, 0.05);
+  border-left: 4px solid #ecf15e;
+  padding: 20px 24px;
+  border-radius: 0 12px 12px 0;
+  margin-top: 16px;
+}
+
+.totalsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  align-items: center;
+}
+
+.totalBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.currencyLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+}
+
+.priceWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* Updated high-contrast yellow for units (AMD and kg) */
+.currencyType,
+.unitLabel {
+  font-size: 14px;
+  color: #ecf15e;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.currencyValue {
+  font-size: 28px;
+  color: #ecf15e;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* --- Scrollbars --- */
+.formScrollArea::-webkit-scrollbar,
+.resultsScrollArea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.formScrollArea::-webkit-scrollbar-thumb,
+.resultsScrollArea::-webkit-scrollbar-thumb {
+  background: rgba(236, 241, 94, 0.2);
+  border-radius: 10px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.2);
+  gap: 20px;
+  text-align: center;
+}
+
+.loaderText {
+  animation: pulse 1.5s infinite;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 12px;
+  color: #f2f693;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+  .resultsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+}

@@ -26,6 +26,10 @@
     "no": "No",
     "filters": "Filters",
     "reset": "Reset",
+    "search": "Search",
+    "noName": "No name",
+    "front": "Front",
+    "back": "Back",
     "noOptionsAvailable": "No options available",
     "previous": "Previous",
     "next": "Next",
@@ -778,7 +782,9 @@
         "operations": "Operations",
         "duration": "Duration",
         "operator": "Operator ID",
-        "finalDiff": "Final Difference"
+        "finalDiff": "Final Difference",
+        "catalystCashOut": "Catalyst Cash Out",
+        "ironCashOut": "Iron Cash Out"
       },
       "filters": {
         "fromDate": "From Date",
@@ -1214,6 +1220,8 @@
     "ironType": "Iron Type",
     "weightKg": "Weight",
     "tabs": {
+      "buy": "Buy",
+      "calculate": "Calculate",
       "catalyst": "Catalyst",
       "iron": "Iron"
     },
@@ -1236,6 +1244,37 @@
       "price": "Price",
       "calculate": "Calculate",
       "selectCustomerToCalculate": "Please search for or create a customer before calculating"
+    },
+    "calculate": {
+      "mode": {
+        "byCode": "By Code",
+        "byAttributes": "By Attributes"
+      },
+      "label": {
+        "bucketGroupCode": "Bucket Group Code",
+        "brandId": "Brand ID",
+        "modelId": "Model ID",
+        "fuelTypeId": "Fuel Type ID",
+        "engineId": "Engine ID",
+        "marketId": "Market ID",
+        "driveTypeId": "Drive Type ID",
+        "year": "Year",
+        "hpMin": "HP Min",
+        "hpMax": "HP Max"
+      },
+      "specs": {
+        "engine": "Engine",
+        "fuel": "Fuel",
+        "weight": "Weight",
+        "price": "Price"
+      },
+      "summary": {
+        "totalPrice": "Total Price",
+        "totalWeight": "Total Weight"
+      },
+      "linkedBuckets": "Linked Buckets",
+      "noResults": "No results found",
+      "group": "Group"
     },
     "tabSwitchWarning": "Switching tabs will reset all current forms and clear entered data. Are you sure you want to continue?"
   },
