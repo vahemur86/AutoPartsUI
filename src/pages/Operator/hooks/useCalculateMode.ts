@@ -17,6 +17,7 @@ export const useCalculateMode = (cashRegisterId?: number) => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
+  // --- State ---
   const [mode, setMode] = useState<ModeType>("code");
   const [searchCode, setSearchCode] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -34,6 +35,7 @@ export const useCalculateMode = (cashRegisterId?: number) => {
     hpMax: "",
   });
 
+  // --- Selectors ---
   const { definitions, isLoading, isDefinitionsLoading } = useAppSelector(
     (state) => state.vehicles,
   );
@@ -42,14 +44,17 @@ export const useCalculateMode = (cashRegisterId?: number) => {
   );
 
   useEffect(() => {
-    dispatch(
-      fetchVehicleDefinitions({
-        lang: i18n.language,
-        cashRegisterId,
-      }),
-    );
+    if (cashRegisterId) {
+      dispatch(
+        fetchVehicleDefinitions({
+          lang: i18n.language,
+          cashRegisterId,
+        }),
+      );
+    }
   }, [dispatch, cashRegisterId, i18n.language]);
 
+  // --- Validation ---
   const validate = useCallback(() => {
     const newErrors: Record<string, string> = {};
     if (mode === "code") {
@@ -64,27 +69,7 @@ export const useCalculateMode = (cashRegisterId?: number) => {
     return Object.keys(newErrors).length === 0;
   }, [mode, searchCode, attrFilters, t]);
 
-  const handleModeChange = (newMode: ModeType) => {
-    if (newMode === mode) return;
-    setSearchCode("");
-    setAttrFilters({
-      brandId: "",
-      modelId: "",
-      fuelTypeId: "",
-      engineId: "",
-      marketId: "",
-      driveTypeId: "",
-      year: "",
-      hpMin: "",
-      hpMax: "",
-    });
-    setErrors({});
-    setHasTriedSubmit(false);
-    dispatch(resetQuoteGroup());
-    dispatch(clearVehicles());
-    setMode(newMode);
-  };
-
+  // --- Handlers ---
   const handleFullReset = () => {
     setSearchCode("");
     setAttrFilters({
@@ -104,14 +89,23 @@ export const useCalculateMode = (cashRegisterId?: number) => {
     dispatch(clearVehicles());
   };
 
+  const handleModeChange = (newMode: ModeType) => {
+    if (newMode === mode) return;
+    handleFullReset();
+    setMode(newMode);
+  };
+
   const updateFilter = (key: string, value: string) => {
     setAttrFilters((prev) => ({ ...prev, [key]: value }));
-    if (hasTriedSubmit) setErrors((prev) => ({ ...prev, [key]: "" }));
+    if (hasTriedSubmit) {
+      setErrors((prev) => ({ ...prev, [key]: "" }));
+    }
   };
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const brandId = e.target.value;
     updateFilter("brandId", brandId);
+
     dispatch(
       fetchVehicleDefinitions({
         brandId: brandId ? Number(brandId) : undefined,
@@ -124,6 +118,7 @@ export const useCalculateMode = (cashRegisterId?: number) => {
   const handleGroupSearch = useCallback(async () => {
     setHasTriedSubmit(true);
     if (!validate()) return;
+
     dispatch(resetQuoteGroup());
     dispatch(clearVehicles());
     dispatch(fetchCatalystQuoteGroup({ code: searchCode, cashRegisterId }));
@@ -132,8 +127,10 @@ export const useCalculateMode = (cashRegisterId?: number) => {
   const handleAttributeSearch = useCallback(async () => {
     setHasTriedSubmit(true);
     if (!validate()) return;
+
     dispatch(resetQuoteGroup());
     dispatch(clearVehicles());
+
     try {
       const vehicleResult = await dispatch(
         fetchVehicles({
@@ -162,10 +159,11 @@ export const useCalculateMode = (cashRegisterId?: number) => {
         );
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch vehicles by attributes:", error);
     }
   }, [attrFilters, validate, cashRegisterId, dispatch]);
 
+  // --- Memos ---
   const totalWeight = useMemo(() => {
     if (!catalystQuoteGroup?.items) return 0;
     return catalystQuoteGroup.items.reduce(
@@ -184,8 +182,9 @@ export const useCalculateMode = (cashRegisterId?: number) => {
     definitions,
     isDefinitionsLoading,
     isGlobalLoading: isLoading || isBucketsLoading,
-    hasGridItems:
-      catalystQuoteGroup?.items && catalystQuoteGroup.items.length > 0,
+    hasGridItems: !!(
+      catalystQuoteGroup?.items && catalystQuoteGroup.items.length > 0
+    ),
     catalystQuoteGroup,
     handleModeChange,
     handleFullReset,
