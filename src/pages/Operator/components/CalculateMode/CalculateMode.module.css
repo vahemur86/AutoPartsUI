@@ -207,6 +207,12 @@
   font-weight: 600;
 }
 
+.positionBadge.unknownBadge {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
 .specTable {
   display: grid;
   grid-template-columns: 1fr 1fr;

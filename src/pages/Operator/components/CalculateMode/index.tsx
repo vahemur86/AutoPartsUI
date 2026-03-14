@@ -41,12 +41,14 @@ export const CalculateMode = ({
   const getError = (key: string) => (hasTriedSubmit ? errors[key] : undefined);
 
   // Labels for catalyst position
-  const getPositionLabel = (typeId: number) =>
-    typeId === 2 ? t("common.back") : t("common.front");
+  const getPositionLabel = (typeId: number) => {
+    if (typeId === 1) return t("common.front");
+    if (typeId === 2) return t("common.back");
+    return t("common.unknown");
+  };
 
   const isBrandNotSelected = !attrFilters.brandId;
 
-  // KEYDOWN HANDLER: Submits form on Enter press
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter" && !isGlobalLoading) {
@@ -269,7 +271,13 @@ export const CalculateMode = ({
                         </div>
                         <div className={styles.headerInfo}>
                           <h3>{item.code}</h3>
-                          <div className={styles.positionBadge}>
+                          <div
+                            className={`${styles.positionBadge} ${
+                              ![1, 2].includes(item.catalystTypeId)
+                                ? styles.unknownBadge
+                                : ""
+                            }`}
+                          >
                             {getPositionLabel(item.catalystTypeId)}
                           </div>
                         </div>
