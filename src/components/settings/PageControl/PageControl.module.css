@@ -1,0 +1,18 @@
+/* PageControl.module.css */
+.pageControlWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  color: var(--color-white);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tableWrapper {
+  width: 100%;
+}

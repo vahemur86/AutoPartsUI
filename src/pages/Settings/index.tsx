@@ -32,6 +32,12 @@ export const Settings = () => {
       showCheckmark: true,
     },
     {
+      path: "/page-control",
+      label: t("settings.navigation.pageControl"),
+      icon: Globe,
+      showCheckmark: true,
+    },
+    {
       path: "/translation",
       label: t("settings.navigation.translation"),
       icon: Languages,

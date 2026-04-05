@@ -23,6 +23,7 @@ import { Products } from "@/pages/Products";
 
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
+import { PageControl } from "@/components/settings/PageControl";
 import { Translation } from "@/components/settings/Translation";
 import { WarehouseSettings } from "@/components/settings/WarehouseSettings";
 import { ShopsSettings } from "@/components/settings/ShopsSettings";
@@ -117,6 +118,8 @@ export const App = () => {
                   path="project-languages"
                   element={<ProjectLanguages />}
                 />
+                <Route path="page-control" element={<PageControl />} />
+
                 <Route path="translation" element={<Translation />} />
                 <Route path="warehouse" element={<WarehouseSettings />} />
                 <Route path="shops" element={<ShopsSettings />} />

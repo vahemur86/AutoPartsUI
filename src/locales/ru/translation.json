@@ -78,6 +78,7 @@
   "settings": {
     "navigation": {
       "projectLanguages": "Языки проекта",
+      "pageControl": "Управление страницами",
       "translation": "Перевод",
       "warehouse": "Склад",
       "shops": "Магазины",
@@ -635,6 +636,12 @@
   "customerTypes": {
     "addCustomerType": "Добавить тип клиента",
     "editCustomerType": "Редактировать тип клиента",
+    "confirmation": {
+      "deleteTitle": "Удалить тип клиента",
+      "deleteDescription": "Вы уверены, что хотите удалить тип клиента \"{{code}}\"? Это действие нельзя отменить.",
+      "deleting": "Удаление...",
+      "delete": "Удалить"
+    },
     "form": {
       "code": "Код",
       "enterCode": "Введите код...",
@@ -1307,6 +1314,12 @@
       "customerType": "Тип клиента",
       "bonusPercent": "Процент бонуса",
       "isActive": "Статус"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить тип клиента",
+      "deleteDescription": "Вы уверены, что хотите удалить клиента \"{{code}}\"? Это действие нельзя отменить.",
+      "deleting": "Удаление...",
+      "delete": "Удалить"
     },
     "success": {
       "customerCreated": "Клиент успешно создан или получен",

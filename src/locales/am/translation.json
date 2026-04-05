@@ -78,6 +78,7 @@
   "settings": {
     "navigation": {
       "projectLanguages": "Նախագծի լեզուներ",
+      "pageControl": "Էջերի կառավարում",
       "translation": "Թարգմանություն",
       "warehouse": "Պահեստ",
       "shops": "Խանութներ",
@@ -635,6 +636,12 @@
   "customerTypes": {
     "addCustomerType": "Ավելացնել հաճախորդի տեսակ",
     "editCustomerType": "Խմբագրել հաճախորդի տեսակը",
+    "confirmation": {
+      "deleteTitle": "Ջնջել հաճախորդի տեսակը",
+      "deleteDescription": "Դուք համոզված եք, որ ցանկանում եք ջնջել «{{code}}»-ը: Այս գործողությունը չի կարող հետարկվել:",
+      "deleting": "Ջնջվում է...",
+      "delete": "Ջնջել"
+    },
     "form": {
       "code": "Կոդ",
       "enterCode": "Մուտքագրեք կոդ...",
@@ -1307,6 +1314,12 @@
       "customerType": "Հաճախորդի տեսակ",
       "bonusPercent": "Բոնուսի տոկոս",
       "isActive": "Կարգավիճակ"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել հաճախորդն",
+      "deleteDescription": "Դուք համոզված եք, որ ցանկանում եք ջնջել «{{code}}»-ը: Այս գործողությունը չի կարող հետարկվել:",
+      "deleting": "Ջնջվում է...",
+      "delete": "Ջնջել"
     },
     "success": {
       "customerCreated": "Հաճախորդը հաջողությամբ ստեղծվել կամ ստացվել է",

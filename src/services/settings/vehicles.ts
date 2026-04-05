@@ -7,8 +7,10 @@ import { getApiErrorMessage, getHeaders } from "@/utils";
 import type {
   CreateVehiclePayload,
   VehicleDefinition,
+  VehicleDefinitionByBucket,
   VehicleFilter,
 } from "@/types/settings";
+import type { PaginatedResponse } from "@/types/cash";
 
 const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
 
@@ -62,6 +64,30 @@ export const getVehicles = async (
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get vehicles."));
+  }
+};
+
+export const getVehicleDefinitionsByBucket = async (
+  bucketCode: string,
+  page?: number,
+  pageSize?: number,
+  cashRegisterId?: number,
+) => {
+  try {
+    const response = await api.get(`/vehicle-definitions/by-bucket`, {
+      params: {
+        bucketCode,
+        page,
+        pageSize,
+      },
+      headers: getHeaders(cashRegisterId),
+    });
+
+    return response.data as PaginatedResponse<VehicleDefinitionByBucket>;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get vehicles by bucket."),
+    );
   }
 };
 

@@ -6,7 +6,13 @@ import { toast } from "react-toastify";
 import { Plus, Filter, RotateCcw } from "lucide-react";
 
 // ui-kit
-import { DataTable, Button, Select, IconButton } from "@/ui-kit";
+import {
+  DataTable,
+  Button,
+  Select,
+  IconButton,
+  ConfirmationModal,
+} from "@/ui-kit";
 
 // components
 import { SectionHeader } from "@/components/common";
@@ -19,6 +25,7 @@ import {
   fetchCustomers,
   createCustomer,
   updateCustomerType,
+  removeCustomer,
 } from "@/store/slices/customersSlice";
 
 // utils
@@ -53,6 +60,10 @@ export const Customers = () => {
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [selectedCustomerTypeId, setSelectedCustomerTypeId] =
     useState<string>("");
+  const [isMutating, setIsMutating] = useState(false);
+  const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(
+    null,
+  );
 
   // Filters State
   const [filterPhone, setFilterPhone] = useState<string>("");
@@ -95,6 +106,21 @@ export const Customers = () => {
       console.error("Failed to create customer:", error);
     }
   };
+
+  const handleDeleteCustomer = useCallback(
+    async (customer: Customer) => {
+      try {
+        setDeletingCustomer(null);
+        setIsMutating(true);
+        await dispatch(removeCustomer(customer.id)).unwrap();
+      } catch (error) {
+        console.error("Failed to delete customer", error);
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [dispatch],
+  );
 
   const handleApplyFilters = (filters: {
     phone: string;
@@ -139,7 +165,12 @@ export const Customers = () => {
   }, []);
 
   const columns = useMemo(
-    () => getCustomerColumns({ onEdit: handleOpenEdit, t }),
+    () =>
+      getCustomerColumns({
+        onEdit: handleOpenEdit,
+        onDelete: (customer) => setDeletingCustomer(customer),
+        t,
+      }),
     [handleOpenEdit, t],
   );
 
@@ -308,6 +339,27 @@ export const Customers = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {!!deletingCustomer && (
+        <ConfirmationModal
+          open={!!deletingCustomer}
+          onOpenChange={(open) => !open && setDeletingCustomer(null)}
+          title={t("customers.confirmation.deleteTitle")}
+          description={t("customers.confirmation.deleteDescription", {
+            code: deletingCustomer?.fullName || deletingCustomer?.phone,
+          })}
+          confirmText={
+            isMutating
+              ? t("customers.confirmation.deleting")
+              : t("customers.confirmation.delete")
+          }
+          cancelText={t("common.cancel")}
+          onConfirm={() =>
+            deletingCustomer && handleDeleteCustomer(deletingCustomer)
+          }
+          onCancel={() => setDeletingCustomer(null)}
+        />
       )}
     </>
   );

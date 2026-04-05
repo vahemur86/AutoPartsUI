@@ -9,6 +9,7 @@ import {
   fetchVehicles,
   fetchVehicleDefinitions,
   clearVehicles,
+  fetchVehicleDefinitionsByBucket,
 } from "@/store/slices/vehiclesSlice";
 
 export type ModeType = "code" | "attributes";
@@ -36,9 +37,13 @@ export const useCalculateMode = (cashRegisterId?: number) => {
   });
 
   // --- Selectors ---
-  const { definitions, isLoading, isDefinitionsLoading } = useAppSelector(
-    (state) => state.vehicles,
-  );
+  const {
+    definitions,
+    isLoading,
+    definitionsByBucket,
+    isLoadingDefinitionsByBucket,
+    isDefinitionsLoading,
+  } = useAppSelector((state) => state.vehicles);
   const { catalystQuoteGroup, isLoading: isBucketsLoading } = useAppSelector(
     (state) => state.catalystBuckets,
   );
@@ -122,6 +127,14 @@ export const useCalculateMode = (cashRegisterId?: number) => {
     dispatch(resetQuoteGroup());
     dispatch(clearVehicles());
     dispatch(fetchCatalystQuoteGroup({ code: searchCode, cashRegisterId }));
+    dispatch(
+      fetchVehicleDefinitionsByBucket({
+        cashRegisterId,
+        page: 1,
+        pageSize: 100,
+        bucketCode: searchCode,
+      }),
+    );
   }, [searchCode, validate, cashRegisterId, dispatch]);
 
   const handleAttributeSearch = useCallback(async () => {
@@ -180,6 +193,8 @@ export const useCalculateMode = (cashRegisterId?: number) => {
     attrFilters,
     updateFilter,
     definitions,
+    definitionsByBucket,
+    isLoadingDefinitionsByBucket,
     isDefinitionsLoading,
     isGlobalLoading: isLoading || isBucketsLoading,
     hasGridItems: !!(

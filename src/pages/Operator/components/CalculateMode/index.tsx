@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Search, Zap, Database, RotateCcw } from "lucide-react";
+import { Search, Zap, Database, RotateCcw, Car } from "lucide-react";
 
 // ui-kit
 import { Button, TextField, Tab, TabGroup, Select } from "@/ui-kit";
@@ -23,6 +23,7 @@ export const CalculateMode = ({
     attrFilters,
     updateFilter,
     definitions,
+    definitionsByBucket,
     isDefinitionsLoading,
     isGlobalLoading,
     hasGridItems,
@@ -297,6 +298,57 @@ export const CalculateMode = ({
                           </strong>
                         </div>
                       </div>
+                    </div>
+                  ))}
+
+                  {definitionsByBucket?.results.map((def) => (
+                    <div key={def.id} className={styles.vehicleCard}>
+                      <div className={styles.cardHeader}>
+                        <div className={styles.iconCircle}>
+                          <Car size={20} />
+                        </div>
+
+                        <div className={styles.headerInfo}>
+                          <h3>
+                            {def.brand.name} {def.model.name}
+                          </h3>
+                          <span className={styles.subTitle}>
+                            {def.year} • {def.market?.name}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.specTable}>
+                        <div className={styles.specItem}>
+                          <span>{t("vehicles.vehicles.form.fuelType")}</span>
+                          <strong>{def.fuelType?.name}</strong>
+                        </div>
+
+                        <div className={styles.specItem}>
+                          <span>{t("vehicles.vehicles.form.engine")}</span>
+                          <strong>{def.engine?.name}</strong>
+                        </div>
+
+                        <div className={styles.specItem}>
+                          <span>{t("vehicles.vehicles.form.horsePower")}</span>
+                          <strong>{def.horsePower}</strong>
+                        </div>
+
+                        <div className={styles.specItem}>
+                          <span>{t("vehicles.vehicles.form.driveType")}</span>
+                          <strong>{def.driveType?.name}</strong>
+                        </div>
+                      </div>
+
+                      {!!def.bucketCodes?.length && (
+                        <div className={styles.bucketWrapper}>
+                          {def.bucketCodes.map((code: string) => (
+                            <span key={code} className={styles.bucketBadge}>
+                              {code}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

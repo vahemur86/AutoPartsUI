@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, IconButton } from "@/ui-kit";
+import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
 
 // icons
 import { Plus } from "lucide-react";
@@ -33,6 +33,7 @@ import {
   addCustomerType,
   editCustomerType,
   fetchCustomerTypes,
+  removeCustomerType,
 } from "@/store/slices/customerTypesSlice";
 
 // types
@@ -50,6 +51,8 @@ export const CustomerTypes: FC = () => {
   const [activeCustomerType, setActiveCustomerType] =
     useState<CustomerType | null>(null);
   const [isMutating, setIsMutating] = useState(false);
+  const [deletingCustomerType, setDeletingCustomerType] =
+    useState<CustomerType | null>(null);
 
   const anchorRef = useRef<HTMLElement | null>(null);
 
@@ -111,11 +114,30 @@ export const CustomerTypes: FC = () => {
     [activeCustomerType, dispatch, t],
   );
 
-  const columns = useMemo(
-    () => getCustomerTypeColumns({ onEdit: handleOpenEdit }),
-    [handleOpenEdit],
+  const handleDeleteCustomerType = useCallback(
+    async (customerType: CustomerType) => {
+      try {
+        setIsMutating(true);
+        await dispatch(removeCustomerType(customerType.id)).unwrap();
+        await dispatch(fetchCustomerTypes()).unwrap();
+        setDeletingCustomerType(null);
+      } catch (error) {
+        console.error("Failed to delete customer type:", error);
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [dispatch],
   );
 
+  const columns = useMemo(
+    () =>
+      getCustomerTypeColumns({
+        onEdit: handleOpenEdit,
+        onDelete: (customerType) => setDeletingCustomerType(customerType),
+      }),
+    [handleOpenEdit],
+  );
   return (
     <div className={styles.customerTypesWrapper}>
       <div className={styles.header}>
@@ -156,6 +178,28 @@ export const CustomerTypes: FC = () => {
         onOpenChange={setIsDropdownOpen}
         onSave={handleSaveCustomerType}
       />
+
+      {!!deletingCustomerType && (
+        <ConfirmationModal
+          open={!!deletingCustomerType}
+          onOpenChange={(open) => !open && setDeletingCustomerType(null)}
+          title={t("customerTypes.confirmation.deleteTitle")}
+          description={t("customerTypes.confirmation.deleteDescription", {
+            code: deletingCustomerType?.code,
+          })}
+          confirmText={
+            isMutating
+              ? t("customerTypes.confirmation.deleting")
+              : t("customerTypes.confirmation.delete")
+          }
+          cancelText={t("common.cancel")}
+          onConfirm={() =>
+            deletingCustomerType &&
+            handleDeleteCustomerType(deletingCustomerType)
+          }
+          onCancel={() => setDeletingCustomerType(null)}
+        />
+      )}
 
       <div className={styles.tableWrapper}>
         <DataTable data={customerTypes} columns={columns} pageSize={10} />
