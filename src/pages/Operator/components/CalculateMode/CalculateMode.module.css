@@ -341,3 +341,25 @@
     grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
   }
 }
+
+.subTitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.bucketWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.bucketBadge {
+  background: rgba(236, 241, 94, 0.15);
+  color: #ecf15e;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}

@@ -44,3 +44,12 @@ export const updateCustomerType = async (
   }
 };
 
+
+export const deleteCustomerType = async (id: number) => {
+  try {
+    const response = await api.delete(`/admin/customer-types/${id}`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete customer type."));
+  }
+};

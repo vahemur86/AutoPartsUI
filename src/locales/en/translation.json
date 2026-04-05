@@ -78,6 +78,7 @@
   "settings": {
     "navigation": {
       "projectLanguages": "Project Languages",
+      "pageControl": "Page Control",
       "translation": "Translation",
       "warehouse": "Warehouse",
       "shops": "Shops",
@@ -635,6 +636,12 @@
   "customerTypes": {
     "addCustomerType": "Add Customer Type",
     "editCustomerType": "Edit Customer Type",
+    "confirmation": {
+      "deleteTitle": "Delete Customer Type",
+      "deleteDescription": "Are you sure you want to delete customer type \"{{code}}\"? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "delete": "Delete"
+    },
     "form": {
       "code": "Code",
       "enterCode": "Enter code...",
@@ -1308,6 +1315,12 @@
       "customerType": "Customer Type",
       "bonusPercent": "Bonus Percent",
       "isActive": "Status"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete Customer",
+      "deleteDescription": "Are you sure you want to delete customer \"{{code}}\"? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "delete": "Delete"
     },
     "success": {
       "customerCreated": "Customer created successfully",

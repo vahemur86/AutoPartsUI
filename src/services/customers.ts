@@ -76,3 +76,12 @@ export const updateCustomerType = async (
     );
   }
 };
+
+export const deleteCustomer = async (customerId: number) => {
+  try {
+    const response = await api.delete( `/catalyst/customers/${customerId}`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete customer."));
+  }
+};

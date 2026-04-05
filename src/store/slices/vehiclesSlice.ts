@@ -11,6 +11,7 @@ import {
   getVehicleBuckets,
   updateVehicleBuckets,
   getVehicleDefinitions,
+  getVehicleDefinitionsByBucket,
 } from "@/services/settings/vehicles";
 
 // utils
@@ -22,7 +23,9 @@ import type {
   Vehicle,
   VehicleFilter,
   VehicleDefinition,
+  VehicleDefinitionByBucket,
 } from "@/types/settings";
+import type { PaginatedResponse } from "@/types/cash";
 
 interface VehiclesState {
   vehicles: Vehicle[];
@@ -31,6 +34,9 @@ interface VehiclesState {
   isLoading: boolean;
   isDefinitionsLoading: boolean;
   error: string | null;
+  definitionsByBucket: PaginatedResponse<VehicleDefinitionByBucket> | null;
+  isLoadingDefinitionsByBucket: boolean;
+  isDefinitionsByBucketError: string | null;
 }
 
 const initialState: VehiclesState = {
@@ -40,6 +46,9 @@ const initialState: VehiclesState = {
   isLoading: false,
   isDefinitionsLoading: false,
   error: null,
+  definitionsByBucket: null,
+  isLoadingDefinitionsByBucket: false,
+  isDefinitionsByBucketError: null,
 };
 
 // Async thunk for fetching vehicle lookups
@@ -61,6 +70,38 @@ export const fetchVehicleDefinitions = createAsyncThunk<
     );
   }
 });
+
+//Async thunk for fetching vehicle definitions by bucket
+export const fetchVehicleDefinitionsByBucket = createAsyncThunk<
+  PaginatedResponse<VehicleDefinitionByBucket>,
+  {
+    bucketCode: string;
+    page?: number;
+    pageSize?: number;
+    cashRegisterId?: number;
+  },
+  { rejectValue: string }
+>(
+  "vehicles/fetchVehicleDefinitionsByBucket",
+  async (params, { rejectWithValue }) => {
+    try {
+      const data = await getVehicleDefinitionsByBucket(
+        params.bucketCode,
+        params.page,
+        params.pageSize,
+        params.cashRegisterId,
+      );
+      return data;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(
+          error,
+          "Failed to fetch vehicle definitions by bucket",
+        ),
+      );
+    }
+  },
+);
 
 // Async thunk for fetching vehicles
 export const fetchVehicles = createAsyncThunk<
@@ -241,6 +282,23 @@ const vehiclesSlice = createSlice({
       .addCase(fetchVehicleBuckets.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch vehicle buckets";
+      });
+
+    //Fetch vehicle definitions by bucket
+    builder
+      .addCase(fetchVehicleDefinitionsByBucket.pending, (state) => {
+        state.isLoadingDefinitionsByBucket = true;
+        state.isDefinitionsByBucketError = null;
+      })
+      .addCase(fetchVehicleDefinitionsByBucket.fulfilled, (state, action) => {
+        state.isLoadingDefinitionsByBucket = false;
+        state.definitionsByBucket = action.payload;
+        state.isDefinitionsByBucketError = null;
+      })
+      .addCase(fetchVehicleDefinitionsByBucket.rejected, (state, action) => {
+        state.isLoadingDefinitionsByBucket = false;
+        state.isDefinitionsByBucketError =
+          action.payload ?? "Failed to fetch vehicle definitions by bucket";
       });
 
     // Update vehicle buckets

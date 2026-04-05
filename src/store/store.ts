@@ -28,6 +28,8 @@ import salePercentagesReducer from "./slices/salePercentagesSlice";
 import ironCarShopReducer from "./slices/ironCarShopSlice";
 import ironSaleReportsReducer from "./slices/ironSaleReportsSlice";
 import metalPricesReducer from "./slices/metalPricesSlice";
+import otpReducer from "./slices/verificationOTPSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -60,6 +62,7 @@ export const store = configureStore({
     ironCarShop: ironCarShopReducer,
     ironSaleReports: ironSaleReportsReducer,
     metalPrices: metalPricesReducer,
+    otp: otpReducer,
   },
 });
 

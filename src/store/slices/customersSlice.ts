@@ -6,6 +6,7 @@ import {
 
 // services
 import {
+  deleteCustomer,
   getCustomers,
   getOrCreateCustomer,
   updateCustomerType as updateCustomerTypeApi,
@@ -64,6 +65,21 @@ export const createCustomer = createAsyncThunk<
   } catch (error: unknown) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to create customer"),
+    );
+  }
+});
+
+export const removeCustomer = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("customers/removeCustomer", async (customerId, { rejectWithValue }) => {
+  try {
+    await deleteCustomer(customerId);
+    return customerId;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete customer"),
     );
   }
 });
@@ -130,7 +146,7 @@ const customersSlice = createSlice({
           state.totalItems += 1;
         },
       )
-
+      
       /* updateCustomerType cases */
       .addCase(updateCustomerType.pending, (state) => {
         state.isSubmitting = true;
@@ -149,7 +165,28 @@ const customersSlice = createSlice({
         },
       )
 
-      /* Global Rejected Matcher */
+// Delete customer 
+    builder
+      .addCase(removeCustomer.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        removeCustomer.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.isLoading = false;
+          state.items = state.items.filter(
+            (ct) => ct.id !== action.payload,
+          );
+          state.error = null;
+        },
+      )
+      .addCase(removeCustomer.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to delete customer";
+      })
+
+        /* Global Rejected Matcher */
       .addMatcher(
         (action): action is PayloadAction<string> =>
           action.type.endsWith("/rejected"),
@@ -159,6 +196,8 @@ const customersSlice = createSlice({
           state.error = action.payload ?? "An unexpected error occurred";
         },
       );
+      
+      
   },
 });
 

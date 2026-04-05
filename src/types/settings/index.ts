@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Languages
 export interface Language {
   id: number;
@@ -159,6 +160,20 @@ export interface VehicleDefinition {
   engines: Array<{ id: number; code: string; name: string }>;
   markets?: Array<{ id: number; code: string; name: string }>;
   driveTypes?: Array<{ id: number; code: string; name: string }>;
+}
+
+export interface VehicleDefinitionByBucket {
+  id: number;
+  brand: { id: number; code: string; name: string };
+  bucketCodes: string[];
+  driveType?: { id: number; code: string; name: string };
+  engine: { id: number; code: string; name: string };
+  fuelType: { id: number; code: string; name: string };
+  market?: { id: number; code: string; name: string };
+  horsePower: number;
+  model: { id: number; code: string; name: string };
+  year: number;
+  totalItems: number;
 }
 
 export interface CatalystBucket {

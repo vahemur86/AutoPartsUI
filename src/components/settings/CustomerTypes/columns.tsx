@@ -15,11 +15,13 @@ const columnHelper = createColumnHelper<CustomerType>();
 export const getCustomerTypeColumns = (
   {
     onEdit,
+    onDelete,
   }: {
     onEdit: (
       customerType: CustomerType,
       e: React.MouseEvent<HTMLElement>,
     ) => void;
+     onDelete: (customerType: CustomerType) => void;
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<CustomerType, any>[] => [
@@ -56,6 +58,13 @@ export const getCustomerTypeColumns = (
         >
           {i18next.t("common.edit")}
         </Button>
+        <Button
+              variant="danger"
+              size="small"
+              onClick={() => onDelete(row.original)}
+            >
+              {i18next.t("common.delete")}
+            </Button>
       </div>
     ),
   }),

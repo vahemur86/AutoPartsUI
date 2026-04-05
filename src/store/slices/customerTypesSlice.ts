@@ -7,6 +7,7 @@ import {
 // services
 import {
   createCustomerType,
+  deleteCustomerType,
   getCustomerTypes,
   updateCustomerType,
 } from "@/services/settings/customerTypes";
@@ -80,6 +81,21 @@ export const editCustomerType = createAsyncThunk<
   },
 );
 
+export const removeCustomerType = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("customerTypes/removeCustomerType", async (id, { rejectWithValue }) => {
+  try {
+    await deleteCustomerType(id);
+    return id;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete customer type"),
+    );
+  }
+});
+
 const customerTypesSlice = createSlice({
   name: "customerTypes",
   initialState,
@@ -150,9 +166,29 @@ const customerTypesSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload ?? "Failed to update customer type";
       });
+
+    // Delete customer type
+    builder
+      .addCase(removeCustomerType.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        removeCustomerType.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.isLoading = false;
+          state.customerTypes = state.customerTypes.filter(
+            (ct) => ct.id !== action.payload,
+          );
+          state.error = null;
+        },
+      )
+      .addCase(removeCustomerType.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to delete customer type";
+      });
   },
 });
 
 export const { clearError } = customerTypesSlice.actions;
 export default customerTypesSlice.reducer;
-
