@@ -264,93 +264,130 @@ export const CalculateMode = ({
             <div className={`${styles.resultsContent} ${styles.visible}`}>
               {hasGridItems ? (
                 <div className={styles.resultsGrid}>
-                  {catalystQuoteGroup?.items.map((item) => (
-                    <div key={item.id} className={styles.vehicleCard}>
-                      <div className={styles.cardHeader}>
-                        <div className={styles.iconCircle}>
-                          <Database size={20} />
+                  {catalystQuoteGroup?.items.flatMap((item) => {
+                    const matchedDefs = definitionsByBucket?.results.filter(
+                      (def) => def.bucketCodes?.includes(item.code),
+                    );
+
+                    // ❗ If no cars found, still show code-only card
+                    if (!matchedDefs?.length) {
+                      return [
+                        <div key={item.id} className={styles.vehicleCard}>
+                          <div className={styles.cardHeader}>
+                            <div className={styles.iconCircle}>
+                              <Database size={20} />
+                            </div>
+
+                            <div className={styles.headerInfo}>
+                              <h3>{item.code}</h3>
+                              <div className={styles.positionBadge}>
+                                {getPositionLabel(item.catalystTypeId)}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className={styles.specTable}>
+                            <div className={styles.specItem}>
+                              <span>
+                                {t("operatorPage.calculate.specs.weight")}
+                              </span>
+                              <strong>{item.weight} kg</strong>
+                            </div>
+
+                            <div className={styles.specItem}>
+                              <span>
+                                {t("operatorPage.calculate.specs.price")}
+                              </span>
+                              <strong>
+                                {item.price.toLocaleString()}{" "}
+                                {catalystQuoteGroup.currencyCode}
+                              </strong>
+                            </div>
+                          </div>
+                        </div>,
+                      ];
+                    }
+
+                    // ✅ Create ONE CARD PER CAR
+                    return matchedDefs.map((def) => (
+                      <div
+                        key={`${item.id}-${def.id}`}
+                        className={styles.vehicleCard}
+                      >
+                        {/* --- HEADER --- */}
+                        <div className={styles.cardHeader}>
+                          <div className={styles.iconCircle}>
+                            <Database size={20} />
+                          </div>
+
+                          <div className={styles.headerInfo}>
+                            <h3>{item.code}</h3>
+                            <div className={styles.positionBadge}>
+                              {getPositionLabel(item.catalystTypeId)}
+                            </div>
+                          </div>
                         </div>
-                        <div className={styles.headerInfo}>
-                          <h3>{item.code}</h3>
-                          <div
-                            className={`${styles.positionBadge} ${
-                              ![1, 2].includes(item.catalystTypeId)
-                                ? styles.unknownBadge
-                                : ""
-                            }`}
-                          >
-                            {getPositionLabel(item.catalystTypeId)}
+
+                        {/* --- PRICE / WEIGHT --- */}
+                        <div className={styles.specTable}>
+                          <div className={styles.specItem}>
+                            <span>
+                              {t("operatorPage.calculate.specs.weight")}
+                            </span>
+                            <strong>{item.weight} kg</strong>
+                          </div>
+
+                          <div className={styles.specItem}>
+                            <span>
+                              {t("operatorPage.calculate.specs.price")}
+                            </span>
+                            <strong>
+                              {item.price.toLocaleString()}{" "}
+                              {catalystQuoteGroup.currencyCode}
+                            </strong>
+                          </div>
+                        </div>
+
+                        {/* --- CAR INFO --- */}
+                        <div className={styles.carDetails}>
+                          <div className={styles.subHeader}>
+                            <Car size={16} />
+                            <span>
+                              {def.brand.name} {def.model.name}
+                            </span>
+                          </div>
+
+                          <div className={styles.specTable}>
+                            <div className={styles.specItem}>
+                              <span>
+                                {t("vehicles.vehicles.form.fuelType")}
+                              </span>
+                              <strong>{def.fuelType?.name}</strong>
+                            </div>
+
+                            <div className={styles.specItem}>
+                              <span>{t("vehicles.vehicles.form.engine")}</span>
+                              <strong>{def.engine?.name}</strong>
+                            </div>
+
+                            <div className={styles.specItem}>
+                              <span>
+                                {t("vehicles.vehicles.form.horsePower")}
+                              </span>
+                              <strong>{def.horsePower}</strong>
+                            </div>
+
+                            <div className={styles.specItem}>
+                              <span>
+                                {t("vehicles.vehicles.form.driveType")}
+                              </span>
+                              <strong>{def.driveType?.name}</strong>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className={styles.specTable}>
-                        <div className={styles.specItem}>
-                          <span>
-                            {t("operatorPage.calculate.specs.weight")}
-                          </span>
-                          <strong>{item.weight} kg</strong>
-                        </div>
-                        <div className={styles.specItem}>
-                          <span>{t("operatorPage.calculate.specs.price")}</span>
-                          <strong>
-                            {item.price.toLocaleString()}{" "}
-                            {catalystQuoteGroup.currencyCode}
-                          </strong>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {definitionsByBucket?.results.map((def) => (
-                    <div key={def.id} className={styles.vehicleCard}>
-                      <div className={styles.cardHeader}>
-                        <div className={styles.iconCircle}>
-                          <Car size={20} />
-                        </div>
-
-                        <div className={styles.headerInfo}>
-                          <h3>
-                            {def.brand.name} {def.model.name}
-                          </h3>
-                          <span className={styles.subTitle}>
-                            {def.year} • {def.market?.name}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className={styles.specTable}>
-                        <div className={styles.specItem}>
-                          <span>{t("vehicles.vehicles.form.fuelType")}</span>
-                          <strong>{def.fuelType?.name}</strong>
-                        </div>
-
-                        <div className={styles.specItem}>
-                          <span>{t("vehicles.vehicles.form.engine")}</span>
-                          <strong>{def.engine?.name}</strong>
-                        </div>
-
-                        <div className={styles.specItem}>
-                          <span>{t("vehicles.vehicles.form.horsePower")}</span>
-                          <strong>{def.horsePower}</strong>
-                        </div>
-
-                        <div className={styles.specItem}>
-                          <span>{t("vehicles.vehicles.form.driveType")}</span>
-                          <strong>{def.driveType?.name}</strong>
-                        </div>
-                      </div>
-
-                      {!!def.bucketCodes?.length && (
-                        <div className={styles.bucketWrapper}>
-                          {def.bucketCodes.map((code: string) => (
-                            <span key={code} className={styles.bucketBadge}>
-                              {code}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    ));
+                  })}
                 </div>
               ) : (
                 <div className={styles.emptyState}>
@@ -363,16 +400,15 @@ export const CalculateMode = ({
         </div>
 
         {/* --- Summary Footer --- */}
-        <div
+        {/* <div
           className={`${styles.groupSummary} ${
             catalystQuoteGroup && !isGlobalLoading
               ? styles.visible
               : styles.hidden
           }`}
-        >
-          {catalystQuoteGroup && (
+        > */}
+        {/* {catalystQuoteGroup && (
             <div className={styles.totalsRow}>
-              {/* Total Price Section */}
               <div className={styles.totalBox}>
                 <span className={styles.currencyLabel}>
                   {t("operatorPage.calculate.summary.totalPrice")}
@@ -387,9 +423,9 @@ export const CalculateMode = ({
                     ).toLocaleString()}
                   </strong>
                 </div>
-              </div>
+              </div> */}
 
-              {/* Total Weight Section */}
+        {/* Total Weight Section
               <div className={styles.totalBox}>
                 <span className={styles.currencyLabel}>
                   {t("operatorPage.calculate.summary.totalWeight")}
@@ -404,7 +440,7 @@ export const CalculateMode = ({
               </div>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

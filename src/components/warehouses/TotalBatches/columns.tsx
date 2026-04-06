@@ -27,9 +27,9 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
     header: i18next.t("warehouses.totalBatches.columns.initialPowderKg"),
     cell: (info) => `${info.getValue()} kg`,
   }),
-  columnHelper.accessor("remainingPowderKg", {
-    header: i18next.t("warehouses.totalBatches.columns.remainingPowderKg"),
-    cell: (info) => `${info.getValue()} kg`,
+  columnHelper.accessor("initialCostAmd", {
+    header: i18next.t("warehouses.totalBatches.columns.initialCostAmd"),
+    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
   }),
   columnHelper.display({
     id: "selectedKg",
@@ -51,16 +51,14 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
       );
     },
   }),
-
+  columnHelper.accessor("remainingPowderKg", {
+    header: i18next.t("warehouses.totalBatches.columns.remainingPowderKg"),
+    cell: (info) => `${info.getValue()} kg`,
+  }),
   columnHelper.accessor("remainingCostAmd", {
     header: i18next.t("warehouses.totalBatches.columns.remainingCostAmd"),
     cell: (info) => `${info.getValue().toLocaleString()} AMD`,
   }),
-  columnHelper.accessor("initialCostAmd", {
-    header: i18next.t("warehouses.totalBatches.columns.initialCostAmd"),
-    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
-  }),
-
   columnHelper.accessor("remainingPt_g", {
     header: i18next.t("warehouses.totalBatches.columns.remainingPt_g"),
     cell: (info) => `${info.getValue()} g`,
@@ -74,16 +72,16 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
     cell: (info) => `${info.getValue()} g`,
   }),
 
-  columnHelper.accessor("status", {
-    header: i18next.t("warehouses.totalBatches.columns.status"),
-    cell: (info) => {
-      const statusValue = info.getValue();
-      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
-      return (
-        <span className={statusConfig.className}>{statusConfig.label}</span>
-      );
-    },
-  }),
+  // columnHelper.accessor("status", {
+  //   header: i18next.t("warehouses.totalBatches.columns.status"),
+  //   cell: (info) => {
+  //     const statusValue = info.getValue();
+  //     const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
+  //     return (
+  //       <span className={statusConfig.className}>{statusConfig.label}</span>
+  //     );
+  //   },
+  // }),
 
   columnHelper.accessor("createdAt", {
     header: i18next.t("warehouses.totalBatches.columns.createdAt"),

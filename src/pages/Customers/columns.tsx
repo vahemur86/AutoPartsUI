@@ -16,7 +16,7 @@ export const getCustomerColumns = ({
   t,
 }: {
   onEdit: (customer: Customer, e: MouseEvent<HTMLElement>) => void;
-   onDelete: (customer: Customer) => void;
+  onDelete: (customer: Customer) => void;
   t: (key: string) => string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): ColumnDef<Customer, any>[] => [
@@ -46,7 +46,7 @@ export const getCustomerColumns = ({
     header: t("customers.columns.bonusPercent"),
     cell: (info) => {
       const value = info.getValue();
-      return value !== undefined ? `${value * 100}%` : "-";
+      return value !== undefined ? `${Math.round(value * 100)}%` : "-";
     },
   }),
 
@@ -72,13 +72,13 @@ export const getCustomerColumns = ({
         >
           {t("common.edit")}
         </Button>
-         <Button
-              variant="danger"
-              size="small"
-              onClick={() => onDelete(row.original)}
-            >
-              {i18next.t("common.delete")}
-            </Button>
+        <Button
+          variant="danger"
+          size="small"
+          onClick={() => onDelete(row.original)}
+        >
+          {i18next.t("common.delete")}
+        </Button>
       </div>
     ),
   }),
