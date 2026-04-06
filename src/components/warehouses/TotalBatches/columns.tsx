@@ -7,14 +7,7 @@ import { SelectedKgCell } from "./SelectedKg";
 // types
 import type { InventoryLot } from "@/types/warehouses/reports";
 
-// utils
-import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
-
-// styles
-import styles from "./TotalBatches.module.css";
-
 const columnHelper = createColumnHelper<InventoryLot>();
-const STATUS_MAP = createStatusMap(styles);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
