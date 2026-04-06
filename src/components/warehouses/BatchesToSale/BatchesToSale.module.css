@@ -84,7 +84,7 @@
   gap: 12px;
 }
 
-/* Pressed table stayles */
+/* Pressed table stayles to become smaller*/
 
 .tableSection :global(th),
 .tableSection :global(td) {
