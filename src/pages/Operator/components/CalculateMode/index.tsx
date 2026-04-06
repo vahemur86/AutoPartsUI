@@ -35,7 +35,6 @@ export const CalculateMode = ({
     handleAttributeSearch,
     errors,
     hasTriedSubmit,
-    totalWeight,
   } = useCalculateMode(cashRegisterId);
 
   // Helper to determine error state for UI components
