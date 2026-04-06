@@ -47,6 +47,17 @@ export const getSalesLotColumns = ({
     header: i18next.t("warehouses.batchesToSale.columns.costTotalAmd"),
     cell: (info) => `${info.getValue().toLocaleString()} AMD`,
   }),
+
+  columnHelper.accessor("itemsCostTotalAmd", {
+    header: i18next.t("warehouses.batchesToSale.columns.itemsCostTotalAmd"),
+    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
+  }),
+
+  columnHelper.accessor("profitAmd", {
+    header: i18next.t("warehouses.batchesToSale.columns.profit"),
+    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
+  }),
+
   columnHelper.accessor("ptTotal_g", {
     header: i18next.t("warehouses.batchesToSale.columns.ptTotal_g"),
     cell: (info) => `${info.getValue()} g`,

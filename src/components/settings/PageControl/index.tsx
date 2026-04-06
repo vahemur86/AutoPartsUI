@@ -3,6 +3,8 @@ import { DataTable, Button } from "@/ui-kit";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { getOtpPages, saveOtpPages } from "@/services/verificationOTP";
 import styles from "./PageControl.module.css";
+import { toast } from "react-toastify";
+import { t } from "i18next";
 
 interface PageItem {
   id: number;
@@ -55,7 +57,7 @@ export const PageControl = () => {
         }));
 
       if (pagesToSave.length === 0) {
-        console.log("No changes to save");
+        toast.info(t("pageControl.toast.noChanges"));
         setIsSaving(false);
         return;
       }
@@ -69,10 +71,9 @@ export const PageControl = () => {
       }));
       setItems(formatted);
       setOriginalItems(formatted);
-
       setOriginalItems([...items]);
 
-      console.log("Pages updated successfully!");
+      toast.info(t("pageControl.toast.pagesUpdated"));
     } catch (error) {
       console.error("Failed to save OTP pages:", error);
     } finally {
@@ -97,10 +98,10 @@ export const PageControl = () => {
         size: 50,
       }),
       columnHelper.accessor("name", {
-        header: "Page Name",
+        header: t("pageControl.columns.name"),
       }),
       columnHelper.accessor("requiresOtp", {
-        header: "Verified",
+        header: t("pageControl.columns.isVerified"),
         cell: ({ getValue }) => (getValue() ? "✅" : "❌"),
       }),
     ],
@@ -109,10 +110,10 @@ export const PageControl = () => {
 
   return (
     <div className={styles.pageControlWrapper}>
-      <h2>Page Control</h2>
+      <h2>{t("pageControl.title")}</h2>
 
       <div className={styles.tableWrapper}>
-        <DataTable data={items} columns={columns} pageSize={5} />
+        <DataTable data={items} columns={columns} pageSize={30} />
       </div>
 
       <div className={styles.saveButtonWrapper}>

@@ -14,6 +14,7 @@ import {
 interface OtpState {
   isLoading: boolean;
   isVerified: boolean;
+  isOtpRequired: boolean;
   error: string | null;
   currentStep: "idle" | "code_sent" | "verified";
   pages: Array<{
@@ -27,6 +28,7 @@ interface OtpState {
 const initialState: OtpState = {
   isLoading: false,
   isVerified: false,
+  isOtpRequired: false,
   error: null,
   currentStep: "idle",
   pages: [],
@@ -108,6 +110,10 @@ const otpSlice = createSlice({
     clearOtpError: (state) => {
       state.error = null;
     },
+
+    setOtpRequired: (state, action: PayloadAction<boolean>) => {
+      state.isOtpRequired = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -169,6 +175,7 @@ const otpSlice = createSlice({
         state.isLoading = false;
         state.isVerified = true;
         state.currentStep = "verified";
+        state.isOtpRequired = false;
         state.error = null;
       })
       .addCase(confirmOtp.rejected, (state, action) => {
@@ -179,5 +186,6 @@ const otpSlice = createSlice({
   },
 });
 
-export const { resetOtpState, clearOtpError } = otpSlice.actions;
+export const { resetOtpState, clearOtpError, setOtpRequired } =
+  otpSlice.actions;
 export default otpSlice.reducer;

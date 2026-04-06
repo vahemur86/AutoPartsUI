@@ -358,6 +358,8 @@
         "id": "ID",
         "warehouseId": "Warehouse ID",
         "status": "Status",
+        "itemsCostTotalAmd": "Items Cost",
+        "profit": "Profit",
         "totalPowderKg": "Total",
         "costTotalAmd": "Total",
         "ptTotal_g": "Pt Total",
@@ -1331,5 +1333,30 @@
       "failedToCreate": "Failed to find customer",
       "failedToUpdate": "Failed to update customer"
     }
+  },
+
+  "pageControl": {
+    "title": "Page Control",
+    "columns": {
+      "name": "Name",
+      "isVerified": "Verified"
+    },
+    "toast": {
+      "noChanges": "No changes to save",
+      "pagesUpdated": "Pages updated successfully!"
+    }
+  },
+
+  "OTP": {
+    "title": "Verify Page",
+    "description": "To continue, please request a One-Time Password (OTP).",
+    "requestOtp": "Request OTP",
+    "verifyOtp": "Verify OTP",
+    "sendingOtp": "Sending OTP...",
+    "verifyingOtp": "Verifying OTP...",
+    "cancel": "Cancel",
+    "requiredVerification": "Verification is required to view this page. Please return to thedashboard.",
+    "goBack": "Go back to dashboard",
+    "accessDenied": "Access denied. You do not have permission to view this page."
   }
 }

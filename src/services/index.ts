@@ -6,7 +6,6 @@ const DEFAULT_API_BASE_URL =
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 
-// axios instance with default config
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -28,12 +27,34 @@ api.interceptors.request.use(
   },
 );
 
+// api.ts
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      console.error("Unauthorized access");
+    const isOtpRequired =
+      error.response?.status === 403 &&
+      (error.response?.data === "OTP_REQUIRED" ||
+        error.response?.data?.message === "OTP_REQUIRED");
+
+    if (isOtpRequired) {
+      return new Promise((resolve, reject) => {
+        const event = new CustomEvent("otp:required", {
+          detail: {
+            onVerified: async () => {
+              try {
+                const response = await api.request(error.config);
+                resolve(response);
+              } catch (retryError) {
+                reject(retryError);
+              }
+            },
+            onCancel: () => reject(error),
+          },
+        });
+        window.dispatchEvent(event);
+      });
     }
+
     return Promise.reject(error);
   },
 );
