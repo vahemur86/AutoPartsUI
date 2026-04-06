@@ -361,6 +361,8 @@
         "warehouseId": "Պահեստի ID",
         "status": "Կարգավիճակ",
         "totalPowderKg": "Ընդհանուր",
+        "itemsCostTotalAmd": "Ապրանքի ինքնարժեքը",
+        "profit": "Շահույթ",
         "costTotalAmd": "Ընդհանուր",
         "ptTotal_g": "Pt ընդհանուր",
         "pdTotal_g": "Pd ընդհանուր",
