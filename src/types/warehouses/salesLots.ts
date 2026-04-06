@@ -3,6 +3,8 @@ export interface BaseLot {
   warehouseId: number;
   status: number;
   totalPowderKg: number;
+  itemsCostTotalAmd: number;
+  profitAmd: number;
   costTotalAmd: number;
   ptTotal_g: number;
   pdTotal_g: number;

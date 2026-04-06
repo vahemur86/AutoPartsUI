@@ -153,6 +153,7 @@ export const DataTable = <TData, TValue>({
     getPaginationRowModel: manualPagination
       ? undefined
       : getPaginationRowModel(),
+      autoResetPageIndex: false,
   });
 
   const getStickyStyles = (

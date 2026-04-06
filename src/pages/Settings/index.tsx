@@ -16,6 +16,7 @@ import {
   Percent,
   Tag,
   Wrench,
+  Layout,
 } from "lucide-react";
 
 // components
@@ -34,7 +35,7 @@ export const Settings = () => {
     {
       path: "/page-control",
       label: t("settings.navigation.pageControl"),
-      icon: Globe,
+      icon: Layout,
       showCheckmark: true,
     },
     {

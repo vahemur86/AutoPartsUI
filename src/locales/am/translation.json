@@ -310,6 +310,8 @@
         "powderBatchId": "Պոդերի խմբաքանակի ID",
         "remainingPowderKg": "Մնացած",
         "remainingCostAmd": "Մնացած",
+        "itemsCostTotalAmd": "Ապրանքների արժեք",
+        "profit": "Շահույթ",
         "remainingPt_g": "Pt (գ)",
         "remainingPd_g": "Pd (գ)",
         "remainingRh_g": "Rh (գ)",
@@ -1330,5 +1332,30 @@
       "failedToCreate": "Հնարավոր չէ ստեղծել կամ ստանալ հաճախորդ",
       "failedToUpdate": "Հնարավոր չէ թարմացնել հաճախորդ"
     }
+  },
+
+  "pageControl": {
+    "title": "Էջի կառավարում",
+    "columns": {
+      "name": "Անուն",
+      "isVerified": "Հաստատված"
+    },
+    "toast": {
+      "noChanges": "Պահելու փոփոխություններ չկան",
+      "pagesUpdated": "Էջերը հաջողությամբ թարմացվեցին!"
+    }
+  },
+
+  "OTP": {
+    "title": "Հաստատել էջը",
+    "description": "Աշխատանքը շարունակելու համար խնդրում ենք պահանջել մեկանգամյա գաղտնաբառ (OTP):",
+    "requestOtp": "Պահանջել OTP",
+    "verifyOtp": "Հաստատել OTP",
+    "sendingOtp": "OTP-ն ուղարկվում է...",
+    "verifyingOtp": "OTP-ն ստուգվում է...",
+    "cancel": "Չեղարկել",
+    "requiredVerification": "Այս էջը դիտելու համար պահանջվում է հաստատում։ Խնդրում ենք վերադարձնել գլխավոր էջ:",
+    "goBack": "Վերադարձ դեպի գլխավոր էջ",
+    "accessDenied": "Մուտքը արգելված է։ Դուք չունեք իրավունք դիտելու այս էջը։"
   }
 }

@@ -65,6 +65,7 @@ import { store } from "@/store/store";
 
 // Styles
 import "@/index.css";
+import { OtpGateProvider } from "./components/otpGateProvider/OtpGateProvider";
 
 const toastOptions = {
   position: "top-right",
@@ -87,8 +88,9 @@ const LanguageInitializer = () => {
 
 export const App = () => {
   return (
-    <Provider store={store}>
-      <LanguageInitializer />
+   <Provider store={store}>
+      <OtpGateProvider>        
+        <LanguageInitializer />
       <BrowserRouter>
         <Routes>
           {/* PUBLIC ROUTE */}
@@ -192,6 +194,7 @@ export const App = () => {
       </BrowserRouter>
 
       <ToastContainer {...toastOptions} />
+      </OtpGateProvider>     
     </Provider>
   );
 };
