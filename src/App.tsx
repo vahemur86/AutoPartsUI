@@ -66,6 +66,7 @@ import { store } from "@/store/store";
 // Styles
 import "@/index.css";
 import { OtpGateProvider } from "./components/otpGateProvider/OtpGateProvider";
+import { CatalystPricings } from "./components/settings/CatalystPricing";
 
 const toastOptions = {
   position: "top-right",
@@ -88,113 +89,128 @@ const LanguageInitializer = () => {
 
 export const App = () => {
   return (
-   <Provider store={store}>
-      <OtpGateProvider>        
+    <Provider store={store}>
+      <OtpGateProvider>
         <LanguageInitializer />
-      <BrowserRouter>
-        <Routes>
-          {/* PUBLIC ROUTE */}
-          <Route path="/login" element={<Login />} />
+        <BrowserRouter>
+          <Routes>
+            {/* PUBLIC ROUTE */}
+            <Route path="/login" element={<Login />} />
 
-          {/* OPERATOR SPECIFIC ROUTES */}
-          <Route element={<ProtectedRoute allowedRoles={["Operator"]} />}>
-            <Route path="/operator" element={<OperatorPage />} />
-          </Route>
-
-          {/* ADMIN & SUPERADMIN SPECIFIC ROUTES */}
-          <Route
-            element={<ProtectedRoute allowedRoles={["Admin", "SuperAdmin"]} />}
-          >
-            <Route path="/" element={<Home />}>
-              <Route
-                index
-                element={<Navigate to="/settings/product-settings" replace />}
-              />
-
-              <Route path="settings" element={<Settings />}>
-                <Route
-                  index
-                  element={<Navigate to="product-settings" replace />}
-                />
-                <Route
-                  path="project-languages"
-                  element={<ProjectLanguages />}
-                />
-                <Route path="page-control" element={<PageControl />} />
-
-                <Route path="translation" element={<Translation />} />
-                <Route path="warehouse" element={<WarehouseSettings />} />
-                <Route path="shops" element={<ShopsSettings />} />
-                <Route path="product-settings" element={<ProductSettings />} />
-                <Route
-                  path="vehicle-management"
-                  element={<VehicleManagement />}
-                />
-                <Route path="metal-rates" element={<MetalRates />} />
-                <Route path="catalyst-buckets" element={<CatalystBuckets />} />
-                <Route path="exchange-rates" element={<ExchangeRates />} />
-                <Route path="customer-types" element={<CustomerTypes />} />
-                <Route path="cash-registers" element={<CashRegisters />} />
-                <Route
-                  path="offer-increase-options"
-                  element={<OfferIncreaseOptions />}
-                />
-                <Route path="sale-percentages" element={<SalePercentages />} />
-                <Route path="iron-management" element={<IronManagement />} />
-              </Route>
-
-              <Route path="reports" element={<Reports />}>
-                <Route index element={<Navigate to="z-reports" replace />} />
-                <Route path="z-reports" element={<ZReports />} />
-                <Route path="batch-reports" element={<BatchReports />} />
-                <Route path="open-sessions" element={<OpenSessions />} />
-                <Route path="powder-batches" element={<PowderBatches />} />
-                <Route
-                  path="cashbox-sessions-reports"
-                  element={<CashboxSessionsReports />}
-                />
-                <Route
-                  path="iron-products-reports"
-                  element={<IronProductsReport />}
-                />
-                <Route path="iron-sale" element={<IronSaleReport />} />
-              </Route>
-
-              <Route path="warehouses" element={<Warehouses />}>
-                <Route
-                  index
-                  element={<Navigate to="total-batches" replace />}
-                />
-                <Route path="total-batches" element={<TotalBatches />} />
-                <Route path="batches-to-sale" element={<BatchesToSale />} />
-                <Route path="sold-batches" element={<SoldBatches />} />
-                <Route path="profit" element={<ProfitReport />} />
-                <Route path="add-product" element={<AddProduct />} />
-                <Route path="products" element={<WarehouseProducts />} />
-                <Route path="transfer-to-shop" element={<TransferToShop />} />
-              </Route>
-
-              <Route path="products" element={<Products />}>
-                <Route
-                  index
-                  element={<Navigate to="products-list" replace />}
-                />
-                <Route path="products-list" element={<GeneralProducts />} />
-                <Route path="iron-products" element={<IronProducts />} />
-              </Route>
-
-              <Route path="shops" element={<Shops />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="customers" element={<Customers />} />
+            {/* OPERATOR SPECIFIC ROUTES */}
+            <Route element={<ProtectedRoute allowedRoles={["Operator"]} />}>
+              <Route path="/operator" element={<OperatorPage />} />
             </Route>
-          </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+            {/* ADMIN & SUPERADMIN SPECIFIC ROUTES */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["Admin", "SuperAdmin"]} />
+              }
+            >
+              <Route path="/" element={<Home />}>
+                <Route
+                  index
+                  element={<Navigate to="/settings/product-settings" replace />}
+                />
 
-      <ToastContainer {...toastOptions} />
-      </OtpGateProvider>     
+                <Route path="settings" element={<Settings />}>
+                  <Route
+                    index
+                    element={<Navigate to="product-settings" replace />}
+                  />
+                  <Route
+                    path="project-languages"
+                    element={<ProjectLanguages />}
+                  />
+                  <Route path="page-control" element={<PageControl />} />
+
+                  <Route path="translation" element={<Translation />} />
+                  <Route path="warehouse" element={<WarehouseSettings />} />
+                  <Route path="shops" element={<ShopsSettings />} />
+                  <Route
+                    path="product-settings"
+                    element={<ProductSettings />}
+                  />
+                  <Route
+                    path="vehicle-management"
+                    element={<VehicleManagement />}
+                  />
+                  <Route path="metal-rates" element={<MetalRates />} />
+                  <Route
+                    path="catalyst-buckets"
+                    element={<CatalystBuckets />}
+                  />
+                  <Route
+                    path="catalyst-pricing"
+                    element={<CatalystPricings />}
+                  />
+                  <Route path="exchange-rates" element={<ExchangeRates />} />
+                  <Route path="customer-types" element={<CustomerTypes />} />
+                  <Route path="cash-registers" element={<CashRegisters />} />
+                  <Route
+                    path="offer-increase-options"
+                    element={<OfferIncreaseOptions />}
+                  />
+                  <Route
+                    path="sale-percentages"
+                    element={<SalePercentages />}
+                  />
+                  <Route path="iron-management" element={<IronManagement />} />
+                </Route>
+
+                <Route path="reports" element={<Reports />}>
+                  <Route index element={<Navigate to="z-reports" replace />} />
+                  <Route path="z-reports" element={<ZReports />} />
+                  <Route path="batch-reports" element={<BatchReports />} />
+                  <Route path="open-sessions" element={<OpenSessions />} />
+                  <Route path="powder-batches" element={<PowderBatches />} />
+                  <Route
+                    path="cashbox-sessions-reports"
+                    element={<CashboxSessionsReports />}
+                  />
+                  <Route
+                    path="iron-products-reports"
+                    element={<IronProductsReport />}
+                  />
+                  <Route path="iron-sale" element={<IronSaleReport />} />
+                </Route>
+
+                <Route path="warehouses" element={<Warehouses />}>
+                  <Route
+                    index
+                    element={<Navigate to="total-batches" replace />}
+                  />
+                  <Route path="total-batches" element={<TotalBatches />} />
+                  <Route path="batches-to-sale" element={<BatchesToSale />} />
+                  <Route path="sold-batches" element={<SoldBatches />} />
+                  <Route path="profit" element={<ProfitReport />} />
+                  <Route path="add-product" element={<AddProduct />} />
+                  <Route path="products" element={<WarehouseProducts />} />
+                  <Route path="transfer-to-shop" element={<TransferToShop />} />
+                </Route>
+
+                <Route path="products" element={<Products />}>
+                  <Route
+                    index
+                    element={<Navigate to="products-list" replace />}
+                  />
+                  <Route path="products-list" element={<GeneralProducts />} />
+                  <Route path="iron-products" element={<IronProducts />} />
+                </Route>
+
+                <Route path="shops" element={<Shops />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="customers" element={<Customers />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+
+        <ToastContainer {...toastOptions} />
+      </OtpGateProvider>
     </Provider>
   );
 };

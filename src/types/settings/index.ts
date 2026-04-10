@@ -248,3 +248,14 @@ export interface SalePercentage {
   percentage: number;
   isActive: boolean;
 }
+
+export interface CatalystPricing {
+  id: number;
+  ptReducePercent: number;
+  pdReducePercent: number;
+  rhReducePercent: number;
+  transportCost1UsdPerKg: number;
+  transportCost2UsdPerKg: number;
+  commissionPercent: number;
+  updatedAt: string;
+}

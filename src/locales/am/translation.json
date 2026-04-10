@@ -87,6 +87,7 @@
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կատալիզատորի բաքեր",
+      "catalystPricing": "Կատալիզատորի գներ",
       "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
       "cashRegisters": "Դրամարկղեր",
@@ -1359,5 +1360,20 @@
     "requiredVerification": "Այս էջը դիտելու համար պահանջվում է հաստատում։ Խնդրում ենք վերադարձնել գլխավոր էջ:",
     "goBack": "Վերադարձ դեպի գլխավոր էջ",
     "accessDenied": "Մուտքը արգելված է։ Դուք չունեք իրավունք դիտելու այս էջը։"
+  },
+
+  "catalystPricing": {
+    "title": "Կատալիզատորի գներ",
+    "editPricing": "Խմբագրել գները",
+    "columns": {
+      "id": "ID",
+      "pdReducePercent": "Պալադիումի նվազեցման տոկոս",
+      "rhReducePercent": "Ռոդիումի նվազեցման տոկոս",
+      "ptReducePercent": "Պլատինի նվազեցման տոկոս",
+      "commissionPercent": "Կոմիսիայի տոկոս",
+      "transportCost1UsdPerKg": "Առաքման ծախս 1 (USD/kg)",
+      "transportCost2UsdPerKg": "Առաքման ծախս 2 (USD/kg)",
+      "updatedAt": "Թարմացվել է"
+    }
   }
 }

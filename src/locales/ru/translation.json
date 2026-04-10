@@ -87,6 +87,7 @@
       "vehicleManagement": "Управление транспортными средствами",
       "metalRates": "Курсы металлов",
       "catalystBuckets": "Катализаторные баки",
+      "catalystPricing": "Ценообразование катализатора",
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
       "cashRegisters": "Кассовые аппараты",
@@ -1357,5 +1358,19 @@
     "requiredVerification": "Для просмотра этой страницы требуется проверка. Пожалуйста, вернитесь на панель управления.",
     "goBack": "Вернуться на панель управления",
     "accessDenied": "Доступ запрещен. У вас нет прав для просмотра этой страницы."
+  },
+  "catalystPricing": {
+    "title": "Ценообразование катализатора",
+    "editPricing": "Редактировать ценообразование катализатора",
+    "columns": {
+      "id": "ID",
+      "pdReducePercent": "Процент снижения палладия",
+      "rhReducePercent": "Процент снижения родия",
+      "ptReducePercent": "Процент снижения платины",
+      "commissionPercent": "Процент комиссии",
+      "transportCost1UsdPerKg": "Стоимость доставки 1 (USD/kg)",
+      "transportCost2UsdPerKg": "Стоимость доставки 2 (USD/kg)",
+      "updatedAt": "Обновлено в"
+    }
   }
 }
