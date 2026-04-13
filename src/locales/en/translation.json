@@ -87,6 +87,7 @@
       "vehicleManagement": "Vehicle Management",
       "metalRates": "Metal Rates",
       "catalystBuckets": "Catalyst Buckets",
+      "catalystPricing": "Catalyst Pricing",
       "customerTypes": "Customer Types",
       "exchangeRates": "Exchange Rates",
       "cashRegisters": "Cash Registers",
@@ -1358,5 +1359,19 @@
     "requiredVerification": "Verification is required to view this page. Please return to thedashboard.",
     "goBack": "Go back to dashboard",
     "accessDenied": "Access denied. You do not have permission to view this page."
+  },
+  "catalystPricing": {
+    "title": "Catalyst Pricing",
+    "editPricing": "Edit Catalyst Pricing",
+    "columns": {
+      "id": "Id",
+      "pdReducePercent": "Palladium Reduce Percent",
+      "rhReducePercent": "Rhodium Reduce Percent",
+      "ptReducePercent": "Platinum Reduce Percent",
+      "commissionPercent": "Commission Percent",
+      "transportCost1UsdPerKg": "Transport Cost 1 (USD/kg)",
+      "transportCost2UsdPerKg": "Transport Cost 2 (USD/kg)",
+      "updatedAt": "Updated At"
+    }
   }
 }

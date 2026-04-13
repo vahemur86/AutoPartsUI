@@ -17,6 +17,7 @@ import {
   Tag,
   Wrench,
   Layout,
+  DollarSign,
 } from "lucide-react";
 
 // components
@@ -78,6 +79,12 @@ export const Settings = () => {
       path: "/catalyst-buckets",
       label: t("settings.navigation.catalystBuckets"),
       icon: FlaskConical,
+      showCheckmark: true,
+    },
+    {
+      path: "/catalyst-pricing",
+      label: t("settings.navigation.catalystPricing"),
+      icon: DollarSign,
       showCheckmark: true,
     },
     {
