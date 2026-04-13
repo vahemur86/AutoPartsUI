@@ -323,8 +323,9 @@
         "totalPowderKg": "Total"
       },
       "preview": {
-        "totalCostAmd": "Total Cost (AMD)",
-        "totalRevenueAmd": "Total Revenue (AMD)",
+        "totalCostAmd": "Sale Price",
+        "totalCost": "Total Cost",
+        "totalRevenueAmd": "Total Revenue",
         "totalPowderKg": "Total powder (kg)"
       },
       "success": {
@@ -836,14 +837,20 @@
         "rh": "Rhodium (Rh)",
         "cost": "Cost",
         "totalCost": "Total Cost",
-        "sales": "Est. Sales",
+        "sales": "Estimated Sales",
         "profit": "Expected Profit",
         "percent": "Bonus Percent",
         "fxRate": "FX Rate (AMD)",
         "offerIncreaseStepOrder": "Offer Increase Step Order",
         "offerIncreasePercent": "Offer Increase Percent",
         "estimatedSalesAmdAtPurchase": "Estimated Sales at purchase time",
-        "estimatedSalesDiffPercent": "Estimated Sales difference percent"
+        "estimatedSalesDiffPercent": "Estimated Sales difference percent",
+        "expectedProfitAmd": "Expected profit at purchase time",
+         "liveProfitPercent": "Live profit percent (now)",
+        "purchaseProfitAmd": "Profit at purchase time",
+        "purchaseProfitPercent": "Profit percent at purchase time",
+        "profitDiffAmd": "Profit difference",
+        "profitDiffPercent": "Profit difference (%)"
       }
     },
     "openSessions": {
@@ -1239,7 +1246,8 @@
       "iron": "Iron"
     },
     "modals": {
-      "pendingTopUpTitle": "Confirm Pending Top-Up"
+      "pendingTopUpTitle": "Confirm Pending Top-Up",
+      "noOffersTitle": "No Offers Available"
     },
     "notifications": {
       "cashUpdated": "Cash register balance has been updated"

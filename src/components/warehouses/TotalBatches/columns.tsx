@@ -40,11 +40,13 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
           onKgChange={meta?.onKgChange}
           onAdd={meta?.onAdd}
           disabled={isEmpty}
-          maxKg={row.original.remainingPowderKg} 
+          maxKg={row.original.remainingPowderKg}
+          isAdded={meta?.selectedMap?.has(inventoryLotId)}
         />
       );
     },
   }),
+
   columnHelper.accessor("remainingPowderKg", {
     header: i18next.t("warehouses.totalBatches.columns.remainingPowderKg"),
     cell: (info) => `${info.getValue()} kg`,

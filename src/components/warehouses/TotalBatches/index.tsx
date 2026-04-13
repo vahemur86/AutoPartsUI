@@ -51,6 +51,10 @@ export const TotalBatches = () => {
     return selectedItems.reduce((acc, item) => acc + item.powderKg, 0);
   }, [selectedItems]);
 
+  const selectedMap = useMemo(() => {
+    return new Set(selectedItems.map((i) => i.inventoryLotId));
+  }, [selectedItems]);
+
   useEffect(() => {
     dispatch(fetchWarehouses());
   }, [dispatch]);
@@ -238,6 +242,7 @@ export const TotalBatches = () => {
             pageSize={10}
             meta={{
               selectedKg,
+              selectedMap,
               onKgChange: handleKgChange,
               onAdd: handleAdd,
             }}

@@ -28,6 +28,11 @@ export interface BatchItem {
   offerIncreasePercent: number;
   estimatedSalesAmdAtPurchase: number;
   estimatedSalesDiffPercent: number;
+  liveProfitPercent: number;
+  purchaseProfitAmd: number;
+  purchaseProfitPercent: number;
+  profitDiffAmd: number;
+  profitDiffPercent: number;
 }
 
 export interface Batch {

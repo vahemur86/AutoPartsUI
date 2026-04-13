@@ -67,6 +67,12 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
     return <div className={styles.detailError}>{t("common.noData")}</div>;
   }
 
+  const getNumberClass = (value: number) => {
+    if (value < 0) return styles.negative;
+    if (value > 0) return styles.positive;
+    return "";
+  };
+
   return (
     <div className={styles.detailContainer}>
       <div className={styles.detailHeaderSection}>
@@ -184,32 +190,47 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     <span>{t("cashbox.batches.details.cost")}</span>
                     <strong>{item.costAmd.toLocaleString()} AMD</strong>
                   </div>
-                  <div className={styles.statLine}>
+                  <div className={styles.statLine2}>
                     <span>{t("cashbox.batches.details.sales")}</span>
-                    <span>{item.estimatedSalesAmd.toLocaleString()} AMD</span>
-                  </div>
-                  <div className={styles.statLine}>
-                    <span>
-                      {t("cashbox.batches.details.estimatedSalesAmdAtPurchase")}
-                    </span>
                     <strong>
-                      {item.estimatedSalesAmdAtPurchase.toLocaleString()} AMD
+                      {item.estimatedSalesAmd.toLocaleString()} AMD
                     </strong>
                   </div>
-                  <div className={styles.statLine}>
+                  <div className={styles.statLine2}>
                     <span>
-                      {t("cashbox.batches.details.estimatedSalesDiffPercent")}
+                      {t("cashbox.batches.details.expectedProfitAmd")}
                     </span>
-                    <strong>
-                      {item.estimatedSalesDiffPercent.toLocaleString()}%
-                    </strong>
-                  </div>
-                  <div className={`${styles.statLine} ${styles.profitLine}`}>
-                    <span>{t("cashbox.batches.details.profit")}</span>
                     <strong>
                       {item.expectedProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
+                  <div className={styles.statLine}>
+                    <span>
+                      {t("cashbox.batches.details.purchaseProfitAmd")}
+                    </span>
+                    <strong>
+                      {item.purchaseProfitAmd.toLocaleString()} AMD
+                    </strong>
+                  </div>
+                  <div className={styles.statLine}>
+                    <span>
+                      {t("cashbox.batches.details.liveProfitPercent")}
+                    </span>
+                    <strong className={getNumberClass(item.liveProfitPercent)}>
+                      {item.liveProfitPercent > 0 ? "+" : ""}
+                      {item.liveProfitPercent.toLocaleString()}%
+                    </strong>
+                  </div>
+                  <div className={styles.statLine}>
+                    <span>{t("cashbox.batches.details.profitDiffAmd")}</span>
+                    <strong className={getNumberClass(item.profitDiffAmd)}>
+                      {item.profitDiffAmd > 0 ? "+" : ""}
+                      {item.profitDiffAmd.toLocaleString()} AMD
+                    </strong>
+                  </div>
+                  <div
+                    className={`${styles.statLine} ${styles.profitLine}`}
+                  ></div>
 
                   <div className={styles.fxRate}>
                     Rate: {item.fxRateToAmd} AMD

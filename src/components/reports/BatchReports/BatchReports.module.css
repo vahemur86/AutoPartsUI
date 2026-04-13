@@ -337,7 +337,7 @@
 
 .metalPricesFooter {
   display: flex;
-  justify-content: flex-end; 
+  justify-content: flex-end;
   gap: 12px;
   font-size: 11px;
   color: white;
@@ -369,4 +369,27 @@
   .itemsGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.negative {
+  color: #ef4444 !important;
+}
+
+.positive {
+  color: #22c55e !important;
+}
+
+.statLine2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.statLine2 span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.statLine2 strong {
+  color: var(--color-primary-500);
 }

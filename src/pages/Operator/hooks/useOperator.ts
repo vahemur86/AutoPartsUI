@@ -85,6 +85,7 @@ export const useOperator = () => {
     isLogoutModalOpen: false,
     isTabConfirmModalOpen: false,
     isRejectConfirmationOpen: false,
+    isCashboxBlockedModalOpen: false,
   });
 
   const [hasTriedCalculateIron, setHasTriedCalculateIron] = useState(false);
@@ -338,6 +339,12 @@ export const useOperator = () => {
     dispatch(clearPrices());
   }, [dispatch]);
 
+  const isCashboxClosedError = (error: unknown) => {
+    const msg = typeof error === "string" ? error : (error as any)?.message;
+
+    return msg === "No open cashbox session for operator.";
+  };
+
   const handleSubmit = async () => {
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
     if (
@@ -372,6 +379,15 @@ export const useOperator = () => {
       setUiState((p) => ({ ...p, hasTriedSubmit: false }));
     } catch (e) {
       console.error(e);
+
+      if (isCashboxClosedError(e)) {
+        setUiState((p) => ({
+          ...p,
+          isCashboxBlockedModalOpen: true,
+        }));
+      } else {
+        dispatch(clearIntakeState());
+      }
     } finally {
       setUiState((p) => ({ ...p, isSubmitting: false }));
     }
