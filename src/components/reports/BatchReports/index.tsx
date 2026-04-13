@@ -190,18 +190,10 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     <span>{t("cashbox.batches.details.cost")}</span>
                     <strong>{item.costAmd.toLocaleString()} AMD</strong>
                   </div>
-                  <div className={styles.statLine2}>
+                   <div className={styles.statLine2}>
                     <span>{t("cashbox.batches.details.sales")}</span>
                     <strong>
                       {item.estimatedSalesAmd.toLocaleString()} AMD
-                    </strong>
-                  </div>
-                  <div className={styles.statLine2}>
-                    <span>
-                      {t("cashbox.batches.details.expectedProfitAmd")}
-                    </span>
-                    <strong>
-                      {item.expectedProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
                   <div className={styles.statLine}>
@@ -212,6 +204,22 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                       {item.purchaseProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
+                      <div className={styles.statLine}>
+                    <span>{t("cashbox.batches.details.profitDiffAmd")}</span>
+                    <strong className={getNumberClass(item.profitDiffAmd)}>
+                      {item.profitDiffAmd > 0 ? "+" : ""}
+                      {item.profitDiffAmd.toLocaleString()} AMD
+                    </strong>
+                  </div>
+                  <div className={styles.statLine2}>
+                    <span>
+                      {t("cashbox.batches.details.expectedProfitAmd")}
+                    </span>
+                    <strong>
+                      {item.expectedProfitAmd.toLocaleString()} AMD
+                    </strong>
+                  </div>
+                  
                   <div className={styles.statLine}>
                     <span>
                       {t("cashbox.batches.details.liveProfitPercent")}
@@ -219,13 +227,6 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     <strong className={getNumberClass(item.liveProfitPercent)}>
                       {item.liveProfitPercent > 0 ? "+" : ""}
                       {item.liveProfitPercent.toLocaleString()}%
-                    </strong>
-                  </div>
-                  <div className={styles.statLine}>
-                    <span>{t("cashbox.batches.details.profitDiffAmd")}</span>
-                    <strong className={getNumberClass(item.profitDiffAmd)}>
-                      {item.profitDiffAmd > 0 ? "+" : ""}
-                      {item.profitDiffAmd.toLocaleString()} AMD
                     </strong>
                   </div>
                   <div
