@@ -188,6 +188,22 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     <span>{t("cashbox.batches.details.sales")}</span>
                     <span>{item.estimatedSalesAmd.toLocaleString()} AMD</span>
                   </div>
+                  <div className={styles.statLine}>
+                    <span>
+                      {t("cashbox.batches.details.estimatedSalesAmdAtPurchase")}
+                    </span>
+                    <strong>
+                      {item.estimatedSalesAmdAtPurchase.toLocaleString()} AMD
+                    </strong>
+                  </div>
+                  <div className={styles.statLine}>
+                    <span>
+                      {t("cashbox.batches.details.estimatedSalesDiffPercent")}
+                    </span>
+                    <strong>
+                      {item.estimatedSalesDiffPercent.toLocaleString()}%
+                    </strong>
+                  </div>
                   <div className={`${styles.statLine} ${styles.profitLine}`}>
                     <span>{t("cashbox.batches.details.profit")}</span>
                     <strong>

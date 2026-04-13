@@ -86,7 +86,7 @@
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
       "metalRates": "Մետաղի գներ",
-      "catalystBuckets": "Կատալիզատորի բաքեր",
+      "catalystBuckets": "Կոդեր",
       "catalystPricing": "Կատալիզատորի գներ",
       "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
@@ -577,7 +577,7 @@
     "editBucket": "Խմբագրել կատալիզատորի բաքը",
     "totalPrice": "Ընդհանուր գին",
     "tabs": {
-      "catalystBuckets": "Կատալիզատորի բաքեր",
+      "catalystBuckets": "Կոդեր",
       "groupCodes": "Խմբային կոդեր"
     },
     "form": {
@@ -843,7 +843,9 @@
         "percent": "Բոնուսային տոկոս",
         "fxRate": "Փոխարժեք (AMD)",
         "offerIncreaseStepOrder": "Առաջարկի բարձրացման քայլերի հերթականություն",
-        "offerIncreasePercent": "Առաջարկի աճի տոկոս"
+        "offerIncreasePercent": "Առաջարկի աճի տոկոս",
+        "estimatedSalesAmdAtPurchase": "Կանխատեսվող վաճառքի գին հիմա",
+        "estimatedSalesDiffPercent": "Վաճառքի գնի տոկոսային տարբերություն"
       }
     },
     "openSessions": {

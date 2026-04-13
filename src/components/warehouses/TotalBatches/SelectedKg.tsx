@@ -11,12 +11,14 @@ export const SelectedKgCell: FC<{
   inventoryLotId: number;
   initialValue: number | undefined;
   disabled?: boolean;
+  maxKg: number;
   onKgChange: (id: number, val: number) => void;
   onAdd: (id: number, val: number) => void;
 }> = ({
   inventoryLotId,
   initialValue,
   disabled = false,
+  maxKg,
   onKgChange,
   onAdd,
 }) => {
@@ -38,15 +40,30 @@ export const SelectedKgCell: FC<{
   const numericValue = parseFloat(localValue) || 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setLocalValue(val);
+    let val = e.target.value;
 
-    const numericVal = val === "" ? 0 : parseFloat(val);
-    onKgChange(inventoryLotId, isNaN(numericVal) ? 0 : numericVal);
+    if (val === "") {
+      setLocalValue("");
+      onKgChange(inventoryLotId, 0);
+      return;
+    }
+
+    let numericVal = parseFloat(val);
+
+    if (isNaN(numericVal)) return;
+
+    // 🚨 LIMIT HERE
+    if (numericVal > maxKg) {
+      numericVal = maxKg;
+      val = maxKg.toString();
+    }
+
+    setLocalValue(val);
+    onKgChange(inventoryLotId, numericVal);
   };
 
   const handleAddClick = () => {
-    if (numericValue > 0) {
+    if (numericValue > 0 && numericValue <= maxKg) {
       onAdd(inventoryLotId, numericValue);
     }
   };
@@ -62,6 +79,7 @@ export const SelectedKgCell: FC<{
           placeholder="0"
           min="0"
           step="0.01"
+          max={maxKg}
           className={styles.kgInput}
         />
       </div>
