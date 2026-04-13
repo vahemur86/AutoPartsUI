@@ -323,8 +323,9 @@
         "totalPowderKg": "Общий"
       },
       "preview": {
-        "totalCostAmd": "Общая стоимость (AMD)",
-        "totalRevenueAmd": "Общая выручка (AMD)",
+        "totalCostAmd": "Стоимость продажи",
+        "totalCost": "Стоимость",
+        "totalRevenueAmd": "Общая выручка",
         "totalPowderKg": "Общий вес порошка (кг)"
       },
       "success": {
@@ -827,23 +828,29 @@
         "status": "Статус"
       },
       "details": {
-        "individualIntakes": "Индивидуальные Заявки",
-        "analysis": "Анализ элементов партии",
+        "individualIntakes": "Отдельные приемы",
+        "analysis": "Анализ партии",
         "intakeId": "Заявка",
         "powder": "Порошок",
         "pt": "Платина (Pt)",
         "pd": "Палладий (Pd)",
         "rh": "Родий (Rh)",
-        "cost": "Себестоимость",
-        "totalCost": "Общая себестоимость",
+        "cost": "Издержки",
+        "totalCost": "Общие издержки",
         "sales": "Оценочные продажи",
-        "profit": "Ожидаемая прибыль",
-        "percent": "Бонусный процент",
-        "fxRate": "Курс валют (AMD)",
-        "offerIncreaseStepOrder": "Порядок шага увеличения предложения",
+        "profit": "Оценочная прибыль",
+        "percent": "Процент прибыли",
+        "fxRate": "Курс (AMD)",
+        "offerIncreaseStepOrder": "Шаг увеличения предложения",
         "offerIncreasePercent": "Процент увеличения предложения",
-        "estimatedSalesAmdAtPurchase": "Оценочные продажи на момент покупки",
-        "estimatedSalesDiffPercent": "Оценочная разница продаж в процентах"
+        "estimatedSalesAmdAtPurchase": "Оценочные продажи (на момент покупки)",
+        "estimatedSalesDiffPercent": "Изменение оценочных продаж",
+        "expectedProfitAmd": "Ожидаемая прибыль (AMD)",
+        "liveProfitPercent": "Текущая процентная прибыль (сейчас)",
+        "purchaseProfitAmd": "Прибыль от покупки (AMD)",
+        "purchaseProfitPercent": "Процент прибыли от покупки",
+        "profitDiffAmd": "Разница в прибыли",
+        "profitDiffPercent": "Разница в прибыли (%)"
       }
     },
     "openSessions": {
@@ -1238,7 +1245,8 @@
       "iron": "Железо"
     },
     "modals": {
-      "pendingTopUpTitle": "Подтверждение ожидаемого пополнения"
+      "pendingTopUpTitle": "Подтверждение ожидаемого пополнения",
+      "noOffersTitle": "Нет предложений для расчета"
     },
     "notifications": {
       "cashUpdated": "Баланс кассы был обновлен"

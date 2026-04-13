@@ -122,6 +122,7 @@ export interface SalesLotPreviewRequest {
 export interface SalesLotPreviewResponse {
   items: SalesLotPreviewItem[];
   totalPowderKg: number;
+  totalCost: number;
   totalCostAmd: number;
   totalRevenueAmd: number;
   ptTotal_g: number;

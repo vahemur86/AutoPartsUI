@@ -236,6 +236,14 @@ export const SalesLotPreviewModal = ({
 
                   <div className={styles.summaryCard}>
                     <span className={styles.summaryCardLabel}>
+                      {t("warehouses.totalBatches.preview.totalCost")}
+                    </span>
+                    <strong className={styles.summaryCardValue}>
+                      {formatValue(previewData.totalCost, 0)} AMD
+                    </strong>
+                  </div>
+                   <div className={styles.summaryCard}>
+                    <span className={styles.summaryCardLabel}>
                       {t("warehouses.totalBatches.preview.totalCostAmd")}
                     </span>
                     <strong className={styles.summaryCardValue}>

@@ -6,18 +6,21 @@ import { TextField, Button } from "@/ui-kit";
 
 // styles
 import styles from "./TotalBatches.module.css";
+import { CheckCircle } from "lucide-react";
 
 export const SelectedKgCell: FC<{
   inventoryLotId: number;
   initialValue: number | undefined;
   disabled?: boolean;
   maxKg: number;
+  isAdded?: boolean;
   onKgChange: (id: number, val: number) => void;
   onAdd: (id: number, val: number) => void;
 }> = ({
   inventoryLotId,
   initialValue,
   disabled = false,
+  isAdded = false,
   maxKg,
   onKgChange,
   onAdd,
@@ -83,14 +86,20 @@ export const SelectedKgCell: FC<{
           className={styles.kgInput}
         />
       </div>
-
       <Button
-        variant="primary"
+        variant={isAdded ? "secondary" : "primary"}
         size="small"
         onClick={handleAddClick}
-        disabled={disabled || numericValue <= 0}
+        disabled={disabled || numericValue <= 0 || isAdded}
       >
-        {t("common.add")}
+        {isAdded ? (
+          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {t("common.add")}
+            <CheckCircle size={16} color="#22c55e" />
+          </span>
+        ) : (
+          t("common.add")
+        )}
       </Button>
     </div>
   );

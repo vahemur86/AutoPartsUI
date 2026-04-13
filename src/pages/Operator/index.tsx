@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { ConfirmationModal, Tab } from "@/ui-kit";
+import { Button, ConfirmationModal, Tab } from "@/ui-kit";
 
 // components
 import {
@@ -304,6 +304,30 @@ export const OperatorPage = () => {
           onConfirm={actions.handleConfirmTopUp}
           isLoading={selectors.cashRegisters.isPendingLoading}
         />
+      )}
+
+      {uiState.isCashboxBlockedModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalCard}>
+            <h2 className={styles.modalTitle}>
+              {t("operatorPage.modals.noOffersTitle")}
+            </h2>
+
+            <div className={styles.modalActions}>
+              <Button
+                className={styles.modalButton}
+                onClick={() =>
+                  setUiState((p) => ({
+                    ...p,
+                    isCashboxBlockedModalOpen: false,
+                  }))
+                }
+              >
+                {t("common.save")}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {uiState.isRejectConfirmationOpen && (

@@ -325,8 +325,9 @@
         "totalPowderKg": "Ընդհանուր"
       },
       "preview": {
-        "totalCostAmd": "Ընդհանուր արժեքը (AMD)",
-        "totalRevenueAmd": "Ընդհանուր հասույթը (AMD)",
+        "totalCostAmd": "Վաճառքի գին",
+        "totalCost": "Ինքնարժեք",
+        "totalRevenueAmd": "Ընդհանուր հասույթը",
         "totalPowderKg": "Փոշու ընդհանուր քանակը (կգ)"
       },
       "success": {
@@ -838,14 +839,20 @@
         "rh": "Ռոդիում (Rh)",
         "cost": "Ինքնարժեք",
         "totalCost": "Ընդհանուր ինքնարժեք",
-        "sales": "Կանխատեսվող վաճառք",
+        "sales": "Վաճառքի գին (ներկա)",
         "profit": "Սպասվող շահույթ",
         "percent": "Բոնուսային տոկոս",
         "fxRate": "Փոխարժեք (AMD)",
         "offerIncreaseStepOrder": "Առաջարկի բարձրացման քայլերի հերթականություն",
         "offerIncreasePercent": "Առաջարկի աճի տոկոս",
-        "estimatedSalesAmdAtPurchase": "Կանխատեսվող վաճառքի գին հիմա",
-        "estimatedSalesDiffPercent": "Վաճառքի գնի տոկոսային տարբերություն"
+        "estimatedSalesAmdAtPurchase": "Վաճառքի գին (գնման պահին)",
+        "estimatedSalesDiffPercent": "Վաճառքի գնի փոփոխություն",
+        "expectedProfitAmd": "Շահույթ (ներկա)",
+        "liveProfitPercent": "Շահույթի տոկոս (ներկա)",
+        "purchaseProfitAmd": "Շահույթ (գնման պահին)",
+        "purchaseProfitPercent": "Շահույթի տոկոս (գնման պահին)",
+        "profitDiffAmd": "Շահույթի աճ",
+        "profitDiffPercent": "Շահույթի աճ (%)"
       }
     },
     "openSessions": {
@@ -1202,7 +1209,7 @@
     }
   },
   "pricingBreakdown": {
-    "title": "Գիների մանրամասներ",
+    "title": "Գների մանրամասներ",
     "metals": {
       "platinum": "Պլատին",
       "palladium": "Պալադիում",
@@ -1240,7 +1247,8 @@
       "iron": "Երկաթ"
     },
     "modals": {
-      "pendingTopUpTitle": "Հաստատել սպասվող համալրումը"
+      "pendingTopUpTitle": "Հաստատել սպասվող համալրումը",
+      "noOffersTitle": "Առաջարկներ չկան"
     },
     "notifications": {
       "cashUpdated": "Դրամարկղի մնացորդը թարմացվել է"
