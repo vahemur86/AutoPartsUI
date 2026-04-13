@@ -86,7 +86,7 @@
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
       "metalRates": "Курсы металлов",
-      "catalystBuckets": "Катализаторные баки",
+      "catalystBuckets": "Коды",
       "catalystPricing": "Ценообразование катализатора",
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
@@ -570,12 +570,12 @@
     }
   },
   "catalystBuckets": {
-    "title": "Катализаторные баки",
+    "title": "Коды",
     "addBucket": "Добавить катализаторный бак",
     "editBucket": "Редактировать катализаторный бак",
     "totalPrice": "Общая стоимость",
     "tabs": {
-      "catalystBuckets": "Катализаторные баки",
+      "catalystBuckets": "Коды",
       "groupCodes": "Групповые коды"
     },
     "form": {
@@ -841,7 +841,9 @@
         "percent": "Бонусный процент",
         "fxRate": "Курс валют (AMD)",
         "offerIncreaseStepOrder": "Порядок шага увеличения предложения",
-        "offerIncreasePercent": "Процент увеличения предложения"
+        "offerIncreasePercent": "Процент увеличения предложения",
+        "estimatedSalesAmdAtPurchase": "Оценочные продажи на момент покупки",
+        "estimatedSalesDiffPercent": "Оценочная разница продаж в процентах"
       }
     },
     "openSessions": {

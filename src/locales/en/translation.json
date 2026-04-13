@@ -86,7 +86,7 @@
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
       "metalRates": "Metal Rates",
-      "catalystBuckets": "Catalyst Buckets",
+      "catalystBuckets": "Codes",
       "catalystPricing": "Catalyst Pricing",
       "customerTypes": "Customer Types",
       "exchangeRates": "Exchange Rates",
@@ -570,12 +570,12 @@
     }
   },
   "catalystBuckets": {
-    "title": "Catalyst Buckets",
+    "title": "Codes",
     "addBucket": "Add Catalyst Bucket",
     "editBucket": "Edit Catalyst Bucket",
     "totalPrice": "Total Price",
     "tabs": {
-      "catalystBuckets": "Catalyst Buckets",
+      "catalystBuckets": "Codes",
       "groupCodes": "Group Codes"
     },
     "form": {
@@ -841,7 +841,9 @@
         "percent": "Bonus Percent",
         "fxRate": "FX Rate (AMD)",
         "offerIncreaseStepOrder": "Offer Increase Step Order",
-        "offerIncreasePercent": "Offer Increase Percent"
+        "offerIncreasePercent": "Offer Increase Percent",
+        "estimatedSalesAmdAtPurchase": "Estimated Sales at purchase time",
+        "estimatedSalesDiffPercent": "Estimated Sales difference percent"
       }
     },
     "openSessions": {

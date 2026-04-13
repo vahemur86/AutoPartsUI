@@ -40,6 +40,7 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
           onKgChange={meta?.onKgChange}
           onAdd={meta?.onAdd}
           disabled={isEmpty}
+          maxKg={row.original.remainingPowderKg} 
         />
       );
     },
