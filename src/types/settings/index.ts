@@ -258,4 +258,5 @@ export interface CatalystPricing {
   transportCost2UsdPerKg: number;
   commissionPercent: number;
   updatedAt: string;
+  profitMargin: number;
 }

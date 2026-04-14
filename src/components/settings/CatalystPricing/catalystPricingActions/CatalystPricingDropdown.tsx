@@ -37,6 +37,7 @@ export const CatalystPricingDropdown = ({
   const [transportCost1, setTransportCost1] = useState("");
   const [transportCost2, setTransportCost2] = useState("");
   const [commissionPercent, setCommissionPercent] = useState("");
+  const [profitMargin, setProfitMargin] = useState("");
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
   const isEditMode = !!initialData;
@@ -49,6 +50,7 @@ export const CatalystPricingDropdown = ({
       setTransportCost1(String(initialData.transportCost1UsdPerKg));
       setTransportCost2(String(initialData.transportCost2UsdPerKg));
       setCommissionPercent(String(initialData.commissionPercent));
+      setProfitMargin(String(initialData.profitMargin));
       setHasTriedSave(false);
     }
   }, [open, initialData]);
@@ -59,6 +61,7 @@ export const CatalystPricingDropdown = ({
   const numT1 = parseFloat(transportCost1);
   const numT2 = parseFloat(transportCost2);
   const numCommission = parseFloat(commissionPercent);
+  const numProfitMargin = parseFloat(profitMargin);
 
   const isValid =
     !isNaN(numPt) &&
@@ -88,6 +91,7 @@ export const CatalystPricingDropdown = ({
       transportCost1UsdPerKg: numT1,
       transportCost2UsdPerKg: numT2,
       commissionPercent: numCommission,
+      profitMargin: numProfitMargin,
       updatedAt: initialData.updatedAt ?? new Date().toISOString(),
     });
   };
@@ -153,7 +157,6 @@ export const CatalystPricingDropdown = ({
             error={hasTriedSave && isNaN(numT2)}
             disabled={isLoading}
           />
-
           <TextField
             label={t("catalystPricing.columns.commissionPercent")}
             type="number"
@@ -162,6 +165,20 @@ export const CatalystPricingDropdown = ({
             error={
               hasTriedSave &&
               (isNaN(numCommission) || numCommission > 100 || numCommission < 0)
+            }
+            disabled={isLoading}
+          />
+
+          <TextField
+            label={t("catalystPricing.columns.profitMargin")}
+            type="number"
+            value={profitMargin}
+            onChange={(e) => setProfitMargin(e.target.value)}
+            error={
+              hasTriedSave &&
+              (isNaN(numProfitMargin) ||
+                numProfitMargin > 100 ||
+                numProfitMargin < 0)
             }
             disabled={isLoading}
           />

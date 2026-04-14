@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { DataTable, IconButton } from "@/ui-kit";
 
 // icons
-import { Filter, User, Phone } from "lucide-react";
+import { Filter, User, Phone, TrendingUp } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -82,7 +82,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
           </h4>
           <div className={styles.metaInfo}>
             <span>
-              {t("cashbox.batches.columns.createdAt")}:{" "}
+              {t("cashbox.batches.columns.createdAt")}:
               <strong>
                 {new Date(batchDetails.createdAt).toLocaleString()}
               </strong>
@@ -90,10 +90,69 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
             <span>
               Session ID: <strong>#{batchDetails.sessionId}</strong>
             </span>
-            <span>
-              {t("cashbox.batches.details.totalCost")}:{" "}
-              <strong>{batchDetails.costTotalAmd.toLocaleString()} AMD</strong>
-            </span>
+
+            <div className={styles.metaRow}>
+              <TrendingUp size={13} className={styles.iconAccent} />
+              <span className={styles.statLine}>
+                {t("cashbox.batches.details.cost")}:{" "}
+                <strong>
+                  {batchDetails.totalCostAmd.toLocaleString()} AMD
+                </strong>
+              </span>
+            </div>
+            <div className={styles.metaRow}>
+              <TrendingUp size={13} className={styles.iconAccent} />
+              <span className={styles.statLine2}>
+                {t("cashbox.batches.details.sales")}:{" "}
+                <strong>
+                  {batchDetails.totalEstimatedSalesAmd.toLocaleString()} AMD
+                </strong>
+              </span>
+            </div>
+            <div className={styles.metaRow}>
+              <TrendingUp size={13} className={styles.iconAccent} />
+              <span className={styles.statLine}>
+                {t("cashbox.batches.details.purchaseProfitAmd")}:{" "}
+                <strong>
+                  {batchDetails.totalPurchaseProfitAmd.toLocaleString()} AMD
+                </strong>
+              </span>
+            </div>
+            <div className={styles.metaRow}>
+              <TrendingUp size={13} className={styles.iconAccent} />
+              <span className={styles.statLine}>
+                {t("cashbox.batches.details.profitDiffAmd")}:{" "}
+                <strong
+                  className={getNumberClass(batchDetails.totalProfitDiffAmd)}
+                >
+                  {batchDetails.totalProfitDiffAmd > 0 ? "+" : ""}
+                  {batchDetails.totalProfitDiffAmd.toLocaleString()}AMD
+                </strong>
+              </span>
+            </div>
+            <div className={styles.metaRow}>
+              <TrendingUp size={13} className={styles.iconAccent} />
+              <span className={styles.statLine2}>
+                {t("cashbox.batches.details.expectedProfitAmd")}:{" "}
+                <strong>
+                  {batchDetails.totalLiveProfitAmd.toLocaleString()} AMD
+                </strong>
+              </span>
+            </div>
+            <div className={styles.metaRow}>
+              <TrendingUp size={13} className={styles.iconAccent} />
+              <span className={styles.statLine}>
+                {t("cashbox.batches.details.liveProfitPercent")}:{" "}
+                <strong
+                  className={getNumberClass(
+                    batchDetails.totalLiveProfitPercent,
+                  )}
+                >
+                  {batchDetails.totalLiveProfitPercent > 0 ? "+" : ""}
+                  {batchDetails.totalLiveProfitPercent.toFixed(2)}%
+                </strong>
+              </span>
+            </div>
           </div>
         </div>
         <div className={styles.totalsGrid}>
@@ -218,7 +277,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     </span>
                     <strong className={getNumberClass(item.liveProfitPercent)}>
                       {item.liveProfitPercent > 0 ? "+" : ""}
-                      {item.liveProfitPercent.toLocaleString()}%
+                      {item.liveProfitPercent.toFixed(2)}%
                     </strong>
                   </div>
                   <div className={styles.statLine}>

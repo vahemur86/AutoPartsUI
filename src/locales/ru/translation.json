@@ -1380,7 +1380,8 @@
       "commissionPercent": "Процент комиссии",
       "transportCost1UsdPerKg": "Стоимость доставки 1 (USD/kg)",
       "transportCost2UsdPerKg": "Стоимость доставки 2 (USD/kg)",
-      "updatedAt": "Обновлено в"
+      "updatedAt": "Обновлено в",
+      "profitMargin": "Процент прибыли"
     }
   }
 }
