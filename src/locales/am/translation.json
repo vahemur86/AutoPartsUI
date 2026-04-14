@@ -1383,7 +1383,8 @@
       "commissionPercent": "Կոմիսիայի տոկոս",
       "transportCost1UsdPerKg": "Առաքման ծախս 1 (USD/kg)",
       "transportCost2UsdPerKg": "Առաքման ծախս 2 (USD/kg)",
-      "updatedAt": "Թարմացվել է"
+      "updatedAt": "Թարմացվել է",
+       "profitMargin": "Շահույթի տոկոս"
     }
   }
 }

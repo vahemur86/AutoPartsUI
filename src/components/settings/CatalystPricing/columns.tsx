@@ -33,10 +33,17 @@ export const getCatalystPricingColumns = (
     header: i18next.t("catalystPricing.columns.transportCost1UsdPerKg"),
     cell: (info) => `$${info.getValue()?.toFixed(2)}`,
   }),
-
   columnHelper.accessor("transportCost2UsdPerKg", {
     header: i18next.t("catalystPricing.columns.transportCost2UsdPerKg"),
     cell: (info) => `$${info.getValue()?.toFixed(2)}`,
+  }),
+  columnHelper.accessor("commissionPercent", {
+    header: i18next.t("catalystPricing.columns.commissionPercent"),
+    cell: (info) => `${info.getValue()?.toFixed(2)}%`,
+  }),
+  columnHelper.accessor("profitMargin", {
+    header: i18next.t("catalystPricing.columns.profitMargin"),
+    cell: (info) => `${info.getValue()?.toFixed(2)}%`,
   }),
   columnHelper.accessor("updatedAt", {
     header: i18next.t("catalystPricing.columns.updatedAt"),

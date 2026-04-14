@@ -59,6 +59,12 @@ export interface Batch {
   avgPdPricePerKg?: number;
   avgPtPricePerKg?: number;
   avgRhPricePerKg?: number;
+  totalCostAmd: number;
+  totalEstimatedSalesAmd: number;
+  totalPurchaseProfitAmd: number;
+  totalLiveProfitAmd: number;
+  totalProfitDiffAmd: number;
+  totalLiveProfitPercent: number;
 }
 
 export interface BatchDetails extends Batch {

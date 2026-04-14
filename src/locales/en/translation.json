@@ -846,7 +846,7 @@
         "estimatedSalesAmdAtPurchase": "Estimated Sales at purchase time",
         "estimatedSalesDiffPercent": "Estimated Sales difference percent",
         "expectedProfitAmd": "Expected profit at purchase time",
-         "liveProfitPercent": "Live profit percent (now)",
+        "liveProfitPercent": "Live profit percent (now)",
         "purchaseProfitAmd": "Profit at purchase time",
         "purchaseProfitPercent": "Profit percent at purchase time",
         "profitDiffAmd": "Profit difference",
@@ -1381,7 +1381,8 @@
       "commissionPercent": "Commission Percent",
       "transportCost1UsdPerKg": "Transport Cost 1 (USD/kg)",
       "transportCost2UsdPerKg": "Transport Cost 2 (USD/kg)",
-      "updatedAt": "Updated At"
+      "updatedAt": "Updated At",
+      "profitMargin": "Profit Percent"
     }
   }
 }
