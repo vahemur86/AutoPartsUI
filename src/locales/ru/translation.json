@@ -362,13 +362,13 @@
         "status": "Статус",
         "itemsCostTotalAmd": "Стоимость",
         "profit": "Прибыль",
-        "totalPowderKg": "Всего",
-        "costTotalAmd": "Общая",
         "ptTotal_g": "Pt",
         "pdTotal_g": "Pd",
         "rhTotal_g": "Rh",
         "createdAt": "Создано",
-        "soldAt": "Продано"
+        "soldAt": "Продано",
+        "totalPowderKg": "Вес",
+        "costTotalAmd": "Цена продажи"
       }
     },
     "soldBatches": {
@@ -386,11 +386,11 @@
         "salesLotId": "ID партии продажи",
         "warehouseId": "ID склада",
         "currencyCode": "Валюта",
-        "revenueTotal": "Общий доход",
-        "revenueTotalAmd": "Общий доход (AMD)",
-        "costAmd": "Стоимость (AMD)",
+        "revenueTotal": "Проданный порошок (кг)",
+        "revenueTotalAmd": "Продажная цена (AMD)",
+        "costAmd": "Инвестиции",
         "profitAmd": "Прибыль (AMD)",
-        "soldPowderKg": "Проданный порошок (кг)",
+        "soldPowderKg": "Вес лота (кг)",
         "createdAt": "Создано"
       },
       "errors": {

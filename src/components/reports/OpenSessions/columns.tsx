@@ -22,7 +22,14 @@ export const getOpenSessionsColumns = (): ColumnDef<OpenSessionSummary, any>[] =
   }),
   columnHelper.accessor("openedAt", {
     header: i18next.t("cashbox.openSessions.columns.openedAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+    cell: (info) =>
+      new Date(info.getValue()).toLocaleString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   }),
   columnHelper.accessor("intakesOfferedCount", {
     header: i18next.t("cashbox.openSessions.columns.intakesOffered"),

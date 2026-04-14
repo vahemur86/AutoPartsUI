@@ -17,6 +17,12 @@ const columnHelper = createColumnHelper<BaseLot>();
 
 const STATUS_MAP = createStatusMapForSale(styles);
 
+const getNumberClass = (value: number) => {
+  if (value < 0) return styles.negative;
+  if (value > 0) return styles.positive;
+  return "";
+};
+
 interface SalesLotColumnHandlers {
   onSell: (lot: BaseLot) => void;
 }
@@ -55,7 +61,11 @@ export const getSalesLotColumns = ({
 
   columnHelper.accessor("profitAmd", {
     header: i18next.t("warehouses.batchesToSale.columns.profit"),
-    cell: (info) => `${info.getValue().toLocaleString()} AMD`,
+    cell: (info) => (
+      <span className={getNumberClass(info.getValue())}>
+        {info.getValue().toLocaleString()} AMD
+      </span>
+    ),
   }),
 
   columnHelper.accessor("ptTotal_g", {
@@ -72,7 +82,14 @@ export const getSalesLotColumns = ({
   }),
   columnHelper.accessor("createdAt", {
     header: i18next.t("warehouses.batchesToSale.columns.createdAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+    cell: (info) =>
+      new Date(info.getValue()).toLocaleString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   }),
   columnHelper.accessor("soldAt", {
     header: i18next.t("warehouses.batchesToSale.columns.soldAt"),

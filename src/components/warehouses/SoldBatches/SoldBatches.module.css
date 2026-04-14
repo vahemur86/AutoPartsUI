@@ -83,3 +83,10 @@
   font-weight: 600;
 }
 
+.negative {
+  color: #ef4444 !important;
+}
+
+.positive {
+  color: #22c55e !important;
+}

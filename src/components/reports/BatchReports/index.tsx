@@ -84,6 +84,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
             <span>
               {t("cashbox.batches.columns.createdAt")}:
               <strong>
+                
                 {new Date(batchDetails.createdAt).toLocaleString()}
               </strong>
             </span>
