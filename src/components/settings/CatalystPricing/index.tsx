@@ -8,7 +8,7 @@ import {
 } from "react";
 
 // ui-kit
-import { DataTable } from "@/ui-kit";
+import { Button } from "@/ui-kit";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -22,9 +22,9 @@ import {
   fetchCatalystPricing,
 } from "@/store/slices/catalystPricingSlice";
 
-import { getCatalystPricingColumns } from "./columns";
 import { CatalystPricingDropdown } from "./catalystPricingActions/CatalystPricingDropdown";
 import type { CatalystPricing } from "@/types/settings";
+import { t } from "i18next";
 
 export const CatalystPricings: FC = () => {
   const dispatch = useAppDispatch();
@@ -70,11 +70,6 @@ export const CatalystPricings: FC = () => {
     return prices ? [prices] : [];
   }, [prices]);
 
-  const columns = useMemo(
-    () => getCatalystPricingColumns({ onEdit: handleOpenEdit }),
-    [handleOpenEdit],
-  );
-
   return (
     <div className={styles.catalystPricingWrapper}>
       <CatalystPricingDropdown
@@ -86,8 +81,68 @@ export const CatalystPricings: FC = () => {
         onSave={handleSaveRate}
       />
 
-      <div className={styles.tableWrapper}>
-        <DataTable data={tableData} columns={columns} pageSize={1} />
+      <div className={styles.cardsWrapper}>
+        {tableData.map((item) => (
+          <div key={item.id} className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div className={styles.cardTitle}>
+                {t("catalystPricing.title")} #{item.id}
+              </div>
+              <Button
+                className={styles.editBtn}
+                onClick={(e) => handleOpenEdit(item, e)}
+              >
+                {t("common.edit")}
+              </Button>
+            </div>
+
+            <div className={styles.cardGrid}>
+              <div className={styles.cardItem}>
+                <span>{t("catalystPricing.columns.pdReducePercent")}</span>
+                <b>{item.pdReducePercent.toFixed(2)}%</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>{t("catalystPricing.columns.ptReducePercent")}</span>
+                <b>{item.ptReducePercent.toFixed(2)}%</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>{t("catalystPricing.columns.rhReducePercent")}</span>
+                <b>{item.rhReducePercent.toFixed(2)}%</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>
+                  {t("catalystPricing.columns.transportCost1UsdPerKg")}
+                </span>
+                <b>${item.transportCost1UsdPerKg.toFixed(2)}</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>
+                  {t("catalystPricing.columns.transportCost2UsdPerKg")}
+                </span>
+                <b>${item.transportCost2UsdPerKg.toFixed(2)}</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>{t("catalystPricing.columns.commissionPercent")}</span>
+                <b>{item.commissionPercent.toFixed(2)}%</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>{t("catalystPricing.columns.profitMargin")}</span>
+                <b>{item.profitMargin.toFixed(2)}%</b>
+              </div>
+
+              <div className={styles.cardItem}>
+                <span>{t("catalystPricing.columns.updatedAt")}</span>
+                <b>{new Date(item.updatedAt).toLocaleDateString()}</b>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

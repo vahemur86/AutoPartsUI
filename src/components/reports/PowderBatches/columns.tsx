@@ -24,7 +24,14 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
   }),
   columnHelper.accessor("createdAt", {
     header: i18next.t("cashbox.powderBatches.columns.createdAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+    cell: (info) =>
+      new Date(info.getValue()).toLocaleString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   }),
   columnHelper.accessor("intakeCount", {
     header: i18next.t("cashbox.powderBatches.columns.intakes"),

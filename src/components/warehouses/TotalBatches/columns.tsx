@@ -81,10 +81,24 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
 
   columnHelper.accessor("createdAt", {
     header: i18next.t("warehouses.totalBatches.columns.createdAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+    cell: (info) =>
+      new Date(info.getValue()).toLocaleString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   }),
   columnHelper.accessor("updatedAt", {
     header: i18next.t("warehouses.totalBatches.columns.updatedAt"),
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+    cell: (info) =>
+      new Date(info.getValue()).toLocaleString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   }),
 ];

@@ -362,13 +362,13 @@
         "status": "Status",
         "itemsCostTotalAmd": "Cost",
         "profit": "Profit",
-        "totalPowderKg": "Total",
-        "costTotalAmd": "Total",
         "ptTotal_g": "Pt",
         "pdTotal_g": "Pd",
         "rhTotal_g": "Rh",
         "createdAt": "Created At",
-        "soldAt": "Sold At"
+        "soldAt": "Sold At",
+        "totalPowderKg": "Weight",
+        "costTotalAmd": "Sale Price"
       }
     },
     "soldBatches": {
@@ -386,11 +386,11 @@
         "salesLotId": "Sales Lot ID",
         "warehouseId": "Warehouse ID",
         "currencyCode": "Currency",
-        "revenueTotal": "Revenue Total",
-        "revenueTotalAmd": "Revenue Total (AMD)",
+        "revenueTotal": "Sold Powder (kg)",
+        "revenueTotalAmd": "Sold Price (AMD)",
         "costAmd": "Cost (AMD)",
         "profitAmd": "Profit (AMD)",
-        "soldPowderKg": "Sold Powder (kg)",
+        "soldPowderKg": "Lot Weight (kg)",
         "createdAt": "Created At"
       },
       "errors": {

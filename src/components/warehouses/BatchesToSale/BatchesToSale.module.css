@@ -104,3 +104,11 @@
 .tableSection :global(tbody tr:active) {
   transform: scale(0.998);
 }
+
+.negative {
+  color: #ef4444 !important;
+}
+
+.positive {
+  color: #22c55e !important;
+}
