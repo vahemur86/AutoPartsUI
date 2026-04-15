@@ -18,6 +18,16 @@ export interface ProfitReportResponse {
   soldPowderKg: number;
 }
 
+export type DailyProfitReportResponse = DailyProfitReportItem[];
+
+export interface DailyProfitReportItem {
+  date: string;
+  revenueAmd: number;
+  costAmd: number;
+  profitAmd: number;
+  soldPowderKg: number;
+}
+
 export interface InventoryLot {
   id: number;
   powderBatchId: number;

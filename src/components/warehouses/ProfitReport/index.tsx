@@ -15,6 +15,7 @@ import { getCashRegisterId, getApiErrorMessage } from "@/utils";
 
 // styles
 import styles from "./ProfitReport.module.css";
+import { DailyProfit } from "./DailyReports";
 
 export const ProfitReport = () => {
   const { t } = useTranslation();
@@ -220,6 +221,11 @@ export const ProfitReport = () => {
             </div>
           </div>
         )}
+      </section>
+      <section>
+         <div style={{ marginTop: 24 }}>
+        <DailyProfit />
+      </div>
       </section>
     </div>
   );

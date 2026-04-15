@@ -1383,5 +1383,28 @@
       "updatedAt": "Обновлено в",
       "profitMargin": "Процент прибыли"
     }
+  },
+  "warehouse": {
+    "dailyProfit": {
+      "columns": {
+        "date": "Дата",
+        "revenueAmd": "Выручка",
+        "costAmd": "Себестоимость",
+        "profitAmd": "Прибыль",
+        "soldPowderKg": "Проданный порошок (кг)"
+      },
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "Дата до"
+      }
+    },
+    "navigation": {
+      "dailyProfit": "Ежедневный отчет о прибыли склада"
+    },
+    "form": {
+      "selectWarehouse": "Пожалуйста, выберите склад",
+      "loading": "Загрузка...",
+      "emptyState": "На этом складе товары не найдены."
+    }
   }
 }

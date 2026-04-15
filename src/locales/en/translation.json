@@ -1384,5 +1384,28 @@
       "updatedAt": "Updated At",
       "profitMargin": "Profit Percent"
     }
+  },
+  "warehouse": {
+    "dailyProfit": {
+      "columns": {
+        "date": "Date",
+        "revenueAmd": "Revenue (AMD)",
+        "costAmd": "Cost (AMD)",
+        "profitAmd": "Profit (AMD)",
+        "soldPowderKg": "Sold Powder (kg)"
+      },
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date"
+      }
+    },
+    "navigation": {
+      "dailyProfit": "Warehouse daily profit reports"
+    },
+    "form": {
+      "selectWarehouse": "Please select a warehouse",
+      "loading": "Loading...",
+      "emptyState": "No products found in this warehouse."
+    }
   }
 }

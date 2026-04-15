@@ -1384,7 +1384,30 @@
       "transportCost1UsdPerKg": "Առաքման ծախս 1 (USD/kg)",
       "transportCost2UsdPerKg": "Առաքման ծախս 2 (USD/kg)",
       "updatedAt": "Թարմացվել է",
-       "profitMargin": "Շահույթի տոկոս"
+      "profitMargin": "Շահույթի տոկոս"
+    }
+  },
+  "warehouse": {
+    "dailyProfit": {
+      "columns": {
+        "date": "Ամսաթիվ",
+        "revenueAmd": "Եկամուտ",
+        "costAmd": "Ինքնարժեք",
+        "profitAmd": "Շահույթ",
+        "soldPowderKg": "Վաճառված փոշի (կգ)"
+      },
+      "filters": {
+        "fromDate": "Սկսած ամսաթվից",
+        "toDate": "Մինչև ամսաթիվ"
+      }
+    },
+    "navigation": {
+      "dailyProfit": "Պահեստի օրական շահույթի հաշվետվություն"
+    },
+    "form": {
+      "selectWarehouse": "Խնդրում ենք ընտրել պահեստ",
+      "loading": "Բեռնվում է...",
+      "emptyState": "Այս պահեստում ապրանքներ չեն գտնվել։"
     }
   }
 }
