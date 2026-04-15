@@ -6,6 +6,7 @@ import {
 
 // services
 import {
+  getBatchDetailsForFilter,
   getOpenSessions,
   getOpenSessionsSummary,
   getPowderBatches,
@@ -15,6 +16,7 @@ import {
 
 // types
 import type {
+  BatchDetailsForFilter,
   OpenSession,
   OpenSessionSummary,
   PowderBatch,
@@ -29,6 +31,7 @@ interface CashDashboardState {
   openSessions: OpenSession[];
   openSessionsSummary: OpenSessionSummary[];
   powderBatches: PowderBatchResponse | null;
+  batchDetailsForFilter: BatchDetailsForFilter | null;
   selectedPowderBatch: PowderBatch | null;
   powderBatchesSummary: PowderBatchesSummary | null;
   isLoading: boolean;
@@ -39,6 +42,7 @@ const initialState: CashDashboardState = {
   openSessions: [],
   openSessionsSummary: [],
   powderBatches: null,
+  batchDetailsForFilter: null,
   selectedPowderBatch: null,
   powderBatchesSummary: null,
   isLoading: false,
@@ -91,6 +95,23 @@ export const fetchPowderBatches = createAsyncThunk<
     );
   }
 });
+
+export const fetchBatchDetailsForFilter = createAsyncThunk<
+  BatchDetailsForFilter,
+  Parameters<typeof getBatchDetailsForFilter>[0],
+  { rejectValue: string }
+>(
+  "cashDashboard/fetchBatchDetailsForFilter",
+  async (params, { rejectWithValue }) => {
+    try {
+      return await getBatchDetailsForFilter(params);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch batch details"),
+      );
+    }
+  },
+);
 
 export const fetchPowderBatchesSummary = createAsyncThunk<
   PowderBatchesSummary,
@@ -153,6 +174,10 @@ const cashDashboardSlice = createSlice({
       .addCase(fetchPowderBatches.fulfilled, (state, action) => {
         state.isLoading = false;
         state.powderBatches = action.payload;
+      })
+      .addCase(fetchBatchDetailsForFilter.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.batchDetailsForFilter = action.payload;
       })
       .addCase(fetchPowderBatchesSummary.fulfilled, (state, action) => {
         state.isLoading = false;

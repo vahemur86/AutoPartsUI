@@ -1248,7 +1248,7 @@
     },
     "modals": {
       "pendingTopUpTitle": "Հաստատել սպասվող համալրումը",
-      "noOffersTitle": "Առաջարկներ չկան"
+      "noOffersTitle": "Տվյալ պրոդուկտը չի համապատասխանում մեր պարամետրերին"
     },
     "notifications": {
       "cashUpdated": "Դրամարկղի մնացորդը թարմացվել է"

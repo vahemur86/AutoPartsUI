@@ -16,6 +16,7 @@ export type {
   PowderBatchItem,
   PowderBatchDetails,
   PowderBatchResponse,
+  BatchDetailsForFilter,
   GetPowderBatchesParams,
   PowderBatchesSummary,
 } from "./dashboard";

@@ -11,6 +11,10 @@ import type {
   GetPowderBatchesParams,
   PowderBatchesSummary,
 } from "@/types/cash";
+import type {
+  BatchDetailsForFilter,
+  GetBatchDetailsForFilterParams,
+} from "@/types/cash/dashboard";
 
 interface Params {
   shopId?: number;
@@ -124,5 +128,38 @@ export const getPowderBatchesSummaryByDate = async ({
         "Failed to get powder batches summary by date.",
       ),
     );
+  }
+};
+
+export const getBatchDetailsForFilter = async ({
+  cashRegisterId,
+  fromDate,
+  toDate,
+  clientName,
+  clientPhone,
+  clientTypeId,
+  page = 1,
+  pageSize = 50,
+}: GetBatchDetailsForFilterParams) => {
+  try {
+    const { data } = await api.get<BatchDetailsForFilter>(
+      `/cashbox-sessions/batch-details`,
+      {
+        params: {
+          fromDate,
+          toDate,
+          clientName,
+          clientPhone,
+          clientTypeId,
+          cashRegisterId,
+          page,
+          pageSize,
+        },
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get powder batches."));
   }
 };

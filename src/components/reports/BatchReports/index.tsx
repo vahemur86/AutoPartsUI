@@ -30,6 +30,9 @@ import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./BatchReports.module.css";
+import { fetchBatchDetailsForFilter } from "@/store/slices/cash/dashboardSlice";
+import type { BatchDetailsForFilterItem } from "@/types/cash/dashboard";
+import { FilteredBatchCard } from "./FilteredBatchCard";
 
 const PAGE_SIZE = 10;
 
@@ -84,7 +87,6 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
             <span>
               {t("cashbox.batches.columns.createdAt")}:
               <strong>
-                
                 {new Date(batchDetails.createdAt).toLocaleString()}
               </strong>
             </span>
@@ -250,7 +252,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     <span>{t("cashbox.batches.details.cost")}</span>
                     <strong>{item.costAmd.toLocaleString()} AMD</strong>
                   </div>
-                   <div className={styles.statLine2}>
+                  <div className={styles.statLine2}>
                     <span>{t("cashbox.batches.details.sales")}</span>
                     <strong>
                       {item.estimatedSalesAmd.toLocaleString()} AMD
@@ -264,7 +266,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                       {item.purchaseProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
-                      <div className={styles.statLine}>
+                  <div className={styles.statLine}>
                     <span>{t("cashbox.batches.details.profitDiffAmd")}</span>
                     <strong className={getNumberClass(item.profitDiffAmd)}>
                       {item.profitDiffAmd > 0 ? "+" : ""}
@@ -279,7 +281,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                       {item.expectedProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
-                  
+
                   <div className={styles.statLine}>
                     <span>
                       {t("cashbox.batches.details.liveProfitPercent")}
@@ -318,6 +320,9 @@ export const BatchReports: FC = () => {
   const dispatch = useAppDispatch();
   const { batches } = useAppSelector((state) => state.cashboxSessions);
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
+  const { batchDetailsForFilter } = useAppSelector(
+    (state) => state.cashDashboard,
+  );
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -334,29 +339,58 @@ export const BatchReports: FC = () => {
     dispatch(fetchCustomerTypes());
   }, [dispatch]);
 
+  const hasClientFilter =
+    !!activeFilters.clientName ||
+    !!activeFilters.clientPhone ||
+    activeFilters.clientTypeId != null;
+
+  // Always fetch batches for the table (no client filters)
   useEffect(() => {
-    dispatch(
-      fetchBatches({
-        page: currentPage + 1,
-        pageSize: PAGE_SIZE,
-        fromDate: activeFilters.fromDate ?? undefined,
-        toDate: activeFilters.toDate ?? undefined,
-        clientName: activeFilters.clientName ?? undefined,
-        clientPhone: activeFilters.clientPhone ?? undefined,
-        clientTypeId: activeFilters.clientTypeId ?? undefined,
-      }),
-    )
-      .unwrap()
-      .catch((error) => {
-        toast.error(
-          getApiErrorMessage(error, t("cashbox.errors.failedToFetchBatches")),
-        );
-      });
+    if (!hasClientFilter) {
+      dispatch(
+        fetchBatches({
+          page: currentPage + 1,
+          pageSize: PAGE_SIZE,
+          fromDate: activeFilters.fromDate ?? undefined,
+          toDate: activeFilters.toDate ?? undefined,
+        }),
+      )
+        .unwrap()
+        .catch((error) => {
+          toast.error(
+            getApiErrorMessage(error, t("cashbox.errors.failedToFetchBatches")),
+          );
+        });
+    }
 
     return () => {
       dispatch(clearSelection());
     };
-  }, [dispatch, activeFilters, currentPage, t]);
+  }, [dispatch, activeFilters, currentPage, hasClientFilter, t]);
+
+  // Fetch filtered batch details when client filters are active
+  useEffect(() => {
+    if (hasClientFilter) {
+      dispatch(
+        fetchBatchDetailsForFilter({
+          page: currentPage + 1,
+          pageSize: PAGE_SIZE,
+          fromDate: activeFilters.fromDate ?? undefined,
+          toDate: activeFilters.toDate ?? undefined,
+          clientName: activeFilters.clientName ?? undefined,
+          clientPhone: activeFilters.clientPhone ?? undefined,
+          clientTypeId: activeFilters.clientTypeId ?? undefined,
+          cashRegisterId: 1,
+        }),
+      )
+        .unwrap()
+        .catch((error) => {
+          toast.error(
+            getApiErrorMessage(error, t("cashbox.errors.failedToFetchBatches")),
+          );
+        });
+    }
+  }, [dispatch, activeFilters, currentPage, hasClientFilter, t]);
 
   const handleApplyFilters = (filters: BatchReportFilters) => {
     setActiveFilters(filters);
@@ -366,11 +400,6 @@ export const BatchReports: FC = () => {
 
   const columns = useMemo(() => getBatchReportColumns(), []);
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
-
-  const hasClientFilter =
-    !!activeFilters.clientName ||
-    !!activeFilters.clientPhone ||
-    activeFilters.clientTypeId != null;
 
   return (
     <div className={styles.batchReportsWrapper}>
@@ -423,103 +452,25 @@ export const BatchReports: FC = () => {
           />
         </div>
       )}
-
       {hasClientFilter && (
         <div className={styles.tableContainer}>
           <div className={styles.detailContainer}>
             <div className={styles.itemsSection}>
               <h5 className={styles.subTitle}>
-                {t("cashbox.batches.title")} ({batches?.results.length || 0})
+                {t("cashbox.batches.title")} (
+                {batchDetailsForFilter?.totalItems || 0})
               </h5>
               <div className={styles.itemsGrid}>
-                {batches?.results?.map((batch) => (
-                  <div key={batch.sessionId} className={styles.itemCard}>
-                    <div className={styles.itemCardHeader}>
-                      <div className={styles.intakeMain}>
-                        <span>#{batch.sessionId}</span>
-                        <strong>{batch.totalPowderKg} kg</strong>
-                      </div>
-                    </div>
-                    <div className={styles.itemCardContent}>
-                      <div className={styles.contactInfo}>
-                        <div className={styles.infoRow}>
-                          <span>{t("cashbox.batches.columns.createdAt")}:</span>
-                          <strong>
-                            {new Date(batch.createdAt).toLocaleString()}
-                          </strong>
-                        </div>
-                        <div className={styles.infoRow}>
-                          <span>{t("cashbox.batches.details.totalCost")}:</span>
-                          <strong>
-                            {batch.costTotalAmd != null
-                              ? batch.costTotalAmd.toLocaleString()
-                              : "-"}{" "}
-                            AMD
-                          </strong>
-                        </div>
-                        {batch.avgCustomerPercent != null && (
-                          <div className={styles.infoRow}>
-                            <span>
-                              {t(
-                                "cashbox.powderBatches.columns.avgCustomerPercent",
-                              )}
-                              :
-                            </span>
-                            <strong>
-                              {(batch.avgCustomerPercent * 100).toFixed(2)}%
-                            </strong>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className={styles.metalConcentrationGrid}>
-                        <div className={styles.metalItem}>
-                          <span>Pt</span>
-                          <strong>
-                            {batch.ptPerKg_g} <small>g/kg</small>
-                          </strong>
-                        </div>
-                        <div className={styles.metalItem}>
-                          <span>Pd</span>
-                          <strong>
-                            {batch.pdPerKg_g} <small>g/kg</small>
-                          </strong>
-                        </div>
-                        <div className={styles.metalItem}>
-                          <span>Rh</span>
-                          <strong>
-                            {batch.rhPerKg_g} <small>g/kg</small>
-                          </strong>
-                        </div>
-                      </div>
-
-                      {batch.avgFxRateToAmd != null && (
-                        <div className={styles.financialStats}>
-                          <div className={styles.fxRate}>
-                            Rate: {batch.avgFxRateToAmd} AMD
-                          </div>
-                          <div className={styles.metalPricesFooter}>
-                            {batch.avgPtPricePerKg != null && (
-                              <span>
-                                Pt: {batch.avgPtPricePerKg.toLocaleString()} $
-                              </span>
-                            )}
-                            {batch.avgPdPricePerKg != null && (
-                              <span>
-                                Pd: {batch.avgPdPricePerKg.toLocaleString()} $
-                              </span>
-                            )}
-                            {batch.avgRhPricePerKg != null && (
-                              <span>
-                                Rh: {batch.avgRhPricePerKg.toLocaleString()} $
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                {batchDetailsForFilter?.results.map(
+                  (batch: BatchDetailsForFilterItem) => (
+                    <FilteredBatchCard
+                      key={batch.id}
+                      batch={batch}
+                      t={t}
+                      styles={styles}
+                    />
+                  ),
+                )}
               </div>
             </div>
           </div>

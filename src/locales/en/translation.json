@@ -1247,7 +1247,7 @@
     },
     "modals": {
       "pendingTopUpTitle": "Confirm Pending Top-Up",
-      "noOffersTitle": "No Offers Available"
+      "noOffersTitle": "This product does not meet our parameters."
     },
     "notifications": {
       "cashUpdated": "Cash register balance has been updated"
