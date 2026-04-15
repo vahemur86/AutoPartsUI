@@ -342,7 +342,7 @@ export const useOperator = () => {
   const isCashboxClosedError = (error: unknown) => {
     const msg = typeof error === "string" ? error : (error as any)?.message;
 
-    return msg === "No open cashbox session for operator.";
+    return msg === "No viable offer for this intake.";
   };
 
   const handleSubmit = async () => {
