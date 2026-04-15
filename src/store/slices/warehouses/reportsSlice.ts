@@ -8,6 +8,7 @@ import {
 import {
   getProfitReport,
   getInventoryLotsReport,
+  getDailyProfitReport,
 } from "@/services/warehouses/reports";
 
 // types
@@ -16,6 +17,7 @@ import type {
   ProfitReportResponse,
   GetInventoryLotsReportParams,
   InventoryLotsReportResponse,
+  DailyProfitReportResponse,
 } from "@/types/warehouses/reports";
 
 // utils
@@ -23,6 +25,7 @@ import { getApiErrorMessage } from "@/utils";
 
 interface AdminReportsState {
   profitData: ProfitReportResponse | null;
+  dailyProfitData: DailyProfitReportResponse | null;
   inventoryLots: InventoryLotsReportResponse;
   isLoading: boolean;
   error: string | null;
@@ -30,6 +33,7 @@ interface AdminReportsState {
 
 const initialState: AdminReportsState = {
   profitData: null,
+  dailyProfitData: null,
   inventoryLots: [],
   isLoading: false,
   error: null,
@@ -42,6 +46,20 @@ export const fetchProfitReport = createAsyncThunk<
 >("adminReports/fetchProfit", async (params, { rejectWithValue }) => {
   try {
     return await getProfitReport(params);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to load profit report"),
+    );
+  }
+});
+
+export const fetchDailyProfitReport = createAsyncThunk<
+  DailyProfitReportResponse,
+  GetProfitReportParams,
+  { rejectValue: string }
+>("adminReports/fetchDailyProfit", async (params, { rejectWithValue }) => {
+  try {
+    return await getDailyProfitReport(params);
   } catch (error) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to load profit report"),
@@ -86,6 +104,14 @@ const adminReportsSlice = createSlice({
         (state, action: PayloadAction<InventoryLotsReportResponse>) => {
           state.isLoading = false;
           state.inventoryLots = action.payload;
+        },
+      )
+
+      .addCase(
+        fetchDailyProfitReport.fulfilled,
+        (state, action: PayloadAction<DailyProfitReportResponse>) => {
+          state.isLoading = false;
+          state.dailyProfitData = action.payload;
         },
       )
 

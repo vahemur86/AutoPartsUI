@@ -10,6 +10,7 @@ import type {
   ProfitReportResponse,
   GetInventoryLotsReportParams,
   InventoryLotsReportResponse,
+  DailyProfitReportResponse,
 } from "@/types/warehouses/reports";
 
 const performRequest = async <T>(
@@ -32,6 +33,20 @@ export const getProfitReport = ({
   performRequest(
     (headers) =>
       api.get<ProfitReportResponse>(`/admin/reports/profit`, {
+        params,
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to fetch profit report.",
+  );
+
+export const getDailyProfitReport = ({
+  cashRegisterId,
+  ...params
+}: GetProfitReportParams) =>
+  performRequest(
+    (headers) =>
+      api.get<DailyProfitReportResponse>(`/admin/reports/profit/daily`, {
         params,
         headers,
       }),
