@@ -422,3 +422,26 @@
   display: flex;
   justify-content: center;
 }
+
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.warningIcon {
+  width: 48px;
+  height: 48px;
+  color: #f59e0b; 
+  background: rgba(245, 158, 11, 0.1);
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 600;
+}
