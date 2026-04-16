@@ -210,6 +210,8 @@ export const CustomerDetails = ({
     !hasSearched ||
     (!!activeCustomer && !!customerData.fullName && !isSearching);
 
+  const appliedPercent = intake?.appliedPercent ?? null;
+
   return (
     <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""}`}>
       <div className={styles.customerHeader}>
@@ -281,9 +283,11 @@ export const CustomerDetails = ({
                     {t("customerDetails.discount")}:{" "}
                   </span>
                   <span className={styles.profileValue}>
-                    {activeCustomer.customerType?.bonusPercent != null
-                      ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
-                      : "0%"}
+                    {appliedPercent != null
+                      ? `${appliedPercent}%`
+                      : activeCustomer.customerType?.bonusPercent != null
+                        ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
+                        : "0%"}
                   </span>
                 </div>
               )}

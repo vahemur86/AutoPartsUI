@@ -83,6 +83,7 @@ export interface IntakeResponse {
   notes: string | null;
   createdAt: string | null;
   updatedAt: string | null;
+  appliedPercent: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   serviceItems: any[];
 }

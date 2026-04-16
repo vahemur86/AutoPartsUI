@@ -342,7 +342,7 @@ export const useOperator = () => {
   const isCashboxClosedError = (error: unknown) => {
     const msg = typeof error === "string" ? error : (error as any)?.message;
 
-    return msg === "No viable offer for this intake.";
+    return msg === "No valid offer due to profit/customer constraints.";
   };
 
   const handleSubmit = async () => {

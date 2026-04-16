@@ -27,6 +27,7 @@ import { useOperator, type TabType } from "./hooks";
 
 // styles
 import styles from "./OperatorPage.module.css";
+import { AlertTriangle } from "lucide-react";
 
 type MainTabType = "buy" | "calculate";
 
@@ -296,7 +297,6 @@ export const OperatorPage = () => {
         </div>
       )}
 
-      {/* --- Modals --- */}
       {!!selectors.cashRegisters.pendingDetails && (
         <TopUpConfirmationModal
           open={!!selectors.cashRegisters.pendingDetails}
@@ -309,9 +309,13 @@ export const OperatorPage = () => {
       {uiState.isCashboxBlockedModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalCard}>
-            <h2 className={styles.modalTitle}>
-              {t("operatorPage.modals.noOffersTitle")}
-            </h2>
+            <div className={styles.modalHeader}>
+              <AlertTriangle className={styles.warningIcon} />
+
+              <h2 className={styles.modalTitle}>
+                {t("operatorPage.modals.noOffersTitle")}
+              </h2>
+            </div>
 
             <div className={styles.modalActions}>
               <Button
