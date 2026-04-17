@@ -43,6 +43,7 @@
     "select": "Выберите",
     "apply": "Применить",
     "all": "Все",
+    "correct": "Корректировка",
     "createdAt": "Дата создания",
     "details": "Детали",
     "buy": "Купить",
@@ -264,6 +265,7 @@
       "totalBatches": "Всего партий",
       "batchesToSale": "Партии к продаже",
       "soldBatches": "Проданные партии",
+      "adjustedSales": "Скорректированные продажи",
       "profit": "Прибыль",
       "addProduct": "Добавить товар",
       "products": "Товары",
@@ -375,18 +377,24 @@
       "title": "Проданные партии",
       "loading": "Загрузка проданных партий...",
       "emptyState": "Проданные партии не найдены.",
+      "editSoldBatch": "Корректировка цены",
       "filters": {
         "fromDate": "С даты",
         "toDate": "По дату",
         "selectFromDate": "Выберите дату начала",
         "selectToDate": "Выберите дату окончания"
       },
+      "form": {
+        "finalAmount": "Изменённая цена",
+        "comment": "Причина",
+        "enterComment": "Введите комментарий..."
+      },
       "columns": {
         "id": "ID",
         "salesLotId": "ID партии продажи",
         "warehouseId": "ID склада",
         "currencyCode": "Валюта",
-        "revenueTotal": "Проданный порошок (кг)",
+        "revenueTotal": "Продажная цена",
         "revenueTotalAmd": "Продажная цена (AMD)",
         "costAmd": "Инвестиции",
         "profitAmd": "Прибыль (AMD)",
@@ -1406,6 +1414,25 @@
       "selectWarehouse": "Пожалуйста, выберите склад",
       "loading": "Загрузка...",
       "emptyState": "На этом складе товары не найдены."
+    }
+  },
+  "powderSales": {
+    "adjustments": {
+      "columns": {
+        "id": "Id",
+        "powderSaleId": "ID",
+        "oldAmount": "Исходн.",
+        "newAmount": "Новая",
+        "difference": "Разн.",
+        "currencyCode": "Валюта",
+        "oldAmountAmd": "Старая (AMD)",
+        "newAmountAmd": "Новая (AMD)",
+        "differenceAmd": "Разн. (AMD)",
+        "exchangeRate": "Курс",
+        "reason": "Причина",
+        "createdAt": "Дата"
+      },
+      "title": "Скорректированные продажи"
     }
   }
 }

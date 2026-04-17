@@ -45,6 +45,7 @@
     "all": "Բոլորը",
     "createdAt": "Ստեղծման ամսաթիվ",
     "details": "Մանրամասներ",
+    "correct": "Ճշգրտում",
     "buy": "Գնել",
     "total": "Ընդհանուր",
     "gender": {
@@ -264,6 +265,7 @@
       "totalBatches": "Խմբաքանակների քանակը",
       "batchesToSale": "Վաճառքի ենթակա խմբաքանակներ",
       "soldBatches": "Վաճառված խմբաքանակներ",
+      "adjustedSales": "Ճշգրտված վաճառքներ",
       "profit": "Շահույթ",
       "addProduct": "Ավելացնել ապրանք",
       "products": "Ապրանքներ պահեստում",
@@ -375,6 +377,7 @@
     },
     "soldBatches": {
       "title": "Վաճառված խմբաքանակներ",
+      "editSoldBatch": "Գնի ճշգրտում",
       "loading": "Վաճառված խմբաքանակների բեռնում...",
       "emptyState": "Վաճառված խմբաքանակներ չեն գտնվել:",
       "filters": {
@@ -383,12 +386,17 @@
         "selectFromDate": "Ընտրեք սկզբնական ամսաթիվ",
         "selectToDate": "Ընտրեք ավարտական ամսաթիվ"
       },
+      "form": {
+        "finalAmount": "Փոփոխված գին",
+        "comment": "Պատճառը",
+        "enterComment":"Մուտքագրեք մեկնաբանություն..."
+      },
       "columns": {
         "id": "ID",
         "salesLotId": "Վաճառքի խմբաքանակի ID",
         "warehouseId": "Պահեստի ID",
         "currencyCode": "Արժույթ",
-        "revenueTotal": "Վաճառքի քանակ",
+        "revenueTotal": "Վաճառքի գին",
         "revenueTotalAmd": "Վաճառքի գին (AMD)",
         "costAmd": "Ինքնարժեք",
         "profitAmd": "Շահույթ (AMD)",
@@ -853,7 +861,7 @@
         "purchaseProfitPercent": "Շահույթի տոկոս (գնման պահին)",
         "profitDiffAmd": "Շահույթի աճ",
         "profitDiffPercent": "Շահույթի աճ (%)",
-         "customerRealPercent": "Հաճախորդի իրական տոկոս"
+        "customerRealPercent": "Հաճախորդի իրական տոկոս"
       }
     },
     "openSessions": {
@@ -1409,6 +1417,25 @@
       "selectWarehouse": "Խնդրում ենք ընտրել պահեստ",
       "loading": "Բեռնվում է...",
       "emptyState": "Այս պահեստում ապրանքներ չեն գտնվել։"
+    }
+  },
+  "powderSales": {
+    "adjustments": {
+      "columns": {
+        "id": "Id",
+        "powderSaleId": "ID",
+        "oldAmount": "Նախնական",
+        "newAmount": "Նոր",
+        "difference": "Տարբ.",
+        "currencyCode": "Արժույթ",
+        "oldAmountAmd": "Հին (AMD)",
+        "newAmountAmd": "Նոր (AMD)",
+        "differenceAmd": "Տարբ. (AMD)",
+        "exchangeRate": "Փոխարժեք",
+        "reason": "Պատճառ",
+        "createdAt": "Ամսաթիվ"
+      },
+      "title": "Ճշգրտված վաճառքներ"
     }
   }
 }

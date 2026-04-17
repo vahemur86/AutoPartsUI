@@ -10,10 +10,17 @@ import { Filter } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchPowderSales } from "@/store/slices/warehouses/powderSalesSlice";
+import {
+  fetchPowderSales,
+  reconcilePowderSale,
+} from "@/store/slices/warehouses/powderSalesSlice";
 
 // components
 import { FilterSoldBatchesDropdown } from "./FilterSoldBatchesDropdown";
+import {
+  SoldBatchesDropdown,
+  type SoldBatchesForm,
+} from "./soldBatchesActions/SoldBatchesDropdown";
 
 // columns
 import { getSoldBatchesColumns } from "./columns";
@@ -23,6 +30,7 @@ import { getApiErrorMessage, getCashRegisterId, checkIsToday } from "@/utils";
 
 // styles
 import styles from "./SoldBatches.module.css";
+import type { PowderSale } from "@/types/warehouses/salesLots";
 
 const PAGE_SIZE = 50;
 
@@ -42,8 +50,12 @@ export const SoldBatches: FC = () => {
     fromUtc: null,
     toUtc: null,
   });
-  const filterAnchorRef = useRef<HTMLDivElement>(null);
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingRow, setEditingRow] = useState<PowderSale | null>(null);
+  const [editAnchorEl, setEditAnchorEl] = useState<HTMLElement | null>(null);
+
+  const filterAnchorRef = useRef<HTMLDivElement>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
@@ -57,10 +69,10 @@ export const SoldBatches: FC = () => {
       }),
     )
       .unwrap()
-      .catch((error) => {
+      .catch((err) => {
         toast.error(
           getApiErrorMessage(
-            error,
+            err,
             t("warehouses.soldBatches.errors.failedToFetch"),
           ),
         );
@@ -68,9 +80,7 @@ export const SoldBatches: FC = () => {
   }, [dispatch, activeFilters, currentPage, cashRegisterId, t]);
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
+    if (error) toast.error(error);
   }, [error]);
 
   const handleApplyFilters = (filters: {
@@ -82,7 +92,55 @@ export const SoldBatches: FC = () => {
     setIsFilterOpen(false);
   };
 
-  const columns = useMemo(() => getSoldBatchesColumns(), []);
+  const handleEdit = (row: PowderSale, e: React.MouseEvent<HTMLElement>) => {
+    setEditingRow(row);
+    setEditAnchorEl(e.currentTarget);
+    setIsEditOpen(true);
+  };
+
+  const handleSaveEdit = async (formData: SoldBatchesForm) => {
+    if (!editingRow) return;
+
+    try {
+      await dispatch(
+        reconcilePowderSale({
+          id: editingRow.salesLotId,
+          cashRegisterId,
+          body: {
+            finalAmount: formData.revenueTotal,
+            reason: formData.comment,
+          },
+        }),
+      ).unwrap();
+
+      toast.success(t("warehouses.soldBatches.success.updated"));
+
+      setIsEditOpen(false);
+      setEditingRow(null);
+      setEditAnchorEl(null);
+
+      dispatch(
+        fetchPowderSales({
+          cashRegisterId,
+          fromUtc: activeFilters.fromUtc || undefined,
+          toUtc: activeFilters.toUtc || undefined,
+          page: currentPage + 1,
+          pageSize: PAGE_SIZE,
+        }),
+      );
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, t("common.error")));
+    }
+  };
+
+  const columns = useMemo(
+    () =>
+      getSoldBatchesColumns({
+        onEdit: handleEdit,
+      }),
+    [],
+  );
+
   const totalPages = Math.ceil((data?.totalItems || 0) / PAGE_SIZE);
 
   return (
@@ -116,7 +174,7 @@ export const SoldBatches: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        {isLoading ? (
+        {isLoading && !data ? (
           <div className={styles.loading}>
             {t("warehouses.soldBatches.loading")}
           </div>
@@ -139,6 +197,29 @@ export const SoldBatches: FC = () => {
           />
         )}
       </div>
+
+      <SoldBatchesDropdown
+        open={isEditOpen}
+        anchorRef={{ current: editAnchorEl } as any}
+        initialData={
+          editingRow
+            ? {
+                revenueTotal: editingRow.revenueTotal,
+                revenueTotalAmd: editingRow.revenueTotalAmd,
+                comment: "",
+              }
+            : null
+        }
+        onOpenChange={(open) => {
+          setIsEditOpen(open);
+          if (!open) {
+            setEditingRow(null);
+            setEditAnchorEl(null);
+          }
+        }}
+        onSave={handleSaveEdit}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

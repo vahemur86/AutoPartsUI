@@ -8,10 +8,12 @@ import { getApiErrorMessage } from "@/utils";
 import type {
   CreateSalesLotRequest,
   GetLotDetailsResponse,
+  GetPowderSalesAdjustmentsResponse,
   GetPowderSalesParams,
   GetPowderSalesResponse,
   GetSalesLotsParams,
   GetSalesLotsResponse,
+  ReconcilePowderSaleRequest,
   SalesLotPreviewRequest,
   SalesLotPreviewResponse,
   SellSalesLotRequest,
@@ -99,4 +101,35 @@ export const previewSalesLot = ({
       }),
     cashRegisterId,
     "Failed to preview sales lot calculations.",
+  );
+
+export const getPowderSalesAdjustments = ({
+  cashRegisterId,
+  ...params
+}: GetPowderSalesParams) =>
+  performRequest(
+    (headers) =>
+      api.get<GetPowderSalesAdjustmentsResponse>(
+        `/admin/powder-sales/adjustments`,
+        {
+          params,
+          headers,
+        },
+      ),
+    cashRegisterId,
+    "Failed to get powder sales adjustments.",
+  );
+
+  export const reconcilePowderSale = ({
+  id,
+  cashRegisterId,
+  body,
+}: ReconcilePowderSaleRequest) =>
+  performRequest(
+    (headers) =>
+      api.post<void>(`/admin/powder-sales/${id}/reconcile`, body, {
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to reconcile powder sale.",
   );

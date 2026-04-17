@@ -67,6 +67,7 @@ import { store } from "@/store/store";
 import "@/index.css";
 import { OtpGateProvider } from "./components/otpGateProvider/OtpGateProvider";
 import { CatalystPricings } from "./components/settings/CatalystPricing";
+import { AdjustedSales } from "./components/warehouses/AdjustedSales/AdjustedSales";
 
 const toastOptions = {
   position: "top-right",
@@ -184,6 +185,7 @@ export const App = () => {
                   <Route path="total-batches" element={<TotalBatches />} />
                   <Route path="batches-to-sale" element={<BatchesToSale />} />
                   <Route path="sold-batches" element={<SoldBatches />} />
+                  <Route path="adjusted-sales" element={<AdjustedSales />} />
                   <Route path="profit" element={<ProfitReport />} />
                   <Route path="add-product" element={<AddProduct />} />
                   <Route path="products" element={<WarehouseProducts />} />

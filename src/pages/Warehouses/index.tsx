@@ -9,6 +9,7 @@ import {
   Package,
   Box,
   Store,
+  Receipt,
 } from "lucide-react";
 
 // components
@@ -34,6 +35,12 @@ export const Warehouses = () => {
       path: "/sold-batches",
       label: t("warehouses.navigation.soldBatches"),
       icon: ClipboardCheck,
+      showCheckmark: true,
+    },
+    {
+      path: "/adjusted-sales",
+      label: t("warehouses.navigation.adjustedSales"),
+      icon: Receipt,
       showCheckmark: true,
     },
     {
