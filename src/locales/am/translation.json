@@ -365,7 +365,7 @@
         "totalPowderKg": "Քաշ",
         "itemsCostTotalAmd": "Ինքնարժեք",
         "profit": "Շահույթ",
-        "costTotalAmd": "Վաճաքի գին",
+        "costTotalAmd": "Վաճառքի գին",
         "ptTotal_g": "Pt",
         "pdTotal_g": "Pd",
         "rhTotal_g": "Rh",
@@ -388,8 +388,8 @@
         "salesLotId": "Վաճառքի խմբաքանակի ID",
         "warehouseId": "Պահեստի ID",
         "currencyCode": "Արժույթ",
-        "revenueTotal": "Վաճաքի քանակ",
-        "revenueTotalAmd": "Վաճաքի գին (AMD)",
+        "revenueTotal": "Վաճառքի քանակ",
+        "revenueTotalAmd": "Վաճառքի գին (AMD)",
         "costAmd": "Ինքնարժեք",
         "profitAmd": "Շահույթ (AMD)",
         "soldPowderKg": "Լոտի քաշ (կգ)",
@@ -852,7 +852,8 @@
         "purchaseProfitAmd": "Շահույթ (գնման պահին)",
         "purchaseProfitPercent": "Շահույթի տոկոս (գնման պահին)",
         "profitDiffAmd": "Շահույթի աճ",
-        "profitDiffPercent": "Շահույթի աճ (%)"
+        "profitDiffPercent": "Շահույթի աճ (%)",
+         "customerRealPercent": "Հաճախորդի իրական տոկոս"
       }
     },
     "openSessions": {
