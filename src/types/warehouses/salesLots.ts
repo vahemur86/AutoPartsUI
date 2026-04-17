@@ -130,3 +130,30 @@ export interface SalesLotPreviewResponse {
   rhTotal_g: number;
   createdLotId: number | null;
 }
+
+export interface PowderSaleAdjustments {
+  id: number;
+  powderSaleId: number;
+  oldAmount: number;
+  newAmount: number;
+  difference: number;
+  currencyCode: string;
+  oldAmountAmd: number;
+  newAmountAmd: number;
+  differenceAmd: number;
+  exchangeRate: number;
+  reason: string;
+  createdAt: string;
+}
+
+export type GetPowderSalesAdjustmentsResponse =
+  PaginatedResponse<PowderSaleAdjustments>;
+
+export interface ReconcilePowderSaleRequest {
+  id: number;
+  cashRegisterId: number;
+  body: {
+    finalAmount: number;
+    reason: string;
+  };
+}

@@ -44,6 +44,7 @@
     "apply": "Apply",
     "buy": "Buy",
     "all": "All",
+    "correct": "Correction",
     "createdAt": "Created At",
     "details": "Details",
     "total": "Total",
@@ -264,6 +265,7 @@
       "totalBatches": "Total Batches",
       "batchesToSale": "Batches To Sale",
       "soldBatches": "Sold Batches",
+      "adjustedSales": "Adjusted Sales",
       "profit": "Profit",
       "addProduct": "Add Product",
       "products": "Products",
@@ -375,18 +377,24 @@
       "title": "Sold Batches",
       "loading": "Loading sold batches...",
       "emptyState": "No sold batches found.",
+      "editSoldBatch": "Price adjustment",
       "filters": {
         "fromDate": "From Date",
         "toDate": "To Date",
         "selectFromDate": "Select from date",
         "selectToDate": "Select to date"
       },
+      "form": {
+        "finalAmount": "Final Price",
+        "comment": "Reason",
+        "enterComment": "Enter a comment..."
+      },
       "columns": {
         "id": "ID",
         "salesLotId": "Sales Lot ID",
         "warehouseId": "Warehouse ID",
         "currencyCode": "Currency",
-        "revenueTotal": "Sold Powder (kg)",
+        "revenueTotal": "Sold Price",
         "revenueTotalAmd": "Sold Price (AMD)",
         "costAmd": "Cost (AMD)",
         "profitAmd": "Profit (AMD)",
@@ -1407,6 +1415,25 @@
       "selectWarehouse": "Please select a warehouse",
       "loading": "Loading...",
       "emptyState": "No products found in this warehouse."
+    }
+  },
+  "powderSales": {
+    "adjustments": {
+      "columns": {
+        "id": "Id",
+        "powderSaleId": "ID",
+        "oldAmount": "Initial",
+        "newAmount": "New",
+        "difference": "Diff.",
+        "currencyCode": "Currency",
+        "oldAmountAmd": "Old (AMD)",
+        "newAmountAmd": "New (AMD)",
+        "differenceAmd": "Diff. (AMD)",
+        "exchangeRate": "Rate",
+        "reason": "Reason",
+        "createdAt": "Date"
+      },
+      "title": "Adjusted Sales"
     }
   }
 }
