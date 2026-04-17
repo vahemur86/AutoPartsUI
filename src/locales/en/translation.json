@@ -850,7 +850,8 @@
         "purchaseProfitAmd": "Profit at purchase time",
         "purchaseProfitPercent": "Profit percent at purchase time",
         "profitDiffAmd": "Profit difference",
-        "profitDiffPercent": "Profit difference (%)"
+        "profitDiffPercent": "Profit difference (%)",
+        "customerRealPercent": "Customer real percent"
       }
     },
     "openSessions": {

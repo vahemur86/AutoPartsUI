@@ -212,17 +212,24 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                     <span>{t("cashbox.batches.details.percent")}:</span>
                     <strong>{item.supplierClientTypePercent * 100}%</strong>
                   </div>
+
                   <div className={styles.infoRow}>
                     <span>
                       {t("cashbox.batches.details.offerIncreaseStepOrder")}:
                     </span>
-                    <strong>{item.offerIncreaseStepOrder}</strong>
+                    <strong>{item?.offerIncreaseStepOrder ?? 0}</strong>
                   </div>
                   <div className={styles.infoRow}>
                     <span>
                       {t("cashbox.batches.details.offerIncreasePercent")}:
                     </span>
-                    <strong>{item.offerIncreasePercent}%</strong>
+                    <strong>{item?.offerIncreasePercent ?? 0}%</strong>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span>
+                      {t("cashbox.batches.details.customerRealPercent")}:
+                    </span>
+                    <strong>{item?.customerRealPercent ?? 0}%</strong>
                   </div>
                 </div>
 

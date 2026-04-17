@@ -850,7 +850,8 @@
         "purchaseProfitAmd": "Прибыль от покупки (AMD)",
         "purchaseProfitPercent": "Процент прибыли от покупки",
         "profitDiffAmd": "Разница в прибыли",
-        "profitDiffPercent": "Разница в прибыли (%)"
+        "profitDiffPercent": "Разница в прибыли (%)",
+        "customerRealPercent": "Реальная процентная ставка клиентаս"
       }
     },
     "openSessions": {

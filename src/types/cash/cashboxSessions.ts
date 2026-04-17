@@ -33,6 +33,7 @@ export interface BatchItem {
   purchaseProfitPercent: number;
   profitDiffAmd: number;
   profitDiffPercent: number;
+  customerRealPercent: number;
 }
 
 export interface Batch {

@@ -92,7 +92,6 @@ export type GetBatchDetailsForFilterParams = {
   pageSize?: number;
 };
 
-
 export interface BatchDetailsForFilterItem {
   id: number;
   sessionId: number;
@@ -145,7 +144,8 @@ export interface BatchDetailsForFilterItemInner {
   purchaseProfitPercent: number;
   profitDiffAmd: number;
   profitDiffPercent: number;
+  customerRealPercent: number;
 }
 
-export type BatchDetailsForFilter = PaginatedResponse<BatchDetailsForFilterItem>;
-
+export type BatchDetailsForFilter =
+  PaginatedResponse<BatchDetailsForFilterItem>;
