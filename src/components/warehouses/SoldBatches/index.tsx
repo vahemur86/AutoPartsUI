@@ -31,6 +31,7 @@ import { getApiErrorMessage, getCashRegisterId, checkIsToday } from "@/utils";
 // styles
 import styles from "./SoldBatches.module.css";
 import type { PowderSale } from "@/types/warehouses/salesLots";
+import { SoldBatchesDetailsPreview } from "./soldBatchesDropdown/SoldBatchesDetailsPreview";
 
 const PAGE_SIZE = 50;
 
@@ -194,6 +195,12 @@ export const SoldBatches: FC = () => {
               checkIsToday(row.createdAt) ? styles.todayRow : ""
             }
             onPaginationChange={setCurrentPage}
+            renderSubComponent={({ row }) => (
+              <SoldBatchesDetailsPreview
+                lot={row.original}
+                cashRegisterId={cashRegisterId}
+              />
+            )}
           />
         )}
       </div>

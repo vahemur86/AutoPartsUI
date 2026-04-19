@@ -1,0 +1,146 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.header {
+  font-size: 12px;
+  color: var(--primary-500);
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px;
+  backdrop-filter: blur(10px);
+  transition: 0.2s ease;
+  min-height: 100%;
+}
+
+.card:hover {
+  border-color: var(--primary-500);
+  transform: translateY(-2px);
+}
+
+.card h4 {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--primary-500);
+}
+
+/* comparison list */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ROW (more compact) */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: 0.2s ease;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.label {
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.valueWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+}
+
+.before {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.after {
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.arrow {
+  opacity: 0.4;
+}
+
+.changed {
+  position: relative;
+}
+
+.changed::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  width: 2px;
+  height: 65%;
+  background: var(--primary-500);
+  border-radius: 2px;
+}
+
+/* key-value list */
+.kv {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 6px;
+}
+
+.kv span {
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.kv strong {
+  font-size: 10.5px;
+  color: var(--color-white);
+}
+
+.loading {
+  padding: 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.noDiffs {
+  padding: 10px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.icon {
+  width: 12px;
+  height: 12px;
+  color: var(--primary-500);
+  flex-shrink: 0;
+  opacity: 0.9;
+}

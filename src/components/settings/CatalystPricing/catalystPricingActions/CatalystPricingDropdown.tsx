@@ -10,8 +10,6 @@ import type { CatalystPricing } from "@/types/settings";
 // styles
 import styles from "./CatalystPricingDropdown.module.css";
 
-export type CatalystPricingForm = Omit<CatalystPricing, "id">;
-
 interface CatalystPricingDropdownProps {
   open: boolean;
   anchorRef?: RefObject<HTMLElement | null>;
@@ -37,7 +35,11 @@ export const CatalystPricingDropdown = ({
   const [transportCost1, setTransportCost1] = useState("");
   const [transportCost2, setTransportCost2] = useState("");
   const [commissionPercent, setCommissionPercent] = useState("");
-  const [profitMargin, setProfitMargin] = useState("");
+
+  const [margins, setMargins] = useState<CatalystPricing["customerMargins"]>(
+    [],
+  );
+
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
   const isEditMode = !!initialData;
@@ -50,7 +52,9 @@ export const CatalystPricingDropdown = ({
       setTransportCost1(String(initialData.transportCost1UsdPerKg));
       setTransportCost2(String(initialData.transportCost2UsdPerKg));
       setCommissionPercent(String(initialData.commissionPercent));
-      setProfitMargin(String(initialData.profitMargin));
+
+      setMargins(initialData.customerMargins ?? []);
+
       setHasTriedSave(false);
     }
   }, [open, initialData]);
@@ -61,7 +65,6 @@ export const CatalystPricingDropdown = ({
   const numT1 = parseFloat(transportCost1);
   const numT2 = parseFloat(transportCost2);
   const numCommission = parseFloat(commissionPercent);
-  const numProfitMargin = parseFloat(profitMargin);
 
   const isValid =
     !isNaN(numPt) &&
@@ -79,6 +82,21 @@ export const CatalystPricingDropdown = ({
     numCommission >= 0 &&
     numCommission <= 100;
 
+  const updateMargin = (id: number, value: string) => {
+    const num = parseFloat(value);
+
+    setMargins((prev) =>
+      prev.map((m) =>
+        m.customerTypeId === id
+          ? {
+              ...m,
+              profitMarginPercent: isNaN(num) ? 0 : num,
+            }
+          : m,
+      ),
+    );
+  };
+
   const handleSaveClick = () => {
     setHasTriedSave(true);
     if (!isValid || !initialData) return;
@@ -91,8 +109,7 @@ export const CatalystPricingDropdown = ({
       transportCost1UsdPerKg: numT1,
       transportCost2UsdPerKg: numT2,
       commissionPercent: numCommission,
-      profitMargin: numProfitMargin,
-      updatedAt: initialData.updatedAt ?? new Date().toISOString(),
+      customerMargins: margins,
     });
   };
 
@@ -118,7 +135,6 @@ export const CatalystPricingDropdown = ({
             type="number"
             value={ptReducePercent}
             onChange={(e) => setPtReducePercent(e.target.value)}
-            error={hasTriedSave && (isNaN(numPt) || numPt > 100 || numPt < 0)}
             disabled={isLoading}
           />
 
@@ -127,7 +143,6 @@ export const CatalystPricingDropdown = ({
             type="number"
             value={pdReducePercent}
             onChange={(e) => setPdReducePercent(e.target.value)}
-            error={hasTriedSave && (isNaN(numPd) || numPd > 100 || numPd < 0)}
             disabled={isLoading}
           />
 
@@ -136,7 +151,6 @@ export const CatalystPricingDropdown = ({
             type="number"
             value={rhReducePercent}
             onChange={(e) => setRhReducePercent(e.target.value)}
-            error={hasTriedSave && (isNaN(numRh) || numRh > 100 || numRh < 0)}
             disabled={isLoading}
           />
 
@@ -145,7 +159,6 @@ export const CatalystPricingDropdown = ({
             type="number"
             value={transportCost1}
             onChange={(e) => setTransportCost1(e.target.value)}
-            error={hasTriedSave && isNaN(numT1)}
             disabled={isLoading}
           />
 
@@ -154,34 +167,71 @@ export const CatalystPricingDropdown = ({
             type="number"
             value={transportCost2}
             onChange={(e) => setTransportCost2(e.target.value)}
-            error={hasTriedSave && isNaN(numT2)}
             disabled={isLoading}
           />
+
           <TextField
             label={t("catalystPricing.columns.commissionPercent")}
             type="number"
             value={commissionPercent}
             onChange={(e) => setCommissionPercent(e.target.value)}
-            error={
-              hasTriedSave &&
-              (isNaN(numCommission) || numCommission > 100 || numCommission < 0)
-            }
             disabled={isLoading}
           />
+        </div>
 
-          <TextField
-            label={t("catalystPricing.columns.profitMargin")}
-            type="number"
-            value={profitMargin}
-            onChange={(e) => setProfitMargin(e.target.value)}
-            error={
-              hasTriedSave &&
-              (isNaN(numProfitMargin) ||
-                numProfitMargin > 100 ||
-                numProfitMargin < 0)
-            }
-            disabled={isLoading}
-          />
+        <div className={styles.marginsSection}>
+          <div className={styles.marginsTitle}>
+            {t("catalystPricing.columns.customerMargins")}
+          </div>
+
+          <div className={styles.marginsGrid}>
+            {margins.map((m) => {
+              const value = m.profitMarginPercent;
+
+              return (
+                <div key={m.customerTypeId} className={styles.marginCard}>
+                  <div className={styles.marginHeader}>
+                    <div className={styles.marginName}>
+                      {m.customerTypeCode}
+                    </div>
+
+                    <div
+                      className={`${styles.marginBadge} ${
+                        value === 0
+                          ? styles.low
+                          : value < 20
+                            ? styles.medium
+                            : styles.high
+                      }`}
+                    >
+                      {value}%
+                    </div>
+                  </div>
+
+                  <div className={styles.marginBar}>
+                    <div
+                      className={styles.marginFill}
+                      style={{ width: `${Math.min(value, 100)}%` }}
+                    />
+                  </div>
+
+                  <div className={styles.marginEdit}>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={value}
+                      onChange={(e) =>
+                        updateMargin(m.customerTypeId, e.target.value)
+                      }
+                      className={styles.marginInput}
+                    />
+                    <span>%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className={styles.actionswithoutDelete}>

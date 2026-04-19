@@ -257,6 +257,11 @@ export interface CatalystPricing {
   transportCost1UsdPerKg: number;
   transportCost2UsdPerKg: number;
   commissionPercent: number;
-  updatedAt: string;
-  profitMargin: number;
+ customerMargins: CustomMargins[];
+}
+
+export interface CustomMargins {
+  customerTypeId: number;
+  customerTypeCode: string;
+  profitMarginPercent: number;
 }

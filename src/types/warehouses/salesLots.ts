@@ -47,6 +47,14 @@ export interface SellSalesLotRequest {
   cashRegisterId: number;
   body: {
     currencyCode: string;
+    oldRevenue: number;
+    ptPrice: number;
+    pdPrice: number;
+    rhPrice: number;
+    powderKg: number;
+    pt_g: number;
+    pd_g: number;
+    rh_g: number;
   };
 }
 
@@ -156,4 +164,54 @@ export interface ReconcilePowderSaleRequest {
     finalAmount: number;
     reason: string;
   };
+}
+export interface SalesLotsSellFormResponse {
+  powderKg: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
+  ptPrice: number;
+  pdPrice: number;
+  rhPrice: number;
+  usdRate: number;
+  revenueAmd: number;
+}
+export interface SellRecalculationResponse {
+  id: number;
+  cashRegisterId: number;
+  body: {
+    currencyCode: string;
+    ptPrice: number;
+    pdPrice: number;
+    rhPrice: number;
+    powderKg: number;
+    pt_g: number;
+    pd_g: number;
+    rh_g: number;
+  };
+}
+
+export interface LotPreviewValues {
+  powderKg: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
+  ptPrice: number;
+  pdPrice: number;
+  rhPrice: number;
+  usdRate: number;
+  revenueAmd: number;
+}
+
+export interface LotPreviewDiff {
+  field: string;
+  oldValue: string;
+  newValue: string;
+}
+
+export interface GetLotPreviewResponse {
+  saleId: number;
+  before: LotPreviewValues;
+  after: LotPreviewValues;
+  diffs: LotPreviewDiff[];
 }

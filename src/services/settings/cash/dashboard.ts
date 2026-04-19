@@ -135,7 +135,7 @@ export const getBatchDetailsForFilter = async ({
   cashRegisterId,
   fromDate,
   toDate,
-  clientName,
+  supplierClientId,
   clientPhone,
   clientTypeId,
   page = 1,
@@ -148,7 +148,7 @@ export const getBatchDetailsForFilter = async ({
         params: {
           fromDate,
           toDate,
-          clientName,
+          supplierClientId,
           clientPhone,
           clientTypeId,
           cashRegisterId,
