@@ -37,10 +37,8 @@ export const CatalystPricingDropdown = ({
   const [commissionPercent, setCommissionPercent] = useState("");
 
   const [margins, setMargins] = useState<CatalystPricing["customerMargins"]>(
-    [],
+    []
   );
-
-  const [hasTriedSave, setHasTriedSave] = useState(false);
 
   const isEditMode = !!initialData;
 
@@ -54,8 +52,6 @@ export const CatalystPricingDropdown = ({
       setCommissionPercent(String(initialData.commissionPercent));
 
       setMargins(initialData.customerMargins ?? []);
-
-      setHasTriedSave(false);
     }
   }, [open, initialData]);
 
@@ -92,13 +88,12 @@ export const CatalystPricingDropdown = ({
               ...m,
               profitMarginPercent: isNaN(num) ? 0 : num,
             }
-          : m,
-      ),
+          : m
+      )
     );
   };
 
   const handleSaveClick = () => {
-    setHasTriedSave(true);
     if (!isValid || !initialData) return;
 
     onSave({
@@ -200,8 +195,8 @@ export const CatalystPricingDropdown = ({
                         value === 0
                           ? styles.low
                           : value < 20
-                            ? styles.medium
-                            : styles.high
+                          ? styles.medium
+                          : styles.high
                       }`}
                     >
                       {value}%
