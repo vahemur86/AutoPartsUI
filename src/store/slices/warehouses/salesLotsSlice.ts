@@ -11,6 +11,9 @@ import {
   createSalesLot,
   sellSalesLot,
   previewSalesLot,
+  getSalesLotsSellForm,
+  sellRecalculation,
+  getSalesLotsPreview,
 } from "@/services/warehouses/salesLots";
 
 // Types
@@ -23,6 +26,9 @@ import type {
   SellSalesLotResponse,
   BaseLot,
   SalesLotPreviewResponse,
+  SalesLotsSellFormResponse,
+  SellRecalculationResponse,
+  GetLotPreviewResponse,
 } from "@/types/warehouses/salesLots";
 
 // Utils
@@ -34,9 +40,12 @@ interface SalesLotsState {
   currentPage: number;
   pageSize: number;
   selectedLot: GetLotDetailsResponse | null;
+  selectedFormDetails: SalesLotsSellFormResponse | null;
   previewData: SalesLotPreviewResponse | null;
   lastCreatedId: number | null;
   lastSaleResult: SellSalesLotResponse | null;
+  lastRecalculationResult: number | null;
+  dropdownPreviewData: GetLotPreviewResponse | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -47,7 +56,10 @@ const initialState: SalesLotsState = {
   currentPage: 1,
   pageSize: 50,
   selectedLot: null,
+  selectedFormDetails: null,
+  lastRecalculationResult: null,
   previewData: null,
+  dropdownPreviewData: null,
   lastCreatedId: null,
   lastSaleResult: null,
   isLoading: false,
@@ -127,6 +139,54 @@ export const processLotSale = createAsyncThunk<
   }
 });
 
+export const fetchSalesLotsSellForm = createAsyncThunk<
+  SalesLotsSellFormResponse,
+  { id: number; cashRegisterId: number },
+  { rejectValue: string }
+>(
+  "salesLots/fetchSellForm",
+  async ({ id, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await getSalesLotsSellForm(id, cashRegisterId);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch lot form details"),
+      );
+    }
+  },
+);
+
+export const recalculateSalesLot = createAsyncThunk<
+  number,
+  SellRecalculationResponse,
+  { rejectValue: string }
+>("salesLots/recalculate", async (request, { rejectWithValue }) => {
+  try {
+    return await sellRecalculation(request);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to recalculate sales lot"),
+    );
+  }
+});
+
+export const fetchSalesLotsPreviewById = createAsyncThunk<
+  GetLotPreviewResponse,
+  { id: number; cashRegisterId: number },
+  { rejectValue: string }
+>(
+  "salesLots/fetchPreviewById",
+  async ({ id, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await getSalesLotsPreview(id, cashRegisterId);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to get lot preview"),
+      );
+    }
+  },
+);
+
 const salesLotsSlice = createSlice({
   name: "salesLots",
   initialState,
@@ -157,6 +217,31 @@ const salesLotsSlice = createSlice({
         state.isLoading = false;
         state.selectedLot = action.payload;
       })
+      .addCase(fetchSalesLotsSellForm.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchSalesLotsSellForm.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to fetch lot form details";
+      })
+      .addCase(fetchSalesLotsSellForm.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.selectedFormDetails = action.payload;
+      })
+      .addCase(fetchSalesLotsPreviewById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchSalesLotsPreviewById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.dropdownPreviewData = action.payload;
+      })
+      .addCase(fetchSalesLotsPreviewById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.dropdownPreviewData = null;
+        state.error = action.payload ?? "Failed to load preview";
+      })
       .addCase(fetchSalesLotPreview.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -174,6 +259,10 @@ const salesLotsSlice = createSlice({
       .addCase(createNewSalesLot.fulfilled, (state, action) => {
         state.isLoading = false;
         state.lastCreatedId = action.payload;
+      })
+      .addCase(recalculateSalesLot.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.lastRecalculationResult = action.payload;
       })
       .addCase(processLotSale.fulfilled, (state, action) => {
         state.isLoading = false;

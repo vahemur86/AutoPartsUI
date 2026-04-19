@@ -84,7 +84,7 @@ export type GetPowderBatchesParams = {
 export type GetBatchDetailsForFilterParams = {
   fromDate?: string;
   toDate?: string;
-  clientName?: string;
+  supplierClientId?: number;
   clientPhone?: string;
   clientTypeId?: number;
   cashRegisterId: number;

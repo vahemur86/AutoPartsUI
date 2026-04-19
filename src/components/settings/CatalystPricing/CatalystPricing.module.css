@@ -49,7 +49,7 @@
 .cardTitle {
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-white);
+  color: var(--color-primary-400);
 }
 
 .editBtn {
@@ -87,7 +87,6 @@
   color: var(--color-white);
 }
 
-/* responsive like your system */
 @media (max-width: 1200px) {
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -98,4 +97,82 @@
   .cardGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.marginsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.marginsTitle {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.marginsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.marginCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  transition: 0.25s ease;
+}
+
+.marginCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary-400);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.marginHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.marginName {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.marginValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary-400);
+}
+
+.marginBar {
+  height: 6px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.marginFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.marginFooter {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
 }

@@ -336,7 +336,7 @@ export const BatchReports: FC = () => {
   const [activeFilters, setActiveFilters] = useState<BatchReportFilters>({
     fromDate: null,
     toDate: null,
-    clientName: null,
+    superClientId: null,
     clientPhone: null,
     clientTypeId: null,
   });
@@ -347,7 +347,7 @@ export const BatchReports: FC = () => {
   }, [dispatch]);
 
   const hasClientFilter =
-    !!activeFilters.clientName ||
+    activeFilters.superClientId != null ||
     !!activeFilters.clientPhone ||
     activeFilters.clientTypeId != null;
 
@@ -384,7 +384,7 @@ export const BatchReports: FC = () => {
           pageSize: PAGE_SIZE,
           fromDate: activeFilters.fromDate ?? undefined,
           toDate: activeFilters.toDate ?? undefined,
-          clientName: activeFilters.clientName ?? undefined,
+          supplierClientId: activeFilters.superClientId ?? undefined,
           clientPhone: activeFilters.clientPhone ?? undefined,
           clientTypeId: activeFilters.clientTypeId ?? undefined,
           cashRegisterId: 1,

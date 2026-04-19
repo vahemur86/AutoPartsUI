@@ -13,7 +13,7 @@ import styles from "./FilterBatchesDropdown.module.css";
 export interface BatchReportFilters {
   fromDate: string | null;
   toDate: string | null;
-  clientName: string | null;
+  superClientId: number | null;
   clientPhone: string | null;
   clientTypeId: number | null;
 }
@@ -30,7 +30,7 @@ interface FilterBatchesDropdownProps {
 const defaultFilters: BatchReportFilters = {
   fromDate: null,
   toDate: null,
-  clientName: null,
+  superClientId: null,
   clientPhone: null,
   clientTypeId: null,
 };
@@ -54,13 +54,13 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   const [tempValues, setTempValues] = useState<{
     fromDate: Date | null;
     toDate: Date | null;
-    clientName: string;
+    superClientId: string;
     clientPhone: string;
     clientTypeId: string;
   }>({
     fromDate: null,
     toDate: null,
-    clientName: "",
+    superClientId: "",
     clientPhone: "",
     clientTypeId: "",
   });
@@ -70,7 +70,10 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
       setTempValues({
         fromDate: parseDate(initialFilters.fromDate),
         toDate: parseDate(initialFilters.toDate),
-        clientName: initialFilters.clientName ?? "",
+        superClientId:
+          initialFilters.superClientId != null
+            ? String(initialFilters.superClientId)
+            : "",
         clientPhone: initialFilters.clientPhone ?? "",
         clientTypeId:
           initialFilters.clientTypeId != null
@@ -88,20 +91,30 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   };
 
   const handleApply = () => {
+    const superClientIdNum =
+      tempValues.superClientId.trim() === ""
+        ? null
+        : Number(tempValues.superClientId);
+
     const clientTypeIdNum =
       tempValues.clientTypeId.trim() === ""
         ? null
         : Number(tempValues.clientTypeId);
+
     onSave({
       fromDate: toSafeISO(tempValues.fromDate),
       toDate: toSafeISO(tempValues.toDate),
-      clientName: tempValues.clientName.trim() || null,
+      superClientId:
+        superClientIdNum != null && !Number.isNaN(superClientIdNum)
+          ? superClientIdNum
+          : null,
       clientPhone: tempValues.clientPhone.trim() || null,
       clientTypeId:
         clientTypeIdNum != null && !Number.isNaN(clientTypeIdNum)
           ? clientTypeIdNum
           : null,
     });
+
     onOpenChange(false);
   };
 
@@ -109,7 +122,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
     setTempValues({
       fromDate: null,
       toDate: null,
-      clientName: "",
+      superClientId: "",
       clientPhone: "",
       clientTypeId: "",
     });
@@ -179,12 +192,14 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
         <div className={styles.filtersRow}>
           <div className={styles.inputWrapper}>
             <TextField
-              label={t("cashbox.batches.filters.clientName")}
-              value={tempValues.clientName}
+              label={t("cashbox.batches.filters.superClientId")}
+              value={tempValues.superClientId}
               onChange={(e) =>
-                setTempValues((p) => ({ ...p, clientName: e.target.value }))
+                setTempValues((p) => ({ ...p, superClientId: e.target.value }))
               }
-              placeholder={t("cashbox.batches.filters.placeholderClientName")}
+              placeholder={t(
+                "cashbox.batches.filters.placeholderSuperClientId",
+              )}
             />
           </div>
           <div className={styles.inputWrapper}>
@@ -207,9 +222,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                   clientTypeId: e.target.value,
                 }))
               }
-              placeholder={t(
-                "cashbox.batches.filters.selectCustomerType",
-              )}
+              placeholder={t("cashbox.batches.filters.selectCustomerType")}
             >
               <option value="">
                 {t("cashbox.batches.filters.selectCustomerType")}

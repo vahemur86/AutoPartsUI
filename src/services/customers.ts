@@ -79,9 +79,30 @@ export const updateCustomerType = async (
 
 export const deleteCustomer = async (customerId: number) => {
   try {
-    const response = await api.delete( `/catalyst/customers/${customerId}`);
+    const response = await api.delete(`/catalyst/customers/${customerId}`);
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to delete customer."));
+  }
+}
+
+export const getCustomerNames = async (
+  search?: string,
+  cashRegisterId?: number,
+): Promise<string[]> => {
+  try {
+    const response = await api.get<string[]>(
+      `/catalyst/customers/names`,
+      {
+        params: { search },
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get customer names."),
+    );
   }
 };

@@ -4,6 +4,7 @@ import i18next from "i18next";
 import { Button } from "@/ui-kit";
 import type { PowderSale } from "@/types/warehouses/salesLots";
 import styles from "./SoldBatches.module.css";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 const columnHelper = createColumnHelper<PowderSale>();
 
@@ -18,7 +19,24 @@ export const getSoldBatchesColumns = ({
 }: {
   onEdit: (row: PowderSale, e: MouseEvent<HTMLElement>) => void;
 }): ColumnDef<PowderSale, any>[] => [
-  columnHelper.accessor("id", {
+  columnHelper.display({
+    id: "expander",
+    header: () => null,
+    cell: ({ row }) => (
+      <button
+        type="button"
+        onClick={row.getToggleExpandedHandler()}
+        className={styles.expandTrigger}
+      >
+        {row.getIsExpanded() ? (
+          <ChevronDown size={18} />
+        ) : (
+          <ChevronRight size={18} />
+        )}
+      </button>
+    ),
+  }),
+  columnHelper.accessor("salesLotId", {
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
   }),

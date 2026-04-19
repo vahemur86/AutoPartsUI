@@ -7,6 +7,7 @@ import {
 // services
 import {
   deleteCustomer,
+  getCustomerNames,
   getCustomers,
   getOrCreateCustomer,
   updateCustomerType as updateCustomerTypeApi,
@@ -28,11 +29,13 @@ interface CustomersState {
   totalItems: number;
   isLoading: boolean;
   isSubmitting: boolean;
+  names: string[];
   error: string | null;
 }
 
 const initialState: CustomersState = {
   items: [],
+  names: [],
   totalItems: 0,
   isLoading: false,
   isSubmitting: false,
@@ -101,6 +104,23 @@ export const updateCustomerType = createAsyncThunk<
   },
 );
 
+export const fetchCustomerNames = createAsyncThunk<
+  string[],
+  { search?: string; cashRegisterId?: number },
+  { rejectValue: string }
+>(
+  "customers/fetchNames",
+  async ({ search, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await getCustomerNames(search, cashRegisterId);
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch customer names"),
+      );
+    }
+  },
+);
+
 // --- Slice ---
 
 const customersSlice = createSlice({
@@ -132,6 +152,12 @@ const customersSlice = createSlice({
           state.totalItems = action.payload.totalItems;
         },
       )
+      .addCase(fetchCustomerNames.fulfilled, (state, action) => {
+        state.names = action.payload;
+      })
+      .addCase(fetchCustomerNames.rejected, (state, action) => {
+        state.error = action.payload ?? "Failed to fetch customer names";
+      })
 
       /* createCustomer cases */
       .addCase(createCustomer.pending, (state) => {
@@ -146,7 +172,7 @@ const customersSlice = createSlice({
           state.totalItems += 1;
         },
       )
-      
+
       /* updateCustomerType cases */
       .addCase(updateCustomerType.pending, (state) => {
         state.isSubmitting = true;
@@ -163,9 +189,9 @@ const customersSlice = createSlice({
             state.items[index] = action.payload;
           }
         },
-      )
+      );
 
-// Delete customer 
+    // Delete customer
     builder
       .addCase(removeCustomer.pending, (state) => {
         state.isLoading = true;
@@ -175,9 +201,7 @@ const customersSlice = createSlice({
         removeCustomer.fulfilled,
         (state, action: PayloadAction<number>) => {
           state.isLoading = false;
-          state.items = state.items.filter(
-            (ct) => ct.id !== action.payload,
-          );
+          state.items = state.items.filter((ct) => ct.id !== action.payload);
           state.error = null;
         },
       )
@@ -186,7 +210,7 @@ const customersSlice = createSlice({
         state.error = action.payload ?? "Failed to delete customer";
       })
 
-        /* Global Rejected Matcher */
+      /* Global Rejected Matcher */
       .addMatcher(
         (action): action is PayloadAction<string> =>
           action.type.endsWith("/rejected"),
@@ -196,8 +220,6 @@ const customersSlice = createSlice({
           state.error = action.payload ?? "An unexpected error occurred";
         },
       );
-      
-      
   },
 });
 

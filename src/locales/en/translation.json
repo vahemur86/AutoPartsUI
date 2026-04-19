@@ -346,7 +346,8 @@
       "saleModal": {
         "title": "Complete Sale",
         "description": "Set metal prices for sales lot #{{id}}.",
-        "confirm": "Confirm sale"
+        "confirm": "Confirm sale",
+        "cancel": "Cancel"
       },
       "saleForm": {
         "currencyCode": "Currency code"
@@ -356,7 +357,24 @@
       },
       "error": {
         "currencyRequired": "Please provide a currency code",
-        "failedToSell": "Failed to complete sales lot transaction"
+        "failedToSell": "Failed to complete sales lot transaction",
+        "failedToRecalculate": "Failed to recalculate sales lot"
+      },
+      "recalculate": {
+        "button": "Recalculate",
+        "loading": "Recalculating...",
+        "resultLabel": "Recalculation Result"
+      },
+      "fields": {
+        "powderKg": "Powder (kg)",
+        "pt_g": "Pt (g)",
+        "pd_g": "Pd (g)",
+        "rh_g": "Rh (g)",
+        "ptPrice": "Pt Price",
+        "pdPrice": "Pd Price",
+        "rhPrice": "Rh Price",
+        "usdRate": "USD Rate",
+        "revenueAmd": "Revenue (AMD)"
       },
       "columns": {
         "id": "ID",
@@ -389,6 +407,23 @@
         "comment": "Reason",
         "enterComment": "Enter a comment..."
       },
+      "dropdown": {
+        "powderKg": "Powder Weight (kg)",
+        "pt_g": "Platinum (g)",
+        "pd_g": "Palladium (g)",
+        "rh_g": "Rhodium (g)",
+        "ptPrice": "Platinum Price",
+        "pdPrice": "Palladium Price",
+        "rhPrice": "Rhodium Price",
+        "usdRate": "USD Rate",
+        "revenueAmd": "Revenue (AMD)",
+        "saleId": "Sale ID",
+        "comparison": "Differences",
+        "original": "Original",
+        "current": "Current",
+        "noDifferences": "No differences found"
+      },
+
       "columns": {
         "id": "ID",
         "salesLotId": "Sales Lot ID",
@@ -1391,7 +1426,8 @@
       "transportCost1UsdPerKg": "Transport Cost 1 (USD/kg)",
       "transportCost2UsdPerKg": "Transport Cost 2 (USD/kg)",
       "updatedAt": "Updated At",
-      "profitMargin": "Profit Percent"
+      "profitMargin": "Profit Percent",
+      "customerMargins": "Predictable profit percentage by customer type"
     }
   },
   "warehouse": {

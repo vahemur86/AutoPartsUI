@@ -8,6 +8,7 @@ import { getApiErrorMessage } from "@/utils";
 import type {
   CreateSalesLotRequest,
   GetLotDetailsResponse,
+  GetLotPreviewResponse,
   GetPowderSalesAdjustmentsResponse,
   GetPowderSalesParams,
   GetPowderSalesResponse,
@@ -16,6 +17,8 @@ import type {
   ReconcilePowderSaleRequest,
   SalesLotPreviewRequest,
   SalesLotPreviewResponse,
+  SalesLotsSellFormResponse,
+  SellRecalculationResponse,
   SellSalesLotRequest,
   SellSalesLotResponse,
 } from "@/types/warehouses/salesLots";
@@ -120,7 +123,7 @@ export const getPowderSalesAdjustments = ({
     "Failed to get powder sales adjustments.",
   );
 
-  export const reconcilePowderSale = ({
+export const reconcilePowderSale = ({
   id,
   cashRegisterId,
   body,
@@ -132,4 +135,38 @@ export const getPowderSalesAdjustments = ({
       }),
     cashRegisterId,
     "Failed to reconcile powder sale.",
+  );
+
+export const getSalesLotsSellForm = (id: number, cashRegisterId: number) =>
+  performRequest(
+    (headers) =>
+      api.get<SalesLotsSellFormResponse>(`/admin/sales-lots/${id}/sell-form`, {
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to get lot form details.",
+  );
+
+export const sellRecalculation = ({
+  id,
+  cashRegisterId,
+  body,
+}: SellRecalculationResponse) =>
+  performRequest(
+    (headers) =>
+      api.post<number>(`/admin/sales-lots/${id}/sell-recalculate`, body, {
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to complete sales lot transaction.",
+  );
+
+export const getSalesLotsPreview = (id: number, cashRegisterId: number) =>
+  performRequest(
+    (headers) =>
+      api.get<GetLotPreviewResponse>(`/admin/powder-sales/${id}/change-report`, {
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to get lot preview.",
   );

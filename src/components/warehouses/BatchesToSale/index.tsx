@@ -3,7 +3,13 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Select, ConfirmationModal } from "@/ui-kit";
+import {
+  DataTable,
+  Select,
+  ConfirmationModal,
+  TextField,
+  Button,
+} from "@/ui-kit";
 
 // components
 import { getSalesLotColumns } from "./columns";
@@ -13,6 +19,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchSalesLots,
   processLotSale,
+  fetchSalesLotsSellForm,
+  recalculateSalesLot,
 } from "@/store/slices/warehouses/salesLotsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
@@ -27,6 +35,7 @@ import type { BaseLot } from "@/types/warehouses/salesLots";
 
 // styles
 import styles from "./BatchesToSale.module.css";
+import { DollarSign } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -34,9 +43,15 @@ export const BatchesToSale = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { lots, isLoading, error, totalItems } = useAppSelector(
-    (state) => state.salesLots,
-  );
+  const {
+    lots,
+    isLoading,
+    error,
+    totalItems,
+    selectedFormDetails,
+    lastRecalculationResult,
+  } = useAppSelector((state) => state.salesLots);
+
   const { warehouses } = useAppSelector((state) => state.warehouses);
 
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
@@ -46,8 +61,19 @@ export const BatchesToSale = () => {
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
   const [lotToSell, setLotToSell] = useState<BaseLot | null>(null);
   const [isProcessingSale, setIsProcessingSale] = useState(false);
+  const [isRecalculating, setIsRecalculating] = useState(false);
+  const [showRecalcResult, setShowRecalcResult] = useState(false);
+
   const [sellForm, setSellForm] = useState({
     currencyCode: "USD",
+    oldRevenue: 0,
+    ptPrice: 0,
+    pdPrice: 0,
+    rhPrice: 0,
+    powderKg: 0,
+    pt_g: 0,
+    pd_g: 0,
+    rh_g: 0,
   });
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
@@ -67,9 +93,6 @@ export const BatchesToSale = () => {
       dispatch(
         fetchSalesLots({
           warehouseId: selectedWarehouseId,
-          // status: 1, // Status 1 typically means "available for sale"
-          // page: currentPageIndex + 1,
-          // pageSize: PAGE_SIZE,
           cashRegisterId,
         }),
       );
@@ -82,21 +105,93 @@ export const BatchesToSale = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (selectedFormDetails) {
+      setSellForm((prev) => ({
+        ...prev,
+        ptPrice: selectedFormDetails.ptPrice,
+        pdPrice: selectedFormDetails.pdPrice,
+        rhPrice: selectedFormDetails.rhPrice,
+        powderKg: selectedFormDetails.powderKg,
+        pt_g: selectedFormDetails.pt_g,
+        pd_g: selectedFormDetails.pd_g,
+        rh_g: selectedFormDetails.rh_g,
+        oldRevenue: selectedFormDetails.revenueAmd,
+      }));
+    }
+  }, [selectedFormDetails]);
+
+  const handleRecalculate = async () => {
+    if (!lotToSell) return;
+
+    try {
+      setIsRecalculating(true);
+
+      await dispatch(
+        recalculateSalesLot({
+          id: lotToSell.id,
+          cashRegisterId,
+          body: {
+            ...sellForm,
+          },
+        }),
+      ).unwrap();
+
+      setShowRecalcResult(true);
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("warehouses.batchesToSale.error.failedToRecalculate"),
+        ),
+      );
+    } finally {
+      setIsRecalculating(false);
+    }
+  };
+
   const handleOpenSellModal = (lot: BaseLot) => {
     setLotToSell(lot);
     setIsSellModalOpen(true);
+
+    setShowRecalcResult(false);
+
+    dispatch(
+      fetchSalesLotsSellForm({
+        id: lot.id,
+        cashRegisterId,
+      }),
+    );
   };
 
   const handleCloseSellModal = () => {
     if (isProcessingSale) return;
+
     setIsSellModalOpen(false);
     setLotToSell(null);
+
+    setShowRecalcResult(false);
+
+    setSellForm({
+      currencyCode: "USD",
+      oldRevenue: 0,
+      ptPrice: 0,
+      pdPrice: 0,
+      rhPrice: 0,
+      powderKg: 0,
+      pt_g: 0,
+      pd_g: 0,
+      rh_g: 0,
+    });
   };
 
-  const handleSellFieldChange = (field: "currencyCode", value: string) => {
+  const handleSellFieldChange = (
+    field: keyof typeof sellForm,
+    value: string | number,
+  ) => {
     setSellForm((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: typeof prev[field] === "number" ? Number(value) : value,
     }));
   };
 
@@ -118,7 +213,7 @@ export const BatchesToSale = () => {
           id: lotToSell.id,
           cashRegisterId,
           body: {
-            currencyCode,
+            ...sellForm,
           },
         }),
       ).unwrap();
@@ -172,6 +267,7 @@ export const BatchesToSale = () => {
         <h2 className={styles.title}>
           {t("warehouses.navigation.batchesToSale")}
         </h2>
+
         <div className={styles.warehouseSelector}>
           <Select
             label={t("warehouses.form.warehouse")}
@@ -240,6 +336,95 @@ export const BatchesToSale = () => {
           confirmLoading={isProcessingSale}
         >
           <div className={styles.saleForm}>
+            <div className={styles.saleFormRow}>
+              <TextField
+                label={t("warehouses.batchesToSale.fields.powderKg")}
+                type="number"
+                value={String(sellForm.powderKg)}
+                onChange={(e) =>
+                  handleSellFieldChange("powderKg", e.target.value)
+                }
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.pt_g")}
+                type="number"
+                value={String(sellForm.pt_g)}
+                onChange={(e) => handleSellFieldChange("pt_g", e.target.value)}
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.pd_g")}
+                type="number"
+                value={String(sellForm.pd_g)}
+                onChange={(e) => handleSellFieldChange("pd_g", e.target.value)}
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.rh_g")}
+                type="number"
+                value={String(sellForm.rh_g)}
+                onChange={(e) => handleSellFieldChange("rh_g", e.target.value)}
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.ptPrice")}
+                icon={<DollarSign size={16} />}
+                type="number"
+                value={String(sellForm.ptPrice)}
+                onChange={(e) =>
+                  handleSellFieldChange("ptPrice", e.target.value)
+                }
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.pdPrice")}
+                icon={<DollarSign size={16} />}
+                type="number"
+                value={String(sellForm.pdPrice)}
+                onChange={(e) =>
+                  handleSellFieldChange("pdPrice", e.target.value)
+                }
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.rhPrice")}
+                icon={<DollarSign size={16} />}
+                type="number"
+                value={String(sellForm.rhPrice)}
+                onChange={(e) =>
+                  handleSellFieldChange("rhPrice", e.target.value)
+                }
+              />
+            </div>
+
+            <div className={styles.saleFormRow}>
+              <TextField
+                label={t("warehouses.batchesToSale.fields.usdRate")}
+                value={String(selectedFormDetails?.usdRate ?? "")}
+                disabled
+              />
+              <TextField
+                label={t("warehouses.batchesToSale.fields.revenueAmd")}
+                value={String(selectedFormDetails?.revenueAmd ?? "")}
+                disabled
+              />
+            </div>
+
+            <div className={styles.recalculateSection}>
+              <Button
+                type="button"
+                onClick={handleRecalculate}
+                disabled={isRecalculating}
+                className={styles.recalculateButton}
+              >
+                {isRecalculating
+                  ? t("warehouses.batchesToSale.recalculate.loading")
+                  : t("warehouses.batchesToSale.recalculate.button")}
+              </Button>
+
+              {showRecalcResult && lastRecalculationResult !== null && (
+                <div className={styles.recalculationResult}>
+                  {t("warehouses.batchesToSale.recalculate.resultLabel")}:{" "}
+                  <strong>{lastRecalculationResult}</strong>
+                </div>
+              )}
+            </div>
+
             <Select
               label={t("warehouses.batchesToSale.saleForm.currencyCode")}
               value={sellForm.currencyCode}

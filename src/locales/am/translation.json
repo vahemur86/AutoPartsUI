@@ -348,7 +348,8 @@
       "saleModal": {
         "title": "Ավարտել վաճառքը",
         "description": "Նշեք մետաղների գները վաճառքի խմբաքանակի #{{id}} համար:",
-        "confirm": "Հաստատել վաճառքը"
+        "confirm": "Հաստատել վաճառքը",
+        "cancel": "Չեղարկել"
       },
       "saleForm": {
         "currencyCode": "Արժույթի կոդ"
@@ -358,7 +359,24 @@
       },
       "error": {
         "currencyRequired": "Խնդրում ենք նշել արժույթի կոդը",
-        "failedToSell": "Չհաջողվեց ավարտել վաճառքի գործարքը"
+        "failedToSell": "Չհաջողվեց ավարտել վաճառքի գործարքը",
+        "failedToRecalculate": "Չհաջողվեց վերահաշվարկել վաճառքի խմբաքանակը"
+      },
+      "recalculate": {
+        "button": "Վերահաշվարկել",
+        "loading": "Վերահաշվարկվում է...",
+        "resultLabel": "Վերահաշվարկի արդյունք"
+      },
+      "fields": {
+        "powderKg": "Փոշի (կգ)",
+        "pt_g": "Պլատին (գ)",
+        "pd_g": "Պալադիում (գ)",
+        "rh_g": "Ռոդիում (գ)",
+        "ptPrice": "Պլատինի գին",
+        "pdPrice": "Պալադիումի գին",
+        "rhPrice": "Ռոդիումի գին",
+        "usdRate": "USD փոխարժեք",
+        "revenueAmd": "Եկամուտ (AMD)"
       },
       "columns": {
         "id": "ID",
@@ -389,7 +407,23 @@
       "form": {
         "finalAmount": "Փոփոխված գին",
         "comment": "Պատճառը",
-        "enterComment":"Մուտքագրեք մեկնաբանություն..."
+        "enterComment": "Մուտքագրեք մեկնաբանություն..."
+      },
+      "dropdown": {
+        "powderKg": "Փոշու քաշ (կգ)",
+        "pt_g": "Պլատին (գ)",
+        "pd_g": "Պալադիում (գ)",
+        "rh_g": "Ռոդիում (գ)",
+        "ptPrice": "Պլատինի գին",
+        "pdPrice": "Պալադիումի գին",
+        "rhPrice": "Ռոդիումի գին",
+        "usdRate": "USD փոխարժեք",
+        "revenueAmd": "Վաճառքի գին (AMD)",
+        "saleId": "Վաճառքի ID",
+        "comparison": "Տարբերություն",
+        "original": "Սկզբնական",
+        "current": "Նոր",
+        "noDifferences": "Տարբերություններ չկան"
       },
       "columns": {
         "id": "ID",
@@ -1393,7 +1427,8 @@
       "transportCost1UsdPerKg": "Առաքման ծախս 1 (USD/kg)",
       "transportCost2UsdPerKg": "Առաքման ծախս 2 (USD/kg)",
       "updatedAt": "Թարմացվել է",
-      "profitMargin": "Շահույթի տոկոս"
+      "profitMargin": "Շահույթի տոկոս",
+      "customerMargins" : "Կանխատեսելի շահույթի տոկոս ըստ հաճախորդի տեսակի"
     }
   },
   "warehouse": {

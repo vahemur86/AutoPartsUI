@@ -346,31 +346,49 @@
       "saleModal": {
         "title": "Завершить продажу",
         "description": "Укажите цены металлов для партии продажи #{{id}}.",
-        "confirm": "Подтвердить продажу"
+        "confirm": "Подтвердить продажу",
+        "cancel": "Отмена"
       },
       "saleForm": {
         "currencyCode": "Код валюты"
       },
       "success": {
-        "saleCompleted": "Партия продажи успешно продана"
+        "saleCompleted": "Партия успешно продана"
       },
       "error": {
         "currencyRequired": "Пожалуйста, укажите код валюты",
-        "failedToSell": "Не удалось завершить продажу партии"
+        "failedToSell": "Не удалось завершить продажу партии",
+        "failedToRecalculate": "Не удалось пересчитать партию продажи"
+      },
+      "recalculate": {
+        "button": "Пересчитать",
+        "loading": "Пересчёт...",
+        "resultLabel": "Результат пересчёта"
+      },
+      "fields": {
+        "powderKg": "Порошок (кг)",
+        "pt_g": "Платина (г)",
+        "pd_g": "Палладий (г)",
+        "rh_g": "Родий (г)",
+        "ptPrice": "Цена платины",
+        "pdPrice": "Цена палладия",
+        "rhPrice": "Цена родия",
+        "usdRate": "Курс USD",
+        "revenueAmd": "Доход (AMD)"
       },
       "columns": {
         "id": "ID",
         "warehouseId": "ID склада",
         "status": "Статус",
-        "itemsCostTotalAmd": "Стоимость",
+        "totalPowderKg": "Вес",
+        "itemsCostTotalAmd": "Себестоимость",
         "profit": "Прибыль",
+        "costTotalAmd": "Цена продажи",
         "ptTotal_g": "Pt",
         "pdTotal_g": "Pd",
         "rhTotal_g": "Rh",
         "createdAt": "Создано",
-        "soldAt": "Продано",
-        "totalPowderKg": "Вес",
-        "costTotalAmd": "Цена продажи"
+        "soldAt": "Продано"
       }
     },
     "soldBatches": {
@@ -383,6 +401,22 @@
         "toDate": "По дату",
         "selectFromDate": "Выберите дату начала",
         "selectToDate": "Выберите дату окончания"
+      },
+      "dropdown": {
+        "powderKg": "Вес порошка (кг)",
+        "pt_g": "Платина (г)",
+        "pd_g": "Палладий (г)",
+        "rh_g": "Родий (г)",
+        "ptPrice": "Цена платины",
+        "pdPrice": "Цена палладия",
+        "rhPrice": "Цена родия",
+        "usdRate": "Курс USD",
+        "revenueAmd": "Цена продажи (AMD)",
+        "saleId": "ID продажи",
+        "comparison": "Различия",
+        "original": "Исходные",
+        "current": "Текущие",
+        "noDifferences": "Нет различий"
       },
       "form": {
         "finalAmount": "Изменённая цена",
@@ -1390,7 +1424,8 @@
       "transportCost1UsdPerKg": "Стоимость доставки 1 (USD/kg)",
       "transportCost2UsdPerKg": "Стоимость доставки 2 (USD/kg)",
       "updatedAt": "Обновлено в",
-      "profitMargin": "Процент прибыли"
+      "profitMargin": "Процент прибыли",
+      "customerMargins": "Прогнозируемый процент прибыли в зависимости от типа клиента"
     }
   },
   "warehouse": {

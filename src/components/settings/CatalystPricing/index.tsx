@@ -88,6 +88,7 @@ export const CatalystPricings: FC = () => {
               <div className={styles.cardTitle}>
                 {t("catalystPricing.title")} #{item.id}
               </div>
+
               <Button
                 className={styles.editBtn}
                 onClick={(e) => handleOpenEdit(item, e)}
@@ -130,17 +131,53 @@ export const CatalystPricings: FC = () => {
                 <span>{t("catalystPricing.columns.commissionPercent")}</span>
                 <b>{item.commissionPercent.toFixed(2)}%</b>
               </div>
-
-              <div className={styles.cardItem}>
-                <span>{t("catalystPricing.columns.profitMargin")}</span>
-                <b>{item.profitMargin.toFixed(2)}%</b>
-              </div>
-
-              <div className={styles.cardItem}>
-                <span>{t("catalystPricing.columns.updatedAt")}</span>
-                <b>{new Date(item.updatedAt).toLocaleDateString()}</b>
-              </div>
             </div>
+
+            {item.customerMargins?.length > 0 && (
+              <div className={styles.marginsSection}>
+                <div className={styles.marginsTitle}>
+                  {t("catalystPricing.columns.customerMargins")}
+                </div>
+
+                <div className={styles.marginsGrid}>
+                  {item.customerMargins.map((m) => {
+                    const percent = m.profitMarginPercent;
+
+                    return (
+                      <div key={m.customerTypeId} className={styles.marginCard}>
+                        {/* top */}
+                        <div className={styles.marginHeader}>
+                          <span className={styles.marginName}>
+                            {m.customerTypeCode}
+                          </span>
+
+                          <span className={styles.marginValue}>{percent}%</span>
+                        </div>
+
+                        {/* progress bar */}
+                        <div className={styles.marginBar}>
+                          <div
+                            className={styles.marginFill}
+                            style={{ width: `${Math.min(percent, 100)}%` }}
+                          />
+                        </div>
+
+                        {/* label */}
+                        <div className={styles.marginFooter}>
+                          {percent === 0
+                            ? "No margin"
+                            : percent < 20
+                              ? "Low margin"
+                              : percent < 40
+                                ? "Medium margin"
+                                : "High margin"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
