@@ -12,8 +12,8 @@ import { Filter, User, Phone, TrendingUp } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchBatches,
-  fetchBatchDetails,
   clearSelection,
+  fetchBatchDetails,
 } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
 
@@ -31,8 +31,8 @@ import { checkIsToday } from "@/utils/checkIsToday.utils";
 // styles
 import styles from "./BatchReports.module.css";
 import { fetchBatchDetailsForFilter } from "@/store/slices/cash/dashboardSlice";
-import type { BatchDetailsForFilterItem } from "@/types/cash/dashboard";
 import { FilteredBatchCard } from "./FilteredBatchCard";
+import { FilteredBatchSummaryCard } from "./FilteredBatchSummaryCard";
 
 const PAGE_SIZE = 10;
 
@@ -339,6 +339,7 @@ export const BatchReports: FC = () => {
     superClientId: null,
     clientPhone: null,
     clientTypeId: null,
+    supplierClientId: null,
   });
   const filterAnchorRef = useRef<HTMLDivElement>(null);
 
@@ -348,10 +349,10 @@ export const BatchReports: FC = () => {
 
   const hasClientFilter =
     activeFilters.superClientId != null ||
+    activeFilters.supplierClientId != null ||
     !!activeFilters.clientPhone ||
     activeFilters.clientTypeId != null;
 
-  // Always fetch batches for the table (no client filters)
   useEffect(() => {
     if (!hasClientFilter) {
       dispatch(
@@ -375,7 +376,6 @@ export const BatchReports: FC = () => {
     };
   }, [dispatch, activeFilters, currentPage, hasClientFilter, t]);
 
-  // Fetch filtered batch details when client filters are active
   useEffect(() => {
     if (hasClientFilter) {
       dispatch(
@@ -384,7 +384,12 @@ export const BatchReports: FC = () => {
           pageSize: PAGE_SIZE,
           fromDate: activeFilters.fromDate ?? undefined,
           toDate: activeFilters.toDate ?? undefined,
-          supplierClientId: activeFilters.superClientId ?? undefined,
+
+          supplierClientId:
+            activeFilters.supplierClientId ??
+            activeFilters.superClientId ??
+            undefined,
+
           clientPhone: activeFilters.clientPhone ?? undefined,
           clientTypeId: activeFilters.clientTypeId ?? undefined,
           cashRegisterId: 1,
@@ -408,6 +413,10 @@ export const BatchReports: FC = () => {
   const columns = useMemo(() => getBatchReportColumns(), []);
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
 
+  console.log(
+    "🚀 ~ BatchReports ~ batchDetailsForFilter?.items:",
+    batchDetailsForFilter?.items,
+  );
   return (
     <div className={styles.batchReportsWrapper}>
       <header className={styles.header}>
@@ -467,17 +476,24 @@ export const BatchReports: FC = () => {
                 {t("cashbox.batches.title")} (
                 {batchDetailsForFilter?.totalItems || 0})
               </h5>
+
+              {batchDetailsForFilter && (
+                <FilteredBatchSummaryCard
+                  data={batchDetailsForFilter}
+                  t={t}
+                  styles={styles}
+                />
+              )}
+
               <div className={styles.itemsGrid}>
-                {batchDetailsForFilter?.results.map(
-                  (batch: BatchDetailsForFilterItem) => (
-                    <FilteredBatchCard
-                      key={batch.id}
-                      batch={batch}
-                      t={t}
-                      styles={styles}
-                    />
-                  ),
-                )}
+                {batchDetailsForFilter?.items?.map((batch) => (
+                  <FilteredBatchCard
+                    key={batch.id}
+                    batch={batch}
+                    t={t}
+                    styles={styles}
+                  />
+                ))}
               </div>
             </div>
           </div>

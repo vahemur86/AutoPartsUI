@@ -22,6 +22,7 @@ import type {
   Customer,
   CreateCustomerRequest,
   CustomersResponse,
+  CustomerSearchResult,
 } from "@/types/operator";
 
 interface CustomersState {
@@ -29,7 +30,7 @@ interface CustomersState {
   totalItems: number;
   isLoading: boolean;
   isSubmitting: boolean;
-  names: string[];
+  names: CustomerSearchResult[];
   error: string | null;
 }
 
@@ -105,7 +106,7 @@ export const updateCustomerType = createAsyncThunk<
 );
 
 export const fetchCustomerNames = createAsyncThunk<
-  string[],
+  CustomerSearchResult[],
   { search?: string; cashRegisterId?: number },
   { rejectValue: string }
 >(
@@ -155,6 +156,7 @@ const customersSlice = createSlice({
       .addCase(fetchCustomerNames.fulfilled, (state, action) => {
         state.names = action.payload;
       })
+
       .addCase(fetchCustomerNames.rejected, (state, action) => {
         state.error = action.payload ?? "Failed to fetch customer names";
       })

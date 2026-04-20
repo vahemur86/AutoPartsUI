@@ -36,6 +36,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
 }
 
 .datePickerWrapper {
@@ -70,4 +71,92 @@
   .content {
     padding: 12px;
   }
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIconBtn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.searchIconBtn:hover {
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+
+  background: rgba(255, 255, 255, 0.04); 
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+
+  max-height: 240px;
+  overflow-y: auto;
+
+  z-index: 999;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+
+.suggestionItem {
+  padding: 10px 12px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  transition: all 0.15s ease;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+.suggestionItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.suggestionItem div {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.suggestionItem small {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
 }

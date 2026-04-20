@@ -7,6 +7,11 @@ import { Button, Dropdown, DatePicker, TextField, Select } from "@/ui-kit";
 // types
 import type { CustomerType } from "@/types/settings";
 
+// store
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchCustomerNames } from "@/store/slices/customersSlice";
+import { Search } from "lucide-react";
+
 // styles
 import styles from "./FilterBatchesDropdown.module.css";
 
@@ -16,6 +21,7 @@ export interface BatchReportFilters {
   superClientId: number | null;
   clientPhone: string | null;
   clientTypeId: number | null;
+  supplierClientId?: number | null;
 }
 
 interface FilterBatchesDropdownProps {
@@ -33,6 +39,7 @@ const defaultFilters: BatchReportFilters = {
   superClientId: null,
   clientPhone: null,
   clientTypeId: null,
+  supplierClientId: null,
 };
 
 const parseDate = (iso: string | null): Date | null => {
@@ -50,6 +57,19 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   customerTypes = [],
 }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const customerNames = useAppSelector((s) => s.customers.names);
+
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [selectedClient, setSelectedClient] = useState<{
+    id: number | null;
+    displayName: string;
+  }>({
+    id: null,
+    displayName: "",
+  });
 
   const [tempValues, setTempValues] = useState<{
     fromDate: Date | null;
@@ -57,12 +77,14 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
     superClientId: string;
     clientPhone: string;
     clientTypeId: string;
+    supplierClientId: number | null;
   }>({
     fromDate: null,
     toDate: null,
     superClientId: "",
     clientPhone: "",
     clientTypeId: "",
+    supplierClientId: null,
   });
 
   useEffect(() => {
@@ -79,6 +101,12 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
           initialFilters.clientTypeId != null
             ? String(initialFilters.clientTypeId)
             : "",
+        supplierClientId: initialFilters.supplierClientId ?? null,
+      });
+
+      setSelectedClient({
+        id: initialFilters.supplierClientId ?? null,
+        displayName: "",
       });
     }
   }, [open, initialFilters]);
@@ -113,6 +141,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
         clientTypeIdNum != null && !Number.isNaN(clientTypeIdNum)
           ? clientTypeIdNum
           : null,
+      supplierClientId: tempValues.supplierClientId,
     });
 
     onOpenChange(false);
@@ -125,7 +154,14 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
       superClientId: "",
       clientPhone: "",
       clientTypeId: "",
+      supplierClientId: null,
     });
+
+    setSelectedClient({
+      id: null,
+      displayName: "",
+    });
+
     onSave(defaultFilters);
     onOpenChange(false);
   };
@@ -157,15 +193,11 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                   setTempValues((p) => ({ ...p, fromDate: date }))
                 }
                 dateFormat="MM/dd/yyyy"
-                placeholderText={t("cashbox.batches.filters.selectFromDate")}
                 isClearable
-                showTimeSelect={false}
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
               />
             </div>
           </div>
+
           <div className={styles.colRight}>
             <div className={styles.datePickerWrapper}>
               <label className={styles.label}>
@@ -177,41 +209,93 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                   setTempValues((p) => ({ ...p, toDate: date }))
                 }
                 dateFormat="MM/dd/yyyy"
-                placeholderText={t("cashbox.batches.filters.selectToDate")}
                 isClearable
-                showTimeSelect={false}
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                minDate={tempValues.fromDate || undefined}
               />
             </div>
           </div>
         </div>
 
-        <div className={styles.filtersRow}>
-          <div className={styles.inputWrapper}>
+        <div className={styles.inputWrapper}>
+          <label className={styles.label}>
+            {t("cashbox.batches.filters.clientName")}
+          </label>
+
+          <div className={styles.searchInputWrapper}>
             <TextField
-              label={t("cashbox.batches.filters.superClientId")}
-              value={tempValues.superClientId}
-              onChange={(e) =>
-                setTempValues((p) => ({ ...p, superClientId: e.target.value }))
-              }
-              placeholder={t(
-                "cashbox.batches.filters.placeholderSuperClientId",
-              )}
+              value={selectedClient.displayName}
+              onChange={(e) => {
+                setSelectedClient({
+                  id: null,
+                  displayName: e.target.value,
+                });
+
+                setTempValues((p) => ({
+                  ...p,
+                  supplierClientId: null,
+                }));
+              }}
+              placeholder="Search client..."
             />
+
+            <button
+              type="button"
+              className={styles.searchIconBtn}
+              onClick={() => {
+                dispatch(
+                  fetchCustomerNames({
+                    search: selectedClient.displayName,
+                  }),
+                );
+                setShowDropdown(true);
+              }}
+            >
+              <Search size={16} />
+            </button>
           </div>
+
+          {showDropdown && customerNames.length > 0 && (
+            <div className={styles.suggestions}>
+              {customerNames.map((c) => (
+                <div
+                  key={c.id}
+                  className={styles.suggestionItem}
+                  onClick={() => {
+                    setSelectedClient({
+                      id: c.id,
+                      displayName: c.displayName,
+                    });
+
+                    setTempValues((p) => ({
+                      ...p,
+                      supplierClientId: c.id,
+                      superClientId: "",
+                    }));
+
+                    setShowDropdown(false);
+                  }}
+                >
+                  <div>{c.displayName}</div>
+                  <small>{c.phone}</small>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.filtersRow}>
           <div className={styles.inputWrapper}>
             <TextField
               label={t("cashbox.batches.filters.clientPhone")}
               value={tempValues.clientPhone}
               onChange={(e) =>
-                setTempValues((p) => ({ ...p, clientPhone: e.target.value }))
+                setTempValues((p) => ({
+                  ...p,
+                  clientPhone: e.target.value,
+                }))
               }
-              placeholder={t("cashbox.batches.filters.placeholderClientPhone")}
             />
           </div>
+
           <div className={styles.inputWrapper}>
             <Select
               label={t("cashbox.batches.filters.customerType")}
@@ -222,7 +306,6 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                   clientTypeId: e.target.value,
                 }))
               }
-              placeholder={t("cashbox.batches.filters.selectCustomerType")}
             >
               <option value="">
                 {t("cashbox.batches.filters.selectCustomerType")}
@@ -237,10 +320,10 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
         </div>
 
         <div className={styles.primaryActions}>
-          <Button variant="secondary" size="medium" onClick={handleReset}>
+          <Button variant="secondary" onClick={handleReset}>
             {t("common.reset")}
           </Button>
-          <Button variant="primary" size="medium" onClick={handleApply}>
+          <Button variant="primary" onClick={handleApply}>
             {t("common.save")}
           </Button>
         </div>
