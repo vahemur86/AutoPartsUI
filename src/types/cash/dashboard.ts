@@ -80,8 +80,7 @@ export type GetPowderBatchesParams = {
   page?: number;
   pageSize?: number;
 };
-
-export type GetBatchDetailsForFilterParams = {
+export interface GetBatchDetailsForFilterParams {
   fromDate?: string;
   toDate?: string;
   supplierClientId?: number;
@@ -90,33 +89,9 @@ export type GetBatchDetailsForFilterParams = {
   cashRegisterId: number;
   page?: number;
   pageSize?: number;
-};
-
-export interface BatchDetailsForFilterItem {
-  id: number;
-  sessionId: number;
-  cashBoxId: number;
-  intakeCount: number;
-  totalPowderKg: number;
-  ptTotal_g: number;
-  pdTotal_g: number;
-  rhTotal_g: number;
-  ptPerKg_g: number;
-  pdPerKg_g: number;
-  rhPerKg_g: number;
-  costTotalAmd: number;
-  totalCostAmd: number;
-  totalEstimatedSalesAmd: number;
-  totalPurchaseProfitAmd: number;
-  totalLiveProfitAmd: number;
-  totalProfitDiffAmd: number;
-  totalLiveProfitPercent: number;
-  status: number;
-  createdAt: string;
-  items: BatchDetailsForFilterItemInner[];
 }
 
-export interface BatchDetailsForFilterItemInner {
+export interface BatchDetailsForFilterItem {
   id: number;
   intakeId: number;
   powderKg: number;
@@ -133,8 +108,8 @@ export interface BatchDetailsForFilterItemInner {
   supplierClientTypePercent: number;
   fxRateToAmd: number;
   costAmd: number;
-  offerIncreaseStepOrder: number;
-  offerIncreasePercent: number;
+  offerIncreaseStepOrder: number | null;
+  offerIncreasePercent: number | null;
   estimatedSalesAmd: number;
   expectedProfitAmd: number;
   estimatedSalesAmdAtPurchase: number;
@@ -147,5 +122,19 @@ export interface BatchDetailsForFilterItemInner {
   customerRealPercent: number;
 }
 
-export type BatchDetailsForFilter =
-  PaginatedResponse<BatchDetailsForFilterItem>;
+export interface BatchDetailsForFilterResponse {
+  totalItems: number;
+  page: number;
+  pageSize: number;
+
+  totalPowderKg: number;
+  totalCostAmd: number;
+
+  avgPtPerKg_g: number;
+  avgPdPerKg_g: number;
+  avgRhPerKg_g: number;
+
+  items: BatchDetailsForFilterItem[];
+}
+
+export type BatchDetailsForFilter = BatchDetailsForFilterResponse;

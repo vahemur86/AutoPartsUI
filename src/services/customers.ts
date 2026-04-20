@@ -8,6 +8,7 @@ import type {
   Customer,
   CreateCustomerRequest,
   CustomersResponse,
+  CustomerSearchResult,
 } from "@/types/operator";
 
 export interface GetCustomersParams {
@@ -84,14 +85,14 @@ export const deleteCustomer = async (customerId: number) => {
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to delete customer."));
   }
-}
+};
 
 export const getCustomerNames = async (
   search?: string,
   cashRegisterId?: number,
-): Promise<string[]> => {
+): Promise<CustomerSearchResult[]> => {
   try {
-    const response = await api.get<string[]>(
+    const response = await api.get<CustomerSearchResult[]>(
       `/catalyst/customers/names`,
       {
         params: { search },
@@ -101,8 +102,6 @@ export const getCustomerNames = async (
 
     return response.data;
   } catch (error: unknown) {
-    throw new Error(
-      getApiErrorMessage(error, "Failed to get customer names."),
-    );
+    throw new Error(getApiErrorMessage(error, "Failed to get customer names."));
   }
 };

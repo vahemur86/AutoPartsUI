@@ -96,3 +96,9 @@ export interface NewPropose {
   offeredAmountAmd: number;
   offeredAt: string;
 }
+export interface CustomerSearchResult {
+  id: number;
+  name: string;
+  phone: string;
+  displayName: string;
+}
