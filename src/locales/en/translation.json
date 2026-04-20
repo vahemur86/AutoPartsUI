@@ -8,7 +8,8 @@
     "customers": "Customers",
     "logout": "Logout",
     "userMenu": "User menu",
-    "reports": "Reports"
+    "reports": "Reports",
+    "calculator": "Calculator"
   },
   "common": {
     "save": "Save",
@@ -1470,6 +1471,60 @@
         "createdAt": "Date"
       },
       "title": "Adjusted Sales"
+    }
+  },
+  "calculator": {
+    "title": "Calculator",
+    "columns": {
+      "weight": "Weights",
+      "price": "Prices",
+      "result": "Result",
+      "noResult": "No result"
+    },
+    "form": {
+      "powderKg": "Powder (kg)",
+      "pt_g": "Platinum (Pt, g)",
+      "pd_g": "Palladium (Pd, g)",
+      "rh_g": "Rhodium (Rh, g)",
+
+      "priceMode": "Auto mode",
+      "priceMode.manual": "Manual",
+      "priceMode.auto": "Automatic",
+      "priceMode.calculate": "Calculate",
+
+      "ptPrice": "Platinum (Pt) price",
+      "pdPrice": "Palladium (Pd) price",
+      "rhPrice": "Rhodium (Rh) price",
+      "exchange": "USD exchange rate",
+
+      "customerBonus": "Customer bonus (%)",
+      "minProfit": "Minimum profit (%)",
+
+      "kitko": "Kitco (AMD)",
+      "finalBase": "Final base",
+      "offer": "Offer",
+      "profit": "Profit",
+      "profitPercent": "Profit percentage",
+
+      "button": {
+        "calculating": "Calculating",
+        "calculate": "Calculate",
+        "cancel": "Cancel"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Enter powder weight",
+      "pt_g": "Enter platinum weight",
+      "pd_g": "Enter palladium weight",
+      "rh_g": "Enter rhodium weight",
+
+      "ptPrice": "Enter platinum price",
+      "pdPrice": "Enter palladium price",
+      "rhPrice": "Enter rhodium price",
+      "exchange": "Enter exchange rate",
+
+      "customerBonus": "Enter customer bonus (%)",
+      "minProfit": "Enter minimum profit (%)"
     }
   }
 }

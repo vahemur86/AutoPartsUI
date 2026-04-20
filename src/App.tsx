@@ -68,6 +68,7 @@ import "@/index.css";
 import { OtpGateProvider } from "./components/otpGateProvider/OtpGateProvider";
 import { CatalystPricings } from "./components/settings/CatalystPricing";
 import { AdjustedSales } from "./components/warehouses/AdjustedSales/AdjustedSales";
+import { NewCalculator } from "./pages/Calculator";
 
 const toastOptions = {
   position: "top-right",
@@ -204,6 +205,7 @@ export const App = () => {
                 <Route path="shops" element={<Shops />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="customers" element={<Customers />} />
+                <Route path="calculator" element={<NewCalculator />} />
               </Route>
             </Route>
 

@@ -122,6 +122,12 @@ export const Header: FC = () => {
               text={t("header.reports")}
               onClick={() => navigate("/reports")}
             />
+            <Tab
+              variant="underline"
+              active={isActive("/calculator")}
+              text={t("header.calculator")}
+              onClick={() => navigate("/calculator")}
+            />
           </nav>
 
           <div className={styles.actions}>
