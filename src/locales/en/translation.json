@@ -1496,12 +1496,14 @@
       "pdPrice": "Palladium (Pd) price",
       "rhPrice": "Rhodium (Rh) price",
       "exchange": "USD exchange rate",
-
+      "totals": "Weights Depending on the setting - in total weight",
+      "details": "Weights Depending on the setting - in 1 Kg",
       "customerBonus": "Customer bonus (%)",
       "minProfit": "Minimum profit (%)",
+      "maxCustomerPercent": "Customer profit",
 
       "kitko": "Kitco (AMD)",
-      "finalBase": "Final base",
+      "finalBase": "Cost",
       "offer": "Offer",
       "profit": "Profit",
       "profitPercent": "Profit percentage",
