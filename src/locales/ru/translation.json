@@ -8,7 +8,8 @@
     "customers": "Клиенты",
     "logout": "Выйти",
     "userMenu": "Меню пользователя",
-    "reports": "Отчеты"
+    "reports": "Отчеты",
+    "calculator": "Калькулятор"
   },
   "common": {
     "save": "Сохранить",
@@ -1468,6 +1469,60 @@
         "createdAt": "Дата"
       },
       "title": "Скорректированные продажи"
+    }
+  },
+  "calculator": {
+    "title": "Калькулятор",
+    "columns": {
+      "weight": "Вес",
+      "price": "Цены",
+      "result": "Результат",
+      "noResult": "Нет результата"
+    },
+    "form": {
+      "powderKg": "Порошок (кг)",
+      "pt_g": "Платина (Pt, г)",
+      "pd_g": "Палладий (Pd, г)",
+      "rh_g": "Родий (Rh, г)",
+
+      "priceMode": "Авто режим",
+      "priceMode.manual": "Вручную",
+      "priceMode.auto": "Автоматически",
+      "priceMode.calculate": "Рассчитать",
+
+      "ptPrice": "Цена платины (Pt)",
+      "pdPrice": "Цена палладия (Pd)",
+      "rhPrice": "Цена родия (Rh)",
+      "exchange": "Курс доллара США",
+
+      "customerBonus": "Бонус клиента (%)",
+      "minProfit": "Минимальная прибыль (%)",
+
+      "kitko": "Kitco (AMD)",
+      "finalBase": "Итоговая база",
+      "offer": "Предложение",
+      "profit": "Прибыль",
+      "profitPercent": "Процент прибыли",
+
+      "button": {
+        "calculating": "Расчёт...",
+        "calculate": "Рассчитать",
+        "cancel": "Отмена"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Введите вес порошка",
+      "pt_g": "Введите вес платины",
+      "pd_g": "Введите вес палладия",
+      "rh_g": "Введите вес родия",
+
+      "ptPrice": "Введите цену платины",
+      "pdPrice": "Введите цену палладия",
+      "rhPrice": "Введите цену родия",
+      "exchange": "Введите курс",
+
+      "customerBonus": "Введите бонус клиента (%)",
+      "minProfit": "Введите минимальную прибыль (%)"
     }
   }
 }

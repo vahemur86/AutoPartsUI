@@ -215,3 +215,27 @@ export interface GetLotPreviewResponse {
   after: LotPreviewValues;
   diffs: LotPreviewDiff[];
 }
+export interface SalesLotsCalculatorRequest {
+  cashRegisterId: number;
+  powderKg: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
+  customerBonusPercent: number;
+  minProfitMarginPercent: number;
+  priceMode: number;
+  ptPrice: number;
+  pdPrice: number;
+  rhPrice: number;
+  usdRate: number;
+}
+
+export interface SalesLotsCalculatorResponse {
+  kitcoAmd: number;
+  finalBaseAmd: number;
+  customerOfferAmd: number;
+  customerPercent: number;
+  maxCustomerPercent: number;
+  profitAmd: number;
+  profitPercent: number;
+}

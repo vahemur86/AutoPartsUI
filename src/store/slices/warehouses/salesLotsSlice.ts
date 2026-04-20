@@ -14,6 +14,7 @@ import {
   getSalesLotsSellForm,
   sellRecalculation,
   getSalesLotsPreview,
+  calculateSalesLot,
 } from "@/services/warehouses/salesLots";
 
 // Types
@@ -29,6 +30,8 @@ import type {
   SalesLotsSellFormResponse,
   SellRecalculationResponse,
   GetLotPreviewResponse,
+  SalesLotsCalculatorResponse,
+  SalesLotsCalculatorRequest,
 } from "@/types/warehouses/salesLots";
 
 // Utils
@@ -46,6 +49,7 @@ interface SalesLotsState {
   lastSaleResult: SellSalesLotResponse | null;
   lastRecalculationResult: number | null;
   dropdownPreviewData: GetLotPreviewResponse | null;
+  calculatorResult: SalesLotsCalculatorResponse | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -62,6 +66,7 @@ const initialState: SalesLotsState = {
   dropdownPreviewData: null,
   lastCreatedId: null,
   lastSaleResult: null,
+  calculatorResult: null,
   isLoading: false,
   error: null,
 };
@@ -187,12 +192,29 @@ export const fetchSalesLotsPreviewById = createAsyncThunk<
   },
 );
 
+export const calculateSalesLotThunk = createAsyncThunk<
+  SalesLotsCalculatorResponse,
+  SalesLotsCalculatorRequest,
+  { rejectValue: string }
+>("salesLots/calculate", async (request, { rejectWithValue }) => {
+  try {
+    return await calculateSalesLot(request);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to calculate sales lot"),
+    );
+  }
+});
+
 const salesLotsSlice = createSlice({
   name: "salesLots",
   initialState,
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    clearCalculatorResult: (state) => {
+      state.calculatorResult = null;
     },
     clearSelectedLot: (state) => {
       state.selectedLot = null;
@@ -256,6 +278,19 @@ const salesLotsSlice = createSlice({
         state.previewData = null;
         state.error = action.payload ?? "Failed to load preview";
       })
+      .addCase(calculateSalesLotThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(calculateSalesLotThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.calculatorResult = action.payload;
+      })
+      .addCase(calculateSalesLotThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.calculatorResult = null;
+        state.error = action.payload ?? "Failed to calculate sales lot";
+      })
       .addCase(createNewSalesLot.fulfilled, (state, action) => {
         state.isLoading = false;
         state.lastCreatedId = action.payload;
@@ -295,6 +330,7 @@ export const {
   clearSelectedLot,
   clearPreviewData,
   resetSalesLotsState,
+  clearCalculatorResult,
 } = salesLotsSlice.actions;
 
 export default salesLotsSlice.reducer;

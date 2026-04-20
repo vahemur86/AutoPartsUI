@@ -17,6 +17,8 @@ import type {
   ReconcilePowderSaleRequest,
   SalesLotPreviewRequest,
   SalesLotPreviewResponse,
+  SalesLotsCalculatorRequest,
+  SalesLotsCalculatorResponse,
   SalesLotsSellFormResponse,
   SellRecalculationResponse,
   SellSalesLotRequest,
@@ -164,9 +166,27 @@ export const sellRecalculation = ({
 export const getSalesLotsPreview = (id: number, cashRegisterId: number) =>
   performRequest(
     (headers) =>
-      api.get<GetLotPreviewResponse>(`/admin/powder-sales/${id}/change-report`, {
-        headers,
-      }),
+      api.get<GetLotPreviewResponse>(
+        `/admin/powder-sales/${id}/change-report`,
+        {
+          headers,
+        },
+      ),
     cashRegisterId,
     "Failed to get lot preview.",
+  );
+
+export const calculateSalesLot = ({
+  cashRegisterId,
+  ...body
+}: SalesLotsCalculatorRequest) =>
+  performRequest(
+    (headers) =>
+      api.post<SalesLotsCalculatorResponse>(
+        `/admin/sales-lots/calculator`,
+        body,
+        { headers },
+      ),
+    cashRegisterId,
+    "Failed to calculate sales lot.",
   );
