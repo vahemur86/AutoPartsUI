@@ -1,5 +1,3 @@
-import type { PaginatedResponse } from "./cashboxSessions";
-
 export interface OpenSession {
   sessionId: number;
   cashBoxId: number;
