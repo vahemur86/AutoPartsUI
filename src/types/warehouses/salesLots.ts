@@ -238,4 +238,10 @@ export interface SalesLotsCalculatorResponse {
   maxCustomerPercent: number;
   profitAmd: number;
   profitPercent: number;
+  totalpt_g: number;
+  totalpd_g: number;
+  totalrh_g: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
 }
