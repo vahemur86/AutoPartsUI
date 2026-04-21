@@ -8,10 +8,10 @@ import type {
   SalesLotsCalculatorResponse,
 } from "@/types/warehouses/salesLots";
 import { t } from "i18next";
-import { fetchMetalRates } from "@/store/slices/metalRatesSlice";
 import { fetchExchangeRates } from "@/store/slices/exchangeRatesSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { toast } from "react-toastify";
+import { fetchMetalPrices } from "@/store/slices/metalPricesSlice";
 
 const initialState: SalesLotsCalculatorRequest = {
   cashRegisterId: 0,
@@ -50,14 +50,16 @@ export const NewCalculator: FC = () => {
   const loadDefaults = async () => {
     try {
       const metalRes = await dispatch(
-        fetchMetalRates(form.cashRegisterId),
+        fetchMetalPrices(form.cashRegisterId),
       ).unwrap();
 
       const exchangeRes = await dispatch(
         fetchExchangeRates({ cashRegisterId: form.cashRegisterId }),
       ).unwrap();
 
-      const metal = metalRes.find((m) => m.isActive) ?? metalRes[0];
+      const pt = metalRes.find((m) => m.metalName === "Platinum");
+      const pd = metalRes.find((m) => m.metalName === "Palladium");
+      const rh = metalRes.find((m) => m.metalName === "Rhodium");
 
       const usd = exchangeRes.find(
         (e) =>
@@ -68,12 +70,9 @@ export const NewCalculator: FC = () => {
 
       setForm((prev) => ({
         ...prev,
-        ptPrice:
-          prev.priceMode === 1 ? prev.ptPrice : (metal?.ptPricePerGram ?? 0),
-        pdPrice:
-          prev.priceMode === 1 ? prev.pdPrice : (metal?.pdPricePerGram ?? 0),
-        rhPrice:
-          prev.priceMode === 1 ? prev.rhPrice : (metal?.rhPricePerGram ?? 0),
+        ptPrice: prev.priceMode === 1 ? prev.ptPrice : (pt?.price ?? 0),
+        pdPrice: prev.priceMode === 1 ? prev.pdPrice : (pd?.price ?? 0),
+        rhPrice: prev.priceMode === 1 ? prev.rhPrice : (rh?.price ?? 0),
         usdRate: prev.priceMode === 1 ? prev.usdRate : (usd?.rate ?? 0),
       }));
     } catch (e) {
@@ -109,8 +108,10 @@ export const NewCalculator: FC = () => {
   };
 
   useEffect(() => {
-    loadDefaults();
-  }, []);
+    if (form.priceMode === 0) {
+      loadDefaults();
+    }
+  }, [form.priceMode]);
 
   return (
     <div className={styles.wrapper}>
@@ -327,7 +328,18 @@ export const NewCalculator: FC = () => {
           </h3>
 
           {!result ? (
-            <span>{t("calculator.columns.noResult")}</span>
+            <div className={styles.loaderWrapper}>
+              <div
+                className={`${styles.loader} ${
+                  loading ? styles.loaderActive : styles.loaderIdle
+                }`}
+              />
+              <span className={styles.loaderText}>
+                {loading
+                  ? t("calculator.form.button.calculating")
+                  : t("calculator.columns.noResult")}
+              </span>
+            </div>
           ) : (
             <div className={styles.resultGrid}>
               <div>
@@ -344,10 +356,12 @@ export const NewCalculator: FC = () => {
                 <span>{t("calculator.form.offer")}</span>
                 <b>{result.customerOfferAmd.toFixed(2)}</b>
               </div>
+
               <div>
                 <span>{t("calculator.form.maxCustomerPercent")}</span>
                 <b>{result.maxCustomerPercent.toFixed(2)}%</b>
               </div>
+
               <div>
                 <span>{t("calculator.form.profit")}</span>
                 <b className={styles.profit}>{result.profitAmd.toFixed(2)}</b>

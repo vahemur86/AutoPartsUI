@@ -342,3 +342,57 @@ label {
     transform: translateX(120%);
   }
 }
+
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  gap: 14px;
+}
+
+.loader {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top: 3px solid var(--color-primary-300);
+}
+
+.loaderActive {
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 18px rgba(96, 165, 250, 0.25);
+}
+
+.loaderIdle {
+  animation: pulse 1.8s ease-in-out infinite;
+  border-top: 3px solid rgba(96, 165, 250, 0.4);
+}
+
+.loaderText {
+  font-size: 12px;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
