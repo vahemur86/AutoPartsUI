@@ -722,6 +722,13 @@
     "ariaLabels": {
       "ironManagementSections": "Մետաղի կառավարման բաժիններ"
     },
+    "confirmation": {
+      "deleteTitle": "Ջնջել ավտոմեքենայի մոդելը",
+      "deleteDescription": "Իսկապե՞ս ցանկանում եք ջնջել: Այս գործողությունն անդառնալի է:",
+      "delete": "Ջնջել",
+      "deleteIronTypeTitle": "Ջնջել մետաղի տեսակը",
+      "deleteIronTypeDescription": "Իսկապե՞ս ցանկանում եք ջնջել: Այս գործողությունն անդառնալի է:"
+    },
     "addCarModel": "Ավելացնել ավտոմոդել",
     "addIronType": "Ավելացնել մետաղի տեսակ",
     "addIronPrice": "Ավելացնել մետաղի գին",

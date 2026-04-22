@@ -721,6 +721,13 @@
     "ariaLabels": {
       "ironManagementSections": "Iron Management Sections"
     },
+    "confirmation": {
+      "deleteTitle": "Delete vehicle model",
+      "deleteDescription": "Are you sure you want to delete? This action is irreversible.",
+      "delete": "Delete",
+      "deleteIronTypeTitle": "Delete metal type",
+      "deleteIronTypeDescription": "Are you sure you want to delete? This action is irreversible."
+    },
     "addCarModel": "Add Car Model",
     "addIronType": "Add Iron Type",
     "addIronPrice": "Add Iron Price",
