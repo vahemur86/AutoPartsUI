@@ -12,11 +12,11 @@ import { toast } from "react-toastify";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 // ui-kit
-import { DataTable, IconButton, Select } from "@/ui-kit";
+import { ConfirmationModal, DataTable, IconButton, Select } from "@/ui-kit";
 import type { AnchorRect } from "@/ui-kit";
 
 // icons
-import { Plus } from "lucide-react";
+import { Plus, RecycleIcon } from "lucide-react";
 
 // utils
 import {
@@ -45,6 +45,7 @@ import {
   fetchCarModels,
   fetchIronTypes,
   fetchIronTypesByCar,
+  removeIronType,
 } from "@/store/slices/ironCarShopSlice";
 import { fetchLanguages } from "@/store/slices/languagesSlice";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
@@ -72,6 +73,10 @@ export const IronTypesAndPrices: FC = () => {
     null,
   );
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
+  const [deletingIronType, setDeletingIronType] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false);
   const [priceDropdownIronTypeId, setPriceDropdownIronTypeId] = useState<
     number | null
@@ -306,14 +311,40 @@ export const IronTypesAndPrices: FC = () => {
         setIsMutating(false);
       }
     },
-    [
-      dispatch,
-      recalculationIronTypeId,
-      selectedCarModelId,
-      cashRegisterId,
-      t,
-    ],
+    [dispatch, recalculationIronTypeId, selectedCarModelId, cashRegisterId, t],
   );
+
+  const handleDeleteIronType = useCallback(async () => {
+    console.log(
+      "🚀 ~ IronTypesAndPrices ~ deletingIronType:",
+      deletingIronType,
+    );
+    if (!deletingIronType) return;
+    try {
+      setIsMutating(true);
+      await dispatch(removeIronType(deletingIronType.id)).unwrap();
+      toast.success(t("ironManagement.success.ironTypeDeleted"));
+      if (selectedCarModelId) {
+        const apiLang = mapI18nCodeToApiCode(i18n.language);
+        await dispatch(
+          fetchIronTypesByCar({
+            carModelId: selectedCarModelId,
+            cashRegisterId,
+            lang: apiLang,
+          }),
+        ).unwrap();
+      }
+      setDeletingIronType(null);
+    } catch (error: unknown) {
+      const errorMessage = getApiErrorMessage(
+        error,
+        t("ironManagement.error.failedToDeleteIronType"),
+      );
+      toast.error(errorMessage);
+    } finally {
+      setIsMutating(false);
+    }
+  }, [dispatch, deletingIronType, selectedCarModelId, cashRegisterId, t]);
 
   const flatRowHelper = createColumnHelper<FlatIronTypeRow>();
 
@@ -379,6 +410,23 @@ export const IronTypesAndPrices: FC = () => {
                   icon={<Plus size={12} color="#0e0f11" />}
                   onClick={(e) =>
                     handleOpenAddRecalculationPrice(e, row.original.ironTypeId)
+                  }
+                />
+                <span className={styles.addButtonText}>
+                  {t("ironManagement.addRecalculationPrice")}
+                </span>
+              </div>
+              <div className={styles.addButtonWrapper}>
+                <IconButton
+                  ariaLabel={t("ironManagement.deleteIronType")}
+                  size="small"
+                  variant="primary"
+                  icon={<RecycleIcon size={14} color="#0e0f11" />}
+                  onClick={() =>
+                    setDeletingIronType({
+                      id: row.original.ironTypeId,
+                      name: row.original.name,
+                    })
                   }
                 />
                 <span className={styles.addButtonText}>
@@ -531,6 +579,28 @@ export const IronTypesAndPrices: FC = () => {
         }}
         onSave={handleSaveRecalculationPrice}
       />
+
+      {!!deletingIronType && (
+        <ConfirmationModal
+          open={!!deletingIronType}
+          onOpenChange={(open) => !open && setDeletingIronType(null)}
+          title={t("ironManagement.confirmation.deleteIronTypeTitle")}
+          description={t(
+            "ironManagement.confirmation.deleteIronTypeDescription",
+            {
+              name: deletingIronType?.name,
+            },
+          )}
+          confirmText={
+            isMutating
+              ? t("ironManagement.confirmation.deleting")
+              : t("common.delete")
+          }
+          cancelText={t("common.cancel")}
+          onConfirm={handleDeleteIronType}
+          onCancel={() => setDeletingIronType(null)}
+        />
+      )}
 
       {renderTableContent()}
     </div>

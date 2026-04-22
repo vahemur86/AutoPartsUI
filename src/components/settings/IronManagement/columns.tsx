@@ -18,23 +18,69 @@ const ironTypePriceByCustomerHelper =
   createColumnHelper<IronTypePriceByCustomer>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getCarModelColumns = (): ColumnDef<CarModel, any>[] => [
+import { Button } from "@/ui-kit";
+import styles from "./IronManagement.module.css";
+
+export const getCarModelColumns = (
+  {
+    onDelete,
+  }: {
+    onDelete: (carModel: CarModel) => void;
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): ColumnDef<CarModel, any>[] => [
   columnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
   }),
   columnHelper.accessor("name", {
     header: i18next.t("ironManagement.columns.name"),
   }),
+  columnHelper.display({
+    id: "actions",
+    header: i18next.t("common.actions"),
+    cell: ({ row }) => (
+      <div className={styles.actionButtonsCell}>
+        <Button
+          variant="danger"
+          size="small"
+          onClick={() => onDelete(row.original)}
+        >
+          {i18next.t("common.delete")}
+        </Button>
+      </div>
+    ),
+  }),
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getIronTypeColumns = (): ColumnDef<IronType, any>[] => [
+export const getIronTypeColumns = (
+  { onDelete }: { onDelete?: (ironType: IronType) => void } = {}
+): ColumnDef<IronType, any>[] => [
   ironTypeColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
   }),
   ironTypeColumnHelper.accessor("name", {
     header: i18next.t("ironManagement.columns.name"),
   }),
+  ...(onDelete
+    ? [
+        ironTypeColumnHelper.display({
+          id: "actions",
+          header: i18next.t("common.actions"),
+          cell: ({ row }) => (
+            <div className={styles.actionButtonsCell}>
+              <Button
+                variant="danger"
+                size="small"
+                onClick={() => onDelete(row.original)}
+              >
+                {i18next.t("common.delete")}
+              </Button>
+            </div>
+          ),
+        }),
+      ]
+    : []),
 ];
 
 export const getIronPriceColumns = (): ColumnDef<

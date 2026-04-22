@@ -17,6 +17,8 @@ import {
   recalculateStep,
   getIronPrices,
   recalculateIron,
+  deleteCarModel,
+  deleteIronType,
 } from "@/services/ironCarShop";
 
 // utils
@@ -284,6 +286,36 @@ export const fetchIronPriceList = createAsyncThunk<
   },
 );
 
+export const removeCarModel = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("ironCarShop/removeCarModel", async (id, { rejectWithValue }) => {
+  try {
+    await deleteCarModel(id);
+    return id;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete car model"),
+    );
+  }
+});
+
+export const removeIronType = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("ironCarShop/removeIronType", async (id, { rejectWithValue }) => {
+  try {
+    await deleteIronType(id);
+    return id;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to delete iron type"),
+    );
+  }
+});
+
 const ironCarShopSlice = createSlice({
   name: "ironCarShop",
   initialState,
@@ -350,6 +382,43 @@ const ironCarShopSlice = createSlice({
       .addCase(fetchIronPriceList.fulfilled, (state, action) => {
         state.isLoading = false;
         state.ironPriceList = action.payload;
+      });
+    builder
+      .addCase(removeCarModel.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        removeCarModel.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.isLoading = false;
+          state.carModels = state.carModels.filter(
+            (ct) => ct.id !== action.payload,
+          );
+          state.error = null;
+        },
+      )
+      .addCase(removeCarModel.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to delete customer type";
+      })
+      .addCase(removeIronType.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        removeIronType.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.isLoading = false;
+          state.ironTypes = state.ironTypes.filter(
+            (ct) => ct.id !== action.payload,
+          );
+          state.error = null;
+        },
+      )
+      .addCase(removeIronType.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to delete customer type";
       })
       .addMatcher(
         (action) =>
