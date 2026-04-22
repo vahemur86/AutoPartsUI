@@ -11,7 +11,7 @@ import i18n from "i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, IconButton } from "@/ui-kit";
+import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
 
 // icons
 import { Plus } from "lucide-react";
@@ -37,11 +37,13 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   createCarModel,
   fetchCarModels,
+  removeCarModel,
 } from "@/store/slices/ironCarShopSlice";
 import { fetchLanguages } from "@/store/slices/languagesSlice";
 
 // styles
 import styles from "./IronManagement.module.css";
+import type { CarModel } from "@/types/ironCarShop";
 
 export const CarModels: FC = () => {
   const { t } = useTranslation();
@@ -50,6 +52,9 @@ export const CarModels: FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
+  const [deletingCarModel, setDeletingCarModel] = useState<CarModel | null>(
+    null,
+  );
 
   const anchorRef = useRef<HTMLElement | null>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
@@ -100,7 +105,40 @@ export const CarModels: FC = () => {
     [dispatch, cashRegisterId, t],
   );
 
-  const columns = useMemo(() => getCarModelColumns(), []);
+  const handleDeleteCarModel = useCallback(
+    async (carModel: CarModel) => {
+      try {
+        setIsMutating(true);
+        await dispatch(removeCarModel(carModel.id)).unwrap();
+
+        toast.success(t("ironManagement.success.carModelDeleted"));
+
+        const apiLang = mapI18nCodeToApiCode(i18n.language);
+        await dispatch(fetchCarModels({ cashRegisterId, lang: apiLang }));
+
+        setDeletingCarModel(null);
+      } catch (error) {
+        console.error("Failed to delete car model:", error);
+        toast.error(
+          getApiErrorMessage(
+            error,
+            t("ironManagement.error.failedToDeleteCarModel"),
+          ),
+        );
+      } finally {
+        setIsMutating(false);
+      }
+    },
+    [dispatch, cashRegisterId, t],
+  );
+
+  const columns = useMemo(
+    () =>
+      getCarModelColumns({
+        onDelete: (carModel) => setDeletingCarModel(carModel),
+      }),
+    [],
+  );
 
   return (
     <div className={styles.carModelsWrapper}>
@@ -141,6 +179,27 @@ export const CarModels: FC = () => {
         onOpenChange={setIsDropdownOpen}
         onSave={handleSaveCarModel}
       />
+
+      {!!deletingCarModel && (
+        <ConfirmationModal
+          open={!!deletingCarModel}
+          onOpenChange={(open) => !open && setDeletingCarModel(null)}
+          title={t("ironManagement.confirmation.deleteTitle")}
+          description={t("ironManagement.confirmation.deleteDescription", {
+            name: deletingCarModel?.name,
+          })}
+          confirmText={
+            isMutating
+              ? t("ironManagement.confirmation.deleting")
+              : t("ironManagement.confirmation.delete")
+          }
+          cancelText={t("common.cancel")}
+          onConfirm={() =>
+            deletingCarModel && handleDeleteCarModel(deletingCarModel)
+          }
+          onCancel={() => setDeletingCarModel(null)}
+        />
+      )}
 
       <div className={styles.tableWrapper}>
         <DataTable data={carModels} columns={columns} pageSize={10} />

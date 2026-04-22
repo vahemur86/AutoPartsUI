@@ -3,12 +3,10 @@
   flex-direction: column;
   gap: 12px;
   padding: 12px;
-  max-height: 520px;
-  overflow-y: auto;
 }
 
 .header {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--primary-500);
 }
 
@@ -34,20 +32,18 @@
 }
 
 .card h4 {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   margin-bottom: 10px;
   color: var(--primary-500);
 }
 
-/* comparison list */
 .grid {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* ROW (more compact) */
 .row {
   display: flex;
   justify-content: space-between;
@@ -63,7 +59,7 @@
 }
 
 .label {
-  font-size: 10.5px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
 
@@ -71,7 +67,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10.5px;
+  font-size: 13px;
 }
 
 .before {
@@ -101,7 +97,6 @@
   border-radius: 2px;
 }
 
-/* key-value list */
 .kv {
   display: flex;
   justify-content: space-between;
@@ -112,25 +107,25 @@
 }
 
 .kv span {
-  font-size: 10.5px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .kv strong {
-  font-size: 10.5px;
+  font-size: 13px;
   color: var(--color-white);
 }
 
 .loading {
   padding: 12px;
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .noDiffs {
   padding: 10px;
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.03);
   border-radius: 10px;
@@ -143,4 +138,13 @@
   color: var(--primary-500);
   flex-shrink: 0;
   opacity: 0.9;
+}
+
+.card {
+  border-radius: 16px;
+}
+
+.row,
+.kv {
+  border-radius: 12px;
 }

@@ -260,3 +260,21 @@ export const getIronPrices = async (
     throw new Error(getApiErrorMessage(error, "Failed to fetch iron prices."));
   }
 };
+
+export const deleteCarModel = async (id: number) => {
+  try {
+    const response = await api.delete(`${BASE_URL}/car-model/${id}`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete CarModel."));
+  }
+};
+
+export const deleteIronType = async (id: number) => {
+  try {
+    const response = await api.delete(`${BASE_URL}/iron-type/${id}`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete IronType."));
+  }
+};
