@@ -720,6 +720,13 @@
     "ariaLabels": {
       "ironManagementSections": "Разделы управления металлоломом"
     },
+    "confirmation": {
+      "deleteTitle": "Удалить модель автомобиля",
+      "deleteDescription": "Вы уверены, что хотите удалить? Это действие необратимо.",
+      "delete": "Удалить",
+      "deleteIronTypeTitle": "Удалить тип металла",
+      "deleteIronTypeDescription": "Вы уверены, что хотите удалить? Это действие необратимо."
+    },
     "addCarModel": "Добавить модель автомобиля",
     "addIronType": "Добавить тип металла",
     "addIronPrice": "Добавить цену металла",
