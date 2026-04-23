@@ -1,44 +1,37 @@
 import { getApiErrorMessage, getHeaders } from "@/utils";
 import api from ".";
 
-export const sendVerificationOTP = async (pageUrl: string, cashRegisterId?: number) => {
-  try {
-    const response = await api.post(`/Otp/send`, 
-      { pageUrl }, 
-      {
-        headers: {
-          ...getHeaders(cashRegisterId),
-          'X-CashRegister-Id': cashRegisterId
-        },
-      }
-    );
-    
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to send OTP verification."));
-  }
+export const sendVerificationOTP = async (
+  pageUrl: string,
+  cashRegisterId?: number,
+  pageKey?: string,
+) => {
+  const response = await api.post(
+    `/Otp/send`,
+    { pageUrl: pageKey ?? pageUrl }, 
+    { headers: { ...getHeaders(cashRegisterId, pageKey) } },
+  );
+  return response.data;
 };
 
-
-export const verifyOTP = async (otp: string, pageUrl: string, cashRegisterId?: number) => {
-  try {
-    const response = await api.post(`/Otp/verify`, 
-      { 
-        pageUrl 
-      }, 
-      {
-        headers: {
-          ...getHeaders(cashRegisterId),
-          'X-OTP': otp, 
-          'X-CashRegister-Id': cashRegisterId,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to verify OTP."));
-  }
+export const verifyOTP = async (
+  otp: string,
+  pageUrl: string,
+  cashRegisterId?: number,
+  pageKey?: string,
+) => {
+  const response = await api.post(
+    `/Otp/verify`,
+    { pageUrl: pageKey ?? pageUrl },
+    {
+      headers: {
+        ...getHeaders(cashRegisterId, pageKey),
+        "X-OTP": otp,
+        "x-page-key": pageKey ?? pageUrl, 
+      },
+    },
+  );
+  return response.data;
 };
 
 
@@ -47,8 +40,8 @@ export const getOtpPages = async (cashRegisterId?: number) => {
     const response = await api.get(`/Otp/Get Pages`, {
       headers: {
         ...getHeaders(cashRegisterId),
-        'X-CashRegister-Id': cashRegisterId,
-        Accept: 'text/plain',
+        "X-CashRegister-Id": cashRegisterId,
+        Accept: "text/plain",
       },
     });
     return response.data as Array<{
@@ -62,10 +55,9 @@ export const getOtpPages = async (cashRegisterId?: number) => {
   }
 };
 
-
 export const saveOtpPages = async (
   pages: { pageId: number; requiresOtp: boolean }[],
-  cashRegisterId?: number
+  cashRegisterId?: number,
 ) => {
   try {
     const response = await api.post(
@@ -74,9 +66,9 @@ export const saveOtpPages = async (
       {
         headers: {
           ...getHeaders(cashRegisterId),
-          'X-CashRegister-Id': cashRegisterId,
+          "X-CashRegister-Id": cashRegisterId,
         },
-      }
+      },
     );
     return response.data;
   } catch (error: unknown) {

@@ -36,13 +36,13 @@ const initialState: OtpState = {
 
 export const requestOtp = createAsyncThunk<
   void,
-  { pageUrl: string; cashRegisterId?: number },
+  { pageUrl: string; cashRegisterId?: number; pageKey?: string },
   { rejectValue: string }
 >(
   "otp/requestOtp",
-  async ({ pageUrl, cashRegisterId }, { rejectWithValue }) => {
+  async ({ pageUrl, cashRegisterId, pageKey }, { rejectWithValue }) => {
     try {
-      await sendVerificationOTP(pageUrl, cashRegisterId);
+      await sendVerificationOTP(pageUrl, cashRegisterId, pageKey);
     } catch (error: unknown) {
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to send OTP code"),

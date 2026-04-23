@@ -31,15 +31,21 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const responseData = error.response?.data;
     const isOtpRequired =
       error.response?.status === 403 &&
-      (error.response?.data === "OTP_REQUIRED" ||
-        error.response?.data?.message === "OTP_REQUIRED");
+      (responseData === "OTP_REQUIRED" ||
+        responseData?.message === "OTP_REQUIRED" ||
+        responseData?.error === "OTP_REQUIRED");
 
     if (isOtpRequired) {
+      // Extract pageKey from the new response format
+      const pageKey = responseData?.pageKey ?? null;
+
       return new Promise((resolve, reject) => {
         const event = new CustomEvent("otp:required", {
           detail: {
+            pageKey,  // ← pass it along
             onVerified: async () => {
               try {
                 const response = await api.request(error.config);

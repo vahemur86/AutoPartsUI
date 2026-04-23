@@ -430,7 +430,7 @@ export const IronTypesAndPrices: FC = () => {
                   }
                 />
                 <span className={styles.addButtonText}>
-                  {t("ironManagement.addRecalculationPrice")}
+                  {t("ironManagement.confirmation.delete")}
                 </span>
               </div>
             </div>

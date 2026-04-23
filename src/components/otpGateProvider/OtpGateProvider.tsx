@@ -13,6 +13,7 @@ import { t } from "i18next";
 interface OtpCallbacks {
   onVerified: () => void;
   onCancel: () => void;
+  pageKey: string | null;
 }
 
 export const OtpGateProvider = ({ children }: { children: ReactNode }) => {
@@ -45,7 +46,12 @@ export const OtpGateProvider = ({ children }: { children: ReactNode }) => {
 
   const handleRequestOtp = async () => {
     try {
-      await dispatch(requestOtp({ pageUrl: window.location.href })).unwrap();
+      await dispatch(
+        requestOtp({
+          pageUrl: callbacks?.pageKey ?? window.location.href,
+          pageKey: callbacks?.pageKey ?? undefined,
+        }),
+      ).unwrap();
       toast.success("OTP sent successfully!");
     } catch (err: unknown) {
       toast.error(typeof err === "string" ? err : "Failed to send OTP");
@@ -56,17 +62,18 @@ export const OtpGateProvider = ({ children }: { children: ReactNode }) => {
     if (!otpValue.trim()) return;
     try {
       await dispatch(
-        confirmOtp({ otp: otpValue, pageUrl: window.location.href }),
+        confirmOtp({
+          pageUrl: callbacks?.pageKey ?? window.location.href,
+          // pageKey: callbacks?.pageKey ?? undefined,
+          otp: otpValue,
+        }),
       ).unwrap();
 
       toast.success("OTP verified successfully!");
       setVisible(false);
       setIsLocked(false);
       setOtpValue("");
-      if (callbacks?.onVerified) {
-        callbacks.onVerified();
-      }
-
+      if (callbacks?.onVerified) callbacks.onVerified();
       dispatch(resetOtpState());
     } catch (err: unknown) {}
   };

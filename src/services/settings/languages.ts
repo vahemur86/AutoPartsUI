@@ -25,8 +25,9 @@ export const createLanguage = async (
 
 export const getLanguages = async (cashRegisterId?: number) => {
   try {
+    const pageKey = "Languages";
     const response = await api.get(`/Languages`, {
-      headers: getHeaders(cashRegisterId),
+      headers: getHeaders(cashRegisterId, pageKey),
     });
     return response.data;
   } catch (error: unknown) {
