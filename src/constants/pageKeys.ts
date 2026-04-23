@@ -2,5 +2,5 @@
 //   "/languages": "Languages",
 //   "/settings": "Settings",
 //   "/users": "Users",
-//   // ... add all your routes
+//  ...
 // };
