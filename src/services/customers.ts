@@ -10,6 +10,7 @@ import type {
   CustomersResponse,
   CustomerSearchResult,
 } from "@/types/operator";
+import { ROUTE_PAGE_KEYS } from "@/constants/pageKeys";
 
 export interface GetCustomersParams {
   phone?: string;
@@ -25,10 +26,11 @@ export const getCustomers = async (
 ): Promise<CustomersResponse> => {
   try {
     const { cashRegisterId, ...queryParams } = params || {};
+    const pageKey = ROUTE_PAGE_KEYS.customers;
 
     const response = await api.get<CustomersResponse>(`/catalyst/customers`, {
       params: queryParams,
-      headers: getHeaders(cashRegisterId),
+      headers: getHeaders(cashRegisterId, pageKey),
     });
     return response.data;
   } catch (error: unknown) {

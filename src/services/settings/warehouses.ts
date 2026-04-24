@@ -1,7 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
+import { getApiErrorMessage, getHeaders } from "@/utils";
 
 export const createWarehouse = async (code: string) => {
   try {
@@ -12,9 +12,12 @@ export const createWarehouse = async (code: string) => {
   }
 };
 
-export const getWarehouses = async () => {
+export const getWarehouses = async (cashRegisterId?: number) => {
   try {
-    const response = await api.get(`/Warehouse`);
+    const response = await api.get(`/Warehouse`, {
+      headers: getHeaders(cashRegisterId),
+    });
+
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get warehouse."));
