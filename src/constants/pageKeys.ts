@@ -1,6 +1,5 @@
-// export const ROUTE_PAGE_KEYS: Record<string, string> = {
-//   "/languages": "Languages",
-//   "/settings": "Settings",
-//   "/users": "Users",
-//  ...
-// };
+export const ROUTE_PAGE_KEYS: Record<string, string> = {
+  warehouse: "Warehouse",
+  reports: "Reports",
+  customers: "Customers",
+};

@@ -13,6 +13,7 @@ import type {
   ZReportResponse,
   CashboxReport,
 } from "@/types/cash";
+import { ROUTE_PAGE_KEYS } from "@/constants/pageKeys";
 
 export const closeCashRegisterSession = async ({
   sessionId,
@@ -62,11 +63,12 @@ export const getZReports = async ({
   pageSize?: number;
 }) => {
   try {
+    const pageKey = ROUTE_PAGE_KEYS.reports;
     const { data } = await api.get<ZReportResponse>(
       `/cashbox-sessions/z-reports`,
       {
         params,
-        headers: getHeaders(cashRegisterId),
+        headers: getHeaders(cashRegisterId, pageKey),
       },
     );
     return data;
