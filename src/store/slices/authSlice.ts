@@ -12,6 +12,7 @@ import type { Credentials, LoginResponse } from "@/types/auth";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
+import { setPasswordRequest } from "@/services/users";
 
 interface AuthState {
   token: string | null;
@@ -46,6 +47,22 @@ export const login = createAsyncThunk<
     return data;
   } catch (error: unknown) {
     return rejectWithValue(getApiErrorMessage(error, "Login failed"));
+  }
+});
+
+export const setPassword = createAsyncThunk<
+  void,
+  { token: string; password: string; cashRegisterId?: number },
+  { rejectValue: string }
+>("auth/setPassword", async (payload, { rejectWithValue }) => {
+  try {
+    await setPasswordRequest(
+      payload.token,
+      payload.password,
+      payload.cashRegisterId,
+    );
+  } catch (error: unknown) {
+    return rejectWithValue(getApiErrorMessage(error, "Failed to set password"));
   }
 });
 
@@ -87,6 +104,17 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.token = null;
         state.user = null;
+      })
+      .addCase(setPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(setPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(setPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to set password";
       });
   },
 });

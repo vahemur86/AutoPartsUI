@@ -88,6 +88,12 @@ export const Settings = () => {
       showCheckmark: true,
     },
     {
+      path: "/car-catalyst",
+      label: t("settings.navigation.carCatalyst"),
+      icon: DollarSign,
+      showCheckmark: true,
+    },
+    {
       path: "/customer-types",
       label: t("settings.navigation.customerTypes"),
       icon: Users,

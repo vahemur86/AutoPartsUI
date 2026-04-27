@@ -257,11 +257,46 @@ export interface CatalystPricing {
   transportCost1UsdPerKg: number;
   transportCost2UsdPerKg: number;
   commissionPercent: number;
- customerMargins: CustomMargins[];
+  customerMargins: CustomMargins[];
 }
 
 export interface CustomMargins {
   customerTypeId: number;
   customerTypeCode: string;
   profitMarginPercent: number;
+}
+
+// Car Catalyst
+export interface CarCatalystBucket {
+  side: number;
+  code: string;
+  weightKg: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
+}
+
+export interface CreateCarCatalyst {
+  carModel: string;
+  country: string;
+  year: string;
+  engineVolume: number;
+  buckets: CarCatalystBucket[];
+}
+
+export interface CarCatalyst {
+  id: number;
+  carModel: string;
+  country: string;
+  year: string;
+  engineVolume: number;
+  buckets: CarCatalystBucket[];
+}
+
+export interface CarCatalystSearchParams {
+  code?: string;
+  carModel?: string;
+  year?: string;
+  country?: string;
+  cashRegisterId?: number;
 }
