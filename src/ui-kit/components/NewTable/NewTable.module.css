@@ -1,0 +1,130 @@
+/* .mainContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tableWrapper {
+  width: 100%;
+  background: transparent;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px; 
+  font-family: "Manrope", sans-serif;
+}
+
+.tableCellHeader {
+  color: #8a92a6;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 12px 4px 12px;
+  text-align: left;
+  user-select: none;
+}
+
+.tableRow {
+  background-color: #ffffff;
+}
+
+.tableCell {
+  padding: 0 6px;
+  vertical-align: middle;
+}
+
+.cellField {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #2d3748;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.sideBadge {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.sideGreen {
+  background: #f0fff4;
+  color: #38a169;
+  border: 1px solid #c6f6d5;
+}
+.sideBlue {
+  background: #ebf8ff;
+  color: #3182ce;
+  border: 1px solid #bee3f8;
+}
+
+.deleteButton {
+  background: transparent;
+  color: #fc8181;
+  border: 1px solid #fed7d7;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.deleteButton:hover {
+  background: #fff5f5;
+}
+
+.tableFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.addBucketBtn {
+  background: #f0fff4;
+  border: 1px solid #c6f6d5;
+  color: #38a169;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addBucketBtn.rearVariant {
+  background: #ebf8ff;
+  border: 1px solid #bee3f8;
+  color: #3182ce;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.paginationControls button {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.paginationControls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+} */

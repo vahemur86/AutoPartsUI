@@ -83,13 +83,15 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  max-height: calc(100vh - 220px); /* leave room for modal header + footer */
+  overflow-y: auto;
 }
 
 .editableItemsList {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 320px;
+  max-height: 220px; /* reduced from 320px */
   overflow-y: scroll;
   padding-right: 12px;
   margin-bottom: 4px;
@@ -169,7 +171,7 @@
 
 .stableSummaryWrapper {
   position: relative;
-  min-height: 320px;
+  min-height: 180px; /* reduced from 320px */
   display: flex;
   flex-direction: column;
   flex-shrink: 0;

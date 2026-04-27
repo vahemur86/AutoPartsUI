@@ -5,7 +5,12 @@ export {
   type ButtonVariant,
 } from "./Button";
 export { Checkbox, type CheckboxProps, type CheckboxShape } from "./Checkbox";
-export { Dropdown, Sheet, type DropdownProps, type AnchorRect } from "./Dropdown";
+export {
+  Dropdown,
+  Sheet,
+  type DropdownProps,
+  type AnchorRect,
+} from "./Dropdown";
 export {
   IconButton,
   type IconButtonProps,
@@ -61,3 +66,4 @@ export {
 } from "./ConfirmationModal";
 export { Tooltip, type TooltipProps } from "./Tooltip";
 export { DatePicker } from "./DatePicker";
+export * from "./NewTable";
