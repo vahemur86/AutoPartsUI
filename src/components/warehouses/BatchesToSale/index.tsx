@@ -420,7 +420,19 @@ export const BatchesToSale = () => {
               {showRecalcResult && lastRecalculationResult !== null && (
                 <div className={styles.recalculationResult}>
                   {t("warehouses.batchesToSale.recalculate.resultLabel")}:{" "}
-                  <strong>{lastRecalculationResult}</strong>
+                  <strong>
+                    {sellForm.currencyCode === "USD"
+                      ? (
+                          lastRecalculationResult /
+                          (selectedFormDetails?.usdRate || 1)
+                        ).toFixed(2)
+                      : lastRecalculationResult}{" "}
+                    {sellForm.currencyCode === "USD"
+                      ? "$"
+                      : sellForm.currencyCode === "AMD"
+                        ? "֏"
+                        : ""}
+                  </strong>
                 </div>
               )}
             </div>
@@ -434,9 +446,7 @@ export const BatchesToSale = () => {
             >
               {CURRENCIES.filter(
                 (currency) =>
-                  currency.value === "AMD" ||
-                  currency.value === "USD" ||
-                  currency.value === "RUB",
+                  currency.value === "AMD" || currency.value === "USD",
               ).map((currency) => (
                 <option key={currency.value} value={currency.value}>
                   {currency.label}

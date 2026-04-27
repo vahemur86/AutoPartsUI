@@ -200,6 +200,8 @@
       "password": "Password",
       "enterPassword": "Enter password",
       "role": "Role",
+      "email": "Email",
+      "enterEmail": "Please enter your email address",
       "selectRole": "Select role",
       "userType": "User Type",
       "selectUserType": "Select user type",
