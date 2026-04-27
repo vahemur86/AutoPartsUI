@@ -36,8 +36,7 @@ export const UserManagement = () => {
   const { shops } = useAppSelector((state) => state.shops);
   const { warehouses } = useAppSelector((state) => state.warehouses);
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [userType, setUserType] = useState("");
   const [shopId, setShopId] = useState("");
@@ -53,8 +52,7 @@ export const UserManagement = () => {
   const isWarehouseRequired =
     userType === "Warehouse" || (userType === "System" && !isSuperAdmin);
 
-  const isUsernameValid = username.trim().length > 0;
-  const isPasswordValid = password.length >= 6;
+  const isEmailValid = /\S+@\S+\.\S+/.test(email);
   const isRoleValid = !!role;
   const isUserTypeValid = !!userType;
 
@@ -62,8 +60,7 @@ export const UserManagement = () => {
   const isWarehouseValid = isWarehouseRequired ? !!warehouseId : true;
 
   const isFormValid =
-    isUsernameValid &&
-    isPasswordValid &&
+    isEmailValid &&
     isRoleValid &&
     isUserTypeValid &&
     isShopValid &&
@@ -93,8 +90,7 @@ export const UserManagement = () => {
   }, [dispatch, shops.length, warehouses.length]);
 
   const handleCancel = () => {
-    setUsername("");
-    setPassword("");
+    setEmail("");
     setRole("");
     setHasTriedSubmit(false);
     if (isSuperAdmin) {
@@ -113,6 +109,7 @@ export const UserManagement = () => {
 
     const finalShopId =
       isSuperAdmin && userType === "System" ? null : parseInt(shopId || "0");
+
     const finalWarehouseId =
       isSuperAdmin && userType === "System"
         ? null
@@ -120,13 +117,14 @@ export const UserManagement = () => {
 
     try {
       await createUser(
-        username,
-        password,
+        email,
         role,
         userType,
         finalShopId,
         finalWarehouseId,
+        email,
       );
+
       toast.success(t("users.success.userCreated"));
       handleCancel();
     } catch (error: unknown) {
@@ -142,36 +140,21 @@ export const UserManagement = () => {
         title={t("header.users")}
         icon={<img src={userIcon} alt={t("users.iconAlt")} />}
       />
+
       <div className={styles.usersContainer}>
         <div className={styles.formWrapper}>
           <div className={styles.formContainer}>
             <div className={styles.formRow}>
               <div className={styles.formColumn}>
                 <TextField
-                  label={t("users.form.username")}
-                  placeholder={t("users.form.enterUsername")}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  error={hasTriedSubmit && !isUsernameValid}
+                  label={t("users.form.email")}
+                  placeholder={t("users.form.enterEmail")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  error={hasTriedSubmit && !isEmailValid}
                   helperText={
-                    hasTriedSubmit && !isUsernameValid
-                      ? t("users.validation.usernameRequired")
-                      : ""
-                  }
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className={styles.formColumn}>
-                <TextField
-                  label={t("users.form.password")}
-                  type="password"
-                  placeholder={t("users.form.enterPassword")}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  error={hasTriedSubmit && !isPasswordValid}
-                  helperText={
-                    hasTriedSubmit && !isPasswordValid
-                      ? t("users.validation.passwordMinLength")
+                    hasTriedSubmit && !isEmailValid
+                      ? t("users.validation.emailInvalid")
                       : ""
                   }
                   disabled={isSubmitting}
@@ -201,6 +184,7 @@ export const UserManagement = () => {
                   ))}
                 </Select>
               </div>
+
               <div className={styles.formColumn}>
                 <Select
                   label={t("users.form.userType")}

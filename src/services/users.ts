@@ -7,22 +7,23 @@ import { getApiErrorMessage, getHeaders } from "@/utils";
 import type { Operator } from "@/types/cash/registers";
 
 export const createUser = async (
-  username: string | null,
-  password: string | null,
+  email: string | null,
   role: string | null,
   userType: string | null,
   shopId: number | null,
   warehouseId: number | null,
+  username: string | null,
 ) => {
   try {
     const response = await api.post(`/Users`, {
       username,
-      password,
+      email,
       role,
       userType,
       shopId,
       warehouseId,
     });
+
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to create user."));
@@ -48,8 +49,7 @@ export const deleteUser = async (id: number) => {
 };
 
 export const updateUser = async (
-  username: string,
-  password: string,
+  email: string,
   role: string,
   userType: string,
   shopId: number,
@@ -57,8 +57,7 @@ export const updateUser = async (
 ) => {
   try {
     const response = await api.put(`/Users`, {
-      username,
-      password,
+      email,
       role,
       userType,
       shopId,
@@ -90,5 +89,28 @@ export const getOperators = async ({
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to get operators."));
+  }
+};
+
+export const setPasswordRequest = async (
+  token: string,
+  password: string,
+  cashRegisterId?: number,
+) => {
+  try {
+    const response = await api.post(
+      `/Users/set-password`,
+      {
+        token,
+        password,
+      },
+      {
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to set password."));
   }
 };

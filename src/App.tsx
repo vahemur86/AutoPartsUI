@@ -69,6 +69,7 @@ import { OtpGateProvider } from "./components/otpGateProvider/OtpGateProvider";
 import { CatalystPricings } from "./components/settings/CatalystPricing";
 import { AdjustedSales } from "./components/warehouses/AdjustedSales/AdjustedSales";
 import { NewCalculator } from "./pages/Calculator";
+import { SetPassword } from "./pages/SetPassword/SetPassword";
 
 const toastOptions = {
   position: "top-right",
@@ -98,6 +99,8 @@ export const App = () => {
           <Routes>
             {/* PUBLIC ROUTE */}
             <Route path="/login" element={<Login />} />
+
+            <Route path="/set-password" element={<SetPassword />} />
 
             {/* OPERATOR SPECIFIC ROUTES */}
             <Route element={<ProtectedRoute allowedRoles={["Operator"]} />}>
@@ -147,6 +150,7 @@ export const App = () => {
                     path="catalyst-pricing"
                     element={<CatalystPricings />}
                   />
+                  {/* <Route path="car-catalyst" element={<CarCatalystPage />} /> */}
                   <Route path="exchange-rates" element={<ExchangeRates />} />
                   <Route path="customer-types" element={<CustomerTypes />} />
                   <Route path="cash-registers" element={<CashRegisters />} />

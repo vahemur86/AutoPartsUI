@@ -30,6 +30,7 @@ import ironSaleReportsReducer from "./slices/ironSaleReportsSlice";
 import metalPricesReducer from "./slices/metalPricesSlice";
 import otpReducer from "./slices/verificationOTPSlice";
 import catalystPricingReducer from "./slices/catalystPricingSlice";
+import carCatalystReducer from "./slices/carCatalystSlice";
 
 export const store = configureStore({
   reducer: {
@@ -64,6 +65,7 @@ export const store = configureStore({
     ironSaleReports: ironSaleReportsReducer,
     metalPrices: metalPricesReducer,
     otp: otpReducer,
+    carCatalyst: carCatalystReducer,
   },
 });
 
