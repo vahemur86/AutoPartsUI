@@ -9,7 +9,8 @@
     "logout": "Выйти",
     "userMenu": "Меню пользователя",
     "reports": "Отчеты",
-    "calculator": "Калькулятор"
+    "calculator": "Калькулятор",
+    "carCatalyst": "Баки"
   },
   "common": {
     "save": "Сохранить",
@@ -1533,6 +1534,39 @@
 
       "customerBonus": "Введите бонус клиента (%)",
       "minProfit": "Введите минимальную прибыль (%)"
+    }
+  },
+  "carCatalyst": {
+    "title": "Блоки катализатора автомобиля",
+
+    "fields": {
+      "brand": "Бренд",
+      "model": "Модель",
+      "year": "Год",
+      "country": "Страна",
+      "engine": "Двигатель",
+      "selectBrand": "Выберите бренд",
+      "selectModel": "Выберите модель",
+      "selectCountry": "Выберите страну",
+      "selectEngine": "Выберите двигатель"
+    },
+
+    "sections": {
+      "frontBuckets": "Передние блоки",
+      "backBuckets": "Задние блоки"
+    },
+
+    "table": {
+      "code": "Код",
+      "weight": "Вес",
+      "pt": "Платина (Pt)",
+      "pd": "Палладий (Pd)",
+      "rh": "Родий (Rh)"
+    },
+
+    "errors": {
+      "loading": "Не удалось загрузить данные",
+      "required": "Заполните все обязательные поля"
     }
   }
 }

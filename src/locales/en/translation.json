@@ -9,7 +9,8 @@
     "logout": "Logout",
     "userMenu": "User menu",
     "reports": "Reports",
-    "calculator": "Calculator"
+    "calculator": "Calculator",
+    "carCatalyst": "Buckets"
   },
   "common": {
     "save": "Save",
@@ -1536,6 +1537,39 @@
 
       "customerBonus": "Enter customer bonus (%)",
       "minProfit": "Enter minimum profit (%)"
+    }
+  },
+  "carCatalyst": {
+    "title": "Car Catalyst Buckets",
+
+    "fields": {
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "country": "Country",
+      "engine": "Engine",
+      "selectBrand": "Select brand",
+      "selectModel": "Select model",
+      "selectCountry": "Select country",
+      "selectEngine": "Select engine"
+    },
+
+    "sections": {
+      "frontBuckets": "Front buckets",
+      "backBuckets": "Back buckets"
+    },
+
+    "table": {
+      "code": "Code",
+      "weight": "Weight",
+      "pt": "Platinum (Pt)",
+      "pd": "Palladium (Pd)",
+      "rh": "Rhodium (Rh)"
+    },
+
+    "errors": {
+      "loading": "Failed to load data",
+      "required": "Please fill in all required fields"
     }
   }
 }

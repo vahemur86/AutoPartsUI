@@ -125,3 +125,27 @@ export const updateVehicleBuckets = async ({
     );
   }
 };
+
+export const getVehicleModels = async (
+  brandId?: number,
+  lang: string = "am",
+  cashRegisterId?: number,
+) => {
+  try {
+    const response = await api.get(`/lookups/models`, {
+      params: {
+        ...(brandId != null && { brandId }),
+        lang: formatLang(lang),
+      },
+      headers: getHeaders(cashRegisterId),
+    });
+
+    return response.data as Array<{
+      id: number;
+      code: string;
+      name: string;
+    }>;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to get vehicle models."));
+  }
+};

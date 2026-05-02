@@ -277,26 +277,31 @@ export interface CarCatalystBucket {
 }
 
 export interface CreateCarCatalyst {
-  carModel: string;
-  country: string;
-  year: string;
+  brandId: number;
+  modelId: number;
+  year: number;
+  country: number;
   engineVolume: number;
+  side: number;
   buckets: CarCatalystBucket[];
 }
 
 export interface CarCatalyst {
   id: number;
-  carModel: string;
-  country: string;
-  year: string;
+  brandId: number;
+  modelId: number;
+  year: number;
+  country: number;
   engineVolume: number;
+  side: number;
   buckets: CarCatalystBucket[];
 }
 
 export interface CarCatalystSearchParams {
   code?: string;
-  carModel?: string;
-  year?: string;
-  country?: string;
+  brandId?: number;
+  modelId?: number;
+  year?: number;
+  country?: number;
   cashRegisterId?: number;
 }

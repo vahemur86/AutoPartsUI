@@ -12,6 +12,7 @@ import {
   updateVehicleBuckets,
   getVehicleDefinitions,
   getVehicleDefinitionsByBucket,
+  getVehicleModels,
 } from "@/services/settings/vehicles";
 
 // utils
@@ -37,6 +38,9 @@ interface VehiclesState {
   definitionsByBucket: PaginatedResponse<VehicleDefinitionByBucket> | null;
   isLoadingDefinitionsByBucket: boolean;
   isDefinitionsByBucketError: string | null;
+  vehicleModels: Array<{ id: number; code: string; name: string }>;
+  isVehicleModelsLoading: boolean;
+  isVehicleModelsError: string | null;
 }
 
 const initialState: VehiclesState = {
@@ -49,6 +53,9 @@ const initialState: VehiclesState = {
   definitionsByBucket: null,
   isLoadingDefinitionsByBucket: false,
   isDefinitionsByBucketError: null,
+  vehicleModels: [],
+  isVehicleModelsLoading: false,
+  isVehicleModelsError: null,
 };
 
 // Async thunk for fetching vehicle lookups
@@ -187,6 +194,26 @@ export const editVehicleBuckets = createAsyncThunk<
   }
 });
 
+export const fetchVehicleModels = createAsyncThunk<
+  Array<{ id: number; code: string; name: string }>,
+  { brandId?: number; lang?: string; cashRegisterId?: number },
+  { rejectValue: string }
+>("vehicles/fetchVehicleModels", async (params, { rejectWithValue }) => {
+  try {
+    const data = await getVehicleModels(
+      params.brandId,
+      params.lang,
+      params.cashRegisterId,
+    );
+
+    return data;
+  } catch (error: unknown) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch vehicle models"),
+    );
+  }
+});
+
 const vehiclesSlice = createSlice({
   name: "vehicles",
   initialState,
@@ -282,6 +309,22 @@ const vehiclesSlice = createSlice({
       .addCase(fetchVehicleBuckets.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch vehicle buckets";
+      });
+
+    builder
+      .addCase(fetchVehicleModels.pending, (state) => {
+        state.isVehicleModelsLoading = true;
+        state.isVehicleModelsError = null;
+      })
+      .addCase(fetchVehicleModels.fulfilled, (state, action) => {
+        state.isVehicleModelsLoading = false;
+        state.vehicleModels = action.payload;
+        state.isVehicleModelsError = null;
+      })
+      .addCase(fetchVehicleModels.rejected, (state, action) => {
+        state.isVehicleModelsLoading = false;
+        state.isVehicleModelsError =
+          action.payload ?? "Failed to fetch vehicle models";
       });
 
     //Fetch vehicle definitions by bucket
