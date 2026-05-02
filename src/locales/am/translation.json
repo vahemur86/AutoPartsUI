@@ -9,7 +9,8 @@
     "logout": "Ելք",
     "userMenu": "Օգտատիրոջ ընտրացանկ",
     "reports": "Հաշվետվություններ",
-    "calculator": "Հաշվիչ"
+    "calculator": "Հաշվիչ",
+    "carCatalyst": "Բաքեր"
   },
   "common": {
     "save": "Պահպանել",
@@ -1538,6 +1539,39 @@
 
       "customerBonus": "Մուտքագրեք հաճախորդի բոնուսը (%)",
       "minProfit": "Մուտքագրեք նվազագույն շահույթը (%)"
+    }
+  },
+  "carCatalyst": {
+    "title": "Մեքենայի կատալիզատորի բաքեր",
+
+    "fields": {
+      "brand": "Բրենդ",
+      "model": "Մոդել",
+      "year": "Տարի",
+      "country": "Երկիր",
+      "engine": "Շարժիչ",
+      "selectBrand": "Ընտրեք բրենդը",
+      "selectModel": "Ընտրեք մոդելը",
+      "selectCountry": "Ընտրեք երկիրը",
+      "selectEngine": "Ընտրեք շարժիչը"
+    },
+
+    "sections": {
+      "frontBuckets": "Առջևի բաքեր",
+      "backBuckets": "Հետևի բաքեր"
+    },
+
+    "table": {
+      "code": "Կոդ",
+      "weight": "Քաշ",
+      "pt": "Պլատին (Pt)",
+      "pd": "Պալադիում (Pd)",
+      "rh": "Ռոդիում (Rh)"
+    },
+
+    "errors": {
+      "loading": "Չհաջողվեց բեռնել տվյալները",
+      "required": "Լրացրեք բոլոր պարտադիր դաշտերը"
     }
   }
 }

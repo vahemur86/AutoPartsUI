@@ -112,6 +112,12 @@ export const Header: FC = () => {
             />
             <Tab
               variant="underline"
+              active={isActive("/carCatalyst")}
+              text={t("header.carCatalyst")}
+              onClick={() => navigate("/carCatalyst")}
+            />
+            <Tab
+              variant="underline"
               active={isActive("/customers")}
               text={t("header.customers")}
               onClick={() => navigate("/customers")}

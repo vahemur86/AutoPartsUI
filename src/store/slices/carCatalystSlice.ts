@@ -41,7 +41,7 @@ export const addCarCatalyst = createAsyncThunk<
     return await createCarCatalyst(payload);
   } catch (error: unknown) {
     return rejectWithValue(
-      getApiErrorMessage(error, "Failed to create car catalyst"),
+      getApiErrorMessage(error, "Failed to create car catalyst."),
     );
   }
 });

@@ -10,6 +10,8 @@ import {
   Users,
   UserCircle,
   FileText,
+  Calculator,
+  Car,
 } from "lucide-react";
 
 // hooks
@@ -53,6 +55,16 @@ export const BottomNav: FC = () => {
       path: "/customers",
       icon: UserCircle,
       label: "Customers",
+    },
+    {
+      path: "/calculator",
+      icon: Calculator,
+      label: "Calculator",
+    },
+    {
+      path: "/carCatalyst",
+      icon: Car,
+      label: "carCatalyst",
     },
     {
       path: "/reports",
