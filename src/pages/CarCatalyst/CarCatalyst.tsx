@@ -18,7 +18,8 @@ import type {
 
 import styles from "./CarCatalyst.module.css";
 import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
-import { Trash } from "lucide-react";
+import { ExternalLink, Trash } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type UIBucket = Omit<
   CarCatalystBucket,
@@ -58,6 +59,7 @@ export const CarCatalystPage = () => {
   const [year, setYear] = useState<number | "">("");
   const [country, setCountry] = useState<number | "">("");
   const [engineId, setEngineId] = useState<number | "">("");
+  const navigate = useNavigate();
 
   const [frontBuckets, setFrontBuckets] = useState<UIBucket[]>([]);
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
@@ -130,7 +132,7 @@ export const CarCatalystPage = () => {
 
   const handleSave = async () => {
     if (!brandId || !modelId || !year || !country || !engineId) {
-      toast.error(t("carCatalyst.error.required"));
+      toast.error(t("carCatalyst.errors.required"));
       return;
     }
 
@@ -155,11 +157,15 @@ export const CarCatalystPage = () => {
 
     try {
       await dispatch(addCarCatalyst(payload)).unwrap();
-      toast.success(t("common.save"));
+      toast.success(t("carCatalyst.errors.success"));
       resetForm();
     } catch {
       toast.error(t("common.error"));
     }
+  };
+
+  const goToDetails = () => {
+    navigate("/car-catalyst/details");
   };
 
   const renderTable = (
@@ -169,7 +175,13 @@ export const CarCatalystPage = () => {
   ) => (
     <div className={styles.bucketTable}>
       <div className={styles.tableHeader}>
-        <h3 className={styles.sectionTitle}>{title}</h3>
+        <h3
+          className={`${styles.sectionTitle} ${
+            side === "front" ? styles.frontTitle : styles.backTitle
+          }`}
+        >
+          {title}
+        </h3>
 
         <Button size="small" onClick={() => addBucket(side)}>
           {t("common.add")}
@@ -279,7 +291,16 @@ export const CarCatalystPage = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>{t("carCatalyst.title")}</h2>
+        <div className={styles.titleRow}>
+          <h2 className={styles.title}>{t("carCatalyst.title")}</h2>
+
+          <IconButton
+            size="large"
+            onClick={goToDetails}
+            icon={<ExternalLink size={18} />}
+            ariaLabel="details"
+          />
+        </div>
 
         <Button variant="primary" size="small" onClick={handleSave}>
           {t("common.save")}
