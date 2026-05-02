@@ -1561,15 +1561,16 @@
 
     "table": {
       "code": "Code",
-      "weight": "Weight",
-      "pt": "Platinum (Pt)",
-      "pd": "Palladium (Pd)",
-      "rh": "Rhodium (Rh)"
+      "weight": "Weight(Kg)",
+      "pt": "Platinum (Pt, g)",
+      "pd": "Palladium (Pd, g)",
+      "rh": "Rhodium (Rh, g)"
     },
 
     "errors": {
       "loading": "Failed to load data",
-      "required": "Please fill in all required fields"
+      "required": "Please fill in all required fields",
+      "success": "Buckets added successfully"
     }
   }
 }
