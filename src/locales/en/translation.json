@@ -1571,6 +1571,75 @@
       "loading": "Failed to load data",
       "required": "Please fill in all required fields",
       "success": "Buckets added successfully"
+    },
+    "details": {
+      "title": "Catalytic Converter Search",
+      "subtitle": "Search by converter code or by vehicle details",
+
+      "tabs": {
+        "code": "Search by Code",
+        "vehicle": "Search by Vehicle"
+      },
+
+      "codeSearch": {
+        "title": "Converter Code",
+        "label": "Enter converter code",
+        "placeholder": "For example kt0271"
+      },
+
+      "vehicleSearch": {
+        "title": "Vehicle Details"
+      },
+
+      "actions": {
+        "back": "Back",
+        "search": "Search",
+        "searchVehicles": "Search Vehicles",
+        "openDetails": "Open details",
+        "deleteFilters": "Clear filters"
+      },
+
+      "results": {
+        "title": "Results",
+        "foundCount": "{{count}} catalytic converters found",
+        "converterCount": "{{count}} converters",
+        "engine": "Engine",
+        "empty": "No results yet"
+      },
+
+      "summary": {
+        "title": "Details",
+        "empty": "Select one result to see details",
+        "emptyBuckets": "No buckets found",
+        "totalWeight": "Total Weight",
+        "totalPt": "Total Pt",
+        "totalPd": "Total Pd",
+        "totalRh": "Total Rh",
+        "weight": "Weight",
+        "pt": "Pt",
+        "pd": "Pd",
+        "rh": "Rh"
+      },
+
+      "offer": {
+        "title": "Best Offer",
+        "calculating": "Calculating...",
+        "notAvailable": "Offer not available",
+        "description": "The offer is calculated based on the metal content of the selected converters",
+        "error": "Failed to calculate offer",
+        "calculate": "Calculate"
+      },
+
+      "sides": {
+        "front": "Front",
+        "rear": "Rear"
+      },
+
+      "fallback": {
+        "brand": "Brand #{{id}}",
+        "model": "Model #{{id}}",
+        "country": "Country #{{id}}"
+      }
     }
   }
 }

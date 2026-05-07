@@ -48,17 +48,20 @@ export const addCarCatalyst = createAsyncThunk<
 
 export const fetchCarCatalystById = createAsyncThunk<
   CarCatalyst,
-  number,
+  { id: number; cashRegisterId?: number },
   { rejectValue: string }
->("carCatalyst/getById", async (id, { rejectWithValue }) => {
-  try {
-    return await getCarCatalystById(id);
-  } catch (error: unknown) {
-    return rejectWithValue(
-      getApiErrorMessage(error, "Failed to fetch car catalyst"),
-    );
-  }
-});
+>(
+  "carCatalyst/getById",
+  async ({ id, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await getCarCatalystById(id, cashRegisterId);
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch car catalyst"),
+      );
+    }
+  },
+);
 
 export const removeCarCatalyst = createAsyncThunk<
   number,
@@ -77,17 +80,20 @@ export const removeCarCatalyst = createAsyncThunk<
 
 export const fetchCarCatalysts = createAsyncThunk<
   CarCatalyst[],
-  CarCatalystSearchParams,
+  { params: CarCatalystSearchParams; cashRegisterId?: number },
   { rejectValue: string }
->("carCatalyst/search", async (params, { rejectWithValue }) => {
-  try {
-    return await searchCarCatalysts(params);
-  } catch (error: unknown) {
-    return rejectWithValue(
-      getApiErrorMessage(error, "Failed to search car catalysts"),
-    );
-  }
-});
+>(
+  "carCatalyst/search",
+  async ({ params, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await searchCarCatalysts(params, cashRegisterId);
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to search car catalysts"),
+      );
+    }
+  },
+);
 
 const carCatalystSlice = createSlice({
   name: "carCatalyst",
@@ -98,6 +104,11 @@ const carCatalystSlice = createSlice({
     },
     clearSelectedCarCatalyst: (state) => {
       state.selected = null;
+    },
+    clearCarCatalystSearch: (state) => {
+      state.list = [];
+      state.selected = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -110,7 +121,10 @@ const carCatalystSlice = createSlice({
         addCarCatalyst.fulfilled,
         (state, action: PayloadAction<CarCatalyst>) => {
           state.isLoading = false;
-          state.list.unshift(action.payload);
+
+          if (action.payload?.id && Array.isArray(action.payload.buckets)) {
+            state.list.unshift(action.payload);
+          }
         },
       )
       .addCase(addCarCatalyst.rejected, (state, action) => {
@@ -171,7 +185,10 @@ const carCatalystSlice = createSlice({
   },
 });
 
-export const { clearCarCatalystError, clearSelectedCarCatalyst } =
-  carCatalystSlice.actions;
+export const {
+  clearCarCatalystError,
+  clearSelectedCarCatalyst,
+  clearCarCatalystSearch,
+} = carCatalystSlice.actions;
 
 export default carCatalystSlice.reducer;
