@@ -1,0 +1,726 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(236, 241, 94, 0.08),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(95, 214, 139, 0.08),
+      transparent 30%
+    ),
+    var(--color-black-1);
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 75%);
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.04em;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.contentGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.leftPanel,
+.resultsPanel {
+  position: relative;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.025)
+    ),
+    var(--color-black-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+}
+
+.leftPanel {
+  position: sticky;
+  top: 20px;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tabButton {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  text-align: left;
+  font-weight: 700;
+  font-size: 14px;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.tabButton:hover {
+  color: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.055);
+  transform: translateY(-1px);
+}
+
+.activeTab {
+  color: var(--color-primary-500);
+  border-color: rgba(236, 241, 94, 0.32);
+  background: linear-gradient(
+    135deg,
+    rgba(236, 241, 94, 0.14),
+    rgba(236, 241, 94, 0.045)
+  );
+  box-shadow: 0 10px 28px rgba(236, 241, 94, 0.07);
+}
+
+.searchCard {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: fadeUp 0.22s ease;
+}
+
+.searchActions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.searchActions button:first-child {
+  width: 100%;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.resultCount {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.resultList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resultCardWrapper {
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.052),
+    rgba(255, 255, 255, 0.022)
+  );
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.resultCardWrapper:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.13);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07),
+    rgba(255, 255, 255, 0.032)
+  );
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.selectedCard {
+  border-color: rgba(236, 241, 94, 0.48);
+  box-shadow:
+    0 22px 55px rgba(236, 241, 94, 0.08),
+    0 20px 48px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.resultCard {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.resultInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.resultInfo h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.resultInfo p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.bucketCount {
+  width: fit-content;
+  margin-top: 7px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5fd68b;
+  background: rgba(95, 214, 139, 0.12);
+  border: 1px solid rgba(95, 214, 139, 0.18);
+}
+
+.chevronIcon {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease,
+    color 0.22s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+  opacity: 1;
+  color: var(--color-primary-500);
+}
+
+.dropdownContent {
+  padding: 0 18px 18px;
+  animation: dropdownOpen 0.24s ease;
+}
+
+.totalBox {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.totalBox div {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 18px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 255, 255, 0.09),
+      transparent 42%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.025)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.totalBox div::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--total-accent, var(--color-primary-500));
+  box-shadow: 0 0 18px var(--total-glow, rgba(236, 241, 94, 0.28));
+}
+
+.totalBox div:nth-child(1) {
+  --total-accent: #ecf15e;
+  --total-glow: rgba(236, 241, 94, 0.34);
+}
+
+.totalBox div:nth-child(2) {
+  --total-accent: #f0c66e;
+  --total-glow: rgba(240, 198, 110, 0.34);
+}
+
+.totalBox div:nth-child(3) {
+  --total-accent: #b9c3d9;
+  --total-glow: rgba(185, 195, 217, 0.28);
+}
+
+.totalBox div:nth-child(4) {
+  --total-accent: #5d93e9;
+  --total-glow: rgba(93, 147, 233, 0.34);
+}
+
+.totalBox span {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.52);
+  letter-spacing: 0.02em;
+}
+
+.totalBox strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  letter-spacing: -0.03em;
+}
+
+.converterList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.bucketCard {
+  padding: 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.052),
+    rgba(255, 255, 255, 0.022)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.bucketCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(95, 214, 139, 0.22);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.067),
+    rgba(255, 255, 255, 0.03)
+  );
+}
+
+.bucketTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+
+.bucketTop strong {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frontCode {
+  color: #5fd68b;
+  text-shadow: 0 0 18px rgba(95, 214, 139, 0.18);
+}
+
+.rearCode {
+  color: #5d93e9;
+  text-shadow: 0 0 18px rgba(93, 147, 233, 0.18);
+}
+
+.bucketTop span {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.bucketGrid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 9px 12px;
+  font-size: 13px;
+}
+
+.bucketGrid span {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.bucketGrid strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+}
+
+.bucketCalculation {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.bucketCalculateButton {
+  flex-shrink: 0;
+  min-width: 112px;
+  padding: 10px 13px;
+  border: 1px solid rgba(236, 241, 94, 0.28);
+  border-radius: 13px;
+  background: linear-gradient(
+    135deg,
+    rgba(236, 241, 94, 0.18),
+    rgba(236, 241, 94, 0.07)
+  );
+  color: var(--color-primary-500);
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.bucketCalculateButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(236, 241, 94, 0.48);
+  background: linear-gradient(
+    135deg,
+    rgba(236, 241, 94, 0.24),
+    rgba(236, 241, 94, 0.1)
+  );
+}
+
+.bucketCalculateButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bucketCalculationResult {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(95, 214, 139, 0.16),
+      transparent 44%
+    ),
+    rgba(95, 214, 139, 0.07);
+  border: 1px solid rgba(95, 214, 139, 0.16);
+}
+
+.bucketCalculationResult span {
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.52);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bucketCalculationResult strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #5fd68b;
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+}
+
+.emptyState {
+  padding: 28px;
+  border-radius: 18px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.52);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.045),
+    rgba(255, 255, 255, 0.02)
+  );
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.converterList .emptyState {
+  grid-column: 1 / -1;
+}
+
+@keyframes dropdownOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1200px) {
+  .wrapper {
+    padding: 18px;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .leftPanel {
+    position: relative;
+    top: auto;
+  }
+
+  .totalBox {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .converterList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 14px;
+    gap: 18px;
+  }
+
+  .header {
+    align-items: flex-start;
+  }
+
+  .titleRow {
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 21px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .leftPanel,
+  .resultsPanel {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .tabs {
+    margin-bottom: 16px;
+  }
+
+  .searchActions {
+    grid-template-columns: 1fr auto;
+  }
+
+  .resultCard {
+    padding: 15px;
+  }
+
+  .resultInfo h4 {
+    font-size: 15px;
+  }
+
+  .totalBox {
+    grid-template-columns: 1fr;
+  }
+
+  .converterList {
+    grid-template-columns: 1fr;
+  }
+
+
+  .dropdownContent {
+    padding: 0 14px 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .wrapper {
+    padding: 10px;
+  }
+
+  .titleRow {
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 19px;
+  }
+
+  .leftPanel,
+  .resultsPanel {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .tabButton {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+
+  .resultCard {
+    gap: 10px;
+    padding: 13px;
+  }
+
+  .bucketCount {
+    font-size: 11px;
+  }
+
+  .totalBox div {
+    padding: 14px;
+  }
+
+
+  .bucketCalculation {
+    flex-direction: column;
+  }
+
+  .bucketCalculateButton {
+    width: 100%;
+  }
+
+  .bucketTop {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bucketTop span {
+    width: fit-content;
+  }
+}

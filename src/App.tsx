@@ -71,6 +71,7 @@ import { AdjustedSales } from "./components/warehouses/AdjustedSales/AdjustedSal
 import { NewCalculator } from "./pages/Calculator";
 import { SetPassword } from "./pages/SetPassword/SetPassword";
 import { CarCatalystPage } from "./pages/CarCatalyst/CarCatalyst";
+import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
 
 const toastOptions = {
   position: "top-right",
@@ -151,7 +152,6 @@ export const App = () => {
                     path="catalyst-pricing"
                     element={<CatalystPricings />}
                   />
-                  {/* <Route path="car-catalyst" element={<CarCatalystPage />} /> */}
                   <Route path="exchange-rates" element={<ExchangeRates />} />
                   <Route path="customer-types" element={<CustomerTypes />} />
                   <Route path="cash-registers" element={<CashRegisters />} />
@@ -210,6 +210,10 @@ export const App = () => {
                 <Route path="shops" element={<Shops />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="carCatalyst" element={<CarCatalystPage />} />
+                <Route
+                  path="car-catalyst/details"
+                  element={<CarCatalystDetails />}
+                />
                 <Route path="customers" element={<Customers />} />
                 <Route path="calculator" element={<NewCalculator />} />
               </Route>

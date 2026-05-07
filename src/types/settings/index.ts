@@ -296,12 +296,10 @@ export interface CarCatalyst {
   side: number;
   buckets: CarCatalystBucket[];
 }
-
 export interface CarCatalystSearchParams {
   code?: string;
   brandId?: number;
   modelId?: number;
   year?: number;
-  country?: number;
-  cashRegisterId?: number;
+  countryId?: number;
 }
