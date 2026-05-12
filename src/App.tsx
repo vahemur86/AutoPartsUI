@@ -20,6 +20,7 @@ import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { Reports } from "@/pages/Reports";
 import { Products } from "@/pages/Products";
+import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage/index";
 
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -216,6 +217,7 @@ export const App = () => {
                 />
                 <Route path="customers" element={<Customers />} />
                 <Route path="calculator" element={<NewCalculator />} />
+            <Route path="service-templates" element={<ServiceTemplatePage />} />
               </Route>
             </Route>
 

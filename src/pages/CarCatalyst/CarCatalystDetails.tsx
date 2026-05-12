@@ -152,8 +152,16 @@ export const CarCatalystDetails = () => {
 
   const [brandId, setBrandId] = useState<number | "">("");
   const [modelId, setModelId] = useState<number | "">("");
-  const [year, setYear] = useState<number | "">("");
+ const [fromYear, setFromYear] = useState<number | "">("");
+const [toYear, setToYear] = useState<number | "">("");
   const [countryId, setCountryId] = useState<number | "">("");
+
+  const currentYear = new Date().getFullYear();
+
+const years = useMemo(
+  () => Array.from({ length: currentYear - 1970 + 1 }, (_, i) => currentYear - i),
+  [currentYear],
+);
 
   const [bucketOffers, setBucketOffers] = useState<
     Record<string, CalculatorResultLike>
@@ -361,7 +369,8 @@ export const CarCatalystDetails = () => {
     setCode("");
     setBrandId("");
     setModelId("");
-    setYear("");
+    setYearFrom("");
+    setYearTo("");
     setCountryId("");
     setModels([]);
     setExpandedItemId(null);
@@ -398,35 +407,62 @@ export const CarCatalystDetails = () => {
     }
   };
 
-  const searchByVehicle = async () => {
-    if (!brandId || !modelId || !year || !countryId) {
-      toast.error(t("carCatalyst.errors.required"));
-      return;
-    }
+const searchByVehicle = async () => {
+  const hasAnyFilter =
+    (typeof brandId === "number" && brandId > 0) ||
+    (typeof modelId === "number" && modelId > 0) ||
+    (typeof countryId === "number" && countryId > 0) ||
+    fromYear !== "" ||
+    toYear !== "";
 
-    setExpandedItemId(null);
-    setBucketOffers({});
-    setCalculatingBucketKey(null);
-    dispatch(clearSelectedCarCatalyst());
+  if (!hasAnyFilter) {
+    toast.error(t("carCatalyst.errors.required"));
+    return;
+  }
 
-    try {
-      const results = await dispatch(
-        fetchCarCatalysts({
-          params: {
-            brandId: Number(brandId),
-            modelId: Number(modelId),
-            year: Number(year),
-            countryId: Number(countryId),
-          },
-          cashRegisterId,
-        }),
-      ).unwrap();
+  let from = typeof fromYear === "number" ? fromYear : undefined;
+  let to = typeof toYear === "number" ? toYear : undefined;
 
-      await loadModelsForResults(results);
-    } catch {
-      toast.error(t("common.error"));
-    }
-  };
+  // auto swap if wrong order
+  if (from && to && from > to) {
+    [from, to] = [to, from];
+  }
+
+  const params: Record<string, number> = {};
+
+  if (from) params.fromYear = from;
+  if (to) params.toYear = to;
+
+  if (typeof brandId === "number" && brandId > 0) {
+    params.brandId = brandId;
+  }
+
+  if (typeof modelId === "number" && modelId > 0) {
+    params.modelId = modelId;
+  }
+
+  if (typeof countryId === "number" && countryId > 0) {
+    params.countryId = countryId;
+  }
+
+  setExpandedItemId(null);
+  setBucketOffers({});
+  setCalculatingBucketKey(null);
+  dispatch(clearSelectedCarCatalyst());
+
+  try {
+    const results = await dispatch(
+      fetchCarCatalysts({
+        params,
+        cashRegisterId,
+      }),
+    ).unwrap();
+
+    await loadModelsForResults(results);
+  } catch {
+    toast.error(t("common.error"));
+  }
+};
 
   const toggleCatalystDetails = async (id: number) => {
     if (expandedItemId === id) {
@@ -695,19 +731,38 @@ export const CarCatalystDetails = () => {
                 ))}
               </Select>
 
-              <TextField
-                label={t("carCatalyst.fields.year")}
-                type="text"
-                inputMode="numeric"
-                value={year}
-                onChange={(e) =>
-                  setYear(
-                    e.target.value === ""
-                      ? ""
-                      : Number(e.target.value.replace(/[^0-9]/g, "")),
-                  )
-                }
-              />
+        <div className={styles.yearRange}>
+  <Select
+    label={t("carCatalyst.fields.fromYear")}
+    value={fromYear}
+    onChange={(e) =>
+      setFromYear(e.target.value ? Number(e.target.value) : "")
+    }
+  >
+    <option value="">{t("common.from")}</option>
+    {years.map((y) => (
+      <option key={y} value={y}>
+        {y}
+      </option>
+    ))}
+  </Select>
+
+  <Select
+    label={t("carCatalyst.fields.toYear")}
+    value={toYear}
+    onChange={(e) =>
+      setToYear(e.target.value ? Number(e.target.value) : "")
+    }
+  >
+    <option value="">{t("common.to")}</option>
+    {years.map((y) => (
+      <option key={y} value={y}>
+        {y}
+      </option>
+    ))}
+  </Select>
+  
+</div>
 
               <Select
                 label={t("carCatalyst.fields.country")}

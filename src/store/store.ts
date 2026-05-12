@@ -31,6 +31,7 @@ import metalPricesReducer from "./slices/metalPricesSlice";
 import otpReducer from "./slices/verificationOTPSlice";
 import catalystPricingReducer from "./slices/catalystPricingSlice";
 import carCatalystReducer from "./slices/carCatalystSlice";
+import serviceTemplatesReducer from "./slices/serviceTemplatesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -66,6 +67,7 @@ export const store = configureStore({
     metalPrices: metalPricesReducer,
     otp: otpReducer,
     carCatalyst: carCatalystReducer,
+    serviceTemplates: serviceTemplatesReducer,
   },
 });
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
+
 import { Button, IconButton, Select, TextField } from "@/ui-kit";
 import { useAppDispatch } from "@/store/hooks";
 import {
@@ -18,7 +19,7 @@ import type {
 
 import styles from "./CarCatalyst.module.css";
 import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
-import { ExternalLink, Trash } from "lucide-react";
+import { Copy, ExternalLink, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type UIBucket = Omit<
@@ -118,6 +119,26 @@ export const CarCatalystPage = () => {
     setter((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const duplicateBucket = (
+  side: "front" | "back",
+  index: number,
+) => {
+  const setter = side === "front"
+    ? setFrontBuckets
+    : setBackBuckets;
+
+  setter((prev) => {
+    const item = prev[index];
+
+    return [
+      ...prev,
+      {
+        ...item,
+      },
+    ];
+  });
+};
+
   const updateBucket = (
     side: "front" | "back",
     index: number,
@@ -196,6 +217,7 @@ export const CarCatalystPage = () => {
             <th>{t("carCatalyst.table.pt")}</th>
             <th>{t("carCatalyst.table.pd")}</th>
             <th>{t("carCatalyst.table.rh")}</th>
+            <th>{t("common.copy")}</th>
             <th>{t("common.delete")}</th>
           </tr>
         </thead>
@@ -271,7 +293,14 @@ export const CarCatalystPage = () => {
                   }
                 />
               </td>
-
+<td>
+  <IconButton
+    size="medium"
+    onClick={() => duplicateBucket(side, i)}
+    icon={<Copy size={18} />}
+    ariaLabel="duplicate"
+  />
+</td>
               <td>
                 <IconButton
                   className={styles.trashIconButton}
