@@ -1,3 +1,4 @@
+console.log("serviceTemplates module loaded");
 import axios from "axios";
 
 export type ServiceTemplate = {
@@ -23,5 +24,13 @@ export const createServiceTemplate = async (
   payload: ServiceTemplate,
 ) => {
   const res = await axios.post(BASE_URL, payload);
+  return res.data;
+};
+
+export const updateServiceTemplate = async (
+  id: number,
+  payload: ServiceTemplate & { isActive: boolean }
+) => {
+  const res = await axios.put(`${BASE_URL}/${id}`, payload);
   return res.data;
 };

@@ -1,64 +1,128 @@
-console.log("🔥 serviceTemplatesSlice LOADED");
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchServiceTemplates,
   addServiceTemplate,
+  updateServiceTemplate,
 } from "@/store/slices/serviceTemplatesSlice";
-import { Button, TextField } from "@/ui-kit";
+
+import { Button, TextField, DataTable } from "@/ui-kit";
 import styles from "./ServiceTemplates.module.css";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+
+type FormState = {
+  name: string;
+  mechanicPrice: number;
+  electricianPrice: number;
+  sparePartsPrice: number;
+};
+
+const initialForm: FormState = {
+  name: "",
+  mechanicPrice: 0,
+  electricianPrice: 0,
+  sparePartsPrice: 0,
+};
 
 export const ServiceTemplatePage = () => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+
   const { list, isLoading } = useAppSelector(
     (state) => state.serviceTemplates
   );
 
-  const [form, setForm] = useState({
-    name: "",
-    mechanicPrice: 0,
-    electricianPrice: 0,
-    sparePartsPrice: 0,
-  });
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editStatus, setEditStatus] = useState<boolean>(true);
+  const [form, setForm] = useState<FormState>(initialForm);
+
+  const isEditMode = editingId !== null;
 
   useEffect(() => {
     dispatch(fetchServiceTemplates());
   }, [dispatch]);
 
+  const resetForm = () => {
+    setForm(initialForm);
+    setEditingId(null);
+    setEditStatus(true);
+  };
+
+  // CREATE
   const onSubmit = async () => {
     try {
       await dispatch(addServiceTemplate(form)).unwrap();
 
-      toast.success("Template created successfully");
-
-      setForm({
-        name: "",
-        mechanicPrice: 0,
-        electricianPrice: 0,
-        sparePartsPrice: 0,
-      });
-
+      toast.success(t("serviceTemplates.createdSuccess"));
+      resetForm();
       dispatch(fetchServiceTemplates());
     } catch {
-      toast.error("Failed to create template");
+      toast.error(t("serviceTemplates.createFailed"));
     }
+  };
+
+  // UPDATE
+  const onUpdate = async () => {
+    if (editingId === null) return;
+
+    try {
+      await dispatch(
+        updateServiceTemplate({
+          id: editingId,
+          data: {
+            name: form.name,
+            mechanicPrice: form.mechanicPrice,
+            electricianPrice: form.electricianPrice,
+            sparePartsPrice: form.sparePartsPrice,
+            isActive: editStatus,
+          },
+        })
+      ).unwrap();
+
+      toast.success(t("serviceTemplates.updateSuccess"));
+      resetForm();
+      dispatch(fetchServiceTemplates());
+    } catch {
+      toast.error(t("serviceTemplates.updateFailed"));
+    }
+  };
+
+  // EDIT
+  const onEdit = (item: any) => {
+    setEditingId(item.id);
+
+    setForm({
+      name: item.name ?? "",
+      mechanicPrice: item.mechanicPrice ?? 0,
+      electricianPrice: item.electricianPrice ?? 0,
+      sparePartsPrice: item.sparePartsPrice ?? 0,
+    });
+
+    setEditStatus(item.isActive ?? true);
   };
 
   return (
     <div className={styles.container}>
-      {/* FORM SECTION */}
+      {/* FORM */}
       <div className={styles.section}>
         <div className={styles.header}>
-          <h3 className={styles.title}>Service Templates</h3>
+          <h3 className={styles.title}>
+            {t("serviceTemplates.title")}
+          </h3>
+
           <div className={styles.actions}>
-            <Button onClick={onSubmit}>Create</Button>
+            <Button onClick={isEditMode ? onUpdate : onSubmit}>
+              {isEditMode
+                ? t("serviceTemplates.actions.update")
+                : t("serviceTemplates.actions.create")}
+            </Button>
           </div>
         </div>
 
         <div className={styles.form}>
           <TextField
-            label="Name"
+            label={t("serviceTemplates.fields.name")}
             value={form.name}
             onChange={(e) =>
               setForm((p) => ({ ...p, name: e.target.value }))
@@ -66,7 +130,7 @@ export const ServiceTemplatePage = () => {
           />
 
           <TextField
-            label="Mechanic Price"
+            label={t("serviceTemplates.fields.mechanicPrice")}
             type="number"
             value={form.mechanicPrice}
             onChange={(e) =>
@@ -78,7 +142,7 @@ export const ServiceTemplatePage = () => {
           />
 
           <TextField
-            label="Electrician Price"
+            label={t("serviceTemplates.fields.electricianPrice")}
             type="number"
             value={form.electricianPrice}
             onChange={(e) =>
@@ -90,7 +154,7 @@ export const ServiceTemplatePage = () => {
           />
 
           <TextField
-            label="Spare Parts Price"
+            label={t("serviceTemplates.fields.sparePartsPrice")}
             type="number"
             value={form.sparePartsPrice}
             onChange={(e) =>
@@ -100,41 +164,116 @@ export const ServiceTemplatePage = () => {
               }))
             }
           />
+
+          {/* STATUS ONLY IN EDIT */}
+          {isEditMode && (
+            <div style={{ marginTop: 12 }}>
+              <label style={{ display: "block", marginBottom: 6 }}>
+                {t("serviceTemplates.fields.status")}
+              </label>
+
+              <select
+                value={String(editStatus)}
+                onChange={(e) =>
+                  setEditStatus(e.target.value === "true")
+                }
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  borderRadius: 8,
+                  border: "1px solid #ddd",
+                }}
+              >
+                <option value="true">
+                  {t("common.active")}
+                </option>
+                <option value="false">
+                  {t("common.inactive")}
+                </option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* TABLE SECTION */}
-      <div className={styles.section}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>List</h3>
-        </div>
+      {/* TABLE */}
+      <div className={`${styles.section} ${styles.tableSection}`}>
+        {isLoading ? (
+          <div className={styles.loading}>
+            {t("common.loading")}
+          </div>
+        ) : (
+          <DataTable
+            data={list ?? []}
+            columns={[
+              {
+                header: t("serviceTemplates.table.name"),
+                accessorKey: "name",
+              },
+              {
+                header: t("serviceTemplates.table.mechanic"),
+                accessorKey: "mechanicPrice",
+              },
+              {
+                header: t("serviceTemplates.table.electrician"),
+                accessorKey: "electricianPrice",
+              },
+              {
+                header: t("serviceTemplates.table.spareParts"),
+                accessorKey: "sparePartsPrice",
+              },
 
-        <div className={styles.tableWrapper}>
-          {isLoading ? (
-            <div className={styles.loading}>Loading...</div>
-          ) : (
-            <table width="100%">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Mechanic</th>
-                  <th>Electrician</th>
-                  <th>Spare Parts</th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((x) => (
-                  <tr key={x.id}>
-                    <td>{x.name}</td>
-                    <td>{x.mechanicPrice}</td>
-                    <td>{x.electricianPrice}</td>
-                    <td>{x.sparePartsPrice}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+              {
+                header: t("serviceTemplates.table.totalAmount"),
+                accessorKey: "totalAmount",
+                cell: ({ getValue }) => getValue<number>() ?? 0,
+              },
+
+              {
+                header: t("serviceTemplates.fields.status"),
+                accessorKey: "isActive",
+                cell: ({ getValue }) => {
+                  const isActive = getValue<boolean>();
+
+                  return (
+                    <span
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: 999,
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        backgroundColor: isActive
+                          ? "#e6f7ee"
+                          : "#fdeaea",
+                        color: isActive ? "#1a7f37" : "#c62828",
+                        border: `1px solid ${
+                          isActive ? "#1a7f37" : "#c62828"
+                        }`,
+                      }}
+                    >
+                      {isActive
+                        ? t("common.active")
+                        : t("common.inactive")}
+                    </span>
+                  );
+                },
+              },
+
+              {
+                header: t("common.actions"),
+                accessorKey: "id",
+                cell: ({ row }) => (
+                  <Button
+                    size="small"
+                    onClick={() => onEdit(row.original)}
+                  >
+                    {t("common.edit")}
+                  </Button>
+                ),
+              },
+            ]}
+          />
+        )}
       </div>
     </div>
   );

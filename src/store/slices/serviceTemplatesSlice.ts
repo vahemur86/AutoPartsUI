@@ -1,4 +1,5 @@
 
+console.log("serviceTemplates module loaded");
 import {
   createSlice,
   createAsyncThunk,
@@ -7,9 +8,9 @@ import {
 import {
   getServiceTemplates,
   createServiceTemplate,
+  updateServiceTemplate as apiUpdateServiceTemplate,
   type ServiceTemplate,
 } from "@/services/settings/serviceTemplates";
-
 
 interface State {
   list: ServiceTemplate[];
@@ -38,9 +39,20 @@ export const addServiceTemplate = createAsyncThunk<
   return await createServiceTemplate(payload);
 });
 
+// UPDATE 👇 NEW
+export const updateServiceTemplate = createAsyncThunk<
+  ServiceTemplate,
+  {
+    id: number;
+    data: Omit<ServiceTemplate, "id"> & { isActive: boolean };
+  }
+>("serviceTemplates/update", async ({ id, data }) => {
+  return await apiUpdateServiceTemplate(id, data);
+});
+
 const serviceTemplatesSlice = createSlice({
   name: "serviceTemplates",
-  initialState, // 🔥 սա պարտադիր է
+  initialState,
   reducers: {
     clearError: (state) => {
       state.error = null;
@@ -48,6 +60,7 @@ const serviceTemplatesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // GET
       .addCase(fetchServiceTemplates.pending, (state) => {
         state.isLoading = true;
       })
@@ -59,8 +72,20 @@ const serviceTemplatesSlice = createSlice({
         state.isLoading = false;
       })
 
+      // CREATE
       .addCase(addServiceTemplate.fulfilled, (state, action) => {
         state.list.unshift(action.payload);
+      })
+
+      // UPDATE 👇
+      .addCase(updateServiceTemplate.fulfilled, (state, action) => {
+        const index = state.list.findIndex(
+          (x) => x.id === action.payload.id
+        );
+
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
       });
   },
 });

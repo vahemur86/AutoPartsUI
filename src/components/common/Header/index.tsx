@@ -110,6 +110,13 @@ export const Header: FC = () => {
               text={t("header.users")}
               onClick={() => navigate("/users")}
             />
+
+           <Tab
+  variant="underline"
+  active={isActive("/service-templates")}
+  text={t("header.workshop")}
+  onClick={() => navigate("/service-templates")}
+/>
             <Tab
               variant="underline"
               active={isActive("/carCatalyst")}
