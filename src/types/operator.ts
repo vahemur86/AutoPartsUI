@@ -106,6 +106,21 @@ export interface WorkshopFormData {
   comment: string;
 }
 
+export interface WorkshopOrder {
+  id: number;
+  templateId: number;
+  isManualMode: boolean;
+  mechanicPrice: number;
+  electricianPrice: number;
+  sparePartsPrice: number;
+  totalAmount: number;
+  comment: string;
+  operatorUserId: number;
+  cashRegisterId: number;
+  sessionId: number;
+  createdAt: string;
+}
+
 export interface NewPropose {
   intakeId: number;
   baseOfferAmd: number;

@@ -105,7 +105,35 @@
   },
 
   "offers": {},
-  "reports": {},
+  "reports": {
+    "navigation": {
+      "workshopOrders": "Աշխատանոցի պատվերներ",
+      "zReports": "Z-հաշիվներ",
+      "batchReports": "Խմբերի հաշվետվություններ",
+      "openSessions": "Բաց սեսսիաներ",
+      "powderBatches": "Փոշու խմբեր",
+      "cashboxSessionsReports": "Դրամարկղի սեանսների հաշվետվություններ",
+      "ironProducts": "Աղեղի արտադրանք",
+      "ironSale": "Աղեղի վաճառք"
+    },
+    "workshopOrders": {
+      "loading": "Բեռնում է գործարանի պատվերները...",
+      "columns": {
+        "id": "ID",
+        "templateId": "Թեմայի ID",
+        "isManualMode": "Ձեռնարկային ռեժիմ",
+        "mechanicPrice": "Մեխանիկի արժեքը",
+        "electricianPrice": "Էլեկտրիկի արժեքը",
+        "sparePartsPrice": "Մատակարարման մասերի արժեքը",
+        "totalAmount": "Ընդհանուր գումարը",
+        "comment": "Մեկնաբանություն",
+        "operatorUserId": "Օպերատորի ID",
+        "cashRegisterId": "Դրամարկղի ID",
+        "sessionId": "Սեսսիայի ID",
+        "createdAt": "Ստեղծման ամսաթիվը"
+      }
+    }
+  },
   "exchangeRates": {},
   "users": {},
   "shops": {},
@@ -228,7 +256,112 @@
   "warehouse": {},
   "powderSales": {},
   "calculator": {},
-  "carCatalyst": {},
+  "carCatalyst": {
+    "title": "Մեքենայի կատալիտիկ կոնվերտորներ",
+
+    "fields": {
+      "brand": "Բրենդ",
+      "model": "Մոդել",
+      "year": "Տարի",
+      "fromYear": "Սկսած տարի",
+      "toYear": "Վերջի տարի",
+      "country": "Երկիր",
+      "engine": "Շարժիչ",
+      "selectBrand": "Ընտրեք բրենդ",
+      "selectModel": "Ընտրեք մոդել",
+      "selectCountry": "Ընտրեք երկիր",
+      "selectEngine": "Ընտրեք շարժիչ"
+    },
+
+    "sections": {
+      "frontBuckets": "Առջևի բաժիններ",
+      "backBuckets": "Վերջի բաժիններ"
+    },
+
+    "table": {
+      "code": "Կոդ",
+      "weight": "Քաշ (կգ)",
+      "pt": "Պլատինա (Pt, գ)",
+      "pd": "Պալադիում (Pd, գ)",
+      "rh": "Ռոդիում (Rh, գ)"
+    },
+
+    "errors": {
+      "loading": "Տվյալները չհաջողվեց ներբեռնել",
+      "required": "Խնդրում ենք լրացնել բոլոր պարտադիր դաշտերը",
+      "success": "Բաժինները հաջողությամբ ավելացվեցին"
+    },
+
+    "details": {
+      "title": "Կատալիտիկ փոխիչի որոնում",
+      "subtitle": "Որոնել կոնվերտորի կոդով կամ մեքենայի տվյալներով",
+
+      "tabs": {
+        "code": "Որոնում ըստ կոդի",
+        "vehicle": "Որոնում ըստ մեքենայի"
+      },
+
+      "codeSearch": {
+        "title": "Կոնվերտորի կոդ",
+        "label": "Մուտքագրեք կոնվերտորի կոդը",
+        "placeholder": "Օրինակ՝ kt0271"
+      },
+
+      "vehicleSearch": {
+        "title": "Մեքենայի տվյալներ"
+      },
+
+      "actions": {
+        "back": "Վերադառնալ",
+        "search": "Որոնել",
+        "searchVehicles": "Որոնել մեքենաներ",
+        "openDetails": "Բացել մանրամասները",
+        "deleteFilters": "Թարմացնել ֆիլտրերը"
+      },
+
+      "results": {
+        "title": "Արդյունքներ",
+        "foundCount": "{{count}} կատալիտիկ փոխիչ է գտնվել",
+        "converterCount": "{{count}} փոխիչ",
+        "engine": "Շարժիչ",
+        "empty": "Արդյունք չկա դեռ"
+      },
+
+      "summary": {
+        "title": "Մանրամասներ",
+        "empty": "Ընտրեք արդյունք՝ մանրամասները տեսնելու համար",
+        "emptyBuckets": "Բաժիններ չեն գտնվել",
+        "totalWeight": "Ընդհանուր քաշը",
+        "totalPt": "Միջին Pt",
+        "totalPd": "Միջին Pd",
+        "totalRh": "Միջին Rh",
+        "weight": "Քաշ",
+        "pt": "Pt",
+        "pd": "Pd",
+        "rh": "Rh"
+      },
+
+      "offer": {
+        "title": "Լավագույն առաջարկ",
+        "calculating": "Հաշվում ենք...",
+        "notAvailable": "Առաջարկը հասանելի չէ",
+        "description": "Առաջlagetը հաշվարկվում է ընտրած կոնվերտորների մետաղների պարունակությամբ",
+        "error": "Առաջարկը հաշվելիս չհաջողվեց",
+        "calculate": "Հաշվել"
+      },
+
+      "sides": {
+        "front": "Առջև",
+        "rear": "Վերև"
+      },
+
+      "fallback": {
+        "brand": "Բրենդ #{{id}}",
+        "model": "Մոդել #{{id}}",
+        "country": "Երկիր #{{id}}"
+      }
+    }
+  },
 
   "serviceTemplates": {
     "title": "Ծառայությունների ձևանմուշներ",

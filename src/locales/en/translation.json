@@ -139,7 +139,25 @@
       "powderBatches": "Powder Batches",
       "cashboxSessionsReports": "Cashbox Sessions Reports",
       "ironProducts": "Iron Products",
-      "ironSale": "Iron Sale"
+      "ironSale": "Iron Sale",
+      "workshopOrders": "Workshop Orders"
+    },
+    "workshopOrders": {
+      "loading": "Loading workshop orders...",
+      "columns": {
+        "id": "ID",
+        "templateId": "Template ID",
+        "isManualMode": "Manual Mode",
+        "mechanicPrice": "Mechanic Price",
+        "electricianPrice": "Electrician Price",
+        "sparePartsPrice": "Spare Parts Price",
+        "totalAmount": "Total Amount",
+        "comment": "Comment",
+        "operatorUserId": "Operator ID",
+        "cashRegisterId": "Cash Register ID",
+        "sessionId": "Session ID",
+        "createdAt": "Created At"
+      }
     },
     "ironProducts": {
       "columns": {
@@ -1568,6 +1586,8 @@
       "brand": "Brand",
       "model": "Model",
       "year": "Year",
+      "fromYear": "From Year",
+      "toYear": "To Year",
       "country": "Country",
       "engine": "Engine",
       "selectBrand": "Select brand",
@@ -1634,9 +1654,9 @@
         "empty": "Select one result to see details",
         "emptyBuckets": "No buckets found",
         "totalWeight": "Total Weight",
-        "totalPt": "Total Pt",
-        "totalPd": "Total Pd",
-        "totalRh": "Total Rh",
+        "totalPt": "Average Pt",
+        "totalPd": "Average Pd",
+        "totalRh": "Average Rh",
         "weight": "Weight",
         "pt": "Pt",
         "pd": "Pd",

@@ -61,6 +61,12 @@ export const Reports = () => {
       icon: ShoppingCart,
       showCheckmark: true,
     },
+    {
+      path: "/workshop-orders",
+      label: t("reports.navigation.workshopOrders"),
+      icon: ShoppingCart,
+      showCheckmark: true,
+    },
   ];
 
   return (

@@ -4,7 +4,7 @@ import api from ".";
 import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
-import type { Intake, IntakeResponse, NewPropose } from "@/types/operator";
+import type { Intake, IntakeResponse, NewPropose, WorkshopOrder } from "@/types/operator";
 
 export const createIntake = async ({
   intake,
@@ -108,6 +108,21 @@ export const createServiceOrder = async ({
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to create workshop order."));
+  }
+};
+
+export const getServiceOrders = async ({
+  cashRegisterId,
+}: {
+  cashRegisterId?: number;
+}): Promise<WorkshopOrder[]> => {
+  try {
+    const response = await api.get(`/operator/orders`, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to load workshop orders."));
   }
 };
 

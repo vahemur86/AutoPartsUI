@@ -295,6 +295,10 @@ export interface CarCatalyst {
   engineVolume: number;
   side: number;
   buckets: CarCatalystBucket[];
+  totalWeightKg?: number;
+  averagePt_g?: number;
+  averagePd_g?: number;
+  averageRh_g?: number;
 }
 export interface CarCatalystSearchParams {
   code?: string;

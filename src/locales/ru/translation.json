@@ -139,7 +139,25 @@
       "powderBatches": "Партии порошка",
       "cashboxSessionsReports": "Отчеты сессий кассы",
       "ironProducts": "Железные изделия",
-      "ironSale": "Продажа железа"
+      "ironSale": "Продажа железа",
+      "workshopOrders": "Заказы мастерской"
+    },
+    "workshopOrders": {
+      "loading": "Загрузка заказов мастерской...",
+      "columns": {
+        "id": "ID",
+        "templateId": "ID шаблона",
+        "isManualMode": "Ручной режим",
+        "mechanicPrice": "Стоимость механика",
+        "electricianPrice": "Стоимость электрика",
+        "sparePartsPrice": "Стоимость запчастей",
+        "totalAmount": "Общая сумма",
+        "comment": "Комментарий",
+        "operatorUserId": "ID оператора",
+        "cashRegisterId": "ID кассы",
+        "sessionId": "ID сессии",
+        "createdAt": "Дата создания"
+      }
     },
     "ironProducts": {
       "columns": {
@@ -1565,6 +1583,8 @@
       "brand": "Бренд",
       "model": "Модель",
       "year": "Год",
+      "fromYear": "Год от",
+      "toYear": "Год до",
       "country": "Страна",
       "engine": "Двигатель",
       "selectBrand": "Выберите бренд",
@@ -1631,9 +1651,9 @@
         "empty": "Выберите результат, чтобы увидеть детали",
         "emptyBuckets": "Баки не найдены",
         "totalWeight": "Общий вес",
-        "totalPt": "Всего Pt",
-        "totalPd": "Всего Pd",
-        "totalRh": "Всего Rh",
+        "totalPt": "Средний Pt",
+        "totalPd": "Средний Pd",
+        "totalRh": "Средний Rh",
         "weight": "Вес",
         "pt": "Pt",
         "pd": "Pd",

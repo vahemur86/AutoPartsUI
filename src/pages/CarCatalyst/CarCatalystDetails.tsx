@@ -328,6 +328,18 @@ const years = useMemo(
       };
     }
 
+    // Use backend totals if available, otherwise calculate from buckets
+    if (selected.totalWeightKg !== undefined && selected.averagePt_g !== undefined &&
+        selected.averagePd_g !== undefined && selected.averageRh_g !== undefined) {
+      return {
+        weight: selected.totalWeightKg,
+        pt: selected.averagePt_g,
+        pd: selected.averagePd_g,
+        rh: selected.averageRh_g,
+      };
+    }
+
+    // Fallback to frontend calculation if backend totals are not available
     return (selected.buckets ?? []).reduce(
       (acc, item) => {
         acc.weight += item.weightKg || 0;

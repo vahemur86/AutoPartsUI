@@ -20,7 +20,7 @@ import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { Reports } from "@/pages/Reports";
 import { Products } from "@/pages/Products";
-import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage/index";
+import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage";
 
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -47,6 +47,7 @@ import { PowderBatches } from "@/components/reports/PowderBatches";
 import { CashboxSessionsReports } from "@/components/reports/CashboxSessionsReports";
 import { IronProductsReport } from "@/components/reports/IronProductsReport";
 import { IronSaleReport } from "@/components/reports/IronSaleReport";
+import { WorkshopOrdersReport } from "@/components/reports/WorkshopOrdersReport";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -182,6 +183,7 @@ export const App = () => {
                     element={<IronProductsReport />}
                   />
                   <Route path="iron-sale" element={<IronSaleReport />} />
+                  <Route path="workshop-orders" element={<WorkshopOrdersReport />} />
                 </Route>
 
                 <Route path="warehouses" element={<Warehouses />}>
