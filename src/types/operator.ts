@@ -88,6 +88,24 @@ export interface IntakeResponse {
   serviceItems: any[];
 }
 
+export interface ServiceOrderRequest {
+  templateId: number;
+  isManualMode: boolean;
+  mechanicPrice: number;
+  electricianPrice: number;
+  sparePartsPrice: number;
+  comment: string;
+}
+
+export interface WorkshopFormData {
+  selectedTemplateId: string;
+  isManualMode: boolean;
+  mechanicPrice: string;
+  electricianPrice: string;
+  sparePartsPrice: string;
+  comment: string;
+}
+
 export interface NewPropose {
   intakeId: number;
   baseOfferAmd: number;

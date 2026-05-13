@@ -1,0 +1,71 @@
+.workshopCard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.modeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modeLabel {
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modeOption,
+.modeOptionActive {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.modeOptionActive {
+  color: var(--color-white);
+  font-weight: 700;
+}
+
+.fieldBlock {
+  display: grid;
+  gap: 16px;
+}
+
+.readOnlyPrices {
+  display: grid;
+  gap: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.summaryLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.summaryValue {
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.submitButton {
+  min-width: 200px;
+}

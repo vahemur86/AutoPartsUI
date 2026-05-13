@@ -42,6 +42,7 @@ import {
 } from "@/store/slices/exchangeRatesSlice";
 import { clearCustomersState } from "@/store/slices/customersSlice";
 import { fetchIronDropdown } from "@/store/slices/adminProductsSlice";
+import { fetchServiceTemplates } from "@/store/slices/serviceTemplatesSlice";
 import {
   submitBulkPurchase,
   clearPrices,
@@ -51,6 +52,12 @@ import {
 
 // utils
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+
+// services
+import { createServiceOrder } from "@/services/operator";
+
+// types
+import type { WorkshopFormData } from "@/types/operator";
 
 export type TabType = "catalyst" | "iron";
 
@@ -74,6 +81,7 @@ export const useOperator = () => {
     offerOptions: useAppSelector((state) => state.offerOptions),
     exchangeRates: useAppSelector((state) => state.exchangeRates),
     customers: useAppSelector((state) => state.customers),
+    serviceTemplates: useAppSelector((state) => state.serviceTemplates),
     ironCarShop: useAppSelector((state) => state.ironCarShop),
   };
 
@@ -100,6 +108,14 @@ export const useOperator = () => {
     palladiumPrice: "0",
     rhodiumPrice: "0",
     customer: { phone: "", fullName: "", gender: 0, notes: "" },
+  });
+  const [workshopFormData, setWorkshopFormData] = useState<WorkshopFormData>({
+    selectedTemplateId: "",
+    isManualMode: false,
+    mechanicPrice: "0",
+    electricianPrice: "0",
+    sparePartsPrice: "0",
+    comment: "",
   });
 
   // --- Helpers ---
@@ -141,9 +157,44 @@ export const useOperator = () => {
       formData.powderWeight !== "0" ||
       formData.customer.phone !== "" ||
       selectors.operator.intake !== null ||
-      selectors.ironCarShop.ironPrices.length > 0
+      selectors.ironCarShop.ironPrices.length > 0 ||
+      workshopFormData.isManualMode ||
+      workshopFormData.selectedTemplateId !== "" ||
+      workshopFormData.comment.trim() !== "" ||
+      workshopFormData.mechanicPrice !== "0" ||
+      workshopFormData.electricianPrice !== "0" ||
+      workshopFormData.sparePartsPrice !== "0"
     );
-  }, [formData, selectors.operator.intake, selectors.ironCarShop.ironPrices]);
+  }, [
+    formData,
+    selectors.operator.intake,
+    selectors.ironCarShop.ironPrices,
+    workshopFormData,
+  ]);
+
+  const selectedWorkshopTemplate = useMemo(
+    () =>
+      selectors.serviceTemplates.list.find(
+        (item) => String(item.id) === workshopFormData.selectedTemplateId,
+      ) ?? null,
+    [selectors.serviceTemplates.list, workshopFormData.selectedTemplateId],
+  );
+
+  const workshopTotalPrice = useMemo(() => {
+    if (!workshopFormData.isManualMode && selectedWorkshopTemplate) {
+      return (
+        selectedWorkshopTemplate.mechanicPrice +
+        selectedWorkshopTemplate.electricianPrice +
+        selectedWorkshopTemplate.sparePartsPrice
+      );
+    }
+
+    return (
+      Number(workshopFormData.mechanicPrice || 0) +
+      Number(workshopFormData.electricianPrice || 0) +
+      Number(workshopFormData.sparePartsPrice || 0)
+    );
+  }, [workshopFormData, selectedWorkshopTemplate]);
 
   const currentLanguageCode = useMemo(() => {
     return (
@@ -219,6 +270,7 @@ export const useOperator = () => {
       );
       dispatch(fetchLanguages(crId));
       dispatch(fetchRegisterSession(crId));
+      dispatch(fetchServiceTemplates());
       refreshBalance();
     }
   }, [dispatch, userData?.cashRegisterId, refreshBalance]);
@@ -333,6 +385,14 @@ export const useOperator = () => {
     setHasTriedCalculateIron(false);
     setInitialOfferPrice(null);
     setRecalculationsAmount(0);
+    setWorkshopFormData({
+      selectedTemplateId: "",
+      isManualMode: false,
+      mechanicPrice: "0",
+      electricianPrice: "0",
+      sparePartsPrice: "0",
+      comment: "",
+    });
     dispatch(clearIntakeState());
     dispatch(clearCustomersState());
     dispatch(clearExchangeRatesState());
@@ -388,6 +448,65 @@ export const useOperator = () => {
       } else {
         dispatch(clearIntakeState());
       }
+    } finally {
+      setUiState((p) => ({ ...p, isSubmitting: false }));
+    }
+  };
+
+  const handleSubmitWorkshopOrder = async () => {
+    setUiState((p) => ({ ...p, hasTriedSubmit: true }));
+
+    if (!selectors.cashSessions.hasOpenSession) {
+      toast.error(t("operatorPage.notifications.sessionNotOpen"));
+      return;
+    }
+
+    if (!userData?.cashRegisterId) return;
+
+    if (!workshopFormData.isManualMode && !workshopFormData.selectedTemplateId) {
+      return;
+    }
+
+    if (workshopFormData.isManualMode) {
+      if (
+        isNaN(Number(workshopFormData.mechanicPrice)) ||
+        isNaN(Number(workshopFormData.electricianPrice)) ||
+        isNaN(Number(workshopFormData.sparePartsPrice))
+      ) {
+        return;
+      }
+    }
+
+    setUiState((p) => ({ ...p, isSubmitting: true }));
+
+    try {
+      const order = {
+        templateId: workshopFormData.isManualMode
+          ? 0
+          : Number(workshopFormData.selectedTemplateId),
+        isManualMode: workshopFormData.isManualMode,
+        mechanicPrice: workshopFormData.isManualMode
+          ? Number(workshopFormData.mechanicPrice)
+          : selectedWorkshopTemplate?.mechanicPrice ?? 0,
+        electricianPrice: workshopFormData.isManualMode
+          ? Number(workshopFormData.electricianPrice)
+          : selectedWorkshopTemplate?.electricianPrice ?? 0,
+        sparePartsPrice: workshopFormData.isManualMode
+          ? Number(workshopFormData.sparePartsPrice)
+          : selectedWorkshopTemplate?.sparePartsPrice ?? 0,
+        comment: workshopFormData.comment,
+      };
+
+      await createServiceOrder({
+        order,
+        cashRegisterId: userData.cashRegisterId,
+      });
+
+      toast.success(t("operatorPage.workshop.success.orderCreated"));
+      handleResetForm();
+    } catch (error) {
+      console.error("Workshop order failed:", error);
+      toast.error(t("operatorPage.workshop.error.createFailed"));
     } finally {
       setUiState((p) => ({ ...p, isSubmitting: false }));
     }
@@ -555,9 +674,13 @@ export const useOperator = () => {
     isNonStandardCustomer,
     isFormDirty,
     selectors,
+    workshopFormData,
+    setWorkshopFormData,
+    workshopTotalPrice,
     actions: {
       handleResetForm,
       handleSubmit,
+      handleSubmitWorkshopOrder,
       handleBulkPurchase,
       handleConfirmReject,
       handleToggleSession,

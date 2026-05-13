@@ -1303,7 +1303,8 @@
       "noOffersTitle": "Данный продукт не соответствует нашим параметрам."
     },
     "notifications": {
-      "cashUpdated": "Баланс кассы был обновлен"
+      "cashUpdated": "Баланс кассы был обновлен",
+      "sessionNotOpen": "Пожалуйста, откройте смену, чтобы создавать заказы"
     },
     "success": {
       "sessionOpened": "Смена успешно открыта",
@@ -1349,6 +1350,27 @@
       "linkedBuckets": "Связанные корзины",
       "noResults": "Результаты не найдены",
       "group": "Группа"
+    },
+    "workshop": {
+      "title": "Мастерская",
+      "modeLabel": "Режим",
+      "templateMode": "Шаблон",
+      "manualMode": "Вручную",
+      "templateLabel": "Шаблон услуги",
+      "selectTemplatePlaceholder": "Выберите шаблон мастерской",
+      "mechanicPrice": "Цена механика",
+      "electricianPrice": "Цена электрика",
+      "sparePartsPrice": "Цена запчастей",
+      "commentLabel": "Комментарий",
+      "commentPlaceholder": "Введите комментарий...",
+      "totalAmount": "Общая сумма",
+      "createOrder": "Рассчитать и создать",
+      "success": {
+        "orderCreated": "Заказ мастерской успешно создан"
+      },
+      "error": {
+        "createFailed": "Не удалось создать заказ мастерской"
+      }
     },
     "tabSwitchWarning": "Переключение вкладки приведет к сбросу всех форм и очистке введенных данных. Вы уверены, что хотите продолжить?"
   },

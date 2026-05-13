@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -16,6 +16,7 @@ import {
   TopUpConfirmationModal,
   BuyIron,
   CalculateMode,
+  WorkshopMode,
 } from "./components";
 
 // stores
@@ -29,7 +30,7 @@ import { useOperator, type TabType } from "./hooks";
 import styles from "./OperatorPage.module.css";
 import { AlertTriangle } from "lucide-react";
 
-type MainTabType = "buy" | "calculate";
+type MainTabType = "buy" | "calculate" | "workshop";
 
 export const OperatorPage = () => {
   const { t } = useTranslation();
@@ -40,8 +41,21 @@ export const OperatorPage = () => {
 
   const mainTab = (searchParams.get("view") as MainTabType) || "buy";
 
+  const [pendingMainTab, setPendingMainTab] = useState<MainTabType | null>(null);
+
   const setMainTab = (tab: MainTabType) => {
     setSearchParams({ view: tab });
+  };
+
+  const setMainTabWithCheck = (targetTab: MainTabType) => {
+    if (mainTab === targetTab) return;
+
+    if (isFormDirty) {
+      setPendingMainTab(targetTab);
+      setUiState((prev) => ({ ...prev, isTabConfirmModalOpen: true }));
+    } else {
+      setMainTab(targetTab);
+    }
   };
 
   const {
@@ -65,6 +79,9 @@ export const OperatorPage = () => {
     isNonStandardCustomer,
     isFormDirty,
     selectors,
+    workshopFormData,
+    setWorkshopFormData,
+    workshopTotalPrice,
     actions,
   } = useOperator();
 
@@ -131,13 +148,19 @@ export const OperatorPage = () => {
           variant="underline"
           active={mainTab === "buy"}
           text={t("operatorPage.tabs.buy")}
-          onClick={() => setMainTab("buy")}
+          onClick={() => setMainTabWithCheck("buy")}
         />
         <Tab
           variant="underline"
           active={mainTab === "calculate"}
           text={t("operatorPage.tabs.calculate")}
-          onClick={() => setMainTab("calculate")}
+          onClick={() => setMainTabWithCheck("calculate")}
+        />
+        <Tab
+          variant="underline"
+          active={mainTab === "workshop"}
+          text={t("operatorPage.tabs.workshop")}
+          onClick={() => setMainTabWithCheck("workshop")}
         />
       </div>
 
@@ -159,7 +182,11 @@ export const OperatorPage = () => {
           </div>
 
           <div className={styles.contentArea}>
-            <div className={!isIron ? styles.topRow : styles.ironLayout}>
+            <div
+              className={
+                !isIron ? styles.topRow : styles.ironLayout
+              }
+            >
               {!isIron ? (
                 <>
                   <div className={styles.leftColumn}>
@@ -291,6 +318,42 @@ export const OperatorPage = () => {
             </div>
           </div>
         </div>
+      ) : mainTab === "workshop" ? (
+        <div className={styles.buyLayoutWrapper}>
+          <div className={styles.contentArea}>
+            <div className={styles.workshopLayout}>
+              <div className={styles.leftColumn}>
+                <WorkshopMode
+                  serviceTemplates={selectors.serviceTemplates.list}
+                  serviceTemplatesLoading={selectors.serviceTemplates.isLoading}
+                  formData={workshopFormData}
+                  setFormData={setWorkshopFormData}
+                  onSubmit={actions.handleSubmitWorkshopOrder}
+                  isSubmitting={uiState.isSubmitting}
+                  hasTriedSubmit={uiState.hasTriedSubmit}
+                  totalPrice={workshopTotalPrice}
+                />
+              </div>
+              <div className={styles.rightColumn}>
+                <CustomerDetails
+                  customerData={formData.customer}
+                  onCustomerChange={(customer) =>
+                    setFormData((prev) => ({ ...prev, customer }))
+                  }
+                  phoneError={
+                    uiState.hasTriedSubmit &&
+                    !formData.customer.phone
+                  }
+                  onSuccess={() => {
+                    actions.handleResetForm();
+                  }}
+                  wide={true}
+                  activeTab="workshop"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className={styles.contentArea}>
           <CalculateMode cashRegisterId={userData?.cashRegisterId} />
@@ -395,17 +458,23 @@ export const OperatorPage = () => {
           title={t("common.warning")}
           description={t("operatorPage.tabSwitchWarning")}
           onConfirm={() => {
-            if (pendingTab) {
+            if (pendingMainTab) {
+              actions.handleResetForm();
+              setHasTriedCalculateIron(false);
+              setMainTab(pendingMainTab);
+              setPendingMainTab(null);
+            } else if (pendingTab) {
               actions.handleResetForm();
               setHasTriedCalculateIron(false);
               setActiveTab(pendingTab);
+              setPendingTab(null);
             }
             setUiState((p) => ({ ...p, isTabConfirmModalOpen: false }));
-            setPendingTab(null);
           }}
           onCancel={() => {
             setUiState((p) => ({ ...p, isTabConfirmModalOpen: false }));
             setPendingTab(null);
+            setPendingMainTab(null);
           }}
         />
       )}

@@ -87,6 +87,30 @@ export const rejectIntake = async ({
   }
 };
 
+export const createServiceOrder = async ({
+  order,
+  cashRegisterId,
+}: {
+  order: {
+    templateId: number;
+    isManualMode: boolean;
+    mechanicPrice: number;
+    electricianPrice: number;
+    sparePartsPrice: number;
+    comment: string;
+  };
+  cashRegisterId?: number;
+}) => {
+  try {
+    const response = await api.post(`/operator/orders`, order, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to create workshop order."));
+  }
+};
+
 export const proposeNewOffer = async ({
   intakeId,
   cashRegisterId,

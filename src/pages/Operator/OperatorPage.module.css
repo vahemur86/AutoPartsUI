@@ -72,6 +72,16 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
+.workshopLayout {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+}
+
 .ironLayout {
   grid-template-columns: 1fr 1fr 1.1fr;
   align-items: stretch;

@@ -44,7 +44,7 @@ interface CustomerDetailsProps {
   phoneError?: boolean;
   onSuccess?: () => void;
   wide?: boolean;
-  activeTab: "catalyst" | "iron";
+  activeTab: "catalyst" | "iron" | "workshop";
 }
 
 export const CustomerDetails = ({

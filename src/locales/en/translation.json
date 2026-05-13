@@ -1305,7 +1305,8 @@
       "noOffersTitle": "This product does not meet our parameters."
     },
     "notifications": {
-      "cashUpdated": "Cash register balance has been updated"
+      "cashUpdated": "Cash register balance has been updated",
+      "sessionNotOpen": "Please open your session to create orders"
     },
     "success": {
       "sessionOpened": "Session opened successfully",
@@ -1351,6 +1352,27 @@
       "linkedBuckets": "Linked Buckets",
       "noResults": "No results found",
       "group": "Group"
+    },
+    "workshop": {
+      "title": "Workshop Service",
+      "modeLabel": "Mode",
+      "templateMode": "Template",
+      "manualMode": "Manual",
+      "templateLabel": "Service Template",
+      "selectTemplatePlaceholder": "Select workshop template",
+      "mechanicPrice": "Mechanic Price",
+      "electricianPrice": "Electrician Price",
+      "sparePartsPrice": "Spare Parts Price",
+      "commentLabel": "Comment",
+      "commentPlaceholder": "Enter comment...",
+      "totalAmount": "Total Amount",
+      "createOrder": "Calculate & Create",
+      "success": {
+        "orderCreated": "Workshop order created successfully"
+      },
+      "error": {
+        "createFailed": "Failed to create workshop order"
+      }
     },
     "tabSwitchWarning": "Switching tabs will reset all current forms and clear entered data. Are you sure you want to continue?"
   },

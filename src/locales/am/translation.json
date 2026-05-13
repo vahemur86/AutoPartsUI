@@ -131,7 +131,96 @@
   "finalOffer": {},
   "pricingBreakdown": {},
   "powderExtraction": {},
-  "operatorPage": {},
+  "operatorPage": {
+    "title": "Օպերատորի տերմինալ",
+    "languageLoading": "Լեզուները բեռնվում են...",
+    "openSession": "Բացել սեսսիան",
+    "closeSession": "Փակել սեսսիան",
+    "cashAmount": "Դրամարկղի կանխիկ գումարը",
+    "cashAmountPlaceholder": "Ներմուծեք ընթացիկ կանխիկ գումարը",
+    "tabs": {
+      "buy": "Գնել",
+      "calculate": "Հաշվել",
+      "catalyst": "Կատալիզատոր",
+      "iron": "Երկաթ",
+      "workshop": "Աշխատանոց"
+    },
+    "modals": {
+      "pendingTopUpTitle": "Հաստատեք սպասվող թարմացումը",
+      "noOffersTitle": "Այս արտադրանքը չի համապատասխանում մեր պայմաններին։"
+    },
+    "notifications": {
+      "cashUpdated": "Դրամարկղի մնացորդը թարմացվել է",
+      "sessionNotOpen": "Խնդրում ենք բացել ձեր փոխարժեքը պատվերներ ստեղծելու համար"
+    },
+    "success": {
+      "sessionOpened": "Պահեստը հաջողությամբ բացվեց",
+      "sessionClosed": "Պահեստը հաջողությամբ փակվեց",
+      "intakeCreated": "Մուտքը հաջողությամբ ստեղծվեց",
+      "ironSold": "Երկաթը հաջողությամբ վաճառվեց",
+      "transactionConfirmed": "Գործարքը հաջողությամբ հաստատվեց",
+      "purchaseCompleted": "Գնումը հաջողությամբ ավարտվեց"
+    },
+    "ironCarShop": {
+      "carModel": "Ավտոմեքենայի մոդել",
+      "price": "Գին",
+      "calculate": "Հաշվել",
+      "selectCustomerToCalculate": "Խնդրում ենք ընտրել կամ ստեղծել հաճախորդ գնի հաշվարկի համար"
+    },
+    "calculate": {
+      "mode": {
+        "byCode": "Ըստ կոդի",
+        "byAttributes": "Ըստ պարամետրերի"
+      },
+      "label": {
+        "bucketGroupCode": "Նկատի ունեք թիմի կոդը",
+        "brandId": "Բրենդի ID",
+        "modelId": "Մոդելի ID",
+        "fuelTypeId": "Վառելիքի տեսակի ID",
+        "engineId": "Շարժիչի ID",
+        "marketId": "Շուկայի ID",
+        "driveTypeId": "Քարշային տիպի ID",
+        "year": "Տարի",
+        "hpMin": "Մին. Լ/Ք",
+        "hpMax": "Մաքս. Լ/Ք"
+      },
+      "specs": {
+        "engine": "Շարժիչ",
+        "fuel": "Վառելիք",
+        "weight": "Քաշ",
+        "price": "Գին"
+      },
+      "summary": {
+        "totalPrice": "Ընդհանուր արժեք",
+        "totalWeight": "Ընդհանուր քաշ"
+      },
+      "linkedBuckets": "Կապված զամբյուղներ",
+      "noResults": "Արդյունքներ չեն գտնվել",
+      "group": "Խումբ"
+    },
+    "workshop": {
+      "title": "Աշխատանոց",
+      "modeLabel": "Ռեժիմ",
+      "templateMode": "Ձևանմուշ",
+      "manualMode": "Ճիշտ",
+      "templateLabel": "Ծառայության ձևանմուշ",
+      "selectTemplatePlaceholder": "Ընտրեք աշխատանոցի ձևանմուշը",
+      "mechanicPrice": "Մեխանիկի գին",
+      "electricianPrice": "Էլեկտրիկի գին",
+      "sparePartsPrice": "Պահեստամասերի գին",
+      "commentLabel": "Մեկնաբանություն",
+      "commentPlaceholder": "Մուտքագրեք մեկնաբանություն...",
+      "totalAmount": "Ընդհանուր գումար",
+      "createOrder": "Հաշվել և ստեղծել",
+      "success": {
+        "orderCreated": "Աշխատանոցի պատվերը հաջողությամբ ստեղծվեց"
+      },
+      "error": {
+        "createFailed": "Չհաջողվեց ստեղծել աշխատանքային պատվերը"
+      }
+    },
+    "tabSwitchWarning": "Տաբի փոփոխությունը կհեռացնի բոլոր ընթացիկ ձևերը և մաքրի մուտքագրած տվյալները։ Դաջառնում եք շարունակել՞"
+  },
   "customers": {},
   "pageControl": {},
   "OTP": {},
