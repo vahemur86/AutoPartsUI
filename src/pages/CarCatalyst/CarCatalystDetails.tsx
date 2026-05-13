@@ -369,8 +369,8 @@ const years = useMemo(
     setCode("");
     setBrandId("");
     setModelId("");
-    setYearFrom("");
-    setYearTo("");
+    setFromYear("");
+    setToYear("");
     setCountryId("");
     setModels([]);
     setExpandedItemId(null);
