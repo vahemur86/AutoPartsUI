@@ -102,6 +102,8 @@ export const ServiceTemplatePage = () => {
     setEditStatus(item.isActive ?? true);
   };
 
+  const displayValue = (v: number) => (v === 0 ? "" : String(v));
+
   return (
     <div className={styles.container}>
       {/* FORM */}
@@ -129,41 +131,42 @@ export const ServiceTemplatePage = () => {
             }
           />
 
-          <TextField
-            label={t("serviceTemplates.fields.mechanicPrice")}
-            type="number"
-            value={form.mechanicPrice}
-            onChange={(e) =>
-              setForm((p) => ({
-                ...p,
-                mechanicPrice: Number(e.target.value),
-              }))
-            }
-          />
+       
+<TextField
+  label={t("serviceTemplates.fields.mechanicPrice")}
+  type="number"
+  value={displayValue(form.mechanicPrice)}
+  onChange={(e) =>
+    setForm((p) => ({
+      ...p,
+      mechanicPrice: Number(e.target.value),
+    }))
+  }
+/>
 
-          <TextField
-            label={t("serviceTemplates.fields.electricianPrice")}
-            type="number"
-            value={form.electricianPrice}
-            onChange={(e) =>
-              setForm((p) => ({
-                ...p,
-                electricianPrice: Number(e.target.value),
-              }))
-            }
-          />
+<TextField
+  label={t("serviceTemplates.fields.electricianPrice")}
+  type="number"
+  value={displayValue(form.electricianPrice)}
+  onChange={(e) =>
+    setForm((p) => ({
+      ...p,
+      electricianPrice: Number(e.target.value),
+    }))
+  }
+/>
 
-          <TextField
-            label={t("serviceTemplates.fields.sparePartsPrice")}
-            type="number"
-            value={form.sparePartsPrice}
-            onChange={(e) =>
-              setForm((p) => ({
-                ...p,
-                sparePartsPrice: Number(e.target.value),
-              }))
-            }
-          />
+         <TextField
+  label={t("serviceTemplates.fields.sparePartsPrice")}
+  type="number"
+  value={displayValue(form.sparePartsPrice)}
+  onChange={(e) =>
+    setForm((p) => ({
+      ...p,
+      sparePartsPrice: Number(e.target.value),
+    }))
+  }
+/>
 
           {/* STATUS ONLY IN EDIT */}
           {isEditMode && (
@@ -188,7 +191,7 @@ export const ServiceTemplatePage = () => {
                   {t("common.active")}
                 </option>
                 <option value="false">
-                  {t("common.inactive")}
+                  {t("serviceTemplates.fields.inactive")}
                 </option>
               </select>
             </div>
