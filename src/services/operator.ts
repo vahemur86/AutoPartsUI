@@ -4,7 +4,7 @@ import api from ".";
 import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
-import type { Intake, IntakeResponse, NewPropose, WorkshopOrder, PaymentMethod } from "@/types/operator";
+import type { Intake, IntakeResponse, NewPropose, WorkshopOrder } from "@/types/operator";
 
 export const createIntake = async ({
   intake,

@@ -39,12 +39,15 @@ export interface CustomersResponse {
   pageSize: number;
 }
 
-export enum PaymentMethod {
-  Cash = 1,
-  NonCash = 2,
-  Card = 3,
-  EWallet = 4,
-}
+export const PaymentMethod = {
+  Cash: 1,
+  NonCash: 2,
+  Card: 3,
+  EWallet: 4,
+} as const;
+
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
+
 
 export interface Intake {
   id?: number;
