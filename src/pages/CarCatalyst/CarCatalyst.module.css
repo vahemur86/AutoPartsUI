@@ -18,12 +18,22 @@
 
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
-  padding: 16px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
   background: var(--color-black-2);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.formGrid :global(select),
+.formGrid :global(input) {
+  min-height: 38px;
+  font-size: 0.92rem;
+}
+
+.formGrid :global(label) {
+  font-size: 0.86rem;
 }
 
 .tablesRowWithImage {

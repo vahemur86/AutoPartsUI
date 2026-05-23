@@ -76,6 +76,12 @@ export const Settings = () => {
       showCheckmark: true,
     },
     {
+      path: "/tags",
+      label: t("settings.navigation.tags"),
+      icon: Tag,
+      showCheckmark: true,
+    },
+    {
       path: "/metal-rates",
       label: t("settings.navigation.metalRates"),
       icon: Container,

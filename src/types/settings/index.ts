@@ -28,6 +28,11 @@ export interface Shop {
   warehouseId: number;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+}
+
 export interface Task {
   id: number;
   code: string;
@@ -277,6 +282,7 @@ export interface CarCatalystBucket {
 }
 
 export interface CreateCarCatalyst {
+  birkaId?: number;
   brandId: number;
   modelId: number;
   year: number;
@@ -288,6 +294,8 @@ export interface CreateCarCatalyst {
 
 export interface CarCatalyst {
   id: number;
+  birkaId?: number;
+  birkaName?: string;
   brandId: number;
   modelId: number;
   year: number;

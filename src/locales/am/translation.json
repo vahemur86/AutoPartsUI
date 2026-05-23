@@ -94,6 +94,7 @@
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
       "serviceTasks": "Ծառայություններ",
+      "tags": "Թեգեր",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կոդեր",
       "catalystPricing": "Կատալիզատորի գներ",
@@ -102,6 +103,32 @@
       "cashRegisters": "Դրամարկղեր",
       "ironManagement": "Մետաղի կառավարում",
       "salePercentages": "Վաճառքի տոկոսներ"
+    }
+  },
+  "tags": {
+    "addTag": "Ավելացնել թեգ",
+    "editTag": "Խմբագրել թեգը",
+    "form": {
+      "name": "Թեգի անուն",
+      "enterTagName": "Մուտքագրեք թեգի անունը",
+      "nameRequired": "Թեգի անունը պարտադիր է"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել թեգը",
+      "deleteDescription": "Պատրաստ ե՞ք ջնջել {{name}} թեգը?",
+      "delete": "Ջնջել",
+      "deleting": "Ջնջվում է..."
+    },
+    "success": {
+      "created": "Թեգը հաջողությամբ ստեղծվեց",
+      "updated": "Թեգը հաջողությամբ թարմացվեց",
+      "deleted": "Թեգը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToLoad": "Չհաջողվեց բեռնել թեգերը",
+      "failedToCreate": "Չհաջողվեց ստեղծել թեգը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել թեգը",
+      "failedToDelete": "Չհաջողվեց ջնջել թեգը"
     }
   },
 
@@ -295,8 +322,10 @@
       "toYear": "Վերջի տարի",
       "country": "Երկիր",
       "engine": "Շարժիչ",
+      "birka": "Բիրկա",
       "selectBrand": "Ընտրեք բրենդ",
-      "selectModel": "Ընտրեք մոդել",
+      "selectModel": "Ընտրեք մոդելը",
+      "selectBirka": "Ընտրեք բիրկան",
       "selectCountry": "Ընտրեք երկիր",
       "selectEngine": "Ընտրեք շարժիչ"
     },
@@ -352,6 +381,7 @@
         "foundCount": "{{count}} կատալիտիկ փոխիչ է գտնվել",
         "converterCount": "{{count}} փոխիչ",
         "engine": "Շարժիչ",
+        "totalPrice": "Ընդհանուր գին",
         "empty": "Արդյունք չկա դեռ"
       },
 
@@ -363,6 +393,7 @@
         "totalPt": "Միջին Pt",
         "totalPd": "Միջին Pd",
         "totalRh": "Միջին Rh",
+        "totalPrice": "Ընդհանուր գին",
         "weight": "Քաշ",
         "pt": "Pt",
         "pd": "Pd",
@@ -386,7 +417,8 @@
       "fallback": {
         "brand": "Բրենդ #{{id}}",
         "model": "Մոդել #{{id}}",
-        "country": "Երկիր #{{id}}"
+        "country": "Երկիր #{{id}}",
+        "birka": "Բիրկա #{{id}}"
       }
     }
   },

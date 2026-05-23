@@ -89,6 +89,7 @@
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
       "serviceTasks": "Service Tasks",
+      "tags": "Tags",
       "metalRates": "Metal Rates",
       "catalystBuckets": "Codes",
       "catalystPricing": "Catalyst Pricing",
@@ -97,6 +98,32 @@
       "cashRegisters": "Cash Registers",
       "salePercentages": "Sale Percentages",
       "ironManagement": "Iron Management"
+    }
+  },
+  "tags": {
+    "addTag": "Add Tag",
+    "editTag": "Edit Tag",
+    "form": {
+      "name": "Tag Name",
+      "enterTagName": "Enter tag name",
+      "nameRequired": "Tag name is required"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete Tag",
+      "deleteDescription": "Are you sure you want to delete the {{name}} tag?",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "success": {
+      "created": "Tag created successfully",
+      "updated": "Tag updated successfully",
+      "deleted": "Tag deleted successfully"
+    },
+    "error": {
+      "failedToLoad": "Failed to load tags",
+      "failedToCreate": "Failed to create tag",
+      "failedToUpdate": "Failed to update tag",
+      "failedToDelete": "Failed to delete tag"
     }
   },
   "offers": {
@@ -1645,8 +1672,10 @@
       "toYear": "To Year",
       "country": "Country",
       "engine": "Engine",
+      "birka": "Birka",
       "selectBrand": "Select brand",
       "selectModel": "Select model",
+      "selectBirka": "Select Birka",
       "selectCountry": "Select country",
       "selectEngine": "Select engine"
     },
@@ -1701,17 +1730,14 @@
         "foundCount": "{{count}} catalytic converters found",
         "converterCount": "{{count}} converters",
         "engine": "Engine",
-        "empty": "No results yet"
-      },
-
-      "summary": {
-        "title": "Details",
+          "totalPrice": "Total price",
         "empty": "Select one result to see details",
         "emptyBuckets": "No buckets found",
         "totalWeight": "Total Weight",
         "totalPt": "Average Pt",
         "totalPd": "Average Pd",
         "totalRh": "Average Rh",
+        "totalPrice": "Total Price",
         "weight": "Weight",
         "pt": "Pt",
         "pd": "Pd",
@@ -1735,7 +1761,8 @@
       "fallback": {
         "brand": "Brand #{{id}}",
         "model": "Model #{{id}}",
-        "country": "Country #{{id}}"
+        "country": "Country #{{id}}",
+        "birka": "Birka #{{id}}"
       }
     }
   }

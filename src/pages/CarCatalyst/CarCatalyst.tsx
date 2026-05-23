@@ -4,12 +4,13 @@ import { toast } from "react-toastify";
 
 
 import { Button, IconButton, Select, TextField } from "@/ui-kit";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   getVehicleDefinitions,
   getVehicleModels,
 } from "@/services/settings/vehicles";
 import autoParts from "@/assets/images/autoParts.png";
+import { fetchTags } from "@/store/slices/tagsSlice";
 
 import type {
   CarCatalystBucket,
@@ -56,11 +57,14 @@ export const CarCatalystPage = () => {
   const [models, setModels] = useState<any[]>([]);
 
   const [brandId, setBrandId] = useState<number | "">("");
+  const [birkaId, setBirkaId] = useState<number | "">("");
   const [modelId, setModelId] = useState<number | "">("");
   const [year, setYear] = useState<number | "">("");
   const [country, setCountry] = useState<number | "">("");
   const [engineId, setEngineId] = useState<number | "">("");
   const navigate = useNavigate();
+
+  const { tags } = useAppSelector((state) => state.tags);
 
   const [frontBuckets, setFrontBuckets] = useState<UIBucket[]>([]);
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
@@ -76,7 +80,12 @@ export const CarCatalystPage = () => {
       }
     };
     load();
-  }, []);
+  }, [t]);
+
+  useEffect(() => {
+    if (tags.length > 0) return;
+    dispatch(fetchTags());
+  }, [dispatch, tags.length]);
 
   const handleBrandChange = async (value: string) => {
     const id = value === "" ? "" : Number(value);
@@ -99,6 +108,7 @@ export const CarCatalystPage = () => {
 
   const resetForm = () => {
     setBrandId("");
+    setBirkaId("");
     setModelId("");
     setYear("");
     setCountry("");
@@ -167,6 +177,7 @@ export const CarCatalystPage = () => {
     });
 
     const payload: CreateCarCatalyst = {
+      birkaId: typeof birkaId === "number" ? birkaId : undefined,
       brandId: Number(brandId),
       modelId: Number(modelId),
       year: Number(year),
@@ -361,6 +372,21 @@ export const CarCatalystPage = () => {
           {models.map((m) => (
             <option key={m.id} value={m.id}>
               {m.name || m.code}
+            </option>
+          ))}
+        </Select>
+
+        <Select
+          label={t("carCatalyst.fields.birka")}
+          value={birkaId}
+          onChange={(e) =>
+            setBirkaId(e.target.value === "" ? "" : Number(e.target.value))
+          }
+        >
+          <option value="">{t("carCatalyst.fields.selectBirka")}</option>
+          {tags.map((tag) => (
+            <option key={tag.id} value={tag.id}>
+              {tag.name}
             </option>
           ))}
         </Select>

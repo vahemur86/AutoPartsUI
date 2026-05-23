@@ -15,6 +15,7 @@ import {
 } from "@/store/slices/carCatalystSlice";
 
 import { calculateSalesLotThunk } from "@/store/slices/warehouses/salesLotsSlice";
+import { fetchTags } from "@/store/slices/tagsSlice";
 
 import {
   getVehicleDefinitions,
@@ -139,6 +140,7 @@ export const CarCatalystDetails = () => {
     null,
   );
 
+  const { tags } = useAppSelector((state) => state.tags);
   const [brands, setBrands] = useState<any[]>([]);
   const [models, setModels] = useState<any[]>([]);
 
@@ -264,10 +266,14 @@ const years = useMemo(
 
     load();
 
+    if (tags.length === 0) {
+      dispatch(fetchTags());
+    }
+
     return () => {
       dispatch(clearSelectedCarCatalyst());
     };
-  }, [dispatch, t]);
+  }, [dispatch, t, tags.length]);
 
   useEffect(() => {
     if (!carCatalystId) return;
@@ -506,6 +512,22 @@ const searchByVehicle = async () => {
     );
   };
 
+  const getBirkaName = (id?: number) => {
+    if (!id) return undefined;
+    return (
+      tags.find((item) => item.id === id)?.name ||
+      t("carCatalyst.details.fallback.birka", { id })
+    );
+  };
+
+  const getItemTotalPrice = (item: CarCatalyst) => {
+    return (item.buckets ?? []).reduce((total, bucket, index) => {
+      const offer = bucketOffers[getBucketKey(item.id, bucket, index)];
+      const customerOfferAmd = getCustomerOfferAmd(offer);
+      return total + (customerOfferAmd ?? 0);
+    }, 0);
+  };
+
   const getModelName = (brandIdValue: number, modelIdValue: number) => {
     return (
       modelsByBrandId[brandIdValue]?.find((item) => item.id === modelIdValue)
@@ -524,6 +546,37 @@ const searchByVehicle = async () => {
       t("carCatalyst.details.fallback.country", { id })
     );
   };
+
+  const selectedTotalOfferAmd = useMemo(() => {
+    if (!selected) return 0;
+
+    return (selected.buckets ?? []).reduce((total, bucket, index) => {
+      const offer = bucketOffers[getBucketKey(selected.id, bucket, index)];
+      const customerOfferAmd = getCustomerOfferAmd(offer);
+      return total + (customerOfferAmd ?? 0);
+    }, 0);
+  }, [selected, bucketOffers, getBucketKey]);
+
+  useEffect(() => {
+    if (!selected || expandedItemId !== selected.id) return;
+
+    const pendingBuckets = (selected.buckets ?? [])
+      .map((bucket, index) => ({
+        bucket,
+        key: getBucketKey(selected.id, bucket, index),
+      }))
+      .filter(({ key }) => bucketOffers[key] === undefined);
+
+    if (pendingBuckets.length === 0) return;
+
+    const calculateAll = async () => {
+      for (const { key, bucket } of pendingBuckets) {
+        await calculateBucketOffer(key, bucket);
+      }
+    };
+
+    void calculateAll();
+  }, [selected, expandedItemId, bucketOffers, calculateBucketOffer, getBucketKey]);
 
   const renderSelectedBuckets = () => {
     if (!selected) return null;
@@ -549,6 +602,11 @@ const searchByVehicle = async () => {
           <div>
             <span>{t("carCatalyst.details.summary.totalRh")}</span>
             <strong>{selectedTotals.rh.toFixed(2)} g</strong>
+          </div>
+
+          <div>
+            <span>{t("carCatalyst.details.summary.totalPrice")}</span>
+            <strong>{selectedTotalOfferAmd.toFixed(2)} AMD</strong>
           </div>
         </div>
 
@@ -837,6 +895,8 @@ const searchByVehicle = async () => {
           <div className={styles.resultList}>
             {displayedList.map((item) => {
               const isExpanded = expandedItemId === item.id;
+              const birkaLabel =
+                item.birkaName || getBirkaName(item.birkaId);
 
               const bucketCount =
                 selected?.id === item.id
@@ -857,8 +917,20 @@ const searchByVehicle = async () => {
                   >
                     <div className={styles.resultInfo}>
                       <h4>
-                        {getBrandName(item.brandId)} /{" "}
+                        {getBrandName(item.brandId)} / {" "}
                         {getModelName(item.brandId, item.modelId)}
+                        {birkaLabel ? ` • ${birkaLabel}` : ""}
+                        {(item.buckets ?? []).length > 0
+                          ? ` • ${(item.buckets ?? [])
+                              .map((bucket) => bucket.code)
+                              .filter(Boolean)
+                              .join(" / ")}`
+                          : ""}
+                        {getItemTotalPrice(item) > 0
+                          ? ` / ${t("carCatalyst.details.results.totalPrice")}: ${getItemTotalPrice(
+                              item,
+                            ).toLocaleString()}`
+                          : ""}
                       </h4>
 
                       <p>

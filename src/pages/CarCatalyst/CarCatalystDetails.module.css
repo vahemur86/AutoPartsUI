@@ -298,9 +298,7 @@
 
 .totalBox {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 2px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .totalBox div {

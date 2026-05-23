@@ -89,6 +89,7 @@
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
       "serviceTasks": "Сервисные задачи",
+      "tags": "Теги",
       "metalRates": "Курсы металлов",
       "catalystBuckets": "Коды",
       "catalystPricing": "Ценообразование катализатора",
@@ -97,6 +98,32 @@
       "cashRegisters": "Кассовые аппараты",
       "ironManagement": "Управление металлоломом",
       "salePercentages": "Проценты продаж"
+    }
+  },
+  "tags": {
+    "addTag": "Добавить тег",
+    "editTag": "Редактировать тег",
+    "form": {
+      "name": "Название тега",
+      "enterTagName": "Введите название тега",
+      "nameRequired": "Название тега обязательно"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить тег",
+      "deleteDescription": "Вы уверены, что хотите удалить тег {{name}}?",
+      "delete": "Удалить",
+      "deleting": "Удаление..."
+    },
+    "success": {
+      "created": "Тег успешно создан",
+      "updated": "Тег успешно обновлен",
+      "deleted": "Тег успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить теги",
+      "failedToCreate": "Не удалось создать тег",
+      "failedToUpdate": "Не удалось обновить тег",
+      "failedToDelete": "Не удалось удалить тег"
     }
   },
   "offers": {
@@ -1642,8 +1669,10 @@
       "toYear": "Год до",
       "country": "Страна",
       "engine": "Двигатель",
+      "birka": "Бирка",
       "selectBrand": "Выберите бренд",
       "selectModel": "Выберите модель",
+      "selectBirka": "Выберите бирку",
       "selectCountry": "Выберите страну",
       "selectEngine": "Выберите двигатель"
     },
@@ -1698,6 +1727,7 @@
         "foundCount": "Найдено катализаторов: {{count}}",
         "converterCount": "Катализаторов: {{count}}",
         "engine": "Двигатель",
+        "totalPrice": "Общая цена",
         "empty": "Результатов пока нет"
       },
 
@@ -1709,6 +1739,7 @@
         "totalPt": "Средний Pt",
         "totalPd": "Средний Pd",
         "totalRh": "Средний Rh",
+        "totalPrice": "Общая цена",
         "weight": "Вес",
         "pt": "Pt",
         "pd": "Pd",
@@ -1732,7 +1763,8 @@
       "fallback": {
         "brand": "Бренд #{{id}}",
         "model": "Модель #{{id}}",
-        "country": "Страна #{{id}}"
+        "country": "Страна #{{id}}",
+        "birka": "Бирка #{{id}}"
       }
     }
   }

@@ -39,6 +39,7 @@ import { OfferIncreaseOptions } from "@/components/settings/OfferOptions";
 import { SalePercentages } from "@/components/settings/SalePercentages";
 import { IronManagement } from "@/components/settings/IronManagement";
 import { ServiceTasks } from "@/components/settings/ServiceTasks";
+import { Tags } from "@/components/settings/Tags";
 
 // Reports components
 import { ZReports } from "@/components/reports/ZReports";
@@ -160,6 +161,7 @@ export const App = () => {
                   <Route path="customer-types" element={<CustomerTypes />} />
                   <Route path="cash-registers" element={<CashRegisters />} />
                   <Route path="service-tasks" element={<ServiceTasks />} />
+                  <Route path="tags" element={<Tags />} />
                   <Route
                     path="offer-increase-options"
                     element={<OfferIncreaseOptions />}
