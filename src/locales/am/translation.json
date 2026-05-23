@@ -93,6 +93,7 @@
       "offerIncreaseOptions": "Առաջարկի ավելացման տարբերակներ",
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
+      "serviceTasks": "Ծառայություններ",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կոդեր",
       "catalystPricing": "Կատալիզատորի գներ",
@@ -114,7 +115,8 @@
       "powderBatches": "Փոշու խմբեր",
       "cashboxSessionsReports": "Դրամարկղի սեանսների հաշվետվություններ",
       "ironProducts": "Աղեղի արտադրանք",
-      "ironSale": "Աղեղի վաճառք"
+      "ironSale": "Աղեղի վաճառք",
+      "serviceTasks": "Ծառայությունների վճարումներ"
     },
     "workshopOrders": {
       "loading": "Բեռնում է գործարանի պատվերները...",
@@ -131,6 +133,31 @@
         "cashRegisterId": "Դրամարկղի ID",
         "sessionId": "Սեսսիայի ID",
         "createdAt": "Ստեղծման ամսաթիվը"
+      }
+    },
+    "serviceTasks": {
+      "loading": "Բեռնում է ծառայությունների վճարումները...",
+      "filters": {
+        "from": "Սկսած",
+        "to": "Մինչև",
+        "userId": "Օգտվողի ID",
+        "paymentType": "Վճարի տեսակը"
+      },
+      "columns": {
+        "paymentId": "Վճարի ID",
+        "createdAt": "Ստեղծման ամսաթիվը",
+        "createdByUserId": "Ստեղծվել է օգտվողի կողմից",
+        "totalAmount": "Ընդհանուր գումարը",
+        "cashTotal": "Ընդհանուր կանխիկը",
+        "nonCashTotal": "Ընդհանուր անկանխիկը",
+        "serviceTaskCode": "Ծառայության կոդը",
+        "price": "Գինը",
+        "paymentType": "Վճարի տեսակը"
+      },
+      "paymentTypes": {
+        "all": "Բբոլորը",
+        "cash": "Կանխիկ",
+        "nonCash": "Անկանխիկ"
       }
     }
   },
@@ -171,7 +198,8 @@
       "calculate": "Հաշվել",
       "catalyst": "Կատալիզատոր",
       "iron": "Երկաթ",
-      "workshop": "Աշխատանոց"
+      "workshop": "Աշխատանոց",
+      "services": "Ծառայություններ"
     },
     "modals": {
       "pendingTopUpTitle": "Հաստատեք սպասվող թարմացումը",

@@ -88,6 +88,7 @@
       "offerIncreaseOptions": "Offer Increase Options",
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
+      "serviceTasks": "Service Tasks",
       "metalRates": "Metal Rates",
       "catalystBuckets": "Codes",
       "catalystPricing": "Catalyst Pricing",
@@ -140,7 +141,8 @@
       "cashboxSessionsReports": "Cashbox Sessions Reports",
       "ironProducts": "Iron Products",
       "ironSale": "Iron Sale",
-      "workshopOrders": "Workshop Orders"
+      "workshopOrders": "Workshop Orders",
+      "serviceTasks": "Service Task Payments"
     },
     "workshopOrders": {
       "loading": "Loading workshop orders...",
@@ -157,6 +159,31 @@
         "cashRegisterId": "Cash Register ID",
         "sessionId": "Session ID",
         "createdAt": "Created At"
+      }
+    },
+    "serviceTasks": {
+      "loading": "Loading service task payments...",
+      "filters": {
+        "from": "From",
+        "to": "To",
+        "userId": "User ID",
+        "paymentType": "Payment Type"
+      },
+      "columns": {
+        "paymentId": "Payment ID",
+        "createdAt": "Created At",
+        "createdByUserId": "Created By",
+        "totalAmount": "Total Amount",
+        "cashTotal": "Cash Total",
+        "nonCashTotal": "Non-Cash Total",
+        "serviceTaskCode": "Service Code",
+        "price": "Price",
+        "paymentType": "Payment Type"
+      },
+      "paymentTypes": {
+        "all": "All",
+        "cash": "Cash",
+        "nonCash": "Non-Cash"
       }
     },
     "ironProducts": {
@@ -1316,7 +1343,9 @@
       "buy": "Buy",
       "calculate": "Calculate",
       "catalyst": "Catalyst",
-      "iron": "Iron"
+      "iron": "Iron",
+      "workshop": "Workshop",
+      "services": "Services"
     },
     "modals": {
       "pendingTopUpTitle": "Confirm Pending Top-Up",
@@ -1390,6 +1419,32 @@
       },
       "error": {
         "createFailed": "Failed to create workshop order"
+      }
+    },
+    "services": {
+      "title": "Service Tasks Payment",
+      "noItems": "No service tasks available.",
+      "columns": {
+        "code": "Service Code",
+        "price": "Price",
+        "paymentType": "Payment Method"
+      },
+      "selectedCount": "Selected services",
+      "paymentTypes": {
+        "cash": "Cash",
+        "nonCash": "Non-Cash"
+      },
+      "totalAmount": "Total Amount",
+      "cashTotal": "Cash Total",
+      "nonCashTotal": "Non-Cash Total",
+      "pay": "Pay selected services",
+      "success": {
+        "paid": "Service payment completed successfully"
+      },
+      "error": {
+        "loadFailed": "Failed to load service tasks.",
+        "nothingSelected": "Please select at least one service and enter a price.",
+        "payFailed": "Failed to complete service payment."
       }
     },
     "tabSwitchWarning": "Switching tabs will reset all current forms and clear entered data. Are you sure you want to continue?"

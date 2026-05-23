@@ -5,22 +5,20 @@ import { useTranslation } from "react-i18next";
 import { Tab, TabGroup } from "@/ui-kit";
 
 // components
-import { Tasks } from "./task/Task";
 import { Vehicles } from "./vehicle/Vehicles";
 
 // styles
 import styles from "./VehicleManagement.module.css";
 
-type VehicleManagementTab = "tasks" | "vehicles";
+type VehicleManagementTab = "vehicles";
 
 export const VehicleManagement = () => {
   const { t } = useTranslation();
-  const [activeTabId, setActiveTabId] = useState<VehicleManagementTab>("tasks");
+  const [activeTabId, setActiveTabId] = useState<VehicleManagementTab>("vehicles");
 
   const tabs = useMemo(
     () =>
       [
-        { id: "tasks", label: t("vehicles.tabs.tasks") },
         { id: "vehicles", label: t("vehicles.tabs.vehicles") },
       ] as const,
     [t],
@@ -45,12 +43,6 @@ export const VehicleManagement = () => {
             ))}
           </TabGroup>
         </nav>
-
-        {activeTabId === "tasks" && (
-          <div role="tabpanel" aria-label={t("vehicles.tabs.tasks")}>
-            <Tasks />
-          </div>
-        )}
 
         {activeTabId === "vehicles" && (
           <div role="tabpanel" aria-label={t("vehicles.tabs.vehicles")}>

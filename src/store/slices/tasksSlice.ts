@@ -32,7 +32,7 @@ const initialState: TasksState = {
 
 type TaskPayload = {
   code: string;
-  laborCost: number;
+  laborCost: number | null;
 };
 
 type TaskUpdatePayload = TaskPayload & { id: number; isActive: boolean };

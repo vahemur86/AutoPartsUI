@@ -38,6 +38,7 @@ import { CashRegisters } from "@/components/settings/CashRegisters";
 import { OfferIncreaseOptions } from "@/components/settings/OfferOptions";
 import { SalePercentages } from "@/components/settings/SalePercentages";
 import { IronManagement } from "@/components/settings/IronManagement";
+import { ServiceTasks } from "@/components/settings/ServiceTasks";
 
 // Reports components
 import { ZReports } from "@/components/reports/ZReports";
@@ -48,6 +49,7 @@ import { CashboxSessionsReports } from "@/components/reports/CashboxSessionsRepo
 import { IronProductsReport } from "@/components/reports/IronProductsReport";
 import { IronSaleReport } from "@/components/reports/IronSaleReport";
 import { WorkshopOrdersReport } from "@/components/reports/WorkshopOrdersReport";
+import { ServiceTasksReport } from "@/components/reports/ServiceTasksReport";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -157,6 +159,7 @@ export const App = () => {
                   <Route path="exchange-rates" element={<ExchangeRates />} />
                   <Route path="customer-types" element={<CustomerTypes />} />
                   <Route path="cash-registers" element={<CashRegisters />} />
+                  <Route path="service-tasks" element={<ServiceTasks />} />
                   <Route
                     path="offer-increase-options"
                     element={<OfferIncreaseOptions />}
@@ -184,6 +187,7 @@ export const App = () => {
                   />
                   <Route path="iron-sale" element={<IronSaleReport />} />
                   <Route path="workshop-orders" element={<WorkshopOrdersReport />} />
+                  <Route path="service-task-reports" element={<ServiceTasksReport />} />
                 </Route>
 
                 <Route path="warehouses" element={<Warehouses />}>

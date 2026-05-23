@@ -88,6 +88,7 @@
       "offerIncreaseOptions": "Варианты увеличения предложения",
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
+      "serviceTasks": "Сервисные задачи",
       "metalRates": "Курсы металлов",
       "catalystBuckets": "Коды",
       "catalystPricing": "Ценообразование катализатора",
@@ -140,7 +141,8 @@
       "cashboxSessionsReports": "Отчеты сессий кассы",
       "ironProducts": "Железные изделия",
       "ironSale": "Продажа железа",
-      "workshopOrders": "Заказы мастерской"
+      "workshopOrders": "Заказы мастерской",
+      "serviceTasks": "Платежи сервисных задач"
     },
     "workshopOrders": {
       "loading": "Загрузка заказов мастерской...",
@@ -157,6 +159,31 @@
         "cashRegisterId": "ID кассы",
         "sessionId": "ID сессии",
         "createdAt": "Дата создания"
+      }
+    },
+    "serviceTasks": {
+      "loading": "Загрузка платежей сервисных задач...",
+      "filters": {
+        "from": "С",
+        "to": "По",
+        "userId": "ID пользователя",
+        "paymentType": "Тип оплаты"
+      },
+      "columns": {
+        "paymentId": "ID платежа",
+        "createdAt": "Дата создания",
+        "createdByUserId": "Создано пользователем",
+        "totalAmount": "Общая сумма",
+        "cashTotal": "Наличные всего",
+        "nonCashTotal": "Безналично всего",
+        "serviceTaskCode": "Код услуги",
+        "price": "Цена",
+        "paymentType": "Тип оплаты"
+      },
+      "paymentTypes": {
+        "all": "Все",
+        "cash": "Наличные",
+        "nonCash": "Безналичные"
       }
     },
     "ironProducts": {
@@ -1314,7 +1341,9 @@
       "buy": "Купить",
       "calculate": "Рассчитать",
       "catalyst": "Катализатор",
-      "iron": "Железо"
+      "iron": "Железо",
+      "workshop": "Мастерская",
+      "services": "Услуги"
     },
     "modals": {
       "pendingTopUpTitle": "Подтверждение ожидаемого пополнения",
@@ -1388,6 +1417,32 @@
       },
       "error": {
         "createFailed": "Не удалось создать заказ мастерской"
+      }
+    },
+    "services": {
+      "title": "Оплата сервисных задач",
+      "noItems": "Нет доступных сервисных задач.",
+      "columns": {
+        "code": "Код услуги",
+        "price": "Цена",
+        "paymentType": "Тип оплаты"
+      },
+      "selectedCount": "Выбранные услуги",
+      "paymentTypes": {
+        "cash": "Наличные",
+        "nonCash": "Безналичные"
+      },
+      "totalAmount": "Общая сумма",
+      "cashTotal": "Наличные всего",
+      "nonCashTotal": "Безналично всего",
+      "pay": "Оплатить выбранные услуги",
+      "success": {
+        "paid": "Оплата сервисных задач успешно завершена"
+      },
+      "error": {
+        "loadFailed": "Не удалось загрузить сервисные задачи.",
+        "nothingSelected": "Пожалуйста, выберите хотя бы одну услугу и введите цену.",
+        "payFailed": "Не удалось завершить оплату сервисных задач."
       }
     },
     "tabSwitchWarning": "Переключение вкладки приведет к сбросу всех форм и очистке введенных данных. Вы уверены, что хотите продолжить?"

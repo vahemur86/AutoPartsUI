@@ -70,6 +70,12 @@ export const Settings = () => {
       showCheckmark: true,
     },
     {
+      path: "/service-tasks",
+      label: t("settings.navigation.serviceTasks"),
+      icon: Wrench,
+      showCheckmark: true,
+    },
+    {
       path: "/metal-rates",
       label: t("settings.navigation.metalRates"),
       icon: Container,

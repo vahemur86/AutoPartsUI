@@ -3,7 +3,7 @@ import api from "..";
 // utils
 import { getApiErrorMessage } from "@/utils";
 
-export const createTask = async (code: string, laborCost: number) => {
+export const createTask = async (code: string, laborCost: number | null) => {
   try {
     const response = await api.post(`/admin/service-tasks`, {
       code,
@@ -36,7 +36,7 @@ export const deleteTask = async (id: number) => {
 export const updateTask = async (
   id: number,
   code: string,
-  laborCost: number,
+  laborCost: number | null,
   isActive: boolean,
 ) => {
   try {

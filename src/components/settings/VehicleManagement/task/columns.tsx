@@ -28,7 +28,10 @@ export const getTaskColumns = (
   }),
   columnHelper.accessor("laborCost", {
     header: i18next.t("vehicles.tasks.columns.laborCost"),
-    cell: (info) => `$${info.getValue()}`,
+    cell: (info) => {
+      const value = info.getValue();
+      return value == null ? "-" : `$${value}`;
+    },
   }),
   columnHelper.accessor("isActive", {
     header: i18next.t("vehicles.tasks.columns.status"),

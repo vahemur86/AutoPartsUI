@@ -4,7 +4,7 @@ import api from ".";
 import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
-import type { Intake, IntakeResponse, NewPropose, WorkshopOrder } from "@/types/operator";
+import type { Intake, IntakeResponse, NewPropose, WorkshopOrder, PaymentMethod } from "@/types/operator";
 
 export const createIntake = async ({
   intake,
@@ -165,5 +165,74 @@ export const offerIntake = async ({
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to offer intake."));
+  }
+};
+
+export const getServiceTasksWithoutPrice = async ({
+  cashRegisterId,
+}: {
+  cashRegisterId?: number;
+}): Promise<{ id: number; code: string }[]> => {
+  try {
+    const response = await api.get(`/admin/service-tasks/without-price`, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to load service tasks."));
+  }
+};
+
+export const payServiceTasks = async ({
+  cashRegisterId,
+  items,
+}: {
+  cashRegisterId?: number;
+  items: Array<{
+    serviceTaskId: number;
+    price: number;
+    paymentType: number;
+  }>;
+}) => {
+  try {
+    const response = await api.post(
+      `/admin/service-tasks/bulkpurchase`,
+      { items },
+      {
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to pay service tasks."));
+  }
+};
+
+export const getServiceTasksReport = async ({
+  cashRegisterId,
+  from,
+  to,
+  userId,
+  paymentType,
+}: {
+  cashRegisterId?: number;
+  from?: string;
+  to?: string;
+  userId?: string;
+  paymentType?: number;
+}) => {
+  try {
+    const response = await api.get(`/admin/service-tasks/report`, {
+      headers: getHeaders(cashRegisterId),
+      params: {
+        from,
+        to,
+        userId,
+        paymentType,
+      },
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch service task report."));
   }
 };

@@ -67,6 +67,12 @@ export const Reports = () => {
       icon: ShoppingCart,
       showCheckmark: true,
     },
+    {
+      path: "/service-task-reports",
+      label: t("reports.navigation.serviceTasks"),
+      icon: ClipboardList,
+      showCheckmark: true,
+    },
   ];
 
   return (

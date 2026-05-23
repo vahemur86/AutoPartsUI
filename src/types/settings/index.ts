@@ -31,7 +31,7 @@ export interface Shop {
 export interface Task {
   id: number;
   code: string;
-  laborCost: number;
+  laborCost: number | null;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;

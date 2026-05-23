@@ -5,7 +5,7 @@ import styles from "./TaskDropdown.module.css";
 
 export interface TaskForm {
   code: string;
-  laborCost: number;
+  laborCost: number | null;
   isActive?: boolean;
 }
 
@@ -38,16 +38,20 @@ export const TaskDropdown = ({
   useEffect(() => {
     if (open) {
       setCode(initialData?.code ?? "");
-      setLaborCostInput(initialData ? String(initialData.laborCost) : "");
+      setLaborCostInput(
+        initialData && initialData.laborCost != null
+          ? String(initialData.laborCost)
+          : "",
+      );
       setIsActive(initialData?.isActive ?? true);
       setHasTriedSave(false);
     }
   }, [open, initialData]);
 
   // Validation Logic
-  const numericLaborCost = parseFloat(laborCostInput);
+  const numericLaborCost = laborCostInput.trim() === "" ? null : parseFloat(laborCostInput);
   const isCodeValid = code.trim().length > 0;
-  const isCostValid = !isNaN(numericLaborCost) && numericLaborCost >= 0;
+  const isCostValid = numericLaborCost === null || (!isNaN(numericLaborCost) && numericLaborCost >= 0);
   const isValid = isCodeValid && isCostValid;
 
   const handleSaveClick = () => {

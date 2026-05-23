@@ -39,6 +39,13 @@ export interface CustomersResponse {
   pageSize: number;
 }
 
+export enum PaymentMethod {
+  Cash = 1,
+  NonCash = 2,
+  Card = 3,
+  EWallet = 4,
+}
+
 export interface Intake {
   id?: number;
   shopId: number;
@@ -119,6 +126,33 @@ export interface WorkshopOrder {
   cashRegisterId: number;
   sessionId: number;
   createdAt: string;
+}
+
+export interface ServiceTasksReportItem {
+  paymentId: number;
+  createdAt: string;
+  createdByUserId: string;
+  totalAmount: number;
+  cashTotal: number;
+  nonCashTotal: number;
+  items: Array<{
+    serviceTaskId: number;
+    serviceTaskCode: string;
+    price: number;
+    paymentType: number;
+  }>;
+}
+
+export interface ServiceTaskReportRow {
+  paymentId: number;
+  createdAt: string;
+  createdByUserId: string;
+  totalAmount: number;
+  cashTotal: number;
+  nonCashTotal: number;
+  serviceTaskCode: string;
+  price: number;
+  paymentType: number;
 }
 
 export interface NewPropose {
