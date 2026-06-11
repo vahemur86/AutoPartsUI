@@ -25,7 +25,7 @@ export const getWarehouseColumns = (
   }),
   columnHelper.display({
     id: "actions",
-    header: "",
+    header: i18next.t("common.actions"),
     cell: ({ row }) => {
       const warehouse = row.original;
       return (
@@ -35,7 +35,7 @@ export const getWarehouseColumns = (
               variant="secondary"
               size="small"
               icon={<Pencil size={14} />}
-              ariaLabel={i18next.t("columns.editWarehouse")}
+              ariaLabel={i18next.t("common.edit")}
               onClick={() => onEdit(warehouse)}
             />
           )}
@@ -44,7 +44,7 @@ export const getWarehouseColumns = (
               variant="secondary"
               size="small"
               icon={<Trash2 size={14} />}
-              ariaLabel={i18next.t("columns.deleteWarehouse")}
+              ariaLabel={i18next.t("common.delete")}
               onClick={() => onDelete(warehouse.id)}
             />
           )}

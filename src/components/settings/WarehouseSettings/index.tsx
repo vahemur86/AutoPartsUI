@@ -71,6 +71,29 @@ export const WarehouseSettings = () => {
     }
   }, [warehouseCode, t, editingWarehouse, dispatch]);
 
+  const handleDeleteWarehouse = useCallback(async () => {
+    if (!editingWarehouse) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(t("common.areYouSure"));
+    if (!shouldDelete) {
+      return;
+    }
+
+    try {
+      await dispatch(removeWarehouse(editingWarehouse.id)).unwrap();
+      toast.success(t("warehouses.success.warehouseDeleted"));
+      setWarehouseCode("");
+      setEditingWarehouse(null);
+    } catch (error: unknown) {
+      console.error(error);
+      toast.error(
+        getErrorMessage(error, t("warehouses.error.failedToDelete")),
+      );
+    }
+  }, [dispatch, editingWarehouse, t]);
+
   const handleTabChange = useCallback((tab: string) => {
     setActiveTab(tab);
     setWarehouseCode("");
@@ -131,6 +154,41 @@ export const WarehouseSettings = () => {
         </div>
 
         <WarehouseContent
+          actionButtons={
+            activeTab === "add-new" ? (
+              <div className={styles.actionButtons}>
+                <Button
+                  variant="secondary"
+                  size="medium"
+                  onClick={() => {
+                    setWarehouseCode("");
+                    setEditingWarehouse(null);
+                  }}
+                  disabled={isLoading}
+                >
+                  {t("common.cancel")}
+                </Button>
+                {editingWarehouse && (
+                  <Button
+                    variant="secondary"
+                    size="medium"
+                    onClick={handleDeleteWarehouse}
+                    disabled={isLoading}
+                  >
+                    {t("common.delete")}
+                  </Button>
+                )}
+                <Button
+                  variant="primary"
+                  size="medium"
+                  onClick={handleAddWarehouse}
+                  disabled={isLoading || !warehouseCode.trim()}
+                >
+                  {editingWarehouse ? t("common.update") : t("common.add")}
+                </Button>
+              </div>
+            ) : undefined
+          }
           activeTab={activeTab}
           warehouseCode={warehouseCode}
           setWarehouseCode={setWarehouseCode}
@@ -140,30 +198,6 @@ export const WarehouseSettings = () => {
           onDelete={handleDelete}
         />
       </div>
-
-      {activeTab === "add-new" && (
-        <div className={styles.actionButtons}>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={() => {
-              setWarehouseCode("");
-              setEditingWarehouse(null);
-            }}
-            disabled={isLoading}
-          >
-            {t("common.cancel")}
-          </Button>
-          <Button
-            variant="primary"
-            size="medium"
-            onClick={handleAddWarehouse}
-            disabled={isLoading || !warehouseCode.trim()}
-          >
-            {editingWarehouse ? t("common.update") : t("common.save")}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

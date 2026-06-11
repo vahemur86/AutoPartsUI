@@ -82,6 +82,28 @@ export const ShopsSettings = () => {
     }
   }, [shopKey, warehouseId, t, editingShop, dispatch]);
 
+  const handleDeleteShop = useCallback(async () => {
+    if (!editingShop) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(t("common.areYouSure"));
+    if (!shouldDelete) {
+      return;
+    }
+
+    try {
+      await dispatch(removeShop(editingShop.id)).unwrap();
+      toast.success(t("shops.success.shopDeleted"));
+      setShopKey("");
+      setWarehouseId(0);
+      setEditingShop(null);
+    } catch (error: unknown) {
+      console.error(error);
+      toast.error(getErrorMessage(error, t("shops.error.failedToDelete")));
+    }
+  }, [dispatch, editingShop, t]);
+
   const handleTabChange = useCallback((tab: string) => {
     setActiveTab(tab);
     setShopKey("");
@@ -142,6 +164,46 @@ export const ShopsSettings = () => {
         </div>
 
         <ShopContent
+          actionButtons={
+            activeTab === "add-new" ? (
+              <div className={styles.actionButtons}>
+                <Button
+                  variant="secondary"
+                  size="medium"
+                  onClick={() => {
+                    setShopKey("");
+                    setWarehouseId(0);
+                    setEditingShop(null);
+                  }}
+                  disabled={isLoading}
+                >
+                  {t("common.cancel")}
+                </Button>
+
+                {editingShop && (
+                  <Button
+                    variant="secondary"
+                    size="medium"
+                    onClick={handleDeleteShop}
+                    disabled={isLoading}
+                  >
+                    {t("common.delete")}
+                  </Button>
+                )}
+
+                <Button
+                  variant="primary"
+                  size="medium"
+                  onClick={handleAddShop}
+                  disabled={
+                    isLoading || !shopKey.trim() || !warehouseId || warehouseId === 0
+                  }
+                >
+                  {editingShop ? t("common.update") : t("common.add")}
+                </Button>
+              </div>
+            ) : undefined
+          }
           shopKey={shopKey}
           setShopKey={setShopKey}
           activeTab={activeTab}
@@ -154,34 +216,6 @@ export const ShopsSettings = () => {
           onDelete={handleDelete}
         />
       </div>
-
-      {activeTab === "add-new" && (
-        <div className={styles.actionButtons}>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={() => {
-              setShopKey("");
-              setWarehouseId(0);
-              setEditingShop(null);
-            }}
-            disabled={isLoading}
-          >
-            {t("common.cancel")}
-          </Button>
-
-          <Button
-            variant="primary"
-            size="medium"
-            onClick={handleAddShop}
-            disabled={
-              isLoading || !shopKey.trim() || !warehouseId || warehouseId === 0
-            }
-          >
-            {editingShop ? t("common.update") : t("common.save")}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

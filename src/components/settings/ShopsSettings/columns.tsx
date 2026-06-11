@@ -40,7 +40,7 @@ export const getShopColumns = (
     }),
     columnHelper.display({
       id: "actions",
-      header: "",
+      header: i18next.t("common.actions"),
       cell: ({ row }) => {
         const shop = row.original;
         return (
@@ -50,7 +50,7 @@ export const getShopColumns = (
                 variant="secondary"
                 size="small"
                 icon={<Pencil size={14} />}
-                ariaLabel={i18next.t("columns.editShop")}
+                ariaLabel={i18next.t("common.edit")}
                 onClick={() => onEdit(shop)}
               />
             )}
@@ -59,7 +59,7 @@ export const getShopColumns = (
                 variant="secondary"
                 size="small"
                 icon={<Trash2 size={14} />}
-                ariaLabel={i18next.t("columns.deleteShop")}
+                ariaLabel={i18next.t("common.delete")}
                 onClick={() => onDelete(shop.id)}
               />
             )}

@@ -1,4 +1,4 @@
-import { type FC, useMemo } from "react";
+import { type FC, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable, TextField } from "@/ui-kit";
 import styles from "./WarehouseSettings.module.css";
@@ -6,6 +6,7 @@ import type { Warehouse } from "@/types/settings";
 import { getWarehouseColumns } from "./columns";
 
 interface WarehouseContentProps {
+  actionButtons?: ReactNode;
   activeTab: string;
   warehouseCode: string;
   setWarehouseCode: (code: string) => void;
@@ -16,6 +17,7 @@ interface WarehouseContentProps {
 }
 
 export const WarehouseContent: FC<WarehouseContentProps> = ({
+  actionButtons,
   activeTab,
   warehouseCode,
   setWarehouseCode,
@@ -33,13 +35,17 @@ export const WarehouseContent: FC<WarehouseContentProps> = ({
   return (
     <div className={styles.warehouseNameSection}>
       {activeTab === "add-new" && (
-        <TextField
-          placeholder={t("warehouses.form.type")}
-          label={t("warehouses.form.warehouseKey")}
-          value={warehouseCode}
-          onChange={(e) => setWarehouseCode(e.target.value)}
-          disabled={isLoading}
-        />
+        <>
+          {actionButtons}
+
+          <TextField
+            placeholder={t("warehouses.form.type")}
+            label={t("warehouses.form.warehouseKey")}
+            value={warehouseCode}
+            onChange={(e) => setWarehouseCode(e.target.value)}
+            disabled={isLoading}
+          />
+        </>
       )}
 
       {activeTab === "warehouses-history" && (
