@@ -3,9 +3,13 @@ export interface Product {
   code: string;
   sku: string;
   brandId: number;
+  brandName?: string;
   categoryId: number;
+  categoryName?: string;
   unitTypeId: number;
+  unitTypeName?: string;
   boxSizeId: number;
+  boxSizeName?: string;
   vehicleDependent: boolean;
   brand?: { id: number; code: string };
   category?: { id: number; code: string };

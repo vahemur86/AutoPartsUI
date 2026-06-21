@@ -9,6 +9,7 @@
     "logout": "Выйти",
     "userMenu": "Меню пользователя",
     "reports": "Отчеты",
+    "financeReports": "Финансы и отчеты",
     "calculator": "Калькулятор",
     "carCatalyst": "Баки"
   },
@@ -240,6 +241,38 @@
       "failedToFetch": "Не удалось загрузить отчеты"
     }
   },
+  "financeReports": {
+    "navigation": {
+      "profitSummary": "Сводка прибыли",
+      "profitDetailed": "Детализированная прибыль",
+      "saleProfit": "Прибыль по продаже",
+      "warehouseInventory": "Остатки склада",
+      "shopInventory": "Остатки магазина"
+    },
+    "filters": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад",
+      "fromDate": "Дата от",
+      "toDate": "Дата до",
+      "saleId": "ID продажи",
+      "productId": "ID товара",
+      "productIdOptional": "ID товара (необязательно)"
+    },
+    "actions": {
+      "load": "Загрузить"
+    },
+    "validation": {
+      "selectShop": "Пожалуйста, выберите магазин",
+      "selectWarehouse": "Пожалуйста, выберите склад",
+      "enterSaleId": "Пожалуйста, введите корректный ID продажи"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить финансовые данные"
+    },
+    "empty": "Установите фильтры и нажмите «Загрузить» для просмотра данных."
+  },
   "exchangeRates": {
     "createNew": "Создать курсы валют",
     "addExchangeRate": "Добавить курс валют",
@@ -296,7 +329,8 @@
   "shops": {
     "tabs": {
       "addNew": "Добавить новый магазин",
-      "shopsHistory": "История магазинов"
+      "shopsHistory": "История магазинов",
+      "shopPricing": "Процент наценки магазина"
     },
     "form": {
       "shopKey": "Код магазина",
@@ -333,6 +367,32 @@
         "quantity": "Количество",
         "createdAt": "Создано",
         "updatedAt": "Обновлено"
+      }
+    },
+    "pricing": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "markupPercentage": "Процент продажи",
+      "markupPlaceholder": "Введите процент",
+      "save": "Сохранить процент",
+      "applyToExisting": "Применить к текущим остаткам",
+      "loading": "Загрузка настроек наценки...",
+      "noSettings": "Для этого магазина настройки наценки не найдены.",
+      "currentMarkup": "Текущая наценка",
+      "isActive": "Активно",
+      "updatedAt": "Последнее обновление",
+      "validation": {
+        "selectShop": "Пожалуйста, выберите магазин",
+        "enterValidMarkup": "Пожалуйста, введите корректный процент"
+      },
+      "success": {
+        "saved": "Процент продажи магазина успешно сохранен",
+        "applied": "Наценка применена к текущим остаткам магазина"
+      },
+      "error": {
+        "failedToLoad": "Не удалось загрузить настройки наценки",
+        "failedToSave": "Не удалось сохранить настройки наценки",
+        "failedToApply": "Не удалось применить наценку к текущим остаткам"
       }
     }
   },
@@ -545,6 +605,7 @@
         "sku": "SKU",
         "brand": "Бренд",
         "category": "Категория",
+        "unitType": "Тип единицы",
         "originalPrice": "Первоначальная цена",
         "salePrice": "Цена продажи",
         "quantity": "Количество"
@@ -1366,11 +1427,66 @@
     "weightKg": "Вес",
     "tabs": {
       "buy": "Купить",
+      "cashier": "Касса",
       "calculate": "Рассчитать",
       "catalyst": "Катализатор",
       "iron": "Железо",
       "workshop": "Мастерская",
       "services": "Услуги"
+    },
+    "cashier": {
+      "title": "Касса",
+      "description": "Выберите товары, добавьте позиции в корзину и завершите оплату наличными или безналично.",
+      "selectShop": "Выберите магазин",
+      "productsList": "Доступные товары",
+      "loadingProducts": "Загрузка товаров...",
+      "noProducts": "Нет доступных товаров.",
+      "scanOrEnterSku": "Сканируйте штрихкод или введите SKU",
+      "scanPlaceholder": "Сканируйте или введите SKU и нажмите Enter",
+      "searchButton": "Добавить по SKU",
+      "enterSku": "Введите SKU продукта.",
+      "productNotFound": "Продукт с этим SKU не найден.",
+      "productNotInShop": "Продукт недоступен в выбранном магазине.",
+      "addedToCart": "Продукт {{sku}} добавлен в корзину.",
+      "table": {
+        "product": "Товар",
+        "sku": "SKU",
+        "salePrice": "Цена",
+        "quantity": "Количество",
+        "actions": "Действия"
+      },
+      "scanPlaceholder": "Сканируйте или введите SKU и нажмите Enter",
+      "searchButton": "Добавить по SKU",
+      "enterSku": "Введите SKU продукта.",
+      "productNotFound": "Продукт с этим SKU не найден.",
+      "productNotInShop": "Продукт недоступен в выбранном магазине.",
+      "addedToCart": "Продукт {{sku}} добавлен в корзину.",
+      "cartTitle": "Корзина",
+      "emptyCart": "Корзина пуста.",
+      "unitPrice": "Цена за единицу",
+      "quantity": "Количество",
+      "remove": "Удалить",
+      "total": "Итого",
+      "paymentMethods": {
+        "cash": "Наличные",
+        "nonCash": "Безналичные",
+        "mixed": "Смешанный"
+      },
+      "shopLabel": "Магазин",
+      "loadingShop": "Загрузка магазина...",
+      "cashReceived": "Получено наличными",
+      "cashPaid": "Наличными",
+      "nonCashPaid": "Безналично",
+      "nonCashReference": "Карта / референс",
+      "nonCashReferencePlaceholder": "напр. Card-XXXX1234",
+      "nonCashReferenceRequired": "Укажите референс карты или платежа.",
+      "completeSale": "Завершить продажу",
+      "processing": "Обработка...",
+      "amountPaid": "Оплачено",
+      "change": "Сдача",
+      "paymentConfirmed": "Платеж подтвержден",
+      "saleCompleted": "Продажа завершена",
+      "saleError": "Не удалось завершить продажу."
     },
     "modals": {
       "pendingTopUpTitle": "Подтверждение ожидаемого пополнения",

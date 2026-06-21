@@ -1,4 +1,8 @@
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import {
+  createColumnHelper,
+  type ColumnDef,
+  type Row,
+} from "@tanstack/react-table";
 import type { RefObject } from "react";
 import i18next from "i18next";
 
@@ -8,6 +12,9 @@ import type { WarehouseProductItem } from "@/types/warehouses/warehouseProduct";
 // components
 import { Checkbox } from "@/ui-kit";
 import { QuantityInputCell } from "./QuantityInputCell";
+
+// styles
+import styles from "./TransferToShop.module.css";
 
 const columnHelper = createColumnHelper<WarehouseProductItem>();
 
@@ -26,6 +33,8 @@ interface TransferColumnsMeta {
   onToggleSelect: (productId: number) => void;
   onQuantityChange: (productId: number, quantity: string) => void;
   maxQuantity: (productId: number) => number;
+  onProductClick: (row: Row<WarehouseProductItem>) => void;
+  getProductCode: (productId: number) => string;
   focusedInputRef: RefObject<{
     productId: number;
   } | null>;
@@ -73,7 +82,20 @@ export const getTransferToShopColumns = (
   }),
   columnHelper.accessor("productId", {
     header: i18next.t("warehouses.products.columns.productId"),
-    cell: (info) => `#${info.getValue()}`,
+    cell: (info) => (
+      <button
+        type="button"
+        className={styles.productIdButton}
+        onClick={() => meta.onProductClick(info.row)}
+      >
+        #{info.getValue()}
+      </button>
+    ),
+  }),
+  columnHelper.display({
+    id: "productKey",
+    header: i18next.t("products.columns.productKey"),
+    cell: ({ row }) => meta.getProductCode(row.original.productId),
   }),
   columnHelper.accessor("originalPrice", {
     header: i18next.t("warehouses.products.columns.originalPrice"),

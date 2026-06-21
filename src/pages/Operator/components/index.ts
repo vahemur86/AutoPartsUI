@@ -9,3 +9,4 @@ export { OperatorHeader } from "./OperatorHeader";
 export { TopUpConfirmationModal } from "./TopUpConfirmationModal";
 export { WorkshopMode } from "./WorkshopMode";
 export { ServiceTasksTab } from "./ServiceTasksTab";
+export { CashierMode } from "./CashierMode";

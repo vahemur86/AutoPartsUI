@@ -40,6 +40,140 @@
   width: 100%;
 }
 
+.productIdButton {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #7cc4ff;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.productIdButton:hover {
+  color: #a1d4ff;
+}
+
+.detailsGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.detailsRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 2fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.detailsLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.detailsValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+.detailsEmpty {
+  padding: 8px 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.productCell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 260px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.productCell::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(127, 255, 157, 0.85));
+  opacity: 0;
+  transform: scaleY(0.35);
+  transform-origin: center;
+  transition: opacity 0.2s ease, transform 0.22s ease;
+}
+
+.productCell:hover {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 6px 14px rgba(255, 255, 255, 0.18));
+}
+
+.productCell:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.productMainLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.productCode {
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.skuBadge {
+  border: 1px solid rgba(84, 214, 120, 0.42);
+  border-radius: 10px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #7fff9d;
+  background: rgba(84, 214, 120, 0.14);
+  letter-spacing: 0.3px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.productCell:hover .skuBadge {
+  box-shadow: 0 0 0 1px rgba(84, 214, 120, 0.35), 0 0 18px rgba(84, 214, 120, 0.22);
+  transform: translateY(-1px);
+}
+
+.productMetaLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.productMetaLine span {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stockCell,
+.timeCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 190px;
+}
+
 @media (max-width: 1064px) {
   .wrapper {
     padding: 16px;

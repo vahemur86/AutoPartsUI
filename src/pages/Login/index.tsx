@@ -110,7 +110,9 @@ export const Login = () => {
       await initializeDefaultLanguage();
       toast.success("Welcome back!");
 
-      if (userRole === "operator") {
+      if (userRole === "cashier") {
+        navigate("/shop-operator", { replace: true });
+      } else if (userRole === "operator") {
         navigate("/operator", { replace: true });
       } else {
         navigate("/", { replace: true });

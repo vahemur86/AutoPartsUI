@@ -18,7 +18,9 @@ import { Login } from "@/pages/Login/index";
 import { UserManagement } from "@/pages/Users";
 import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
+import { ShopOperatorPage } from "@/pages/ShopOperator";
 import { Reports } from "@/pages/Reports";
+import { FinanceReports } from "@/pages/FinanceReports";
 import { Products } from "@/pages/Products";
 import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage";
 
@@ -51,6 +53,13 @@ import { IronProductsReport } from "@/components/reports/IronProductsReport";
 import { IronSaleReport } from "@/components/reports/IronSaleReport";
 import { WorkshopOrdersReport } from "@/components/reports/WorkshopOrdersReport";
 import { ServiceTasksReport } from "@/components/reports/ServiceTasksReport";
+
+// Finance Reports components
+import { ProfitSummary } from "@/components/financeReports/ProfitSummary";
+import { ProfitDetailed } from "@/components/financeReports/ProfitDetailed";
+import { SaleProfitLookup } from "@/components/financeReports/SaleProfitLookup";
+import { WarehouseInventoryStatus } from "@/components/financeReports/WarehouseInventoryStatus";
+import { ShopInventoryStatus } from "@/components/financeReports/ShopInventoryStatus";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -109,9 +118,14 @@ export const App = () => {
 
             <Route path="/set-password" element={<SetPassword />} />
 
-            {/* OPERATOR SPECIFIC ROUTES */}
-            <Route element={<ProtectedRoute allowedRoles={["Operator"]} />}>
+            {/* OPERATOR / CASHIER SPECIFIC ROUTES */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["Operator", "Cashier"]} />
+              }
+            >
               <Route path="/operator" element={<OperatorPage />} />
+              <Route path="/shop-operator" element={<ShopOperatorPage />} />
             </Route>
 
             {/* ADMIN & SUPERADMIN SPECIFIC ROUTES */}
@@ -190,6 +204,21 @@ export const App = () => {
                   <Route path="iron-sale" element={<IronSaleReport />} />
                   <Route path="workshop-orders" element={<WorkshopOrdersReport />} />
                   <Route path="service-task-reports" element={<ServiceTasksReport />} />
+                </Route>
+
+                <Route path="finance-reports" element={<FinanceReports />}>
+                  <Route
+                    index
+                    element={<Navigate to="profit-summary" replace />}
+                  />
+                  <Route path="profit-summary" element={<ProfitSummary />} />
+                  <Route path="profit-detailed" element={<ProfitDetailed />} />
+                  <Route path="sale-profit" element={<SaleProfitLookup />} />
+                  <Route
+                    path="warehouse-inventory"
+                    element={<WarehouseInventoryStatus />}
+                  />
+                  <Route path="shop-inventory" element={<ShopInventoryStatus />} />
                 </Route>
 
                 <Route path="warehouses" element={<Warehouses />}>

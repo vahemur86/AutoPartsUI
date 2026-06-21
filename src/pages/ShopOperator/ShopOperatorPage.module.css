@@ -1,0 +1,14 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: var(--color-black-2);
+}
+
+.contentArea {
+  flex: 1;
+  min-height: 0;
+}

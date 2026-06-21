@@ -2,6 +2,7 @@
 export const ROLES = [
   { value: "SuperAdmin", label: "Super Admin" },
   { value: "Operator", label: "Operator" },
+  { value: "Cashier", label: "Cashier" },
   { value: "Admin", label: "Admin" },
 ];
 

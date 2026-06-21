@@ -40,7 +40,13 @@ export const OperatorPage = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const mainTab = (searchParams.get("view") as MainTabType) || "buy";
+  const rawMainTab = searchParams.get("view");
+  const mainTab =
+    rawMainTab === "calculate" ||
+    rawMainTab === "workshop" ||
+    rawMainTab === "services"
+      ? (rawMainTab as MainTabType)
+      : "buy";
 
   const [pendingMainTab, setPendingMainTab] = useState<MainTabType | null>(null);
 

@@ -33,4 +33,50 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.productIdButton {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #7cc4ff;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.productIdButton:hover {
+  color: #a1d4ff;
+}
+
+.detailsGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.detailsRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 2fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.detailsLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.detailsValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+.detailsEmpty {
+  padding: 8px 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
 

@@ -28,6 +28,17 @@ export interface Shop {
   warehouseId: number;
 }
 
+export interface ShopPricing {
+  id: number;
+  shopId: number;
+  markupPercentage: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+}
+
 export interface Tag {
   id: number;
   name: string;

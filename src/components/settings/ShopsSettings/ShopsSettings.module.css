@@ -41,6 +41,37 @@
   width: 100%;
 }
 
+.pricingSummary {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pricingDetailsGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.pricingDetailsRow {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 2fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.pricingLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.pricingValue {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .loadingState,
 .emptyState {
   padding: 40px 20px;

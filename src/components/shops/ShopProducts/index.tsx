@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { Row } from "@tanstack/react-table";
 
 // ui-kit
 import { DataTable, Select } from "@/ui-kit";
@@ -62,7 +63,68 @@ export const ShopProducts = () => {
     [],
   );
 
-  const columns = useMemo(() => getShopProductColumns(), []);
+  const handleProductClick = useCallback((row: Row<(typeof shopProducts)[number]>) => {
+    row.toggleExpanded(!row.getIsExpanded());
+  }, []);
+
+  const getProductCode = useCallback((item: (typeof shopProducts)[number]): string => {
+    return item.product?.code || "-";
+  }, []);
+
+  const columns = useMemo(
+    () =>
+      getShopProductColumns({
+        onProductClick: handleProductClick,
+        getProductCode,
+      }),
+    [handleProductClick, getProductCode],
+  );
+
+  const renderProductDetails = useCallback(
+    ({ row }: { row: Row<(typeof shopProducts)[number]> }) => {
+      const product = row.original.product;
+
+      if (!product) {
+        return <div className={styles.detailsEmpty}>{t("common.noData")}</div>;
+      }
+
+      return (
+        <div className={styles.detailsGrid}>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>ID</span>
+            <span className={styles.detailsValue}>#{product.id}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.sku")}</span>
+            <span className={styles.detailsValue}>{product.sku || "-"}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.brand")}</span>
+            <span className={styles.detailsValue}>{product.brandName || "-"}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.category")}</span>
+            <span className={styles.detailsValue}>{product.categoryName || "-"}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.unitType")}</span>
+            <span className={styles.detailsValue}>{product.unitTypeName || "-"}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.boxSize")}</span>
+            <span className={styles.detailsValue}>{product.boxSizeName || "-"}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.vehicleDependent")}</span>
+            <span className={styles.detailsValue}>
+              {product.vehicleDependent ? t("common.yes") : t("common.no")}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    [t],
+  );
 
   return (
     <div className={styles.wrapper}>
@@ -106,6 +168,7 @@ export const ShopProducts = () => {
           columns={columns}
           pageSize={10}
           freezeHeader
+          renderSubComponent={renderProductDetails}
         />
       )}
     </div>

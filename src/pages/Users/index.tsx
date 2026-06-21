@@ -46,9 +46,12 @@ export const UserManagement = () => {
 
   const isSuperAdmin = currentUser?.role === "SuperAdmin";
   const isAdmin = currentUser?.role === "Admin";
+  const isCashier = role === "Cashier";
 
   const isShopRequired =
-    userType === "Shop" || (userType === "System" && !isSuperAdmin);
+    isCashier ||
+    userType === "Shop" ||
+    (userType === "System" && !isSuperAdmin);
   const isWarehouseRequired =
     userType === "Warehouse" || (userType === "System" && !isSuperAdmin);
 
@@ -89,15 +92,20 @@ export const UserManagement = () => {
     if (warehouses.length === 0) dispatch(fetchWarehouses());
   }, [dispatch, shops.length, warehouses.length]);
 
+  useEffect(() => {
+    if (role === "Cashier") {
+      setUserType("Shop");
+      setWarehouseId("");
+    }
+  }, [role]);
+
   const handleCancel = () => {
     setEmail("");
     setRole("");
+    setUserType("");
+    setShopId("");
+    setWarehouseId("");
     setHasTriedSubmit(false);
-    if (isSuperAdmin) {
-      setUserType("");
-      setShopId("");
-      setWarehouseId("");
-    }
   };
 
   const handleSubmit = async () => {
@@ -108,12 +116,22 @@ export const UserManagement = () => {
     setIsSubmitting(true);
 
     const finalShopId =
-      isSuperAdmin && userType === "System" ? null : parseInt(shopId || "0");
+      role === "Cashier"
+        ? parseInt(shopId || "0")
+        : isSuperAdmin && userType === "System"
+        ? null
+        : userType === "Shop"
+        ? parseInt(shopId || "0")
+        : null;
 
     const finalWarehouseId =
-      isSuperAdmin && userType === "System"
+      role === "Cashier"
         ? null
-        : parseInt(warehouseId || "0");
+        : isSuperAdmin && userType === "System"
+        ? null
+        : userType === "Warehouse"
+        ? parseInt(warehouseId || "0")
+        : null;
 
     try {
       await createUser(
@@ -201,9 +219,12 @@ export const UserManagement = () => {
                       ? t("users.validation.userTypeRequired")
                       : ""
                   }
-                  disabled={isAdmin || isSubmitting}
+                  disabled={isAdmin || isSubmitting || role === "Cashier"}
                 >
-                  {USER_TYPES.map((type) => (
+                  {(role === "Cashier"
+                    ? USER_TYPES.filter((type) => type.value === "Shop")
+                    : USER_TYPES
+                  ).map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.label}
                     </option>
@@ -220,7 +241,7 @@ export const UserManagement = () => {
                     placeholder={t("users.form.selectShop")}
                     value={shopId}
                     onChange={(e) => setShopId(e.target.value)}
-                    disabled={(isAdmin && userType === "Shop") || isSubmitting}
+                    disabled={isSubmitting}
                     error={hasTriedSubmit && !isShopValid}
                     helperText={
                       hasTriedSubmit && !isShopValid

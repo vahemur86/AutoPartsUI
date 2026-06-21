@@ -119,3 +119,20 @@
 .textFieldHelperText.error {
   color: #ef4444;
 }
+
+.compact {
+  gap: 4px;
+}
+
+.compact .textFieldContainer {
+  height: 36px;
+  padding: 8px 10px;
+}
+
+.compact .textFieldLabel {
+  font-size: 12px;
+}
+
+.compact .textFieldInput {
+  font-size: 13px;
+}

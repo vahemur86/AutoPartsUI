@@ -9,6 +9,7 @@
     "logout": "Logout",
     "userMenu": "User menu",
     "reports": "Reports",
+    "financeReports": "Finance & Reports",
     "calculator": "Calculator",
     "carCatalyst": "Buckets"
   },
@@ -240,6 +241,38 @@
       "failedToFetch": "Failed to fetch reports"
     }
   },
+  "financeReports": {
+    "navigation": {
+      "profitSummary": "Profit Summary",
+      "profitDetailed": "Profit Detailed",
+      "saleProfit": "Sale Profit",
+      "warehouseInventory": "Warehouse Inventory",
+      "shopInventory": "Shop Inventory"
+    },
+    "filters": {
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "warehouse": "Warehouse",
+      "selectWarehouse": "Select warehouse",
+      "fromDate": "From date",
+      "toDate": "To date",
+      "saleId": "Sale ID",
+      "productId": "Product ID",
+      "productIdOptional": "Optional product ID"
+    },
+    "actions": {
+      "load": "Load"
+    },
+    "validation": {
+      "selectShop": "Please select a shop",
+      "selectWarehouse": "Please select a warehouse",
+      "enterSaleId": "Please enter a valid sale ID"
+    },
+    "error": {
+      "failedToLoad": "Failed to load finance report data"
+    },
+    "empty": "Set filters and click Load to view data."
+  },
   "exchangeRates": {
     "createNew": "Create Exchange Rates",
     "addExchangeRate": "Add Exchange Rate",
@@ -296,7 +329,8 @@
   "shops": {
     "tabs": {
       "addNew": "Add New Shop",
-      "shopsHistory": "Shops History"
+      "shopsHistory": "Shops History",
+      "shopPricing": "Shop Sale Percentage"
     },
     "form": {
       "shopKey": "Shop key",
@@ -333,6 +367,32 @@
         "quantity": "Quantity",
         "createdAt": "Created At",
         "updatedAt": "Updated At"
+      }
+    },
+    "pricing": {
+      "shop": "Shop",
+      "selectShop": "Select shop",
+      "markupPercentage": "Sale Percentage",
+      "markupPlaceholder": "Enter percentage",
+      "save": "Save Percentage",
+      "applyToExisting": "Apply To Existing Stock",
+      "loading": "Loading shop pricing...",
+      "noSettings": "No pricing settings found for this shop.",
+      "currentMarkup": "Current markup",
+      "isActive": "Active",
+      "updatedAt": "Last updated",
+      "validation": {
+        "selectShop": "Please select a shop",
+        "enterValidMarkup": "Please enter a valid percentage"
+      },
+      "success": {
+        "saved": "Shop sale percentage saved successfully",
+        "applied": "Pricing applied to existing shop stock"
+      },
+      "error": {
+        "failedToLoad": "Failed to load shop pricing",
+        "failedToSave": "Failed to save shop pricing",
+        "failedToApply": "Failed to apply pricing to existing stock"
       }
     }
   },
@@ -546,6 +606,7 @@
         "sku": "SKU",
         "brand": "Brand",
         "category": "Category",
+        "unitType": "Unit Type",
         "originalPrice": "Original Price",
         "salePrice": "Sale Price",
         "quantity": "Quantity"
@@ -1368,11 +1429,66 @@
     "weightKg": "Weight",
     "tabs": {
       "buy": "Buy",
+      "cashier": "Cashier",
       "calculate": "Calculate",
       "catalyst": "Catalyst",
       "iron": "Iron",
       "workshop": "Workshop",
       "services": "Services"
+    },
+    "cashier": {
+      "title": "Cashier",
+      "description": "Select products, add items to the cart, and complete cash or non-cash payments.",
+      "selectShop": "Select shop",
+      "productsList": "Available products",
+      "loadingProducts": "Loading products...",
+      "noProducts": "No products available.",
+      "scanOrEnterSku": "Scan barcode or enter SKU",
+      "scanPlaceholder": "Scan or type SKU and press Enter",
+      "searchButton": "Add by SKU",
+      "enterSku": "Enter product SKU.",
+      "productNotFound": "Product with this SKU was not found.",
+      "productNotInShop": "Product is not available in the selected shop.",
+      "addedToCart": "Added product {{sku}} to cart.",
+      "table": {
+        "product": "Product",
+        "sku": "SKU",
+        "salePrice": "Sale Price",
+        "quantity": "Quantity",
+        "actions": "Actions"
+      },
+      "scanPlaceholder": "Scan or type SKU and press Enter",
+      "searchButton": "Add by SKU",
+      "enterSku": "Enter product SKU.",
+      "productNotFound": "Product with this SKU was not found.",
+      "productNotInShop": "Product is not available in the selected shop.",
+      "addedToCart": "Added product {{sku}} to cart.",
+      "cartTitle": "Shopping cart",
+      "emptyCart": "Cart is empty.",
+      "unitPrice": "Unit price",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "total": "Total",
+      "paymentMethods": {
+        "cash": "Cash",
+        "nonCash": "Non-cash",
+        "mixed": "Mixed"
+      },
+      "shopLabel": "Shop",
+      "loadingShop": "Loading shop...",
+      "cashReceived": "Cash received",
+      "cashPaid": "Cash paid",
+      "nonCashPaid": "Non-cash paid",
+      "nonCashReference": "Card / reference",
+      "nonCashReferencePlaceholder": "e.g. Card-XXXX1234",
+      "nonCashReferenceRequired": "Please enter a card or payment reference.",
+      "completeSale": "Complete sale",
+      "processing": "Processing...",
+      "amountPaid": "Amount paid",
+      "change": "Change",
+      "paymentConfirmed": "Payment confirmed",
+      "saleCompleted": "Sale completed",
+      "saleError": "Failed to complete sale."
     },
     "modals": {
       "pendingTopUpTitle": "Confirm Pending Top-Up",

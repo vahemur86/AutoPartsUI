@@ -40,11 +40,11 @@ type ShopUpdatePayload = ShopPayload & { id: number };
 // Async thunk for fetching shops
 export const fetchShops = createAsyncThunk<
   Shop[],
-  void,
+  { cashRegisterId?: number } | undefined,
   { rejectValue: string }
->("shops/fetchShops", async (_, { rejectWithValue }) => {
+>("shops/fetchShops", async (payload, { rejectWithValue }) => {
   try {
-    const data = await getShops();
+    const data = await getShops(payload?.cashRegisterId);
     return data;
   } catch (error: unknown) {
     return rejectWithValue(getApiErrorMessage(error, "Failed to fetch shops"));

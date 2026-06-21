@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import type { Row } from "@tanstack/react-table";
 
 // ui-kit
 import { DataTable, Select, Button } from "@/ui-kit";
@@ -11,6 +12,11 @@ import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 import { transferProduct } from "@/store/slices/warehousesSlice";
 import { fetchShops } from "@/store/slices/shopsSlice";
 import { fetchWarehouseProducts } from "@/store/slices/warehouses/productsSlice";
+import { fetchProducts } from "@/store/slices/productsSlice";
+
+// types
+import type { Product } from "@/types/products";
+import type { WarehouseProductItem } from "@/types/warehouses/warehouseProduct";
 
 // utils
 import { getCashRegisterId, getApiErrorMessage } from "@/utils";
@@ -33,6 +39,7 @@ export const TransferToShop = () => {
   );
   const { items: warehouseProducts, isLoading: isLoadingProducts } =
     useAppSelector((state) => state.warehouseProducts);
+  const { products } = useAppSelector((state) => state.products);
 
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
     null,
@@ -53,6 +60,7 @@ export const TransferToShop = () => {
   useEffect(() => {
     dispatch(fetchWarehouses());
     dispatch(fetchShops());
+    dispatch(fetchProducts());
   }, [dispatch]);
 
   useEffect(() => {
@@ -124,6 +132,95 @@ export const TransferToShop = () => {
       }));
     },
     [],
+  );
+
+  const handleProductClick = useCallback((row: Row<WarehouseProductItem>) => {
+    row.toggleExpanded(!row.getIsExpanded());
+  }, []);
+
+  const getProductCodeById = useCallback(
+    (productId: number): string => {
+      const product = products.find((item) => item.id === productId);
+      return product?.code || "-";
+    },
+    [products],
+  );
+
+  const getSkuValue = (product: Product | undefined): string => {
+    if (!product) return "-";
+    return product.sku || "-";
+  };
+
+  const getBrandValue = (product: Product | undefined): string => {
+    if (!product) return "-";
+    return product.brandName || product.brand?.code || "-";
+  };
+
+  const getCategoryValue = (product: Product | undefined): string => {
+    if (!product) return "-";
+    return product.categoryName || product.category?.code || "-";
+  };
+
+  const getUnitTypeValue = (product: Product | undefined): string => {
+    if (!product) return "-";
+    return product.unitTypeName || product.unitType?.code || "-";
+  };
+
+  const getBoxSizeValue = (product: Product | undefined): string => {
+    if (!product) return "-";
+    return product.boxSizeName || product.boxSize?.code || "-";
+  };
+
+  const renderProductDetails = useCallback(
+    ({ row }: { row: Row<WarehouseProductItem> }) => {
+      const product = products.find((item) => item.id === row.original.productId);
+
+      if (!product) {
+        return <div className={styles.detailsEmpty}>{t("common.noData")}</div>;
+      }
+
+      return (
+        <div className={styles.detailsGrid}>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>ID</span>
+            <span className={styles.detailsValue}>#{product.id}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.sku")}</span>
+            <span className={styles.detailsValue}>{getSkuValue(product)}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.brand")}</span>
+            <span className={styles.detailsValue}>{getBrandValue(product)}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>
+              {t("products.columns.category")}
+            </span>
+            <span className={styles.detailsValue}>{getCategoryValue(product)}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>
+              {t("products.columns.unitType")}
+            </span>
+            <span className={styles.detailsValue}>{getUnitTypeValue(product)}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>{t("products.columns.boxSize")}</span>
+            <span className={styles.detailsValue}>{getBoxSizeValue(product)}</span>
+          </div>
+          <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>
+              {t("products.columns.vehicleDependent")}
+            </span>
+            <span className={styles.detailsValue}>
+              {product.vehicleDependent ? t("common.yes") : t("common.no")}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    [products, t],
   );
 
   const handleTransfer = useCallback(async () => {
@@ -237,6 +334,8 @@ export const TransferToShop = () => {
           const product = warehouseProducts.find((p) => p.id === productId);
           return product?.quantity || 0;
         },
+        onProductClick: handleProductClick,
+        getProductCode: getProductCodeById,
         focusedInputRef,
       }),
     [
@@ -244,6 +343,8 @@ export const TransferToShop = () => {
       quantities,
       handleToggleSelect,
       handleQuantityChange,
+      handleProductClick,
+      getProductCodeById,
       warehouseProducts,
     ],
   );
@@ -277,6 +378,7 @@ export const TransferToShop = () => {
         columns={columns}
         pageSize={10}
         freezeHeader
+        renderSubComponent={renderProductDetails}
       />
     );
   };

@@ -57,13 +57,17 @@ export const getProductColumns = ({
     header: i18next.t("warehouses.addProduct.columns.sku"),
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor("brand", {
+  columnHelper.accessor("brandName", {
     header: i18next.t("warehouses.addProduct.columns.brand"),
-    cell: (info) => info.getValue()?.code || "-",
+    cell: (info) => info.getValue() || "-",
   }),
-  columnHelper.accessor("category", {
+  columnHelper.accessor("categoryName", {
     header: i18next.t("warehouses.addProduct.columns.category"),
-    cell: (info) => info.getValue()?.code || "-",
+    cell: (info) => info.getValue() || "-",
+  }),
+  columnHelper.accessor("unitTypeName", {
+    header: i18next.t("warehouses.addProduct.columns.unitType"),
+    cell: (info) => info.getValue() || "-",
   }),
   columnHelper.display({
     id: "originalPrice",

@@ -11,7 +11,13 @@ export const getRegisterSession = async (cashRegisterId: number) => {
     const response = await api.get<GetRegisterSession>(
       `/cash-sessions/Get-Register-session`,
       {
-        headers: getHeaders(cashRegisterId),
+        headers: {
+          ...getHeaders(cashRegisterId),
+          "X-CashRegister-Id": cashRegisterId,
+        },
+        params: {
+          cashRegisterId,
+        },
       },
     );
     return response.data;

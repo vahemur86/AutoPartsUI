@@ -55,6 +55,10 @@ import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 
 // services
 import { createServiceOrder } from "@/services/operator";
+import {
+  getCashRegisters,
+  getCashRegisterOperators,
+} from "@/services/settings/cash/registers";
 
 // types
 import type { WorkshopFormData } from "@/types/operator";
@@ -64,12 +68,94 @@ export type TabType = "catalyst" | "iron";
 export const useOperator = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const authUser = useAppSelector((state) => state.auth.user);
 
   const [activeTab, setActiveTab] = useState<TabType>("catalyst");
   const [connection, setConnection] = useState<HubConnection | null>(null);
-  const [userData] = useState(() =>
+  const [resolvedCashRegisterId, setResolvedCashRegisterId] = useState<
+    number | undefined
+  >(undefined);
+  const [savedUserData] = useState(() =>
     JSON.parse(localStorage.getItem("user_data") ?? "null"),
   );
+
+  const userData: any = useMemo(() => {
+    const saved = (savedUserData as Record<string, unknown> | null) ?? {};
+    const current = (authUser as Record<string, unknown> | null) ?? {};
+
+    const mergedCashRegisterId =
+      Number(current.cashRegisterId) ||
+      Number(saved.cashRegisterId) ||
+      resolvedCashRegisterId ||
+      undefined;
+
+    return {
+      ...saved,
+      ...current,
+      token:
+        (current.token as string | undefined) ||
+        (saved.token as string | undefined) ||
+        localStorage.getItem("access_token") ||
+        undefined,
+      cashRegisterId: mergedCashRegisterId,
+    };
+  }, [authUser, savedUserData, resolvedCashRegisterId]);
+
+  useEffect(() => {
+    const currentCashRegisterId = Number(userData?.cashRegisterId) || undefined;
+    if (currentCashRegisterId) return;
+
+    const username = String(userData?.username || "").trim().toLowerCase();
+    const shopId = Number(userData?.shopId) || undefined;
+    if (!username || !shopId) return;
+
+    let isCancelled = false;
+
+    const resolveAssignedCashRegister = async () => {
+      try {
+        const registersResponse = await getCashRegisters(shopId);
+        const registers = Array.isArray(registersResponse)
+          ? registersResponse
+          : Array.isArray(registersResponse?.items)
+            ? registersResponse.items
+            : [];
+
+        for (const register of registers) {
+          const registerId = Number(register?.id);
+          if (!registerId) continue;
+
+          const assignedUsers = await getCashRegisterOperators(registerId);
+          const isAssignedHere = assignedUsers.some(
+            (user) =>
+              user.isActive &&
+              String(user.username || "").trim().toLowerCase() === username,
+          );
+
+          if (isAssignedHere) {
+            if (isCancelled) return;
+
+            setResolvedCashRegisterId(registerId);
+
+            const rawSaved = localStorage.getItem("user_data");
+            const parsedSaved = rawSaved ? JSON.parse(rawSaved) : {};
+            localStorage.setItem(
+              "user_data",
+              JSON.stringify({ ...parsedSaved, cashRegisterId: registerId }),
+            );
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Failed to resolve assigned cash register", error);
+      }
+    };
+
+    void resolveAssignedCashRegister();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [userData?.cashRegisterId, userData?.shopId, userData?.username]);
 
   const selectors = {
     metalRates: useAppSelector((state) => state.metalRates),
@@ -271,7 +357,11 @@ export const useOperator = () => {
       dispatch(fetchLanguages(crId));
       dispatch(fetchRegisterSession(crId));
       dispatch(fetchServiceTemplates());
+      dispatch(fetchPendingTransaction(crId));
       refreshBalance();
+    } else {
+      // Prevent stale session flag from previous user/login from disabling open-session action.
+      dispatch(resetSessionState());
     }
   }, [dispatch, userData?.cashRegisterId, refreshBalance]);
 
@@ -600,17 +690,48 @@ export const useOperator = () => {
   const handleToggleSession = useCallback(
     async (action: "open" | "close") => {
       const crId = userData?.cashRegisterId;
-      if (!crId) return;
+      if (!crId) {
+        toast.error("Cash register is not assigned to current user.");
+        return;
+      }
       try {
         if (action === "open") {
           await dispatch(openSession(crId)).unwrap();
-          dispatch(fetchRegisterSession(crId));
+
+          // Backend can lag briefly after open, so verify with a few short retries.
+          let isOpened = false;
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            const status = await dispatch(fetchRegisterSession(crId)).unwrap();
+            if (status.hasOpenSession && status.sessionId) {
+              isOpened = true;
+              break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 300));
+          }
+
+          if (!isOpened) {
+            toast.error(t("operatorPage.notifications.sessionNotOpen"));
+            return;
+          }
+
           toast.success(t("operatorPage.success.sessionOpened"));
           refreshBalance();
-        } else if (selectors.cashSessions.sessionDetails?.sessionId) {
+        } else {
+          let sessionId = selectors.cashSessions.sessionDetails?.sessionId;
+
+          if (!sessionId) {
+            const sessionStatus = await dispatch(fetchRegisterSession(crId)).unwrap();
+            sessionId = sessionStatus.sessionId;
+
+            if (!sessionStatus.hasOpenSession || !sessionId) {
+              toast.error(t("operatorPage.notifications.sessionNotOpen"));
+              return;
+            }
+          }
+
           await dispatch(
             closeSession({
-              sessionId: selectors.cashSessions.sessionDetails.sessionId,
+              sessionId,
               cashRegisterId: crId,
             }),
           ).unwrap();

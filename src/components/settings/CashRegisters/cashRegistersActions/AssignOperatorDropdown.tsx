@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { Button, Dropdown, Select } from "@/ui-kit";
 
 // services
-import { getOperators } from "@/services/users";
+import { getUsers } from "@/services/users";
 
 // stores
 import { useAppDispatch } from "@/store/hooks";
@@ -45,6 +45,12 @@ export const AssignOperatorDropdown = ({
   const [isLoadingOperators, setIsLoadingOperators] = useState(false);
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
+  type AssignableUser = Operator & {
+    role?: string | number;
+    userType?: string;
+    shopId?: number;
+  };
+
   useEffect(() => {
     if (open) {
       setHasTriedSave(false);
@@ -56,17 +62,46 @@ export const AssignOperatorDropdown = ({
   const fetchOperators = async () => {
     try {
       setIsLoadingOperators(true);
-      const data = await getOperators({
-        role: 2, // operator role
-        shopId: cashRegister.shopId,
-        cashRegisterId: cashRegister.id,
+      const response = await getUsers();
+      const users = (
+        Array.isArray(response)
+          ? response
+          : Array.isArray((response as { items?: unknown[] })?.items)
+            ? (response as { items: unknown[] }).items
+            : Array.isArray((response as { data?: unknown[] })?.data)
+              ? (response as { data: unknown[] }).data
+              : []
+      ) as AssignableUser[];
+
+      const assignableUsers = users.filter((user) => {
+        const roleName =
+          typeof user.role === "string" ? user.role.toLowerCase() : "";
+        const roleId =
+          typeof user.role === "number" ? user.role : Number.NaN;
+        const userType = (user.userType || "").toLowerCase();
+
+        const isBlockedAdminRole =
+          roleName === "admin" ||
+          roleName === "superadmin" ||
+          roleId === 0 ||
+          roleId === 1;
+        const isOperatorOrCashier =
+          roleName === "operator" ||
+          roleName === "cashier" ||
+          roleId === 2 ||
+          roleId === 3 ||
+          (!roleName && Number.isNaN(roleId) && userType === "shop");
+
+        const isFromSameShop = Number(user.shopId) === Number(cashRegister.shopId);
+        return !isBlockedAdminRole && isOperatorOrCashier && isFromSameShop;
       });
-      setOperators(data);
+
+      setOperators(assignableUsers);
 
       // Preselect the first already-assigned operator, if any exist in the list
       const defaultAssignedId =
         assignedUserIds.find((assignedId) =>
-          data.some((op) => op.id === assignedId),
+          assignableUsers.some((op) => op.id === assignedId),
         ) ?? null;
 
       setSelectedOperatorId(
@@ -136,15 +171,21 @@ export const AssignOperatorDropdown = ({
         ) : (
           <div className={styles.grid}>
             <Select
-              label={t("cashRegisters.assignOperator.operator")}
-              placeholder={t("cashRegisters.assignOperator.selectOperator")}
+              label={t("cashRegisters.assignOperator.operator", {
+                defaultValue: "User",
+              })}
+              placeholder={t("cashRegisters.assignOperator.selectOperator", {
+                defaultValue: "Select user",
+              })}
               value={selectedOperatorId}
               onChange={(e) => setSelectedOperatorId(e.target.value)}
               disabled={isLoading}
               error={hasTriedSave && !isOperatorValid}
             >
               <option value="">
-                {t("cashRegisters.assignOperator.selectOperator")}
+                {t("cashRegisters.assignOperator.selectOperator", {
+                  defaultValue: "Select user",
+                })}
               </option>
               {operators.map((op) => {
                 const isAlreadyAssigned = assignedUserIds.includes(op.id);
@@ -153,6 +194,21 @@ export const AssignOperatorDropdown = ({
                   { defaultValue: "assigned" },
                 );
 
+                const rawRole = (op as AssignableUser).role;
+                const roleKey =
+                  typeof rawRole === "string"
+                    ? rawRole.toLowerCase()
+                    : rawRole === 2
+                      ? "operator"
+                      : rawRole === 3
+                        ? "cashier"
+                        : "";
+                const roleLabel = roleKey
+                  ? t(`common.roles.${roleKey}`, {
+                      defaultValue: roleKey,
+                    })
+                  : "";
+
                 return (
                   <option
                     key={op.id}
@@ -160,6 +216,7 @@ export const AssignOperatorDropdown = ({
                     disabled={isAlreadyAssigned}
                   >
                     {op.username}
+                    {roleLabel ? ` - ${roleLabel}` : ""}
                     {isAlreadyAssigned ? ` (${assignedLabel})` : ""}
                   </option>
                 );

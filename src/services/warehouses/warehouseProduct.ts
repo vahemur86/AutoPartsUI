@@ -14,6 +14,7 @@ import type {
   GetWarehouseProductsResponse,
   GetShopProductsParams,
   GetShopProductsResponse,
+  SearchShopProductsParams,
 } from "@/types/warehouses/warehouseProduct";
 
 const performRequest = async <T>(
@@ -87,6 +88,34 @@ export const getShopProducts = ({
       ),
     cashRegisterId,
     "Failed to fetch shop products.",
+  ).then((items) =>
+    items.map((item) => ({
+      ...item,
+      productId: item.productId ?? item.product?.id,
+    })),
+  );
+
+export const searchShopProductsBySku = ({
+  shopId,
+  cashRegisterId,
+  sku,
+}: SearchShopProductsParams) =>
+  performRequest(
+    (headers) =>
+      api.get<GetShopProductsResponse>(
+        `/WarehouseProduct/shop/${shopId}/products/search`,
+        {
+          headers,
+          params: { sku },
+        },
+      ),
+    cashRegisterId,
+    "Failed to search shop products by SKU.",
+  ).then((items) =>
+    items.map((item) => ({
+      ...item,
+      productId: item.productId ?? item.product?.id,
+    })),
   );
 
 
