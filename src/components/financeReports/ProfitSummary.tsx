@@ -19,7 +19,12 @@ import { getApiErrorMessage, getCashRegisterId } from "@/utils";
 import { getDynamicColumns, toDynamicRows } from "./tableUtils";
 import styles from "./FinanceReports.module.css";
 
-const formatDateForApi = (date: Date): string => date.toISOString().split("T")[0];
+const formatDateForApi = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const parseDate = (value: string): Date | null => {
   if (!value) return null;
@@ -37,7 +42,7 @@ export const ProfitSummary = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<unknown>(null);
 
-  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+  const cashRegisterId = useMemo(() => getCashRegisterId(0), []);
 
   useEffect(() => {
     dispatch(fetchShops({ cashRegisterId }));

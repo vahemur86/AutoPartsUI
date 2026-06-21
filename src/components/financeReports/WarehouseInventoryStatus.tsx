@@ -29,7 +29,7 @@ export const WarehouseInventoryStatus = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<unknown>(null);
 
-  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+  const cashRegisterId = useMemo(() => getCashRegisterId(0), []);
 
   useEffect(() => {
     dispatch(fetchWarehouses());

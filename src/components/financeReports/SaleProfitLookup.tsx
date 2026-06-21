@@ -22,7 +22,7 @@ export const SaleProfitLookup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<unknown>(null);
 
-  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+  const cashRegisterId = useMemo(() => getCashRegisterId(0), []);
 
   const handleLoad = useCallback(async () => {
     const parsedSaleId = Number(saleId);
