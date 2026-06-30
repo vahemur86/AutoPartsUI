@@ -135,58 +135,90 @@
   "offers": {},
   "reports": {
     "navigation": {
-      "workshopOrders": "Աշխատանոցի պատվերներ",
+      "workshopOrders": "Աշխատարանի պատվերներ",
       "zReports": "Z-հաշիվներ",
       "batchReports": "Խմբերի հաշվետվություններ",
       "openSessions": "Բաց սեսսիաներ",
       "powderBatches": "Փոշու խմբեր",
-      "cashboxSessionsReports": "Դրամարկղի սեանսների հաշվետվություններ",
-      "ironProducts": "Աղեղի արտադրանք",
-      "ironSale": "Աղեղի վաճառք",
-      "serviceTasks": "Ծառայությունների վճարումներ"
+      "cashboxSessionsReports": "Դրամարկղի հերթափոխերի հաշվետվություններ",
+      "ironProducts": "Երկաթյա արտադրանք",
+      "ironSale": "Երկաթի վաճառք",
+      "serviceTasks": "Ծառայության վճարումներ"
     },
     "workshopOrders": {
-      "loading": "Բեռնում է գործարանի պատվերները...",
+      "loading": "Բեռնում է աշխատարանի պատվերները...",
       "columns": {
         "id": "ID",
-        "templateId": "Թեմայի ID",
-        "isManualMode": "Ձեռնարկային ռեժիմ",
-        "mechanicPrice": "Մեխանիկի արժեքը",
-        "electricianPrice": "Էլեկտրիկի արժեքը",
-        "sparePartsPrice": "Մատակարարման մասերի արժեքը",
-        "totalAmount": "Ընդհանուր գումարը",
+        "templateId": "Շաբլոնի ID",
+        "isManualMode": "Ձեռքով ռեժիմ",
+        "mechanicPrice": "Մեխանիկի գինը",
+        "electricianPrice": "Էլեկտրիկի գինը",
+        "sparePartsPrice": "Պահեստամասերի գինը",
+        "totalAmount": "Ընդամենը",
         "comment": "Մեկնաբանություն",
         "operatorUserId": "Օպերատորի ID",
         "cashRegisterId": "Դրամարկղի ID",
-        "sessionId": "Սեսսիայի ID",
-        "createdAt": "Ստեղծման ամսաթիվը"
+        "sessionId": "Սեսիայի ID",
+        "createdAt": "Ստեղծման ամսաթիվ"
       }
     },
     "serviceTasks": {
-      "loading": "Բեռնում է ծառայությունների վճարումները...",
+      "loading": "Բեռնում է ծառայության վճարումները...",
       "filters": {
         "from": "Սկսած",
         "to": "Մինչև",
-        "userId": "Օգտվողի ID",
-        "paymentType": "Վճարի տեսակը"
+        "userId": "Օգտատիրոջ ID",
+        "paymentType": "Վճարման տեսակ"
       },
       "columns": {
-        "paymentId": "Վճարի ID",
-        "createdAt": "Ստեղծման ամսաթիվը",
-        "createdByUserId": "Ստեղծվել է օգտվողի կողմից",
-        "totalAmount": "Ընդհանուր գումարը",
-        "cashTotal": "Ընդհանուր կանխիկը",
-        "nonCashTotal": "Ընդհանուր անկանխիկը",
-        "serviceTaskCode": "Ծառայության կոդը",
+        "paymentId": "Վճարման ID",
+        "createdAt": "Ստեղծման ամսաթիվ",
+        "createdByUserId": "Ստեղծող",
+        "totalAmount": "Ընդամենը",
+        "cashTotal": "Կանխիկ գումար",
+        "nonCashTotal": "Անկանխիկ գումար",
+        "serviceTaskCode": "Ծառայության կոդ",
         "price": "Գինը",
-        "paymentType": "Վճարի տեսակը"
+        "paymentType": "Վճարման տեսակ"
       },
       "paymentTypes": {
-        "all": "Բբոլորը",
+        "all": "Բոլորը",
         "cash": "Կանխիկ",
         "nonCash": "Անկանխիկ"
       }
     }
+  },
+  "financeReports": {
+    "navigation": {
+      "profitSummary": "Շահույթի ամփոփում",
+      "profitDetailed": "Մանրամասն շահույթ",
+      "saleProfit": "Վաճառքների շահույթ",
+      "warehouseInventory": "Պահեստի մնացորդ",
+      "shopInventory": "Խանութի մնացորդ"
+    },
+    "filters": {
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութը",
+      "warehouse": "Պահեստ",
+      "selectWarehouse": "Ընտրեք պահեստը",
+      "fromDate": "Սկսած ամսաթիվ",
+      "toDate": "Մինչև ամսաթիվ",
+      "saleId": "Վաճառքի ID",
+      "productId": "Ապրանքի ID",
+      "productIdOptional": "Ապրանքի ID (ըստ ցանկության)"
+    },
+    "actions": {
+      "load": "Ցույց տալ հաշվետվությունը"
+    },
+    "validation": {
+      "selectShop": "Ընտրեք խանութը",
+      "selectWarehouse": "Ընտրեք պահեստը",
+      "enterSaleId": "Մուտքագրեք վավեր վաճառքի ID"
+    },
+    "error": {
+      "failedToLoad": "Չհաջողվեց բեռնել ֆինանսական հաշվետվության տվյալները"
+    },
+    "empty": "Կարգավորեք ֆիլտրերը և սեղմեք «Ցույց տալ հաշվետվությունը»՝ տվյալները տեսնելու համար."
   },
   "exchangeRates": {},
   "users": {},
@@ -198,9 +230,261 @@
   "customerTypes": {},
 
   "ironManagement": {},
-  "cashRegisters": {},
+  "cashRegisters": {
+    "addCashRegister": "Ավելացնել դրամարկղ",
+    "editCashRegister": "Խմբագրել դրամարկղը",
+    "fetchingBalance": "Բեռնվում է մնացորդը...",
+    "form": {
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութը",
+      "code": "Դրամարկղի կոդ",
+      "enterCode": "Մուտքագրեք դրամարկղի կոդը...",
+      "description": "Նկարագրություն",
+      "enterDescription": "Մուտքագրեք նկարագրությունը..."
+    },
+    "columns": {
+      "code": "Դրամարկղի կոդ",
+      "description": "Նկարագրություն",
+      "shopId": "Խանութ",
+      "status": "Կարգավիճակ"
+    },
+    "success": {
+      "created": "Դրամարկղը հաջողությամբ ստեղծվեց",
+      "updated": "Դրամարկղը հաջողությամբ թարմացվեց",
+      "deleted": "Դրամարկղը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել դրամարկղը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել դրամարկղը",
+      "failedToDelete": "Չհաջողվեց ջնջել դրամարկղը"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել դրամարկղը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{name}}» դրամարկղը։ Այս գործողությունը հետադարձելի չէ։"
+    },
+    "topUp": {
+      "button": "Լիցքավորել",
+      "title": "Դրամարկղի լիցքավորում",
+      "currentBalance": "Ընթացիկ մնացորդ",
+      "sessionOpen": "Սեսիան բաց է",
+      "amount": "Գումար",
+      "enterAmount": "Մուտքագրեք գումարը...",
+      "currencyCode": "AMD",
+      "comment": "Մեկնաբանություն",
+      "enterComment": "Մուտքագրեք մեկնաբանությունը...",
+      "submit": "Լիցքավորել",
+      "loadingBalance": "Բեռնվում է մնացորդը...",
+      "success": "Դրամարկղը հաջողությամբ լիցքավորվեց",
+      "error": "Չհաջողվեց լիցքավորել դրամարկղը"
+    },
+    "assignOperator": {
+      "button": "Կցել օպերատոր",
+      "title": "Օպերատորի կցում դրամարկղին",
+      "operator": "Օպերատոր",
+      "selectOperator": "Ընտրեք օպերատորը",
+      "loading": "Բեռնվում են օպերատորները...",
+      "submit": "Կցել",
+      "success": "Օպերատորը հաջողությամբ կցվեց",
+      "error": "Չհաջողվեց կցել օպերատորին"
+    }
+  },
+  "cashbox": {
+    "zReports": {
+      "title": "Z հաշվետվություններ",
+      "columns": {
+        "openedAt": "Բացված է",
+        "closedAt": "Փակված է",
+        "intakeCount": "Հայտեր",
+        "totalPurchases": "Ընդհանուր գնումներ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "difference": "Տարբերություն"
+      },
+      "details": {
+        "timeline": "Սեսիայի ժամանակագրություն",
+        "financials": "Ֆինանսական ամփոփում",
+        "operations": "Գործողություններ",
+        "duration": "Տևողություն",
+        "operator": "Օպերատոր",
+        "finalDiff": "Վերջնական տարբերություն",
+        "catalystCashOut": "Կատալիզատորի կանխիկ ելք",
+        "ironCashOut": "Երկաթի կանխիկ ելք"
+      },
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ",
+        "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
+        "selectToDate": "Ընտրեք վերջի ամսաթիվը"
+      }
+    },
+    "batches": {
+      "title": "Խմբային հաշվետվություններ",
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ",
+        "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
+        "selectToDate": "Ընտրեք վերջի ամսաթիվը",
+        "clientName": "Հաճախորդի անուն",
+        "clientPhone": "Հաճախորդի հեռախոս",
+        "clientTypeId": "Հաճախորդի տիպի ID",
+        "customerType": "Հաճախորդի տեսակ",
+        "selectCustomerType": "Ընտրեք հաճախորդի տեսակը",
+        "placeholderClientName": "Ըստ հաճախորդի անվան",
+        "placeholderClientPhone": "Ըստ հաճախորդի հեռախոսի",
+        "placeholderClientTypeId": "Ըստ հաճախորդի տիպի ID-ի"
+      },
+      "columns": {
+        "createdAt": "Ստեղծման ամսաթիվ",
+        "intakes": "Հայտեր",
+        "weight": "Ընդհանուր քաշ",
+        "status": "Կարգավիճակ"
+      },
+      "details": {
+        "individualIntakes": "Առանձին հայտեր",
+        "analysis": "Խմբի վերլուծություն",
+        "intakeId": "Հայտ",
+        "powder": "Փոշի",
+        "pt": "Պլատին (Pt)",
+        "pd": "Պալադիում (Pd)",
+        "rh": "Ռոդիում (Rh)",
+        "cost": "Արժեք",
+        "totalCost": "Ընդհանուր արժեք",
+        "sales": "Գնահատված վաճառք",
+        "profit": "Սպասվող շահույթ",
+        "percent": "Բոնուսի տոկոս",
+        "fxRate": "Փոխարժեք (AMD)",
+        "offerIncreaseStepOrder": "Առաջարկի բարձրացման քայլի հերթականություն",
+        "offerIncreasePercent": "Առաջարկի բարձրացման տոկոս",
+        "estimatedSalesAmdAtPurchase": "Գնահատված վաճառք՝ գնման պահին",
+        "estimatedSalesDiffPercent": "Գնահատված վաճառքի տարբերությունը (%)",
+        "expectedProfitAmd": "Սպասվող շահույթ՝ գնման պահին",
+        "liveProfitPercent": "Ընթացիկ շահույթի տոկոսը",
+        "purchaseProfitAmd": "Շահույթ՝ գնման պահին",
+        "purchaseProfitPercent": "Շահույթի տոկոս՝ գնման պահին",
+        "profitDiffAmd": "Շահույթի տարբերություն",
+        "profitDiffPercent": "Շահույթի տարբերություն (%)",
+        "customerRealPercent": "Հաճախորդի իրական տոկոս"
+      }
+    },
+    "openSessions": {
+      "title": "Բաց սեսսիաներ",
+      "columns": {
+        "sessionId": "Սեսիայի ID",
+        "cashBoxCode": "Կոդ",
+        "operator": "Օպերատոր",
+        "openedAt": "Բացված է",
+        "intakesOffered": "Առաջարկված հայտեր",
+        "intakesAccepted": "Ընդունված հայտեր",
+        "powderKg": "Փոշի",
+        "purchases": "Գնումներ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "difference": "Տարբերություն",
+        "lastActivity": "Վերջին ակտիվություն"
+      }
+    },
+    "powderBatches": {
+      "title": "Փոշու խմբեր",
+      "columns": {
+        "createdAt": "Ստեղծման ամսաթիվ",
+        "intakes": "Հայտեր",
+        "weight": "Ընդհանուր",
+        "ptTotal": "Pt ընդհանուր",
+        "pdTotal": "Pd ընդհանուր",
+        "rhTotal": "Rh ընդհանուր",
+        "ptPerKg_g": "Pt",
+        "pdPerKg_g": "Pd",
+        "rhPerKg_g": "Rh",
+        "status": "Կարգավիճակ",
+        "avgPdPricePerKg": "Միջին Pd",
+        "avgPtPricePerKg": "Միջին Pt",
+        "avgRhPricePerKg": "Միջին Rh",
+        "avgFxRateToAmd": "Միջին փոխարժեք",
+        "avgCustomerPercent": "Միջին %"
+      },
+      "summary": {
+        "title": "Փոշու ամփոփում",
+        "button": "Ամփոփում",
+        "tooltip": "Ցույց տալ բոլոր խմբերի ընդհանուր փոշին և մետաղները",
+        "empty": "Ամփոփ տվյալներ չկան։",
+        "thisMonth": "Այս ամիս",
+        "totalPowderKg": "Ընդհանուր փոշի (կգ)",
+        "ptTotal": "Ընդհանուր պլատին (գ)",
+        "pdTotal": "Ընդհանուր պալադիում (գ)",
+        "rhTotal": "Ընդհանուր ռոդիում (գ)",
+        "batchCount": "Խմբերի քանակ",
+        "metalsTitle": "Թանկարժեք մետաղներ",
+        "averagesTitle": "Միջին ցուցանիշներ",
+        "metals": {
+          "pt": "Պլատին",
+          "pd": "Պալադիում",
+          "rh": "Ռոդիում"
+        },
+        "units": {
+          "kg": "կգ",
+          "g": "գ",
+          "batches": "խմբեր"
+        }
+      },
+      "details": {
+        "analysis": "Փոշու խմբի վերլուծություն",
+        "intakeId": "Հայտ",
+        "powder": "Փոշի",
+        "pt": "Պլատին (Pt)",
+        "pd": "Պալադիում (Pd)",
+        "rh": "Ռոդիում (Rh)",
+        "individualIntakes": "Առանձին հայտեր",
+        "summaryInfo": "Այս խմբում կա {{count}} հայտ։ Մանրամասն տարրերը ներկայացված են վերևի խմբային ամփոփման մեջ։"
+      },
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ",
+        "cashRegisterId": "Դրամարկղի ID",
+        "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
+        "selectToDate": "Ընտրեք վերջի ամսաթիվը",
+        "enterCashRegisterId": "Մուտքագրեք դրամարկղի ID-ն"
+      }
+    },
+    "cashboxReport": {
+      "title": "Դրամարկղի հաշվետվություն",
+      "shopLabel": "Խանութ",
+      "registerLabel": "Դրամարկղ",
+      "dateLabel": "Ամսաթիվ",
+      "selectShop": "Ընտրեք խանութը",
+      "selectRegister": "Ընտրեք դրամարկղը",
+      "selectDatePlaceholder": "Ընտրեք ամսաթիվ (ըստ ցանկության)",
+      "load": "Ցույց տալ հաշվետվությունը",
+      "validation": {
+        "shopRequired": "Խանութը պարտադիր է",
+        "registerRequired": "Դրամարկղը պարտադիր է"
+      },
+      "columns": {
+        "cashBoxId": "Դրամարկղի ID",
+        "date": "Ամսաթիվ",
+        "openingBalance": "Սկզբնական մնացորդ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "expectedClosingBalance": "Ակնկալվող վերջնական մնացորդ"
+      }
+    },
+    "errors": {
+      "failedToFetchZReports": "Չհաջողվեց բեռնել Z հաշվետվությունները",
+      "failedToFetchZReport": "Չհաջողվեց բեռնել Z հաշվետվության մանրամասները",
+      "failedToFetchBatches": "Չհաջողվեց բեռնել խմբերը",
+      "failedToFetchBatchDetails": "Չհաջողվեց բեռնել խմբի տարրերը",
+      "failedToFetchOpenSessionsSummary": "Չհաջողվեց բեռնել բաց սեսսիաների ամփոփումը",
+      "failedToFetchPowderBatches": "Չհաջողվեց բեռնել փոշու խմբերը",
+      "failedToFetchPowderBatchesSummary": "Չհաջողվեց բեռնել փոշու խմբերի ամփոփումը",
+      "failedToFetchCashboxReport": "Չհաջողվեց բեռնել դրամարկղի հաշվետվությունը"
+    }
+  },
   "cashbox": {},
-  "products": {},
+  "products": {
+    "form": {
+      "rootCategory": "Ծնող կատեգորիա",
+      "childCategory": "Ենթակատեգորիա"
+    }
+  },
 
   "translation": {},
   "languages": {},
@@ -232,17 +516,17 @@
     "cashier": {
       "title": "Դրամարկղ",
       "description": "Ընտրեք ապրանքները, ավելացրեք դրանք զամբյուղում և ավարտեք կանխիկ կամ անկանխիկ վճարումը։",
-      "selectShop": "Սեղմեք խանութը",
+      "selectShop": "Ընտրեք խանութը",
       "productsList": "Հասանելի ապրանքներ",
       "loadingProducts": "Տվյալների բեռնում...",
       "noProducts": "Հասանելի ապրանքներ չկան.",
       "scanOrEnterSku": "Սքանավորեք շտրիխ կոդը կամ մուտքագրեք SKU-ը",
       "scanPlaceholder": "Սքանավորեք կամ մուտքագրեք SKU և սեղմեք Enter",
-      "searchButton": "Ավելացնել SKU-ով",
-      "enterSku": "Մուտքագրեք ապրանքի SKU-ը.",
-      "productNotFound": "Այս SKU-ով ապրանքը չի գտնվել.",
-      "productNotInShop": "Ապրանքը մատչելի չէ ընտրված խանութում.",
-      "addedToCart": "Ապրանքը {{sku}} ավելացված է զամբյուղում.",
+      "searchButton": "Ավելացնել ըստ SKU-ի",
+      "enterSku": "Մուտքագրեք ապրանքի SKU-ն։",
+      "productNotFound": "Նշված SKU-ով ապրանք չի գտնվել։",
+      "productNotInShop": "Ապրանքը հասանելի չէ ընտրված խանութում։",
+      "addedToCart": "{{sku}} ապրանքն ավելացվել է զամբյուղում։",
       "table": {
         "product": "Ապրանք",
         "sku": "SKU",
@@ -251,13 +535,13 @@
         "actions": "Գործողություններ"
       },
       "scanPlaceholder": "Սքանավորեք կամ մուտքագրեք SKU և սեղմեք Enter",
-      "searchButton": "Ավելացնել SKU-ով",
-      "enterSku": "Մուտքագրեք ապրանքի SKU-ը.",
-      "productNotFound": "Այս SKU-ով ապրանքը չի գտնվել.",
-      "productNotInShop": "Ապրանքը մատչելի չէ ընտրված խանութում.",
-      "addedToCart": "Ապրանքը {{sku}} ավելացված է զամբյուղում.",
+      "searchButton": "Ավելացնել ըստ SKU-ի",
+      "enterSku": "Մուտքագրեք ապրանքի SKU-ն։",
+      "productNotFound": "Նշված SKU-ով ապրանք չի գտնվել։",
+      "productNotInShop": "Ապրանքը հասանելի չէ ընտրված խանութում։",
+      "addedToCart": "{{sku}} ապրանքն ավելացվել է զամբյուղում։",
       "cartTitle": "Զամբյուղ",
-      "emptyCart": "Զամբյուղը դատարկ է.",
+      "emptyCart": "Զամբյուղը դատարկ է։",
       "unitPrice": "Միավոր գին",
       "quantity": "Քանակ",
       "remove": "Ջնջել",
@@ -268,7 +552,7 @@
         "mixed": "Խառը"
       },
       "shopLabel": "Խանութ",
-      "loadingShop": "Խանութը բեռնում է...",
+      "loadingShop": "Խանութի տվյալները բեռնվում են...",
       "cashReceived": "Ստացված կանխիկը",
       "cashPaid": "Կանխիկ",
       "nonCashPaid": "Անկանխիկ",
@@ -276,34 +560,34 @@
       "nonCashReferencePlaceholder": "օր. Card-XXXX1234",
       "nonCashReferenceRequired": "Մուտքագրեք քարտի կամ վճարման հղումը։",
       "completeSale": "Ավարտել վաճառքը",
-      "processing": "Մշակվում է...",
-      "saleCompleted": "Վաճառքն ավարտված է",
+      "processing": "Ընթացքի մեջ է...",
+      "saleCompleted": "Վաճառքը հաջողությամբ ավարտվել է",
       "saleError": "Չհաջողվեց ավարտել վաճառքը։",
       "amountPaid": "Վճարված գումարը",
       "change": "Վերադարձ",
       "paymentConfirmed": "Վճարը հաստատված է"
     },
     "modals": {
-      "pendingTopUpTitle": "Հաստատեք սպասվող թարմացումը",
-      "noOffersTitle": "Այս արտադրանքը չի համապատասխանում մեր պայմաններին։"
+      "pendingTopUpTitle": "Հաստատեք սպասվող մուտքագրումը",
+      "noOffersTitle": "Տվյալ արտադրանքը չի համապատասխանում սահմանված պայմաններին։"
     },
     "notifications": {
       "cashUpdated": "Դրամարկղի մնացորդը թարմացվել է",
-      "sessionNotOpen": "Խնդրում ենք բացել ձեր փոխարժեքը պատվերներ ստեղծելու համար"
+      "sessionNotOpen": "Պատվերներ ձևակերպելու համար նախ բացեք հերթափոխը։"
     },
     "success": {
-      "sessionOpened": "Պահեստը հաջողությամբ բացվեց",
-      "sessionClosed": "Պահեստը հաջողությամբ փակվեց",
+      "sessionOpened": "Հերթափոխը հաջողությամբ բացվել է",
+      "sessionClosed": "Հերթափոխը հաջողությամբ փակվել է",
       "intakeCreated": "Մուտքը հաջողությամբ ստեղծվեց",
-      "ironSold": "Երկաթը հաջողությամբ վաճառվեց",
+      "ironSold": "Երկաթի գնումը հաջողությամբ կատարվեց",
       "transactionConfirmed": "Գործարքը հաջողությամբ հաստատվեց",
-      "purchaseCompleted": "Գնումը հաջողությամբ ավարտվեց"
+      "purchaseCompleted": "Գնումը հաջողությամբ ավարտվել է"
     },
     "ironCarShop": {
       "carModel": "Ավտոմեքենայի մոդել",
       "price": "Գին",
       "calculate": "Հաշվել",
-      "selectCustomerToCalculate": "Խնդրում ենք ընտրել կամ ստեղծել հաճախորդ գնի հաշվարկի համար"
+      "selectCustomerToCalculate": "Գնի հաշվարկից առաջ ընտրեք կամ ստեղծեք հաճախորդ։"
     },
     "calculate": {
       "mode": {
@@ -311,16 +595,16 @@
         "byAttributes": "Ըստ պարամետրերի"
       },
       "label": {
-        "bucketGroupCode": "Նկատի ունեք թիմի կոդը",
+        "bucketGroupCode": "Զամբյուղի խմբի կոդ",
         "brandId": "Բրենդի ID",
         "modelId": "Մոդելի ID",
         "fuelTypeId": "Վառելիքի տեսակի ID",
         "engineId": "Շարժիչի ID",
         "marketId": "Շուկայի ID",
-        "driveTypeId": "Քարշային տիպի ID",
+        "driveTypeId": "Քարշակի տեսակի ID",
         "year": "Տարի",
-        "hpMin": "Մին. Լ/Ք",
-        "hpMax": "Մաքս. Լ/Ք"
+        "hpMin": "Նվազագույն ձիաուժ",
+        "hpMax": "Առավելագույն ձիաուժ"
       },
       "specs": {
         "engine": "Շարժիչ",
@@ -337,27 +621,66 @@
       "group": "Խումբ"
     },
     "workshop": {
-      "title": "Աշխատանոց",
-      "modeLabel": "Ռեժիմ",
-      "templateMode": "Ձևանմուշ",
-      "manualMode": "Ճիշտ",
-      "templateLabel": "Ծառայության ձևանմուշ",
-      "selectTemplatePlaceholder": "Ընտրեք աշխատանոցի ձևանմուշը",
-      "mechanicPrice": "Մեխանիկի գին",
-      "electricianPrice": "Էլեկտրիկի գին",
-      "sparePartsPrice": "Պահեստամասերի գին",
-      "commentLabel": "Մեկնաբանություն",
-      "commentPlaceholder": "Մուտքագրեք մեկնաբանություն...",
+      "title": "Աշխատանոցի ծառայություններ",
+      "fields": {
+        "brand": "Մակնիշ",
+        "model": "Մոդել",
+        "fuelType": "Վառելիքի տեսակ",
+        "engine": "Շարժիչ",
+        "location": "Տեղակայություն",
+        "year": "Տարի",
+        "product": "Ապրանք",
+        "quantity": "Քանակ",
+        "vinCode": "VIN կոդ",
+        "mileageKm": "Վազք (կմ)"
+      },
+      "orderInfo": {
+        "title": "Պատվերի տվյալներ"
+      },
+      "actions": {
+        "addProduct": "Ավելացնել ապրանք",
+        "calculate": "Կատարել հաշվարկ",
+        "printCheck": "Տպել չեկը"
+      },
+      "mechanicPrice": "Մեխանիկական աշխատանքների արժեք",
+      "electricianPrice": "Էլեկտրական աշխատանքների արժեք",
+      "sparePartsPrice": "Պահեստամասերի արժեք",
+      "commentLabel": "Նշում",
+      "commentPlaceholder": "Մուտքագրեք հավելյալ նշում...",
+      "emptyProducts": "Ընտրված ապրանքներ չկան։",
       "totalAmount": "Ընդհանուր գումար",
-      "createOrder": "Հաշվել և ստեղծել",
+      "createOrder": "Ստեղծել պատվերը",
+      "receipt": {
+        "title": "Աշխատանոցի վճարման կտրոն",
+        "subtitle": "Սպասարկման պատվերի ամփոփ տվյալներ",
+        "cashRegister": "Դրամարկղ",
+        "operator": "Օպերատոր",
+        "estimateNumber": "Պատվերի համար",
+        "vehicleSection": "Մեքենա",
+        "productsSection": "Ընտրված ապրանքներ",
+        "productSku": "SKU կոդ",
+        "summarySection": "Գումարային ամփոփում",
+        "serviceTotal": "Ծառայությունների արժեք",
+        "electricityTotal": "Էլեկտրական աշխատանքների արժեք",
+        "productsTotal": "Ապրանքների արժեք"
+      },
       "success": {
-        "orderCreated": "Աշխատանոցի պատվերը հաջողությամբ ստեղծվեց"
+        "orderCreated": "Աշխատանոցի պատվերը հաջողությամբ ստեղծվել է",
+        "moveToCashDesk": "Չեկը տպվեց։ Մոտեցեք կասսա՝ վճարման համար։"
       },
       "error": {
-        "createFailed": "Չհաջողվեց ստեղծել աշխատանքային պատվերը"
+        "createFailed": "Չհաջողվեց ստեղծել աշխատանոցի պատվերը",
+        "loadVehicleDefinitionsFailed": "Չհաջողվեց բեռնել մեքենայի տվյալները։",
+        "loadProductsFailed": "Չհաջողվեց բեռնել խանութի ապրանքացանկը։",
+        "requiredVehicleFields": "Լրացրեք մեքենայի բոլոր պարտադիր դաշտերը։",
+        "templateNotFound": "Ընտրված մեքենայի համար գնագոյացման ձևանմուշ չի գտնվել։",
+        "calculateBeforePrint": "Չեկը տպելուց առաջ նախ կատարեք հաշվարկը։",
+        "createBeforePrint": "Սկզբում ստեղծեք պատվերը, որ չեկի վրա երևա պատվերի համարը։",
+        "estimateNeedsServices": "Գնահատումը պետք է ունենա առնվազն մեկ ծառայություն։",
+        "requiredOrderFields": "Պատվերը ստեղծելու համար լրացրեք VIN կոդը, վազքը և նշումը։"
       }
     },
-    "tabSwitchWarning": "Տաբի փոփոխությունը կհեռացնի բոլոր ընթացիկ ձևերը և մաքրի մուտքագրած տվյալները։ Դաջառնում եք շարունակել՞"
+    "tabSwitchWarning": "Տաբը փոխելու դեպքում ընթացիկ տվյալները կմաքրվեն։ Վստա՞հ եք, որ ցանկանում եք շարունակել։"
   },
   "customers": {},
   "pageControl": {},
@@ -459,14 +782,14 @@
         "title": "Լավագույն առաջարկ",
         "calculating": "Հաշվում ենք...",
         "notAvailable": "Առաջարկը հասանելի չէ",
-        "description": "Առաջlagetը հաշվարկվում է ընտրած կոնվերտորների մետաղների պարունակությամբ",
+        "description": "Առաջարկը հաշվարկվում է ընտրված կոնվերտորների մետաղական բաղադրության հիման վրա",
         "error": "Առաջարկը հաշվելիս չհաջողվեց",
         "calculate": "Հաշվել"
       },
 
       "sides": {
         "front": "Առջև",
-        "rear": "Վերև"
+        "rear": "Հետին"
       },
 
       "fallback": {
@@ -480,35 +803,83 @@
 
   "serviceTemplates": {
     "title": "Ծառայությունների ձևանմուշներ",
+    "tabs": {
+      "pricing": "Մեքենայի ծառայությունների գնագոյացում",
+      "categories": "Ծառայությունների կատեգորիաներ",
+      "employees": "Աշխատակիցներ",
+      "services": "Ծառայություններ"
+    },
 
     "actions": {
       "create": "Ստեղծել",
-      "update": "Թարմացնել"
+      "update": "Թարմացնել",
+      "addService": "Ավելացնել ծառայություն",
+      "loadPricing": "Բեռնել մեքենայի գները",
+      "viewItems": "Դիտել կազմը",
+      "hideItems": "Թաքցնել կազմը"
     },
 
     "fields": {
-      "name": "Անվանում",
-      "mechanicPrice": "Մեխանիկի գին",
-      "electricianPrice": "Էլեկտրիկի գին",
-      "sparePartsPrice": "Պահեստամասերի գին",
-      "status": "Կարգավիճակ"
+      "name": "Ձևանմուշի անվանում",
+      "vehicleBrand": "Մեքենայի մակնիշ",
+      "vehicleModel": "Մոդել",
+      "year": "Տարի",
+      "fuelType": "Վառելիքի տեսակ",
+      "engine": "Շարժիչ",
+      "allFuelTypes": "Բոլոր վառելիքի տեսակները",
+      "allEngines": "Բոլոր շարժիչները",
+      "location": "Տեղակայություն",
+      "electricityPrice": "Էլեկտրական աշխատանքների արժեք",
+      "serviceCategory": "Ծառայության կատեգորիա",
+      "code": "Կոդ",
+      "description": "Նկարագրություն",
+      "displayOrder": "Ցուցադրման հերթականություն",
+      "estimatedDurationMinutes": "Կանխատեսվող տևողություն (րոպե)",
+      "allCategories": "Բոլոր կատեգորիաները",
+      "filterByCategory": "Զտել ըստ կատեգորիայի",
+      "services": "Ծառայություններ",
+      "service": "Ծառայություն",
+      "employee": "Աշխատակից",
+      "firstName": "Անուն",
+      "lastName": "Ազգանուն",
+      "fullName": "Լրիվ անուն",
+      "email": "Էլ. փոստ",
+      "phone": "Հեռախոս",
+      "hireDate": "Աշխատանքի ընդունման օր",
+      "notes": "Նշումներ",
+      "servicePrice": "Ծառայության գին",
+      "servicesTotal": "Ծառայությունների ընդհանուր արժեք",
+      "totalAmount": "Ընդհանուր արժեք",
+      "vehicleDefinitionId": "Մեքենայի սահմանման ID",
+      "status": "Կարգավիճակ",
+      "inactive": "Անգործուն"
     },
 
     "table": {
-      "name": "Անվանում",
-      "mechanic": "Մեխանիկ",
-      "electrician": "Էլեկտրիկ",
-      "spareParts": "Պահեստամասեր",
-      "totalAmount": "Ընդհանուր գումար",
+      "name": "Ձևանմուշ",
+      "vehicle": "Մեքենա",
+      "location": "Տեղակայություն",
+      "service": "Ծառայություն",
+      "internalCost": "Ներքին ինքնարժեք",
+      "servicePrice": "Ծառայության գին",
+      "profit": "Շահույթ",
+      "marginPercent": "Մարժա %",
+      "serviceCategory": "Ծառայության կատեգորիա",
+      "services": "Ծառայություններ",
+      "totalAmount": "Ընդհանուր արժեք",
       "status": "Կարգավիճակ",
       "actions": "Գործողություններ"
     },
 
     "messages": {
-      "created": "Ձևանմուշը ստեղծվեց հաջողությամբ",
-      "updated": "Թարմացվեց հաջողությամբ",
-      "createFailed": "Ստեղծումը ձախողվեց",
-      "updateFailed": "Թարմացումը ձախողվեց"
+      "created": "Ձևանմուշը հաջողությամբ ստեղծվել է",
+      "updated": "Փոփոխությունները հաջողությամբ պահպանվեցին",
+      "createFailed": "Չհաջողվեց ստեղծել ձևանմուշը",
+      "updateFailed": "Չհաջողվեց թարմացնել ձևանմուշը",
+      "validationFailed": "Լրացրեք մեքենայի, կատեգորիայի և ծառայությունների բոլոր պարտադիր դաշտերը։",
+      "selectVehicleFirst": "Նախ ընտրեք մեքենայի մակնիշը, մոդելը, տարին, վառելիքի տեսակը, շարժիչը և տեղակայությունը։",
+      "vehicleNotFound": "Ընտրված պարամետրերով մեքենայի ձևանմուշ չի գտնվել։",
+      "loadFailed": "Չհաջողվեց բեռնել մեքենայի ծառայությունների գնագոյացման տվյալները։"
     }
   }
 }

@@ -42,7 +42,7 @@ import {
 } from "@/store/slices/exchangeRatesSlice";
 import { clearCustomersState } from "@/store/slices/customersSlice";
 import { fetchIronDropdown } from "@/store/slices/adminProductsSlice";
-import { fetchServiceTemplates } from "@/store/slices/serviceTemplatesSlice";
+import { fetchVehicleServiceTemplates } from "@/store/slices/vehicleServicePricingSlice";
 import {
   submitBulkPurchase,
   clearPrices,
@@ -167,7 +167,7 @@ export const useOperator = () => {
     offerOptions: useAppSelector((state) => state.offerOptions),
     exchangeRates: useAppSelector((state) => state.exchangeRates),
     customers: useAppSelector((state) => state.customers),
-    serviceTemplates: useAppSelector((state) => state.serviceTemplates),
+    vehicleServicePricing: useAppSelector((state) => state.vehicleServicePricing),
     ironCarShop: useAppSelector((state) => state.ironCarShop),
   };
 
@@ -258,30 +258,6 @@ export const useOperator = () => {
     workshopFormData,
   ]);
 
-  const selectedWorkshopTemplate = useMemo(
-    () =>
-      selectors.serviceTemplates.list.find(
-        (item) => String(item.id) === workshopFormData.selectedTemplateId,
-      ) ?? null,
-    [selectors.serviceTemplates.list, workshopFormData.selectedTemplateId],
-  );
-
-  const workshopTotalPrice = useMemo(() => {
-    if (!workshopFormData.isManualMode && selectedWorkshopTemplate) {
-      return (
-        selectedWorkshopTemplate.mechanicPrice +
-        selectedWorkshopTemplate.electricianPrice +
-        selectedWorkshopTemplate.sparePartsPrice
-      );
-    }
-
-    return (
-      Number(workshopFormData.mechanicPrice || 0) +
-      Number(workshopFormData.electricianPrice || 0) +
-      Number(workshopFormData.sparePartsPrice || 0)
-    );
-  }, [workshopFormData, selectedWorkshopTemplate]);
-
   const currentLanguageCode = useMemo(() => {
     return (
       languages.find((l) => mapApiCodeToI18nCode(l.code) === i18n.language)
@@ -351,12 +327,12 @@ export const useOperator = () => {
   useEffect(() => {
     const crId = userData?.cashRegisterId;
     if (crId) {
+      dispatch(fetchVehicleServiceTemplates({ cashRegisterId: crId }));
       dispatch(
         fetchActiveMetalRate({ cashRegisterId: crId, currencyCode: "USD" }),
       );
       dispatch(fetchLanguages(crId));
       dispatch(fetchRegisterSession(crId));
-      dispatch(fetchServiceTemplates());
       dispatch(fetchPendingTransaction(crId));
       refreshBalance();
     } else {
@@ -543,7 +519,22 @@ export const useOperator = () => {
     }
   };
 
-  const handleSubmitWorkshopOrder = async () => {
+  const handleSubmitWorkshopOrder = async (payload: {
+    vehicleBrandId: number;
+    vehicleModelId: number;
+    vehicleYear: number;
+    vehicleFuelTypeId: number;
+    vehicleEngineId: number;
+    location: string;
+    vinCode: string;
+    mileage: number;
+    notes: string;
+    services: Array<{
+      serviceId: number;
+      customerPrice: number;
+      employeeId?: number;
+    }>;
+  }) => {
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
 
     if (!selectors.cashSessions.hasOpenSession) {
@@ -553,50 +544,47 @@ export const useOperator = () => {
 
     if (!userData?.cashRegisterId) return;
 
-    if (!workshopFormData.isManualMode && !workshopFormData.selectedTemplateId) {
+    if (!payload.vehicleBrandId || !payload.vehicleModelId || !payload.vehicleYear) {
       return;
     }
 
-    if (workshopFormData.isManualMode) {
-      if (
-        isNaN(Number(workshopFormData.mechanicPrice)) ||
-        isNaN(Number(workshopFormData.electricianPrice)) ||
-        isNaN(Number(workshopFormData.sparePartsPrice))
-      ) {
-        return;
-      }
+    if (!payload.services.length) {
+      toast.error(t("operatorPage.workshop.error.estimateNeedsServices"));
+      return;
     }
 
     setUiState((p) => ({ ...p, isSubmitting: true }));
 
     try {
       const order = {
-        templateId: workshopFormData.isManualMode
-          ? 0
-          : Number(workshopFormData.selectedTemplateId),
-        isManualMode: workshopFormData.isManualMode,
-        mechanicPrice: workshopFormData.isManualMode
-          ? Number(workshopFormData.mechanicPrice)
-          : selectedWorkshopTemplate?.mechanicPrice ?? 0,
-        electricianPrice: workshopFormData.isManualMode
-          ? Number(workshopFormData.electricianPrice)
-          : selectedWorkshopTemplate?.electricianPrice ?? 0,
-        sparePartsPrice: workshopFormData.isManualMode
-          ? Number(workshopFormData.sparePartsPrice)
-          : selectedWorkshopTemplate?.sparePartsPrice ?? 0,
-        comment: workshopFormData.comment,
+        vehicleBrandId: Number(payload.vehicleBrandId),
+        vehicleModelId: Number(payload.vehicleModelId),
+        vehicleYear: Number(payload.vehicleYear),
+        vehicleDefinitionId: null,
+        vehicleFuelTypeId: Number(payload.vehicleFuelTypeId),
+        vehicleEngineId: Number(payload.vehicleEngineId),
+        location: payload.location,
+        vinCode: payload.vinCode,
+        mileage: Number(payload.mileage || 0),
+        notes: payload.notes,
+        services: payload.services.map((line) => ({
+          serviceId: Number(line.serviceId),
+          customerPrice: Number(line.customerPrice || 0),
+          ...(line.employeeId ? { employeeId: Number(line.employeeId) } : {}),
+        })),
       };
 
-      await createServiceOrder({
+      const estimate = await createServiceOrder({
         order,
         cashRegisterId: userData.cashRegisterId,
       });
 
       toast.success(t("operatorPage.workshop.success.orderCreated"));
-      handleResetForm();
+      return estimate;
     } catch (error) {
       console.error("Workshop order failed:", error);
       toast.error(t("operatorPage.workshop.error.createFailed"));
+      return null;
     } finally {
       setUiState((p) => ({ ...p, isSubmitting: false }));
     }
@@ -797,7 +785,6 @@ export const useOperator = () => {
     selectors,
     workshopFormData,
     setWorkshopFormData,
-    workshopTotalPrice,
     actions: {
       handleResetForm,
       handleSubmit,

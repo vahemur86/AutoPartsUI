@@ -17,7 +17,12 @@ const columnHelper = createColumnHelper<Product>();
 
 interface ColumnHandlers {
   brands: Array<{ id: number; code: string }>;
-  categories: Array<{ id: number; code: string }>;
+  categories: Array<{
+    id: number;
+    code: string;
+    name?: string;
+    parentCategoryId?: number | null;
+  }>;
   unitTypes: Array<{ id: number; code: string }>;
   boxSizes: Array<{ id: number; code: string }>;
   onEdit: (product: Product, buttonRef: React.RefObject<HTMLElement>) => void;
@@ -30,6 +35,45 @@ const getNameById = (
 ): string => {
   const item = items.find((i) => i.id === id);
   return item?.code || `${i18next.t("products.idPrefix")}${id}`;
+};
+
+const getCategoryPathById = (
+  id: number,
+  categories: Array<{
+    id: number;
+    code: string;
+    name?: string;
+    parentCategoryId?: number | null;
+  }>,
+): string => {
+  const categoryMap = new Map(categories.map((category) => [category.id, category]));
+  const selected = categoryMap.get(id);
+
+  if (!selected) {
+    return `${i18next.t("products.idPrefix")}${id}`;
+  }
+
+  const labels: string[] = [];
+  const visited = new Set<number>();
+  let current = selected;
+
+  while (current && !visited.has(current.id)) {
+    visited.add(current.id);
+    labels.unshift(current.name || current.code);
+
+    if (current.parentCategoryId == null) {
+      break;
+    }
+
+    const parent = categoryMap.get(current.parentCategoryId);
+    if (!parent) {
+      break;
+    }
+
+    current = parent;
+  }
+
+  return labels.join("/");
 };
 
 export const getProductColumns = ({
@@ -60,7 +104,7 @@ export const getProductColumns = ({
     }),
     columnHelper.accessor("categoryId", {
       header: i18next.t("products.columns.category"),
-      cell: (info) => getNameById(info.getValue(), categories),
+      cell: (info) => getCategoryPathById(info.getValue(), categories),
     }),
     columnHelper.accessor("unitTypeId", {
       header: i18next.t("products.columns.unitType"),

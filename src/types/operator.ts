@@ -104,7 +104,34 @@ export interface ServiceOrderRequest {
   mechanicPrice: number;
   electricianPrice: number;
   sparePartsPrice: number;
+  vinCode: string;
+  mileageKm: number;
   comment: string;
+}
+
+export interface ServiceEstimateRequestLine {
+  serviceId: number;
+  customerPrice: number;
+  employeeId?: number;
+}
+
+export interface ServiceEstimateRequest {
+  vehicleBrandId: number;
+  vehicleModelId: number;
+  vehicleYear: number;
+  vehicleDefinitionId: number | null;
+  vehicleFuelTypeId: number;
+  vehicleEngineId: number;
+  location: string;
+  vinCode: string;
+  mileage: number;
+  notes: string;
+  services: ServiceEstimateRequestLine[];
+}
+
+export interface ServiceEstimateResponse {
+  id: number;
+  estimateNumber: string;
 }
 
 export interface WorkshopFormData {

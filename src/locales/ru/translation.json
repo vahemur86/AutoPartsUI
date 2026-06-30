@@ -29,6 +29,7 @@
     "no": "Нет",
     "filters": "Фильтры",
     "reset": "Сбросить",
+    "refresh": "Обновить",
     "search": "Поиск",
     "noName": "Без названия",
     "front": "Передний",
@@ -166,44 +167,44 @@
       "batchReports": "Отчеты по партиям",
       "openSessions": "Открытые сессии",
       "powderBatches": "Партии порошка",
-      "cashboxSessionsReports": "Отчеты сессий кассы",
-      "ironProducts": "Железные изделия",
-      "ironSale": "Продажа железа",
+      "cashboxSessionsReports": "Отчеты по сессиям кассы",
+      "ironProducts": "Отчеты по железным изделиям",
+      "ironSale": "Отчеты по продажам железа",
       "workshopOrders": "Заказы мастерской",
-      "serviceTasks": "Платежи сервисных задач"
+      "serviceTasks": "Платежи по сервисным задачам"
     },
     "workshopOrders": {
       "loading": "Загрузка заказов мастерской...",
       "columns": {
         "id": "ID",
-        "templateId": "ID шаблона",
+        "templateId": "Шаблон",
         "isManualMode": "Ручной режим",
-        "mechanicPrice": "Стоимость механика",
-        "electricianPrice": "Стоимость электрика",
-        "sparePartsPrice": "Стоимость запчастей",
-        "totalAmount": "Общая сумма",
+        "mechanicPrice": "Цена механика",
+        "electricianPrice": "Цена электрика",
+        "sparePartsPrice": "Цена запчастей",
+        "totalAmount": "Итого",
         "comment": "Комментарий",
-        "operatorUserId": "ID оператора",
-        "cashRegisterId": "ID кассы",
-        "sessionId": "ID сессии",
-        "createdAt": "Дата создания"
+        "operatorUserId": "Оператор",
+        "cashRegisterId": "Касса",
+        "sessionId": "Сессия",
+        "createdAt": "Создано"
       }
     },
     "serviceTasks": {
-      "loading": "Загрузка платежей сервисных задач...",
+      "loading": "Загрузка платежей по сервисным задачам...",
       "filters": {
-        "from": "С",
-        "to": "По",
+        "from": "Дата с",
+        "to": "Дата по",
         "userId": "ID пользователя",
         "paymentType": "Тип оплаты"
       },
       "columns": {
         "paymentId": "ID платежа",
-        "createdAt": "Дата создания",
-        "createdByUserId": "Создано пользователем",
-        "totalAmount": "Общая сумма",
-        "cashTotal": "Наличные всего",
-        "nonCashTotal": "Безналично всего",
+        "createdAt": "Создано",
+        "createdByUserId": "Создал",
+        "totalAmount": "Итого",
+        "cashTotal": "Наличные итого",
+        "nonCashTotal": "Безналичные итого",
         "serviceTaskCode": "Код услуги",
         "price": "Цена",
         "paymentType": "Тип оплаты"
@@ -222,7 +223,7 @@
     "ironSale": {
       "loading": "Загрузка продаж железа...",
       "filters": {
-        "customerId": "ID Клиента"
+        "customerId": "ID клиента"
       },
       "columns": {
         "customerPhone": "Телефон клиента",
@@ -231,11 +232,11 @@
       }
     },
     "filters": {
-      "fromUtc": "С даты (UTC)",
-      "toUtc": "По дату (UTC)",
+      "fromUtc": "Дата с (UTC)",
+      "toUtc": "Дата по (UTC)",
       "selectDate": "Выберите дату",
-      "operatorUserId": "ID Оператора",
-      "cashRegisterId": "ID Кассы"
+      "operatorUserId": "Оператор",
+      "cashRegisterId": "Касса"
     },
     "errors": {
       "failedToFetch": "Не удалось загрузить отчеты"
@@ -244,8 +245,8 @@
   "financeReports": {
     "navigation": {
       "profitSummary": "Сводка прибыли",
-      "profitDetailed": "Детализированная прибыль",
-      "saleProfit": "Прибыль по продаже",
+      "profitDetailed": "Детальная прибыль",
+      "saleProfit": "Прибыль по продажам",
       "warehouseInventory": "Остатки склада",
       "shopInventory": "Остатки магазина"
     },
@@ -254,14 +255,14 @@
       "selectShop": "Выберите магазин",
       "warehouse": "Склад",
       "selectWarehouse": "Выберите склад",
-      "fromDate": "Дата от",
-      "toDate": "Дата до",
+      "fromDate": "Дата с",
+      "toDate": "Дата по",
       "saleId": "ID продажи",
       "productId": "ID товара",
       "productIdOptional": "ID товара (необязательно)"
     },
     "actions": {
-      "load": "Загрузить"
+      "load": "Показать отчет"
     },
     "validation": {
       "selectShop": "Пожалуйста, выберите магазин",
@@ -271,7 +272,7 @@
     "error": {
       "failedToLoad": "Не удалось загрузить финансовые данные"
     },
-    "empty": "Установите фильтры и нажмите «Загрузить» для просмотра данных."
+    "empty": "Установите фильтры и нажмите «Показать отчет», чтобы увидеть данные."
   },
   "exchangeRates": {
     "createNew": "Создать курсы валют",
@@ -1194,6 +1195,8 @@
       "sku": "SKU",
       "brand": "Бренд",
       "category": "Категория",
+      "rootCategory": "Родительская категория",
+      "childCategory": "Дочерняя категория",
       "unitType": "Тип единицы",
       "boxSize": "Размер коробки",
       "vehicleDependent": "Зависит от транспорта",
@@ -1301,7 +1304,7 @@
   },
   "productSettings": {
     "tabs": {
-      "category": "Код категории",
+      "category": "Категории",
       "brand": "Код бренда",
       "unitType": "Код единиц измерения",
       "boxSize": "Код размера коробки"
@@ -1315,6 +1318,35 @@
       "created": "{{type}} успешно создан",
       "updated": "{{type}} успешно обновлен",
       "deleted": "{{type}} успешно удален"
+    },
+    "categoryTree": {
+      "createTitle": "Создать категорию",
+      "createDescription": "Добавляйте корневые категории или создавайте подкатегории внутри существующего родителя.",
+      "createButton": "Создать категорию",
+      "treeTitle": "Дерево категорий",
+      "editTitle": "Редактировать категорию",
+      "codeLabel": "Код категории",
+      "parentLabel": "Родительская категория",
+      "root": "Корневая категория",
+      "displayOrderLabel": "Порядок отображения",
+      "activeLabel": "Категория активна",
+      "rootBadge": "Корень",
+      "confirmDelete": "Удалить {{name}}?",
+      "noItems": "Категории пока отсутствуют.",
+      "success": {
+        "created": "Категория успешно создана",
+        "updated": "Категория успешно обновлена",
+        "deleted": "Категория успешно удалена"
+      },
+      "error": {
+        "load": "Не удалось загрузить дерево категорий",
+        "create": "Не удалось создать категорию",
+        "update": "Не удалось обновить категорию",
+        "delete": "Не удалось удалить категорию",
+        "codeRequired": "Требуется код категории",
+        "displayOrder": "Порядок отображения должен быть не меньше 1",
+        "invalidParent": "Нельзя переместить категорию в саму себя или в свою дочернюю категорию"
+      }
     },
     "error": {
       "failedToAction": "Не удалось {{action}} {{type}}"
@@ -1436,7 +1468,7 @@
     },
     "cashier": {
       "title": "Касса",
-      "description": "Выберите товары, добавьте позиции в корзину и завершите оплату наличными или безналично.",
+      "description": "Выберите товары, добавьте их в корзину и завершите оплату наличным или безналичным способом.",
       "selectShop": "Выберите магазин",
       "productsList": "Доступные товары",
       "loadingProducts": "Загрузка товаров...",
@@ -1447,7 +1479,7 @@
       "enterSku": "Введите SKU продукта.",
       "productNotFound": "Продукт с этим SKU не найден.",
       "productNotInShop": "Продукт недоступен в выбранном магазине.",
-      "addedToCart": "Продукт {{sku}} добавлен в корзину.",
+      "addedToCart": "Товар {{sku}} добавлен в корзину.",
       "table": {
         "product": "Товар",
         "sku": "SKU",
@@ -1460,7 +1492,7 @@
       "enterSku": "Введите SKU продукта.",
       "productNotFound": "Продукт с этим SKU не найден.",
       "productNotInShop": "Продукт недоступен в выбранном магазине.",
-      "addedToCart": "Продукт {{sku}} добавлен в корзину.",
+      "addedToCart": "Товар {{sku}} добавлен в корзину.",
       "cartTitle": "Корзина",
       "emptyCart": "Корзина пуста.",
       "unitPrice": "Цена за единицу",
@@ -1490,11 +1522,11 @@
     },
     "modals": {
       "pendingTopUpTitle": "Подтверждение ожидаемого пополнения",
-      "noOffersTitle": "Данный продукт не соответствует нашим параметрам."
+      "noOffersTitle": "Данный товар не соответствует заданным условиям."
     },
     "notifications": {
       "cashUpdated": "Баланс кассы был обновлен",
-      "sessionNotOpen": "Пожалуйста, откройте смену, чтобы создавать заказы"
+      "sessionNotOpen": "Перед созданием заказов откройте смену."
     },
     "success": {
       "sessionOpened": "Смена успешно открыта",
@@ -1508,7 +1540,7 @@
       "carModel": "Модель машины",
       "price": "Цена",
       "calculate": "Рассчитать",
-      "selectCustomerToCalculate": "Пожалуйста, найдите или создайте клиента перед выполнением расчета"
+      "selectCustomerToCalculate": "Перед выполнением расчета найдите или создайте клиента."
     },
     "calculate": {
       "mode": {
@@ -1542,24 +1574,63 @@
       "group": "Группа"
     },
     "workshop": {
-      "title": "Мастерская",
-      "modeLabel": "Режим",
-      "templateMode": "Шаблон",
-      "manualMode": "Вручную",
-      "templateLabel": "Шаблон услуги",
-      "selectTemplatePlaceholder": "Выберите шаблон мастерской",
-      "mechanicPrice": "Цена механика",
-      "electricianPrice": "Цена электрика",
-      "sparePartsPrice": "Цена запчастей",
-      "commentLabel": "Комментарий",
-      "commentPlaceholder": "Введите комментарий...",
+      "title": "Услуги мастерской",
+      "fields": {
+        "brand": "Марка",
+        "model": "Модель",
+        "fuelType": "Тип топлива",
+        "engine": "Двигатель",
+        "location": "Локация",
+        "year": "Год",
+        "product": "Товар",
+        "quantity": "Количество",
+        "vinCode": "VIN код",
+        "mileageKm": "Пробег (км)"
+      },
+      "orderInfo": {
+        "title": "Данные заказа"
+      },
+      "actions": {
+        "addProduct": "Добавить товар",
+        "calculate": "Рассчитать",
+        "printCheck": "Распечатать чек"
+      },
+      "mechanicPrice": "Стоимость механических работ",
+      "electricianPrice": "Стоимость электротехнических работ",
+      "sparePartsPrice": "Стоимость запчастей",
+      "commentLabel": "Примечание",
+      "commentPlaceholder": "Введите дополнительное примечание...",
+      "emptyProducts": "Товары не выбраны.",
       "totalAmount": "Общая сумма",
-      "createOrder": "Рассчитать и создать",
+      "createOrder": "Создать заказ-наряд",
+      "receipt": {
+        "title": "Чек на обслуживание",
+        "subtitle": "Сводка по заказу-наряду",
+        "cashRegister": "Касса",
+        "operator": "Оператор",
+        "estimateNumber": "Номер заказа",
+        "vehicleSection": "Автомобиль",
+        "productsSection": "Выбранные товары",
+        "productSku": "SKU код",
+        "summarySection": "Итоговая сводка",
+        "serviceTotal": "Стоимость услуг",
+        "electricityTotal": "Стоимость электротехнических работ",
+        "productsTotal": "Стоимость товаров"
+      },
       "success": {
-        "orderCreated": "Заказ мастерской успешно создан"
+        "orderCreated": "Заказ-наряд успешно создан",
+        "moveToCashDesk": "Чек распечатан. Перейдите в кассу для оплаты."
       },
       "error": {
-        "createFailed": "Не удалось создать заказ мастерской"
+        "createFailed": "Не удалось создать заказ-наряд",
+        "loadVehicleDefinitionsFailed": "Не удалось загрузить данные автомобиля.",
+        "loadProductsFailed": "Не удалось загрузить ассортимент магазина.",
+        "requiredVehicleFields": "Заполните все обязательные поля автомобиля.",
+        "templateNotFound": "Для выбранного автомобиля не найден шаблон ценообразования.",
+        "calculateBeforePrint": "Перед печатью чека сначала выполните расчет.",
+        "createBeforePrint": "Сначала создайте заказ, чтобы номер заказа попал в чек.",
+        "estimateNeedsServices": "Оценка должна содержать хотя бы одну услугу.",
+        "requiredOrderFields": "Перед созданием заказа заполните VIN, пробег и примечание."
       }
     },
     "services": {
@@ -1589,6 +1660,83 @@
       }
     },
     "tabSwitchWarning": "Переключение вкладки приведет к сбросу всех форм и очистке введенных данных. Вы уверены, что хотите продолжить?"
+  },
+  "serviceTemplates": {
+    "title": "Шаблоны услуг",
+    "tabs": {
+      "pricing": "Тарификация услуг по автомобилю",
+      "categories": "Категории услуг",
+      "employees": "Сотрудники",
+      "services": "Услуги"
+    },
+    "actions": {
+      "create": "Создать",
+      "update": "Обновить",
+      "addService": "Добавить услугу",
+      "loadPricing": "Загрузить тарификацию по автомобилю",
+      "viewItems": "Показать состав",
+      "hideItems": "Скрыть состав"
+    },
+    "fields": {
+      "name": "Название шаблона",
+      "vehicleBrand": "Марка",
+      "vehicleModel": "Модель",
+      "year": "Год",
+      "fuelType": "Тип топлива",
+      "engine": "Двигатель",
+      "allFuelTypes": "Все типы топлива",
+      "allEngines": "Все двигатели",
+      "location": "Локация",
+      "electricityPrice": "Стоимость электротехнических работ",
+      "serviceCategory": "Категория услуги",
+      "code": "Код",
+      "description": "Описание",
+      "displayOrder": "Порядок отображения",
+      "estimatedDurationMinutes": "Ориентировочная длительность (мин.)",
+      "allCategories": "Все категории",
+      "filterByCategory": "Фильтр по категории",
+      "services": "Услуги",
+      "service": "Услуга",
+      "employee": "Сотрудник",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "fullName": "ФИО",
+      "email": "Электронная почта",
+      "phone": "Телефон",
+      "hireDate": "Дата найма",
+      "notes": "Примечание",
+      "servicePrice": "Стоимость услуги",
+      "servicesTotal": "Общая стоимость услуг",
+      "totalAmount": "Общая стоимость",
+      "vehicleDefinitionId": "ID определения авто",
+      "status": "Статус",
+      "inactive": "Неактивно"
+    },
+    "table": {
+      "name": "Шаблон",
+      "vehicle": "Автомобиль",
+      "location": "Локация",
+      "service": "Услуга",
+      "internalCost": "Внутренняя стоимость",
+      "servicePrice": "Цена услуги",
+      "profit": "Прибыль",
+      "marginPercent": "Маржа %",
+      "serviceCategory": "Категория услуги",
+      "services": "Услуги",
+      "totalAmount": "Общая стоимость",
+      "status": "Статус",
+      "actions": "Действия"
+    },
+    "messages": {
+      "created": "Шаблон успешно создан",
+      "updated": "Изменения успешно сохранены",
+      "createFailed": "Не удалось создать шаблон",
+      "updateFailed": "Не удалось обновить шаблон",
+      "validationFailed": "Заполните все обязательные поля автомобиля, категории и стоимости услуг.",
+      "selectVehicleFirst": "Сначала выберите марку, модель, год, тип топлива, двигатель и локацию автомобиля.",
+      "vehicleNotFound": "Для выбранных параметров шаблон автомобиля не найден.",
+      "loadFailed": "Не удалось загрузить данные по тарификации услуг для автомобиля."
+    }
   },
   "customers": {
     "createOrGet": "Найти клиента",

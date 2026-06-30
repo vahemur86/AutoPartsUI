@@ -53,6 +53,155 @@ export interface Task {
   updatedAt?: string;
 }
 
+export interface ServiceCategoryItem {
+  id: number;
+  code: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  displayOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ServiceCategoryCreatePayload {
+  code: string;
+  name: string;
+  description?: string;
+  displayOrder: number;
+}
+
+export interface ServiceCategoryUpdatePayload {
+  id: number;
+  name: string;
+  description?: string;
+  displayOrder: number;
+}
+
+export interface EmployeeItem {
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  serviceCategoryId: number;
+  serviceCategoryName?: string;
+  hireDate: string;
+  isActive: boolean;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmployeeCreatePayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  serviceCategoryId: number;
+  hireDate: string;
+  notes?: string;
+}
+
+export interface EmployeeUpdatePayload {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  serviceCategoryId: number;
+  notes?: string;
+}
+
+export interface ServiceCatalogItem {
+  id: number;
+  code: string;
+  name: string;
+  description?: string;
+  serviceCategoryId: number;
+  serviceCategoryName?: string;
+  internalCost: number;
+  estimatedDurationMinutes: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ServiceCreatePayload {
+  code: string;
+  name: string;
+  description?: string;
+  serviceCategoryId: number;
+  internalCost: number;
+  estimatedDurationMinutes: number;
+}
+
+export interface ServiceUpdatePayload {
+  id: number;
+  name: string;
+  description?: string;
+  serviceCategoryId: number;
+  internalCost: number;
+  estimatedDurationMinutes: number;
+}
+
+export interface VehicleServiceTemplateLineItem {
+  id?: number;
+  serviceId: number;
+  serviceName?: string;
+  internalCost?: number;
+  customerPrice: number;
+  profit?: number;
+  profitMargin?: number;
+}
+
+export interface VehicleServiceTemplateItem {
+  id: number;
+  brandId: number;
+  brandName?: string;
+  modelId: number;
+  modelName?: string;
+  year: number;
+  fuelTypeId?: number;
+  fuelTypeName?: string;
+  engineId?: number;
+  engineName?: string;
+  location: string;
+  electricityPrice: number;
+  serviceCategoryId: number;
+  serviceCategoryName?: string;
+  notes?: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string | null;
+  items: VehicleServiceTemplateLineItem[];
+}
+
+export interface VehicleServiceTemplateUpsertPayload {
+  brandId: number;
+  modelId: number;
+  year: number;
+  fuelTypeId: number;
+  engineId: number;
+  location: string;
+  electricityPrice: number;
+  serviceCategoryId: number;
+  notes?: string;
+  services: Array<{
+    serviceId: number;
+    customerPrice: number;
+  }>;
+}
+
+export interface VehicleServiceTemplateCreatePayload
+  extends VehicleServiceTemplateUpsertPayload {}
+
+export interface VehicleServiceTemplateUpdatePayload
+  extends VehicleServiceTemplateUpsertPayload {
+  id: number;
+}
+
 export interface CreateVehiclePayload {
   brandId: number;
   modelId: number;
@@ -103,7 +252,44 @@ export interface ExistingItem {
 export interface ProductSettingItem {
   id: number;
   code: string;
+  name?: string;
+  parentCategoryId?: number | null;
+  level?: number;
+  isActive?: boolean;
+  displayOrder?: number;
+  canHaveProducts?: boolean;
   enabled?: boolean;
+}
+
+export interface CategoryNode {
+  id: number;
+  code: string;
+  name?: string;
+  parentCategoryId: number | null;
+  parentName?: string | null;
+  level: number;
+  isActive: boolean;
+  displayOrder: number;
+  canHaveProducts?: boolean;
+  subCategories: CategoryNode[];
+}
+
+export interface CategoriesTreeResponse {
+  rootCategories: CategoryNode[];
+}
+
+export interface CreateCategoryPayload {
+  code: string;
+  parentCategoryId: number | null;
+  displayOrder: number;
+}
+
+export interface UpdateCategoryPayload {
+  id: number;
+  code: string;
+  parentCategoryId: number | null;
+  isActive: boolean;
+  displayOrder: number;
 }
 
 // Exchange Rates

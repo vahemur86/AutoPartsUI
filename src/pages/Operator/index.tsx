@@ -86,9 +86,6 @@ export const OperatorPage = () => {
     isNonStandardCustomer,
     isFormDirty,
     selectors,
-    workshopFormData,
-    setWorkshopFormData,
-    workshopTotalPrice,
     actions,
   } = useOperator();
 
@@ -337,31 +334,16 @@ export const OperatorPage = () => {
             <div className={styles.workshopLayout}>
               <div className={styles.leftColumn}>
                 <WorkshopMode
-                  serviceTemplates={selectors.serviceTemplates.list}
-                  serviceTemplatesLoading={selectors.serviceTemplates.isLoading}
-                  formData={workshopFormData}
-                  setFormData={setWorkshopFormData}
+                  vehicleTemplates={selectors.vehicleServicePricing.items}
+                  vehicleTemplatesLoading={selectors.vehicleServicePricing.isLoading}
+                  cashRegisterId={userData?.cashRegisterId}
+                  shopId={userData?.shopId}
+                  operatorName={String(userData?.username || "")}
+                  cashRegisterName={String(
+                    userData?.cashRegisterName || userData?.cashRegisterId || "",
+                  )}
                   onSubmit={actions.handleSubmitWorkshopOrder}
                   isSubmitting={uiState.isSubmitting}
-                  hasTriedSubmit={uiState.hasTriedSubmit}
-                  totalPrice={workshopTotalPrice}
-                />
-              </div>
-              <div className={styles.rightColumn}>
-                <CustomerDetails
-                  customerData={formData.customer}
-                  onCustomerChange={(customer) =>
-                    setFormData((prev) => ({ ...prev, customer }))
-                  }
-                  phoneError={
-                    uiState.hasTriedSubmit &&
-                    !formData.customer.phone
-                  }
-                  onSuccess={() => {
-                    actions.handleResetForm();
-                  }}
-                  wide={true}
-                  activeTab="workshop"
                 />
               </div>
             </div>

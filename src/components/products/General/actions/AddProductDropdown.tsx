@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 // stores
@@ -40,10 +40,37 @@ export const AddProductDropdown = ({
   const [productKey, setProductKey] = useState("");
   const [sku, setSku] = useState("");
   const [brand, setBrand] = useState("");
-  const [category, setCategory] = useState("");
+  const [rootCategoryId, setRootCategoryId] = useState("");
+  const [childCategoryId, setChildCategoryId] = useState("");
   const [unitType, setUnitType] = useState("");
   const [boxSize, setBoxSize] = useState("");
   const [vehicleDependent, setVehicleDependent] = useState(false);
+
+  const sortedCategories = useMemo(
+    () =>
+      [...categories].sort(
+        (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
+      ),
+    [categories],
+  );
+
+  const rootCategories = useMemo(
+    () =>
+      sortedCategories.filter(
+        (item) => (item.parentCategoryId ?? null) === null && item.isActive !== false,
+      ),
+    [sortedCategories],
+  );
+
+  const childCategories = useMemo(() => {
+    if (!rootCategoryId) return [];
+    const rootId = Number(rootCategoryId);
+    return sortedCategories.filter(
+      (item) => item.parentCategoryId === rootId && item.isActive !== false,
+    );
+  }, [rootCategoryId, sortedCategories]);
+
+  const selectedCategoryId = childCategoryId || rootCategoryId;
 
   useEffect(() => {
     if (open) {
@@ -67,7 +94,8 @@ export const AddProductDropdown = ({
       setProductKey("");
       setSku("");
       setBrand("");
-      setCategory("");
+      setRootCategoryId("");
+      setChildCategoryId("");
       setUnitType("");
       setBoxSize("");
       setVehicleDependent(false);
@@ -79,7 +107,7 @@ export const AddProductDropdown = ({
       !productKey.trim() ||
       !sku.trim() ||
       !brand ||
-      !category ||
+      !selectedCategoryId ||
       !unitType ||
       !boxSize
     ) {
@@ -89,7 +117,7 @@ export const AddProductDropdown = ({
       productKey: productKey.trim(),
       sku: sku.trim(),
       brand: parseInt(brand),
-      category: parseInt(category),
+      category: parseInt(selectedCategoryId),
       unitType: parseInt(unitType),
       boxSize: parseInt(boxSize),
       vehicleDependent,
@@ -139,18 +167,37 @@ export const AddProductDropdown = ({
             ))}
           </Select>
           <Select
-            label={t("products.form.category")}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            label={t("products.form.rootCategory")}
+            value={rootCategoryId}
+            onChange={(e) => {
+              setRootCategoryId(e.target.value);
+              setChildCategoryId("");
+            }}
             placeholder={t("products.form.select")}
           >
             <option value="">{t("products.form.select")}</option>
-            {categories.map((categoryItem) => (
+            {rootCategories.map((categoryItem) => (
               <option key={categoryItem.id} value={categoryItem.id}>
-                {categoryItem.code}
+                {categoryItem.name || categoryItem.code}
               </option>
             ))}
           </Select>
+
+          {rootCategoryId && childCategories.length > 0 && (
+            <Select
+              label={t("products.form.childCategory")}
+              value={childCategoryId}
+              onChange={(e) => setChildCategoryId(e.target.value)}
+              placeholder={t("products.form.select")}
+            >
+              <option value="">{t("products.form.select")}</option>
+              {childCategories.map((categoryItem) => (
+                <option key={categoryItem.id} value={categoryItem.id}>
+                  {categoryItem.name || categoryItem.code}
+                </option>
+              ))}
+            </Select>
+          )}
           <Select
             label={t("products.form.unitType")}
             value={unitType}

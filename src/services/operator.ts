@@ -4,7 +4,14 @@ import api from ".";
 import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
-import type { Intake, IntakeResponse, NewPropose, WorkshopOrder } from "@/types/operator";
+import type {
+  Intake,
+  IntakeResponse,
+  NewPropose,
+  ServiceEstimateRequest,
+  ServiceEstimateResponse,
+  WorkshopOrder,
+} from "@/types/operator";
 
 export const createIntake = async ({
   intake,
@@ -91,23 +98,16 @@ export const createServiceOrder = async ({
   order,
   cashRegisterId,
 }: {
-  order: {
-    templateId: number;
-    isManualMode: boolean;
-    mechanicPrice: number;
-    electricianPrice: number;
-    sparePartsPrice: number;
-    comment: string;
-  };
+  order: ServiceEstimateRequest;
   cashRegisterId?: number;
-}) => {
+}): Promise<ServiceEstimateResponse> => {
   try {
-    const response = await api.post(`/operator/orders`, order, {
+    const response = await api.post(`/ServiceEstimate`, order, {
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error: unknown) {
-    throw new Error(getApiErrorMessage(error, "Failed to create workshop order."));
+    throw new Error(getApiErrorMessage(error, "Failed to create service estimate."));
   }
 };
 

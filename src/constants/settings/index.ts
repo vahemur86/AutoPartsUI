@@ -2,7 +2,10 @@ import type { ProductSettingsTab, TabConfig, TabId } from "@/types/settings";
 import {
   boxSizeService,
   brandsService,
-  categoryService,
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory,
   unitTypeService,
 } from "@/services/settings/productSettings";
 import {
@@ -29,7 +32,12 @@ export const PRODUCT_SETTINGS_TABS: ProductSettingsTab[] = [
     id: "category",
     label: "Category Code",
     type: "Category",
-    service: categoryService,
+    service: {
+      create: createCategory,
+      getAll: getCategories,
+      delete: deleteCategory,
+      update: updateCategory,
+    },
   },
   {
     id: "brand",

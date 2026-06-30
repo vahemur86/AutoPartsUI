@@ -77,3 +77,265 @@
   padding: 40px;
   color: var(--color-secondary-500);
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.section {
+  background: var(--color-black-2);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.pricingToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.pricingFilters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pricingActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.collapsiblePanel {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.filterControl {
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gridTwo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.serviceLinesBlock {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.serviceLinesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.serviceLineRow {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 180px auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.selectedServicesSummary {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectedServicesTitle {
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.selectedServiceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-white);
+  font-size: 13px;
+}
+
+.templateItemsPanel {
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.templateItemsTitle {
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.templateItemsEmpty {
+  color: var(--color-secondary-500);
+  font-size: 13px;
+}
+
+.templateItemsAccordion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.templateItemCard {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.templateItemSummary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.templateItemSummary::-webkit-details-marker {
+  display: none;
+}
+
+.templateItemSummaryPrice {
+  opacity: 0.8;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.templateItemMetrics {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.templateItemMetric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-white);
+  font-size: 12px;
+}
+
+.templateItemMetric strong {
+  font-size: 13px;
+}
+
+.totalsPanel {
+  display: flex;
+  gap: 18px;
+  color: var(--color-white);
+  font-size: 14px;
+}
+
+.statusRow {
+  margin-top: 12px;
+}
+
+.statusLabel {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--color-white);
+}
+
+.statusSelect {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+@media (max-width: 900px) {
+  .gridTwo {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pricingToolbar {
+    justify-content: stretch;
+  }
+
+  .pricingFilters,
+  .pricingActions {
+    width: 100%;
+  }
+
+  .serviceLineRow {
+    grid-template-columns: 1fr;
+  }
+
+  .templateItemSummary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .templateItemMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

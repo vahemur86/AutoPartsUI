@@ -32,7 +32,10 @@ import metalPricesReducer from "./slices/metalPricesSlice";
 import otpReducer from "./slices/verificationOTPSlice";
 import catalystPricingReducer from "./slices/catalystPricingSlice";
 import carCatalystReducer from "./slices/carCatalystSlice";
-import serviceTemplatesReducer from "./slices/serviceTemplatesSlice";
+import serviceCategoryReducer from "./slices/serviceCategorySlice";
+import employeesReducer from "./slices/employeesSlice";
+import servicesCatalogReducer from "./slices/servicesCatalogSlice";
+import vehicleServicePricingReducer from "./slices/vehicleServicePricingSlice";
 
 export const store = configureStore({
   reducer: {
@@ -69,7 +72,10 @@ export const store = configureStore({
     metalPrices: metalPricesReducer,
     otp: otpReducer,
     carCatalyst: carCatalystReducer,
-    serviceTemplates: serviceTemplatesReducer,
+    serviceCategory: serviceCategoryReducer,
+    employees: employeesReducer,
+    servicesCatalog: servicesCatalogReducer,
+    vehicleServicePricing: vehicleServicePricingReducer,
   },
 });
 

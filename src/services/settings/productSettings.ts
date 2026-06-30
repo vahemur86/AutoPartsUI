@@ -1,7 +1,17 @@
 import api from "..";
+import i18n from "@/i18n/config";
+
+import type {
+  CategoriesTreeResponse,
+  CategoryNode,
+  CreateCategoryPayload,
+  ProductSettingItem,
+  UpdateCategoryPayload,
+} from "@/types/settings";
 
 // utils
 import { getApiErrorMessage, getHeaders } from "@/utils";
+import { mapI18nCodeToApiCode } from "@/utils/languageMapping";
 
 // Generic CRUD factory
 export const createCrudService = (endpoint: string, entityName: string) => {
@@ -54,19 +64,113 @@ export const createCrudService = (endpoint: string, entityName: string) => {
   };
 };
 
+const getCurrentApiLanguageCode = () => {
+  return mapI18nCodeToApiCode(i18n.language || "en");
+};
+
+export const categoryService = {
+  create: async (payload: CreateCategoryPayload) => {
+    try {
+      const response = await api.post("/Categories", payload);
+      return response.data;
+    } catch (error: unknown) {
+      throw new Error(getApiErrorMessage(error, "Failed to create category."));
+    }
+  },
+
+  getAll: async (): Promise<ProductSettingItem[]> => {
+    try {
+      const response = await api.get("/Categories/with-names", {
+        params: {
+          languageCode: getCurrentApiLanguageCode(),
+        },
+      });
+
+      const items = Array.isArray(response.data) ? response.data : [];
+      return items.map((item: ProductSettingItem) => ({
+        id: item.id,
+        code: item.code,
+        name: item.name,
+        parentCategoryId: item.parentCategoryId ?? null,
+        level: item.level,
+        isActive: item.isActive,
+        displayOrder: item.displayOrder,
+        canHaveProducts: item.canHaveProducts,
+        enabled: item.isActive,
+      }));
+    } catch (error: unknown) {
+      throw new Error(getApiErrorMessage(error, "Failed to get category."));
+    }
+  },
+
+  getTree: async (): Promise<CategoriesTreeResponse> => {
+    try {
+      const response = await api.get("/Categories/tree", {
+        params: {
+          languageCode: getCurrentApiLanguageCode(),
+        },
+      });
+
+      const data = response.data as Partial<CategoriesTreeResponse>;
+      return {
+        rootCategories: Array.isArray(data?.rootCategories)
+          ? data.rootCategories
+          : [],
+      };
+    } catch (error: unknown) {
+      throw new Error(getApiErrorMessage(error, "Failed to get category tree."));
+    }
+  },
+
+  delete: async (id: number) => {
+    try {
+      const response = await api.delete(`/Categories/${id}`);
+      return response.data;
+    } catch (error: unknown) {
+      throw new Error(getApiErrorMessage(error, "Failed to delete category."));
+    }
+  },
+
+  update: async (payload: UpdateCategoryPayload): Promise<CategoryNode> => {
+    try {
+      const response = await api.put("/Categories", payload);
+      return response.data;
+    } catch (error: unknown) {
+      throw new Error(getApiErrorMessage(error, "Failed to update category."));
+    }
+  },
+};
+
 // Export individual services
-export const categoryService = createCrudService("Category", "category");
 export const brandsService = createCrudService("Brands", "brands");
 export const unitTypeService = createCrudService("UnitType", "unitType");
 export const boxSizeService = createCrudService("BoxSize", "boxSize");
 
-// Export backward-compatible named functions
-export const {
-  create: createCategory,
-  getAll: getCategories,
-  delete: deleteCategory,
-  update: updateCategory,
-} = categoryService;
+// Export category functions
+export const getCategories = () => categoryService.getAll();
+export const getCategoriesTree = () => categoryService.getTree();
+export const createCategoryNode = (payload: CreateCategoryPayload) =>
+  categoryService.create(payload);
+export const updateCategoryNode = (payload: UpdateCategoryPayload) =>
+  categoryService.update(payload);
+export const deleteCategory = (id: number) => categoryService.delete(id);
+
+// Backward-compatible wrappers used by generic settings flows
+export const createCategory = (code: string) =>
+  categoryService.create({
+    code,
+    parentCategoryId: null,
+    displayOrder: 1,
+  });
+
+export const updateCategory = (id: number, code: string) =>
+  categoryService.update({
+    id,
+    code,
+    parentCategoryId: null,
+    isActive: true,
+    displayOrder: 1,
+  });
 
 export const {
   create: createBrands,

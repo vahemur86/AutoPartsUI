@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 import { ProductContent } from "./ProductContent";
+import { CategoryContent } from "./CategoryContent";
 import { PRODUCT_SETTINGS_TABS, TAB_CONFIG } from "@/constants/settings";
 import type { ExistingItem, TabId, ProductSettingItem } from "@/types/settings";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -180,36 +181,42 @@ export const ProductSettings = () => {
           </TabGroup>
         </div>
 
-        <ProductContent
-          newFieldValue={newFieldValue}
-          setNewFieldValue={setNewFieldValue}
-          setIsExistingExpanded={setIsExistingExpanded}
-          isExistingExpanded={isExistingExpanded}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          existingItems={existingItems}
-          isLoading={isLoading}
-        />
+        {activeTabId === "category" ? (
+          <CategoryContent />
+        ) : (
+          <ProductContent
+            newFieldValue={newFieldValue}
+            setNewFieldValue={setNewFieldValue}
+            setIsExistingExpanded={setIsExistingExpanded}
+            isExistingExpanded={isExistingExpanded}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            existingItems={existingItems}
+            isLoading={isLoading}
+          />
+        )}
       </div>
 
-      <div className={styles.actionButtons}>
-        <Button
-          variant="secondary"
-          size="medium"
-          onClick={handleCancel}
-          disabled={isLoading}
-        >
-          {t("common.cancel")}
-        </Button>
-        <Button
-          variant="primary"
-          size="medium"
-          onClick={handleSave}
-          disabled={isLoading || !newFieldValue.trim()}
-        >
-          {t("common.save")}
-        </Button>
-      </div>
+      {activeTabId !== "category" && (
+        <div className={styles.actionButtons}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleSave}
+            disabled={isLoading || !newFieldValue.trim()}
+          >
+            {t("common.save")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

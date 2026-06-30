@@ -65,6 +65,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const [open, setOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [internalValue, setInternalValue] = useState(defaultValue);
+    const [openUpward, setOpenUpward] = useState(false);
 
     const isControlled = value !== undefined;
     const currentValue = isControlled ? value : internalValue;
@@ -137,6 +138,20 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     useEffect(() => {
       if (!open) setSearchQuery("");
     }, [open]);
+
+    useEffect(() => {
+      if (!open || !rootRef.current) return;
+
+      const rect = rootRef.current.getBoundingClientRect();
+      const estimatedDropdownHeight = searchable ? 320 : 280;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      setOpenUpward(
+        spaceBelow < estimatedDropdownHeight &&
+          spaceAbove > spaceBelow,
+      );
+    }, [open, searchable]);
 
     const handleSelect = (optionValue: string) => {
       if (!internalSelectRef.current) return;
@@ -218,7 +233,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </div>
 
           {open && !disabled && (
-            <div className={styles.dropdown} role="listbox">
+            <div
+              className={`${styles.dropdown} ${openUpward ? styles.dropdownTop : ""}`}
+              role="listbox"
+            >
               {searchable && (
                 <div className={styles.searchContainer}>
                   <div className={styles.searchIcon}>

@@ -5,67 +5,311 @@
   width: 100%;
 }
 
-.modeRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.modeLabel {
-  color: var(--color-white);
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.switchRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.modeOption,
-.modeOptionActive {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.modeOptionActive {
-  color: var(--color-white);
-  font-weight: 700;
-}
-
 .fieldBlock {
   display: grid;
   gap: 16px;
 }
 
-.readOnlyPrices {
+.orderInfoBlock {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px;
   display: grid;
+  gap: 12px;
+}
+
+.orderInfoTitle {
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.gridTwo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.productPickerRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.productLines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emptyProducts {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.productLine {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 140px 140px auto;
+  gap: 10px;
+  align-items: end;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+
+.productCode {
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.productPrice {
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  padding-bottom: 10px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summaryItem {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryItem span {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.summaryItem strong {
+  color: var(--color-white);
+  font-size: 14px;
 }
 
 .summaryRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 16px;
 }
 
-.summaryLabel {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  margin-bottom: 4px;
+.submitButton {
+  min-width: 200px;
 }
 
-.summaryValue {
+.printArea {
+  display: block;
+}
+
+.receiptBlock {
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+
+.receiptHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.receiptTitle {
   color: var(--color-white);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 18px;
 }
 
-.submitButton {
-  min-width: 200px;
+.receiptSubtitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.receiptHeaderMeta {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+}
+
+.receiptMeta {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.receiptSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receiptSectionTitle {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.receiptGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 18px;
+}
+
+.receiptProductsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receiptProductRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+.receiptProductCode {
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.receiptProductMeta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+}
+
+.receiptRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-white);
+  font-size: 13px;
+}
+
+.receiptTotal {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+}
+
+.receiptComment {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  white-space: pre-wrap;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  padding-top: 8px;
+}
+
+@media print {
+  :global(body *) {
+    visibility: hidden;
+  }
+
+  .printArea,
+  .printArea * {
+    visibility: visible;
+  }
+
+  .printArea {
+    position: fixed;
+    inset: 0;
+    padding: 24px;
+    background: #ffffff;
+  }
+
+  .receiptBlock {
+    border: 1px solid #111111;
+    border-radius: 0;
+    background: #ffffff;
+    color: #111111;
+    max-width: 780px;
+    margin: 0 auto;
+    box-shadow: none;
+  }
+
+  .receiptTitle,
+  .receiptProductCode,
+  .receiptRow,
+  .receiptComment,
+  .receiptItem strong,
+  .receiptMeta,
+  .receiptSubtitle,
+  .receiptSectionTitle,
+  .receiptProductMeta {
+    color: #111111;
+  }
+
+  .receiptHeader,
+  .receiptTotal,
+  .receiptComment,
+  .receiptProductRow {
+    border-color: #bdbdbd;
+  }
+
+  .summaryRow,
+  .summaryGrid,
+  .fieldBlock,
+  .productPickerRow,
+  .productLines,
+  .orderInfoBlock {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  .gridTwo,
+  .summaryGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .productLine {
+    grid-template-columns: 1fr 120px;
+  }
+}
+
+@media (max-width: 720px) {
+  .gridTwo,
+  .summaryGrid,
+  .receiptGrid,
+  .productPickerRow,
+  .productLine {
+    grid-template-columns: 1fr;
+  }
+
+  .submitButton {
+    min-width: 100%;
+  }
 }
