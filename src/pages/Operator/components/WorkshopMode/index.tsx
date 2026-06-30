@@ -130,9 +130,15 @@ export const WorkshopMode = ({
         const yearValue = Number(raw.year ?? 0);
         const locationValue =
           String(raw.location ?? raw.locationName ?? raw.marketName ?? "").trim();
-        const items = Array.isArray(raw.items)
-          ? (raw.items as Array<{ serviceId?: number; customerPrice?: number; employeeId?: number }>)
-          : [];
+     const items = Array.isArray(raw.items)
+  ? (raw.items
+      .map((i: any) => ({
+        serviceId: Number(i.serviceId),
+        customerPrice: i.customerPrice != null ? Number(i.customerPrice) : undefined,
+        employeeId: i.employeeId != null ? Number(i.employeeId) : undefined,
+      }))
+      .filter((i) => i.serviceId > 0))
+  : [];
 
         return {
           id,
