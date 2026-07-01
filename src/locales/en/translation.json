@@ -244,6 +244,11 @@
   },
   "financeReports": {
     "navigation": {
+      "dashboard": "Dashboard",
+      "shopReports": "Shop Reports",
+      "serviceReports": "Service Reports",
+      "warehouseReports": "Warehouse Reports",
+      "salesReports": "Sales Reports",
       "profitSummary": "Profit Summary",
       "profitDetailed": "Detailed Profit",
       "saleProfit": "Sales Profit",
@@ -272,7 +277,273 @@
     "error": {
       "failedToLoad": "Failed to load finance report data"
     },
-    "empty": "Set filters and click Show report to view the results."
+    "empty": "Set filters and click Show report to view the results.",
+    "dashboard": {
+      "empty": "Select filters and click Show report to load dashboard analytics.",
+      "generatedAt": "Generated at",
+      "filters": {
+        "warehouse": "Warehouse",
+        "allWarehouses": "All warehouses",
+        "lowStockThreshold": "Low stock threshold",
+        "lowStockThresholdHelp": "Optional. Products at or below this quantity are included in low stock alerts.",
+        "lowStockThresholdPlaceholder": "Default: 5"
+      },
+      "sections": {
+        "overview": "Executive Overview",
+        "lowStock": "Low Stock Alerts",
+        "outOfStock": "Out-of-Stock Alerts"
+      },
+      "kpi": {
+        "todayRevenue": "Today revenue",
+        "todayProfit": "Today profit",
+        "todaySalesCount": "Today sales count",
+        "monthlyRevenue": "Monthly revenue",
+        "monthlyProfit": "Monthly profit",
+        "monthlySalesCount": "Monthly sales count",
+        "totalRevenue": "Total revenue",
+        "lowStockAlertsCount": "Low stock alerts",
+        "outOfStockCount": "Out-of-stock alerts",
+        "threshold": "Alert threshold"
+      },
+      "charts": {
+        "revenueMix": "Revenue mix: products vs services",
+        "performance": "Revenue and profit performance",
+        "orderStatus": "Order status distribution",
+        "products": "Products",
+        "services": "Services",
+        "pendingOrders": "Pending",
+        "completedOrders": "Completed",
+        "today": "Today",
+        "month": "Month",
+        "revenue": "Revenue",
+        "profit": "Profit"
+      },
+      "columns": {
+        "productCode": "Product code",
+        "productSku": "Product SKU",
+        "quantity": "Quantity",
+        "salePrice": "Sale price",
+        "stockValue": "Stock value"
+      }
+    },
+    "shopReports": {
+      "empty": "Select a shop and date range, then click Show report to load shop analytics.",
+      "filters": {
+        "take": "Top products count",
+        "lowStockThreshold": "Low stock threshold",
+        "takeLabel": "How many top products to show",
+        "takeHelp": "Optional. Leave empty to use default 10.",
+        "takePlaceholder": "Default: 10",
+        "lowStockThresholdLabel": "Low stock threshold (quantity)",
+        "lowStockThresholdHelp": "Optional. Products at or below this quantity appear in Low Stock. Default is 5.",
+        "lowStockThresholdPlaceholder": "Default: 5"
+      },
+      "sections": {
+        "summary": "Sales Summary",
+        "bestSelling": "Best-Selling Products",
+        "highestProfit": "Products With Highest Profit",
+        "inventory": "Inventory Overview",
+        "lowStock": "Low Stock Products",
+        "outOfStock": "Out-of-Stock Products",
+        "allInventory": "All Inventory Products (Value Per Product)"
+      },
+      "kpi": {
+        "revenue": "Revenue from product sales",
+        "profit": "Profit from product sales",
+        "productsSold": "Products sold",
+        "salesCount": "Sales count",
+        "currentInventoryValue": "Current inventory value",
+        "currentInventoryCostValue": "Current inventory value at cost",
+        "lowStockCount": "Low stock products",
+        "outOfStockCount": "Out-of-stock products"
+      },
+      "charts": {
+        "byQuantity": "Top products by quantity sold",
+        "byProfit": "Top products by generated profit"
+      },
+      "columns": {
+        "productCode": "Product code",
+        "productSku": "Product SKU",
+        "quantitySold": "Quantity sold",
+        "revenue": "Revenue",
+        "cost": "Cost",
+        "profit": "Profit",
+        "quantity": "Quantity",
+        "salePrice": "Sale price",
+        "avgCostPrice": "Average cost price",
+        "inventoryValue": "Inventory value",
+        "inventoryValueAtSalePrice": "Inventory value at sale price",
+        "inventoryValueAtCost": "Inventory value at cost"
+      },
+      "noRows": "No records found for the selected filters."
+    },
+    "serviceReports": {
+      "empty": "Select filters and click Show report to load service analytics.",
+      "filters": {
+        "serviceCategory": "Service category",
+        "allCategories": "All categories",
+        "topNLabel": "Top services to show",
+        "topNHelp": "Optional. Leave empty to use default 10.",
+        "topNPlaceholder": "Default: 10"
+      },
+      "sections": {
+        "summary": "Service Summary",
+        "grouped": "Revenue and Profit by Service Type",
+        "topServices": "Top Service Rankings",
+        "mostFrequent": "Most Frequently Performed Services",
+        "mostProfitable": "Most Profitable Services",
+        "reportRows": "Source Orders"
+      },
+      "kpi": {
+        "revenue": "Revenue from services",
+        "profit": "Profit from services",
+        "performed": "Services performed",
+        "averagePrice": "Average service price"
+      },
+      "charts": {
+        "revenueByType": "Revenue grouped by service type"
+      },
+      "columns": {
+        "categoryOrService": "Service type / Service",
+        "revenue": "Revenue",
+        "profit": "Profit",
+        "count": "Count",
+        "averagePrice": "Average price"
+      },
+      "orders": {
+        "estimate": "Estimate",
+        "vehicle": "Vehicle",
+        "servicesCount": "Services",
+        "servicesRevenue": "Services revenue",
+        "servicesCost": "Services cost",
+        "servicesProfit": "Services profit",
+        "createdAt": "Created at",
+        "status": "Status",
+        "servicesLines": "Service lines",
+        "productsLines": "Product lines",
+        "service": "Service",
+        "category": "Category",
+        "internalCost": "Internal cost",
+        "customerPrice": "Customer price",
+        "profit": "Profit",
+        "productCode": "Product code",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "lineTotal": "Line total",
+        "share": "Share in order"
+      },
+      "reportRowsHint": "{{count}} service orders matched the selected filters.",
+      "noRows": "No service records found for the selected filters."
+    },
+    "warehouseReports": {
+      "empty": "Select a warehouse and filters, then click Show report to load warehouse analytics.",
+      "filters": {
+        "topNLabel": "Top products count",
+        "topNHelp": "Optional. Leave empty to use default 20.",
+        "topNPlaceholder": "Default: 20",
+        "slowMovingDaysLabel": "Slow moving threshold (days)",
+        "slowMovingDaysHelp": "Optional. Products not sold for at least this many days are treated as slow-moving. Default is 30.",
+        "slowMovingDaysPlaceholder": "Default: 30"
+      },
+      "sections": {
+        "stock": "Stock Valuation",
+        "movements": "Inventory Movements",
+        "purchases": "Purchase History",
+        "velocity": "Fast / Slow / Not Sold",
+        "fastMoving": "Fast Moving Products",
+        "slowMoving": "Slow Moving Products",
+        "notSold": "Not Sold Products",
+        "turnover": "Inventory Turnover"
+      },
+      "kpi": {
+        "totalValueAtCost": "Total stock value at cost",
+        "totalValueAtSalePrice": "Total stock value at sale price",
+        "totalProducts": "Total products",
+        "totalUnits": "Total units"
+      },
+      "charts": {
+        "turnover": "Top products by turnover rate"
+      },
+      "movementTypes": {
+        "in": "In",
+        "out": "Out",
+        "unknown": "Unknown"
+      },
+      "columns": {
+        "productCode": "Product code",
+        "productSku": "Product SKU",
+        "quantity": "Quantity",
+        "purchaseCost": "Purchase cost",
+        "salePrice": "Sale price",
+        "stockValueAtCost": "Stock value at cost",
+        "stockValueAtSalePrice": "Stock value at sale price",
+        "movementType": "Movement type",
+        "unitCost": "Unit cost",
+        "targetShopId": "Target shop",
+        "createdBy": "Created by",
+        "occurredAt": "Occurred at",
+        "quantityAdded": "Quantity added",
+        "totalCost": "Total cost",
+        "purchasedAt": "Purchased at",
+        "currentWarehouseStock": "Current warehouse stock",
+        "totalUnitsSold": "Total units sold",
+        "lastSoldAt": "Last sold at",
+        "daysSinceLastSale": "Days since last sale",
+        "unitsSold": "Units sold",
+        "avgStockOnHand": "Average stock on hand",
+        "turnoverRate": "Turnover rate"
+      },
+      "noRows": "No warehouse records found for the selected filters."
+    },
+    "salesReports": {
+      "empty": "Select filters and click Show report to load sales analytics.",
+      "filters": {
+        "allShops": "All shops",
+        "groupBy": "Group by period"
+      },
+      "groupBy": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "year": "Year"
+      },
+      "sections": {
+        "summary": "Revenue Summary",
+        "byPeriod": "Revenue by Period",
+        "byEmployee": "Revenue by Employee",
+        "byPaymentMethod": "Revenue by Payment Method"
+      },
+      "kpi": {
+        "totalRevenue": "Total revenue",
+        "totalProductSalesRevenue": "Product sales revenue",
+        "totalServiceOrdersRevenue": "Service orders revenue",
+        "totalCashRevenue": "Cash revenue",
+        "totalNonCashRevenue": "Non-cash revenue",
+        "productSalesCount": "Product sales count",
+        "serviceOrdersCount": "Service orders count"
+      },
+      "charts": {
+        "byPeriod": "Revenue trend by period",
+        "byEmployee": "Revenue distribution by employee",
+        "byPaymentMethod": "Cash vs Non-cash split"
+      },
+      "columns": {
+        "period": "Period",
+        "periodStart": "Period start",
+        "periodEnd": "Period end",
+        "productSalesRevenue": "Product sales revenue",
+        "serviceOrdersRevenue": "Service orders revenue",
+        "totalRevenue": "Total revenue",
+        "productSalesCount": "Product sales count",
+        "serviceOrdersCount": "Service orders count",
+        "employeeId": "Employee",
+        "transactionCount": "Transactions",
+        "paymentMethod": "Payment method",
+        "amount": "Amount",
+        "percentage": "Percentage"
+      },
+      "noRows": "No sales records found for the selected filters."
+    }
   },
   "exchangeRates": {
     "createNew": "Create Exchange Rates",

@@ -244,6 +244,11 @@
   },
   "financeReports": {
     "navigation": {
+      "dashboard": "Дашборд",
+      "shopReports": "Отчеты магазина",
+      "serviceReports": "Отчеты по услугам",
+      "warehouseReports": "Складские отчеты",
+      "salesReports": "Отчеты по продажам",
       "profitSummary": "Сводка прибыли",
       "profitDetailed": "Детальная прибыль",
       "saleProfit": "Прибыль по продажам",
@@ -272,7 +277,273 @@
     "error": {
       "failedToLoad": "Не удалось загрузить финансовые данные"
     },
-    "empty": "Установите фильтры и нажмите «Показать отчет», чтобы увидеть данные."
+    "empty": "Установите фильтры и нажмите «Показать отчет», чтобы увидеть данные.",
+    "dashboard": {
+      "empty": "Выберите фильтры и нажмите «Показать отчет», чтобы загрузить аналитику дашборда.",
+      "generatedAt": "Сформировано",
+      "filters": {
+        "warehouse": "Склад",
+        "allWarehouses": "Все склады",
+        "lowStockThreshold": "Порог низкого остатка",
+        "lowStockThresholdHelp": "Необязательно. Товары с количеством на уровне или ниже этого порога попадут в оповещения.",
+        "lowStockThresholdPlaceholder": "По умолчанию: 5"
+      },
+      "sections": {
+        "overview": "Оперативная сводка",
+        "lowStock": "Оповещения о низком остатке",
+        "outOfStock": "Оповещения об отсутствии товара"
+      },
+      "kpi": {
+        "todayRevenue": "Выручка за сегодня",
+        "todayProfit": "Прибыль за сегодня",
+        "todaySalesCount": "Продаж за сегодня",
+        "monthlyRevenue": "Выручка за месяц",
+        "monthlyProfit": "Прибыль за месяц",
+        "monthlySalesCount": "Продаж за месяц",
+        "totalRevenue": "Общая выручка",
+        "lowStockAlertsCount": "Оповещения о низком остатке",
+        "outOfStockCount": "Оповещения об отсутствии товара",
+        "threshold": "Порог оповещений"
+      },
+      "charts": {
+        "revenueMix": "Структура выручки: товары vs услуги",
+        "performance": "Динамика выручки и прибыли",
+        "orderStatus": "Распределение статусов заказов",
+        "products": "Товары",
+        "services": "Услуги",
+        "pendingOrders": "В ожидании",
+        "completedOrders": "Завершено",
+        "today": "Сегодня",
+        "month": "Месяц",
+        "revenue": "Выручка",
+        "profit": "Прибыль"
+      },
+      "columns": {
+        "productCode": "Код товара",
+        "productSku": "SKU товара",
+        "quantity": "Количество",
+        "salePrice": "Цена продажи",
+        "stockValue": "Стоимость остатка"
+      }
+    },
+    "shopReports": {
+      "empty": "Выберите магазин и диапазон дат, затем нажмите «Показать отчет», чтобы загрузить аналитику магазина.",
+      "filters": {
+        "take": "Количество топ-товаров",
+        "lowStockThreshold": "Порог низкого остатка",
+        "takeLabel": "Сколько топ-товаров показать",
+        "takeHelp": "Необязательно. Если оставить пустым, будет использовано значение 10.",
+        "takePlaceholder": "По умолчанию: 10",
+        "lowStockThresholdLabel": "Порог низкого остатка (количество)",
+        "lowStockThresholdHelp": "Необязательно. Товары с количеством на уровне или ниже этого порога попадут в раздел «Низкий остаток». По умолчанию: 5.",
+        "lowStockThresholdPlaceholder": "По умолчанию: 5"
+      },
+      "sections": {
+        "summary": "Сводка продаж",
+        "bestSelling": "Самые продаваемые товары",
+        "highestProfit": "Товары с наибольшей прибылью",
+        "inventory": "Обзор остатков",
+        "lowStock": "Товары с низким остатком",
+        "outOfStock": "Товары без остатка",
+        "allInventory": "Все товары в остатке (стоимость по каждому товару)"
+      },
+      "kpi": {
+        "revenue": "Выручка от продаж товаров",
+        "profit": "Прибыль от продаж товаров",
+        "productsSold": "Продано товаров",
+        "salesCount": "Количество продаж",
+        "currentInventoryValue": "Текущая стоимость остатков",
+        "currentInventoryCostValue": "Текущая стоимость остатков по себестоимости",
+        "lowStockCount": "Товары с низким остатком",
+        "outOfStockCount": "Товары без остатка"
+      },
+      "charts": {
+        "byQuantity": "Топ товаров по проданному количеству",
+        "byProfit": "Топ товаров по полученной прибыли"
+      },
+      "columns": {
+        "productCode": "Код товара",
+        "productSku": "SKU товара",
+        "quantitySold": "Продано (шт)",
+        "revenue": "Выручка",
+        "cost": "Себестоимость",
+        "profit": "Прибыль",
+        "quantity": "Количество",
+        "salePrice": "Цена продажи",
+        "avgCostPrice": "Средняя себестоимость",
+        "inventoryValue": "Стоимость остатка",
+        "inventoryValueAtSalePrice": "Стоимость остатка по цене продажи",
+        "inventoryValueAtCost": "Стоимость остатка по себестоимости"
+      },
+      "noRows": "По выбранным фильтрам записи не найдены."
+    },
+    "serviceReports": {
+      "empty": "Выберите фильтры и нажмите «Показать отчет», чтобы загрузить аналитику по услугам.",
+      "filters": {
+        "serviceCategory": "Категория услуги",
+        "allCategories": "Все категории",
+        "topNLabel": "Количество топ-услуг",
+        "topNHelp": "Необязательно. Если оставить пустым, будет использовано значение 10.",
+        "topNPlaceholder": "По умолчанию: 10"
+      },
+      "sections": {
+        "summary": "Сводка по услугам",
+        "grouped": "Выручка и прибыль по типам услуг",
+        "topServices": "Рейтинг услуг",
+        "mostFrequent": "Самые часто выполняемые услуги",
+        "mostProfitable": "Самые прибыльные услуги",
+        "reportRows": "Исходные заказы"
+      },
+      "kpi": {
+        "revenue": "Выручка от услуг",
+        "profit": "Прибыль от услуг",
+        "performed": "Количество выполненных услуг",
+        "averagePrice": "Средняя цена услуги"
+      },
+      "charts": {
+        "revenueByType": "Выручка в разрезе типов услуг"
+      },
+      "columns": {
+        "categoryOrService": "Тип услуги / Услуга",
+        "revenue": "Выручка",
+        "profit": "Прибыль",
+        "count": "Количество",
+        "averagePrice": "Средняя цена"
+      },
+      "orders": {
+        "estimate": "Оценка",
+        "vehicle": "Автомобиль",
+        "servicesCount": "Услуг",
+        "servicesRevenue": "Выручка по услугам",
+        "servicesCost": "Себестоимость услуг",
+        "servicesProfit": "Прибыль по услугам",
+        "createdAt": "Создано",
+        "status": "Статус",
+        "servicesLines": "Строки услуг",
+        "productsLines": "Строки товаров",
+        "service": "Услуга",
+        "category": "Категория",
+        "internalCost": "Внутренняя себестоимость",
+        "customerPrice": "Цена для клиента",
+        "profit": "Прибыль",
+        "productCode": "Код товара",
+        "quantity": "Количество",
+        "unitPrice": "Цена за единицу",
+        "lineTotal": "Сумма строки",
+        "share": "Доля в заказе"
+      },
+      "reportRowsHint": "По выбранным фильтрам найдено {{count}} заказов по услугам.",
+      "noRows": "По выбранным фильтрам записи по услугам не найдены."
+    },
+    "warehouseReports": {
+      "empty": "Выберите склад и фильтры, затем нажмите «Показать отчет», чтобы загрузить складскую аналитику.",
+      "filters": {
+        "topNLabel": "Количество топ-товаров",
+        "topNHelp": "Необязательно. Если оставить пустым, будет использовано значение 20.",
+        "topNPlaceholder": "По умолчанию: 20",
+        "slowMovingDaysLabel": "Порог медленно оборачиваемых (дни)",
+        "slowMovingDaysHelp": "Необязательно. Товары, не продававшиеся минимум столько дней, будут считаться медленно оборачиваемыми. По умолчанию: 30.",
+        "slowMovingDaysPlaceholder": "По умолчанию: 30"
+      },
+      "sections": {
+        "stock": "Оценка остатков",
+        "movements": "Движение запасов",
+        "purchases": "История закупок",
+        "velocity": "Быстрые / Медленные / Непродаваемые",
+        "fastMoving": "Быстрооборачиваемые товары",
+        "slowMoving": "Медленнооборачиваемые товары",
+        "notSold": "Непродаваемые товары",
+        "turnover": "Оборачиваемость запасов"
+      },
+      "kpi": {
+        "totalValueAtCost": "Общая стоимость по себестоимости",
+        "totalValueAtSalePrice": "Общая стоимость по цене продажи",
+        "totalProducts": "Всего товаров",
+        "totalUnits": "Всего единиц"
+      },
+      "charts": {
+        "turnover": "Топ товаров по коэффициенту оборачиваемости"
+      },
+      "movementTypes": {
+        "in": "Приход",
+        "out": "Расход",
+        "unknown": "Неизвестно"
+      },
+      "columns": {
+        "productCode": "Код товара",
+        "productSku": "SKU товара",
+        "quantity": "Количество",
+        "purchaseCost": "Себестоимость закупки",
+        "salePrice": "Цена продажи",
+        "stockValueAtCost": "Стоимость остатка по себестоимости",
+        "stockValueAtSalePrice": "Стоимость остатка по цене продажи",
+        "movementType": "Тип движения",
+        "unitCost": "Себестоимость за единицу",
+        "targetShopId": "Целевой магазин",
+        "createdBy": "Создал",
+        "occurredAt": "Время операции",
+        "quantityAdded": "Добавленное количество",
+        "totalCost": "Общая себестоимость",
+        "purchasedAt": "Дата закупки",
+        "currentWarehouseStock": "Текущий остаток на складе",
+        "totalUnitsSold": "Всего продано единиц",
+        "lastSoldAt": "Последняя продажа",
+        "daysSinceLastSale": "Дней с последней продажи",
+        "unitsSold": "Продано единиц",
+        "avgStockOnHand": "Средний остаток",
+        "turnoverRate": "Коэффициент оборачиваемости"
+      },
+      "noRows": "По выбранным фильтрам записи склада не найдены."
+    },
+    "salesReports": {
+      "empty": "Выберите фильтры и нажмите «Показать отчет», чтобы загрузить аналитику продаж.",
+      "filters": {
+        "allShops": "Все магазины",
+        "groupBy": "Группировка по периоду"
+      },
+      "groupBy": {
+        "day": "День",
+        "week": "Неделя",
+        "month": "Месяц",
+        "year": "Год"
+      },
+      "sections": {
+        "summary": "Сводка выручки",
+        "byPeriod": "Выручка по периодам",
+        "byEmployee": "Выручка по сотрудникам",
+        "byPaymentMethod": "Выручка по способам оплаты"
+      },
+      "kpi": {
+        "totalRevenue": "Общая выручка",
+        "totalProductSalesRevenue": "Выручка от продаж товаров",
+        "totalServiceOrdersRevenue": "Выручка от заказов услуг",
+        "totalCashRevenue": "Наличная выручка",
+        "totalNonCashRevenue": "Безналичная выручка",
+        "productSalesCount": "Количество продаж товаров",
+        "serviceOrdersCount": "Количество заказов услуг"
+      },
+      "charts": {
+        "byPeriod": "Динамика выручки по периодам",
+        "byEmployee": "Распределение выручки по сотрудникам",
+        "byPaymentMethod": "Наличные vs Безналичные"
+      },
+      "columns": {
+        "period": "Период",
+        "periodStart": "Начало периода",
+        "periodEnd": "Конец периода",
+        "productSalesRevenue": "Выручка от продаж товаров",
+        "serviceOrdersRevenue": "Выручка от заказов услуг",
+        "totalRevenue": "Общая выручка",
+        "productSalesCount": "Количество продаж товаров",
+        "serviceOrdersCount": "Количество заказов услуг",
+        "employeeId": "Сотрудник",
+        "transactionCount": "Транзакции",
+        "paymentMethod": "Способ оплаты",
+        "amount": "Сумма",
+        "percentage": "Процент"
+      },
+      "noRows": "По выбранным фильтрам записи продаж не найдены."
+    }
   },
   "exchangeRates": {
     "createNew": "Создать курсы валют",

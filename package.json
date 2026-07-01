@@ -31,7 +31,8 @@
     "react-i18next": "^16.2.4",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.5",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.9.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.0",

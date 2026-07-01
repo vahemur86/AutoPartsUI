@@ -3,6 +3,25 @@ import api from "./index";
 // utils
 import { getApiErrorMessage, getHeaders } from "@/utils";
 import { AxiosError } from "axios";
+import type {
+  DashboardReportResponse,
+  SalesRevenueByEmployeeItem,
+  SalesRevenueByPaymentMethodItem,
+  SalesRevenueByPeriodItem,
+  SalesRevenueFullResponse,
+  ServiceEstimateReportResponse,
+  ShopReportDateRangeParams,
+  ShopReportInventoryAllProductsResponse,
+  ShopReportInventoryResponse,
+  ShopReportProductMetric,
+  ShopReportSummaryResponse,
+  WarehouseFullReportResponse,
+  WarehouseMovementItem,
+  WarehousePurchaseItem,
+  WarehouseStockResponse,
+  WarehouseTurnoverItem,
+  WarehouseVelocityItem,
+} from "@/types/financeReports";
 
 type QueryValue = string | number | boolean | undefined;
 
@@ -181,5 +200,474 @@ export const getShopInventoryStatus = async (
     throw new Error(
       getApiErrorMessage(error, "Failed to fetch shop inventory status."),
     );
+  }
+};
+
+export const getShopReportSummary = async (
+  shopId: number,
+  params?: ShopReportDateRangeParams & { cashRegisterId?: number },
+): Promise<ShopReportSummaryResponse> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/shop/${shopId}/summary${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+
+    return response.data as ShopReportSummaryResponse;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch shop report summary."),
+    );
+  }
+};
+
+export const getShopBestSellingProducts = async (
+  shopId: number,
+  params?: ShopReportDateRangeParams & { take?: number; cashRegisterId?: number },
+): Promise<ShopReportProductMetric[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      take: params?.take ?? 10,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(
+      `/admin/reports/shop/${shopId}/best-selling-products${suffix}`,
+      {
+        headers: getFinanceHeaders(params?.cashRegisterId),
+      },
+    );
+
+    return response.data as ShopReportProductMetric[];
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch best selling products."),
+    );
+  }
+};
+
+export const getShopHighestProfitProducts = async (
+  shopId: number,
+  params?: ShopReportDateRangeParams & { take?: number; cashRegisterId?: number },
+): Promise<ShopReportProductMetric[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      take: params?.take ?? 10,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(
+      `/admin/reports/shop/${shopId}/highest-profit-products${suffix}`,
+      {
+        headers: getFinanceHeaders(params?.cashRegisterId),
+      },
+    );
+
+    return response.data as ShopReportProductMetric[];
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch highest profit products."),
+    );
+  }
+};
+
+export const getShopInventoryReport = async (
+  shopId: number,
+  params?: { lowStockThreshold?: number; cashRegisterId?: number },
+): Promise<ShopReportInventoryResponse> => {
+  try {
+    const query = buildQuery({
+      lowStockThreshold: params?.lowStockThreshold ?? 5,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/shop/${shopId}/inventory${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+
+    return response.data as ShopReportInventoryResponse;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch shop inventory report."),
+    );
+  }
+};
+
+export const getShopInventoryAllProductsReport = async (
+  shopId: number,
+  params?: { cashRegisterId?: number },
+): Promise<ShopReportInventoryAllProductsResponse> => {
+  try {
+    const response = await api.get(`/admin/reports/shop/${shopId}/inventory/all-products`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+
+    return response.data as ShopReportInventoryAllProductsResponse;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch all shop inventory products."),
+    );
+  }
+};
+
+export const getServiceEstimateReport = async (
+  params?: {
+    shopId?: number;
+    serviceCategoryId?: number;
+    fromDate?: string;
+    toDate?: string;
+    pageNumber?: number;
+    pageSize?: number;
+    cashRegisterId?: number;
+  },
+): Promise<ServiceEstimateReportResponse> => {
+  try {
+    const query = buildQuery({
+      shopId: params?.shopId,
+      serviceCategoryId: params?.serviceCategoryId,
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      pageNumber: params?.pageNumber ?? 1,
+      pageSize: params?.pageSize ?? 50,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/ServiceEstimate/report${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+
+    return response.data as ServiceEstimateReportResponse;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch service estimate report."),
+    );
+  }
+};
+
+export const getServiceEstimateAnalytics = async (
+  params?: {
+    shopId?: number;
+    fromDate?: string;
+    toDate?: string;
+    topN?: number;
+    cashRegisterId?: number;
+  },
+) => {
+  try {
+    const query = buildQuery({
+      shopId: params?.shopId,
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      topN: params?.topN ?? 10,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/ServiceEstimate/analytics${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch service estimate analytics."),
+    );
+  }
+};
+
+export const getWarehouseReportStock = async (
+  warehouseId: number,
+  params?: { cashRegisterId?: number },
+): Promise<WarehouseStockResponse> => {
+  try {
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/stock`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseStockResponse;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse stock report."));
+  }
+};
+
+export const getWarehouseReportMovements = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & { cashRegisterId?: number },
+): Promise<WarehouseMovementItem[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/movements${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseMovementItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse movements report."));
+  }
+};
+
+export const getWarehouseReportPurchases = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & { cashRegisterId?: number },
+): Promise<WarehousePurchaseItem[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/purchases${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehousePurchaseItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse purchases report."));
+  }
+};
+
+export const getWarehouseReportFastMoving = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & { take?: number; cashRegisterId?: number },
+): Promise<WarehouseVelocityItem[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      take: params?.take,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/fast-moving${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseVelocityItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse fast-moving report."));
+  }
+};
+
+export const getWarehouseReportSlowMoving = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & {
+    notSoldForDays?: number;
+    take?: number;
+    cashRegisterId?: number;
+  },
+): Promise<WarehouseVelocityItem[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      notSoldForDays: params?.notSoldForDays,
+      take: params?.take,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/slow-moving${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseVelocityItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse slow-moving report."));
+  }
+};
+
+export const getWarehouseReportNotSold = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & { cashRegisterId?: number },
+): Promise<WarehouseVelocityItem[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/not-sold${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseVelocityItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse not-sold report."));
+  }
+};
+
+export const getWarehouseReportTurnover = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & { cashRegisterId?: number },
+): Promise<WarehouseTurnoverItem[]> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/turnover${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseTurnoverItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse turnover report."));
+  }
+};
+
+export const getWarehouseReportFull = async (
+  warehouseId: number,
+  params?: ShopReportDateRangeParams & {
+    topN?: number;
+    slowMovingDays?: number;
+    cashRegisterId?: number;
+  },
+): Promise<WarehouseFullReportResponse> => {
+  try {
+    const query = buildQuery({
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+      topN: params?.topN ?? 20,
+      slowMovingDays: params?.slowMovingDays,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/warehouse/${warehouseId}/full${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as WarehouseFullReportResponse;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch warehouse full report."));
+  }
+};
+
+export const getSalesRevenueReport = async (
+  params?: ShopReportDateRangeParams & {
+    groupBy?: number;
+    shopId?: number;
+    cashRegisterId?: number;
+  },
+): Promise<SalesRevenueByPeriodItem[]> => {
+  try {
+    const query = buildQuery({
+      groupBy: params?.groupBy ?? 0,
+      shopId: params?.shopId,
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/sales/revenue${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as SalesRevenueByPeriodItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch sales revenue report."));
+  }
+};
+
+export const getSalesRevenueByEmployee = async (
+  params?: ShopReportDateRangeParams & {
+    shopId?: number;
+    cashRegisterId?: number;
+  },
+): Promise<SalesRevenueByEmployeeItem[]> => {
+  try {
+    const query = buildQuery({
+      shopId: params?.shopId,
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/sales/revenue/by-employee${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as SalesRevenueByEmployeeItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch sales revenue by employee."));
+  }
+};
+
+export const getSalesRevenueByPaymentMethod = async (
+  params?: ShopReportDateRangeParams & {
+    shopId?: number;
+    cashRegisterId?: number;
+  },
+): Promise<SalesRevenueByPaymentMethodItem[]> => {
+  try {
+    const query = buildQuery({
+      shopId: params?.shopId,
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/sales/revenue/by-payment-method${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as SalesRevenueByPaymentMethodItem[];
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch sales revenue by payment method."));
+  }
+};
+
+export const getSalesRevenueFull = async (
+  params?: ShopReportDateRangeParams & {
+    groupBy?: number;
+    shopId?: number;
+    cashRegisterId?: number;
+  },
+): Promise<SalesRevenueFullResponse> => {
+  try {
+    const query = buildQuery({
+      groupBy: params?.groupBy ?? 0,
+      shopId: params?.shopId,
+      fromDate: params?.fromDate,
+      toDate: params?.toDate,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/reports/sales/revenue/full${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+    return response.data as SalesRevenueFullResponse;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch full sales revenue report."));
+  }
+};
+
+export const getAdminDashboardReport = async (
+  params?: {
+    shopId?: number;
+    warehouseId?: number;
+    lowStockThreshold?: number;
+    cashRegisterId?: number;
+  },
+): Promise<DashboardReportResponse> => {
+  try {
+    const query = buildQuery({
+      shopId: params?.shopId,
+      warehouseId: params?.warehouseId,
+      lowStockThreshold: params?.lowStockThreshold,
+    });
+    const suffix = query ? `?${query}` : "";
+
+    const response = await api.get(`/admin/dashboard${suffix}`, {
+      headers: getFinanceHeaders(params?.cashRegisterId),
+    });
+
+    return response.data as DashboardReportResponse;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch admin dashboard report."));
   }
 };

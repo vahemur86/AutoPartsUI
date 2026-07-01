@@ -60,6 +60,11 @@ import { ProfitDetailed } from "@/components/financeReports/ProfitDetailed";
 import { SaleProfitLookup } from "@/components/financeReports/SaleProfitLookup";
 import { WarehouseInventoryStatus } from "@/components/financeReports/WarehouseInventoryStatus";
 import { ShopInventoryStatus } from "@/components/financeReports/ShopInventoryStatus";
+import { ShopReports } from "@/components/financeReports/ShopReports";
+import { ServiceReports } from "@/components/financeReports/ServiceReports";
+import { WarehouseReports } from "@/components/financeReports/WarehouseReports";
+import { SalesReports } from "@/components/financeReports/SalesReports";
+import { DashboardReports } from "@/components/financeReports/DashboardReports";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -209,8 +214,13 @@ export const App = () => {
                 <Route path="finance-reports" element={<FinanceReports />}>
                   <Route
                     index
-                    element={<Navigate to="profit-summary" replace />}
+                    element={<Navigate to="dashboard" replace />}
                   />
+                  <Route path="dashboard" element={<DashboardReports />} />
+                  <Route path="shop-reports" element={<ShopReports />} />
+                  <Route path="service-reports" element={<ServiceReports />} />
+                  <Route path="warehouse-reports" element={<WarehouseReports />} />
+                  <Route path="sales-reports" element={<SalesReports />} />
                   <Route path="profit-summary" element={<ProfitSummary />} />
                   <Route path="profit-detailed" element={<ProfitDetailed />} />
                   <Route path="sale-profit" element={<SaleProfitLookup />} />

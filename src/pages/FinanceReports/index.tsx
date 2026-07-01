@@ -2,9 +2,14 @@ import { useTranslation } from "react-i18next";
 
 // icons
 import {
+  LayoutDashboard,
   ChartColumnBig,
   ListChecks,
   BadgeDollarSign,
+  ChartCandlestick,
+  ChartSpline,
+  Wrench,
+  Factory,
   Warehouse,
   Store,
 } from "lucide-react";
@@ -16,6 +21,36 @@ export const FinanceReports = () => {
   const { t } = useTranslation();
 
   const navigationItems: NavItem[] = [
+    {
+      path: "/dashboard",
+      label: t("financeReports.navigation.dashboard"),
+      icon: LayoutDashboard,
+      showCheckmark: true,
+    },
+    {
+      path: "/shop-reports",
+      label: t("financeReports.navigation.shopReports"),
+      icon: ChartCandlestick,
+      showCheckmark: true,
+    },
+    {
+      path: "/service-reports",
+      label: t("financeReports.navigation.serviceReports"),
+      icon: Wrench,
+      showCheckmark: true,
+    },
+    {
+      path: "/warehouse-reports",
+      label: t("financeReports.navigation.warehouseReports"),
+      icon: Factory,
+      showCheckmark: true,
+    },
+    {
+      path: "/sales-reports",
+      label: t("financeReports.navigation.salesReports"),
+      icon: ChartSpline,
+      showCheckmark: true,
+    },
     {
       path: "/profit-summary",
       label: t("financeReports.navigation.profitSummary"),

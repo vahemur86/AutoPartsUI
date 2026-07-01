@@ -30,9 +30,340 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
+.shopReportsPanel {
+  gap: 16px;
+}
+
+.shopSections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reportSection {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(96, 165, 250, 0.15), transparent 38%),
+    rgba(15, 23, 42, 0.45);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  width: 100%;
+  border: none;
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.sectionBody {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rotate180 {
+  transform: rotate(180deg);
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.kpiCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(14, 116, 144, 0.25), rgba(30, 64, 175, 0.15));
+  border: 1px solid rgba(125, 211, 252, 0.2);
+}
+
+.kpiCard span {
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 12px;
+}
+
+.kpiCard strong {
+  color: #f8fafc;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.chartCard {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(2, 6, 23, 0.35);
+}
+
+.chartTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #e2e8f0;
+}
+
+.chartTitleRow h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.barChart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) minmax(180px, 4fr) minmax(90px, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.barLabel {
+  color: #cbd5e1;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+}
+
+.barFillPrimary,
+.barFillAccent {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.barFillPrimary {
+  background: linear-gradient(90deg, #22d3ee, #3b82f6);
+}
+
+.barFillAccent {
+  background: linear-gradient(90deg, #fb923c, #f43f5e);
+}
+
+.barValue {
+  color: #f8fafc;
+  font-size: 12px;
+  text-align: right;
+}
+
+.chartEmpty {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 13px;
+}
+
+.inventorySummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.inventoryCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  color: #f8fafc;
+}
+
+.inventoryCard span {
+  display: block;
+  color: rgba(226, 232, 240, 0.75);
+  font-size: 12px;
+}
+
+.inventoryCard strong {
+  font-size: 18px;
+}
+
+.inventoryTablesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.subTitle {
+  margin: 0 0 8px;
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboardPanel {
+  gap: 16px;
+}
+
+.dashboardHero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(14, 165, 233, 0.35), transparent 40%),
+    radial-gradient(circle at 95% 90%, rgba(249, 115, 22, 0.3), transparent 35%),
+    rgba(15, 23, 42, 0.55);
+}
+
+.dashboardHeroTitle h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #f8fafc;
+}
+
+.dashboardHeroTitle p {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: rgba(241, 245, 249, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dashboardHeroBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dashboardBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.kpiCardCyan {
+  background: linear-gradient(160deg, rgba(6, 182, 212, 0.32), rgba(14, 116, 144, 0.22));
+  border: 1px solid rgba(34, 211, 238, 0.35);
+}
+
+.kpiCardBlue {
+  background: linear-gradient(160deg, rgba(59, 130, 246, 0.35), rgba(30, 64, 175, 0.22));
+  border: 1px solid rgba(125, 211, 252, 0.35);
+}
+
+.kpiCardOrange {
+  background: linear-gradient(160deg, rgba(251, 146, 60, 0.35), rgba(194, 65, 12, 0.2));
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.kpiCardPink {
+  background: linear-gradient(160deg, rgba(244, 63, 94, 0.32), rgba(190, 24, 93, 0.2));
+  border: 1px solid rgba(251, 113, 133, 0.35);
+}
+
+.dashboardChartsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.dashboardChartCard {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 40%),
+    rgba(15, 23, 42, 0.5);
+}
+
+.dashboardChartWrap {
+  width: 100%;
+  height: 250px;
+}
+
+.serviceOrderDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 8px 4px;
+}
+
+.serviceOrderSubTitle {
+  margin: 0 0 8px;
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.serviceLinesTable {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.serviceLinesHeader,
+.serviceLinesRow {
+  display: grid;
+  grid-template-columns: 2fr 1.4fr 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 8px 10px;
+  align-items: center;
+}
+
+.serviceLinesHeader {
+  background: rgba(30, 41, 59, 0.7);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.serviceLinesRow {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  font-size: 12px;
+}
+
 @media (max-width: 1200px) {
   .filters {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .dashboardChartsGrid,
+  .kpiGrid,
+  .inventorySummaryGrid,
+  .inventoryTablesGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -41,11 +372,29 @@
     grid-template-columns: 1fr;
   }
 
+  .barRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .barValue {
+    text-align: left;
+  }
+
   .actions {
     justify-content: stretch;
   }
 
   .actions button {
     width: 100%;
+  }
+
+  .serviceLinesHeader,
+  .serviceLinesRow {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboardHero {
+    flex-direction: column;
   }
 }
