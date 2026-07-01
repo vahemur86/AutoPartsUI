@@ -40,8 +40,7 @@ export const AddProductDropdown = ({
   const [productKey, setProductKey] = useState("");
   const [sku, setSku] = useState("");
   const [brand, setBrand] = useState("");
-  const [rootCategoryId, setRootCategoryId] = useState("");
-  const [childCategoryId, setChildCategoryId] = useState("");
+  const [selectedCategoryPath, setSelectedCategoryPath] = useState<number[]>([]);
   const [unitType, setUnitType] = useState("");
   const [boxSize, setBoxSize] = useState("");
   const [vehicleDependent, setVehicleDependent] = useState(false);
@@ -54,23 +53,53 @@ export const AddProductDropdown = ({
     [categories],
   );
 
-  const rootCategories = useMemo(
-    () =>
-      sortedCategories.filter(
-        (item) => (item.parentCategoryId ?? null) === null && item.isActive !== false,
-      ),
+  const activeCategories = useMemo(
+    () => sortedCategories.filter((item) => item.isActive !== false),
     [sortedCategories],
   );
 
-  const childCategories = useMemo(() => {
-    if (!rootCategoryId) return [];
-    const rootId = Number(rootCategoryId);
-    return sortedCategories.filter(
-      (item) => item.parentCategoryId === rootId && item.isActive !== false,
-    );
-  }, [rootCategoryId, sortedCategories]);
+  const categoryLevels = useMemo(() => {
+    const levels: Array<Array<{ id: number; name: string }>> = [];
+    let parentId: number | null = null;
+    let levelIndex = 0;
 
-  const selectedCategoryId = childCategoryId || rootCategoryId;
+    while (true) {
+      const options = activeCategories
+        .filter((item) => Number(item.parentCategoryId ?? 0) === Number(parentId ?? 0))
+        .map((item) => ({
+          id: Number(item.id),
+          name: String(item.name || item.code || `#${item.id}`),
+        }));
+
+      if (!options.length) {
+        break;
+      }
+
+      levels.push(options);
+
+      const selectedId = Number(selectedCategoryPath[levelIndex] || 0);
+      if (!selectedId || !options.some((item) => item.id === selectedId)) {
+        break;
+      }
+
+      parentId = selectedId;
+      levelIndex += 1;
+    }
+
+    return levels;
+  }, [activeCategories, selectedCategoryPath]);
+
+  const selectedCategoryId = useMemo(() => {
+    if (!selectedCategoryPath.length) return "";
+    const lastSelectedId = Number(selectedCategoryPath[selectedCategoryPath.length - 1] || 0);
+    if (!lastSelectedId) return "";
+
+    const hasActiveChildren = activeCategories.some(
+      (item) => Number(item.parentCategoryId || 0) === lastSelectedId,
+    );
+
+    return hasActiveChildren ? "" : String(lastSelectedId);
+  }, [selectedCategoryPath, activeCategories]);
 
   useEffect(() => {
     if (open) {
@@ -94,8 +123,7 @@ export const AddProductDropdown = ({
       setProductKey("");
       setSku("");
       setBrand("");
-      setRootCategoryId("");
-      setChildCategoryId("");
+      setSelectedCategoryPath([]);
       setUnitType("");
       setBoxSize("");
       setVehicleDependent(false);
@@ -166,38 +194,35 @@ export const AddProductDropdown = ({
               </option>
             ))}
           </Select>
-          <Select
-            label={t("products.form.rootCategory")}
-            value={rootCategoryId}
-            onChange={(e) => {
-              setRootCategoryId(e.target.value);
-              setChildCategoryId("");
-            }}
-            placeholder={t("products.form.select")}
-          >
-            <option value="">{t("products.form.select")}</option>
-            {rootCategories.map((categoryItem) => (
-              <option key={categoryItem.id} value={categoryItem.id}>
-                {categoryItem.name || categoryItem.code}
-              </option>
-            ))}
-          </Select>
-
-          {rootCategoryId && childCategories.length > 0 && (
+          {categoryLevels.map((options, levelIndex) => (
             <Select
-              label={t("products.form.childCategory")}
-              value={childCategoryId}
-              onChange={(e) => setChildCategoryId(e.target.value)}
+              key={`category-level-${levelIndex}`}
+              label={
+                levelIndex === 0
+                  ? t("products.form.rootCategory")
+                  : t("products.form.categoryLevel", { level: levelIndex + 1 })
+              }
+              value={String(selectedCategoryPath[levelIndex] || "")}
+              onChange={(e) => {
+                const nextId = Number(e.target.value) || 0;
+                setSelectedCategoryPath((prev) => {
+                  const next = prev.slice(0, levelIndex);
+                  if (nextId > 0) {
+                    next[levelIndex] = nextId;
+                  }
+                  return next;
+                });
+              }}
               placeholder={t("products.form.select")}
             >
               <option value="">{t("products.form.select")}</option>
-              {childCategories.map((categoryItem) => (
+              {options.map((categoryItem) => (
                 <option key={categoryItem.id} value={categoryItem.id}>
-                  {categoryItem.name || categoryItem.code}
+                  {categoryItem.name}
                 </option>
               ))}
             </Select>
-          )}
+          ))}
           <Select
             label={t("products.form.unitType")}
             value={unitType}

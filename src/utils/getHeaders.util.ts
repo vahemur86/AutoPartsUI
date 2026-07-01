@@ -1,6 +1,12 @@
 export const getHeaders = (cashRegisterId?: number, pageKey?: string) => {
+  const normalizedCashRegisterId = Number(cashRegisterId);
+  const hasValidCashRegisterId =
+    Number.isFinite(normalizedCashRegisterId) && normalizedCashRegisterId > 0;
+
   return {
-    ...(cashRegisterId && { "X-CashRegister-Id": cashRegisterId }),
+    ...(hasValidCashRegisterId && {
+      "X-CashRegister-Id": String(normalizedCashRegisterId),
+    }),
     ...(pageKey && { "X-Page-Key": pageKey }),
   };
 };

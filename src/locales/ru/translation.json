@@ -1197,6 +1197,7 @@
       "category": "Категория",
       "rootCategory": "Родительская категория",
       "childCategory": "Дочерняя категория",
+      "categoryLevel": "Уровень категории {{level}}",
       "unitType": "Тип единицы",
       "boxSize": "Размер коробки",
       "vehicleDependent": "Зависит от транспорта",
@@ -1518,7 +1519,33 @@
       "change": "Сдача",
       "paymentConfirmed": "Платеж подтвержден",
       "saleCompleted": "Продажа завершена",
-      "saleError": "Не удалось завершить продажу."
+      "saleError": "Не удалось завершить продажу.",
+      "estimate": {
+        "label": "Номер оценки",
+        "placeholder": "Введите номер оценки (напр. EST-2024-06-0001)",
+        "findButton": "Найти оценку",
+        "enterNumber": "Введите номер оценки.",
+        "found": "Оценка найдена.",
+        "notFound": "Оценка не найдена.",
+        "number": "Оценка",
+        "summaryTitle": "Сводка оценки",
+        "status": "Статус",
+        "vehicle": "Автомобиль",
+        "vin": "VIN",
+        "amount": "Сумма",
+        "servicesSection": "Услуги",
+        "noServices": "В оценке нет услуг.",
+        "productsSection": "Товары",
+        "noProducts": "В оценке нет товаров.",
+        "servicesTotal": "Сумма услуг",
+        "productsTotal": "Сумма товаров",
+        "orderTotal": "Итог заказа",
+        "invalidAmount": "Сумма оценки некорректна.",
+        "insufficientPayment": "Введенная оплата меньше общей суммы оценки.",
+        "confirmButton": "Подтвердить оплату",
+        "confirmed": "Оплата оценки подтверждена.",
+        "confirmFailed": "Не удалось подтвердить оплату оценки."
+      }
     },
     "modals": {
       "pendingTopUpTitle": "Подтверждение ожидаемого пополнения",
@@ -1582,9 +1609,14 @@
         "engine": "Двигатель",
         "location": "Локация",
         "year": "Год",
+        "services": "Услуги",
+        "parentCategory": "Категория",
+        "childCategory": "Подкатегория",
+        "categoryLevel": "Уровень категории {{level}}",
         "product": "Товар",
         "quantity": "Количество",
         "vinCode": "VIN код",
+        "customerPhone": "Телефон клиента",
         "mileageKm": "Пробег (км)"
       },
       "orderInfo": {
@@ -1610,6 +1642,7 @@
         "operator": "Оператор",
         "estimateNumber": "Номер заказа",
         "vehicleSection": "Автомобиль",
+        "servicesSection": "Выбранные услуги",
         "productsSection": "Выбранные товары",
         "productSku": "SKU код",
         "summarySection": "Итоговая сводка",
@@ -1627,10 +1660,11 @@
         "loadProductsFailed": "Не удалось загрузить ассортимент магазина.",
         "requiredVehicleFields": "Заполните все обязательные поля автомобиля.",
         "templateNotFound": "Для выбранного автомобиля не найден шаблон ценообразования.",
+        "selectAtLeastOneService": "Выберите хотя бы одну услугу для оценки.",
         "calculateBeforePrint": "Перед печатью чека сначала выполните расчет.",
         "createBeforePrint": "Сначала создайте заказ, чтобы номер заказа попал в чек.",
         "estimateNeedsServices": "Оценка должна содержать хотя бы одну услугу.",
-        "requiredOrderFields": "Перед созданием заказа заполните VIN, пробег и примечание."
+        "requiredOrderFields": "Перед созданием заказа заполните VIN, пробег, телефон клиента и примечание."
       }
     },
     "services": {

@@ -115,11 +115,18 @@ export interface ServiceEstimateRequestLine {
   employeeId?: number;
 }
 
+export interface ServiceEstimateProductLine {
+  shopStockId: number;
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+}
+
 export interface ServiceEstimateRequest {
   vehicleBrandId: number;
   vehicleModelId: number;
   vehicleYear: number;
-  vehicleDefinitionId: number | null;
+  vehicleDefinitionId: number;
   vehicleFuelTypeId: number;
   vehicleEngineId: number;
   location: string;
@@ -127,11 +134,119 @@ export interface ServiceEstimateRequest {
   mileage: number;
   notes: string;
   services: ServiceEstimateRequestLine[];
+  products: ServiceEstimateProductLine[];
 }
 
 export interface ServiceEstimateResponse {
   id: number;
   estimateNumber: string;
+  vehicleBrandId?: number;
+  vehicleBrandName?: string;
+  vehicleModelId?: number;
+  vehicleModelName?: string;
+  vehicleYear?: number;
+  vehicleFuelTypeId?: number;
+  vehicleFuelTypeName?: string;
+  vehicleEngineId?: number;
+  vehicleEngineName?: string;
+  location?: string;
+  vinCode?: string;
+  mileage?: number;
+  notes?: string;
+  operatorUserId?: number;
+  shopId?: number;
+  servicesTotal?: number;
+  productsTotal?: number;
+  grandTotal?: number;
+  status?: string;
+  createdAt?: string;
+  lines?: Array<{
+    id?: number;
+    serviceId?: number;
+    serviceName?: string;
+    serviceCategoryId?: number;
+    serviceCategoryName?: string;
+    employeeId?: number;
+    internalCost?: number;
+    customerPrice?: number;
+    profit?: number;
+  }>;
+  productLines?: Array<{
+    id?: number;
+    productId?: number;
+    productCode?: string;
+    quantity?: number;
+    unitPrice?: number;
+    lineTotal?: number;
+  }>;
+}
+
+export interface ServiceEstimateLookupResponse {
+  id: number;
+  estimateNumber: string;
+  vehicleBrandId?: number;
+  vehicleBrandName?: string;
+  vehicleModelId?: number;
+  vehicleModelName?: string;
+  vehicleYear?: number;
+  vehicleFuelTypeId?: number;
+  vehicleFuelTypeName?: string;
+  vehicleEngineId?: number;
+  vehicleEngineName?: string;
+  vinCode?: string;
+  mileage?: number;
+  notes?: string;
+  servicesTotal?: number;
+  productsTotal?: number;
+  grandTotal?: number;
+  totalAmount?: number;
+  status?: string;
+  createdAt?: string;
+  lines?: Array<{
+    id?: number;
+    serviceId?: number;
+    serviceName?: string;
+    customerPrice?: number;
+  }>;
+  services?: Array<{
+    id?: number;
+    serviceId?: number;
+    serviceName?: string;
+    customerPrice?: number;
+  }>;
+  products?: Array<{
+    id?: number;
+    productId?: number;
+    productName?: string;
+    productCode?: string;
+    sku?: string;
+    quantity?: number;
+    unitPrice?: number;
+    totalPrice?: number;
+  }>;
+  productLines?: Array<{
+    id?: number;
+    productId?: number;
+    productCode?: string;
+    quantity?: number;
+    unitPrice?: number;
+    lineTotal?: number;
+  }>;
+}
+
+export interface ConvertEstimateToOrderRequest {
+  serviceEstimateId: number;
+  cashPaid: number;
+  nonCashPaid: number;
+  products: Array<{
+    productId: number;
+    quantity: number;
+  }>;
+}
+
+export interface ConvertEstimateToOrderResponse {
+  id?: number;
+  orderNumber?: string;
 }
 
 export interface WorkshopFormData {

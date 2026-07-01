@@ -68,6 +68,47 @@ const getCurrentApiLanguageCode = () => {
   return mapI18nCodeToApiCode(i18n.language || "en");
 };
 
+const normalizeCategoryNode = (rawNode: unknown): CategoryNode | null => {
+  if (!rawNode || typeof rawNode !== "object") return null;
+
+  const node = rawNode as Record<string, unknown>;
+  const id = Number(node.id ?? 0);
+  if (!id) return null;
+
+  const rawChildren = Array.isArray(node.subCategories)
+    ? node.subCategories
+    : Array.isArray(node.subcategories)
+      ? node.subcategories
+      : Array.isArray(node.children)
+        ? node.children
+        : [];
+
+  const subCategories = rawChildren
+    .map((child) => normalizeCategoryNode(child))
+    .filter((child): child is CategoryNode => !!child);
+
+  return {
+    id,
+    code: String(node.code ?? ""),
+    name:
+      node.name != null && String(node.name).trim()
+        ? String(node.name)
+        : undefined,
+    parentCategoryId:
+      node.parentCategoryId != null ? Number(node.parentCategoryId) : null,
+    parentName:
+      node.parentName != null && String(node.parentName).trim()
+        ? String(node.parentName)
+        : null,
+    level: Number(node.level ?? 0),
+    isActive: node.isActive !== false,
+    displayOrder: Number(node.displayOrder ?? 0),
+    canHaveProducts:
+      node.canHaveProducts != null ? Boolean(node.canHaveProducts) : undefined,
+    subCategories,
+  };
+};
+
 export const categoryService = {
   create: async (payload: CreateCategoryPayload) => {
     try {
@@ -103,19 +144,25 @@ export const categoryService = {
     }
   },
 
-  getTree: async (): Promise<CategoriesTreeResponse> => {
+  getTree: async (cashRegisterId?: number): Promise<CategoriesTreeResponse> => {
     try {
       const response = await api.get("/Categories/tree", {
+        headers: getHeaders(cashRegisterId),
         params: {
           languageCode: getCurrentApiLanguageCode(),
         },
       });
 
       const data = response.data as Partial<CategoriesTreeResponse>;
+
+      const rootCategories = (Array.isArray(data?.rootCategories)
+        ? data.rootCategories
+        : [])
+        .map((node) => normalizeCategoryNode(node))
+        .filter((node): node is CategoryNode => !!node);
+
       return {
-        rootCategories: Array.isArray(data?.rootCategories)
-          ? data.rootCategories
-          : [],
+        rootCategories,
       };
     } catch (error: unknown) {
       throw new Error(getApiErrorMessage(error, "Failed to get category tree."));
@@ -148,7 +195,8 @@ export const boxSizeService = createCrudService("BoxSize", "boxSize");
 
 // Export category functions
 export const getCategories = () => categoryService.getAll();
-export const getCategoriesTree = () => categoryService.getTree();
+export const getCategoriesTree = (cashRegisterId?: number) =>
+  categoryService.getTree(cashRegisterId);
 export const createCategoryNode = (payload: CreateCategoryPayload) =>
   categoryService.create(payload);
 export const updateCategoryNode = (payload: UpdateCategoryPayload) =>

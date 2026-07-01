@@ -11,6 +11,7 @@ import {
 } from "@/services/settings/productSettings";
 import { fetchCategories } from "@/store/slices/productSettingsSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { getCashRegisterId } from "@/utils";
 import type {
   CategoriesTreeResponse,
   CategoryNode,
@@ -57,6 +58,7 @@ const collectDescendantIds = (node: CategoryNode): Set<number> => {
 export const CategoryContent = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const cashRegisterId = getCashRegisterId(0);
 
   const [treeData, setTreeData] = useState<CategoriesTreeResponse>({
     rootCategories: [],
@@ -87,7 +89,7 @@ export const CategoryContent = () => {
   const loadTree = useCallback(async () => {
     setIsLoadingTree(true);
     try {
-      const data = await getCategoriesTree();
+      const data = await getCategoriesTree(cashRegisterId);
       setTreeData(data);
     } catch (error: unknown) {
       const message =
@@ -98,7 +100,7 @@ export const CategoryContent = () => {
     } finally {
       setIsLoadingTree(false);
     }
-  }, [t]);
+  }, [cashRegisterId, t]);
 
   useEffect(() => {
     void loadTree();

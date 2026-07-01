@@ -528,11 +528,18 @@ export const useOperator = () => {
     location: string;
     vinCode: string;
     mileage: number;
+    customerPhone: string;
     notes: string;
     services: Array<{
       serviceId: number;
       customerPrice: number;
       employeeId?: number;
+    }>;
+    products: Array<{
+      shopStockId: number;
+      productId: number;
+      quantity: number;
+      unitPrice: number;
     }>;
   }) => {
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
@@ -560,17 +567,30 @@ export const useOperator = () => {
         vehicleBrandId: Number(payload.vehicleBrandId),
         vehicleModelId: Number(payload.vehicleModelId),
         vehicleYear: Number(payload.vehicleYear),
-        vehicleDefinitionId: null,
+        vehicleDefinitionId: 0,
         vehicleFuelTypeId: Number(payload.vehicleFuelTypeId),
         vehicleEngineId: Number(payload.vehicleEngineId),
         location: payload.location,
         vinCode: payload.vinCode,
         mileage: Number(payload.mileage || 0),
-        notes: payload.notes,
+        notes: [
+          payload.notes?.trim() || "",
+          payload.customerPhone?.trim()
+            ? `Customer phone: ${payload.customerPhone.trim()}`
+            : "",
+        ]
+          .filter(Boolean)
+          .join("\n"),
         services: payload.services.map((line) => ({
           serviceId: Number(line.serviceId),
           customerPrice: Number(line.customerPrice || 0),
           ...(line.employeeId ? { employeeId: Number(line.employeeId) } : {}),
+        })),
+        products: payload.products.map((line) => ({
+          shopStockId: Number(line.shopStockId),
+          productId: Number(line.productId),
+          quantity: Number(line.quantity || 0),
+          unitPrice: Number(line.unitPrice || 0),
         })),
       };
 

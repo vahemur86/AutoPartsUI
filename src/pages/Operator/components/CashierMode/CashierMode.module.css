@@ -98,6 +98,45 @@
   min-width: 0;
 }
 
+.estimateSearchRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  width: 100%;
+  min-width: 0;
+}
+
+.estimateCard {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  border-radius: 14px;
+  background: rgba(250, 204, 21, 0.08);
+  padding: 12px 14px;
+}
+
+.estimateHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.estimateGrid {
+  display: grid;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13px;
+}
+
+.estimateActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .searchRow > * {
   min-width: 0;
 }
@@ -392,6 +431,10 @@
     grid-template-columns: 1fr;
   }
 
+  .estimateSearchRow {
+    grid-template-columns: 1fr;
+  }
+
   .grid,
   .cartContent {
     grid-template-columns: 1fr;
@@ -458,6 +501,10 @@
   }
 
   .searchRow {
+    grid-template-columns: 1fr;
+  }
+
+  .estimateSearchRow {
     grid-template-columns: 1fr;
   }
 

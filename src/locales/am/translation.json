@@ -482,7 +482,8 @@
   "products": {
     "form": {
       "rootCategory": "Ծնող կատեգորիա",
-      "childCategory": "Ենթակատեգորիա"
+      "childCategory": "Ենթակատեգորիա",
+      "categoryLevel": "Կատեգորիայի մակարդակ {{level}}"
     }
   },
 
@@ -565,7 +566,33 @@
       "saleError": "Չհաջողվեց ավարտել վաճառքը։",
       "amountPaid": "Վճարված գումարը",
       "change": "Վերադարձ",
-      "paymentConfirmed": "Վճարը հաստատված է"
+      "paymentConfirmed": "Վճարը հաստատված է",
+      "estimate": {
+        "label": "Գնահատման համար",
+        "placeholder": "Մուտքագրեք գնահատման համարը (օր. EST-2024-06-0001)",
+        "findButton": "Գտնել գնահատումը",
+        "enterNumber": "Մուտքագրեք գնահատման համարը։",
+        "found": "Գնահատումը գտնվեց։",
+        "notFound": "Գնահատումը չի գտնվել։",
+        "number": "Գնահատում",
+        "summaryTitle": "Գնահատման ամփոփում",
+        "status": "Կարգավիճակ",
+        "vehicle": "Մեքենա",
+        "vin": "VIN",
+        "amount": "Գումար",
+        "servicesSection": "Ծառայություններ",
+        "noServices": "Գնահատման մեջ ծառայություններ չկան։",
+        "productsSection": "Ապրանքներ",
+        "noProducts": "Գնահատման մեջ ապրանքներ չկան։",
+        "servicesTotal": "Ծառայությունների գումար",
+        "productsTotal": "Ապրանքների գումար",
+        "orderTotal": "Պատվերի ընդհանուր գումար",
+        "invalidAmount": "Գնահատման գումարը սխալ է։",
+        "insufficientPayment": "Մուտքագրված վճարումը պակաս է գնահատման ընդհանուր գումարից։",
+        "confirmButton": "Հաստատել վճարումը",
+        "confirmed": "Գնահատման վճարումը հաստատվեց։",
+        "confirmFailed": "Չհաջողվեց հաստատել գնահատման վճարումը։"
+      }
     },
     "modals": {
       "pendingTopUpTitle": "Հաստատեք սպասվող մուտքագրումը",
@@ -629,9 +656,14 @@
         "engine": "Շարժիչ",
         "location": "Տեղակայություն",
         "year": "Տարի",
+        "services": "Ծառայություններ",
+        "parentCategory": "Կատեգորիա",
+        "childCategory": "Ենթակատեգորիա",
+        "categoryLevel": "Կատեգորիայի մակարդակ {{level}}",
         "product": "Ապրանք",
         "quantity": "Քանակ",
         "vinCode": "VIN կոդ",
+        "customerPhone": "Հաճախորդի հեռախոս",
         "mileageKm": "Վազք (կմ)"
       },
       "orderInfo": {
@@ -657,6 +689,7 @@
         "operator": "Օպերատոր",
         "estimateNumber": "Պատվերի համար",
         "vehicleSection": "Մեքենա",
+        "servicesSection": "Ընտրված ծառայություններ",
         "productsSection": "Ընտրված ապրանքներ",
         "productSku": "SKU կոդ",
         "summarySection": "Գումարային ամփոփում",
@@ -674,10 +707,11 @@
         "loadProductsFailed": "Չհաջողվեց բեռնել խանութի ապրանքացանկը։",
         "requiredVehicleFields": "Լրացրեք մեքենայի բոլոր պարտադիր դաշտերը։",
         "templateNotFound": "Ընտրված մեքենայի համար գնագոյացման ձևանմուշ չի գտնվել։",
+        "selectAtLeastOneService": "Գնահատման համար ընտրեք առնվազն մեկ ծառայություն։",
         "calculateBeforePrint": "Չեկը տպելուց առաջ նախ կատարեք հաշվարկը։",
         "createBeforePrint": "Սկզբում ստեղծեք պատվերը, որ չեկի վրա երևա պատվերի համարը։",
         "estimateNeedsServices": "Գնահատումը պետք է ունենա առնվազն մեկ ծառայություն։",
-        "requiredOrderFields": "Պատվերը ստեղծելու համար լրացրեք VIN կոդը, վազքը և նշումը։"
+        "requiredOrderFields": "Պատվերը ստեղծելու համար լրացրեք VIN կոդը, վազքը, հաճախորդի հեռախոսը և նշումը։"
       }
     },
     "tabSwitchWarning": "Տաբը փոխելու դեպքում ընթացիկ տվյալները կմաքրվեն։ Վստա՞հ եք, որ ցանկանում եք շարունակել։"

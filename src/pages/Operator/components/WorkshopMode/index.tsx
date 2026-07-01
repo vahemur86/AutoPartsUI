@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Button, Select, TextField, Textarea } from "@/ui-kit";
+import { Button, Checkbox, Select, TextField, Textarea } from "@/ui-kit";
 import { useTranslation } from "react-i18next";
 
 import sharedStyles from "../../OperatorPage.module.css";
 import styles from "./WorkshopMode.module.css";
+import { getCategoriesTree } from "@/services/settings/productSettings";
 import { getShopProducts } from "@/services/warehouses/warehouseProduct";
+import type { CategoryNode } from "@/types/settings";
 import type { VehicleServiceTemplateItem } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 
@@ -25,11 +27,18 @@ interface WorkshopModeProps {
     location: string;
     vinCode: string;
     mileage: number;
+    customerPhone: string;
     notes: string;
     services: Array<{
       serviceId: number;
       customerPrice: number;
       employeeId?: number;
+    }>;
+    products: Array<{
+      shopStockId: number;
+      productId: number;
+      quantity: number;
+      unitPrice: number;
     }>;
   }) => Promise<{ id: number; estimateNumber: string } | null | undefined>;
   isSubmitting: boolean;
@@ -42,6 +51,16 @@ type WorkshopProductLine = {
   code: string;
   unitPrice: number;
   quantity: number;
+};
+
+type ProductOption = {
+  stockId: number;
+  productId: number;
+  sku: string;
+  code: string;
+  salePrice: number;
+  categoryId: number;
+  categoryPath: number[];
 };
 
 type NormalizedTemplate = {
@@ -60,6 +79,7 @@ type NormalizedTemplate = {
   isActive: boolean;
   items: Array<{
     serviceId: number;
+    serviceName?: string;
     customerPrice?: number;
     employeeId?: number;
   }>;
@@ -78,7 +98,9 @@ export const WorkshopMode = ({
   const { t } = useTranslation();
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const [isProductsLoading, setIsProductsLoading] = useState(false);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
   const [products, setProducts] = useState<ShopProductItem[]>([]);
+  const [categoryTree, setCategoryTree] = useState<CategoryNode[]>([]);
 
   const [brandId, setBrandId] = useState(0);
   const [modelId, setModelId] = useState(0);
@@ -88,9 +110,12 @@ export const WorkshopMode = ({
   const [year, setYear] = useState("");
   const [vinCode, setVinCode] = useState("");
   const [mileageKm, setMileageKm] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [orderComment, setOrderComment] = useState("");
+  const [selectedCategoryPath, setSelectedCategoryPath] = useState<number[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [productLines, setProductLines] = useState<WorkshopProductLine[]>([]);
+  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [createdEstimate, setCreatedEstimate] = useState<{
     id: number;
@@ -102,16 +127,23 @@ export const WorkshopMode = ({
 
     const loadProducts = async () => {
       setIsProductsLoading(true);
+      setIsCategoriesLoading(true);
       try {
-        const response = await getShopProducts({
-          shopId,
-          cashRegisterId,
-        });
-        setProducts(response);
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          getShopProducts({
+            shopId,
+            cashRegisterId,
+          }),
+          getCategoriesTree(cashRegisterId),
+        ]);
+
+        setProducts(productsResponse);
+        setCategoryTree(categoriesResponse.rootCategories ?? []);
       } catch {
         toast.error(t("operatorPage.workshop.error.loadProductsFailed"));
       } finally {
         setIsProductsLoading(false);
+        setIsCategoriesLoading(false);
       }
     };
 
@@ -130,15 +162,17 @@ export const WorkshopMode = ({
         const yearValue = Number(raw.year ?? 0);
         const locationValue =
           String(raw.location ?? raw.locationName ?? raw.marketName ?? "").trim();
-     const items = Array.isArray(raw.items)
-  ? (raw.items
-      .map((i: any) => ({
-        serviceId: Number(i.serviceId),
-        customerPrice: i.customerPrice != null ? Number(i.customerPrice) : undefined,
-        employeeId: i.employeeId != null ? Number(i.employeeId) : undefined,
-      }))
-      .filter((i) => i.serviceId > 0))
-  : [];
+        const items = Array.isArray(raw.items)
+          ? (raw.items
+              .map((i: Record<string, unknown>) => ({
+                serviceId: Number(i.serviceId ?? 0),
+                serviceName: String(i.serviceName ?? i.serviceCode ?? "").trim() || undefined,
+                customerPrice:
+                  i.customerPrice != null ? Number(i.customerPrice) : undefined,
+                employeeId: i.employeeId != null ? Number(i.employeeId) : undefined,
+              }))
+              .filter((i) => i.serviceId > 0))
+          : [];
 
         return {
           id,
@@ -347,6 +381,27 @@ export const WorkshopMode = ({
     }
   }, [hasCalculated]);
 
+  useEffect(() => {
+    setSelectedCategoryPath([]);
+    setSelectedProductId("");
+  }, [categoryTree, products]);
+
+  const categoryParentById = useMemo(() => {
+    const parentMap = new Map<number, number | null>();
+
+    const walk = (nodes: CategoryNode[]) => {
+      nodes.forEach((node) => {
+        parentMap.set(node.id, node.parentCategoryId ?? null);
+        if (Array.isArray(node.subCategories) && node.subCategories.length > 0) {
+          walk(node.subCategories);
+        }
+      });
+    };
+
+    walk(categoryTree);
+    return parentMap;
+  }, [categoryTree]);
+
   const selectedTemplate = useMemo(() => {
     const yearNumber = Number(year || 0);
     if (!brandId || !modelId || !yearNumber || !location) return null;
@@ -364,27 +419,141 @@ export const WorkshopMode = ({
     );
   }, [activeTemplates, brandId, modelId, fuelTypeId, engineId, year, location]);
 
-  const productOptions = useMemo(
+  useEffect(() => {
+    setSelectedServiceIds([]);
+    setHasCalculated(false);
+  }, [selectedTemplate?.id]);
+
+  const productOptions = useMemo<ProductOption[]>(
     () =>
       products
         .filter((item) => Number(item.productId || item.product?.id || 0) > 0)
         .map((item) => ({
+          categoryId: Number(item.product?.categoryId || 0),
           stockId: item.id,
           productId: Number(item.productId || item.product?.id || 0),
           sku: (item.product?.sku || item.product?.code || `#${item.productId}`).trim(),
           code: (item.product?.code || item.product?.sku || `#${item.productId}`).trim(),
           salePrice: Number(item.salePrice || 0),
-        })),
-    [products],
+          categoryPath: [],
+        }))
+        .map((item) => {
+          const categoryId = item.categoryId;
+          if (!categoryId || !categoryParentById.has(categoryId)) {
+            return item;
+          }
+
+          const path: number[] = [];
+          let current: number | null = categoryId;
+
+          while (current != null && current > 0) {
+            path.push(current);
+            current = categoryParentById.get(current) ?? null;
+          }
+
+          return {
+            ...item,
+            categoryPath: path.reverse(),
+          };
+        }),
+    [products, categoryParentById],
+  );
+
+  const categorySelection = useMemo(() => {
+    const levels: Array<Array<{ id: number; name: string }>> = [];
+    let resolvedPath: number[] = [];
+    let currentNodes = categoryTree;
+    let lastSelectedNode: CategoryNode | null = null;
+
+    while (Array.isArray(currentNodes) && currentNodes.length > 0) {
+      const nextOptions = currentNodes
+        .map((node) => ({
+          id: Number(node.id || 0),
+          name: String(node.name || node.code || `#${node.id}`),
+        }))
+        .filter((node) => node.id > 0)
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      if (!nextOptions.length) {
+        break;
+      }
+
+      levels.push(nextOptions);
+
+      const selectedId = selectedCategoryPath[resolvedPath.length];
+      if (!selectedId) {
+        break;
+      }
+
+      const selectedNode = currentNodes.find(
+        (node) => Number(node.id || 0) === Number(selectedId),
+      );
+      if (!selectedNode) {
+        break;
+      }
+
+      resolvedPath = [...resolvedPath, selectedId];
+      lastSelectedNode = selectedNode;
+      currentNodes = Array.isArray(selectedNode.subCategories)
+        ? selectedNode.subCategories
+        : [];
+    }
+
+    const isLeafSelected =
+      !!lastSelectedNode &&
+      (Array.isArray(lastSelectedNode.subCategories)
+        ? lastSelectedNode.subCategories.length === 0
+        : true);
+
+    const selectedCategoryCanHaveProducts =
+      !!lastSelectedNode && lastSelectedNode.canHaveProducts === true;
+
+    return {
+      levels,
+      resolvedPath,
+      isComplete:
+        resolvedPath.length > 0 && (isLeafSelected || selectedCategoryCanHaveProducts),
+    };
+  }, [categoryTree, selectedCategoryPath]);
+
+  const selectedCategoryBreadcrumb = useMemo(
+    () =>
+      categorySelection.resolvedPath
+        .map((id, levelIndex) => {
+          const label = categorySelection.levels[levelIndex]?.find(
+            (item) => item.id === id,
+          )?.name;
+          return label || `#${id}`;
+        })
+        .join(" > "),
+    [categorySelection],
+  );
+
+  const filteredProductOptions = useMemo(() => {
+    if (!categorySelection.isComplete) return [];
+
+    return productOptions.filter((item) =>
+      categorySelection.resolvedPath.every(
+        (id, index) => item.categoryPath[index] === id,
+      ),
+    );
+  }, [productOptions, categorySelection]);
+
+  const selectedServiceLines = useMemo(
+    () =>
+      (selectedTemplate?.items ?? []).filter((item) =>
+        selectedServiceIds.includes(Number(item.serviceId || 0)),
+      ),
+    [selectedTemplate, selectedServiceIds],
   );
 
   const servicesPrice = useMemo(
     () =>
-      (selectedTemplate?.items ?? []).reduce(
+      selectedServiceLines.reduce(
         (sum, item) => sum + Number(item.customerPrice || 0),
         0,
       ),
-    [selectedTemplate],
+    [selectedServiceLines],
   );
 
   const electricityPrice = Number(selectedTemplate?.electricityPrice || 0);
@@ -405,7 +574,7 @@ export const WorkshopMode = ({
     const productId = Number(selectedProductId || 0);
     if (!productId) return;
 
-    const selected = productOptions.find((item) => item.productId === productId);
+    const selected = filteredProductOptions.find((item) => item.productId === productId);
     if (!selected) return;
 
     setProductLines((prev) => {
@@ -465,55 +634,68 @@ export const WorkshopMode = ({
       return;
     }
 
+    if (!selectedServiceLines.length) {
+      toast.error(t("operatorPage.workshop.error.selectAtLeastOneService"));
+      return;
+    }
+
     setHasCalculated(true);
   };
 
- const handleCreateOrder = async () => {
-  if (!selectedTemplate || !hasCalculated) return;
+  const handleCreateOrder = async () => {
+    if (!selectedTemplate || !hasCalculated) return;
 
-  if (
-    !vinCode.trim() ||
-    !mileageKm.trim() ||
-    Number(mileageKm) <= 0 ||
-    !orderComment.trim()
-  ) {
-    toast.error(t("operatorPage.workshop.error.requiredOrderFields"));
-    return;
-  }
+    if (
+      !vinCode.trim() ||
+      !mileageKm.trim() ||
+      Number(mileageKm) <= 0 ||
+      !customerPhone.trim() ||
+      !orderComment.trim()
+    ) {
+      toast.error(t("operatorPage.workshop.error.requiredOrderFields"));
+      return;
+    }
 
-  const services = (selectedTemplate.items ?? [])
-    .map((item) => ({
-      serviceId: Number(item.serviceId || 0),
-      customerPrice: Number(item.customerPrice || 0),
-      employeeId: Number(item.employeeId || 0) || undefined,
-    }))
-    .filter((item) => item.serviceId > 0);
+    const services = selectedServiceLines
+      .map((item) => ({
+        serviceId: Number(item.serviceId || 0),
+        customerPrice: Number(item.customerPrice || 0),
+        employeeId: Number(item.employeeId || 0) || undefined,
+      }))
+      .filter((item) => item.serviceId > 0);
 
-  if (!services.length) {
-    toast.error(t("operatorPage.workshop.error.estimateNeedsServices"));
-    return;
-  }
+    if (!services.length) {
+      toast.error(t("operatorPage.workshop.error.estimateNeedsServices"));
+      return;
+    }
 
-  const estimate = await onSubmit({
-    vehicleBrandId: selectedTemplate.brandId,
-    vehicleModelId: selectedTemplate.modelId,
-    vehicleYear: selectedTemplate.year,
-    vehicleFuelTypeId: selectedTemplate.fuelTypeId,
-    vehicleEngineId: selectedTemplate.engineId,
-    location: selectedTemplate.location,
-    vinCode: vinCode.trim(),
-    mileage: Number(mileageKm),
-    notes: orderComment.trim(),
-    services,
-  });
-
-  if (estimate?.estimateNumber) {
-    setCreatedEstimate({
-      id: Number(estimate.id || 0),
-      estimateNumber: String(estimate.estimateNumber),
+    const estimate = await onSubmit({
+      vehicleBrandId: selectedTemplate.brandId,
+      vehicleModelId: selectedTemplate.modelId,
+      vehicleYear: selectedTemplate.year,
+      vehicleFuelTypeId: selectedTemplate.fuelTypeId,
+      vehicleEngineId: selectedTemplate.engineId,
+      location: selectedTemplate.location,
+      vinCode: vinCode.trim(),
+      mileage: Number(mileageKm),
+      customerPhone: customerPhone.trim(),
+      notes: orderComment.trim(),
+      services,
+      products: productLines.map((line) => ({
+        shopStockId: line.shopStockId,
+        productId: line.productId,
+        quantity: line.quantity,
+        unitPrice: line.unitPrice,
+      })),
     });
-  }
-};
+
+    if (estimate?.estimateNumber) {
+      setCreatedEstimate({
+        id: Number(estimate.id || 0),
+        estimateNumber: String(estimate.estimateNumber),
+      });
+    }
+  };
 
   const handlePrintCheck = () => {
     if (!hasCalculated) {
@@ -673,16 +855,96 @@ export const WorkshopMode = ({
       </div>
 
       <div className={styles.fieldBlock}>
+        {selectedTemplate && (selectedTemplate.items?.length ?? 0) > 0 && (
+          <div className={styles.servicesSelector}>
+            <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.fields.services")}</div>
+            <div className={styles.servicesList}>
+              {(selectedTemplate.items ?? []).map((line) => {
+                const serviceId = Number(line.serviceId || 0);
+                const checked = selectedServiceIds.includes(serviceId);
+                return (
+                  <div key={serviceId} className={styles.serviceLine}>
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(value) => {
+                        setSelectedServiceIds((prev) => {
+                          if (value) {
+                            return prev.includes(serviceId) ? prev : [...prev, serviceId];
+                          }
+                          return prev.filter((id) => id !== serviceId);
+                        });
+                        setHasCalculated(false);
+                      }}
+                    />
+                    <div className={styles.serviceLineText}>
+                      <span>{line.serviceName || `#${serviceId}`}</span>
+                      <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className={styles.productPickerRow}>
+          {selectedCategoryBreadcrumb ? (
+            <div className={styles.categoryBreadcrumb}>
+              {selectedCategoryBreadcrumb}
+            </div>
+          ) : null}
+
+          {categorySelection.levels.map((options, levelIndex) => (
+            <Select
+              key={`category-level-${levelIndex}`}
+              label={
+                levelIndex === 0
+                  ? t("operatorPage.workshop.fields.parentCategory")
+                  : t("operatorPage.workshop.fields.categoryLevel", {
+                      level: levelIndex + 1,
+                    })
+              }
+              value={String(selectedCategoryPath[levelIndex] || "")}
+              onChange={(e) => {
+                const selectedId = Number(e.target.value) || 0;
+                setSelectedCategoryPath((prev) => {
+                  const next = prev.slice(0, levelIndex);
+                  if (selectedId > 0) {
+                    next[levelIndex] = selectedId;
+                  }
+                  return next;
+                });
+                setSelectedProductId("");
+              }}
+              disabled={
+                isProductsLoading ||
+                isCategoriesLoading ||
+                (levelIndex > 0 && !selectedCategoryPath[levelIndex - 1])
+              }
+              searchable
+            >
+              <option value="">{t("common.select")}</option>
+              {options.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </Select>
+          ))}
+
           <Select
             label={t("operatorPage.workshop.fields.product")}
             value={selectedProductId}
             onChange={(e) => setSelectedProductId(e.target.value)}
-            disabled={isProductsLoading}
+            disabled={
+              isProductsLoading ||
+              isCategoriesLoading ||
+              !categorySelection.isComplete
+            }
             searchable
           >
             <option value="">{t("common.select")}</option>
-            {productOptions.map((item) => (
+            {filteredProductOptions.map((item) => (
               <option key={`${item.stockId}-${item.productId}`} value={item.productId}>
                 {item.sku} / {item.code} ({item.salePrice})
               </option>
@@ -741,6 +1003,12 @@ export const WorkshopMode = ({
               value={mileageKm}
               onChange={(e) => setMileageKm(e.target.value)}
               placeholder="150000"
+            />
+            <TextField
+              label={t("operatorPage.workshop.fields.customerPhone")}
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              placeholder="+374..."
             />
           </div>
           <Textarea
@@ -854,8 +1122,28 @@ export const WorkshopMode = ({
                   <span>{t("operatorPage.workshop.fields.mileageKm")}</span>
                   <strong>{mileageKm || "-"} km</strong>
                 </div>
+                <div className={styles.receiptRow}>
+                  <span>{t("operatorPage.workshop.fields.customerPhone")}</span>
+                  <strong>{customerPhone || "-"}</strong>
+                </div>
               </div>
             </div>
+
+            {selectedServiceLines.length > 0 && (
+              <div className={styles.receiptSection}>
+                <div className={styles.receiptSectionTitle}>{t("operatorPage.workshop.receipt.servicesSection")}</div>
+                <div className={styles.receiptProductsList}>
+                  {selectedServiceLines.map((line) => (
+                    <div key={line.serviceId} className={styles.receiptProductRow}>
+                      <div className={styles.receiptProductCode}>{line.serviceName || `#${line.serviceId}`}</div>
+                      <div className={styles.receiptProductMeta}>
+                        <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {productLines.length > 0 && (
               <div className={styles.receiptSection}>

@@ -1199,6 +1199,7 @@
       "category": "Category",
       "rootCategory": "Root Category",
       "childCategory": "Child Category",
+      "categoryLevel": "Category Level {{level}}",
       "unitType": "Unit Type",
       "boxSize": "Box size",
       "vehicleDependent": "Vehicle Dependent",
@@ -1520,7 +1521,33 @@
       "change": "Change",
       "paymentConfirmed": "Payment confirmed",
       "saleCompleted": "Sale completed",
-      "saleError": "Failed to complete sale."
+      "saleError": "Failed to complete sale.",
+      "estimate": {
+        "label": "Estimate Number",
+        "placeholder": "Enter estimate number (e.g. EST-2024-06-0001)",
+        "findButton": "Find Estimate",
+        "enterNumber": "Enter estimate number.",
+        "found": "Estimate found.",
+        "notFound": "Estimate was not found.",
+        "number": "Estimate",
+        "summaryTitle": "Estimate Summary",
+        "status": "Status",
+        "vehicle": "Vehicle",
+        "vin": "VIN",
+        "amount": "Amount",
+        "servicesSection": "Services",
+        "noServices": "No services in estimate.",
+        "productsSection": "Products",
+        "noProducts": "No products in estimate.",
+        "servicesTotal": "Services Total",
+        "productsTotal": "Products Total",
+        "orderTotal": "Order Total",
+        "invalidAmount": "Estimate amount is invalid.",
+        "insufficientPayment": "Entered payment is less than estimate total.",
+        "confirmButton": "Confirm Payment",
+        "confirmed": "Estimate payment confirmed.",
+        "confirmFailed": "Failed to confirm estimate payment."
+      }
     },
     "modals": {
       "pendingTopUpTitle": "Confirm Pending Top-Up",
@@ -1584,9 +1611,14 @@
         "engine": "Engine",
         "location": "Location",
         "year": "Year",
+        "services": "Services",
+        "parentCategory": "Category",
+        "childCategory": "Subcategory",
+        "categoryLevel": "Category Level {{level}}",
         "product": "Product",
         "quantity": "Quantity",
         "vinCode": "VIN Code",
+        "customerPhone": "Customer Phone",
         "mileageKm": "Mileage (km)"
       },
       "orderInfo": {
@@ -1612,6 +1644,7 @@
         "operator": "Operator",
         "estimateNumber": "Order Number",
         "vehicleSection": "Vehicle",
+        "servicesSection": "Selected Services",
         "productsSection": "Selected Products",
         "productSku": "SKU Code",
         "summarySection": "Order Summary",
@@ -1629,10 +1662,11 @@
         "loadProductsFailed": "Failed to load shop inventory.",
         "requiredVehicleFields": "Please fill all required vehicle fields.",
         "templateNotFound": "No pricing template was found for the selected vehicle.",
+        "selectAtLeastOneService": "Select at least one service for this estimate.",
         "calculateBeforePrint": "Please complete the calculation before printing the receipt.",
         "createBeforePrint": "Create the order first to print with the order number.",
         "estimateNeedsServices": "Estimate must include at least one service.",
-        "requiredOrderFields": "VIN, mileage, and notes are required before creating the order."
+        "requiredOrderFields": "VIN, mileage, customer phone, and notes are required before creating the order."
       }
     },
     "services": {

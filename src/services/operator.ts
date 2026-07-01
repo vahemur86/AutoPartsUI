@@ -5,9 +5,12 @@ import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
 import type {
+  ConvertEstimateToOrderRequest,
+  ConvertEstimateToOrderResponse,
   Intake,
   IntakeResponse,
   NewPropose,
+  ServiceEstimateLookupResponse,
   ServiceEstimateRequest,
   ServiceEstimateResponse,
   WorkshopOrder,
@@ -123,6 +126,152 @@ export const getServiceOrders = async ({
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to load workshop orders."));
+  }
+};
+
+export const getServiceEstimateByNumber = async ({
+  estimateNumber,
+  cashRegisterId,
+}: {
+  estimateNumber: string;
+  cashRegisterId?: number;
+}): Promise<ServiceEstimateLookupResponse> => {
+  const normalizedNumber = estimateNumber.trim();
+
+  if (!normalizedNumber) {
+    throw new Error("Estimate number is required.");
+  }
+
+  const normalizedCashRegisterId = Number(cashRegisterId);
+  if (!Number.isFinite(normalizedCashRegisterId) || normalizedCashRegisterId <= 0) {
+    throw new Error("Missing or invalid X-CashRegister-Id header.");
+  }
+
+  const headers = getHeaders(normalizedCashRegisterId);
+
+  const maybeEstimateId = Number(normalizedNumber);
+  const canTryById = Number.isInteger(maybeEstimateId) && maybeEstimateId > 0;
+
+  if (canTryById) {
+    try {
+      const byIdResponse = await api.get(`/ServiceEstimate/${maybeEstimateId}`, {
+        headers,
+      });
+      return byIdResponse.data;
+    } catch {
+      // Continue to estimate-number lookup fallback chain.
+    }
+  }
+
+  try {
+    const response = await api.get(
+      `/ServiceEstimate/number/${encodeURIComponent(normalizedNumber)}`,
+      { headers },
+    );
+    return response.data;
+  } catch {
+    try {
+      const response = await api.get(`/ServiceEstimate`, {
+        headers,
+        params: { estimateNumber: normalizedNumber },
+      });
+
+      if (Array.isArray(response.data)) {
+        const matched = response.data.find(
+          (item: Record<string, unknown>) =>
+            String(item.estimateNumber || "").toLowerCase() ===
+            normalizedNumber.toLowerCase(),
+        );
+
+        if (!matched) {
+          throw new Error("Service estimate not found.");
+        }
+
+        return matched as ServiceEstimateLookupResponse;
+      }
+
+      return response.data as ServiceEstimateLookupResponse;
+    } catch (error: unknown) {
+      throw new Error(
+        getApiErrorMessage(error, "Failed to find service estimate by number."),
+      );
+    }
+  }
+};
+
+export const confirmServiceEstimate = async ({
+  estimateId,
+  cashRegisterId,
+}: {
+  estimateId: number;
+  cashRegisterId?: number;
+}) => {
+  const normalizedCashRegisterId = Number(cashRegisterId);
+  if (!Number.isFinite(normalizedCashRegisterId) || normalizedCashRegisterId <= 0) {
+    throw new Error("Missing or invalid X-CashRegister-Id header.");
+  }
+
+  const headers = getHeaders(normalizedCashRegisterId);
+  const body = {
+    paymentType: 1,
+  };
+
+  try {
+    const response = await api.post(`/ServiceEstimate/${estimateId}/confirm`, body, {
+      headers,
+    });
+    return response.data;
+  } catch {
+    try {
+      const response = await api.post(
+        `/ServiceEstimate/${estimateId}/confirm-payment`,
+        body,
+        {
+          headers,
+        },
+      );
+      return response.data;
+    } catch {
+      try {
+        const response = await api.post(
+          `/ServiceEstimate/confirm`,
+          {
+            estimateId,
+            ...body,
+          },
+          {
+            headers,
+          },
+        );
+        return response.data;
+      } catch (error: unknown) {
+        throw new Error(
+          getApiErrorMessage(error, "Failed to confirm service estimate."),
+        );
+      }
+    }
+  }
+};
+
+export const convertServiceEstimateToOrder = async ({
+  payload,
+  cashRegisterId,
+}: {
+  payload: ConvertEstimateToOrderRequest;
+  cashRegisterId?: number;
+}): Promise<ConvertEstimateToOrderResponse> => {
+  const normalizedCashRegisterId = Number(cashRegisterId);
+  if (!Number.isFinite(normalizedCashRegisterId) || normalizedCashRegisterId <= 0) {
+    throw new Error("Missing or invalid X-CashRegister-Id header.");
+  }
+
+  try {
+    const response = await api.post(`/ServiceEstimate/convert-to-order`, payload, {
+      headers: getHeaders(normalizedCashRegisterId),
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to convert estimate to order."));
   }
 };
 

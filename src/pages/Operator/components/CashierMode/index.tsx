@@ -11,6 +11,10 @@ import { fetchShopProducts } from "@/store/slices/shops/productsSlice";
 
 // services
 import { searchShopProductsBySku } from "@/services/warehouses/warehouseProduct";
+import {
+  convertServiceEstimateToOrder,
+  getServiceEstimateByNumber,
+} from "@/services/operator";
 
 // utils
 import { getCashRegisterId } from "@/utils";
@@ -19,6 +23,7 @@ import { getCashRegisterId } from "@/utils";
 import { createPOSSale } from "@/services/shops/posSale";
 
 // types
+import type { ServiceEstimateLookupResponse } from "@/types/operator";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 
 // styles
@@ -58,30 +63,49 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [searchSku, setSearchSku] = useState("");
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
   const [searchMessageType, setSearchMessageType] = useState<"success" | "error" | null>(null);
+  const [estimateNumberInput, setEstimateNumberInput] = useState("");
+  const [isEstimateLoading, setIsEstimateLoading] = useState(false);
+  const [isEstimateConverting, setIsEstimateConverting] = useState(false);
+  const [selectedEstimate, setSelectedEstimate] =
+    useState<ServiceEstimateLookupResponse | null>(null);
   const skuInputRef = useRef<HTMLInputElement | null>(null);
 
-  const cashRegister = useMemo(() => getCashRegisterId(), []);
+  const cashRegister = useMemo(() => getCashRegisterId(0), []);
+  const resolvedCashRegisterId = useMemo(() => {
+    const fromProp = Number(cashRegisterId || 0);
+    if (Number.isFinite(fromProp) && fromProp > 0) {
+      return fromProp;
+    }
+
+    const fromLocal = Number(cashRegister || 0);
+    if (Number.isFinite(fromLocal) && fromLocal > 0) {
+      return fromLocal;
+    }
+
+    return 0;
+  }, [cashRegisterId, cashRegister]);
   const currentShopId = shops[0]?.id ?? null;
   const currentShopCode = shops[0]?.code ?? "";
 
   useEffect(() => {
-    dispatch(fetchShops({ cashRegisterId: cashRegisterId || cashRegister }));
-  }, [dispatch, cashRegisterId, cashRegister]);
+    if (!resolvedCashRegisterId) return;
+    dispatch(fetchShops({ cashRegisterId: resolvedCashRegisterId }));
+  }, [dispatch, resolvedCashRegisterId]);
 
   useEffect(() => {
     skuInputRef.current?.focus();
   }, [currentShopId]);
 
   useEffect(() => {
-    if (!currentShopId) return;
+    if (!currentShopId || !resolvedCashRegisterId) return;
     dispatch(
       fetchShopProducts({
         shopId: currentShopId,
-        cashRegisterId: cashRegisterId || cashRegister,
+        cashRegisterId: resolvedCashRegisterId,
       }),
     );
     setCartItems([]);
-  }, [dispatch, currentShopId, cashRegisterId, cashRegister]);
+  }, [dispatch, currentShopId, resolvedCashRegisterId]);
 
   const totalAmount = useMemo(
     () =>
@@ -92,26 +116,67 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     [cartItems],
   );
 
+  const isEstimateMode = !!selectedEstimate;
+
+  const estimateServiceLines = useMemo(
+    () => (selectedEstimate?.lines ?? selectedEstimate?.services ?? []),
+    [selectedEstimate],
+  );
+
+  const estimateProductLines = useMemo(
+    () => selectedEstimate?.productLines ?? selectedEstimate?.products ?? [],
+    [selectedEstimate],
+  );
+
+  const estimateServicesTotal = useMemo(() => {
+    const fromField = Number(selectedEstimate?.servicesTotal || 0);
+    if (fromField > 0) return fromField;
+
+    return estimateServiceLines.reduce(
+      (sum, line) => sum + Number(line.customerPrice || 0),
+      0,
+    );
+  }, [selectedEstimate, estimateServiceLines]);
+
+  const estimateProductsTotal = useMemo(() => {
+    const fromField = Number(selectedEstimate?.productsTotal || 0);
+    if (fromField > 0) return fromField;
+
+    return estimateProductLines.reduce((sum, line) => {
+      const lineTotal = Number((line as { totalPrice?: number; lineTotal?: number }).lineTotal ?? (line as { totalPrice?: number; lineTotal?: number }).totalPrice ?? 0);
+      if (lineTotal > 0) return sum + lineTotal;
+      return sum + Number(line.quantity || 0) * Number(line.unitPrice || 0);
+    }, 0);
+  }, [selectedEstimate, estimateProductLines]);
+
+  const estimateTotalAmount = useMemo(() => {
+    const fromField = Number(selectedEstimate?.grandTotal || selectedEstimate?.totalAmount || 0);
+    if (fromField > 0) return fromField;
+    return estimateServicesTotal + estimateProductsTotal;
+  }, [selectedEstimate, estimateServicesTotal, estimateProductsTotal]);
+
+  const activeTotalAmount = isEstimateMode ? estimateTotalAmount : totalAmount;
+
   const cashPaidNum = useMemo(() => parseFloat(cashPaid) || 0, [cashPaid]);
   const nonCashPaidNum = useMemo(() => parseFloat(nonCashPaid) || 0, [nonCashPaid]);
 
   const resolvedCashPaid = useMemo(() => {
-    if (paymentMode === "cash") return totalAmount;
+    if (paymentMode === "cash") return activeTotalAmount;
     if (paymentMode === "non-cash") return 0;
     return cashPaidNum;
-  }, [paymentMode, totalAmount, cashPaidNum]);
+  }, [paymentMode, activeTotalAmount, cashPaidNum]);
 
   const resolvedNonCashPaid = useMemo(() => {
-    if (paymentMode === "non-cash") return totalAmount;
+    if (paymentMode === "non-cash") return activeTotalAmount;
     if (paymentMode === "cash") return 0;
     return nonCashPaidNum;
-  }, [paymentMode, totalAmount, nonCashPaidNum]);
+  }, [paymentMode, activeTotalAmount, nonCashPaidNum]);
 
   const change = useMemo(() => {
-    if (paymentMode === "cash") return Math.max(0, cashPaidNum - totalAmount);
-    if (paymentMode === "mixed") return Math.max(0, cashPaidNum + nonCashPaidNum - totalAmount);
+    if (paymentMode === "cash") return Math.max(0, cashPaidNum - activeTotalAmount);
+    if (paymentMode === "mixed") return Math.max(0, cashPaidNum + nonCashPaidNum - activeTotalAmount);
     return 0;
-  }, [paymentMode, cashPaidNum, nonCashPaidNum, totalAmount]);
+  }, [paymentMode, cashPaidNum, nonCashPaidNum, activeTotalAmount]);
 
   const handleAddToCart = useCallback(
     (product: CashierProductRow) => {
@@ -160,7 +225,12 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     }
 
     try {
-      const crId = cashRegisterId || cashRegister;
+      const crId = resolvedCashRegisterId;
+      if (!crId) {
+        setSearchMessageType("error");
+        setSearchMessage("Missing or invalid X-CashRegister-Id header.");
+        return;
+      }
       const results = await searchShopProductsBySku({
         shopId: currentShopId,
         cashRegisterId: crId,
@@ -198,8 +268,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   }, [
     searchSku,
     currentShopId,
-    cashRegisterId,
-    cashRegister,
+    resolvedCashRegisterId,
     handleAddToCart,
     t,
   ]);
@@ -228,7 +297,11 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const handleCompleteSale = useCallback(async () => {
     if (cartItems.length === 0 || !currentShopId) return;
 
-    const crId = cashRegisterId || cashRegister;
+    const crId = resolvedCashRegisterId;
+    if (!crId) {
+      toast.error("Missing or invalid X-CashRegister-Id header.");
+      return;
+    }
 
     if (paymentMode === "mixed" && !nonCashReference.trim()) {
       toast.error(t("operatorPage.cashier.nonCashReferenceRequired"));
@@ -271,12 +344,95 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   }, [
     cartItems,
     currentShopId,
-    cashRegisterId,
-    cashRegister,
+    resolvedCashRegisterId,
     paymentMode,
     nonCashReference,
     resolvedCashPaid,
     resolvedNonCashPaid,
+    t,
+  ]);
+
+  const handleFindEstimate = useCallback(async () => {
+    const estimateNumber = estimateNumberInput.trim();
+    if (!estimateNumber) {
+      toast.error(t("operatorPage.cashier.estimate.enterNumber"));
+      return;
+    }
+
+    setIsEstimateLoading(true);
+    try {
+      const result = await getServiceEstimateByNumber({
+        estimateNumber,
+        cashRegisterId: resolvedCashRegisterId,
+      });
+      setSelectedEstimate(result);
+      setPaymentMode("cash");
+      setCashPaid("0");
+      setNonCashPaid("0");
+      setNonCashReference("");
+      toast.success(t("operatorPage.cashier.estimate.found"));
+    } catch (error) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : t("operatorPage.cashier.estimate.notFound");
+      setSelectedEstimate(null);
+      toast.error(msg);
+    } finally {
+      setIsEstimateLoading(false);
+    }
+  }, [estimateNumberInput, resolvedCashRegisterId, t]);
+
+  const handleConvertEstimate = useCallback(async () => {
+    if (!selectedEstimate?.id) return;
+
+    if (estimateTotalAmount <= 0) {
+      toast.error(t("operatorPage.cashier.estimate.invalidAmount"));
+      return;
+    }
+
+    const paidTotal = resolvedCashPaid + resolvedNonCashPaid;
+    if (paidTotal < estimateTotalAmount) {
+      toast.error(t("operatorPage.cashier.estimate.insufficientPayment"));
+      return;
+    }
+
+    setIsEstimateConverting(true);
+    try {
+      await convertServiceEstimateToOrder({
+        payload: {
+          serviceEstimateId: Number(selectedEstimate.id),
+          cashPaid: Number(resolvedCashPaid || 0),
+          nonCashPaid: Number(resolvedNonCashPaid || 0),
+          products: [],
+        },
+        cashRegisterId: resolvedCashRegisterId,
+      });
+
+      toast.success(t("operatorPage.cashier.estimate.confirmed"));
+      setSelectedEstimate((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: "Converted",
+            }
+          : prev,
+      );
+    } catch (error) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : t("operatorPage.cashier.estimate.confirmFailed");
+      toast.error(msg);
+    } finally {
+      setIsEstimateConverting(false);
+    }
+  }, [
+    selectedEstimate,
+    resolvedCashPaid,
+    resolvedNonCashPaid,
+    resolvedCashRegisterId,
+    estimateTotalAmount,
     t,
   ]);
 
@@ -298,7 +454,126 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         </div>
       </div>
 
-      <div className={styles.searchRow}>
+      <div className={styles.estimateSearchRow}>
+        <TextField
+          className={styles.searchTextField}
+          label={t("operatorPage.cashier.estimate.label")}
+          value={estimateNumberInput}
+          onChange={(event) => setEstimateNumberInput(event.target.value)}
+          placeholder={t("operatorPage.cashier.estimate.placeholder")}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleFindEstimate();
+            }
+          }}
+          inputMode="text"
+        />
+        <Button type="button" onClick={handleFindEstimate} disabled={isEstimateLoading}>
+          {isEstimateLoading
+            ? t("operatorPage.cashier.processing")
+            : t("operatorPage.cashier.estimate.findButton")}
+        </Button>
+      </div>
+
+      {selectedEstimate && (
+        <div className={styles.estimateCard}>
+          <div className={styles.estimateHeader}>
+            <strong>
+              {t("operatorPage.cashier.estimate.number")}: {selectedEstimate.estimateNumber}
+            </strong>
+            <span>
+              {t("operatorPage.cashier.estimate.status")}: {selectedEstimate.status || "Pending"}
+            </span>
+          </div>
+
+          <div className={styles.estimateGrid}>
+            <div>
+              {t("operatorPage.cashier.estimate.vehicle")}: {selectedEstimate.vehicleBrandName || "-"} {selectedEstimate.vehicleModelName || ""} {selectedEstimate.vehicleYear || ""}
+            </div>
+            <div>
+              {t("operatorPage.cashier.estimate.vin")}: {selectedEstimate.vinCode || "-"}
+            </div>
+            <div>
+              {t("operatorPage.cashier.estimate.amount")}: {Number(selectedEstimate.grandTotal || estimateTotalAmount || 0).toLocaleString()} AMD
+            </div>
+          </div>
+
+          <div className={styles.estimateGrid}>
+            <div>
+              <strong>{t("operatorPage.cashier.estimate.servicesSection")}</strong>
+            </div>
+            {estimateServiceLines.length === 0 ? (
+              <div>{t("operatorPage.cashier.estimate.noServices")}</div>
+            ) : (
+              estimateServiceLines.map((line, index) => (
+                <div key={`${line.id || line.serviceId || index}`}>
+                  {(line.serviceName || `#${line.serviceId || "-"}`)} - {Number(line.customerPrice || 0).toLocaleString()} AMD
+                </div>
+              ))
+            )}
+            <div>
+              {t("operatorPage.cashier.estimate.servicesTotal")}: {estimateServicesTotal.toLocaleString()} AMD
+            </div>
+          </div>
+
+          <div className={styles.estimateGrid}>
+            <div>
+              <strong>{t("operatorPage.cashier.estimate.productsSection")}</strong>
+            </div>
+            {estimateProductLines.length === 0 ? (
+              <div>{t("operatorPage.cashier.estimate.noProducts")}</div>
+            ) : (
+              estimateProductLines.map((line, index) => {
+                const productLine = line as {
+                  totalPrice?: number;
+                  lineTotal?: number;
+                  productName?: string;
+                  sku?: string;
+                };
+                const lineTotal =
+                  Number(productLine.lineTotal || productLine.totalPrice || 0) ||
+                  Number(line.quantity || 0) * Number(line.unitPrice || 0);
+                const lineLabel =
+                  productLine.productName ||
+                  line.productCode ||
+                  productLine.sku ||
+                  `#${line.productId || "-"}`;
+
+                return (
+                  <div key={`${line.id || line.productId || index}`}>
+                    {lineLabel} x {Number(line.quantity || 0)} - {lineTotal.toLocaleString()} AMD
+                  </div>
+                );
+              })
+            )}
+            <div>
+              {t("operatorPage.cashier.estimate.productsTotal")}: {estimateProductsTotal.toLocaleString()} AMD
+            </div>
+            <div>
+              <strong>
+                {t("operatorPage.cashier.estimate.orderTotal")}: {estimateTotalAmount.toLocaleString()} AMD
+              </strong>
+            </div>
+          </div>
+
+          <div className={styles.estimateActions}>
+            <Button
+              type="button"
+              onClick={() => {
+                setSelectedEstimate(null);
+                setEstimateNumberInput("");
+              }}
+              variant="secondary"
+            >
+              {t("common.cancel")}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!isEstimateMode && (
+        <div className={styles.searchRow}>
         <TextField
           ref={skuInputRef}
           className={styles.searchTextField}
@@ -324,8 +599,9 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         >
           {t("operatorPage.cashier.searchButton")}
         </Button>
-      </div>
-      {searchMessage ? (
+        </div>
+      )}
+      {!isEstimateMode && searchMessage ? (
         <div
           className={`${styles.searchMessage} ${
             searchMessageType === "success"
@@ -340,15 +616,19 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       <div className={styles.grid}>
         <aside className={styles.cartSection}>
           <div className={styles.sectionHeader}>
-            <h3>{t("operatorPage.cashier.cartTitle")}</h3>
+            <h3>
+              {isEstimateMode
+                ? t("operatorPage.cashier.estimate.summaryTitle")
+                : t("operatorPage.cashier.cartTitle")}
+            </h3>
           </div>
 
           <div className={styles.cartContent}>
-            {cartItems.length === 0 ? (
+            {!isEstimateMode && cartItems.length === 0 ? (
               <div className={styles.emptyState}>
                 {t("operatorPage.cashier.emptyCart")}
               </div>
-            ) : (
+            ) : !isEstimateMode ? (
               <div className={styles.cartItems}>
                 {cartItems.map((item) => (
                   <div key={item.productId} className={styles.cartItem}>
@@ -381,12 +661,33 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                   </div>
                 ))}
               </div>
+            ) : (
+              <div className={styles.cartItems}>
+                <div className={styles.cartItem}>
+                  <div>
+                    <strong>{t("operatorPage.cashier.estimate.servicesTotal")}</strong>
+                  </div>
+                  <div className={styles.cartItemMeta}>{estimateServicesTotal.toLocaleString()} AMD</div>
+                </div>
+                <div className={styles.cartItem}>
+                  <div>
+                    <strong>{t("operatorPage.cashier.estimate.productsTotal")}</strong>
+                  </div>
+                  <div className={styles.cartItemMeta}>{estimateProductsTotal.toLocaleString()} AMD</div>
+                </div>
+                <div className={styles.cartItem}>
+                  <div>
+                    <strong>{t("operatorPage.cashier.estimate.orderTotal")}</strong>
+                  </div>
+                  <div className={styles.cartItemMeta}>{estimateTotalAmount.toLocaleString()} AMD</div>
+                </div>
+              </div>
             )}
 
             <div className={styles.paymentPanel}>
               <div className={styles.totalRow}>
                 <span>{t("operatorPage.cashier.total")}</span>
-                <strong>{totalAmount.toFixed(2)}</strong>
+                <strong>{activeTotalAmount.toFixed(2)}</strong>
               </div>
 
               <div className={styles.paymentMethods}>
@@ -418,17 +719,17 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 />
               )}
 
-              {(paymentMode === "non-cash" || paymentMode === "mixed") && (
+              {!isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
                 <TextField
                   label={t("operatorPage.cashier.nonCashPaid")}
-                  value={paymentMode === "non-cash" ? totalAmount.toFixed(2) : nonCashPaid}
+                  value={paymentMode === "non-cash" ? activeTotalAmount.toFixed(2) : nonCashPaid}
                   onChange={(e) => setNonCashPaid(e.target.value)}
                   inputMode="numeric"
                   disabled={paymentMode === "non-cash"}
                 />
               )}
 
-              {(paymentMode === "non-cash" || paymentMode === "mixed") && (
+              {!isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
                 <TextField
                   label={t("operatorPage.cashier.nonCashReference")}
                   placeholder={t("operatorPage.cashier.nonCashReferencePlaceholder")}
@@ -440,12 +741,20 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               <div className={styles.actions}>
                 <Button
                   fullWidth
-                  disabled={cartItems.length === 0 || totalAmount === 0 || isSaleLoading}
-                  onClick={handleCompleteSale}
+                  disabled={
+                    activeTotalAmount === 0 ||
+                    isSaleLoading ||
+                    isEstimateConverting ||
+                    (!isEstimateMode && cartItems.length === 0) ||
+                    (isEstimateMode && !selectedEstimate?.id)
+                  }
+                  onClick={isEstimateMode ? handleConvertEstimate : handleCompleteSale}
                 >
-                  {isSaleLoading
+                  {isSaleLoading || isEstimateConverting
                     ? t("operatorPage.cashier.processing")
-                    : t("operatorPage.cashier.completeSale")}
+                    : isEstimateMode
+                      ? t("operatorPage.cashier.estimate.confirmButton")
+                      : t("operatorPage.cashier.completeSale")}
                 </Button>
               </div>
 
