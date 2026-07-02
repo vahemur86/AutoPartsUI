@@ -58,14 +58,14 @@ const normalizeSalaryRecordSalaryType = (
 });
 
 const attendanceStatusToApi = (status: unknown): number => {
-  if (status === 1 || status === "1" || status === "Present") {
-    return 1;
+  if (status === 0 || status === "0" || status === "Present") {
+    return 0;
   }
-  return 0;
+  return 1;
 };
 
 const attendanceStatusFromApi = (status: unknown): "Present" | "Absent" => {
-  if (status === 1 || status === "1" || status === "Present") {
+  if (status === 0 || status === "0" || status === "Present") {
     return "Present";
   }
   return "Absent";
