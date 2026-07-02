@@ -212,6 +212,9 @@ export const EmployeeManagement = () => {
     return servicesCatalog.filter((item: ServiceCatalogItem) => item.isActive !== false);
   }, [servicesCatalog]);
 
+  const selectedPercentageEmployeeId =
+    servicePercentageForm.employeeId || selectedEmployeeId;
+
   useEffect(() => {
     if (!selectedEmployeeId && employees.length > 0) {
       setSelectedEmployeeId(employees[0].id);
@@ -245,14 +248,14 @@ export const EmployeeManagement = () => {
   useEffect(() => {
     if (activeTab !== "percentages") return;
 
-    if (!selectedEmployeeId) {
+    if (!selectedPercentageEmployeeId) {
       setEmployeePercentages([]);
       return;
     }
 
     const loadEmployeePercentages = async () => {
       try {
-        const percentages = await getEmployeeServicePercentages(selectedEmployeeId);
+        const percentages = await getEmployeeServicePercentages(selectedPercentageEmployeeId);
         setEmployeePercentages(percentages);
       } catch {
         toast.error(t("serviceTemplates.employeeManagement.messages.loadFailed"));
@@ -260,7 +263,7 @@ export const EmployeeManagement = () => {
     };
 
     void loadEmployeePercentages();
-  }, [activeTab, selectedEmployeeId, t]);
+  }, [activeTab, selectedPercentageEmployeeId, t]);
 
   useEffect(() => {
     if (activeTab !== "deposits") return;
