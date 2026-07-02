@@ -369,13 +369,13 @@ export const upsertEmployeeAttendance = async (
   payload: EmployeeAttendancePayload,
 ): Promise<EmployeeAttendanceItem> => {
   try {
+    const normalizedWorkDate = payload.workDate.includes("T")
+      ? payload.workDate.split("T")[0]
+      : payload.workDate;
     const response = await api.post(`${employeeBase}/attendance`, {
       ...payload,
       status: attendanceStatusToApi(payload.status),
-      workDate:
-        payload.workDate.includes("T")
-          ? payload.workDate
-          : `${payload.workDate}T00:00:00Z`,
+      workDate: normalizedWorkDate,
     });
     return normalizeAttendanceStatus(response.data);
   } catch (error: unknown) {
@@ -388,9 +388,10 @@ export const getAttendanceByDate = async (
   shopId?: number,
 ): Promise<EmployeeAttendanceItem[]> => {
   try {
+    const normalizedDate = date.includes("T") ? date.split("T")[0] : date;
     const response = await api.get(`${employeeBase}/attendance/by-date`, {
       params: {
-        date,
+        date: normalizedDate,
         ...(shopId && shopId > 0 ? { shopId } : {}),
       },
     });
@@ -407,8 +408,12 @@ export const getEmployeeAttendanceHistory = async (
   params: { from: string; to: string },
 ): Promise<EmployeeAttendanceItem[]> => {
   try {
+    const normalizedParams = {
+      from: params.from.includes("T") ? params.from.split("T")[0] : params.from,
+      to: params.to.includes("T") ? params.to.split("T")[0] : params.to,
+    };
     const response = await api.get(`${employeeBase}/${employeeId}/attendance`, {
-      params,
+      params: normalizedParams,
     });
     return Array.isArray(response.data)
       ? response.data.map((item: EmployeeAttendanceItem) => normalizeAttendanceStatus(item))
