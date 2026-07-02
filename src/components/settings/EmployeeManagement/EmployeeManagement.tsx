@@ -314,8 +314,8 @@ export const EmployeeManagement = () => {
     const loadAttendanceHistory = async () => {
       try {
         const attendanceItems = await getEmployeeAttendanceHistory(selectedEmployeeId, {
-          from: `${attendanceDate}T00:00:00Z`,
-          to: `${attendanceDate}T23:59:59Z`,
+          from: attendanceDate,
+          to: attendanceDate,
         });
         setAttendanceHistory(attendanceItems);
       } catch {
