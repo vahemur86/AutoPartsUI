@@ -116,7 +116,7 @@
 
 .summaryGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
 }
 
@@ -137,6 +137,39 @@
 .summaryItem strong {
   color: var(--color-white);
   font-size: 14px;
+}
+
+.selectedServicesBreakdown {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectedServicesTitle {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.selectedServicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selectedServiceRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-white);
+  font-size: 13px;
+}
+
+.selectedServiceRow strong {
+  white-space: nowrap;
 }
 
 .summaryRow {

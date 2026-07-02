@@ -77,7 +77,6 @@ type NormalizedTemplate = {
   engineId: number;
   engineName: string;
   location: string;
-  electricityPrice: number;
   serviceCategoryId: number;
   isActive: boolean;
   items: Array<{
@@ -191,7 +190,6 @@ export const WorkshopMode = ({
           engineId,
           engineName: String(raw.engineName ?? `#${engineId}`),
           location: locationValue,
-          electricityPrice: Number(raw.electricityPrice ?? 0),
           serviceCategoryId: Number(raw.serviceCategoryId ?? 0),
           isActive: raw.isActive !== false,
           items,
@@ -620,8 +618,6 @@ export const WorkshopMode = ({
     [selectedServiceLines],
   );
 
-  const electricityPrice = Number(selectedTemplate?.electricityPrice || 0);
-
   const productsPrice = useMemo(
     () =>
       productLines.reduce(
@@ -631,7 +627,7 @@ export const WorkshopMode = ({
     [productLines],
   );
 
-  const totalPrice = servicesPrice + electricityPrice + productsPrice;
+  const totalPrice = servicesPrice + productsPrice;
   const printedAt = useMemo(() => new Date().toLocaleString(), [hasCalculated]);
 
   const addProductLine = () => {
@@ -1109,14 +1105,6 @@ export const WorkshopMode = ({
 
       <div ref={resultsRef} className={styles.summaryGrid}>
         <div className={styles.summaryItem}>
-          <span>{t("operatorPage.workshop.mechanicPrice")}</span>
-          <strong>{servicesPrice.toLocaleString()} AMD</strong>
-        </div>
-        <div className={styles.summaryItem}>
-          <span>{t("operatorPage.workshop.electricianPrice")}</span>
-          <strong>{electricityPrice.toLocaleString()} AMD</strong>
-        </div>
-        <div className={styles.summaryItem}>
           <span>{t("operatorPage.workshop.sparePartsPrice")}</span>
           <strong>{productsPrice.toLocaleString()} AMD</strong>
         </div>
@@ -1125,6 +1113,22 @@ export const WorkshopMode = ({
           <strong>{totalPrice.toLocaleString()} AMD</strong>
         </div>
       </div>
+
+      {selectedServiceLines.length > 0 && (
+        <div className={styles.selectedServicesBreakdown}>
+          <div className={styles.selectedServicesTitle}>
+            {t("operatorPage.workshop.receipt.servicesSection")}
+          </div>
+          <div className={styles.selectedServicesList}>
+            {selectedServiceLines.map((line) => (
+              <div key={line.serviceId} className={styles.selectedServiceRow}>
+                <span>{line.serviceName || `#${line.serviceId}`}</span>
+                <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className={styles.summaryRow}>
         <Button
@@ -1263,10 +1267,6 @@ export const WorkshopMode = ({
               <div className={styles.receiptRow}>
                 <span>{t("operatorPage.workshop.receipt.serviceTotal")}</span>
                 <strong>{servicesPrice.toLocaleString()} AMD</strong>
-              </div>
-              <div className={styles.receiptRow}>
-                <span>{t("operatorPage.workshop.receipt.electricityTotal")}</span>
-                <strong>{electricityPrice.toLocaleString()} AMD</strong>
               </div>
               <div className={styles.receiptRow}>
                 <span>{t("operatorPage.workshop.receipt.productsTotal")}</span>
