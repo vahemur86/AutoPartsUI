@@ -1579,12 +1579,12 @@
   "productSettings": {
     "tabs": {
       "category": "Categories",
-      "brand": "Brand Code",
-      "unitType": "Unit Types Code",
-      "boxSize": "Box Size Code"
+      "brand": "Brands",
+      "unitType": "Unit Types",
+      "boxSize": "Box Sizes"
     },
-    "createNew": "Create new one",
-    "keyHere": "Key here",
+    "createNew": "Create New",
+    "keyHere": "Enter code",
     "existing": "Existing",
     "loading": "Loading...",
     "noItems": "No items yet",

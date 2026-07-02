@@ -1577,15 +1577,15 @@
   "productSettings": {
     "tabs": {
       "category": "Категории",
-      "brand": "Код бренда",
-      "unitType": "Код единиц измерения",
-      "boxSize": "Код размера коробки"
+      "brand": "Бренды",
+      "unitType": "Единицы измерения",
+      "boxSize": "Размеры коробок"
     },
-    "createNew": "Создать новый",
-    "keyHere": "Введите ключ здесь",
-    "existing": "Существующие",
+    "createNew": "Создать",
+    "keyHere": "Введите код",
+    "existing": "Список",
     "loading": "Загрузка...",
-    "noItems": "Пока нет элементов",
+    "noItems": "Пока нет записей",
     "success": {
       "created": "{{type}} успешно создан",
       "updated": "{{type}} успешно обновлен",
