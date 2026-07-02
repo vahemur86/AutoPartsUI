@@ -443,6 +443,7 @@ export const WorkshopMode = ({
           shopId,
           serviceCategoryId: selectedTemplate.serviceCategoryId,
           date: today,
+          cashRegisterId,
         });
         setOnDutyEmployees(employees);
       } catch {
@@ -453,7 +454,7 @@ export const WorkshopMode = ({
     };
 
     void loadOnDutyEmployees();
-  }, [selectedServiceIds.length, selectedTemplate?.serviceCategoryId, shopId]);
+  }, [cashRegisterId, selectedServiceIds.length, selectedTemplate?.serviceCategoryId, shopId]);
 
   const productOptions = useMemo<ProductOption[]>(
     () =>

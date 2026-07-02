@@ -1,6 +1,6 @@
 import api from "..";
 
-import { getApiErrorMessage, getHeaders } from "@/utils";
+import { getApiErrorMessage, getCashRegisterId, getHeaders } from "@/utils";
 import type {
   EmployeeAttendanceItem,
   EmployeeAttendancePayload,
@@ -350,12 +350,18 @@ export const getEmployeesOnDuty = async (
   params: EmployeesOnDutyParams,
 ): Promise<EmployeeItem[]> => {
   try {
+    const resolvedCashRegisterId =
+      Number(params.cashRegisterId) > 0
+        ? Number(params.cashRegisterId)
+        : getCashRegisterId(0);
+
     const response = await api.get(`${employeeBase}/on-duty`, {
       params: {
         shopId: Number(params.shopId),
         serviceCategoryId: Number(params.serviceCategoryId),
         ...(params.date ? { date: params.date.includes("T") ? params.date.split("T")[0] : params.date } : {}),
       },
+      headers: getHeaders(resolvedCashRegisterId),
     });
     return Array.isArray(response.data)
       ? response.data.map((item: EmployeeItem) => normalizeEmployeeSalaryType(item))

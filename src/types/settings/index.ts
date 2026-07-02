@@ -203,6 +203,7 @@ export interface EmployeesOnDutyParams {
   shopId: number;
   serviceCategoryId: number;
   date?: string;
+  cashRegisterId?: number;
 }
 
 export interface EmployeeSalaryCalculatePayload {
