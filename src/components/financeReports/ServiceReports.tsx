@@ -37,6 +37,8 @@ type ServiceAggregateRow = {
   id: string;
   name: string;
   revenue: number;
+  baseRate: number;
+  employeeSalaryCost: number;
   profit: number;
   count: number;
   averagePrice: number;
@@ -184,9 +186,15 @@ const parseAnalyticsRows = (
 
       const row = item as Record<string, unknown>;
       const revenue = Number(row.revenue || row.totalRevenue || row.amount || 0);
-      const profit = Number(row.profit || row.totalProfit || 0);
+      const baseRate = Number(row.baseRate || row.totalBaseRate || row.cost || row.totalCost || 0);
+      const employeeSalaryCost = Number(
+        row.employeeSalaryCost || row.totalEmployeeSalaryCost || 0,
+      );
+      const profit = Number(
+        row.netProfit || row.totalNetProfit || row.profit || row.totalProfit || 0,
+      );
       const count = Number(
-        row.count || row.totalCount || row.quantity || row.serviceCount || 0,
+        row.count || row.totalCount || row.quantity || row.serviceCount || row.timesPerformed || 0,
       );
       const name = String(
         row.name ||
@@ -201,6 +209,8 @@ const parseAnalyticsRows = (
         id: String(row.id || row.serviceId || row.serviceCategoryId || name),
         name,
         revenue,
+        baseRate,
+        employeeSalaryCost,
         profit,
         count,
         averagePrice: count > 0 ? revenue / count : 0,
@@ -375,12 +385,18 @@ export const ServiceReports = () => {
       return fromReport;
     }
 
-    const fromAnalytics =
+    const summaryRecord =
       analytics && typeof analytics === "object"
+        ? (((analytics as Record<string, unknown>).summary as Record<string, unknown>) ||
+          (analytics as Record<string, unknown>))
+        : null;
+
+    const fromAnalytics =
+      summaryRecord
         ? Number(
-            (analytics as Record<string, unknown>).totalRevenue ||
-              (analytics as Record<string, unknown>).servicesRevenue ||
-              (analytics as Record<string, unknown>).revenue ||
+            summaryRecord.totalRevenue ||
+              summaryRecord.servicesRevenue ||
+              summaryRecord.revenue ||
               0,
           )
         : 0;
@@ -398,12 +414,20 @@ export const ServiceReports = () => {
       return fromReport;
     }
 
-    const fromAnalytics =
+    const summaryRecord =
       analytics && typeof analytics === "object"
+        ? (((analytics as Record<string, unknown>).summary as Record<string, unknown>) ||
+          (analytics as Record<string, unknown>))
+        : null;
+
+    const fromAnalytics =
+      summaryRecord
         ? Number(
-            (analytics as Record<string, unknown>).totalProfit ||
-              (analytics as Record<string, unknown>).servicesProfit ||
-              (analytics as Record<string, unknown>).profit ||
+            summaryRecord.totalNetProfit ||
+              summaryRecord.netProfit ||
+              summaryRecord.totalProfit ||
+              summaryRecord.servicesProfit ||
+              summaryRecord.profit ||
               0,
           )
         : 0;
@@ -415,7 +439,67 @@ export const ServiceReports = () => {
     return filteredLines.reduce((sum, line) => sum + Number(line.profit || 0), 0);
   }, [reportSummary, analytics, filteredLines]);
 
+  const totalBaseRate = useMemo(() => {
+    const summaryRecord =
+      analytics && typeof analytics === "object"
+        ? (((analytics as Record<string, unknown>).summary as Record<string, unknown>) ||
+          (analytics as Record<string, unknown>))
+        : null;
+
+    const fromAnalytics = summaryRecord
+      ? Number(
+          summaryRecord.totalBaseRate ||
+            summaryRecord.baseRate ||
+            summaryRecord.totalCost ||
+            0,
+        )
+      : 0;
+
+    if (fromAnalytics > 0) {
+      return fromAnalytics;
+    }
+
+    const fromReport = Number(reportSummary?.totalServicesCost || 0);
+    if (fromReport > 0) {
+      return fromReport;
+    }
+
+    return filteredLines.reduce((sum, line) => sum + Number(line.internalCost || 0), 0);
+  }, [analytics, reportSummary, filteredLines]);
+
+  const totalEmployeeSalaryCost = useMemo(() => {
+    const summaryRecord =
+      analytics && typeof analytics === "object"
+        ? (((analytics as Record<string, unknown>).summary as Record<string, unknown>) ||
+          (analytics as Record<string, unknown>))
+        : null;
+
+    const fromAnalytics = summaryRecord
+      ? Number(summaryRecord.totalEmployeeSalaryCost || summaryRecord.employeeSalaryCost || 0)
+      : 0;
+
+    if (fromAnalytics > 0) {
+      return fromAnalytics;
+    }
+
+    return 0;
+  }, [analytics]);
+
   const totalServicesPerformed = useMemo(() => {
+    const summaryRecord =
+      analytics && typeof analytics === "object"
+        ? (((analytics as Record<string, unknown>).summary as Record<string, unknown>) ||
+          (analytics as Record<string, unknown>))
+        : null;
+
+    const fromSummary = summaryRecord
+      ? Number(summaryRecord.totalServicesPerformed || 0)
+      : 0;
+
+    if (fromSummary > 0) {
+      return fromSummary;
+    }
+
     const fromAnalytics =
       analytics && typeof analytics === "object"
         ? Number(
@@ -439,6 +523,20 @@ export const ServiceReports = () => {
   }, [reportSummary, analytics, filteredLines]);
 
   const averageServicePrice = useMemo(() => {
+    const summaryRecord =
+      analytics && typeof analytics === "object"
+        ? (((analytics as Record<string, unknown>).summary as Record<string, unknown>) ||
+          (analytics as Record<string, unknown>))
+        : null;
+
+    const fromSummary = summaryRecord
+      ? Number(summaryRecord.averageServicePrice || 0)
+      : 0;
+
+    if (fromSummary > 0) {
+      return fromSummary;
+    }
+
     const fromAnalytics =
       analytics && typeof analytics === "object"
         ? Number((analytics as Record<string, unknown>).averageServicePrice || 0)
@@ -457,6 +555,8 @@ export const ServiceReports = () => {
 
   const groupedByCategory = useMemo(() => {
     const fromAnalytics = parseAnalyticsRows(analytics, [
+      "revenueByCategory",
+      "profitByCategory",
       "revenueByServiceType",
       "profitByServiceType",
       "groupedByServiceType",
@@ -476,12 +576,15 @@ export const ServiceReports = () => {
         id: key,
         name,
         revenue: 0,
+        baseRate: 0,
+        employeeSalaryCost: 0,
         profit: 0,
         count: 0,
         averagePrice: 0,
       };
 
       current.revenue += Number(line.customerPrice || 0);
+      current.baseRate += Number(line.internalCost || 0);
       current.profit += Number(line.profit || 0);
       current.count += 1;
       current.averagePrice = current.count > 0 ? current.revenue / current.count : 0;
@@ -511,12 +614,15 @@ export const ServiceReports = () => {
         id: key,
         name,
         revenue: 0,
+        baseRate: 0,
+        employeeSalaryCost: 0,
         profit: 0,
         count: 0,
         averagePrice: 0,
       };
 
       current.revenue += Number(line.customerPrice || 0);
+      current.baseRate += Number(line.internalCost || 0);
       current.profit += Number(line.profit || 0);
       current.count += 1;
       current.averagePrice = current.count > 0 ? current.revenue / current.count : 0;
@@ -547,12 +653,15 @@ export const ServiceReports = () => {
         id: key,
         name,
         revenue: 0,
+        baseRate: 0,
+        employeeSalaryCost: 0,
         profit: 0,
         count: 0,
         averagePrice: 0,
       };
 
       current.revenue += Number(line.customerPrice || 0);
+      current.baseRate += Number(line.internalCost || 0);
       current.profit += Number(line.profit || 0);
       current.count += 1;
       current.averagePrice = current.count > 0 ? current.revenue / current.count : 0;
@@ -575,6 +684,16 @@ export const ServiceReports = () => {
         id: "revenue",
         header: t("financeReports.serviceReports.columns.revenue"),
         cell: ({ row }) => money(row.original.revenue),
+      }),
+      serviceColumnHelper.display({
+        id: "baseRate",
+        header: t("financeReports.serviceReports.columns.baseRate"),
+        cell: ({ row }) => money(row.original.baseRate),
+      }),
+      serviceColumnHelper.display({
+        id: "employeeSalaryCost",
+        header: t("financeReports.serviceReports.columns.employeeSalaryCost"),
+        cell: ({ row }) => money(row.original.employeeSalaryCost),
       }),
       serviceColumnHelper.display({
         id: "profit",
@@ -606,6 +725,16 @@ export const ServiceReports = () => {
         id: "topServiceRevenue",
         header: t("financeReports.serviceReports.columns.revenue"),
         cell: ({ row }) => money(row.original.revenue),
+      }),
+      serviceColumnHelper.display({
+        id: "topServiceBaseRate",
+        header: t("financeReports.serviceReports.columns.baseRate"),
+        cell: ({ row }) => money(row.original.baseRate),
+      }),
+      serviceColumnHelper.display({
+        id: "topServiceEmployeeSalaryCost",
+        header: t("financeReports.serviceReports.columns.employeeSalaryCost"),
+        cell: ({ row }) => money(row.original.employeeSalaryCost),
       }),
       serviceColumnHelper.display({
         id: "topServiceProfit",
@@ -673,6 +802,8 @@ export const ServiceReports = () => {
 
   const hasData =
     totalRevenue > 0 ||
+    totalBaseRate > 0 ||
+    totalEmployeeSalaryCost > 0 ||
     totalProfit > 0 ||
     groupedByCategory.length > 0 ||
     servicesByFrequency.length > 0 ||
@@ -761,6 +892,14 @@ export const ServiceReports = () => {
                   <article className={styles.kpiCard}>
                     <span>{t("financeReports.serviceReports.kpi.revenue")}</span>
                     <strong>{money(totalRevenue)}</strong>
+                  </article>
+                  <article className={styles.kpiCard}>
+                    <span>{t("financeReports.serviceReports.kpi.baseRate")}</span>
+                    <strong>{money(totalBaseRate)}</strong>
+                  </article>
+                  <article className={styles.kpiCard}>
+                    <span>{t("financeReports.serviceReports.kpi.employeeSalaryCost")}</span>
+                    <strong>{money(totalEmployeeSalaryCost)}</strong>
                   </article>
                   <article className={styles.kpiCard}>
                     <span>{t("financeReports.serviceReports.kpi.profit")}</span>

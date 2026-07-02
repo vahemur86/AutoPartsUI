@@ -396,6 +396,8 @@
       },
       "kpi": {
         "revenue": "Revenue from services",
+        "baseRate": "Base rate total",
+        "employeeSalaryCost": "Employee salary cost",
         "profit": "Profit from services",
         "performed": "Services performed",
         "averagePrice": "Average service price"
@@ -406,6 +408,8 @@
       "columns": {
         "categoryOrService": "Service type / Service",
         "revenue": "Revenue",
+        "baseRate": "Base rate",
+        "employeeSalaryCost": "Employee salary cost",
         "profit": "Profit",
         "count": "Count",
         "averagePrice": "Average price"

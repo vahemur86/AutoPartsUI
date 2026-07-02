@@ -396,6 +396,8 @@
       },
       "kpi": {
         "revenue": "Выручка от услуг",
+        "baseRate": "Сумма базовой ставки",
+        "employeeSalaryCost": "Затраты на зарплату сотрудников",
         "profit": "Прибыль от услуг",
         "performed": "Количество выполненных услуг",
         "averagePrice": "Средняя цена услуги"
@@ -406,6 +408,8 @@
       "columns": {
         "categoryOrService": "Тип услуги / Услуга",
         "revenue": "Выручка",
+        "baseRate": "Базовая ставка",
+        "employeeSalaryCost": "Зарплатные затраты",
         "profit": "Прибыль",
         "count": "Количество",
         "averagePrice": "Средняя цена"
