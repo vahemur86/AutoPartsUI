@@ -684,6 +684,26 @@ export const WorkshopMode = ({
     setHasCalculated(false);
   };
 
+  const resetWorkshopState = () => {
+    setBrandId(0);
+    setModelId(0);
+    setFuelTypeId(0);
+    setEngineId(0);
+    setLocation("");
+    setYear("");
+    setVinCode("");
+    setMileageKm("");
+    setCustomerPhone("");
+    setOrderComment("");
+    setSelectedCategoryPath([]);
+    setSelectedProductId("");
+    setProductLines([]);
+    setSelectedServiceIds([]);
+    setOnDutyEmployees([]);
+    setHasCalculated(false);
+    setCreatedEstimate(null);
+  };
+
   const handleCalculate = () => {
     if (!brandId || !modelId || !fuelTypeId || !engineId || !location || !year) {
       toast.error(t("operatorPage.workshop.error.requiredVehicleFields"));
@@ -761,10 +781,7 @@ export const WorkshopMode = ({
     });
 
     if (estimate?.estimateNumber) {
-      setCreatedEstimate({
-        id: Number(estimate.id || 0),
-        estimateNumber: String(estimate.estimateNumber),
-      });
+      resetWorkshopState();
     }
   };
 

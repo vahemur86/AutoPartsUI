@@ -294,6 +294,19 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     );
   }, []);
 
+  const resetCheckoutState = useCallback(() => {
+    setCartItems([]);
+    setCashPaid("0");
+    setNonCashPaid("0");
+    setNonCashReference("");
+    setPaymentMode("cash");
+    setSearchSku("");
+    setSearchMessage(null);
+    setSearchMessageType(null);
+    setEstimateNumberInput("");
+    setSelectedEstimate(null);
+  }, []);
+
   const handleCompleteSale = useCallback(async () => {
     if (cartItems.length === 0 || !currentShopId) return;
 
@@ -330,11 +343,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         crId,
       );
       toast.success(t("operatorPage.cashier.saleCompleted"));
-      setCartItems([]);
-      setCashPaid("0");
-      setNonCashPaid("0");
-      setNonCashReference("");
-      setPaymentMode("cash");
+      resetCheckoutState();
     } catch (error) {
       const msg = error instanceof Error ? error.message : t("operatorPage.cashier.saleError");
       toast.error(msg);
@@ -349,6 +358,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     nonCashReference,
     resolvedCashPaid,
     resolvedNonCashPaid,
+    resetCheckoutState,
     t,
   ]);
 
@@ -410,14 +420,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       });
 
       toast.success(t("operatorPage.cashier.estimate.confirmed"));
-      setSelectedEstimate((prev) =>
-        prev
-          ? {
-              ...prev,
-              status: "Converted",
-            }
-          : prev,
-      );
+      resetCheckoutState();
     } catch (error) {
       const msg =
         error instanceof Error
@@ -433,6 +436,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     resolvedNonCashPaid,
     resolvedCashRegisterId,
     estimateTotalAmount,
+    resetCheckoutState,
     t,
   ]);
 
