@@ -951,6 +951,11 @@
       "commentLabel": "Նշում",
       "commentPlaceholder": "Մուտքագրեք հավելյալ նշում...",
       "emptyProducts": "Ընտրված ապրանքներ չկան։",
+      "onDuty": {
+        "loading": "Ստուգվում է հերթապահ կազմը...",
+        "assigned": "Նշանակված աշխատակից՝ {{employee}}",
+        "none": "Այսօր այս կատեգորիայում հերթապահ աշխատակից չի գտնվել։"
+      },
       "totalAmount": "Ընդհանուր գումար",
       "createOrder": "Ստեղծել պատվերը",
       "receipt": {
@@ -961,6 +966,7 @@
         "estimateNumber": "Պատվերի համար",
         "vehicleSection": "Մեքենա",
         "servicesSection": "Ընտրված ծառայություններ",
+        "assignedEmployee": "Նշանակված աշխատակից",
         "productsSection": "Ընտրված ապրանքներ",
         "productSku": "SKU կոդ",
         "summarySection": "Գումարային ամփոփում",
@@ -1185,6 +1191,119 @@
       "selectVehicleFirst": "Նախ ընտրեք մեքենայի մակնիշը, մոդելը, տարին, վառելիքի տեսակը, շարժիչը և տեղակայությունը։",
       "vehicleNotFound": "Ընտրված պարամետրերով մեքենայի ձևանմուշ չի գտնվել։",
       "loadFailed": "Չհաջողվեց բեռնել մեքենայի ծառայությունների գնագոյացման տվյալները։"
+    },
+    "employeeManagement": {
+      "tabs": {
+        "employees": "Աշխատակիցներ",
+        "percentages": "Ծառայությունների տոկոսներ",
+        "deposits": "Ավանսներ",
+        "attendance": "Հաճախում",
+        "payroll": "Աշխատավարձերի հաշվարկ"
+      },
+      "actions": {
+        "save": "Պահպանել",
+        "giveDeposit": "Տալ ավանս",
+        "saveAttendance": "Պահպանել հաճախումը",
+        "calculate": "Հաշվել աշխատավարձը",
+        "markPaid": "Նշել որպես վճարված"
+      },
+      "fields": {
+        "shop": "Խանութ",
+        "salaryType": "Աշխատավարձի տեսակ",
+        "fixedDailySalary": "Ֆիքսված օրական աշխատավարձ",
+        "selectShop": "Ընտրեք խանութը",
+        "selectEmployee": "Ընտրեք աշխատակցին",
+        "allEmployees": "Բոլոր աշխատակիցները",
+        "selectService": "Ընտրեք ծառայությունը",
+        "percentage": "Տոկոս",
+        "amount": "Գումար",
+        "notes": "Նշումներ",
+        "workDate": "Աշխատանքի օր",
+        "allShops": "Բոլոր խանութները",
+        "allDeposits": "Բոլոր ավանսները",
+        "activeOnly": "Միայն ակտիվ",
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ"
+      },
+      "salaryTypes": {
+        "FixedDaily": "Ֆիքսված օրական աշխատավարձ",
+        "PercentageBased": "Տոկոսային աշխատավարձ"
+      },
+      "attendanceStatus": {
+        "Present": "Ներկա",
+        "Absent": "Բացակա"
+      },
+      "labels": {
+        "activeDeposit": "Գործող ավանս",
+        "presentCount": "Ներկա աշխատակիցներ",
+        "absentCount": "Բացակա աշխատակիցներ",
+        "paid": "Վճարված",
+        "unpaid": "Չվճարված"
+      },
+      "sections": {
+        "employeeForm": "Աշխատակցի ձև",
+        "employeeList": "Աշխատակիցների ցուցակ",
+        "servicePercentages": "Ծառայության տոկոսների կարգավորում",
+        "byEmployee": "Տոկոսներ ըստ աշխատակցի",
+        "byService": "Տոկոսներ ըստ ծառայության",
+        "deposits": "Ավանսի գրանցում",
+        "depositHistory": "Ավանսների պատմություն",
+        "depositsAll": "Բոլոր աշխատողների ավանսները",
+        "depositsByEmployee": "Ընթացիկ մնացորդը",
+        "attendance": "Օրական հաճախում",
+        "attendanceHistory": "Հաճախման պատմություն",
+        "payroll": "Օրական աշխատավարձ",
+        "salaryHistory": "Աշխատավարձի պատմություն"
+      },
+      "confirmation": {
+        "markPaidTitle": "Հաստատեք աշխատավարձի վճարումը",
+        "markPaidDescription": "Նշե՞լ {{employee}}-ի {{amount}} աշխատավարձը որպես վճարված։"
+      },
+      "columns": {
+        "fullName": "Լրիվ անուն",
+        "shop": "Խանութ",
+        "serviceCategory": "Ծառայության կատեգորիա",
+        "salaryType": "Աշխատավարձի տեսակ",
+        "fixedDailySalary": "Ֆիքսված օրական աշխատավարձ",
+        "phone": "Հեռախոս",
+        "status": "Կարգավիճակ",
+        "serviceName": "Ծառայություն",
+        "employee": "Աշխատակից",
+        "percentage": "Տոկոս",
+        "amount": "Գումար",
+        "remainingBalance": "Մնացորդ",
+        "fullyRecoveredAt": "Փոխհատուցված է",
+        "workDate": "Աշխատանքի օր",
+        "notes": "Նշումներ",
+        "grossSalary": "Համախառն աշխատավարձ",
+        "depositDeduction": "Ավանսի պահում",
+        "depositRemainingAfter": "Մնացորդը աշխատավարձից հետո",
+        "netPayable": "Վճարման ենթակա",
+        "paidStatus": "Վճարման կարգավիճակ",
+        "paidAt": "Վճարման ամսաթիվ"
+      },
+      "messages": {
+        "validationFailed": "Լրացրեք աշխատակցի պարտադիր տվյալները։",
+        "created": "Աշխատակիցը հաջողությամբ ստեղծվեց",
+        "updated": "Աշխատակցի տվյալները հաջողությամբ թարմացվեցին",
+        "saveFailed": "Չհաջողվեց պահպանել աշխատակցի տվյալները",
+        "statusUpdated": "Աշխատակցի կարգավիճակը թարմացվեց",
+        "statusUpdateFailed": "Չհաջողվեց թարմացնել աշխատակցի կարգավիճակը",
+        "saved": "Փոփոխությունները հաջողությամբ պահպանվեցին",
+        "loadFailed": "Չհաջողվեց բեռնել աշխատակցի տվյալները",
+        "attendanceLoadFailed": "Չհաջողվեց բեռնել հաճախման տվյալները",
+        "attendanceSaveFailed": "Չհաջողվեց պահպանել հաճախման տվյալները",
+        "depositsAllLoadFailed": "Չհաջողվեց բեռնել բոլոր աշխատողների ավանսները",
+        "calculated": "Աշխատավարձը հաջողությամբ հաշվարկվեց",
+        "salaryFailed": "Չհաջողվեց հաշվարկել աշխատավարձը",
+        "salaryByDateLoadFailed": "Չհաջողվեց բեռնել աշխատավարձերը ընտրված օրվա համար",
+        "salaryHistoryLoadFailed": "Չհաջողվեց բեռնել աշխատավարձի պատմությունը",
+        "salaryMarkedPaid": "Աշխատավարձը նշվեց որպես վճարված",
+        "salaryMarkPaidFailed": "Չհաջողվեց նշել աշխատավարձը որպես վճարված",
+        "salaryRecordIdMissing": "Աշխատավարձի գրառման ID-ն բացակայում է",
+        "selectEmployeeHint": "Ընտրեք աշխատակցին՝ ավանսը և պատմությունը տեսնելու համար։",
+        "selectEmployeeForSalaryHistory": "Աշխատավարձի պատմությունը տեսնելու համար ընտրեք աշխատակցին։"
+      }
     }
   }
 }

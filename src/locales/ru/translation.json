@@ -1759,12 +1759,6 @@
         "quantity": "Количество",
         "actions": "Действия"
       },
-      "scanPlaceholder": "Сканируйте или введите SKU и нажмите Enter",
-      "searchButton": "Добавить по SKU",
-      "enterSku": "Введите SKU продукта.",
-      "productNotFound": "Продукт с этим SKU не найден.",
-      "productNotInShop": "Продукт недоступен в выбранном магазине.",
-      "addedToCart": "Товар {{sku}} добавлен в корзину.",
       "cartTitle": "Корзина",
       "emptyCart": "Корзина пуста.",
       "unitPrice": "Цена за единицу",
@@ -1904,6 +1898,11 @@
       "commentLabel": "Примечание",
       "commentPlaceholder": "Введите дополнительное примечание...",
       "emptyProducts": "Товары не выбраны.",
+      "onDuty": {
+        "loading": "Проверяем дежурных сотрудников...",
+        "assigned": "Назначенный сотрудник: {{employee}}",
+        "none": "На сегодня для этой категории нет дежурного сотрудника."
+      },
       "totalAmount": "Общая сумма",
       "createOrder": "Создать заказ-наряд",
       "receipt": {
@@ -1914,6 +1913,7 @@
         "estimateNumber": "Номер заказа",
         "vehicleSection": "Автомобиль",
         "servicesSection": "Выбранные услуги",
+        "assignedEmployee": "Назначенный сотрудник",
         "productsSection": "Выбранные товары",
         "productSku": "SKU код",
         "summarySection": "Итоговая сводка",
@@ -2041,6 +2041,119 @@
       "selectVehicleFirst": "Сначала выберите марку, модель, год, тип топлива, двигатель и локацию автомобиля.",
       "vehicleNotFound": "Для выбранных параметров шаблон автомобиля не найден.",
       "loadFailed": "Не удалось загрузить данные по тарификации услуг для автомобиля."
+    },
+    "employeeManagement": {
+      "tabs": {
+        "employees": "Сотрудники",
+        "percentages": "Проценты по услугам",
+        "deposits": "Депозиты",
+        "attendance": "Посещаемость",
+        "payroll": "Начисление зарплаты"
+      },
+      "actions": {
+        "save": "Сохранить",
+        "giveDeposit": "Выдать аванс",
+        "saveAttendance": "Сохранить посещаемость",
+        "calculate": "Рассчитать зарплату",
+        "markPaid": "Отметить как выплаченную"
+      },
+      "fields": {
+        "shop": "Магазин",
+        "salaryType": "Тип зарплаты",
+        "fixedDailySalary": "Фиксированная дневная зарплата",
+        "selectShop": "Выберите магазин",
+        "selectEmployee": "Выберите сотрудника",
+        "allEmployees": "Все сотрудники",
+        "selectService": "Выберите услугу",
+        "percentage": "Процент",
+        "amount": "Сумма",
+        "notes": "Примечания",
+        "workDate": "Дата работы",
+        "allShops": "Все магазины",
+        "allDeposits": "Все авансы",
+        "activeOnly": "Только активные",
+        "fromDate": "С даты",
+        "toDate": "По дату"
+      },
+      "salaryTypes": {
+        "FixedDaily": "Фиксированная дневная зарплата",
+        "PercentageBased": "Процентная зарплата"
+      },
+      "attendanceStatus": {
+        "Present": "Присутствует",
+        "Absent": "Отсутствует"
+      },
+      "labels": {
+        "activeDeposit": "Активный аванс",
+        "presentCount": "Присутствуют",
+        "absentCount": "Отсутствуют",
+        "paid": "Выплачено",
+        "unpaid": "Не выплачено"
+      },
+      "sections": {
+        "employeeForm": "Форма сотрудника",
+        "employeeList": "Список сотрудников",
+        "servicePercentages": "Настройка процентов по услугам",
+        "byEmployee": "Проценты по сотруднику",
+        "byService": "Проценты по услуге",
+        "deposits": "Выдача аванса",
+        "depositHistory": "История авансов",
+        "depositsAll": "Авансы всех сотрудников",
+        "depositsByEmployee": "Текущий баланс",
+        "attendance": "Дневная посещаемость",
+        "attendanceHistory": "История посещаемости",
+        "payroll": "Дневная зарплата",
+        "salaryHistory": "История зарплаты"
+      },
+      "confirmation": {
+        "markPaidTitle": "Подтвердите выплату зарплаты",
+        "markPaidDescription": "Отметить зарплату сотрудника {{employee}} в размере {{amount}} как выплаченную?"
+      },
+      "columns": {
+        "fullName": "Полное имя",
+        "shop": "Магазин",
+        "serviceCategory": "Категория услуги",
+        "salaryType": "Тип зарплаты",
+        "fixedDailySalary": "Фиксированная дневная зарплата",
+        "phone": "Телефон",
+        "status": "Статус",
+        "serviceName": "Услуга",
+        "employee": "Сотрудник",
+        "percentage": "Процент",
+        "amount": "Сумма",
+        "remainingBalance": "Остаток",
+        "fullyRecoveredAt": "Погашен",
+        "workDate": "Дата работы",
+        "notes": "Примечания",
+        "grossSalary": "Валовая зарплата",
+        "depositDeduction": "Удержание из аванса",
+        "depositRemainingAfter": "Остаток после зарплаты",
+        "netPayable": "К выплате",
+        "paidStatus": "Статус выплаты",
+        "paidAt": "Выплачено в"
+      },
+      "messages": {
+        "validationFailed": "Заполните обязательные данные сотрудника.",
+        "created": "Сотрудник успешно создан",
+        "updated": "Данные сотрудника успешно обновлены",
+        "saveFailed": "Не удалось сохранить данные сотрудника",
+        "statusUpdated": "Статус сотрудника обновлен",
+        "statusUpdateFailed": "Не удалось обновить статус сотрудника",
+        "saved": "Изменения успешно сохранены",
+        "loadFailed": "Не удалось загрузить данные сотрудника",
+        "attendanceLoadFailed": "Не удалось загрузить данные посещаемости",
+        "attendanceSaveFailed": "Не удалось сохранить данные посещаемости",
+        "depositsAllLoadFailed": "Не удалось загрузить авансы всех сотрудников",
+        "calculated": "Зарплата успешно рассчитана",
+        "salaryFailed": "Не удалось рассчитать зарплату",
+        "salaryByDateLoadFailed": "Не удалось загрузить зарплаты за выбранную дату",
+        "salaryHistoryLoadFailed": "Не удалось загрузить историю зарплат",
+        "salaryMarkedPaid": "Зарплата отмечена как выплаченная",
+        "salaryMarkPaidFailed": "Не удалось отметить зарплату как выплаченную",
+        "salaryRecordIdMissing": "Отсутствует ID записи зарплаты",
+        "selectEmployeeHint": "Выберите сотрудника, чтобы увидеть аванс и историю.",
+        "selectEmployeeForSalaryHistory": "Выберите сотрудника, чтобы посмотреть историю зарплаты."
+      }
     }
   },
   "customers": {

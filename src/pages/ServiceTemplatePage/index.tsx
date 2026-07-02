@@ -28,6 +28,7 @@ import {
   editVehicleServiceTemplate,
   fetchVehicleServiceTemplates,
 } from "@/store/slices/vehicleServicePricingSlice";
+import { EmployeeManagement } from "@/components/settings/EmployeeManagement/EmployeeManagement";
 
 import { DataTable, Button, Select, Tab, TabGroup, TextField } from "@/ui-kit";
 
@@ -63,7 +64,6 @@ type FormState = {
   fuelTypeId: number;
   engineId: number;
   locationId: number;
-  electricityPrice: number;
   serviceCategoryId: number;
   notes: string;
   services: ServiceLine[];
@@ -77,6 +77,7 @@ type EmployeeFormState = {
   lastName: string;
   email: string;
   phone: string;
+  shopId: number;
   serviceCategoryId: number;
   hireDate: string;
   notes: string;
@@ -113,7 +114,6 @@ const getInitialForm = (): FormState => ({
   fuelTypeId: 0,
   engineId: 0,
   locationId: 0,
-  electricityPrice: 0,
   serviceCategoryId: 0,
   notes: "",
   services: [getEmptyLine()],
@@ -125,6 +125,7 @@ const getInitialEmployeeForm = (): EmployeeFormState => ({
   lastName: "",
   email: "",
   phone: "",
+  shopId: 0,
   serviceCategoryId: 0,
   hireDate: new Date().toISOString().slice(0, 10),
   notes: "",
@@ -221,8 +222,6 @@ export const ServiceTemplatePage = () => {
     () => form.services.reduce((sum, item) => sum + Number(item.customerPrice || 0), 0),
     [form.services],
   );
-
-  const totalAmount = serviceTotal + Number(form.electricityPrice || 0);
 
   const expandedTemplate = useMemo(
     () =>
@@ -373,7 +372,10 @@ export const ServiceTemplatePage = () => {
           lastName,
           email,
           phone,
+          shopId: employeeForm.shopId,
           serviceCategoryId: employeeForm.serviceCategoryId,
+          salaryType: "FixedDaily",
+          fixedDailySalary: 0,
           notes,
         };
 
@@ -385,8 +387,11 @@ export const ServiceTemplatePage = () => {
           lastName,
           email,
           phone,
+          shopId: employeeForm.shopId,
           serviceCategoryId: employeeForm.serviceCategoryId,
           hireDate: new Date(employeeForm.hireDate).toISOString(),
+          salaryType: "FixedDaily",
+          fixedDailySalary: 0,
           notes,
         };
 
@@ -398,7 +403,7 @@ export const ServiceTemplatePage = () => {
       setIsEmployeeFormOpen(false);
 
       if (employeeCategoryFilterId > 0) {
-        await dispatch(fetchEmployeesByCategory(employeeCategoryFilterId)).unwrap();
+        await dispatch(fetchEmployeesByCategory({ categoryId: employeeCategoryFilterId, includeInactive: true })).unwrap();
       } else {
         await dispatch(fetchEmployees()).unwrap();
       }
@@ -418,6 +423,7 @@ export const ServiceTemplatePage = () => {
       lastName: item.lastName || "",
       email: item.email || "",
       phone: item.phone || "",
+      shopId: Number(item.shopId || 0),
       serviceCategoryId: item.serviceCategoryId || 0,
       hireDate: (item.hireDate || new Date().toISOString()).slice(0, 10),
       notes: item.notes || "",
@@ -435,7 +441,7 @@ export const ServiceTemplatePage = () => {
 
     try {
       if (categoryId > 0) {
-        await dispatch(fetchEmployeesByCategory(categoryId)).unwrap();
+        await dispatch(fetchEmployeesByCategory({ categoryId, includeInactive: true })).unwrap();
       } else {
         await dispatch(fetchEmployees()).unwrap();
       }
@@ -511,7 +517,6 @@ export const ServiceTemplatePage = () => {
     if (!form.year || form.year < 1900) return false;
     if (!form.fuelTypeId || !form.engineId) return false;
     if (!form.locationId || !form.serviceCategoryId) return false;
-    if (Number.isNaN(Number(form.electricityPrice))) return false;
     if (form.services.length === 0) return false;
 
     return form.services.every(
@@ -550,7 +555,7 @@ export const ServiceTemplatePage = () => {
         fuelTypeId: form.fuelTypeId,
         engineId: form.engineId,
         location: selectedLocation.name,
-        electricityPrice: Number(form.electricityPrice),
+        electricityPrice: 0,
         serviceCategoryId: form.serviceCategoryId,
         notes: form.notes.trim(),
         services: form.services
@@ -599,7 +604,6 @@ export const ServiceTemplatePage = () => {
       fuelTypeId: Number(item.fuelTypeId || 0),
       engineId: Number(item.engineId || 0),
       locationId: matchedLocation?.id ?? 0,
-      electricityPrice: Number(item.electricityPrice || 0),
       serviceCategoryId: item.serviceCategoryId,
       notes: item.notes || "",
       services:
@@ -796,7 +800,7 @@ export const ServiceTemplatePage = () => {
                         (sum, item) => sum + Number(item.customerPrice || 0),
                         0,
                       );
-                      return (servicesTotal ?? 0) + Number(row.original.electricityPrice || 0);
+                      return servicesTotal ?? 0;
                     },
                   },
                   {
@@ -1035,18 +1039,6 @@ export const ServiceTemplatePage = () => {
                   ))}
                 </Select>
 
-                <TextField
-                  label={t("serviceTemplates.fields.electricityPrice")}
-                  type="number"
-                  value={toDisplayNumber(form.electricityPrice)}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      electricityPrice: Number(e.target.value),
-                    }))
-                  }
-                />
-
                 <Select
                   label={t("serviceTemplates.fields.serviceCategory")}
                   value={String(form.serviceCategoryId || "")}
@@ -1179,7 +1171,7 @@ export const ServiceTemplatePage = () => {
                   {t("serviceTemplates.fields.servicesTotal")}: <b>{serviceTotal}</b>
                 </div>
                 <div>
-                  {t("serviceTemplates.table.totalAmount")}: <b>{totalAmount}</b>
+                  {t("serviceTemplates.table.totalAmount")}: <b>{serviceTotal}</b>
                 </div>
               </div>
             </div>
@@ -1303,7 +1295,9 @@ export const ServiceTemplatePage = () => {
         </>
       )}
 
-      {activeTab === "employees" && (
+      {activeTab === "employees" && <EmployeeManagement />}
+
+      {false && activeTab === "employees" && (
         <>
           <div className={`${styles.section} ${styles.tableSection}`}>
             <div className={styles.header}>

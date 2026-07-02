@@ -78,18 +78,25 @@ export interface ServiceCategoryUpdatePayload {
   displayOrder: number;
 }
 
+export type EmployeeSalaryType = "FixedDaily" | "PercentageBased";
+export type EmployeeAttendanceStatus = "Present" | "Absent";
+
 export interface EmployeeItem {
   id: number;
   firstName: string;
   lastName: string;
   fullName: string;
-  email: string;
+  email: string | null;
   phone: string;
+  shopId: number;
+  shopCode?: string;
   serviceCategoryId: number;
   serviceCategoryName?: string;
   hireDate: string;
   isActive: boolean;
-  notes?: string;
+  salaryType: EmployeeSalaryType;
+  fixedDailySalary: number;
+  notes?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -97,10 +104,13 @@ export interface EmployeeItem {
 export interface EmployeeCreatePayload {
   firstName: string;
   lastName: string;
-  email: string;
+  email: string | null;
   phone: string;
+  shopId: number;
   serviceCategoryId: number;
   hireDate: string;
+  salaryType: EmployeeSalaryType;
+  fixedDailySalary: number;
   notes?: string;
 }
 
@@ -108,10 +118,97 @@ export interface EmployeeUpdatePayload {
   id: number;
   firstName: string;
   lastName: string;
-  email: string;
+  email: string | null;
   phone: string;
+  shopId: number;
   serviceCategoryId: number;
+  salaryType: EmployeeSalaryType;
+  fixedDailySalary: number;
   notes?: string;
+}
+
+export interface EmployeeServicePercentageItem {
+  id: number;
+  serviceId: number;
+  serviceName: string;
+  employeeId: number;
+  employeeFullName: string;
+  percentage: number;
+}
+
+export interface EmployeeDepositItem {
+  id: number;
+  employeeId: number;
+  employeeFullName: string;
+  amount: number;
+  remainingBalance: number;
+  notes?: string | null;
+  createdAt: string;
+  fullyRecoveredAt?: string | null;
+  isActive: boolean;
+}
+
+export interface EmployeeAttendanceItem {
+  id: number;
+  employeeId: number;
+  employeeFullName: string;
+  workDate: string;
+  status: EmployeeAttendanceStatus;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface EmployeeSalaryRecordItem {
+  id?: number;
+  employeeId: number;
+  employeeFullName: string;
+  shopId?: number;
+  workDate: string;
+  salaryType: EmployeeSalaryType;
+  grossSalary: number;
+  depositDeduction: number;
+  depositRemainingAfter: number;
+  netPayable: number;
+  createdAt?: string;
+  isPaid?: boolean;
+  paidAt?: string | null;
+  paidByUserId?: string | null;
+}
+
+export interface EmployeeServicePercentagePayload {
+  serviceId: number;
+  employeeId: number;
+  percentage: number;
+}
+
+export interface EmployeeDepositPayload {
+  employeeId: number;
+  amount: number;
+  notes?: string;
+}
+
+export interface EmployeeDepositsAllParams {
+  shopId?: number;
+  activeOnly?: boolean;
+}
+
+export interface EmployeeAttendancePayload {
+  employeeId: number;
+  workDate: string;
+  status: EmployeeAttendanceStatus;
+  notes?: string | null;
+}
+
+export interface EmployeesOnDutyParams {
+  shopId: number;
+  serviceCategoryId: number;
+  date?: string;
+}
+
+export interface EmployeeSalaryCalculatePayload {
+  workDate: string;
+  shopId?: number;
+  employeeId?: number;
 }
 
 export interface ServiceCatalogItem {

@@ -1906,6 +1906,11 @@
       "commentLabel": "Notes",
       "commentPlaceholder": "Enter additional notes...",
       "emptyProducts": "No products selected.",
+      "onDuty": {
+        "loading": "Checking on-duty staff...",
+        "assigned": "Assigned employee: {{employee}}",
+        "none": "No on-duty employee found for this category today."
+      },
       "totalAmount": "Total Amount",
       "createOrder": "Create Service Order",
       "receipt": {
@@ -1916,6 +1921,7 @@
         "estimateNumber": "Order Number",
         "vehicleSection": "Vehicle",
         "servicesSection": "Selected Services",
+        "assignedEmployee": "Assigned employee",
         "productsSection": "Selected Products",
         "productSku": "SKU Code",
         "summarySection": "Order Summary",
@@ -2043,6 +2049,119 @@
       "selectVehicleFirst": "Select the brand, model, year, fuel type, engine, and location first.",
       "vehicleNotFound": "No vehicle pricing template was found for the selected criteria.",
       "loadFailed": "Failed to load vehicle service pricing data."
+    },
+    "employeeManagement": {
+      "tabs": {
+        "employees": "Employees",
+        "percentages": "Service Percentages",
+        "deposits": "Deposits",
+        "attendance": "Attendance",
+        "payroll": "Payroll"
+      },
+      "actions": {
+        "save": "Save",
+        "giveDeposit": "Give deposit",
+        "saveAttendance": "Save attendance",
+        "calculate": "Calculate salary",
+        "markPaid": "Mark as paid"
+      },
+      "fields": {
+        "shop": "Shop",
+        "salaryType": "Salary type",
+        "fixedDailySalary": "Fixed daily salary",
+        "selectShop": "Select shop",
+        "selectEmployee": "Select employee",
+        "allEmployees": "All employees",
+        "selectService": "Select service",
+        "percentage": "Percentage",
+        "amount": "Amount",
+        "notes": "Notes",
+        "workDate": "Work date",
+        "allShops": "All shops",
+        "allDeposits": "All deposits",
+        "activeOnly": "Active only",
+        "fromDate": "From date",
+        "toDate": "To date"
+      },
+      "salaryTypes": {
+        "FixedDaily": "Fixed daily salary",
+        "PercentageBased": "Percentage-based salary"
+      },
+      "attendanceStatus": {
+        "Present": "Present",
+        "Absent": "Absent"
+      },
+      "labels": {
+        "activeDeposit": "Active deposit",
+        "presentCount": "Present employees",
+        "absentCount": "Absent employees",
+        "paid": "Paid",
+        "unpaid": "Unpaid"
+      },
+      "sections": {
+        "employeeForm": "Employee form",
+        "employeeList": "Employee list",
+        "servicePercentages": "Service percentage setup",
+        "byEmployee": "Percentages by employee",
+        "byService": "Percentages by service",
+        "deposits": "Deposit entry",
+        "depositHistory": "Deposit history",
+        "depositsAll": "All employee deposits",
+        "depositsByEmployee": "Current employee balance",
+        "attendance": "Daily attendance",
+        "attendanceHistory": "Attendance history",
+        "payroll": "Daily payroll",
+        "salaryHistory": "Salary history"
+      },
+      "confirmation": {
+        "markPaidTitle": "Confirm salary payment",
+        "markPaidDescription": "Mark {{employee}} salary as paid for {{amount}}?"
+      },
+      "columns": {
+        "fullName": "Full name",
+        "shop": "Shop",
+        "serviceCategory": "Service category",
+        "salaryType": "Salary type",
+        "fixedDailySalary": "Fixed daily salary",
+        "phone": "Phone",
+        "status": "Status",
+        "serviceName": "Service",
+        "employee": "Employee",
+        "percentage": "Percentage",
+        "amount": "Amount",
+        "remainingBalance": "Remaining balance",
+        "fullyRecoveredAt": "Recovered at",
+        "workDate": "Work date",
+        "notes": "Notes",
+        "grossSalary": "Gross salary",
+        "depositDeduction": "Deposit deduction",
+        "depositRemainingAfter": "Balance after salary",
+        "netPayable": "Net payable",
+        "paidStatus": "Payment status",
+        "paidAt": "Paid at"
+      },
+      "messages": {
+        "validationFailed": "Please fill in the required employee data.",
+        "created": "Employee created successfully",
+        "updated": "Employee updated successfully",
+        "saveFailed": "Failed to save employee data",
+        "statusUpdated": "Employee status updated",
+        "statusUpdateFailed": "Failed to update employee status",
+        "saved": "Changes saved successfully",
+        "loadFailed": "Failed to load employee data",
+        "attendanceLoadFailed": "Failed to load attendance data",
+        "attendanceSaveFailed": "Failed to save attendance data",
+        "depositsAllLoadFailed": "Failed to load all employee deposits",
+        "calculated": "Salary calculated successfully",
+        "salaryFailed": "Failed to calculate salary",
+        "salaryByDateLoadFailed": "Failed to load payroll for the selected date",
+        "salaryHistoryLoadFailed": "Failed to load salary history",
+        "salaryMarkedPaid": "Salary marked as paid",
+        "salaryMarkPaidFailed": "Failed to mark salary as paid",
+        "salaryRecordIdMissing": "Salary record ID is missing",
+        "selectEmployeeHint": "Select an employee to view deposit and history details.",
+        "selectEmployeeForSalaryHistory": "Select an employee to view salary history."
+      }
     }
   },
   "customers": {

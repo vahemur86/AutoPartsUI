@@ -30,11 +30,11 @@ const initialState: EmployeesState = {
 
 export const fetchEmployees = createAsyncThunk<
   EmployeeItem[],
-  void,
+  { includeInactive?: boolean } | void,
   { rejectValue: string }
->("employees/fetchAll", async (_, { rejectWithValue }) => {
+>("employees/fetchAll", async (payload, { rejectWithValue }) => {
   try {
-    return await getEmployees();
+    return await getEmployees(payload?.includeInactive ?? false);
   } catch (error: unknown) {
     return rejectWithValue(getApiErrorMessage(error, "Failed to fetch employees"));
   }
@@ -42,11 +42,11 @@ export const fetchEmployees = createAsyncThunk<
 
 export const fetchEmployeesByCategory = createAsyncThunk<
   EmployeeItem[],
-  number,
+  { categoryId: number; includeInactive?: boolean },
   { rejectValue: string }
->("employees/fetchByCategory", async (categoryId, { rejectWithValue }) => {
+>("employees/fetchByCategory", async (payload, { rejectWithValue }) => {
   try {
-    return await getEmployeesByCategory(categoryId);
+    return await getEmployeesByCategory(payload.categoryId, payload.includeInactive ?? false);
   } catch (error: unknown) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to fetch employees by category"),

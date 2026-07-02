@@ -5,9 +5,11 @@ import { useTranslation } from "react-i18next";
 
 import sharedStyles from "../../OperatorPage.module.css";
 import styles from "./WorkshopMode.module.css";
+import { getEmployeesOnDuty } from "@/services/settings/workshopPricing";
 import { getCategoriesTree } from "@/services/settings/productSettings";
 import { getShopProducts } from "@/services/warehouses/warehouseProduct";
 import type { CategoryNode } from "@/types/settings";
+import type { EmployeeItem } from "@/types/settings";
 import type { VehicleServiceTemplateItem } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 
@@ -76,6 +78,7 @@ type NormalizedTemplate = {
   engineName: string;
   location: string;
   electricityPrice: number;
+  serviceCategoryId: number;
   isActive: boolean;
   items: Array<{
     serviceId: number;
@@ -116,6 +119,8 @@ export const WorkshopMode = ({
   const [selectedProductId, setSelectedProductId] = useState("");
   const [productLines, setProductLines] = useState<WorkshopProductLine[]>([]);
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
+  const [onDutyEmployees, setOnDutyEmployees] = useState<EmployeeItem[]>([]);
+  const [isOnDutyLoading, setIsOnDutyLoading] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [createdEstimate, setCreatedEstimate] = useState<{
     id: number;
@@ -187,6 +192,7 @@ export const WorkshopMode = ({
           engineName: String(raw.engineName ?? `#${engineId}`),
           location: locationValue,
           electricityPrice: Number(raw.electricityPrice ?? 0),
+          serviceCategoryId: Number(raw.serviceCategoryId ?? 0),
           isActive: raw.isActive !== false,
           items,
         };
@@ -421,8 +427,35 @@ export const WorkshopMode = ({
 
   useEffect(() => {
     setSelectedServiceIds([]);
+    setOnDutyEmployees([]);
     setHasCalculated(false);
   }, [selectedTemplate?.id]);
+
+  useEffect(() => {
+    if (!shopId || !selectedTemplate?.serviceCategoryId || selectedServiceIds.length === 0) {
+      setOnDutyEmployees([]);
+      return;
+    }
+
+    const loadOnDutyEmployees = async () => {
+      try {
+        setIsOnDutyLoading(true);
+        const today = new Date().toISOString().slice(0, 10);
+        const employees = await getEmployeesOnDuty({
+          shopId,
+          serviceCategoryId: selectedTemplate.serviceCategoryId,
+          date: today,
+        });
+        setOnDutyEmployees(employees);
+      } catch {
+        setOnDutyEmployees([]);
+      } finally {
+        setIsOnDutyLoading(false);
+      }
+    };
+
+    void loadOnDutyEmployees();
+  }, [selectedServiceIds.length, selectedTemplate?.serviceCategoryId, shopId]);
 
   const productOptions = useMemo<ProductOption[]>(
     () =>
@@ -547,6 +580,37 @@ export const WorkshopMode = ({
     [selectedTemplate, selectedServiceIds],
   );
 
+  const assignedEmployeeByServiceId = useMemo(() => {
+    const assignments = new Map<number, EmployeeItem | null>();
+    if (!selectedServiceLines.length) return assignments;
+
+    let onDutyIndex = 0;
+    selectedServiceLines.forEach((line) => {
+      const serviceId = Number(line.serviceId || 0);
+      if (serviceId <= 0) return;
+
+      const templateEmployeeId = Number(line.employeeId || 0);
+      if (templateEmployeeId > 0) {
+        const fromOnDuty = onDutyEmployees.find(
+          (employee) => Number(employee.id || 0) === templateEmployeeId,
+        );
+        assignments.set(serviceId, fromOnDuty ?? null);
+        return;
+      }
+
+      if (!onDutyEmployees.length) {
+        assignments.set(serviceId, null);
+        return;
+      }
+
+      const assigned = onDutyEmployees[onDutyIndex % onDutyEmployees.length] ?? null;
+      assignments.set(serviceId, assigned);
+      onDutyIndex += 1;
+    });
+
+    return assignments;
+  }, [onDutyEmployees, selectedServiceLines]);
+
   const servicesPrice = useMemo(
     () =>
       selectedServiceLines.reduce(
@@ -571,17 +635,17 @@ export const WorkshopMode = ({
   const printedAt = useMemo(() => new Date().toLocaleString(), [hasCalculated]);
 
   const addProductLine = () => {
-    const productId = Number(selectedProductId || 0);
-    if (!productId) return;
+    const stockId = Number(selectedProductId || 0);
+    if (!stockId) return;
 
-    const selected = filteredProductOptions.find((item) => item.productId === productId);
+    const selected = filteredProductOptions.find((item) => item.stockId === stockId);
     if (!selected) return;
 
     setProductLines((prev) => {
-      const existing = prev.find((line) => line.productId === productId);
+      const existing = prev.find((line) => line.shopStockId === stockId);
       if (existing) {
         return prev.map((line) =>
-          line.productId === productId
+          line.shopStockId === stockId
             ? { ...line, quantity: line.quantity + 1 }
             : line,
         );
@@ -604,13 +668,13 @@ export const WorkshopMode = ({
     setHasCalculated(false);
   };
 
-  const updateQuantity = (productId: number, quantity: string) => {
+  const updateQuantity = (shopStockId: number, quantity: string) => {
     const value = Number(quantity);
     if (Number.isNaN(value) || value < 0) return;
 
     setProductLines((prev) =>
       prev.map((line) =>
-        line.productId === productId
+        line.shopStockId === shopStockId
           ? { ...line, quantity: value }
           : line,
       ),
@@ -618,8 +682,8 @@ export const WorkshopMode = ({
     setHasCalculated(false);
   };
 
-  const removeLine = (productId: number) => {
-    setProductLines((prev) => prev.filter((line) => line.productId !== productId));
+  const removeLine = (shopStockId: number) => {
+    setProductLines((prev) => prev.filter((line) => line.shopStockId !== shopStockId));
     setHasCalculated(false);
   };
 
@@ -657,11 +721,21 @@ export const WorkshopMode = ({
     }
 
     const services = selectedServiceLines
-      .map((item) => ({
-        serviceId: Number(item.serviceId || 0),
-        customerPrice: Number(item.customerPrice || 0),
-        employeeId: Number(item.employeeId || 0) || undefined,
-      }))
+      .map((item) => {
+        const serviceId = Number(item.serviceId || 0);
+        const assignedEmployeeId = Number(
+          assignedEmployeeByServiceId.get(serviceId)?.id || 0,
+        );
+
+        return {
+          serviceId,
+          customerPrice: Number(item.customerPrice || 0),
+          employeeId:
+            Number(item.employeeId || 0) ||
+            assignedEmployeeId ||
+            undefined,
+        };
+      })
       .filter((item) => item.serviceId > 0);
 
     if (!services.length) {
@@ -862,6 +936,7 @@ export const WorkshopMode = ({
               {(selectedTemplate.items ?? []).map((line) => {
                 const serviceId = Number(line.serviceId || 0);
                 const checked = selectedServiceIds.includes(serviceId);
+                const assignedEmployee = assignedEmployeeByServiceId.get(serviceId) ?? null;
                 return (
                   <div key={serviceId} className={styles.serviceLine}>
                     <Checkbox
@@ -880,6 +955,17 @@ export const WorkshopMode = ({
                       <span>{line.serviceName || `#${serviceId}`}</span>
                       <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
                     </div>
+                    {checked && (
+                      <div className={styles.emptyProducts}>
+                        {isOnDutyLoading
+                          ? t("operatorPage.workshop.onDuty.loading")
+                          : assignedEmployee
+                            ? t("operatorPage.workshop.onDuty.assigned", {
+                                employee: assignedEmployee.fullName,
+                              })
+                            : t("operatorPage.workshop.onDuty.none")}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -945,7 +1031,7 @@ export const WorkshopMode = ({
           >
             <option value="">{t("common.select")}</option>
             {filteredProductOptions.map((item) => (
-              <option key={`${item.stockId}-${item.productId}`} value={item.productId}>
+              <option key={`${item.stockId}-${item.productId}`} value={item.stockId}>
                 {item.sku} / {item.code} ({item.salePrice})
               </option>
             ))}
@@ -965,19 +1051,19 @@ export const WorkshopMode = ({
             <div className={styles.emptyProducts}>{t("operatorPage.workshop.emptyProducts")}</div>
           ) : (
             productLines.map((line) => (
-              <div key={line.productId} className={styles.productLine}>
+              <div key={line.shopStockId} className={styles.productLine}>
                 <div className={styles.productCode}>{line.code}</div>
                 <TextField
                   type="number"
                   value={String(line.quantity)}
-                  onChange={(e) => updateQuantity(line.productId, e.target.value)}
+                  onChange={(e) => updateQuantity(line.shopStockId, e.target.value)}
                   label={t("operatorPage.workshop.fields.quantity")}
                 />
                 <div className={styles.productPrice}>{line.unitPrice.toLocaleString()} AMD</div>
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => removeLine(line.productId)}
+                  onClick={() => removeLine(line.shopStockId)}
                 >
                   {t("common.remove")}
                 </Button>
@@ -1133,14 +1219,22 @@ export const WorkshopMode = ({
               <div className={styles.receiptSection}>
                 <div className={styles.receiptSectionTitle}>{t("operatorPage.workshop.receipt.servicesSection")}</div>
                 <div className={styles.receiptProductsList}>
-                  {selectedServiceLines.map((line) => (
-                    <div key={line.serviceId} className={styles.receiptProductRow}>
-                      <div className={styles.receiptProductCode}>{line.serviceName || `#${line.serviceId}`}</div>
-                      <div className={styles.receiptProductMeta}>
-                        <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                  {selectedServiceLines.map((line) => {
+                    const assignedEmployee = assignedEmployeeByServiceId.get(
+                      Number(line.serviceId || 0),
+                    );
+                    return (
+                      <div key={line.serviceId} className={styles.receiptProductRow}>
+                        <div className={styles.receiptProductCode}>{line.serviceName || `#${line.serviceId}`}</div>
+                        <div className={styles.receiptProductMeta}>
+                          <span>
+                            {t("operatorPage.workshop.receipt.assignedEmployee")}: {assignedEmployee?.fullName || "-"}
+                          </span>
+                          <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
