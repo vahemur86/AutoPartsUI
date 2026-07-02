@@ -208,10 +208,6 @@ export const EmployeeManagement = () => {
     return payrollEmployees;
   }, [employees, payrollEmployees, payrollShopId]);
 
-  const selectedEmployee = useMemo(() => {
-    return employees.find((item) => item.id === selectedEmployeeId) ?? null;
-  }, [employees, selectedEmployeeId]);
-
   const serviceOptions = useMemo(() => {
     return servicesCatalog.filter((item: ServiceCatalogItem) => item.isActive !== false);
   }, [servicesCatalog]);
