@@ -684,7 +684,7 @@ export const WorkshopMode = ({
     setHasCalculated(false);
   };
 
-  const resetWorkshopState = () => {
+  const resetWorkshopState = (options?: { keepEstimate?: boolean }) => {
     setBrandId(0);
     setModelId(0);
     setFuelTypeId(0);
@@ -700,8 +700,11 @@ export const WorkshopMode = ({
     setProductLines([]);
     setSelectedServiceIds([]);
     setOnDutyEmployees([]);
-    setHasCalculated(false);
-    setCreatedEstimate(null);
+    // When keepEstimate is true, preserve `createdEstimate` so printing remains available
+    if (!options?.keepEstimate) {
+      setHasCalculated(false);
+      setCreatedEstimate(null);
+    }
   };
 
   const handleCalculate = () => {
@@ -781,22 +784,25 @@ export const WorkshopMode = ({
     });
 
     if (estimate?.estimateNumber) {
-      resetWorkshopState();
+      // keep created estimate so user can print the check after the form is cleared
+      setCreatedEstimate(estimate);
+      resetWorkshopState({ keepEstimate: true });
+      toast.success(t("operatorPage.workshop.success.orderCreated"));
     }
   };
 
   const handlePrintCheck = () => {
+    if (createdEstimate?.estimateNumber) {
+      window.print();
+      return;
+    }
+
     if (!hasCalculated) {
       toast.error(t("operatorPage.workshop.error.calculateBeforePrint"));
       return;
     }
 
-    if (!createdEstimate?.estimateNumber) {
-      toast.error(t("operatorPage.workshop.error.createBeforePrint"));
-      return;
-    }
-
-    window.print();
+    toast.error(t("operatorPage.workshop.error.createBeforePrint"));
   };
 
   return (
