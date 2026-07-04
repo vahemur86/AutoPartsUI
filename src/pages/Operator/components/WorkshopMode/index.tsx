@@ -119,6 +119,7 @@ export const WorkshopMode = ({
   const [productLines, setProductLines] = useState<WorkshopProductLine[]>([]);
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
   const [onDutyEmployees, setOnDutyEmployees] = useState<EmployeeItem[]>([]);
+  const [selectedEmployeeByServiceId, setSelectedEmployeeByServiceId] = useState<Record<number, number>>({});
   const [isOnDutyLoading, setIsOnDutyLoading] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [createdEstimate, setCreatedEstimate] = useState<{
@@ -426,6 +427,7 @@ export const WorkshopMode = ({
   useEffect(() => {
     setSelectedServiceIds([]);
     setOnDutyEmployees([]);
+    setSelectedEmployeeByServiceId({});
     setHasCalculated(false);
   }, [selectedTemplate?.id]);
 
@@ -744,7 +746,7 @@ export const WorkshopMode = ({
       .map((item) => {
         const serviceId = Number(item.serviceId || 0);
         const assignedEmployeeId = Number(
-          assignedEmployeeByServiceId.get(serviceId)?.id || 0,
+          (selectedEmployeeByServiceId[serviceId] ?? assignedEmployeeByServiceId.get(serviceId)?.id) || 0,
         );
 
         return {
@@ -977,13 +979,32 @@ export const WorkshopMode = ({
                     </div>
                     {checked && (
                       <div className={styles.emptyProducts}>
-                        {isOnDutyLoading
-                          ? t("operatorPage.workshop.onDuty.loading")
-                          : assignedEmployee
-                            ? t("operatorPage.workshop.onDuty.assigned", {
-                                employee: assignedEmployee.fullName,
-                              })
-                            : t("operatorPage.workshop.onDuty.none")}
+                        {isOnDutyLoading ? (
+                          t("operatorPage.workshop.onDuty.loading")
+                        ) : onDutyEmployees.length ? (
+                          // allow operator to choose among all on-duty employees for this service
+                          <Select
+                            value={String(selectedEmployeeByServiceId[serviceId] || assignedEmployee?.id || "")}
+                            onChange={(e) => {
+                              const empId = Number(e.target.value) || 0;
+                              setSelectedEmployeeByServiceId((prev) => ({ ...prev, [serviceId]: empId }));
+                            }}
+                            searchable={false}
+                          >
+                            <option value="">{t("operatorPage.workshop.onDuty.select")}</option>
+                            {onDutyEmployees.map((emp) => (
+                              <option key={emp.id} value={emp.id}>
+                                {emp.fullName}
+                              </option>
+                            ))}
+                          </Select>
+                        ) : assignedEmployee ? (
+                          t("operatorPage.workshop.onDuty.assigned", {
+                            employee: assignedEmployee.fullName,
+                          })
+                        ) : (
+                          t("operatorPage.workshop.onDuty.none")
+                        )}
                       </div>
                     )}
                   </div>
@@ -1248,20 +1269,21 @@ export const WorkshopMode = ({
                 <div className={styles.receiptSectionTitle}>{t("operatorPage.workshop.receipt.servicesSection")}</div>
                 <div className={styles.receiptProductsList}>
                   {selectedServiceLines.map((line) => {
-                    const assignedEmployee = assignedEmployeeByServiceId.get(
-                      Number(line.serviceId || 0),
-                    );
-                    return (
-                      <div key={line.serviceId} className={styles.receiptProductRow}>
-                        <div className={styles.receiptProductCode}>{line.serviceName || `#${line.serviceId}`}</div>
-                        <div className={styles.receiptProductMeta}>
-                          <span>
-                            {t("operatorPage.workshop.receipt.assignedEmployee")}: {assignedEmployee?.fullName || "-"}
-                          </span>
-                          <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                      const assignedEmployee = selectedEmployeeByServiceId[Number(line.serviceId || 0)]
+                        ? onDutyEmployees.find((e) => Number(e.id) === Number(selectedEmployeeByServiceId[Number(line.serviceId || 0)]))
+                        : assignedEmployeeByServiceId.get(Number(line.serviceId || 0));
+
+                      return (
+                        <div key={line.serviceId} className={styles.receiptProductRow}>
+                          <div className={styles.receiptProductCode}>{line.serviceName || `#${line.serviceId}`}</div>
+                          <div className={styles.receiptProductMeta}>
+                            <span>
+                              {t("operatorPage.workshop.receipt.assignedEmployee")}: {assignedEmployee?.fullName || "-"}
+                            </span>
+                            <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                          </div>
                         </div>
-                      </div>
-                    );
+                      );
                   })}
                 </div>
               </div>
