@@ -599,7 +599,11 @@ export const useOperator = () => {
         cashRegisterId: userData.cashRegisterId,
       });
 
-      toast.success(t("operatorPage.workshop.success.orderCreated"));
+      const createdText = `${t("operatorPage.workshop.success.orderCreated")}\n${t("operatorPage.workshop.success.moveToCashDesk")}`;
+      toast.success(createdText, {
+        className: "workshop-confirm-toast",
+        autoClose: 7000,
+      });
       return estimate;
     } catch (error) {
       console.error("Workshop order failed:", error);

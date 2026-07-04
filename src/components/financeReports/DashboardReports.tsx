@@ -308,6 +308,14 @@ export const DashboardReports = () => {
               <span>{t("financeReports.dashboard.kpi.monthlyProfit")}</span>
               <strong>{money(Number(report?.monthlyProfit || 0))}</strong>
             </article>
+            <article className={`${styles.kpiCard} ${styles.kpiCardCyan}`}>
+              <span>{t("financeReports.dashboard.kpi.totalProductRevenue")}</span>
+              <strong>{money(Number(report?.totalProductRevenue || 0))}</strong>
+            </article>
+            <article className={`${styles.kpiCard} ${styles.kpiCardBlue}`}>
+              <span>{t("financeReports.dashboard.kpi.totalServiceRevenue")}</span>
+              <strong>{money(Number(report?.totalServiceRevenue || 0))}</strong>
+            </article>
             <article className={styles.kpiCard}>
               <span>{t("financeReports.dashboard.kpi.totalRevenue")}</span>
               <strong>{money(Number(report?.totalRevenue || 0))}</strong>

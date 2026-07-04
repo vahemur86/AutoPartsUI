@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Checkbox, Select, TextField, Textarea } from "@/ui-kit";
 import { useTranslation } from "react-i18next";
+import { CountryPhoneInput } from "@/components/common/CountryPhoneInput";
+import type { CountryCode } from "libphonenumber-js";
 
 import sharedStyles from "../../OperatorPage.module.css";
 import styles from "./WorkshopMode.module.css";
@@ -113,6 +115,7 @@ export const WorkshopMode = ({
   const [vinCode, setVinCode] = useState("");
   const [mileageKm, setMileageKm] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [orderComment, setOrderComment] = useState("");
   const [selectedCategoryPath, setSelectedCategoryPath] = useState<number[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -686,6 +689,66 @@ export const WorkshopMode = ({
     setHasCalculated(false);
   };
 
+  const createEstimate = async () => {
+    if (!selectedTemplate || !hasCalculated) return null;
+
+    if (
+      !vinCode.trim() ||
+      !mileageKm.trim() ||
+      Number(mileageKm) <= 0 ||
+      !customerPhone.trim() ||
+      !orderComment.trim()
+    ) {
+      toast.error(t("operatorPage.workshop.error.requiredOrderFields"));
+      return null;
+    }
+
+    const services = selectedServiceLines
+      .map((item) => {
+        const serviceId = Number(item.serviceId || 0);
+        const assignedEmployeeId = Number(
+          (selectedEmployeeByServiceId[serviceId] ?? assignedEmployeeByServiceId.get(serviceId)?.id) || 0,
+        );
+
+        return {
+          serviceId,
+          customerPrice: Number(item.customerPrice || 0),
+          employeeId:
+            Number(item.employeeId || 0) ||
+            assignedEmployeeId ||
+            undefined,
+        };
+      })
+      .filter((item) => item.serviceId > 0);
+
+    if (!services.length) {
+      toast.error(t("operatorPage.workshop.error.estimateNeedsServices"));
+      return null;
+    }
+
+    const estimate = await onSubmit({
+      vehicleBrandId: selectedTemplate.brandId,
+      vehicleModelId: selectedTemplate.modelId,
+      vehicleYear: selectedTemplate.year,
+      vehicleFuelTypeId: selectedTemplate.fuelTypeId,
+      vehicleEngineId: selectedTemplate.engineId,
+      location: selectedTemplate.location,
+      vinCode: vinCode.trim(),
+      mileage: Number(mileageKm),
+      customerPhone: customerPhone.trim(),
+      notes: orderComment.trim(),
+      services,
+      products: productLines.map((line) => ({
+        shopStockId: line.shopStockId,
+        productId: line.productId,
+        quantity: line.quantity,
+        unitPrice: line.unitPrice,
+      })),
+    });
+
+    return estimate ?? null;
+  };
+
   const resetWorkshopState = (options?: { keepEstimate?: boolean }) => {
     setBrandId(0);
     setModelId(0);
@@ -731,80 +794,22 @@ export const WorkshopMode = ({
   const handleCreateOrder = async () => {
     if (!selectedTemplate || !hasCalculated) return;
 
-    if (
-      !vinCode.trim() ||
-      !mileageKm.trim() ||
-      Number(mileageKm) <= 0 ||
-      !customerPhone.trim() ||
-      !orderComment.trim()
-    ) {
-      toast.error(t("operatorPage.workshop.error.requiredOrderFields"));
-      return;
-    }
-
-    const services = selectedServiceLines
-      .map((item) => {
-        const serviceId = Number(item.serviceId || 0);
-        const assignedEmployeeId = Number(
-          (selectedEmployeeByServiceId[serviceId] ?? assignedEmployeeByServiceId.get(serviceId)?.id) || 0,
-        );
-
-        return {
-          serviceId,
-          customerPrice: Number(item.customerPrice || 0),
-          employeeId:
-            Number(item.employeeId || 0) ||
-            assignedEmployeeId ||
-            undefined,
-        };
-      })
-      .filter((item) => item.serviceId > 0);
-
-    if (!services.length) {
-      toast.error(t("operatorPage.workshop.error.estimateNeedsServices"));
-      return;
-    }
-
-    const estimate = await onSubmit({
-      vehicleBrandId: selectedTemplate.brandId,
-      vehicleModelId: selectedTemplate.modelId,
-      vehicleYear: selectedTemplate.year,
-      vehicleFuelTypeId: selectedTemplate.fuelTypeId,
-      vehicleEngineId: selectedTemplate.engineId,
-      location: selectedTemplate.location,
-      vinCode: vinCode.trim(),
-      mileage: Number(mileageKm),
-      customerPhone: customerPhone.trim(),
-      notes: orderComment.trim(),
-      services,
-      products: productLines.map((line) => ({
-        shopStockId: line.shopStockId,
-        productId: line.productId,
-        quantity: line.quantity,
-        unitPrice: line.unitPrice,
-      })),
-    });
-
+    const estimate = await createEstimate();
     if (estimate?.estimateNumber) {
-      // keep created estimate so user can print the check after the form is cleared
       setCreatedEstimate(estimate);
       resetWorkshopState({ keepEstimate: true });
-      toast.success(t("operatorPage.workshop.success.orderCreated"));
+      // success toast is shown by the shared order creation hook
     }
   };
 
   const handlePrintCheck = () => {
-    if (createdEstimate?.estimateNumber) {
-      window.print();
-      return;
-    }
-
     if (!hasCalculated) {
       toast.error(t("operatorPage.workshop.error.calculateBeforePrint"));
       return;
     }
 
-    toast.error(t("operatorPage.workshop.error.createBeforePrint"));
+    // Just print the receipt preview without creating the order.
+    window.print();
   };
 
   return (
@@ -1078,9 +1083,6 @@ export const WorkshopMode = ({
           >
             {t("operatorPage.workshop.actions.addProduct")}
           </Button>
-        </div>
-
-        <div className={styles.productLines}>
           {productLines.length === 0 ? (
             <div className={styles.emptyProducts}>{t("operatorPage.workshop.emptyProducts")}</div>
           ) : (
@@ -1124,12 +1126,19 @@ export const WorkshopMode = ({
               onChange={(e) => setMileageKm(e.target.value)}
               placeholder="150000"
             />
-            <TextField
-              label={t("operatorPage.workshop.fields.customerPhone")}
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              placeholder="+374..."
-            />
+            <div>
+              <label className={sharedStyles.fieldLabel}>{t("operatorPage.workshop.fields.customerPhone")}</label>
+              <CountryPhoneInput
+                phone={customerPhone}
+                selectedCountry={selectedCountry}
+                onCountryChange={(c) => {
+                  setSelectedCountry(c);
+                  // reset phone local part when country changes
+                  setCustomerPhone("");
+                }}
+                onPhoneChange={(full) => setCustomerPhone(full)}
+              />
+            </div>
           </div>
           <Textarea
             label={t("operatorPage.workshop.commentLabel")}
@@ -1179,7 +1188,7 @@ export const WorkshopMode = ({
         <Button
           variant="secondary"
           onClick={handlePrintCheck}
-          disabled={!hasCalculated || !createdEstimate?.estimateNumber}
+          disabled={!hasCalculated}
         >
           {t("operatorPage.workshop.actions.printCheck")}
         </Button>

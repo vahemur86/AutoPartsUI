@@ -300,6 +300,8 @@
         "monthlyRevenue": "Выручка за месяц",
         "monthlyProfit": "Прибыль за месяц",
         "monthlySalesCount": "Продаж за месяц",
+        "totalProductRevenue": "Выручка по товарам",
+        "totalServiceRevenue": "Выручка по услугам",
         "totalRevenue": "Общая выручка",
         "lowStockAlertsCount": "Оповещения о низком остатке",
         "outOfStockCount": "Оповещения об отсутствии товара",
@@ -419,7 +421,7 @@
         "vehicle": "Автомобиль",
         "servicesCount": "Услуг",
         "servicesRevenue": "Выручка по услугам",
-        "servicesCost": "Себестоимость услуг",
+        "servicesCost": "Базовая ставка услуг",
         "servicesProfit": "Прибыль по услугам",
         "createdAt": "Создано",
         "status": "Статус",
@@ -435,6 +437,13 @@
         "unitPrice": "Цена за единицу",
         "lineTotal": "Сумма строки",
         "share": "Доля в заказе"
+      },
+      "statuses": {
+        "completed": "Завершено",
+        "pending": "В ожидании",
+        "cancelled": "Отменено",
+        "inProgress": "В процессе",
+        "open": "Открыто"
       },
       "reportRowsHint": "По выбранным фильтрам найдено {{count}} заказов по услугам.",
       "noRows": "По выбранным фильтрам записи по услугам не найдены."

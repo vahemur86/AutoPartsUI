@@ -273,3 +273,14 @@ body:has([data-radix-dialog-overlay]) {
 .Toastify__close-button:hover {
   opacity: 1;
 }
+
+/* Workshop confirmation larger toast */
+.workshop-confirm-toast {
+  font-size: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+}
+.workshop-confirm-toast .Toastify__toast-body {
+  font-size: 16px;
+}

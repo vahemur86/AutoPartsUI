@@ -794,7 +794,19 @@ export const ServiceReports = () => {
       orderColumnHelper.display({
         id: "status",
         header: t("financeReports.serviceReports.orders.status"),
-        cell: ({ row }) => row.original.status || "-",
+        cell: ({ row }) => {
+          const rawStatus = row.original.status?.trim();
+          if (!rawStatus) return "-";
+          const normalized = rawStatus.toLowerCase().replace(/\s+/g, "_");
+          const statusTranslations: Record<string, string> = {
+            completed: t("financeReports.serviceReports.statuses.completed"),
+            pending: t("financeReports.serviceReports.statuses.pending"),
+            cancelled: t("financeReports.serviceReports.statuses.cancelled"),
+            in_progress: t("financeReports.serviceReports.statuses.inProgress"),
+            open: t("financeReports.serviceReports.statuses.open"),
+          };
+          return statusTranslations[normalized] || rawStatus;
+        },
       }),
     ],
     [t],

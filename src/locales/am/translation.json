@@ -247,6 +247,8 @@
         "monthlyRevenue": "Ամսական շրջանառություն",
         "monthlyProfit": "Ամսական շահույթ",
         "monthlySalesCount": "Ամսական վաճառքների քանակ",
+        "totalProductRevenue": "Ապրանքների շրջանառություն",
+        "totalServiceRevenue": "Ծառայությունների շրջանառություն",
         "totalRevenue": "Ընդհանուր շրջանառություն",
         "lowStockAlertsCount": "Քիչ մնացորդի ազդանշաններ",
         "outOfStockCount": "Սպառված ապրանքների ազդանշաններ",
@@ -301,6 +303,8 @@
         "salesCount": "Վաճառքների քանակ",
         "currentInventoryValue": "Ընթացիկ մնացորդի արժեք",
         "currentInventoryCostValue": "Ընթացիկ մնացորդի արժեքը ինքնարժեքով",
+        "totalProductRevenue": "Ապրանքների շրջանառություն",
+        "totalServiceRevenue": "Ծառայությունների շրջանառություն",
         "lowStockCount": "Քիչ մնացորդով ապրանքներ",
         "outOfStockCount": "Սպառված ապրանքներ"
       },
@@ -366,7 +370,7 @@
         "vehicle": "Մեքենա",
         "servicesCount": "Ծառայությունների քանակ",
         "servicesRevenue": "Ծառայությունների շրջանառություն",
-        "servicesCost": "Ծառայությունների ինքնարժեք",
+        "servicesCost": "Ծառայությունների բազային արժեք",
         "servicesProfit": "Ծառայությունների շահույթ",
         "createdAt": "Ստեղծման պահ",
         "status": "Կարգավիճակ",
@@ -382,6 +386,13 @@
         "unitPrice": "Միավորի գին",
         "lineTotal": "Տողի գումար",
         "share": "Մասնաբաժինը պատվերի մեջ"
+      },
+      "statuses": {
+        "completed": "Ավարտված",
+        "pending": "Սպասման մեջ",
+        "cancelled": "Չեղարկված",
+        "inProgress": "Կատարման մեջ",
+        "open": "Բաց"
       },
       "reportRowsHint": "Ընտրված ֆիլտրերին համապատասխանում է {{count}} ծառայության պատվեր։",
       "noRows": "Ընտրված ֆիլտրերով ծառայության գրառումներ չեն գտնվել։"

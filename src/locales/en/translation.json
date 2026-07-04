@@ -300,6 +300,8 @@
         "monthlyRevenue": "Monthly revenue",
         "monthlyProfit": "Monthly profit",
         "monthlySalesCount": "Monthly sales count",
+        "totalProductRevenue": "Product revenue",
+        "totalServiceRevenue": "Service revenue",
         "totalRevenue": "Total revenue",
         "lowStockAlertsCount": "Low stock alerts",
         "outOfStockCount": "Out-of-stock alerts",
@@ -419,7 +421,7 @@
         "vehicle": "Vehicle",
         "servicesCount": "Services",
         "servicesRevenue": "Services revenue",
-        "servicesCost": "Services cost",
+        "servicesCost": "Services base rate",
         "servicesProfit": "Services profit",
         "createdAt": "Created at",
         "status": "Status",
@@ -435,6 +437,13 @@
         "unitPrice": "Unit price",
         "lineTotal": "Line total",
         "share": "Share in order"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "cancelled": "Cancelled",
+        "inProgress": "In progress",
+        "open": "Open"
       },
       "reportRowsHint": "{{count}} service orders matched the selected filters.",
       "noRows": "No service records found for the selected filters."
