@@ -982,22 +982,15 @@ export const WorkshopMode = ({
                         {isOnDutyLoading ? (
                           t("operatorPage.workshop.onDuty.loading")
                         ) : onDutyEmployees.length ? (
-                          // allow operator to choose among all on-duty employees for this service
-                          <Select
-                            value={String(selectedEmployeeByServiceId[serviceId] || assignedEmployee?.id || "")}
-                            onChange={(e) => {
-                              const empId = Number(e.target.value) || 0;
-                              setSelectedEmployeeByServiceId((prev) => ({ ...prev, [serviceId]: empId }));
-                            }}
-                            searchable={false}
-                          >
-                            <option value="">{t("operatorPage.workshop.onDuty.select")}</option>
-                            {onDutyEmployees.map((emp) => (
-                              <option key={emp.id} value={emp.id}>
+                          // show read-only list of on-duty employees
+                          <div>
+                            {onDutyEmployees.map((emp, idx) => (
+                              <span key={emp.id}>
                                 {emp.fullName}
-                              </option>
+                                {idx < onDutyEmployees.length - 1 ? ", " : ""}
+                              </span>
                             ))}
-                          </Select>
+                          </div>
                         ) : assignedEmployee ? (
                           t("operatorPage.workshop.onDuty.assigned", {
                             employee: assignedEmployee.fullName,
