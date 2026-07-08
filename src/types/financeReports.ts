@@ -1,3 +1,5 @@
+import type { DashboardOtherExpenseItem } from "@/types/otherExpenses";
+
 export interface ShopReportSummaryResponse {
   shopId: number;
   fromDate: string;
@@ -256,4 +258,8 @@ export interface DashboardReportResponse {
   outOfStockCount: number;
   lowStockAlerts: DashboardStockAlertItem[];
   outOfStockAlerts: DashboardStockAlertItem[];
+  monthlyOtherExpenses: number;
+  otherExpenses: DashboardOtherExpenseItem[];
+  monthlyNetProfit: number;
+  todayNetProfit: number;
 }

@@ -12,7 +12,7 @@ const columnHelper = createColumnHelper<InventoryLot>();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
   columnHelper.accessor("id", {
-    header: "ID",
+    header: i18next.t("warehouses.totalBatches.columns.id"),
     cell: (info) => `#${info.getValue()}`,
   }),
 

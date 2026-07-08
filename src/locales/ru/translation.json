@@ -8,9 +8,13 @@
     "customers": "Клиенты",
     "logout": "Выйти",
     "userMenu": "Меню пользователя",
+    "language": "Язык",
+    "languageLoading": "Загрузка языков...",
+    "useGlobalDefault": "Использовать общий язык",
     "reports": "Отчеты",
     "financeReports": "Финансы и отчеты",
     "calculator": "Калькулятор",
+    "workshop": "Мастерская",
     "carCatalyst": "Баки"
   },
   "common": {
@@ -95,11 +99,57 @@
       "metalRates": "Курсы металлов",
       "catalystBuckets": "Коды",
       "catalystPricing": "Ценообразование катализатора",
+      "carCatalyst": "Баки",
       "customerTypes": "Типы клиентов",
       "exchangeRates": "Курсы валют",
       "cashRegisters": "Кассовые аппараты",
       "ironManagement": "Управление металлоломом",
       "salePercentages": "Проценты продаж"
+    },
+    "otherExpenses": {
+      "fields": {
+        "entityType": "Тип объекта",
+        "entity": "Магазин / Склад",
+        "name": "Название расхода",
+        "price": "Сумма",
+        "paymentDay": "День оплаты"
+      },
+      "placeholders": {
+        "name": "Введите название расхода",
+        "price": "Введите сумму",
+        "paymentDay": "Введите день месяца"
+      },
+      "entityTypes": {
+        "shop": "Магазин",
+        "warehouse": "Склад"
+      },
+      "columns": {
+        "name": "Название",
+        "entityType": "Тип",
+        "entity": "Объект",
+        "price": "Сумма",
+        "paymentDay": "День оплаты"
+      },
+      "confirmation": {
+        "deleteTitle": "Удалить расход",
+        "deleteDescription": "Вы уверены, что хотите удалить расход {{name}}?"
+      },
+      "validation": {
+        "nameRequired": "Введите название расхода",
+        "entityRequired": "Выберите магазин или склад",
+        "priceRequired": "Введите корректную сумму",
+        "paymentDayRequired": "Введите корректный день оплаты от 1 до 31"
+      },
+      "success": {
+        "created": "Расход успешно создан",
+        "updated": "Расход успешно обновлен",
+        "deleted": "Расход успешно удален"
+      },
+      "error": {
+        "loadFailed": "Не удалось загрузить расходы",
+        "saveFailed": "Не удалось сохранить расход",
+        "deleteFailed": "Не удалось удалить расход"
+      }
     }
   },
   "tags": {
@@ -253,10 +303,30 @@
       "profitDetailed": "Детальная прибыль",
       "saleProfit": "Прибыль по продажам",
       "warehouseInventory": "Остатки склада",
-      "shopInventory": "Остатки магазина"
+      "shopInventory": "Остатки магазина",
+      "otherExpenses": "Прочие расходы"
+    },
+    "otherExpenses": {
+      "monthlyTotal": "Прочие расходы за месяц",
+      "rowsCount": "Записи за месяц",
+      "empty": "За текущий месяц прочие расходы не найдены.",
+      "loadFailed": "Не удалось загрузить отчет по прочим расходам.",
+      "columns": {
+        "locationName": "Объект",
+        "name": "Название расхода",
+        "entityType": "Тип",
+        "price": "Сумма",
+        "paymentDay": "День оплаты",
+        "totalMonthlyExpense": "Итог за месяц"
+      },
+      "entityTypes": {
+        "shop": "Магазин",
+        "warehouse": "Склад"
+      }
     },
     "filters": {
       "shop": "Магазин",
+        "otherExpenses": "Прочие расходы",
       "selectShop": "Выберите магазин",
       "warehouse": "Склад",
       "selectWarehouse": "Выберите склад",
@@ -266,13 +336,20 @@
       "productId": "ID товара",
       "productIdOptional": "ID товара (необязательно)"
     },
+        "monthlyOtherExpenses": "Прочие расходы за месяц",
+        "monthlyNetProfit": "Чистая прибыль за месяц",
     "actions": {
+        "todayNetProfit": "Чистая прибыль за сегодня",
       "load": "Показать отчет"
     },
     "validation": {
       "selectShop": "Пожалуйста, выберите магазин",
       "selectWarehouse": "Пожалуйста, выберите склад",
       "enterSaleId": "Пожалуйста, введите корректный ID продажи"
+      },
+      "otherExpenses": {
+        "empty": "Для дашборда нет прочих расходов.",
+        "paymentDay": "День оплаты"
     },
     "error": {
       "failedToLoad": "Не удалось загрузить финансовые данные"
@@ -602,7 +679,12 @@
       "selectWarehouse": "Выберите склад"
     },
     "validation": {
-      "fillAllFields": "Пожалуйста, заполните все поля"
+      "fillAllFields": "Пожалуйста, заполните все поля",
+      "emailInvalid": "Введите корректный адрес электронной почты",
+      "roleRequired": "Выберите роль",
+      "userTypeRequired": "Выберите тип пользователя",
+      "shopRequired": "Выберите магазин",
+      "warehouseRequired": "Выберите склад"
     },
     "success": {
       "userCreated": "Пользователь успешно создан"
@@ -1667,6 +1749,7 @@
     "validation": {
       "enterPhoneNumber": "Пожалуйста, введите номер телефона",
       "enterCustomerPhone": "Пожалуйста, введите номер телефона клиента",
+      "enterFullName": "Пожалуйста, введите полное имя",
       "invalidPhone": "Неверный номер телефона"
     },
     "success": {
@@ -1748,12 +1831,12 @@
       "calculate": "Рассчитать",
       "catalyst": "Катализатор",
       "iron": "Железо",
-      "workshop": "Мастерская",
-      "services": "Услуги"
+      "workshop": "Мастерская"
     },
     "cashier": {
       "title": "Касса",
       "description": "Выберите товары, добавьте их в корзину и завершите оплату наличным или безналичным способом.",
+      "missingCashRegisterHeader": "Отсутствует или некорректный ID кассы.",
       "selectShop": "Выберите магазин",
       "productsList": "Доступные товары",
       "loadingProducts": "Загрузка товаров...",
@@ -1808,6 +1891,7 @@
         "number": "Оценка",
         "summaryTitle": "Сводка оценки",
         "status": "Статус",
+        "pending": "В ожидании",
         "vehicle": "Автомобиль",
         "vin": "VIN",
         "amount": "Сумма",
@@ -1851,6 +1935,9 @@
       "mode": {
         "byCode": "По коду",
         "byAttributes": "По параметрам"
+      },
+      "placeholder": {
+        "bucketGroupCode": "напр. newT1"
       },
       "label": {
         "bucketGroupCode": "Код группы корзин",
@@ -1916,6 +2003,10 @@
         "assigned": "Назначенный сотрудник: {{employee}}",
         "none": "На сегодня для этой категории нет дежурного сотрудника."
       },
+      "programming": {
+        "loading": "Загружаем цены программирования для выбранного автомобиля...",
+        "noProgrammer": "Для этого автомобиля нет доступного программиста"
+      },
       "totalAmount": "Общая сумма",
       "createOrder": "Создать заказ-наряд",
       "receipt": {
@@ -1942,6 +2033,7 @@
         "createFailed": "Не удалось создать заказ-наряд",
         "loadVehicleDefinitionsFailed": "Не удалось загрузить данные автомобиля.",
         "loadProductsFailed": "Не удалось загрузить ассортимент магазина.",
+        "loadProgrammingServicesFailed": "Не удалось загрузить услуги программирования для выбранного автомобиля.",
         "requiredVehicleFields": "Заполните все обязательные поля автомобиля.",
         "templateNotFound": "Для выбранного автомобиля не найден шаблон ценообразования.",
         "selectAtLeastOneService": "Выберите хотя бы одну услугу для оценки.",
@@ -1985,11 +2077,13 @@
       "pricing": "Тарификация услуг по автомобилю",
       "categories": "Категории услуг",
       "employees": "Сотрудники",
-      "services": "Услуги"
+      "services": "Услуги",
+      "programmers": "Записи программистов"
     },
     "actions": {
       "create": "Создать",
       "update": "Обновить",
+      "addCategory": "Добавить категорию",
       "addService": "Добавить услугу",
       "loadPricing": "Загрузить тарификацию по автомобилю",
       "viewItems": "Показать состав",
@@ -2025,6 +2119,7 @@
       "notes": "Примечание",
       "servicePrice": "Стоимость услуги",
       "servicesTotal": "Общая стоимость услуг",
+      "autoResolved": "Определяется автоматически",
       "totalAmount": "Общая стоимость",
       "vehicleDefinitionId": "ID определения авто",
       "status": "Статус",
@@ -2038,6 +2133,8 @@
       "internalCost": "Внутренняя стоимость",
       "servicePrice": "Цена услуги",
       "profit": "Прибыль",
+      "bestProgrammer": "Лучший программист",
+      "programmerCost": "Себестоимость программиста",
       "marginPercent": "Маржа %",
       "serviceCategory": "Категория услуги",
       "services": "Услуги",
@@ -2053,7 +2150,46 @@
       "validationFailed": "Заполните все обязательные поля автомобиля, категории и стоимости услуг.",
       "selectVehicleFirst": "Сначала выберите марку, модель, год, тип топлива, двигатель и локацию автомобиля.",
       "vehicleNotFound": "Для выбранных параметров шаблон автомобиля не найден.",
+      "programmingPriceAutoResolved": "Цена определяется автоматически по записям программистов.",
+      "noProgrammerForVehicle": "Для этого автомобиля нет доступного программиста.",
       "loadFailed": "Не удалось загрузить данные по тарификации услуг для автомобиля."
+    },
+    "programmerAdmin": {
+      "badge": "Панель администратора",
+      "title": "Контроль цен программистов",
+      "subtitle": "Просматривайте все записи программистов и корректируйте цену продажи, не изменяя их себестоимость.",
+      "hint": "Показаны все записи по программированию от всех программистов.",
+      "columns": {
+        "vehicle": "Автомобиль",
+        "programmerPrices": "Цены программистов",
+        "location": "Локация",
+        "serviceCost": "Себестоимость",
+        "sellingPrice": "Цена продажи",
+        "profit": "Прибыль",
+        "created": "Создано"
+      },
+      "actions": {
+        "editSellingPrice": "Изменить цену продажи",
+        "applyFilters": "Применить фильтры",
+        "resetFilters": "Сбросить фильтры"
+      },
+      "filters": {
+        "programmerUsername": "Имя пользователя программиста",
+        "allProgrammers": "Все программисты",
+        "programmerUsernamePlaceholder": "например, john_prog",
+        "brand": "Марка автомобиля",
+        "allBrands": "Все марки",
+        "model": "Модель автомобиля",
+        "allModels": "Все модели"
+      },
+      "messages": {
+        "loadFailed": "Не удалось загрузить записи программистов.",
+        "invalidSellingPrice": "Цена продажи должна быть корректным числом.",
+        "sellingPriceUpdated": "Цена продажи успешно обновлена.",
+        "updateFailed": "Не удалось обновить цену продажи.",
+        "noEntries": "Записи цен программистов не найдены.",
+        "searchFailed": "Не удалось выполнить поиск записей программистов."
+      }
     },
     "employeeManagement": {
       "tabs": {
@@ -2177,6 +2313,11 @@
     "loading": "Загрузка клиентов...",
     "emptyState": "Клиенты не найдены.",
     "createCustomer": "Создать клиента",
+    "actions": {
+      "resetFilters": "Сбросить фильтры",
+      "openFilters": "Открыть фильтры",
+      "addCustomer": "Добавить клиента"
+    },
     "form": {
       "phone": "Телефон",
       "phonePlaceholder": "Добавить номер телефона",
@@ -2300,6 +2441,7 @@
   },
   "calculator": {
     "title": "Калькулятор",
+    "liveBadge": "LIVE",
     "columns": {
       "weight": "Вес",
       "price": "Цены",
@@ -2351,12 +2493,16 @@
 
       "customerBonus": "Введите бонус клиента (%)",
       "minProfit": "Введите минимальную прибыль (%)"
+    },
+    "error": {
+      "failedToCalculate": "Не удалось выполнить расчет партии"
     }
   },
   "carCatalyst": {
     "title": "Блоки катализатора автомобиля",
 
     "fields": {
+      "category": "Категория",
       "brand": "Бренд",
       "model": "Модель",
       "year": "Год",
@@ -2461,6 +2607,96 @@
         "country": "Страна #{{id}}",
         "birka": "Бирка #{{id}}"
       }
+    }
+  },
+  "programmerPage": {
+    "badge": "Категория программирования",
+    "title": "Панель управления ценами программиста",
+    "subtitle": "Выберите параметры автомобиля, затем услугу программирования и укажите себестоимость и цену продажи.",
+    "sections": {
+      "vehicleLookup": "1. Выберите параметры автомобиля",
+      "createPricing": "2. Добавить цену программирования",
+      "myEntries": "Мои записи по программированию"
+    },
+    "tabs": {
+      "add": "Добавить",
+      "entries": "Мои записи по программированию"
+    },
+    "user": {
+      "username": "Вы вошли как"
+    },
+    "fields": {
+      "category": "Категория",
+      "brand": "Бренд",
+      "model": "Модель",
+      "fuelType": "Тип топлива",
+      "engine": "Двигатель",
+      "location": "Локация",
+      "driveType": "Тип привода",
+      "horsePower": "Мощность (л.с.)",
+      "year": "Год",
+      "selectedVehicle": "Выбранный автомобиль",
+      "programmingService": "Услуга программирования",
+      "notes": "Примечание",
+      "serviceCost": "Себестоимость",
+      "sellingPrice": "Цена продажи"
+    },
+    "values": {
+      "programming": "Программирование"
+    },
+    "placeholders": {
+      "selectBrand": "Выберите бренд",
+      "selectModel": "Выберите модель",
+      "selectFuelType": "Выберите тип топлива",
+      "selectEngine": "Выберите двигатель",
+      "selectLocation": "Выберите локацию",
+      "selectDriveType": "Выберите тип привода",
+      "horsePower": "150",
+      "selectYear": "Выберите год",
+      "chooseService": "Выберите услугу",
+      "notes": "Необязательное примечание",
+      "serviceCost": "80.00",
+      "sellingPrice": "150.00"
+    },
+    "actions": {
+      "searchVehicles": "Найти автомобили",
+      "searching": "Поиск...",
+      "resetFilters": "Сбросить фильтры",
+      "addPricing": "Добавить цену программирования",
+      "saving": "Сохранение...",
+      "editCost": "Изменить себестоимость",
+      "editPricing": "Изменить цены"
+    },
+    "states": {
+      "noVehicleLoaded": "Автомобили еще не загружены.",
+      "noVehicleSelected": "Автомобиль не выбран",
+      "resolvingVehicle": "Подбираем автомобиль по выбранным параметрам...",
+      "noEntries": "Для вашей учетной записи записи не найдены."
+    },
+    "table": {
+      "vehicle": "Автомобиль",
+      "service": "Услуга",
+      "myServiceCost": "Моя себестоимость",
+      "sellingPrice": "Цена продажи",
+      "profit": "Прибыль",
+      "updatedAt": "Обновлено"
+    },
+    "messages": {
+      "loadDataFailed": "Не удалось загрузить данные.",
+      "refreshFailed": "Не удалось обновить записи.",
+      "noVehiclesMatched": "По текущим фильтрам автомобили не найдены.",
+      "vehicleSearchFailed": "Ошибка поиска автомобилей.",
+      "selectVehicleAndService": "Пожалуйста, выберите автомобиль и услугу программирования.",
+      "invalidCosts": "Себестоимость и цена продажи должны быть корректными числами.",
+      "created": "Запись по программированию успешно создана.",
+      "createFailed": "Не удалось создать запись.",
+      "invalidServiceCost": "Себестоимость должна быть корректным числом.",
+      "costUpdated": "Себестоимость успешно обновлена.",
+      "updateCostFailed": "Не удалось обновить себестоимость."
+    },
+    "logout": {
+      "title": "Выход",
+      "description": "Выйти из панели программиста?"
     }
   }
 }

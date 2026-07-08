@@ -1,4 +1,5 @@
-import type { FC, ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
 
 // icons
@@ -65,7 +66,42 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
     completed: index < safeIndex,
   }));
 
+  const [tooltip, setTooltip] = useState<{
+    label: string;
+    top: number;
+    left: number;
+    visible: boolean;
+  }>({
+    label: "",
+    top: 0,
+    left: 0,
+    visible: false,
+  });
+
   const handleNavigate = (path: string) => navigate(`${basePath}${path}`);
+
+  const handleShowTooltip = (
+    target: HTMLDivElement,
+    label: string,
+  ) => {
+    const rect = target.getBoundingClientRect();
+    const tooltipWidth = 320;
+    const viewportPadding = 8;
+    const preferredLeft = rect.right + 12;
+    const maxLeft = window.innerWidth - tooltipWidth - viewportPadding;
+    const left = Math.max(viewportPadding, Math.min(preferredLeft, maxLeft));
+
+    setTooltip({
+      label,
+      top: rect.top + rect.height / 2,
+      left,
+      visible: true,
+    });
+  };
+
+  const handleHideTooltip = () => {
+    setTooltip((prev) => ({ ...prev, visible: false }));
+  };
 
   return (
     <>
@@ -79,15 +115,27 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
         <div className={styles.layout}>
           <aside className={styles.sidebar}>
             {navigationItems.map((item) => (
-              <Tab
+              <div
                 key={item.path}
-                variant="vertical"
-                active={getIsActive(item.path)}
-                text={item.label}
-                icon={<item.icon size={20} color="#ffffff" />}
-                showCheckmark={item.showCheckmark}
-                onClick={() => handleNavigate(item.path)}
-              />
+                className={styles.sidebarNavItem}
+                onMouseEnter={(event) =>
+                  handleShowTooltip(event.currentTarget, item.label)
+                }
+                onFocus={(event) =>
+                  handleShowTooltip(event.currentTarget, item.label)
+                }
+                onMouseLeave={handleHideTooltip}
+                onBlur={handleHideTooltip}
+              >
+                <Tab
+                  variant="vertical"
+                  active={getIsActive(item.path)}
+                  text={item.label}
+                  icon={<item.icon size={20} color="#ffffff" />}
+                  showCheckmark={item.showCheckmark}
+                  onClick={() => handleNavigate(item.path)}
+                />
+              </div>
             ))}
           </aside>
 
@@ -105,6 +153,19 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
           </div>
         </div>
       </div>
+
+      {tooltip.visible
+        ? createPortal(
+            <div
+              className={styles.sidebarTooltip}
+              style={{ top: tooltip.top, left: tooltip.left }}
+              role="tooltip"
+            >
+              {tooltip.label}
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 };

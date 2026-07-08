@@ -321,6 +321,18 @@ export const DashboardReports = () => {
               <strong>{money(Number(report?.totalRevenue || 0))}</strong>
             </article>
             <article className={styles.kpiCard}>
+              <span>{t("financeReports.dashboard.kpi.monthlyOtherExpenses")}</span>
+              <strong>{money(Number(report?.monthlyOtherExpenses || 0))}</strong>
+            </article>
+            <article className={styles.kpiCard}>
+              <span>{t("financeReports.dashboard.kpi.monthlyNetProfit")}</span>
+              <strong>{money(Number(report?.monthlyNetProfit || 0))}</strong>
+            </article>
+            <article className={styles.kpiCard}>
+              <span>{t("financeReports.dashboard.kpi.todayNetProfit")}</span>
+              <strong>{money(Number(report?.todayNetProfit || 0))}</strong>
+            </article>
+            <article className={styles.kpiCard}>
               <span>{t("financeReports.dashboard.kpi.lowStockAlertsCount")}</span>
               <strong>{Number(report?.lowStockAlertsCount || 0).toLocaleString()}</strong>
             </article>
@@ -414,6 +426,29 @@ export const DashboardReports = () => {
           </section>
 
           <section className={styles.inventoryTablesGrid}>
+            <article className={styles.chartCard}>
+              <h4 className={styles.subTitle}>
+                <CircleDollarSign size={16} /> {t("financeReports.dashboard.sections.otherExpenses")}
+              </h4>
+              {!report?.otherExpenses?.length ? (
+                <div className={styles.info}>{t("financeReports.dashboard.otherExpenses.empty")}</div>
+              ) : (
+                <div className={styles.dashboardList}>
+                  {report.otherExpenses.map((expense, index) => (
+                    <div key={`${expense.serviceName}-${expense.paymentDay}-${index}`} className={styles.dashboardListItem}>
+                      <div>
+                        <strong>{expense.serviceName || "-"}</strong>
+                        <div className={styles.dashboardListMeta}>
+                          {t("financeReports.dashboard.otherExpenses.paymentDay")}: {expense.paymentDay}
+                        </div>
+                      </div>
+                      <strong>{money(Number(expense.amount || 0))}</strong>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </article>
+
             <article className={styles.chartCard}>
               <h4 className={styles.subTitle}>
                 <AlertTriangle size={16} /> {t("financeReports.dashboard.sections.lowStock")}

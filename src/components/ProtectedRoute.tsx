@@ -28,6 +28,9 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     if (userRole === "cashier") {
       return <Navigate to="/shop-operator" replace />;
     }
+    if (userRole === "programmer") {
+      return <Navigate to="/programmer" replace />;
+    }
 
     return <Navigate to="/" replace />;
   }

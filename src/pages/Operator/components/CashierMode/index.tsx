@@ -228,7 +228,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       const crId = resolvedCashRegisterId;
       if (!crId) {
         setSearchMessageType("error");
-        setSearchMessage("Missing or invalid X-CashRegister-Id header.");
+        setSearchMessage(t("operatorPage.cashier.missingCashRegisterHeader"));
         return;
       }
       const results = await searchShopProductsBySku({
@@ -312,7 +312,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
 
     const crId = resolvedCashRegisterId;
     if (!crId) {
-      toast.error("Missing or invalid X-CashRegister-Id header.");
+      toast.error(t("operatorPage.cashier.missingCashRegisterHeader"));
       return;
     }
 
@@ -487,7 +487,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               {t("operatorPage.cashier.estimate.number")}: {selectedEstimate.estimateNumber}
             </strong>
             <span>
-              {t("operatorPage.cashier.estimate.status")}: {selectedEstimate.status || "Pending"}
+              {t("operatorPage.cashier.estimate.status")}: {selectedEstimate.status || t("operatorPage.cashier.estimate.pending")}
             </span>
           </div>
 

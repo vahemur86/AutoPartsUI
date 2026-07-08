@@ -80,6 +80,11 @@
   font-size: 13px;
 }
 
+.programmerWarning {
+  color: #ffd1d1;
+  margin-left: 6px;
+}
+
 .productLines {
   display: flex;
   flex-direction: column;

@@ -15,6 +15,8 @@ import type {
   EmployeeServicePercentageItem,
   EmployeeServicePercentagePayload,
   EmployeeUpdatePayload,
+  ProgrammingServicesWithPricingParams,
+  ProgrammingServiceWithPricingItem,
   ServiceCreatePayload,
   ServiceCatalogItem,
   ServiceCategoryCreatePayload,
@@ -81,9 +83,13 @@ const normalizeAttendanceStatus = (
 });
 
 // Service Categories
-export const getServiceCategories = async (): Promise<ServiceCategoryItem[]> => {
+export const getServiceCategories = async (
+  cashRegisterId?: number,
+): Promise<ServiceCategoryItem[]> => {
   try {
-    const response = await api.get(serviceCategoryBase);
+    const response = await api.get(serviceCategoryBase, {
+      headers: getHeaders(cashRegisterId),
+    });
     return Array.isArray(response.data) ? response.data : [];
   } catch (error: unknown) {
     throw new Error(
@@ -284,10 +290,19 @@ export const getEmployeeServicePercentages = async (
 
 export const getEmployeeServicePercentagesByService = async (
   serviceId: number,
+  cashRegisterId?: number,
 ): Promise<EmployeeServicePercentageItem[]> => {
   try {
+    const resolvedCashRegisterId =
+      Number(cashRegisterId) > 0
+        ? Number(cashRegisterId)
+        : getCashRegisterId(0);
+
     const response = await api.get(
       `${employeeBase}/service-percentages/by-service/${serviceId}`,
+      {
+        headers: getHeaders(resolvedCashRegisterId),
+      },
     );
     return Array.isArray(response.data) ? response.data : [];
   } catch (error: unknown) {
@@ -524,6 +539,76 @@ export const getServicesByCategory = async (
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to fetch services by category."),
+    );
+  }
+};
+
+export const getProgrammingServicesWithPricing = async (
+  params: ProgrammingServicesWithPricingParams,
+  cashRegisterId?: number,
+): Promise<ProgrammingServiceWithPricingItem[]> => {
+  try {
+    const resolvedCashRegisterId =
+      Number(cashRegisterId) > 0
+        ? Number(cashRegisterId)
+        : getCashRegisterId(0);
+
+    const response = await api.get(`${serviceBase}/programming/with-pricing`, {
+      params,
+      headers: getHeaders(resolvedCashRegisterId),
+    });
+
+    if (!Array.isArray(response.data)) {
+      return [];
+    }
+
+    return response.data.map((item: Record<string, unknown>) => {
+      const hasProgrammerPricing = Boolean(
+        item.hasProgrammerPricing ?? item["hasПrogrammerPricing"] ?? false,
+      );
+
+      return {
+        id: Number(item.id ?? 0),
+        code: String(item.code ?? ""),
+        name: String(item.name ?? ""),
+        serviceCategoryId:
+          item.serviceCategoryId != null
+            ? Number(item.serviceCategoryId)
+            : undefined,
+        serviceCategoryName:
+          item.serviceCategoryName != null
+            ? String(item.serviceCategoryName)
+            : undefined,
+        internalCost:
+          item.internalCost != null ? Number(item.internalCost) : undefined,
+        isActive: item.isActive !== false,
+        hasProgrammerPricing,
+        bestProgrammerUserId:
+          item.bestProgrammerUserId != null
+            ? Number(item.bestProgrammerUserId)
+            : null,
+        bestProgrammerUsername:
+          item.bestProgrammerUsername != null
+            ? String(item.bestProgrammerUsername)
+            : null,
+        programmerServiceCost:
+          item.programmerServiceCost != null
+            ? Number(item.programmerServiceCost)
+            : null,
+        programmerSellingPrice:
+          item.programmerSellingPrice != null
+            ? Number(item.programmerSellingPrice)
+            : null,
+        programmerProfit:
+          item.programmerProfit != null ? Number(item.programmerProfit) : null,
+      };
+    });
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        "Failed to load programming services with vehicle pricing.",
+      ),
     );
   }
 };

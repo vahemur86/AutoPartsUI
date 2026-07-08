@@ -176,6 +176,22 @@
   font-weight: 600;
 }
 
+.autoPricingInfo,
+.autoPricingInline {
+  border: 1px dashed rgba(236, 241, 94, 0.4);
+  background: rgba(236, 241, 94, 0.1);
+  color: #f6fab3;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.autoPricingInline {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+}
+
 .serviceLineRow {
   display: grid;
   grid-template-columns: minmax(200px, 1fr) 180px auto;
@@ -281,6 +297,15 @@
 
 .templateItemMetric strong {
   font-size: 13px;
+}
+
+.noProgrammerWarning {
+  color: #ffd1d1;
+  background: rgba(255, 78, 78, 0.15);
+  border: 1px solid rgba(255, 78, 78, 0.35);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
 }
 
 .totalsPanel {

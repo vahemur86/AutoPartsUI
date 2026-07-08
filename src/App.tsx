@@ -19,6 +19,7 @@ import { UserManagement } from "@/pages/Users";
 import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { ShopOperatorPage } from "@/pages/ShopOperator";
+import { ProgrammerPage } from "@/pages/Programmer";
 import { Reports } from "@/pages/Reports";
 import { FinanceReports } from "@/pages/FinanceReports";
 import { Products } from "@/pages/Products";
@@ -42,6 +43,7 @@ import { SalePercentages } from "@/components/settings/SalePercentages";
 import { IronManagement } from "@/components/settings/IronManagement";
 import { ServiceTasks } from "@/components/settings/ServiceTasks";
 import { Tags } from "@/components/settings/Tags";
+import { ProgrammingPricingAdmin } from "@/components/settings/ProgrammingPricingAdmin";
 
 // Reports components
 import { ZReports } from "@/components/reports/ZReports";
@@ -65,6 +67,7 @@ import { ServiceReports } from "@/components/financeReports/ServiceReports";
 import { WarehouseReports } from "@/components/financeReports/WarehouseReports";
 import { SalesReports } from "@/components/financeReports/SalesReports";
 import { DashboardReports } from "@/components/financeReports/DashboardReports";
+import { OtherExpensesReports } from "@/components/financeReports/OtherExpensesReports";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -126,11 +129,12 @@ export const App = () => {
             {/* OPERATOR / CASHIER SPECIFIC ROUTES */}
             <Route
               element={
-                <ProtectedRoute allowedRoles={["Operator", "Cashier"]} />
+                <ProtectedRoute allowedRoles={["Operator", "Cashier", "Programmer"]} />
               }
             >
               <Route path="/operator" element={<OperatorPage />} />
               <Route path="/shop-operator" element={<ShopOperatorPage />} />
+              <Route path="/programmer" element={<ProgrammerPage />} />
             </Route>
 
             {/* ADMIN & SUPERADMIN SPECIFIC ROUTES */}
@@ -176,6 +180,11 @@ export const App = () => {
                     path="catalyst-pricing"
                     element={<CatalystPricings />}
                   />
+                  <Route path="car-catalyst" element={<CarCatalystPage />} />
+                  <Route
+                    path="car-catalyst/details"
+                    element={<CarCatalystDetails />}
+                  />
                   <Route path="exchange-rates" element={<ExchangeRates />} />
                   <Route path="customer-types" element={<CustomerTypes />} />
                   <Route path="cash-registers" element={<CashRegisters />} />
@@ -188,6 +197,10 @@ export const App = () => {
                   <Route
                     path="sale-percentages"
                     element={<SalePercentages />}
+                  />
+                  <Route
+                    path="programming-pricing"
+                    element={<ProgrammingPricingAdmin />}
                   />
                   <Route path="iron-management" element={<IronManagement />} />
                 </Route>
@@ -229,6 +242,7 @@ export const App = () => {
                     element={<WarehouseInventoryStatus />}
                   />
                   <Route path="shop-inventory" element={<ShopInventoryStatus />} />
+                  <Route path="other-expenses" element={<OtherExpensesReports />} />
                 </Route>
 
                 <Route path="warehouses" element={<Warehouses />}>
@@ -257,10 +271,9 @@ export const App = () => {
 
                 <Route path="shops" element={<Shops />} />
                 <Route path="users" element={<UserManagement />} />
-                <Route path="carCatalyst" element={<CarCatalystPage />} />
                 <Route
-                  path="car-catalyst/details"
-                  element={<CarCatalystDetails />}
+                  path="carCatalyst"
+                  element={<Navigate to="/settings/car-catalyst" replace />}
                 />
                 <Route path="customers" element={<Customers />} />
                 <Route path="calculator" element={<NewCalculator />} />

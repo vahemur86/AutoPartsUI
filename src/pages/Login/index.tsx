@@ -1,16 +1,13 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import i18n from "i18next";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login, clearAuthError } from "@/store/slices/authSlice";
-import { fetchLanguages } from "@/store/slices/languagesSlice";
 
-// utils, types
-import type { Language } from "@/types/settings";
-import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+// utils
+import { applyUserLanguagePreference } from "@/utils";
 
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
@@ -31,7 +28,6 @@ export const Login = () => {
   const { isLoading, error, isAuthenticated, user } = useAppSelector(
     (state) => state.auth,
   );
-  const { languages } = useAppSelector((state) => state.languages);
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -43,7 +39,15 @@ export const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const targetPath = user.role === "operator" ? "/operator" : "/";
+      const userRole = user.role.toLowerCase();
+      const targetPath =
+        userRole === "operator"
+          ? "/operator"
+          : userRole === "cashier"
+            ? "/shop-operator"
+            : userRole === "programmer"
+              ? "/programmer"
+              : "/finance-reports/dashboard";
       navigate(targetPath, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
@@ -61,35 +65,7 @@ export const Login = () => {
 
   const initializeDefaultLanguage = async () => {
     try {
-      const savedLanguage = localStorage.getItem("i18nextLng");
-      if (
-        savedLanguage &&
-        i18n.hasResourceBundle(savedLanguage, "translation")
-      ) {
-        return;
-      }
-
-      let languagesToUse = languages;
-      if (languagesToUse.length === 0) {
-        const result = await dispatch(fetchLanguages());
-        if (fetchLanguages.fulfilled.match(result)) {
-          languagesToUse = result.payload;
-        } else {
-          return;
-        }
-      }
-
-      const defaultLanguage = languagesToUse.find(
-        (lang: Language) => lang.isDefault,
-      );
-
-      if (defaultLanguage) {
-        const i18nCode = mapApiCodeToI18nCode(defaultLanguage.code);
-        if (i18n.hasResourceBundle(i18nCode, "translation")) {
-          i18n.changeLanguage(i18nCode);
-          localStorage.setItem("i18nextLng", i18nCode);
-        }
-      }
+      await applyUserLanguagePreference();
     } catch (error) {
       console.error("Failed to initialize default language:", error);
     }
@@ -114,8 +90,10 @@ export const Login = () => {
         navigate("/shop-operator", { replace: true });
       } else if (userRole === "operator") {
         navigate("/operator", { replace: true });
+      } else if (userRole === "programmer") {
+        navigate("/programmer", { replace: true });
       } else {
-        navigate("/", { replace: true });
+        navigate("/finance-reports/dashboard", { replace: true });
       }
     }
   };

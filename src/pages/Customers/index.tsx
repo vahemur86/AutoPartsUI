@@ -194,7 +194,7 @@ export const Customers = () => {
                   onClick={handleResetFilters}
                 >
                   <IconButton
-                    ariaLabel="Reset filters"
+                    ariaLabel={t("customers.actions.resetFilters")}
                     variant="secondary"
                     size="small"
                     icon={<RotateCcw size={12} color="#fff" />}
@@ -211,7 +211,7 @@ export const Customers = () => {
                 onClick={() => setIsFilterDropdownOpen(true)}
               >
                 <IconButton
-                  ariaLabel="Open filters"
+                  ariaLabel={t("customers.actions.openFilters")}
                   variant="secondary"
                   size="small"
                   icon={<Filter size={12} color="#fff" />}
@@ -227,7 +227,7 @@ export const Customers = () => {
                 onClick={() => setIsAddDropdownOpen(true)}
               >
                 <IconButton
-                  ariaLabel="Add customer"
+                  ariaLabel={t("customers.actions.addCustomer")}
                   variant="primary"
                   size="small"
                   icon={<Plus size={12} color="#0e0f11" />}

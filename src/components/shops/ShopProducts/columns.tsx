@@ -31,7 +31,7 @@ export const getShopProductColumns =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [
     columnHelper.accessor("id", {
-      header: "ID",
+      header: i18next.t("shops.products.columns.id"),
       cell: (info) => `#${info.getValue()}`,
     }),
     columnHelper.accessor("productId", {

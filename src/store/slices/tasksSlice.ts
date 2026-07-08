@@ -33,6 +33,9 @@ const initialState: TasksState = {
 type TaskPayload = {
   code: string;
   laborCost: number | null;
+  shopId?: number | null;
+  warehouseId?: number | null;
+  paymentDay?: string | null;
 };
 
 type TaskUpdatePayload = TaskPayload & { id: number; isActive: boolean };
@@ -58,7 +61,7 @@ export const addTask = createAsyncThunk<
   { rejectValue: string }
 >("tasks/addTask", async (payload, { rejectWithValue }) => {
   try {
-    const data = await createTask(payload.code, payload.laborCost);
+    const data = await createTask(payload);
     return data;
   } catch (error: unknown) {
     return rejectWithValue(getApiErrorMessage(error, "Failed to create task"));
@@ -72,12 +75,7 @@ export const editTask = createAsyncThunk<
   { rejectValue: string }
 >("tasks/updateTask", async (payload, { rejectWithValue }) => {
   try {
-    const data = await updateTask(
-      payload.id,
-      payload.code,
-      payload.laborCost,
-      payload.isActive,
-    );
+    const data = await updateTask(payload.id, payload);
     return data;
   } catch (error: unknown) {
     return rejectWithValue(getApiErrorMessage(error, "Failed to update task"));

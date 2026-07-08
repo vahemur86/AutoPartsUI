@@ -88,7 +88,7 @@ export const CalculateMode = ({
             <div className={styles.inputGrid}>
               <TextField
                 label={t("operatorPage.calculate.label.bucketGroupCode")}
-                placeholder="e.g. newT1"
+                placeholder={t("operatorPage.calculate.placeholder.bucketGroupCode")}
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
                 onKeyDown={handleKeyDown}

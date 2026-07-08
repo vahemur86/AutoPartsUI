@@ -7,13 +7,18 @@ import type { CountryCode } from "libphonenumber-js";
 
 import sharedStyles from "../../OperatorPage.module.css";
 import styles from "./WorkshopMode.module.css";
-import { getEmployeesOnDuty } from "@/services/settings/workshopPricing";
+import {
+  getEmployeeServicePercentagesByService,
+  getEmployeesOnDuty,
+  getProgrammingServicesWithPricing,
+  getServiceCategories,
+} from "@/services/settings/workshopPricing";
 import { getCategoriesTree } from "@/services/settings/productSettings";
 import { getShopProducts } from "@/services/warehouses/warehouseProduct";
-import type { CategoryNode } from "@/types/settings";
-import type { EmployeeItem } from "@/types/settings";
+import type { CategoryNode, EmployeeItem, EmployeeServicePercentageItem, ServiceCategoryItem } from "@/types/settings";
 import type { VehicleServiceTemplateItem } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
+import { isProgrammingServiceCategory } from "@/constants/serviceCategories";
 
 interface WorkshopModeProps {
   vehicleTemplates: VehicleServiceTemplateItem[];
@@ -80,12 +85,21 @@ type NormalizedTemplate = {
   engineName: string;
   location: string;
   serviceCategoryId: number;
+  serviceCategoryName?: string;
   isActive: boolean;
   items: Array<{
     serviceId: number;
     serviceName?: string;
     customerPrice?: number;
     employeeId?: number;
+    serviceCategoryId?: number;
+    serviceCategoryName?: string;
+    isProgrammerService?: boolean;
+    hasProgrammerPricing?: boolean;
+    bestProgrammerUsername?: string | null;
+    programmerServiceCost?: number | null;
+    programmerSellingPrice?: number | null;
+    programmerProfit?: number | null;
   }>;
 };
 
@@ -123,7 +137,16 @@ export const WorkshopMode = ({
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
   const [onDutyEmployees, setOnDutyEmployees] = useState<EmployeeItem[]>([]);
   const [selectedEmployeeByServiceId, setSelectedEmployeeByServiceId] = useState<Record<number, number>>({});
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryItem[]>([]);
+  const [serviceEmployeePercentagesByServiceId, setServiceEmployeePercentagesByServiceId] = useState<
+    Record<number, EmployeeServicePercentageItem[]>
+  >({});
+  const [programmingVehicleServices, setProgrammingVehicleServices] = useState<
+    NormalizedTemplate["items"] | null
+  >(null);
+  const [isProgrammingServicesLoading, setIsProgrammingServicesLoading] = useState(false);
   const [isOnDutyLoading, setIsOnDutyLoading] = useState(false);
+  const [isServiceEmployeePercentagesLoading, setIsServiceEmployeePercentagesLoading] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [createdEstimate, setCreatedEstimate] = useState<{
     id: number;
@@ -137,16 +160,19 @@ export const WorkshopMode = ({
       setIsProductsLoading(true);
       setIsCategoriesLoading(true);
       try {
-        const [productsResponse, categoriesResponse] = await Promise.all([
-          getShopProducts({
-            shopId,
-            cashRegisterId,
-          }),
-          getCategoriesTree(cashRegisterId),
-        ]);
+        const [productsResponse, categoriesResponse, serviceCategoriesResponse] =
+          await Promise.all([
+            getShopProducts({
+              shopId,
+              cashRegisterId,
+            }),
+            getCategoriesTree(cashRegisterId),
+            getServiceCategories(cashRegisterId),
+          ]);
 
         setProducts(productsResponse);
         setCategoryTree(categoriesResponse.rootCategories ?? []);
+        setServiceCategories(serviceCategoriesResponse || []);
       } catch {
         toast.error(t("operatorPage.workshop.error.loadProductsFailed"));
       } finally {
@@ -170,7 +196,10 @@ export const WorkshopMode = ({
         const yearValue = Number(raw.year ?? 0);
         const locationValue =
           String(raw.location ?? raw.locationName ?? raw.marketName ?? "").trim();
-        const items = Array.isArray(raw.items)
+        const rawCategories = Array.isArray(raw.categories)
+          ? (raw.categories as Array<Record<string, unknown>>)
+          : [];
+        const normalizedFromItems = Array.isArray(raw.items)
           ? (raw.items
               .map((i: Record<string, unknown>) => ({
                 serviceId: Number(i.serviceId ?? 0),
@@ -178,9 +207,119 @@ export const WorkshopMode = ({
                 customerPrice:
                   i.customerPrice != null ? Number(i.customerPrice) : undefined,
                 employeeId: i.employeeId != null ? Number(i.employeeId) : undefined,
+                serviceCategoryId:
+                  i.serviceCategoryId != null ? Number(i.serviceCategoryId) : undefined,
+                serviceCategoryName:
+                  i.serviceCategoryName != null
+                    ? String(i.serviceCategoryName)
+                    : undefined,
+                isProgrammerService:
+                  i.isProgrammerService != null
+                    ? Boolean(i.isProgrammerService)
+                    : undefined,
+                hasProgrammerPricing:
+                  i.hasProgrammerPricing != null
+                    ? Boolean(i.hasProgrammerPricing)
+                    : Boolean(i["hasПrogrammerPricing"]),
+                bestProgrammerUsername:
+                  i.bestProgrammerUsername != null
+                    ? String(i.bestProgrammerUsername)
+                    : null,
+                programmerServiceCost:
+                  i.programmerServiceCost != null
+                    ? Number(i.programmerServiceCost)
+                    : null,
+                programmerSellingPrice:
+                  i.programmerSellingPrice != null
+                    ? Number(i.programmerSellingPrice)
+                    : null,
+                programmerProfit:
+                  i.programmerProfit != null
+                    ? Number(i.programmerProfit)
+                    : null,
               }))
               .filter((i) => i.serviceId > 0))
           : [];
+
+        const normalizedFromCategories = rawCategories.flatMap((category) => {
+          const categoryId = Number(category.serviceCategoryId ?? 0);
+          const categoryName =
+            category.serviceCategoryName != null
+              ? String(category.serviceCategoryName)
+              : undefined;
+          const categoryIsProgrammer =
+            category.isProgrammerCategory != null
+              ? Boolean(category.isProgrammerCategory)
+              : undefined;
+
+          const categoryServices = Array.isArray(category.items)
+            ? (category.items as Array<Record<string, unknown>>)
+            : Array.isArray(category.services)
+              ? (category.services as Array<Record<string, unknown>>)
+              : [];
+
+          if (categoryServices.length === 0) {
+            return [];
+          }
+
+          return categoryServices
+            .map((service) => ({
+              serviceId: Number(service.serviceId ?? 0),
+              serviceName:
+                String(service.serviceName ?? service.serviceCode ?? "").trim() ||
+                undefined,
+              customerPrice:
+                service.customerPrice != null
+                  ? Number(service.customerPrice)
+                  : undefined,
+              employeeId:
+                service.employeeId != null ? Number(service.employeeId) : undefined,
+              serviceCategoryId: categoryId > 0 ? categoryId : undefined,
+              serviceCategoryName: categoryName,
+              isProgrammerService:
+                service.isProgrammerService != null
+                  ? Boolean(service.isProgrammerService)
+                  : categoryIsProgrammer,
+              hasProgrammerPricing:
+                service.hasProgrammerPricing != null
+                  ? Boolean(service.hasProgrammerPricing)
+                  : Boolean(service["hasПrogrammerPricing"]),
+              bestProgrammerUsername:
+                service.bestProgrammerUsername != null
+                  ? String(service.bestProgrammerUsername)
+                  : null,
+              programmerServiceCost:
+                service.programmerServiceCost != null
+                  ? Number(service.programmerServiceCost)
+                  : null,
+              programmerSellingPrice:
+                service.programmerSellingPrice != null
+                  ? Number(service.programmerSellingPrice)
+                  : null,
+              programmerProfit:
+                service.programmerProfit != null
+                  ? Number(service.programmerProfit)
+                  : null,
+            }))
+            .filter((service) => service.serviceId > 0);
+        });
+
+        const items =
+          normalizedFromItems.length > 0
+            ? normalizedFromItems
+            : normalizedFromCategories;
+
+        const fallbackCategoryId = Number(raw.serviceCategoryId ?? 0);
+        const derivedCategoryId =
+          fallbackCategoryId > 0
+            ? fallbackCategoryId
+            : Number(rawCategories[0]?.serviceCategoryId ?? 0);
+        const fallbackCategoryName =
+          raw.serviceCategoryName != null
+            ? String(raw.serviceCategoryName)
+            : rawCategories[0]?.serviceCategoryName != null
+              ? String(rawCategories[0]?.serviceCategoryName)
+              : undefined;
 
         return {
           id,
@@ -194,7 +333,8 @@ export const WorkshopMode = ({
           engineId,
           engineName: String(raw.engineName ?? `#${engineId}`),
           location: locationValue,
-          serviceCategoryId: Number(raw.serviceCategoryId ?? 0),
+          serviceCategoryId: derivedCategoryId,
+          serviceCategoryName: fallbackCategoryName,
           isActive: raw.isActive !== false,
           items,
         };
@@ -427,15 +567,147 @@ export const WorkshopMode = ({
     );
   }, [activeTemplates, brandId, modelId, fuelTypeId, engineId, year, location]);
 
+  const selectedTemplateServiceCategory = useMemo(() => {
+    if (!selectedTemplate) return undefined;
+    return serviceCategories.find(
+      (category) => category.id === selectedTemplate.serviceCategoryId,
+    );
+  }, [selectedTemplate, serviceCategories]);
+
+  const isSelectedTemplateProgramming = useMemo(
+    () =>
+      isProgrammingServiceCategory(selectedTemplateServiceCategory?.code) ||
+      isProgrammingServiceCategory(selectedTemplateServiceCategory?.name) ||
+      isProgrammingServiceCategory(selectedTemplate?.serviceCategoryName),
+    [selectedTemplate, selectedTemplateServiceCategory],
+  );
+
   useEffect(() => {
     setSelectedServiceIds([]);
     setOnDutyEmployees([]);
     setSelectedEmployeeByServiceId({});
+    setProgrammingVehicleServices(null);
     setHasCalculated(false);
   }, [selectedTemplate?.id]);
 
   useEffect(() => {
-    if (!shopId || !selectedTemplate?.serviceCategoryId || selectedServiceIds.length === 0) {
+    if (!selectedTemplate) {
+      setProgrammingVehicleServices(null);
+      setIsProgrammingServicesLoading(false);
+      return;
+    }
+
+    const selectedIds = new Set(selectedServiceIds);
+    const selectedProgrammerIds = (selectedTemplate.items ?? [])
+      .filter(
+        (item) =>
+          item.isProgrammerService &&
+          selectedIds.has(Number(item.serviceId || 0)) &&
+          Number(item.serviceId || 0) > 0,
+      )
+      .map((item) => Number(item.serviceId || 0));
+
+    if (selectedProgrammerIds.length === 0) {
+      setProgrammingVehicleServices(null);
+      setIsProgrammingServicesLoading(false);
+      return;
+    }
+
+    const loadProgrammingServices = async () => {
+      try {
+        setIsProgrammingServicesLoading(true);
+
+        const response = await getProgrammingServicesWithPricing({
+          brandId: Number(selectedTemplate.brandId || 0),
+          modelId: Number(selectedTemplate.modelId || 0),
+          year: Number(selectedTemplate.year || 0),
+          fuelTypeId: Number(selectedTemplate.fuelTypeId || 0),
+          engineId: Number(selectedTemplate.engineId || 0),
+        }, cashRegisterId);
+
+        const apiServices = response
+          .filter((item) => Number(item.id || 0) > 0)
+          .map((item) => ({
+            serviceId: Number(item.id || 0),
+            serviceName: item.name || item.code || `#${item.id}`,
+            customerPrice: item.programmerSellingPrice ?? 0,
+            employeeId: undefined,
+            hasProgrammerPricing: Boolean(item.hasProgrammerPricing),
+            bestProgrammerUsername: item.bestProgrammerUsername ?? null,
+            programmerServiceCost: item.programmerServiceCost ?? null,
+            programmerSellingPrice: item.programmerSellingPrice ?? null,
+            programmerProfit: item.programmerProfit ?? null,
+          }));
+
+        const apiServiceById = new Map(
+          apiServices.map((service) => [service.serviceId, service]),
+        );
+
+        const templateServices = (selectedTemplate.items ?? []).filter(
+          (item) => Number(item.serviceId || 0) > 0 && item.isProgrammerService,
+        );
+
+        const mergedTemplateServices = templateServices.map((templateItem) => {
+          const serviceId = Number(templateItem.serviceId || 0);
+          const matchedApi = apiServiceById.get(serviceId);
+
+          if (matchedApi) {
+            apiServiceById.delete(serviceId);
+            return {
+              ...matchedApi,
+              serviceName:
+                matchedApi.serviceName ||
+                templateItem.serviceName ||
+                `#${serviceId}`,
+            };
+          }
+
+          return {
+            serviceId,
+            serviceName: templateItem.serviceName || `#${serviceId}`,
+            customerPrice: Number(templateItem.customerPrice || 0),
+            employeeId: templateItem.employeeId,
+            hasProgrammerPricing: false,
+            bestProgrammerUsername: null,
+            serviceCategoryId: templateItem.serviceCategoryId,
+            serviceCategoryName: templateItem.serviceCategoryName,
+            isProgrammerService: true,
+            programmerServiceCost: null,
+            programmerSellingPrice: null,
+            programmerProfit: null,
+          };
+        });
+
+        const remainingApiServices = Array.from(apiServiceById.values());
+
+        const services = [...mergedTemplateServices, ...remainingApiServices];
+
+        setProgrammingVehicleServices(services);
+      } catch {
+        setProgrammingVehicleServices([]);
+        toast.error(t("operatorPage.workshop.error.loadProgrammingServicesFailed"));
+      } finally {
+        setIsProgrammingServicesLoading(false);
+      }
+    };
+
+    void loadProgrammingServices();
+  }, [cashRegisterId, selectedServiceIds, selectedTemplate, t]);
+
+  useEffect(() => {
+    const selectedIds = new Set(selectedServiceIds);
+    const selectedProgrammerServices = (selectedTemplate?.items ?? []).filter(
+      (item) =>
+        item.isProgrammerService &&
+        selectedIds.has(Number(item.serviceId || 0)) &&
+        Number(item.serviceId || 0) > 0,
+    );
+
+    const programmerCategoryId = selectedProgrammerServices.find(
+      (item) => Number(item.serviceCategoryId || 0) > 0,
+    )?.serviceCategoryId;
+
+    if (!shopId || !programmerCategoryId || selectedProgrammerServices.length === 0) {
       setOnDutyEmployees([]);
       return;
     }
@@ -446,7 +718,7 @@ export const WorkshopMode = ({
         const today = new Date().toISOString().slice(0, 10);
         const employees = await getEmployeesOnDuty({
           shopId,
-          serviceCategoryId: selectedTemplate.serviceCategoryId,
+          serviceCategoryId: Number(programmerCategoryId || 0),
           date: today,
           cashRegisterId,
         });
@@ -459,7 +731,12 @@ export const WorkshopMode = ({
     };
 
     void loadOnDutyEmployees();
-  }, [cashRegisterId, selectedServiceIds.length, selectedTemplate?.serviceCategoryId, shopId]);
+  }, [
+    cashRegisterId,
+    selectedServiceIds,
+    selectedTemplate,
+    shopId,
+  ]);
 
   const productOptions = useMemo<ProductOption[]>(
     () =>
@@ -576,12 +853,58 @@ export const WorkshopMode = ({
     );
   }, [productOptions, categorySelection]);
 
+  const renderedServiceLines = useMemo(() => {
+    const baseServices = selectedTemplate?.items ?? [];
+    if (!programmingVehicleServices?.length) {
+      return baseServices;
+    }
+
+    const programmingByServiceId = new Map(
+      programmingVehicleServices.map((item) => [Number(item.serviceId || 0), item]),
+    );
+
+    return baseServices.map((line) => {
+      const serviceId = Number(line.serviceId || 0);
+      const override = programmingByServiceId.get(serviceId);
+
+      if (!override) {
+        return line;
+      }
+
+      return {
+        ...line,
+        ...override,
+        serviceName: override.serviceName || line.serviceName,
+      };
+    });
+  }, [programmingVehicleServices, selectedTemplate]);
+
+  const getServiceLinePrice = (item: NormalizedTemplate["items"][number]) => {
+    if (item.isProgrammerService) {
+      if (item.hasProgrammerPricing) {
+        return Number(item.programmerSellingPrice || 0);
+      }
+      return 0;
+    }
+
+    return Number(item.customerPrice || 0);
+  };
+
   const selectedServiceLines = useMemo(
     () =>
-      (selectedTemplate?.items ?? []).filter((item) =>
+      renderedServiceLines.filter((item) =>
         selectedServiceIds.includes(Number(item.serviceId || 0)),
       ),
-    [selectedTemplate, selectedServiceIds],
+    [renderedServiceLines, selectedServiceIds],
+  );
+
+  const selectedNonProgrammerServiceIds = useMemo(
+    () =>
+      selectedServiceLines
+        .filter((line) => !line.isProgrammerService)
+        .map((line) => Number(line.serviceId || 0))
+        .filter((id) => id > 0),
+    [selectedServiceLines],
   );
 
   const assignedEmployeeByServiceId = useMemo(() => {
@@ -594,34 +917,114 @@ export const WorkshopMode = ({
       if (serviceId <= 0) return;
 
       const templateEmployeeId = Number(line.employeeId || 0);
-      if (templateEmployeeId > 0) {
-        const fromOnDuty = onDutyEmployees.find(
-          (employee) => Number(employee.id || 0) === templateEmployeeId,
-        );
-        assignments.set(serviceId, fromOnDuty ?? null);
+
+      if (line.isProgrammerService) {
+        if (templateEmployeeId > 0) {
+          const fromOnDutyTemplate = onDutyEmployees.find(
+            (employee) => Number(employee.id || 0) === templateEmployeeId,
+          );
+          assignments.set(serviceId, fromOnDutyTemplate ?? null);
+          return;
+        }
+
+        if (!onDutyEmployees.length) {
+          assignments.set(serviceId, null);
+          return;
+        }
+
+        const assigned = onDutyEmployees[onDutyIndex % onDutyEmployees.length] ?? null;
+        onDutyIndex += 1;
+        assignments.set(serviceId, assigned);
         return;
       }
 
-      if (!onDutyEmployees.length) {
+      const percentages = serviceEmployeePercentagesByServiceId[serviceId] ?? [];
+      if (templateEmployeeId > 0) {
+        const matchedTemplateEmployee = percentages.find(
+          (item) => Number(item.employeeId || 0) === templateEmployeeId,
+        );
+
+        if (matchedTemplateEmployee) {
+          assignments.set(serviceId, {
+            id: Number(matchedTemplateEmployee.employeeId || 0),
+            fullName:
+              matchedTemplateEmployee.employeeFullName ||
+              `#${matchedTemplateEmployee.employeeId}`,
+          } as EmployeeItem);
+          return;
+        }
+      }
+
+      if (!percentages.length) {
         assignments.set(serviceId, null);
         return;
       }
 
-      const assigned = onDutyEmployees[onDutyIndex % onDutyEmployees.length] ?? null;
-      assignments.set(serviceId, assigned);
-      onDutyIndex += 1;
+      const bestByPercentage = percentages.reduce((best, current) =>
+        Number(current.percentage || 0) < Number(best.percentage || 0)
+          ? current
+          : best,
+      );
+
+      assignments.set(serviceId, {
+        id: Number(bestByPercentage.employeeId || 0),
+        fullName: bestByPercentage.employeeFullName || `#${bestByPercentage.employeeId}`,
+      } as EmployeeItem);
     });
 
     return assignments;
-  }, [onDutyEmployees, selectedServiceLines]);
+  }, [
+    onDutyEmployees,
+    selectedServiceLines,
+    serviceEmployeePercentagesByServiceId,
+  ]);
+
+  useEffect(() => {
+    if (selectedNonProgrammerServiceIds.length === 0) {
+      setServiceEmployeePercentagesByServiceId({});
+      return;
+    }
+
+    const loadServiceEmployeePercentages = async () => {
+      try {
+        setIsServiceEmployeePercentagesLoading(true);
+        const serviceIds = Array.from(new Set(selectedNonProgrammerServiceIds));
+
+        const results = await Promise.all(
+          serviceIds.map((serviceId) =>
+            getEmployeeServicePercentagesByService(serviceId, cashRegisterId).then((items) => ({
+              serviceId,
+              items,
+            })),
+          ),
+        );
+
+        setServiceEmployeePercentagesByServiceId(
+          results.reduce<Record<number, EmployeeServicePercentageItem[]>>(
+            (acc, result) => ({
+              ...acc,
+              [result.serviceId]: Array.isArray(result.items) ? result.items : [],
+            }),
+            {},
+          ),
+        );
+      } catch {
+        setServiceEmployeePercentagesByServiceId({});
+      } finally {
+        setIsServiceEmployeePercentagesLoading(false);
+      }
+    };
+
+    void loadServiceEmployeePercentages();
+  }, [cashRegisterId, selectedNonProgrammerServiceIds]);
 
   const servicesPrice = useMemo(
     () =>
       selectedServiceLines.reduce(
-        (sum, item) => sum + Number(item.customerPrice || 0),
+        (sum, item) => sum + getServiceLinePrice(item),
         0,
       ),
-    [selectedServiceLines],
+    [selectedServiceLines, isSelectedTemplateProgramming],
   );
 
   const productsPrice = useMemo(
@@ -712,7 +1115,7 @@ export const WorkshopMode = ({
 
         return {
           serviceId,
-          customerPrice: Number(item.customerPrice || 0),
+          customerPrice: getServiceLinePrice(item),
           employeeId:
             Number(item.employeeId || 0) ||
             assignedEmployeeId ||
@@ -797,19 +1200,20 @@ export const WorkshopMode = ({
     const estimate = await createEstimate();
     if (estimate?.estimateNumber) {
       setCreatedEstimate(estimate);
-      resetWorkshopState({ keepEstimate: true });
       // success toast is shown by the shared order creation hook
     }
   };
 
   const handlePrintCheck = () => {
-    if (!hasCalculated) {
-      toast.error(t("operatorPage.workshop.error.calculateBeforePrint"));
+    if (!createdEstimate?.estimateNumber) {
+      toast.error(t("operatorPage.workshop.error.createBeforePrint"));
       return;
     }
 
-    // Just print the receipt preview without creating the order.
+    // Print only after order creation so receipt includes order number,
+    // then clear the workshop state for next order.
     window.print();
+    resetWorkshopState();
   };
 
   return (
@@ -956,14 +1360,21 @@ export const WorkshopMode = ({
       </div>
 
       <div className={styles.fieldBlock}>
-        {selectedTemplate && (selectedTemplate.items?.length ?? 0) > 0 && (
+        {selectedTemplate && (renderedServiceLines.length > 0 || isProgrammingServicesLoading) && (
           <div className={styles.servicesSelector}>
             <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.fields.services")}</div>
+            {isSelectedTemplateProgramming && isProgrammingServicesLoading && (
+              <div className={styles.emptyProducts}>
+                {t("operatorPage.workshop.programming.loading")}
+              </div>
+            )}
             <div className={styles.servicesList}>
-              {(selectedTemplate.items ?? []).map((line) => {
+              {renderedServiceLines.map((line) => {
                 const serviceId = Number(line.serviceId || 0);
                 const checked = selectedServiceIds.includes(serviceId);
                 const assignedEmployee = assignedEmployeeByServiceId.get(serviceId) ?? null;
+                const servicePercentageEmployees =
+                  serviceEmployeePercentagesByServiceId[serviceId] ?? [];
                 return (
                   <div key={serviceId} className={styles.serviceLine}>
                     <Checkbox
@@ -980,19 +1391,31 @@ export const WorkshopMode = ({
                     />
                     <div className={styles.serviceLineText}>
                       <span>{line.serviceName || `#${serviceId}`}</span>
-                      <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                      <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
                     </div>
                     {checked && (
                       <div className={styles.emptyProducts}>
-                        {isOnDutyLoading ? (
+                        {isOnDutyLoading || isServiceEmployeePercentagesLoading ? (
                           t("operatorPage.workshop.onDuty.loading")
-                        ) : onDutyEmployees.length ? (
-                          // show read-only list of on-duty employees
+                        ) : line.isProgrammerService && assignedEmployee ? (
+                          t("operatorPage.workshop.onDuty.assigned", {
+                            employee: assignedEmployee.fullName,
+                          })
+                        ) : line.isProgrammerService && onDutyEmployees.length ? (
                           <div>
                             {onDutyEmployees.map((emp, idx) => (
                               <span key={emp.id}>
                                 {emp.fullName}
                                 {idx < onDutyEmployees.length - 1 ? ", " : ""}
+                              </span>
+                            ))}
+                          </div>
+                        ) : !line.isProgrammerService && servicePercentageEmployees.length ? (
+                          <div>
+                            {servicePercentageEmployees.map((emp, idx) => (
+                              <span key={`${serviceId}-${emp.employeeId}`}>
+                                {emp.employeeFullName || `#${emp.employeeId}`}
+                                {idx < servicePercentageEmployees.length - 1 ? ", " : ""}
                               </span>
                             ))}
                           </div>
@@ -1170,7 +1593,7 @@ export const WorkshopMode = ({
             {selectedServiceLines.map((line) => (
               <div key={line.serviceId} className={styles.selectedServiceRow}>
                 <span>{line.serviceName || `#${line.serviceId}`}</span>
-                <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
               </div>
             ))}
           </div>
@@ -1188,7 +1611,7 @@ export const WorkshopMode = ({
         <Button
           variant="secondary"
           onClick={handlePrintCheck}
-          disabled={!hasCalculated}
+          disabled={!createdEstimate?.estimateNumber}
         >
           {t("operatorPage.workshop.actions.printCheck")}
         </Button>
@@ -1271,18 +1694,28 @@ export const WorkshopMode = ({
                 <div className={styles.receiptSectionTitle}>{t("operatorPage.workshop.receipt.servicesSection")}</div>
                 <div className={styles.receiptProductsList}>
                   {selectedServiceLines.map((line) => {
-                      const assignedEmployee = selectedEmployeeByServiceId[Number(line.serviceId || 0)]
+                      const serviceId = Number(line.serviceId || 0);
+                      const assignedEmployee = selectedEmployeeByServiceId[serviceId]
                         ? onDutyEmployees.find((e) => Number(e.id) === Number(selectedEmployeeByServiceId[Number(line.serviceId || 0)]))
-                        : assignedEmployeeByServiceId.get(Number(line.serviceId || 0));
+                        : assignedEmployeeByServiceId.get(serviceId);
+                      const servicePercentageEmployees =
+                        serviceEmployeePercentagesByServiceId[serviceId] ?? [];
+                      const employeeLabel = line.isProgrammerService
+                        ? assignedEmployee?.fullName || "-"
+                        : servicePercentageEmployees.length > 0
+                          ? servicePercentageEmployees
+                              .map((employee) => employee.employeeFullName || `#${employee.employeeId}`)
+                              .join(", ")
+                          : assignedEmployee?.fullName || "-";
 
                       return (
                         <div key={line.serviceId} className={styles.receiptProductRow}>
                           <div className={styles.receiptProductCode}>{line.serviceName || `#${line.serviceId}`}</div>
                           <div className={styles.receiptProductMeta}>
                             <span>
-                              {t("operatorPage.workshop.receipt.assignedEmployee")}: {assignedEmployee?.fullName || "-"}
+                              {t("operatorPage.workshop.receipt.assignedEmployee")}: {employeeLabel}
                             </span>
-                            <strong>{Number(line.customerPrice || 0).toLocaleString()} AMD</strong>
+                            <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
                           </div>
                         </div>
                       );

@@ -29,6 +29,7 @@ import {
   fetchVehicleServiceTemplates,
 } from "@/store/slices/vehicleServicePricingSlice";
 import { EmployeeManagement } from "@/components/settings/EmployeeManagement/EmployeeManagement";
+import { ProgrammingPricingAdmin } from "@/components/settings/ProgrammingPricingAdmin";
 
 import { DataTable, Button, Select, Tab, TabGroup, TextField } from "@/ui-kit";
 
@@ -45,7 +46,11 @@ import type {
   VehicleServiceTemplateItem,
   VehicleServiceTemplateUpdatePayload,
 } from "@/types/settings";
-import { getServicesByCategory as getPricingServicesByCategory } from "@/services/settings/workshopPricing";
+import {
+  getProgrammingServicesWithPricing,
+  getServicesByCategory as getPricingServicesByCategory,
+} from "@/services/settings/workshopPricing";
+import { isProgrammingServiceCategory } from "@/constants/serviceCategories";
 
 import styles from "./ServiceTemplates.module.css";
 
@@ -56,6 +61,11 @@ type ServiceLine = {
   internalCost?: number;
 };
 
+type TemplateCategoryForm = {
+  serviceCategoryId: number;
+  services: ServiceLine[];
+};
+
 type FormState = {
   id: number | null;
   vehicleBrandId: number;
@@ -64,12 +74,16 @@ type FormState = {
   fuelTypeId: number;
   engineId: number;
   locationId: number;
-  serviceCategoryId: number;
   notes: string;
-  services: ServiceLine[];
+  categories: TemplateCategoryForm[];
 };
 
-type ServiceTemplateTab = "pricing" | "categories" | "employees" | "services";
+type ServiceTemplateTab =
+  | "pricing"
+  | "categories"
+  | "employees"
+  | "services"
+  | "programmers";
 
 type EmployeeFormState = {
   id: number | null;
@@ -114,9 +128,8 @@ const getInitialForm = (): FormState => ({
   fuelTypeId: 0,
   engineId: 0,
   locationId: 0,
-  serviceCategoryId: 0,
   notes: "",
-  services: [getEmptyLine()],
+  categories: [{ serviceCategoryId: 0, services: [getEmptyLine()] }],
 });
 
 const getInitialEmployeeForm = (): EmployeeFormState => ({
@@ -189,10 +202,22 @@ export const ServiceTemplatePage = () => {
   const [serviceForm, setServiceForm] = useState<ServiceFormState>(
     getInitialServiceForm(),
   );
-  const [pricingServiceOptionsRaw, setPricingServiceOptionsRaw] = useState<
-    ServiceCatalogItem[]
-  >([]);
+  const [pricingServiceOptionsByCategoryId, setPricingServiceOptionsByCategoryId] =
+    useState<Record<number, ServiceCatalogItem[]>>({});
   const [isPricingServicesLoading, setIsPricingServicesLoading] = useState(false);
+  const [isProgrammingPricingLoading, setIsProgrammingPricingLoading] =
+    useState(false);
+  const [programmingResolvedByServiceId, setProgrammingResolvedByServiceId] =
+    useState<
+      Record<
+        number,
+        {
+          hasProgrammerPricing: boolean;
+          programmerSellingPrice: number;
+          bestProgrammerUsername: string | null;
+        }
+      >
+    >({});
 
   const rootServiceCategories = useMemo(
     () =>
@@ -202,13 +227,10 @@ export const ServiceTemplatePage = () => {
     [serviceCategories],
   );
 
-  const serviceOptions = useMemo(
-    () =>
-      pricingServiceOptionsRaw.filter(
-        (item: ServiceCatalogItem) => item.isActive !== false,
-      ),
-    [pricingServiceOptionsRaw],
-  );
+  const getServiceOptionsForCategory = (categoryId: number) =>
+    (pricingServiceOptionsByCategoryId[categoryId] ?? []).filter(
+      (item: ServiceCatalogItem) => item.isActive !== false,
+    );
 
   const modelOptions = useMemo(() => definitions?.models ?? [], [definitions]);
   const fuelTypeOptions = useMemo(() => definitions?.fuelTypes ?? [], [definitions]);
@@ -219,8 +241,17 @@ export const ServiceTemplatePage = () => {
   );
 
   const serviceTotal = useMemo(
-    () => form.services.reduce((sum, item) => sum + Number(item.customerPrice || 0), 0),
-    [form.services],
+    () =>
+      form.categories.reduce(
+        (sum, category) =>
+          sum +
+          category.services.reduce(
+            (servicesSum, service) => servicesSum + Number(service.customerPrice || 0),
+            0,
+          ),
+        0,
+      ),
+    [form.categories],
   );
 
   const expandedTemplate = useMemo(
@@ -246,21 +277,76 @@ export const ServiceTemplatePage = () => {
 
   const selectedServicesSummary = useMemo(
     () =>
-      form.services
-        .filter((line) => line.serviceId > 0)
-        .map((line) => {
-          const selectedService = serviceOptions.find(
-            (item) => item.id === line.serviceId,
-          );
+      form.categories.flatMap((category) =>
+        category.services
+          .filter((line) => line.serviceId > 0)
+          .map((line) => {
+            const selectedService = getServiceOptionsForCategory(
+              category.serviceCategoryId,
+            ).find((item) => item.id === line.serviceId);
+            const selectedCategory = rootServiceCategories.find(
+              (item) => item.id === category.serviceCategoryId,
+            );
+            const isProgrammingCategory =
+              isProgrammingServiceCategory(selectedCategory?.code) ||
+              isProgrammingServiceCategory(selectedCategory?.name);
+          const resolvedProgramming = programmingResolvedByServiceId[line.serviceId];
+
           return {
             id: line.serviceId,
             label: selectedService
               ? `${selectedService.name || selectedService.code} (${selectedService.code})`
               : line.serviceName || `#${line.serviceId}`,
-            price: Number(line.customerPrice || 0),
+            categoryLabel:
+              selectedCategory?.name || selectedCategory?.code || `#${category.serviceCategoryId}`,
+            price: isProgrammingCategory
+              ? Number(resolvedProgramming?.programmerSellingPrice ?? 0)
+              : Number(line.customerPrice || 0),
+            isAutoResolved: isProgrammingCategory,
+            hasProgrammerPricing:
+              isProgrammingCategory && !resolvedProgramming
+                ? false
+                : Boolean(resolvedProgramming?.hasProgrammerPricing),
           };
+          }),
+      ),
+    [
+      form.categories,
+      rootServiceCategories,
+      programmingResolvedByServiceId,
+      pricingServiceOptionsByCategoryId,
+    ],
+  );
+
+  const selectedProgrammingServiceIds = useMemo(
+    () =>
+      form.categories
+        .flatMap((category) => {
+          const selectedCategory = rootServiceCategories.find(
+            (item) => item.id === category.serviceCategoryId,
+          );
+          const isProgrammingCategory =
+            isProgrammingServiceCategory(selectedCategory?.code) ||
+            isProgrammingServiceCategory(selectedCategory?.name);
+
+          if (!isProgrammingCategory) {
+            return [];
+          }
+
+          return category.services
+            .map((line) => Number(line.serviceId || 0))
+            .filter((serviceId) => serviceId > 0);
         }),
-    [form.services, serviceOptions],
+    [form.categories, rootServiceCategories],
+  );
+
+  const selectedProgrammingServiceIdsKey = useMemo(
+    () =>
+      selectedProgrammingServiceIds
+        .slice()
+        .sort((a, b) => a - b)
+        .join(","),
+    [selectedProgrammingServiceIds],
   );
 
   const years = useMemo(() => {
@@ -295,6 +381,116 @@ export const ServiceTemplatePage = () => {
       dispatch(fetchVehicleServiceTemplates());
     }
   }, [activeTab, dispatch]);
+
+  useEffect(() => {
+    if (
+      !form.vehicleBrandId ||
+      !form.vehicleModelId ||
+      !form.year ||
+      !form.fuelTypeId ||
+      !form.engineId ||
+      selectedProgrammingServiceIds.length === 0
+    ) {
+      setProgrammingResolvedByServiceId({});
+      setIsProgrammingPricingLoading(false);
+      return;
+    }
+
+    const loadProgrammingPricing = async () => {
+      try {
+        setIsProgrammingPricingLoading(true);
+        const items = await getProgrammingServicesWithPricing({
+          brandId: Number(form.vehicleBrandId),
+          modelId: Number(form.vehicleModelId),
+          year: Number(form.year),
+          fuelTypeId: Number(form.fuelTypeId),
+          engineId: Number(form.engineId),
+        });
+
+        const resolved = items.reduce<
+          Record<
+            number,
+            {
+              hasProgrammerPricing: boolean;
+              programmerSellingPrice: number;
+              bestProgrammerUsername: string | null;
+            }
+          >
+        >((acc, item) => {
+          const serviceId = Number(item.id || 0);
+          if (serviceId <= 0) {
+            return acc;
+          }
+
+          acc[serviceId] = {
+            hasProgrammerPricing: Boolean(item.hasProgrammerPricing),
+            programmerSellingPrice: Number(item.programmerSellingPrice || 0),
+            bestProgrammerUsername: item.bestProgrammerUsername ?? null,
+          };
+
+          return acc;
+        }, {});
+
+        setProgrammingResolvedByServiceId(resolved);
+
+        setForm((prev) => ({
+          ...prev,
+          categories: prev.categories.map((category) => {
+            const selectedCategory = rootServiceCategories.find(
+              (item) => item.id === category.serviceCategoryId,
+            );
+            const isProgrammingCategory =
+              isProgrammingServiceCategory(selectedCategory?.code) ||
+              isProgrammingServiceCategory(selectedCategory?.name);
+
+            if (!isProgrammingCategory) {
+              return category;
+            }
+
+            return {
+              ...category,
+              services: category.services.map((line) => {
+                const serviceId = Number(line.serviceId || 0);
+                if (serviceId <= 0) {
+                  return line;
+                }
+
+                const resolvedLine = resolved[serviceId];
+                const nextPrice = resolvedLine?.hasProgrammerPricing
+                  ? Number(resolvedLine.programmerSellingPrice || 0)
+                  : 0;
+
+                if (Number(line.customerPrice || 0) === nextPrice) {
+                  return line;
+                }
+
+                return {
+                  ...line,
+                  customerPrice: nextPrice,
+                };
+              }),
+            };
+          }),
+        }));
+      } catch {
+        setProgrammingResolvedByServiceId({});
+        toast.error(t("serviceTemplates.messages.loadFailed"));
+      } finally {
+        setIsProgrammingPricingLoading(false);
+      }
+    };
+
+    void loadProgrammingPricing();
+  }, [
+    form.vehicleBrandId,
+    form.vehicleModelId,
+    form.year,
+    form.fuelTypeId,
+    form.engineId,
+    selectedProgrammingServiceIdsKey,
+    rootServiceCategories,
+    t,
+  ]);
 
   const handleCreateOrUpdateCategory = async () => {
     const code = categoryForm.code.trim();
@@ -516,11 +712,17 @@ export const ServiceTemplatePage = () => {
     if (!form.vehicleBrandId || !form.vehicleModelId) return false;
     if (!form.year || form.year < 1900) return false;
     if (!form.fuelTypeId || !form.engineId) return false;
-    if (!form.locationId || !form.serviceCategoryId) return false;
-    if (form.services.length === 0) return false;
+    if (!form.locationId) return false;
+    if (form.categories.length === 0) return false;
 
-    return form.services.every(
-      (item) => item.serviceId > 0 && Number(item.customerPrice) >= 0,
+    return form.categories.every(
+      (category) =>
+        category.serviceCategoryId > 0 &&
+        category.services.length > 0 &&
+        category.services.every(
+          (service) =>
+            service.serviceId > 0 && Number(service.customerPrice) >= 0,
+        ),
     );
   };
 
@@ -556,14 +758,29 @@ export const ServiceTemplatePage = () => {
         engineId: form.engineId,
         location: selectedLocation.name,
         electricityPrice: 0,
-        serviceCategoryId: form.serviceCategoryId,
         notes: form.notes.trim(),
-        services: form.services
-          .filter((item) => item.serviceId > 0)
-          .map((item) => ({
-            serviceId: item.serviceId,
-            customerPrice: Number(item.customerPrice),
-          })),
+        categories: form.categories
+          .filter((category) => category.serviceCategoryId > 0)
+          .map((category) => {
+            const selectedCategory = rootServiceCategories.find(
+              (item) => item.id === category.serviceCategoryId,
+            );
+            const isProgrammingCategory =
+              isProgrammingServiceCategory(selectedCategory?.code) ||
+              isProgrammingServiceCategory(selectedCategory?.name);
+
+            return {
+              serviceCategoryId: category.serviceCategoryId,
+              services: category.services
+                .filter((service) => service.serviceId > 0)
+                .map((service) => ({
+                  serviceId: service.serviceId,
+                  customerPrice: isProgrammingCategory
+                    ? 0
+                    : Number(service.customerPrice),
+                })),
+            };
+          }),
       };
 
       if (form.id) {
@@ -580,7 +797,7 @@ export const ServiceTemplatePage = () => {
 
       await dispatch(fetchVehicleServiceTemplates()).unwrap();
       setForm(getInitialForm());
-      setPricingServiceOptionsRaw([]);
+      setPricingServiceOptionsByCategoryId({});
       setIsPricingFormOpen(false);
     } catch {
       toast.error(
@@ -596,6 +813,47 @@ export const ServiceTemplatePage = () => {
       (location) => location.name === item.location,
     );
 
+    const rawTemplate = item as unknown as Record<string, unknown>;
+    const rawCategories = Array.isArray(rawTemplate.categories)
+      ? (rawTemplate.categories as Array<Record<string, unknown>>)
+      : [];
+
+    const normalizedCategories =
+      rawCategories.length > 0
+        ? rawCategories.map((category) => ({
+            serviceCategoryId: Number(category.serviceCategoryId || 0),
+            services: Array.isArray(category.services)
+              ? (category.services as Array<Record<string, unknown>>)
+                  .map((service) => ({
+                    serviceId: Number(service.serviceId || 0),
+                    customerPrice: Number(service.customerPrice || 0),
+                    serviceName:
+                      service.serviceName != null
+                        ? String(service.serviceName)
+                        : undefined,
+                    internalCost:
+                      service.internalCost != null
+                        ? Number(service.internalCost)
+                        : undefined,
+                  }))
+                  .filter((service) => service.serviceId > 0)
+              : [getEmptyLine()],
+          }))
+        : [
+            {
+              serviceCategoryId: Number(item.serviceCategoryId || 0),
+              services:
+                item.items?.length > 0
+                  ? item.items.map((service) => ({
+                      serviceId: service.serviceId,
+                      customerPrice: Number(service.customerPrice || 0),
+                      serviceName: service.serviceName,
+                      internalCost: service.internalCost,
+                    }))
+                  : [getEmptyLine()],
+            },
+          ];
+
     setForm({
       id: item.id,
       vehicleBrandId: item.brandId,
@@ -604,25 +862,37 @@ export const ServiceTemplatePage = () => {
       fuelTypeId: Number(item.fuelTypeId || 0),
       engineId: Number(item.engineId || 0),
       locationId: matchedLocation?.id ?? 0,
-      serviceCategoryId: item.serviceCategoryId,
       notes: item.notes || "",
-      services:
-        item.items?.length > 0
-          ? item.items.map((service) => ({
-              serviceId: service.serviceId,
-              customerPrice: Number(service.customerPrice || 0),
-              serviceName: service.serviceName,
-              internalCost: service.internalCost,
-            }))
-          : [getEmptyLine()],
+      categories:
+        normalizedCategories.length > 0
+          ? normalizedCategories
+          : [{ serviceCategoryId: 0, services: [getEmptyLine()] }],
     });
 
     try {
       setIsPricingServicesLoading(true);
-      const items = await getPricingServicesByCategory(item.serviceCategoryId);
-      setPricingServiceOptionsRaw(Array.isArray(items) ? items : []);
+      const categoriesToLoad = normalizedCategories
+        .map((category) => Number(category.serviceCategoryId || 0))
+        .filter((categoryId) => categoryId > 0);
+
+      const optionsEntries = await Promise.all(
+        categoriesToLoad.map(async (categoryId) => {
+          const options = await getPricingServicesByCategory(categoryId);
+          return [categoryId, Array.isArray(options) ? options : []] as const;
+        }),
+      );
+
+      setPricingServiceOptionsByCategoryId(
+        optionsEntries.reduce<Record<number, ServiceCatalogItem[]>>(
+          (acc, [categoryId, options]) => ({
+            ...acc,
+            [categoryId]: options,
+          }),
+          {},
+        ),
+      );
     } catch {
-      setPricingServiceOptionsRaw([]);
+      setPricingServiceOptionsByCategoryId({});
     } finally {
       setIsPricingServicesLoading(false);
     }
@@ -630,29 +900,105 @@ export const ServiceTemplatePage = () => {
     setIsPricingFormOpen(true);
   };
 
-  const setLine = (index: number, patch: Partial<ServiceLine>) => {
+  const setLine = (
+    categoryIndex: number,
+    lineIndex: number,
+    patch: Partial<ServiceLine>,
+  ) => {
     setForm((prev) => ({
       ...prev,
-      services: prev.services.map((line, lineIndex) =>
-        lineIndex === index ? { ...line, ...patch } : line,
+      categories: prev.categories.map((category, currentCategoryIndex) =>
+        currentCategoryIndex === categoryIndex
+          ? {
+              ...category,
+              services: category.services.map((line, currentLineIndex) =>
+                currentLineIndex === lineIndex ? { ...line, ...patch } : line,
+              ),
+            }
+          : category,
       ),
     }));
   };
 
-  const addLine = () => {
+  const addCategory = () => {
     setForm((prev) => ({
       ...prev,
-      services: [...prev.services, getEmptyLine()],
+      categories: [
+        ...prev.categories,
+        { serviceCategoryId: 0, services: [getEmptyLine()] },
+      ],
     }));
   };
 
-  const removeLine = (index: number) => {
+  const removeCategory = (categoryIndex: number) => {
     setForm((prev) => ({
       ...prev,
-      services:
-        prev.services.length === 1
-          ? [getEmptyLine()]
-          : prev.services.filter((_, lineIndex) => lineIndex !== index),
+      categories:
+        prev.categories.length === 1
+          ? [{ serviceCategoryId: 0, services: [getEmptyLine()] }]
+          : prev.categories.filter((_, index) => index !== categoryIndex),
+    }));
+  };
+
+  const setCategory = async (categoryIndex: number, serviceCategoryId: number) => {
+    setForm((prev) => ({
+      ...prev,
+      categories: prev.categories.map((category, index) =>
+        index === categoryIndex
+          ? { serviceCategoryId, services: [getEmptyLine()] }
+          : category,
+      ),
+    }));
+
+    if (!serviceCategoryId) {
+      return;
+    }
+
+    try {
+      setIsPricingServicesLoading(true);
+      const items = await getPricingServicesByCategory(serviceCategoryId);
+      setPricingServiceOptionsByCategoryId((prev) => ({
+        ...prev,
+        [serviceCategoryId]: Array.isArray(items) ? items : [],
+      }));
+    } catch {
+      toast.error(t("serviceTemplates.messages.loadFailed"));
+      setPricingServiceOptionsByCategoryId((prev) => ({
+        ...prev,
+        [serviceCategoryId]: [],
+      }));
+    } finally {
+      setIsPricingServicesLoading(false);
+    }
+  };
+
+  const addLine = (categoryIndex: number) => {
+    setForm((prev) => ({
+      ...prev,
+      categories: prev.categories.map((category, index) =>
+        index === categoryIndex
+          ? { ...category, services: [...category.services, getEmptyLine()] }
+          : category,
+      ),
+    }));
+  };
+
+  const removeLine = (categoryIndex: number, lineIndex: number) => {
+    setForm((prev) => ({
+      ...prev,
+      categories: prev.categories.map((category, index) => {
+        if (index !== categoryIndex) {
+          return category;
+        }
+
+        return {
+          ...category,
+          services:
+            category.services.length === 1
+              ? [getEmptyLine()]
+              : category.services.filter((_, currentLineIndex) => currentLineIndex !== lineIndex),
+        };
+      }),
     }));
   };
 
@@ -661,6 +1007,42 @@ export const ServiceTemplatePage = () => {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
     return date.toLocaleDateString();
+  };
+
+  const getTemplateCategories = (template: VehicleServiceTemplateItem) => {
+    const rawTemplate = template as unknown as Record<string, unknown>;
+    const rawCategories = Array.isArray(rawTemplate.categories)
+      ? (rawTemplate.categories as Array<Record<string, unknown>>)
+      : [];
+
+    if (rawCategories.length > 0) {
+      return rawCategories.map((category) => ({
+        serviceCategoryId: Number(category.serviceCategoryId || 0),
+      }));
+    }
+
+    if (Number(template.serviceCategoryId || 0) > 0) {
+      return [{ serviceCategoryId: Number(template.serviceCategoryId || 0) }];
+    }
+
+    return [];
+  };
+
+  const getTemplateItems = (template: VehicleServiceTemplateItem) => {
+    const rawTemplate = template as unknown as Record<string, unknown>;
+    const rawCategories = Array.isArray(rawTemplate.categories)
+      ? (rawTemplate.categories as Array<Record<string, unknown>>)
+      : [];
+
+    if (rawCategories.length > 0) {
+      return rawCategories.flatMap((category) =>
+        Array.isArray(category.services)
+          ? (category.services as VehicleServiceTemplateItem["items"])
+          : [],
+      );
+    }
+
+    return template.items ?? [];
   };
 
   return (
@@ -690,6 +1072,12 @@ export const ServiceTemplatePage = () => {
             active={activeTab === "services"}
             text={t("serviceTemplates.tabs.services")}
             onClick={() => setActiveTab("services")}
+          />
+          <Tab
+            variant="segmented"
+            active={activeTab === "programmers"}
+            text={t("serviceTemplates.tabs.programmers")}
+            onClick={() => setActiveTab("programmers")}
           />
         </TabGroup>
       </div>
@@ -781,23 +1169,55 @@ export const ServiceTemplatePage = () => {
                   {
                     header: t("serviceTemplates.fields.serviceCategory"),
                     accessorKey: "serviceCategoryName",
-                    cell: ({ row }) =>
-                      row.original.serviceCategoryName || `#${row.original.serviceCategoryId}`,
+                    cell: ({ row }) => {
+                      const categoryLabels = getTemplateCategories(row.original)
+                        .map((category) => {
+                          const selectedCategory = rootServiceCategories.find(
+                            (item) => item.id === category.serviceCategoryId,
+                          );
+                          return (
+                            selectedCategory?.name ||
+                            selectedCategory?.code ||
+                            `#${category.serviceCategoryId}`
+                          );
+                        })
+                        .filter((label) => !!label);
+
+                      return categoryLabels.length > 0 ? categoryLabels.join(", ") : "-";
+                    },
                   },
                   {
                     header: t("serviceTemplates.fields.services"),
                     accessorKey: "items",
                     cell: ({ row }) =>
-                      row.original.items
-                        ?.map((item) => item.serviceName || `#${item.serviceId}`)
+                      getTemplateItems(row.original)
+                        ?.map((item) => {
+                          const serviceName = item.serviceName || `#${item.serviceId}`;
+
+                          if (!item.isProgrammerService) {
+                            return serviceName;
+                          }
+
+                          if (!item.bestProgrammerUsername) {
+                            return `${serviceName} (${t("serviceTemplates.messages.noProgrammerForVehicle")})`;
+                          }
+
+                          return `${serviceName} (${item.bestProgrammerUsername})`;
+                        })
                         .join(", ") || "-",
                   },
                   {
                     header: t("serviceTemplates.table.totalAmount"),
                     accessorKey: "electricityPrice",
                     cell: ({ row }) => {
-                      const servicesTotal = row.original.items?.reduce(
-                        (sum, item) => sum + Number(item.customerPrice || 0),
+                      const servicesTotal = getTemplateItems(row.original)?.reduce(
+                        (sum, item) =>
+                          sum +
+                          Number(
+                            item.isProgrammerService
+                              ? item.programmerSellingPrice || 0
+                              : item.customerPrice || 0,
+                          ),
                         0,
                       );
                       return servicesTotal ?? 0;
@@ -846,11 +1266,11 @@ export const ServiceTemplatePage = () => {
                 <div className={styles.templateItemsTitle}>
                   {expandedTemplate.brandName || "-"} / {expandedTemplate.modelName || "-"} / {expandedTemplate.year}
                 </div>
-                {(expandedTemplate.items ?? []).length === 0 ? (
+                {getTemplateItems(expandedTemplate).length === 0 ? (
                   <div className={styles.templateItemsEmpty}>{t("common.noData")}</div>
                 ) : (
                   <div className={styles.templateItemsAccordion}>
-                    {(expandedTemplate.items ?? []).map((item) => (
+                    {getTemplateItems(expandedTemplate).map((item) => (
                       <details
                         key={item.id || item.serviceId}
                         className={styles.templateItemCard}
@@ -862,22 +1282,49 @@ export const ServiceTemplatePage = () => {
                           </span>
                         </summary>
                         <div className={styles.templateItemMetrics}>
-                          <div className={styles.templateItemMetric}>
-                            <span>{t("serviceTemplates.table.internalCost")}</span>
-                            <strong>{item.internalCost ?? 0}</strong>
-                          </div>
-                          <div className={styles.templateItemMetric}>
-                            <span>{t("serviceTemplates.table.servicePrice")}</span>
-                            <strong>{item.customerPrice ?? 0}</strong>
-                          </div>
-                          <div className={styles.templateItemMetric}>
-                            <span>{t("serviceTemplates.table.profit")}</span>
-                            <strong>{item.profit ?? 0}</strong>
-                          </div>
-                          <div className={styles.templateItemMetric}>
-                            <span>{t("serviceTemplates.table.marginPercent")}</span>
-                            <strong>{item.profitMargin ?? 0}%</strong>
-                          </div>
+                          {!item.isProgrammerService ? (
+                            <>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.internalCost")}</span>
+                                <strong>{item.internalCost ?? 0}</strong>
+                              </div>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.servicePrice")}</span>
+                                <strong>{item.customerPrice ?? 0}</strong>
+                              </div>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.profit")}</span>
+                                <strong>{item.profit ?? 0}</strong>
+                              </div>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.marginPercent")}</span>
+                                <strong>{item.profitMargin ?? 0}%</strong>
+                              </div>
+                            </>
+                          ) : item.bestProgrammerUsername ? (
+                            <>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.bestProgrammer")}</span>
+                                <strong>{item.bestProgrammerUsername}</strong>
+                              </div>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.servicePrice")}</span>
+                                <strong>{item.programmerSellingPrice ?? 0}</strong>
+                              </div>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.programmerCost")}</span>
+                                <strong>{item.programmerServiceCost ?? 0}</strong>
+                              </div>
+                              <div className={styles.templateItemMetric}>
+                                <span>{t("serviceTemplates.table.profit")}</span>
+                                <strong>{item.programmerProfit ?? 0}</strong>
+                              </div>
+                            </>
+                          ) : (
+                            <div className={styles.noProgrammerWarning}>
+                              {t("serviceTemplates.messages.noProgrammerForVehicle")}
+                            </div>
+                          )}
                         </div>
                       </details>
                     ))}
@@ -905,7 +1352,7 @@ export const ServiceTemplatePage = () => {
                     variant="secondary"
                     onClick={() => {
                       setForm(getInitialForm());
-                      setPricingServiceOptionsRaw([]);
+                      setPricingServiceOptionsByCategoryId({});
                       setIsPricingFormOpen(false);
                     }}
                   >
@@ -1039,106 +1486,149 @@ export const ServiceTemplatePage = () => {
                   ))}
                 </Select>
 
-                <Select
-                  label={t("serviceTemplates.fields.serviceCategory")}
-                  value={String(form.serviceCategoryId || "")}
-                  onChange={async (e) => {
-                    const selectedCategoryId = Number(e.target.value) || 0;
-
-                    setForm((prev) => ({
-                      ...prev,
-                      serviceCategoryId: selectedCategoryId,
-                      services: [getEmptyLine()],
-                    }));
-
-                    if (!selectedCategoryId) {
-                      setPricingServiceOptionsRaw([]);
-                      return;
-                    }
-
-                    try {
-                      setIsPricingServicesLoading(true);
-                      const items = await getPricingServicesByCategory(selectedCategoryId);
-                      setPricingServiceOptionsRaw(Array.isArray(items) ? items : []);
-                    } catch {
-                      toast.error(t("serviceTemplates.messages.loadFailed"));
-                      setPricingServiceOptionsRaw([]);
-                    } finally {
-                      setIsPricingServicesLoading(false);
-                    }
-                  }}
-                  placeholder={t("common.select")}
-                >
-                  <option value="">{t("common.select")}</option>
-                  {rootServiceCategories.map((category: ServiceCategoryItem) => (
-                    <option key={category.id} value={category.id}>
-                      {category.code}
-                    </option>
-                  ))}
-                </Select>
               </div>
 
-              <div className={styles.serviceLinesBlock}>
-                <div className={styles.serviceLinesHeader}>
-                  <span>{t("serviceTemplates.fields.services")}</span>
-                  <Button size="small" variant="secondary" onClick={addLine}>
-                    {t("serviceTemplates.actions.addService")}
-                  </Button>
-                </div>
+              <div className={styles.actions}>
+                <Button size="small" variant="secondary" onClick={addCategory}>
+                  {t("serviceTemplates.actions.addCategory")}
+                </Button>
+              </div>
 
-                {form.services.map((line, index) => (
-                  <div key={index} className={styles.serviceLineRow}>
+              {form.categories.map((category, categoryIndex) => {
+                const selectedCategory = rootServiceCategories.find(
+                  (item) => item.id === category.serviceCategoryId,
+                );
+                const isProgrammingCategory =
+                  isProgrammingServiceCategory(selectedCategory?.code) ||
+                  isProgrammingServiceCategory(selectedCategory?.name);
+                const serviceOptions = getServiceOptionsForCategory(
+                  category.serviceCategoryId,
+                );
+
+                return (
+                  <div
+                    key={`category-${categoryIndex}`}
+                    className={styles.serviceLinesBlock}
+                  >
+                    <div className={styles.serviceLinesHeader}>
+                      <span>{t("serviceTemplates.fields.services")}</span>
+                      <div className={styles.actions}>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          onClick={() => addLine(categoryIndex)}
+                        >
+                          {t("serviceTemplates.actions.addService")}
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          onClick={() => removeCategory(categoryIndex)}
+                        >
+                          {t("common.delete")}
+                        </Button>
+                      </div>
+                    </div>
+
                     <Select
-                      label={t("serviceTemplates.fields.service")}
-                      value={String(line.serviceId || "")}
-                      onChange={(e) => {
-                        const selectedId = Number(e.target.value) || 0;
-                        const selectedService = serviceOptions.find(
-                          (item) => item.id === selectedId,
-                        );
-                        setLine(index, {
-                          serviceId: selectedId,
-                          serviceName: selectedService?.name || selectedService?.code,
-                          internalCost: selectedService?.internalCost,
-                        });
-                      }}
+                      label={t("serviceTemplates.fields.serviceCategory")}
+                      value={String(category.serviceCategoryId || "")}
+                      onChange={(e) =>
+                        void setCategory(
+                          categoryIndex,
+                          Number(e.target.value) || 0,
+                        )
+                      }
                       placeholder={t("common.select")}
-                      searchable
-                      disabled={isPricingServicesLoading || !form.serviceCategoryId}
                     >
                       <option value="">{t("common.select")}</option>
-                      {form.serviceCategoryId > 0 && serviceOptions.length === 0 && (
-                        <option value="" disabled>
-                          {t("common.noData")}
-                        </option>
-                      )}
-                      {serviceOptions.map((item: ServiceCatalogItem) => (
+                      {rootServiceCategories.map((item: ServiceCategoryItem) => (
                         <option key={item.id} value={item.id}>
-                          {item.name || item.code} ({item.code})
+                          {item.code}
                         </option>
                       ))}
                     </Select>
 
-                    <TextField
-                      label={t("serviceTemplates.fields.servicePrice")}
-                      type="number"
-                      value={toDisplayNumber(Number(line.customerPrice || 0))}
-                      onChange={(e) =>
-                        setLine(index, {
-                          customerPrice: Number(e.target.value),
-                        })
-                      }
-                    />
+                    {isProgrammingCategory && (
+                      <div className={styles.autoPricingInfo}>
+                        {t("serviceTemplates.messages.programmingPriceAutoResolved")}
+                      </div>
+                    )}
 
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      onClick={() => removeLine(index)}
-                    >
-                      {t("common.delete")}
-                    </Button>
+                    {category.services.map((line, lineIndex) => (
+                      <div key={lineIndex} className={styles.serviceLineRow}>
+                        <Select
+                          label={t("serviceTemplates.fields.service")}
+                          value={String(line.serviceId || "")}
+                          onChange={(e) => {
+                            const selectedId = Number(e.target.value) || 0;
+                            const selectedService = serviceOptions.find(
+                              (item) => item.id === selectedId,
+                            );
+                            setLine(categoryIndex, lineIndex, {
+                              serviceId: selectedId,
+                              serviceName:
+                                selectedService?.name || selectedService?.code,
+                              internalCost: selectedService?.internalCost,
+                            });
+                          }}
+                          placeholder={t("common.select")}
+                          searchable
+                          disabled={isPricingServicesLoading || !category.serviceCategoryId}
+                        >
+                          <option value="">{t("common.select")}</option>
+                          {category.serviceCategoryId > 0 &&
+                            serviceOptions.length === 0 && (
+                              <option value="" disabled>
+                                {t("common.noData")}
+                              </option>
+                            )}
+                          {serviceOptions.map((item: ServiceCatalogItem) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name || item.code} ({item.code})
+                            </option>
+                          ))}
+                        </Select>
+
+                        {isProgrammingCategory ? (
+                          <div className={styles.autoPricingInline}>
+                            {line.serviceId <= 0
+                              ? t("serviceTemplates.messages.programmingPriceAutoResolved")
+                              : isProgrammingPricingLoading
+                                ? t("common.loading")
+                                : programmingResolvedByServiceId[line.serviceId]
+                                    ?.hasProgrammerPricing
+                                  ? `${Number(
+                                      programmingResolvedByServiceId[line.serviceId]
+                                        ?.programmerSellingPrice || 0,
+                                    ).toLocaleString()} AMD`
+                                  : t("serviceTemplates.messages.noProgrammerForVehicle")}
+                          </div>
+                        ) : (
+                          <TextField
+                            label={t("serviceTemplates.fields.servicePrice")}
+                            type="number"
+                            value={toDisplayNumber(Number(line.customerPrice || 0))}
+                            onChange={(e) =>
+                              setLine(categoryIndex, lineIndex, {
+                                customerPrice: Number(e.target.value),
+                              })
+                            }
+                          />
+                        )}
+
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          onClick={() => removeLine(categoryIndex, lineIndex)}
+                        >
+                          {t("common.delete")}
+                        </Button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                );
+              })}
 
                 {selectedServicesSummary.length > 0 && (
                   <div className={styles.selectedServicesSummary}>
@@ -1146,9 +1636,15 @@ export const ServiceTemplatePage = () => {
                       {t("serviceTemplates.fields.services")}
                     </div>
                     {selectedServicesSummary.map((item) => (
-                      <div key={item.id} className={styles.selectedServiceItem}>
-                        <span>{item.label}</span>
-                        <b>{item.price}</b>
+                      <div key={`${item.id}-${item.categoryLabel}`} className={styles.selectedServiceItem}>
+                        <span>{item.categoryLabel}: {item.label}</span>
+                        <b>
+                          {item.isAutoResolved
+                            ? item.hasProgrammerPricing
+                              ? `${Number(item.price || 0).toLocaleString()} AMD`
+                              : t("serviceTemplates.messages.noProgrammerForVehicle")
+                            : item.price}
+                        </b>
                       </div>
                     ))}
                   </div>
@@ -1174,7 +1670,6 @@ export const ServiceTemplatePage = () => {
                   {t("serviceTemplates.table.totalAmount")}: <b>{serviceTotal}</b>
                 </div>
               </div>
-            </div>
             </div>
           )}
         </>
@@ -1659,6 +2154,8 @@ export const ServiceTemplatePage = () => {
           </div>
         </>
       )}
+
+      {activeTab === "programmers" && <ProgrammingPricingAdmin />}
     </div>
   );
 };

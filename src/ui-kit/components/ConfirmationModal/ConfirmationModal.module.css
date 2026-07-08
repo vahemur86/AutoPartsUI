@@ -11,6 +11,10 @@
   outline: none;
   z-index: 1000;
 
+  display: none;
+}
+
+.modal[open] {
   display: grid;
   place-items: center;
 }
@@ -99,10 +103,11 @@
     outline: none;
     z-index: 1000;
 
-    display: block;
+    display: none;
   }
 
   .modal[open] {
+    display: block;
     animation: slideUpFullScreen 0.3s ease-out forwards;
   }
 

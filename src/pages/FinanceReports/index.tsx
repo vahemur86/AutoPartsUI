@@ -12,6 +12,7 @@ import {
   Factory,
   Warehouse,
   Store,
+  HandCoins,
 } from "lucide-react";
 
 // components
@@ -79,6 +80,12 @@ export const FinanceReports = () => {
       path: "/shop-inventory",
       label: t("financeReports.navigation.shopInventory"),
       icon: Store,
+      showCheckmark: true,
+    },
+    {
+      path: "/other-expenses",
+      label: t("financeReports.navigation.otherExpenses"),
+      icon: HandCoins,
       showCheckmark: true,
     },
   ];

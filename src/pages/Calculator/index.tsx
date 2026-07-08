@@ -1,4 +1,5 @@
 import { useEffect, useState, type FC } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./Calculator.module.css";
 import { Button, Switch, TextField } from "@/ui-kit";
 import { calculateSalesLot } from "@/services/warehouses/salesLots";
@@ -7,7 +8,6 @@ import type {
   SalesLotsCalculatorRequest,
   SalesLotsCalculatorResponse,
 } from "@/types/warehouses/salesLots";
-import { t } from "i18next";
 import { fetchExchangeRates } from "@/store/slices/exchangeRatesSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { toast } from "react-toastify";
@@ -29,6 +29,7 @@ const initialState: SalesLotsCalculatorRequest = {
 };
 
 export const NewCalculator: FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [form, setForm] = useState<SalesLotsCalculatorRequest>(initialState);
   const [result, setResult] = useState<SalesLotsCalculatorResponse | null>(
@@ -95,7 +96,7 @@ export const NewCalculator: FC = () => {
       console.log("RESULT:", res);
       setResult(res);
     } catch (e) {
-      toast.error("Failed to calculate sales lot");
+      toast.error(t("calculator.error.failedToCalculate"));
     } finally {
       setLoading(false);
     }
@@ -237,7 +238,9 @@ export const NewCalculator: FC = () => {
         >
           <h3 className={styles.cardTitle}>
             💰 {t("calculator.columns.price")}
-            {!isManualMode && <span className={styles.autoBadge}>LIVE</span>}
+            {!isManualMode && (
+              <span className={styles.autoBadge}>{t("calculator.liveBadge")}</span>
+            )}
           </h3>
           <label>
             <DollarSign size={14} />

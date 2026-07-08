@@ -48,6 +48,9 @@ export interface Task {
   id: number;
   code: string;
   laborCost: number | null;
+  shopId?: number | null;
+  warehouseId?: number | null;
+  paymentDay?: string | null;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -249,9 +252,16 @@ export interface VehicleServiceTemplateLineItem {
   serviceId: number;
   serviceName?: string;
   internalCost?: number;
-  customerPrice: number;
-  profit?: number;
-  profitMargin?: number;
+  customerPrice: number | null;
+  employeeId?: number;
+  profit?: number | null;
+  profitMargin?: number | null;
+  isProgrammerService?: boolean;
+  bestProgrammerUserId?: number | null;
+  bestProgrammerUsername?: string | null;
+  programmerServiceCost?: number | null;
+  programmerSellingPrice?: number | null;
+  programmerProfit?: number | null;
 }
 
 export interface VehicleServiceTemplateItem {
@@ -267,13 +277,20 @@ export interface VehicleServiceTemplateItem {
   engineName?: string;
   location: string;
   electricityPrice: number;
-  serviceCategoryId: number;
+  serviceCategoryId?: number;
   serviceCategoryName?: string;
+  categories?: VehicleServiceTemplateCategoryItem[];
   notes?: string;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string | null;
   items: VehicleServiceTemplateLineItem[];
+}
+
+export interface VehicleServiceTemplateCategoryItem {
+  serviceCategoryId: number;
+  serviceCategoryName?: string;
+  services: VehicleServiceTemplateLineItem[];
 }
 
 export interface VehicleServiceTemplateUpsertPayload {
@@ -284,11 +301,18 @@ export interface VehicleServiceTemplateUpsertPayload {
   engineId: number;
   location: string;
   electricityPrice: number;
-  serviceCategoryId: number;
+  serviceCategoryId?: number;
   notes?: string;
-  services: Array<{
+  services?: Array<{
     serviceId: number;
     customerPrice: number;
+  }>;
+  categories: Array<{
+    serviceCategoryId: number;
+    services: Array<{
+      serviceId: number;
+      customerPrice: number;
+    }>;
   }>;
 }
 
@@ -474,6 +498,159 @@ export interface VehicleDefinitionByBucket {
   model: { id: number; code: string; name: string };
   year: number;
   totalItems: number;
+}
+
+export interface VehicleLookupItem {
+  id: number;
+  name: string;
+}
+
+export interface VehicleLookupModelItem extends VehicleLookupItem {
+  brandId?: number;
+}
+
+export interface VehicleDefinitionLookups {
+  brands: VehicleLookupItem[];
+  models: VehicleLookupModelItem[];
+  fuelTypes: VehicleLookupItem[];
+  engines: VehicleLookupItem[];
+  markets: VehicleLookupItem[];
+  driveTypes: VehicleLookupItem[];
+}
+
+export interface VehicleDefinitionSearchItem {
+  id: number;
+  brand: VehicleLookupItem;
+  model: VehicleLookupItem;
+  fuelType: VehicleLookupItem;
+  engine: VehicleLookupItem;
+  market: VehicleLookupItem;
+  horsePower: number;
+  driveType: VehicleLookupItem;
+  year: number;
+}
+
+export interface VehicleDefinitionSearchParams {
+  brandId?: number;
+  modelId?: number;
+  fuelTypeId?: number;
+  engineId?: number;
+  year?: number;
+  page?: number;
+  pageSize?: number;
+  lang?: string;
+}
+
+export interface VehicleDefinitionSearchResponse {
+  totalItems: number;
+  page: number;
+  pageSize: number;
+  results: VehicleDefinitionSearchItem[];
+}
+
+export interface ProgrammingServiceItem {
+  id: number;
+  code?: string;
+  name: string;
+  description?: string;
+  serviceCategoryId?: number;
+  serviceCategoryName?: string;
+  internalCost?: number;
+  estimatedDurationMinutes?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string | null;
+}
+
+export interface ProgrammingServiceWithPricingItem {
+  id: number;
+  code?: string;
+  name: string;
+  serviceCategoryId?: number;
+  serviceCategoryName?: string;
+  internalCost?: number;
+  isActive?: boolean;
+  hasProgrammerPricing: boolean;
+  bestProgrammerUserId?: number | null;
+  bestProgrammerUsername?: string | null;
+  programmerServiceCost?: number | null;
+  programmerSellingPrice?: number | null;
+  programmerProfit?: number | null;
+}
+
+export interface ProgrammingServicesWithPricingParams {
+  brandId: number;
+  modelId: number;
+  year: number;
+  fuelTypeId: number;
+  engineId: number;
+}
+
+export interface ProgrammingPricingEntry {
+  id: number;
+  vehicleDefinitionId: number;
+  vehicleName: string;
+  location?: string;
+  serviceId: number;
+  serviceName: string;
+  programmerUserId: number;
+  programmerUsername: string;
+  serviceCost: number;
+  sellingPrice: number;
+  profit: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface AddProgrammingPricingPayload {
+  brandId: number;
+  modelId: number;
+  year: number;
+  fuelTypeId: number;
+  engineId: number;
+  marketId: number;
+  location: string;
+  notes?: string;
+  services: Array<{
+    serviceId: number;
+    serviceCost: number;
+    sellingPrice: number;
+  }>;
+}
+
+export interface UpdateProgrammingMyCostPayload {
+  id: number;
+  serviceCost: number;
+  sellingPrice: number;
+}
+
+export interface UpdateProgrammingAdminSellingPricePayload {
+  id: number;
+  sellingPrice: number;
+}
+
+export interface VehicleBestProgrammerPricingService {
+  serviceId: number;
+  serviceName: string;
+  categoryName: string;
+  internalCost: number;
+  customerPrice: number | null;
+  profit: number | null;
+  isPriced: boolean;
+  bestProgrammerUserId: number | null;
+  bestProgrammerUsername: string | null;
+  bestProgrammerServiceCost: number | null;
+  bestProgrammerSellingPrice: number | null;
+  bestProgrammerProfit: number | null;
+}
+
+export interface VehicleBestProgrammerPricingResponse {
+  vehicleDefinitionId: number;
+  vehicleName: string;
+  brandName: string;
+  modelName: string;
+  services: VehicleBestProgrammerPricingService[];
 }
 
 export interface CatalystBucket {

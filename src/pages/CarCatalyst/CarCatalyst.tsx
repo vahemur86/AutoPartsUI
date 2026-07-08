@@ -197,7 +197,7 @@ export const CarCatalystPage = () => {
   };
 
   const goToDetails = () => {
-    navigate("/car-catalyst/details");
+    navigate("/settings/car-catalyst/details");
   };
 
   const renderTable = (

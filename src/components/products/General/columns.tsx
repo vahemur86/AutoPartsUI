@@ -87,7 +87,7 @@ export const getProductColumns = ({
 }: ColumnHandlers): ColumnDef<Product, any>[] => {
   return [
     columnHelper.accessor("id", {
-      header: "ID",
+      header: i18next.t("columns.id"),
       cell: (info) => `#${info.getValue()}`,
     }),
     columnHelper.accessor("code", {

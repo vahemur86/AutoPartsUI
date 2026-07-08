@@ -8,9 +8,14 @@
     "customers": "Customers",
     "logout": "Logout",
     "userMenu": "User menu",
+    "language": "Language",
+    "languageLoading": "Loading languages...",
+    "useGlobalDefault": "Use global default",
+      "addCategory": "Add Category",
     "reports": "Reports",
     "financeReports": "Finance & Reports",
     "calculator": "Calculator",
+    "workshop": "Workshop",
     "carCatalyst": "Buckets"
   },
   "common": {
@@ -95,11 +100,57 @@
       "metalRates": "Metal Rates",
       "catalystBuckets": "Codes",
       "catalystPricing": "Catalyst Pricing",
+      "carCatalyst": "Buckets",
       "customerTypes": "Customer Types",
       "exchangeRates": "Exchange Rates",
       "cashRegisters": "Cash Registers",
       "salePercentages": "Sale Percentages",
       "ironManagement": "Iron Management"
+    },
+    "otherExpenses": {
+      "fields": {
+        "entityType": "Entity type",
+        "entity": "Shop / Warehouse",
+        "name": "Expense name",
+        "price": "Price",
+        "paymentDay": "Payment day"
+      },
+      "placeholders": {
+        "name": "Enter expense name",
+        "price": "Enter amount",
+        "paymentDay": "Enter day of month"
+      },
+      "entityTypes": {
+        "shop": "Shop",
+        "warehouse": "Warehouse"
+      },
+      "columns": {
+        "name": "Name",
+        "entityType": "Type",
+        "entity": "Entity",
+        "price": "Price",
+        "paymentDay": "Payment day"
+      },
+      "confirmation": {
+        "deleteTitle": "Delete expense",
+        "deleteDescription": "Are you sure you want to delete {{name}}?"
+      },
+      "validation": {
+        "nameRequired": "Please enter expense name",
+        "entityRequired": "Please select shop or warehouse",
+        "priceRequired": "Please enter a valid amount",
+        "paymentDayRequired": "Please enter a valid payment day from 1 to 31"
+      },
+      "success": {
+        "created": "Expense created successfully",
+        "updated": "Expense updated successfully",
+        "deleted": "Expense deleted successfully"
+      },
+      "error": {
+        "loadFailed": "Failed to load expenses",
+        "saveFailed": "Failed to save expense",
+        "deleteFailed": "Failed to delete expense"
+      }
     }
   },
   "tags": {
@@ -253,7 +304,26 @@
       "profitDetailed": "Detailed Profit",
       "saleProfit": "Sales Profit",
       "warehouseInventory": "Warehouse Inventory",
-      "shopInventory": "Shop Inventory"
+      "shopInventory": "Shop Inventory",
+      "otherExpenses": "Other Expenses"
+    },
+    "otherExpenses": {
+      "monthlyTotal": "Monthly other expenses",
+      "rowsCount": "Records this month",
+      "empty": "No other expenses recorded for current month.",
+      "loadFailed": "Failed to load other expenses report.",
+      "columns": {
+        "locationName": "Location",
+        "name": "Expense name",
+        "entityType": "Type",
+        "price": "Amount",
+        "paymentDay": "Payment day",
+        "totalMonthlyExpense": "Monthly total"
+      },
+      "entityTypes": {
+        "shop": "Shop",
+        "warehouse": "Warehouse"
+      }
     },
     "filters": {
       "shop": "Shop",
@@ -290,6 +360,7 @@
       },
       "sections": {
         "overview": "Executive Overview",
+        "otherExpenses": "Other Expenses",
         "lowStock": "Low Stock Alerts",
         "outOfStock": "Out-of-Stock Alerts"
       },
@@ -299,13 +370,20 @@
         "todaySalesCount": "Today sales count",
         "monthlyRevenue": "Monthly revenue",
         "monthlyProfit": "Monthly profit",
+        "monthlyOtherExpenses": "Monthly other expenses",
+        "monthlyNetProfit": "Monthly net profit",
         "monthlySalesCount": "Monthly sales count",
+        "todayNetProfit": "Today net profit",
         "totalProductRevenue": "Product revenue",
         "totalServiceRevenue": "Service revenue",
         "totalRevenue": "Total revenue",
         "lowStockAlertsCount": "Low stock alerts",
         "outOfStockCount": "Out-of-stock alerts",
         "threshold": "Alert threshold"
+      },
+      "otherExpenses": {
+        "empty": "No recurring other expenses in dashboard.",
+        "paymentDay": "Payment day"
       },
       "charts": {
         "revenueMix": "Revenue mix: products vs services",
@@ -602,7 +680,12 @@
       "selectWarehouse": "Select warehouse"
     },
     "validation": {
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "Please fill in all fields",
+      "emailInvalid": "Please enter a valid email address",
+      "roleRequired": "Role is required",
+      "userTypeRequired": "User type is required",
+      "shopRequired": "Shop is required",
+      "warehouseRequired": "Warehouse is required"
     },
     "success": {
       "userCreated": "User created successfully"
@@ -1669,6 +1752,7 @@
     "validation": {
       "enterPhoneNumber": "Please enter a phone number",
       "enterCustomerPhone": "Please enter customer phone number",
+      "enterFullName": "Please enter full name",
       "invalidPhone": "Invalid phone number"
     },
     "success": {
@@ -1750,12 +1834,12 @@
       "calculate": "Calculate",
       "catalyst": "Catalyst",
       "iron": "Iron",
-      "workshop": "Workshop",
-      "services": "Services"
+      "workshop": "Workshop"
     },
     "cashier": {
       "title": "Cashier",
       "description": "Select products, add them to the cart, and complete the payment in cash or by non-cash method.",
+      "missingCashRegisterHeader": "Missing or invalid cash register ID.",
       "selectShop": "Select shop",
       "productsList": "Available products",
       "loadingProducts": "Loading products...",
@@ -1816,6 +1900,7 @@
         "number": "Estimate",
         "summaryTitle": "Estimate Summary",
         "status": "Status",
+        "pending": "Pending",
         "vehicle": "Vehicle",
         "vin": "VIN",
         "amount": "Amount",
@@ -1859,6 +1944,9 @@
       "mode": {
         "byCode": "By Code",
         "byAttributes": "By Attributes"
+      },
+      "placeholder": {
+        "bucketGroupCode": "e.g. newT1"
       },
       "label": {
         "bucketGroupCode": "Bucket Group Code",
@@ -1924,6 +2012,10 @@
         "assigned": "Assigned employee: {{employee}}",
         "none": "No on-duty employee found for this category today."
       },
+      "programming": {
+        "loading": "Loading programming prices for selected vehicle...",
+        "noProgrammer": "No programmer available for this vehicle"
+      },
       "totalAmount": "Total Amount",
       "createOrder": "Create Service Order",
       "receipt": {
@@ -1950,6 +2042,7 @@
         "createFailed": "Failed to create service order",
         "loadVehicleDefinitionsFailed": "Failed to load vehicle data.",
         "loadProductsFailed": "Failed to load shop inventory.",
+        "loadProgrammingServicesFailed": "Failed to load programming services for selected vehicle.",
         "requiredVehicleFields": "Please fill all required vehicle fields.",
         "templateNotFound": "No pricing template was found for the selected vehicle.",
         "selectAtLeastOneService": "Select at least one service for this estimate.",
@@ -1993,11 +2086,13 @@
       "pricing": "Vehicle Service Pricing",
       "categories": "Service Categories",
       "employees": "Employees",
-      "services": "Services"
+      "services": "Services",
+      "programmers": "Programmer Entries"
     },
     "actions": {
       "create": "Create",
       "update": "Update",
+      "addCategory": "Add Category",
       "addService": "Add Service",
       "loadPricing": "Load Vehicle Pricing",
       "viewItems": "View Line Items",
@@ -2033,6 +2128,7 @@
       "notes": "Note",
       "servicePrice": "Service Price",
       "servicesTotal": "Total Service Cost",
+      "autoResolved": "Auto-resolved",
       "totalAmount": "Grand Total",
       "vehicleDefinitionId": "Vehicle Definition ID",
       "status": "Status",
@@ -2046,6 +2142,8 @@
       "internalCost": "Internal Cost",
       "servicePrice": "Service Price",
       "profit": "Profit",
+      "bestProgrammer": "Best Programmer",
+      "programmerCost": "Programmer Cost",
       "marginPercent": "Margin %",
       "serviceCategory": "Service Category",
       "services": "Services",
@@ -2061,7 +2159,46 @@
       "validationFailed": "Please complete all required vehicle, category, and service pricing fields.",
       "selectVehicleFirst": "Select the brand, model, year, fuel type, engine, and location first.",
       "vehicleNotFound": "No vehicle pricing template was found for the selected criteria.",
+      "programmingPriceAutoResolved": "Price is resolved automatically from programmer entries.",
+      "noProgrammerForVehicle": "No programmer available for this vehicle.",
       "loadFailed": "Failed to load vehicle service pricing data."
+    },
+    "programmerAdmin": {
+      "badge": "Admin Panel",
+      "title": "Programmer Pricing Oversight",
+      "subtitle": "Review all programmer entries and adjust selling prices while preserving programmer service costs.",
+      "hint": "Showing all programming entries from all programmers.",
+      "columns": {
+        "vehicle": "Vehicle",
+        "programmerPrices": "Programmer Prices",
+        "location": "Location",
+        "serviceCost": "Service Cost",
+        "sellingPrice": "Selling Price",
+        "profit": "Profit",
+        "created": "Created"
+      },
+      "actions": {
+        "editSellingPrice": "Edit Selling Price",
+        "applyFilters": "Apply Filters",
+        "resetFilters": "Reset Filters"
+      },
+      "filters": {
+        "programmerUsername": "Programmer Username",
+        "allProgrammers": "All Programmers",
+        "programmerUsernamePlaceholder": "e.g. john_prog",
+        "brand": "Vehicle Brand",
+        "allBrands": "All Brands",
+        "model": "Vehicle Model",
+        "allModels": "All Models"
+      },
+      "messages": {
+        "loadFailed": "Failed to load programmer entries.",
+        "invalidSellingPrice": "Selling price must be a valid number.",
+        "sellingPriceUpdated": "Selling price updated successfully.",
+        "updateFailed": "Failed to update selling price.",
+        "noEntries": "No programmer pricing entries found.",
+        "searchFailed": "Failed to search programmer entries."
+      }
     },
     "employeeManagement": {
       "tabs": {
@@ -2185,6 +2322,11 @@
     "loading": "Loading customers...",
     "emptyState": "No customers found.",
     "createCustomer": "Create Customer",
+    "actions": {
+      "resetFilters": "Reset filters",
+      "openFilters": "Open filters",
+      "addCustomer": "Add customer"
+    },
     "form": {
       "phone": "Phone",
       "phonePlaceholder": "Add phone number",
@@ -2308,6 +2450,7 @@
   },
   "calculator": {
     "title": "Calculator",
+    "liveBadge": "LIVE",
     "columns": {
       "weight": "Weights",
       "price": "Prices",
@@ -2360,12 +2503,16 @@
 
       "customerBonus": "Enter customer bonus (%)",
       "minProfit": "Enter minimum profit (%)"
+    },
+    "error": {
+      "failedToCalculate": "Failed to calculate sales lot"
     }
   },
   "carCatalyst": {
     "title": "Car Catalyst Buckets",
 
     "fields": {
+      "category": "Category",
       "brand": "Brand",
       "model": "Model",
       "year": "Year",
@@ -2465,6 +2612,96 @@
         "country": "Country #{{id}}",
         "birka": "Birka #{{id}}"
       }
+    }
+  },
+  "programmerPage": {
+    "badge": "Programming Category",
+    "title": "Programmer Pricing Control Center",
+    "subtitle": "Select vehicle parameters, choose a Programming service, then enter Service Cost and Selling Price.",
+    "sections": {
+      "vehicleLookup": "1. Select Vehicle Parameters",
+      "createPricing": "2. Create Programming Price",
+      "myEntries": "My Programming Entries"
+    },
+    "tabs": {
+      "add": "Add",
+      "entries": "My Programming Entries"
+    },
+    "user": {
+      "username": "Logged in as"
+    },
+    "fields": {
+      "category": "Category",
+      "brand": "Brand",
+      "model": "Model",
+      "fuelType": "Fuel Type",
+      "engine": "Engine",
+      "location": "Location",
+      "driveType": "Drive Type",
+      "horsePower": "Horsepower",
+      "year": "Year",
+      "selectedVehicle": "Selected Vehicle",
+      "programmingService": "Programming Service",
+      "notes": "Notes",
+      "serviceCost": "Service Cost",
+      "sellingPrice": "Selling Price"
+    },
+    "values": {
+      "programming": "Programming"
+    },
+    "placeholders": {
+      "selectBrand": "Select brand",
+      "selectModel": "Select model",
+      "selectFuelType": "Select fuel type",
+      "selectEngine": "Select engine",
+      "selectLocation": "Select location",
+      "selectDriveType": "Select drive type",
+      "horsePower": "150",
+      "selectYear": "Select year",
+      "chooseService": "Choose service",
+      "notes": "Optional note",
+      "serviceCost": "80.00",
+      "sellingPrice": "150.00"
+    },
+    "actions": {
+      "searchVehicles": "Search Vehicles",
+      "searching": "Searching...",
+      "resetFilters": "Reset Filters",
+      "addPricing": "Add Programming Pricing",
+      "saving": "Saving...",
+      "editCost": "Edit Cost",
+      "editPricing": "Edit Pricing"
+    },
+    "states": {
+      "noVehicleLoaded": "No vehicle loaded yet.",
+      "noVehicleSelected": "No vehicle selected",
+      "resolvingVehicle": "Resolving vehicle by selected parameters...",
+      "noEntries": "No programming entries found for your account."
+    },
+    "table": {
+      "vehicle": "Vehicle",
+      "service": "Service",
+      "myServiceCost": "My Service Cost",
+      "sellingPrice": "Selling Price",
+      "profit": "Profit",
+      "updatedAt": "Updated At"
+    },
+    "messages": {
+      "loadDataFailed": "Failed to load data.",
+      "refreshFailed": "Failed to refresh entries.",
+      "noVehiclesMatched": "No vehicles matched current filters.",
+      "vehicleSearchFailed": "Vehicle search failed.",
+      "selectVehicleAndService": "Please select both vehicle and programming service.",
+      "invalidCosts": "Service Cost and Selling Price must be valid numbers.",
+      "created": "Programming pricing entry created.",
+      "createFailed": "Failed to create entry.",
+      "invalidServiceCost": "Service cost must be a valid number.",
+      "costUpdated": "Your service cost was updated.",
+      "updateCostFailed": "Failed to update cost."
+    },
+    "logout": {
+      "title": "Log Out",
+      "description": "Are you sure you want to log out from the programmer panel?"
     }
   }
 }

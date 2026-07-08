@@ -8,6 +8,9 @@
     "customers": "Հաճախորդներ",
     "logout": "Ելք",
     "userMenu": "Օգտատիրոջ ընտրացանկ",
+    "language": "Լեզու",
+    "languageLoading": "Լեզուները բեռնվում են...",
+    "useGlobalDefault": "Օգտագործել ընդհանուր լռելյայնը",
     "reports": "Հաշվետվություններ",
     "financeReports": "Ֆինանսներ և հաշվետվություններ",
     "calculator": "Հաշվիչ",
@@ -15,12 +18,6 @@
      "workshop": "Արհեստանոց"
   },
   "common": {
-    "save": "Պահպանել",
-    "cancel": "Չեղարկել",
-    "delete": "Ջնջել",
-    "copy": "Կրկնել",
-    "deleting": "Ջնջվում է...",
-    "edit": "Խմբագրել",
     "add": "Ավելացնել",
     "update": "Թարմացնել",
     "actions": "Գործողություններ",
@@ -32,6 +29,7 @@
     "filters": "Ֆիլտրեր",
     "reset": "Վերակայել",
     "search": "Որոնել",
+    "refresh": "Թարմացնել",
     "noName": "Անուն չկա",
     "front": "Դիմացի",
     "back": "Հետևի",
@@ -99,11 +97,57 @@
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կոդեր",
       "catalystPricing": "Կատալիզատորի գներ",
+      "carCatalyst": "Բաքեր",
       "customerTypes": "Հաճախորդների տեսակներ",
       "exchangeRates": "Փոխարժեքներ",
       "cashRegisters": "Դրամարկղեր",
       "ironManagement": "Մետաղի կառավարում",
       "salePercentages": "Վաճառքի տոկոսներ"
+    },
+    "otherExpenses": {
+      "fields": {
+        "entityType": "Օբյեկտի տեսակ",
+        "entity": "Խանութ / Պահեստ",
+        "name": "Ծախսի անվանում",
+        "price": "Գին",
+        "paymentDay": "Վճարման օր"
+      },
+      "placeholders": {
+        "name": "Մուտքագրեք ծախսի անվանումը",
+        "price": "Մուտքագրեք գումարը",
+        "paymentDay": "Մուտքագրեք ամսվա օրը"
+      },
+      "entityTypes": {
+        "shop": "Խանութ",
+        "warehouse": "Պահեստ"
+      },
+      "columns": {
+        "name": "Անվանում",
+        "entityType": "Տեսակ",
+        "entity": "Օբյեկտ",
+        "price": "Գումար",
+        "paymentDay": "Վճարման օր"
+      },
+      "confirmation": {
+        "deleteTitle": "Ջնջել ծախսը",
+        "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել {{name}} ծախսը։"
+      },
+      "validation": {
+        "nameRequired": "Մուտքագրեք ծախսի անվանումը",
+        "entityRequired": "Ընտրեք խանութ կամ պահեստ",
+        "priceRequired": "Մուտքագրեք վավեր գումար",
+        "paymentDayRequired": "Մուտքագրեք 1-ից 31 միջակայքի վավեր օր"
+      },
+      "success": {
+        "created": "Ծախսը հաջողությամբ ստեղծվեց",
+        "updated": "Ծախսը հաջողությամբ թարմացվեց",
+        "deleted": "Ծախսը հաջողությամբ ջնջվեց"
+      },
+      "error": {
+        "loadFailed": "Չհաջողվեց բեռնել ծախսերը",
+        "saveFailed": "Չհաջողվեց պահպանել ծախսը",
+        "deleteFailed": "Չհաջողվեց ջնջել ծախսը"
+      }
     }
   },
   "tags": {
@@ -133,7 +177,39 @@
     }
   },
 
-  "offers": {},
+  "offers": {
+    "selectShop": "Ընտրեք խանութը",
+    "shop": "Խանութ",
+    "addOption": "Ավելացնել",
+    "addNew": "Ավելացնել նորը",
+    "editOption": "Խմբագրել տարբերակը",
+    "deleteOption": "Ջնջել տարբերակը",
+    "increase": "Ավելացում",
+    "loading": "Առաջարկի տարբերակները բեռնվում են...",
+    "emptyState": "Առաջարկի տարբերակներ չեն գտնվել։ Ավելացրեք առաջինը։",
+    "status": {
+      "active": "Ակտիվ",
+      "inactive": "Անգործուն"
+    },
+    "form": {
+      "percent": "Տոկոս",
+      "active": "Ակտիվ"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել առաջարկի տարբերակը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել {{percent}}% ավելացման տարբերակը։ Այս գործողությունը հետադարձելի չէ։"
+    },
+    "success": {
+      "optionCreated": "Առաջարկի տարբերակը հաջողությամբ ստեղծվեց",
+      "optionUpdated": "Առաջարկի տարբերակը հաջողությամբ թարմացվեց",
+      "optionDeleted": "Առաջարկի տարբերակը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToLoad": "Չհաջողվեց բեռնել առաջարկի տարբերակները",
+      "failedToSave": "Չհաջողվեց պահպանել առաջարկի տարբերակը",
+      "failedToDelete": "Չհաջողվեց ջնջել առաջարկի տարբերակը"
+    }
+  },
   "reports": {
     "navigation": {
       "workshopOrders": "Աշխատարանի պատվերներ",
@@ -200,7 +276,26 @@
       "profitDetailed": "Մանրամասն շահույթ",
       "saleProfit": "Վաճառքների շահույթ",
       "warehouseInventory": "Պահեստի մնացորդ",
-      "shopInventory": "Խանութի մնացորդ"
+      "shopInventory": "Խանութի մնացորդ",
+      "otherExpenses": "Այլ ծախսեր"
+    },
+    "otherExpenses": {
+      "monthlyTotal": "Ամսվա այլ ծախսեր",
+      "rowsCount": "Այս ամսվա գրառումներ",
+      "empty": "Ընթացիկ ամսվա համար այլ ծախսերի գրառում չկա։",
+      "loadFailed": "Չհաջողվեց բեռնել այլ ծախսերի հաշվետվությունը։",
+      "columns": {
+        "locationName": "Օբյեկտ",
+        "name": "Ծախսի անվանում",
+        "entityType": "Տեսակ",
+        "price": "Գումար",
+        "paymentDay": "Վճարման օր",
+        "totalMonthlyExpense": "Ամսական ընդհանուր"
+      },
+      "entityTypes": {
+        "shop": "Խանութ",
+        "warehouse": "Պահեստ"
+      }
     },
     "filters": {
       "shop": "Խանութ",
@@ -237,6 +332,7 @@
       },
       "sections": {
         "overview": "Գործադիր ամփոփում",
+        "otherExpenses": "Այլ ծախսեր",
         "lowStock": "Քիչ մնացորդի ազդանշաններ",
         "outOfStock": "Սպառված ապրանքների ազդանշաններ"
       },
@@ -246,13 +342,20 @@
         "todaySalesCount": "Այսօրվա վաճառքների քանակ",
         "monthlyRevenue": "Ամսական շրջանառություն",
         "monthlyProfit": "Ամսական շահույթ",
+        "monthlyOtherExpenses": "Ամսվա այլ ծախսեր",
+        "monthlyNetProfit": "Ամսվա մաքուր շահույթ",
         "monthlySalesCount": "Ամսական վաճառքների քանակ",
+        "todayNetProfit": "Այսօրվա մաքուր շահույթ",
         "totalProductRevenue": "Ապրանքների շրջանառություն",
         "totalServiceRevenue": "Ծառայությունների շրջանառություն",
         "totalRevenue": "Ընդհանուր շրջանառություն",
         "lowStockAlertsCount": "Քիչ մնացորդի ազդանշաններ",
         "outOfStockCount": "Սպառված ապրանքների ազդանշաններ",
         "threshold": "Ազդանշանի շեմ"
+      },
+      "otherExpenses": {
+        "empty": "Դաշբորդի համար այլ ծախսեր չկան։",
+        "paymentDay": "Վճարման օր"
       },
       "charts": {
         "revenueMix": "Շրջանառության կառուցվածք․ ապրանքներ vs ծառայություններ",
@@ -507,16 +610,398 @@
       "noRows": "Ընտրված ֆիլտրերով վաճառքի գրառումներ չեն գտնվել։"
     }
   },
-  "exchangeRates": {},
-  "users": {},
-  "shops": {},
-  "warehouses": {},
-  "vehicles": {},
-  "metals": {},
-  "catalystBuckets": {},
-  "customerTypes": {},
+  "exchangeRates": {
+    "createNew": "Ստեղծել փոխարժեք",
+    "addExchangeRate": "Ավելացնել փոխարժեք",
+    "updateRates": "Թարմացնել փոխարժեքները",
+    "baseCurrency": "Հիմնական արժույթ",
+    "quoteCurrency": "Հակադիր արժույթ",
+    "rate": "Փոխարժեք",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Փոխարժեքը հաջողությամբ ստեղծվեց",
+      "updated": "Փոխարժեքը հաջողությամբ թարմացվեց",
+      "deleted": "Փոխարժեքը հաջողությամբ ջնջվեց",
+      "statusChanged": "Կարգավիճակը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել փոխարժեքը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել փոխարժեքը",
+      "failedToChangeStatus": "Չհաջողվեց փոխել կարգավիճակը",
+      "addFailed": "Չհաջողվեց ավելացնել փոխարժեքը:",
+      "saveFailed": "Չհաջողվեց պահպանել փոխարժեքը:",
+      "statusUpdateFailed": "Չհաջողվեց {{action}} փոխարժեքը:"
+    }
+  },
+  "users": {
+    "iconAlt": "Օգտատերերի պատկերակ",
+    "form": {
+      "username": "Օգտատիրոջ անուն",
+      "enterUsername": "Մուտքագրեք օգտատիրոջ անունը",
+      "password": "Գաղտնաբառ",
+      "enterPassword": "Մուտքագրեք գաղտնաբառը",
+      "role": "Դեր",
+      "email": "Էլ. փոստ",
+      "enterEmail": "Մուտքագրեք էլեկտրոնային փոստի հասցեն",
+      "selectRole": "Ընտրեք դերը",
+      "userType": "Օգտատիրոջ տեսակ",
+      "selectUserType": "Ընտրեք օգտատիրոջ տեսակը",
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութը",
+      "warehouse": "Պահեստ",
+      "selectWarehouse": "Ընտրեք պահեստը"
+    },
+    "validation": {
+      "fillAllFields": "Խնդրում ենք լրացնել բոլոր դաշտերը",
+      "emailInvalid": "Մուտքագրեք վավեր էլ. փոստի հասցե",
+      "roleRequired": "Դաշտը պարտադիր է",
+      "userTypeRequired": "Օգտատիրոջ տեսակը պարտադիր է",
+      "shopRequired": "Ընտրեք խանութը",
+      "warehouseRequired": "Ընտրեք պահեստը"
+    },
+    "success": {
+      "userCreated": "Օգտատերը հաջողությամբ ստեղծվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել օգտատիրոջը"
+    }
+  },
+  "shops": {
+    "products": {
+      "title": "Խանութի ապրանքներ",
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութը",
+      "loading": "Խանութի ապրանքները բեռնվում են...",
+      "emptyState": "Այս խանութում ապրանքներ չեն գտնվել։",
+      "columns": {
+        "id": "ID",
+        "productId": "Ապրանքի ID",
+        "salePrice": "Վաճառքի գին",
+        "quantity": "Քանակ",
+        "createdAt": "Ստեղծվել է",
+        "updatedAt": "Թարմացվել է"
+      }
+    }
+  },
+  "warehouses": {
+    "navigation": {
+      "totalBatches": "Ընդհանուր խմբեր",
+      "batchesToSale": "Վաճառքի խմբեր",
+      "soldBatches": "Վաճառված խմբեր",
+      "adjustedSales": "Ճշգրտված վաճառքներ",
+      "profit": "Շահույթ",
+      "addProduct": "Ավելացնել ապրանք",
+      "products": "Ապրանքներ",
+      "transferToShop": "Տեղափոխել խանութ"
+    },
+    "form": {
+      "selectWarehouse": "Ընտրեք պահեստը"
+    },
+    "totalBatches": {
+      "loading": "Խմբերը բեռնվում են...",
+      "emptyState": "Խմբեր չեն գտնվել։",
+      "createSale": "Ստեղծել վաճառք",
+      "creating": "Ստեղծվում է...",
+      "previewAndCreateSale": "Նախադիտել և ստեղծել վաճառք",
+      "previewTitle": "Վաճառքի նախադիտում",
+      "details": {
+        "individualIntakes": "Առանձին մուտքեր"
+      },
+      "columns": {
+        "id": "ID",
+        "powderBatchId": "Փոշու խմբի ID",
+        "remainingPowderKg": "Մնացորդ",
+        "remainingCostAmd": "Արժեք",
+        "remainingPt_g": "Pt (գ)",
+        "remainingPd_g": "Pd (գ)",
+        "remainingRh_g": "Rh (գ)",
+        "initialPowderKg": "Սկզբնական",
+        "initialCostAmd": "Արժեք",
+        "status": "Կարգավիճակ",
+        "createdAt": "Ստեղծվել է",
+        "updatedAt": "Թարմացվել է",
+        "selectedKg": "Ընտրված կգ",
+        "totalPowderKg": "Ընդհանուր"
+      },
+      "preview": {
+        "totalCostAmd": "Վաճառքի գին",
+        "totalCost": "Ընդհանուր ինքնարժեք",
+        "totalRevenueAmd": "Ընդհանուր հասույթ",
+        "totalPowderKg": "Ընդհանուր փոշի (կգ)"
+      },
+      "success": {
+        "itemAdded": "#{{id}} խումբն ավելացվեց {{kg}} կգ քաշով",
+        "saleCreated": "Վաճառքի խումբը հաջողությամբ ստեղծվեց"
+      },
+      "error": {
+        "noItemsSelected": "Վաճառք ստեղծելուց առաջ ավելացրեք առնվազն մեկ խումբ",
+        "failedToCreateSale": "Չհաջողվեց ստեղծել վաճառքի խումբը"
+      }
+    }
+  },
+  "vehicles": {
+    "tabs": {
+      "tasks": "Աշխատանքներ",
+      "vehicles": "Մեքենաներ"
+    },
+    "tasks": {
+      "addTask": "Ավելացնել աշխատանք",
+      "editTask": "Խմբագրել աշխատանքը",
+      "deleteTask": "Ջնջել աշխատանքը",
+      "form": {
+        "taskService": "Աշխատանք / Ծառայություն",
+        "enterTaskName": "Մուտքագրեք աշխատանքի անվանումը...",
+        "laborCost": "Աշխատուժի արժեք (USD)",
+        "taskNameRequired": "Անվանումը պարտադիր է",
+        "enterValidCost": "Մուտքագրեք վավեր արժեք",
+        "enabled": "Ակտիվ"
+      },
+      "columns": {
+        "code": "Կոդ",
+        "laborCost": "Աշխատուժի արժեք (USD)",
+        "status": "Կարգավիճակ",
+        "actions": "Գործողություններ",
+        "active": "Ակտիվ",
+        "inactive": "Անգործուն"
+      },
+      "confirmation": {
+        "deleteTitle": "Ջնջել աշխատանքը",
+        "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{code}}»-ը։ Այս գործողությունը հետադարձելի չէ։",
+        "deleting": "Ջնջվում է...",
+        "delete": "Ջնջել"
+      }
+    },
+    "vehicles": {
+      "addVehicle": "Ավելացնել մեքենա",
+      "actions": {
+        "viewBuckets": "Բաքեր",
+        "calculatePrice": "Հաշվել գինը",
+        "withBuckets": "Բաքերով"
+      },
+      "form": {
+        "brand": "Բրենդ",
+        "selectBrand": "Ընտրեք բրենդը...",
+        "model": "Մոդել",
+        "enterModel": "Մուտքագրեք մոդելը...",
+        "selectModel": "Ընտրեք մոդելը...",
+        "year": "Տարի",
+        "enterYear": "Մուտքագրեք տարին...",
+        "engine": "Շարժիչ",
+        "enterEngine": "Մուտքագրեք շարժիչը...",
+        "selectEngine": "Ընտրեք շարժիչը...",
+        "fuelType": "Վառելիքի տեսակ",
+        "selectFuelType": "Ընտրեք վառելիքի տեսակը...",
+        "market": "Շուկա",
+        "selectMarket": "Ընտրեք շուկան...",
+        "horsePower": "Ձիաուժ",
+        "enterHorsePower": "Մուտքագրեք ձիաուժը...",
+        "hpMin": "ՁՈւ նվազ.",
+        "selectHPMin": "Նվազ.",
+        "hpMax": "ՁՈւ առավել.",
+        "selectHPMax": "Առավել.",
+        "driveType": "Քարշակի տեսակ",
+        "selectDriveType": "Ընտրեք քարշակի տեսակը...",
+        "status": "Կարգավիճակ"
+      },
+      "columns": {
+        "brand": "Բրենդ",
+        "model": "Մոդել",
+        "year": "Տարի",
+        "engine": "Շարժիչ",
+        "fuelType": "Վառելիքի տեսակ",
+        "market": "Շուկա",
+        "horsePower": "Ձիաուժ",
+        "driveType": "Քարշակի տեսակ",
+        "status": "Կարգավիճակ"
+      }
+    },
+    "ariaLabels": {
+      "addNewTask": "Ավելացնել նոր աշխատանք",
+      "addNewVehicle": "Ավելացնել նոր մեքենա",
+      "editVehicle": "Խմբագրել մեքենան",
+      "deleteVehicle": "Ջնջել մեքենան",
+      "vehicleManagementSections": "Մեքենաների կառավարման բաժիններ"
+    }
+  },
+  "metals": {
+    "addRate": "Ավելացնել մետաղի գին",
+    "editRate": "Խմբագրել մետաղի գինը",
+    "columns": {
+      "currency": "Արժույթ",
+      "platinum": "Պլատին (գրամով)",
+      "palladium": "Պալադիում (գրամով)",
+      "rhodium": "Ռոդիում (գրամով)",
+      "effectiveFrom": "Գործում է սկսած",
+      "status": "Կարգավիճակ"
+    },
+    "form": {
+      "currency": "Արժույթի կոդ",
+      "platinum": "Պլատինի քաշ",
+      "palladium": "Պալադիումի քաշ",
+      "rhodium": "Ռոդիումի քաշ"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել մետաղի գինը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{name}}»-ի գինը։ Այս գործողությունը հետադարձելի չէ։"
+    }
+  },
+  "catalystBuckets": {
+    "title": "Կոդեր",
+    "addBucket": "Ավելացնել կատալիզատորի կոդ",
+    "editBucket": "Խմբագրել կատալիզատորի կոդը",
+    "totalPrice": "Ընդհանուր գին",
+    "tabs": {
+      "catalystBuckets": "Կոդեր",
+      "groupCodes": "Խմբային կոդեր"
+    },
+    "form": {
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդը...",
+      "codeRequired": "Կոդը պարտադիր է",
+      "weight": "Քաշ (գ)",
+      "ptWeight": "Պլատինի քաշ (գ)",
+      "pdWeight": "Պալադիումի քաշ (գ)",
+      "rhWeight": "Ռոդիումի քաշ (գ)",
+      "enterValidWeight": "Մուտքագրեք վավեր քաշ",
+      "enabled": "Ակտիվ",
+      "type": "Կատալիզատորի տեսակը",
+      "selectType": "Ընտրեք տեսակը...",
+      "frontType": "Առջևի բաք",
+      "backType": "Հետևի բաք"
+    },
+    "columns": {
+      "code": "Կոդ",
+      "name": "Անվանում",
+      "type": "Տեսակ",
+      "price": "Գին",
+      "weight": "Քաշ",
+      "ptWeight": "Պլատինի քաշ",
+      "pdWeight": "Պալադիումի քաշ",
+      "rhWeight": "Ռոդիումի քաշ",
+      "status": "Կարգավիճակ",
+      "active": "Ակտիվ",
+      "inactive": "Անգործուն"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել կատալիզատորի կոդը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{code}}»-ը։ Այս գործողությունը հետադարձելի չէ։",
+      "deleting": "Ջնջվում է...",
+      "delete": "Ջնջել"
+    },
+    "ariaLabels": {
+      "addNewBucket": "Ավելացնել նոր կատալիզատորի կոդ"
+    },
+    "searchBucket": "Կցված բաքեր",
+    "searchGroup": "Որոնել ըստ խմբային կոդի",
+    "messages": {
+      "searchToSeeResults": "Արդյունքները տեսնելու համար որոնեք ըստ կոդի"
+    },
+    "search": {
+      "notFound": "Կատալիզատորի կոդ չի գտնվել",
+      "error": "Չհաջողվեց որոնել կատալիզատորի կոդը"
+    },
+    "success": {
+      "bucketsUpdated": "Բաքերը հաջողությամբ թարմացվեցին",
+      "bucketCreated": "Բաքը հաջողությամբ ստեղծվեց",
+      "bucketDeleted": "Բաքը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToFetch": "Չհաջողվեց բեռնել կատալիզատորի կոդերը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել բաքերը",
+      "failedToCreate": "Չհաջողվեց ստեղծել բաքը",
+      "failedToDelete": "Չհաջողվեց ջնջել բաքը"
+    }
+  },
+  "customerTypes": {
+    "addCustomerType": "Ավելացնել հաճախորդի տեսակ",
+    "editCustomerType": "Խմբագրել հաճախորդի տեսակը",
+    "confirmation": {
+      "deleteTitle": "Ջնջել հաճախորդի տեսակը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{code}}» հաճախորդի տեսակը։ Այս գործողությունը հետադարձելի չէ։",
+      "deleting": "Ջնջվում է...",
+      "delete": "Ջնջել"
+    },
+    "form": {
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդը...",
+      "bonusPercent": "Բոնուսի տոկոս (%)",
+      "isDefault": "Լռելյայն"
+    },
+    "columns": {
+      "code": "Կոդ",
+      "isDefault": "Լռելյայն",
+      "bonusPercent": "Բոնուսի տոկոս",
+      "status": "Կարգավիճակ"
+    },
+    "success": {
+      "created": "Հաճախորդի տեսակը հաջողությամբ ստեղծվեց",
+      "updated": "Հաճախորդի տեսակը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել հաճախորդի տեսակը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել հաճախորդի տեսակը"
+    }
+  },
 
-  "ironManagement": {},
+  "ironManagement": {
+    "tabs": {
+      "carModels": "Ավտոմեքենայի մոդելներ",
+      "ironTypes": "Երկաթի տեսակներ",
+      "ironTypesAndPrices": "Երկաթի տեսակներ և գներ",
+      "prices": "Գներ"
+    },
+    "ariaLabels": {
+      "ironManagementSections": "Երկաթի կառավարման բաժիններ"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել մեքենայի մոդելը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել։ Այս գործողությունը հետադարձելի չէ։",
+      "delete": "Ջնջել",
+      "deleteIronTypeTitle": "Ջնջել մետաղի տեսակը",
+      "deleteIronTypeDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել։ Այս գործողությունը հետադարձելի չէ։"
+    },
+    "addCarModel": "Ավելացնել մեքենայի մոդել",
+    "addIronType": "Ավելացնել երկաթի տեսակ",
+    "addIronPrice": "Ավելացնել երկաթի գին",
+    "addPrice": "Ավելացնել գին",
+    "addRecalculationPrice": "Ավելացնել վերահաշվարկի գին",
+    "selectCarModel": "Ընտրեք մեքենայի մոդելը",
+    "selectIronType": "Ընտրեք երկաթի տեսակը",
+    "loading": "Բեռնվում է…",
+    "noIronTypesForCarModel": "Այս մոդելի համար երկաթի տեսակներ չկան։ Ավելացրեք վերևում։",
+    "noPricesYet": "Գներ դեռ չկան։ Սեղմեք +՝ ավելացնելու համար։",
+    "form": {
+      "code": "Կոդ",
+      "enterCode": "Մուտքագրեք կոդը...",
+      "name": "Անվանում",
+      "enterName": "Մուտքագրեք անվանումը...",
+      "language": "Լեզու",
+      "pricePerKg": "Գին",
+      "customerType": "Հաճախորդի տեսակ",
+      "selectCustomerType": "Ընտրեք հաճախորդի տեսակը..."
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Անվանում",
+      "customerType": "Հաճախորդի տեսակ",
+      "pricePerKg": "Գին"
+    },
+    "success": {
+      "carModelCreated": "Մեքենայի մոդելը հաջողությամբ ստեղծվեց",
+      "ironTypeCreated": "Երկաթի տեսակը հաջողությամբ ստեղծվեց",
+      "ironPriceCreated": "Երկաթի գինը հաջողությամբ ստեղծվեց",
+      "recalculationPriceCreated": "Վերահաշվարկի գինը հաջողությամբ ավելացվեց"
+    },
+    "error": {
+      "failedToCreateCarModel": "Չհաջողվեց ստեղծել մեքենայի մոդելը",
+      "failedToCreateIronType": "Չհաջողվեց ստեղծել երկաթի տեսակը",
+      "failedToCreateIronPrice": "Չհաջողվեց ստեղծել երկաթի գինը",
+      "failedToCreateRecalculationPrice": "Չհաջողվեց ավելացնել վերահաշվարկի գինը",
+      "selectCarModel": "Նախ ընտրեք մեքենայի մոդելը"
+    }
+  },
   "cashRegisters": {
     "addCashRegister": "Ավելացնել դրամարկղ",
     "editCashRegister": "Խմբագրել դրամարկղը",
@@ -765,18 +1250,348 @@
       "failedToFetchCashboxReport": "Չհաջողվեց բեռնել դրամարկղի հաշվետվությունը"
     }
   },
-  "cashbox": {},
-  "products": {
-    "form": {
-      "rootCategory": "Ծնող կատեգորիա",
-      "childCategory": "Ենթակատեգորիա",
-      "categoryLevel": "Կատեգորիայի մակարդակ {{level}}"
+  "cashbox": {
+    "zReports": {
+      "title": "Z հաշվետվություններ",
+      "columns": {
+        "openedAt": "Բացված է",
+        "closedAt": "Փակված է",
+        "intakeCount": "Հայտերի քանակ",
+        "totalPurchases": "Ընդհանուր գնումներ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "difference": "Տարբերություն"
+      },
+      "details": {
+        "timeline": "Սեսիայի ժամանակագրություն",
+        "financials": "Ֆինանսական ամփոփում",
+        "operations": "Գործողություններ",
+        "duration": "Տևողություն",
+        "operator": "Օպերատորի ID",
+        "finalDiff": "Վերջնական տարբերություն",
+        "catalystCashOut": "Կատալիզատորի կանխիկ ելք",
+        "ironCashOut": "Երկաթի կանխիկ ելք"
+      },
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ",
+        "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
+        "selectToDate": "Ընտրեք վերջի ամսաթիվը"
+      }
+    },
+    "batches": {
+      "title": "Խմբային հաշվետվություններ",
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ",
+        "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
+        "selectToDate": "Ընտրեք վերջի ամսաթիվը",
+        "clientName": "Հաճախորդի անուն",
+        "clientPhone": "Հաճախորդի հեռախոս",
+        "clientTypeId": "Հաճախորդի տեսակի ID",
+        "customerType": "Հաճախորդի տեսակ",
+        "selectCustomerType": "Ընտրեք հաճախորդի տեսակը",
+        "placeholderClientName": "Ըստ հաճախորդի անվան",
+        "placeholderClientPhone": "Ըստ հաճախորդի հեռախոսի",
+        "placeholderClientTypeId": "Ըստ հաճախորդի տեսակի ID-ի"
+      },
+      "columns": {
+        "createdAt": "Ստեղծման ամսաթիվ",
+        "intakes": "Հայտեր",
+        "weight": "Ընդհանուր քաշ",
+        "status": "Կարգավիճակ"
+      },
+      "details": {
+        "individualIntakes": "Առանձին մուտքեր",
+        "analysis": "Խմբի տարրերի վերլուծություն",
+        "intakeId": "Մուտք",
+        "powder": "Փոշի",
+        "pt": "Պլատին (Pt)",
+        "pd": "Պալադիում (Pd)",
+        "rh": "Ռոդիում (Rh)",
+        "cost": "Ինքնարժեք",
+        "totalCost": "Ընդհանուր ինքնարժեք",
+        "sales": "Կանխատեսվող վաճառք",
+        "profit": "Կանխատեսվող շահույթ",
+        "percent": "Բոնուսի տոկոս",
+        "fxRate": "Փոխարժեք (AMD)",
+        "offerIncreaseStepOrder": "Առաջարկի ավելացման քայլի հերթ",
+        "offerIncreasePercent": "Առաջարկի ավելացման տոկոս",
+        "estimatedSalesAmdAtPurchase": "Գնման պահին կանխատեսվող վաճառք",
+        "estimatedSalesDiffPercent": "Կանխատեսվող վաճառքի տարբերության տոկոս",
+        "expectedProfitAmd": "Գնման պահին սպասվող շահույթ",
+        "liveProfitPercent": "Ընթացիկ շահույթի տոկոս",
+        "purchaseProfitAmd": "Գնման պահին շահույթ",
+        "purchaseProfitPercent": "Գնման պահին շահույթի տոկոս",
+        "profitDiffAmd": "Շահույթի տարբերություն",
+        "profitDiffPercent": "Շահույթի տարբերություն (%)",
+        "customerRealPercent": "Հաճախորդի փաստացի տոկոս"
+      }
+    },
+    "openSessions": {
+      "title": "Բաց սեսսիաներ",
+      "columns": {
+        "sessionId": "Սեսիայի ID",
+        "cashBoxCode": "Կոդ",
+        "operator": "Օպերատոր",
+        "openedAt": "Բացված է",
+        "intakesOffered": "Առաջարկված մուտքեր",
+        "intakesAccepted": "Հաստատված մուտքեր",
+        "powderKg": "Փոշի",
+        "purchases": "Գնումներ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "difference": "Տարբերություն",
+        "lastActivity": "Վերջին ակտիվություն"
+      }
+    },
+    "powderBatches": {
+      "title": "Փոշու խմբեր",
+      "columns": {
+        "createdAt": "Ստեղծման ամսաթիվ",
+        "intakes": "Հայտեր",
+        "weight": "Ընդհանուր քաշ",
+        "ptTotal": "Pt ընդհանուր",
+        "pdTotal": "Pd ընդհանուր",
+        "rhTotal": "Rh ընդհանուր",
+        "ptPerKg_g": "Pt",
+        "pdPerKg_g": "Pd",
+        "rhPerKg_g": "Rh",
+        "status": "Կարգավիճակ",
+        "avgPdPricePerKg": "Pd միջ.",
+        "avgPtPricePerKg": "Pt միջ.",
+        "avgRhPricePerKg": "Rh միջ.",
+        "avgFxRateToAmd": "Փոխարժեք միջ.",
+        "avgCustomerPercent": "Միջ. %"
+      },
+      "summary": {
+        "title": "Փոշու ամփոփում",
+        "button": "Ամփոփում",
+        "tooltip": "Ցույց տալ ընդհանուր փոշին և մետաղները բոլոր խմբերով",
+        "empty": "Ամփոփման տվյալներ չկան։",
+        "thisMonth": "Այս ամիս",
+        "totalPowderKg": "Ընդհանուր փոշի (կգ)",
+        "ptTotal": "Ընդհանուր պլատին (գ)",
+        "pdTotal": "Ընդհանուր պալադիում (գ)",
+        "rhTotal": "Ընդհանուր ռոդիում (գ)",
+        "batchCount": "Խմբերի քանակ",
+        "metalsTitle": "Թանկարժեք մետաղներ",
+        "averagesTitle": "Շուկայի միջին արժեքներ",
+        "metals": {
+          "pt": "Պլատին",
+          "pd": "Պալադիում",
+          "rh": "Ռոդիում"
+        },
+        "units": {
+          "kg": "կգ",
+          "g": "գ",
+          "batches": "խումբ"
+        }
+      },
+      "details": {
+        "analysis": "Փոշու խմբի վերլուծություն",
+        "intakeId": "Մուտք",
+        "powder": "Փոշի",
+        "pt": "Պլատին (Pt)",
+        "pd": "Պալադիում (Pd)",
+        "rh": "Ռոդիում (Rh)",
+        "individualIntakes": "Առանձին մուտքեր",
+        "summaryInfo": "Այս խումբը պարունակում է {{count}} մուտք։ Մանրամասները հասանելի են վերևում։"
+      },
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ",
+        "cashRegisterId": "Դրամարկղի ID",
+        "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
+        "selectToDate": "Ընտրեք վերջի ամսաթիվը",
+        "enterCashRegisterId": "Մուտքագրեք դրամարկղի ID"
+      }
+    },
+    "cashboxReport": {
+      "title": "Դրամարկղի հաշվետվություն",
+      "shopLabel": "Խանութ",
+      "registerLabel": "Դրամարկղ",
+      "dateLabel": "Ամսաթիվ",
+      "selectShop": "Ընտրեք խանութը",
+      "selectRegister": "Ընտրեք դրամարկղը",
+      "selectDatePlaceholder": "Ընտրեք ամսաթիվ (ըստ ցանկության)",
+      "load": "Ցույց տալ հաշվետվությունը",
+      "validation": {
+        "shopRequired": "Խանութը պարտադիր է",
+        "registerRequired": "Դրամարկղը պարտադիր է"
+      },
+      "columns": {
+        "cashBoxId": "Դրամարկղի ID",
+        "date": "Ամսաթիվ",
+        "openingBalance": "Սկզբնական մնացորդ",
+        "cashIn": "Կանխիկ մուտք",
+        "cashOut": "Կանխիկ ելք",
+        "expectedClosingBalance": "Սպասվող վերջնական մնացորդ"
+      }
+    },
+    "errors": {
+      "failedToFetchZReports": "Չհաջողվեց բեռնել Z հաշվետվությունները",
+      "failedToFetchZReport": "Չհաջողվեց բեռնել Z հաշվետվության մանրամասները",
+      "failedToFetchBatches": "Չհաջողվեց բեռնել խմբերը",
+      "failedToFetchBatchDetails": "Չհաջողվեց բեռնել խմբի տարրերը",
+      "failedToFetchOpenSessionsSummary": "Չհաջողվեց բեռնել բաց սեսսիաների ամփոփումը",
+      "failedToFetchPowderBatches": "Չհաջողվեց բեռնել փոշու խմբերը",
+      "failedToFetchPowderBatchesSummary": "Չհաջողվեց բեռնել փոշու խմբերի ամփոփումը",
+      "failedToFetchCashboxReport": "Չհաջողվեց բեռնել դրամարկղի հաշվետվությունը"
     }
   },
+  "products": {
+    "iconAlt": "Ապրանքների պատկերակ",
+    "addNew": "Ավելացնել",
+    "loading": "Ապրանքները բեռնվում են...",
+    "emptyState": "Ապրանքներ չեն գտնվել։ Սեղմեք «Ավելացնել», որպեսզի ստեղծեք առաջին ապրանքը։",
+    "loadingGeneric": "Բեռնվում է...",
+    "navigation": {
+      "products": "Ապրանքներ",
+      "ironProducts": "Երկաթյա ապրանքներ"
+    },
+    "columns": {
+      "productKey": "Ապրանքի կոդ",
+      "sku": "SKU",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "unitType": "Չափման միավոր",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է մեքենայից",
+      "code": "Կոդ",
+      "name": "Անվանում",
+      "price": "Միավոր գին",
+      "actions": "Գործողություններ"
+    },
+    "mobile": {
+      "actions": "Գործողություններ",
+      "sku": "SKU",
+      "code": "Կոդ",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "unitType": "Չափման միավոր",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է մեքենայից",
+      "viewMore": "Ցույց տալ ավելին",
+      "viewLess": "Ցույց տալ պակաս"
+    },
+    "form": {
+      "addProduct": "Ավելացնել ապրանք",
+      "addNewProduct": "Ավելացնել նոր ապրանք",
+      "editProduct": "Խմբագրել ապրանքը",
+      "productKey": "Ապրանքի կոդ",
+      "sku": "SKU",
+      "brand": "Բրենդ",
+      "category": "Կատեգորիա",
+      "rootCategory": "Ծնող կատեգորիա",
+      "childCategory": "Ենթակատեգորիա",
+      "categoryLevel": "Կատեգորիայի մակարդակ {{level}}",
+      "unitType": "Չափման միավոր",
+      "boxSize": "Տուփի չափ",
+      "vehicleDependent": "Կախված է մեքենայից",
+      "type": "Մուտքագրեք",
+      "editPrice": "Խմբագրել գինը",
+      "unitPrice": "Միավոր գին",
+      "select": "Ընտրել"
+    },
+    "success": {
+      "productCreated": "Ապրանքը հաջողությամբ ստեղծվեց",
+      "productUpdated": "Ապրանքը հաջողությամբ թարմացվեց",
+      "productDeleted": "Ապրանքը հաջողությամբ ջնջվեց",
+      "priceUpdated": "Ապրանքի գինը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել ապրանքը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել ապրանքը",
+      "failedToDelete": "Չհաջողվեց ջնջել ապրանքը",
+      "failedToUpdatePrice": "Չհաջողվեց թարմացնել ապրանքի գինը"
+    },
+    "pagination": {
+      "previous": "Նախորդ",
+      "next": "Հաջորդ"
+    },
+    "idPrefix": "ID: "
+  },
 
-  "translation": {},
-  "languages": {},
-  "salePercentages": {},
+  "translation": {
+    "tabs": {
+      "addNew": "Ավելացնել նոր թարգմանություն",
+      "history": "Թարգմանությունների պատմություն"
+    },
+    "ariaLabel": "Թարգմանությունների բաժիններ",
+    "form": {
+      "entityName": "Էնթիթի անվանում",
+      "entityId": "Էնթիթի ID",
+      "fieldName": "Դաշտի անվանում",
+      "fieldValue": "Դաշտի արժեք",
+      "languageCode": "Լեզվի կոդ",
+      "type": "Տեսակ",
+      "select": "Ընտրեք"
+    },
+    "columns": {
+      "entityName": "Էնթիթի անվանում",
+      "entityId": "Էնթիթի ID",
+      "fieldName": "Դաշտի անվանում",
+      "languageCode": "Լեզվի կոդ",
+      "value": "Արժեք"
+    }
+  },
+  "languages": {
+    "addNew": "Ավելացնել նորը",
+    "addLanguage": "Ավելացնել լեզու",
+    "editLanguageTitle": "Խմբագրել լեզուն",
+    "deleteLanguage": "Ջնջել լեզուն",
+    "loading": "Լեզուները բեռնվում են...",
+    "emptyState": "Լեզուներ չեն գտնվել։ Ավելացրեք առաջինը։",
+    "disabled": "Անջատված",
+    "editLanguage": "Խմբագրել {{name}}",
+    "form": {
+      "languageKey": "Լեզվի կոդ",
+      "displayName": "Ցուցադրվող անվանում",
+      "defaultLanguage": "Լռելյայն լեզու",
+      "useAsDefault": "Օգտագործել որպես լռելյայն",
+      "enabled": "Ակտիվ"
+    },
+    "success": {
+      "languageCreated": "Լեզուն հաջողությամբ ստեղծվեց",
+      "languageUpdated": "Լեզուն հաջողությամբ թարմացվեց",
+      "languageDeleted": "Լեզուն հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToLoad": "Չհաջողվեց բեռնել լեզուները",
+      "failedToCreate": "Չհաջողվեց ստեղծել լեզուն",
+      "failedToUpdate": "Չհաջողվեց թարմացնել լեզուն",
+      "failedToDelete": "Չհաջողվեց ջնջել լեզուն",
+      "failedToUpdateDefault": "Չհաջողվեց թարմացնել լռելյայն լեզուն"
+    }
+  },
+  "salePercentages": {
+    "addNew": "Ավելացնել նորը",
+    "addSalePercentage": "Ավելացնել տոկոս",
+    "editSalePercentageTitle": "Խմբագրել տոկոսը",
+    "deleteSalePercentage": "Ջնջել տոկոսը",
+    "editSalePercentage": "Խմբագրել {{percent}}%",
+    "loading": "Վաճառքի տոկոսները բեռնվում են...",
+    "emptyState": "Վաճառքի տոկոսներ չեն գտնվել։ Ավելացրեք առաջինը։",
+    "form": {
+      "percent": "Տոկոս",
+      "enabled": "Ակտիվ",
+      "activePercentage": "Ակտիվ տոկոս",
+      "useAsActive": "Օգտագործել որպես ակտիվ տոկոս"
+    },
+    "success": {
+      "salePercentageCreated": "Վաճառքի տոկոսը հաջողությամբ ստեղծվեց",
+      "salePercentageUpdated": "Վաճառքի տոկոսը հաջողությամբ թարմացվեց",
+      "salePercentageDeleted": "Վաճառքի տոկոսը հաջողությամբ ջնջվեց"
+    },
+    "error": {
+      "failedToLoad": "Չհաջողվեց բեռնել վաճառքի տոկոսները",
+      "failedToCreate": "Չհաջողվեց ստեղծել վաճառքի տոկոսը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել վաճառքի տոկոսը",
+      "failedToDelete": "Չհաջողվեց ջնջել վաճառքի տոկոսը",
+      "failedToUpdateActive": "Չհաջողվեց թարմացնել ակտիվ վաճառքի տոկոսը"
+    }
+  },
   "productSettings": {
     "tabs": {
       "category": "Կատեգորիաներ",
@@ -828,12 +1643,102 @@
     }
   },
 
-  "columns": {},
-  "customerDetails": {},
-  "liveMarketPrices": {},
-  "finalOffer": {},
-  "pricingBreakdown": {},
-  "powderExtraction": {},
+  "columns": {
+    "id": "ID",
+    "code": "Կոդ",
+    "warehouseId": "Պահեստի ID",
+    "actions": "Գործողություններ",
+    "editShop": "Խմբագրել խանութը",
+    "deleteShop": "Ջնջել խանութը",
+    "editWarehouse": "Խմբագրել պահեստը",
+    "deleteWarehouse": "Ջնջել պահեստը"
+  },
+  "customerDetails": {
+    "title": "Հաճախորդի տվյալներ",
+    "client": "Հաճախորդ",
+    "discount": "Զեղչ",
+    "phone": "Հեռախոս",
+    "phonePlaceholder": "Ավելացրեք հեռախոսահամար",
+    "autoModel": "Մեքենայի մոդել",
+    "acceptAndPurchase": "Կատարել գնում",
+    "search": "Փնտրել հաճախորդ",
+    "searchByCountryCode": "Փնտրել երկրի կոդով",
+    "fullName": "Ամբողջական անուն",
+    "fullNamePlaceholder": "Մուտքագրեք ամբողջական անունը",
+    "gender": "Սեռ",
+    "clientType": {
+      "label": "Հաճախորդի տեսակ",
+      "regular": "Ստանդարտ"
+    },
+    "validation": {
+      "enterPhoneNumber": "Խնդրում ենք մուտքագրել հեռախոսահամար",
+      "enterCustomerPhone": "Խնդրում ենք մուտքագրել հաճախորդի հեռախոսահամարը",
+      "enterFullName": "Խնդրում ենք մուտքագրել ամբողջական անունը",
+      "invalidPhone": "Հեռախոսահամարը սխալ է"
+    },
+    "success": {
+      "customerFound": "Հաճախորդը գտնվեց",
+      "customerAccepted": "Հաճախորդը հաստատվեց"
+    },
+    "error": {
+      "failedToSearch": "Չհաջողվեց որոնել հաճախորդին",
+      "missingData": "Պահանջվող տվյալները բացակայում են"
+    },
+    "info": {
+      "newCustomer": "Հաճախորդ չի գտնվել։ Կարող եք գրանցել նոր հաճախորդ։"
+    }
+  },
+  "liveMarketPrices": {
+    "title": "Շուկայական գներ",
+    "live": "ՈՒՂԻՂ",
+    "exchangeRate": "Փոխարժեք",
+    "platinum": "Պլատին",
+    "palladium": "Պալադիում",
+    "rhodium": "Ռոդիում",
+    "source": "Kitco",
+    "bankSource": "Փոխարժեք (USD / AMD)",
+    "loading": "Բեռնվում է...",
+    "updated": "Թարմացվել է {{time}}"
+  },
+  "finalOffer": {
+    "title": "Վերջնական առաջարկ",
+    "offerButton": "Հաստատել առաջարկը",
+    "rejectButton": "Մերժել առաջարկը",
+    "recalculateButton": "Վերահաշվել առաջարկը",
+    "success": {
+      "offered": "Առաջարկը հաջողությամբ հաշվարկվեց",
+      "rejected": "Առաջարկը հաջողությամբ մերժվեց",
+      "recalculated": "Առաջարկը հաջողությամբ վերահաշվարկվեց"
+    },
+    "error": {
+      "noIntake": "Մուտք չի գտնվել",
+      "noIntakeId": "Մուտքի ID-ն բացակայում է",
+      "failedToOffer": "Չհաջողվեց հաշվարկել առաջարկը",
+      "failedToReject": "Չհաջողվեց մերժել առաջարկը"
+    }
+  },
+  "pricingBreakdown": {
+    "title": "Գնի հաշվարկ",
+    "metals": {
+      "platinum": "Պլատին",
+      "palladium": "Պալադիում",
+      "rhodium": "Ռոդիում"
+    },
+    "platinumWeight": "Պլատինի քաշը:",
+    "palladiumWeight": "Պալադիումի քաշը:",
+    "rhodiumWeight": "Ռոդիումի քաշը:",
+    "createIntake": "Հաշվել առաջարկը",
+    "totalMetalValue": "Մետաղների ընդհանուր արժեքը:",
+    "clientCoefficient": "Հաճախորդի գործակից:",
+    "finalOffer": "Վերջնական առաջարկը:"
+  },
+  "powderExtraction": {
+    "title": "Փոշու արդյունահանում",
+    "extractionWeight": "Արդյունահանման քաշը (կգ)",
+    "shopId": "Խանութի ID:",
+    "username": "Օգտատիրոջ անուն:",
+    "cashRegisterName": "Դրամարկղի ID:"
+  },
   "operatorPage": {
     "title": "Օպերատորի տերմինալ",
     "languageLoading": "Լեզուները բեռնվում են...",
@@ -847,12 +1752,12 @@
       "calculate": "Հաշվել",
       "catalyst": "Կատալիզատոր",
       "iron": "Երկաթ",
-      "workshop": "Աշխատանոց",
-      "services": "Ծառայություններ"
+      "workshop": "Աշխատանոց"
     },
     "cashier": {
       "title": "Դրամարկղ",
       "description": "Ընտրեք ապրանքները, ավելացրեք դրանք զամբյուղում և ավարտեք կանխիկ կամ անկանխիկ վճարումը։",
+      "missingCashRegisterHeader": "Դրամարկղի ID-ն բացակայում է կամ անվավեր է։",
       "selectShop": "Ընտրեք խանութը",
       "productsList": "Հասանելի ապրանքներ",
       "loadingProducts": "Տվյալների բեռնում...",
@@ -913,6 +1818,7 @@
         "number": "Գնահատում",
         "summaryTitle": "Գնահատման ամփոփում",
         "status": "Կարգավիճակ",
+        "pending": "Սպասման մեջ",
         "vehicle": "Մեքենա",
         "vin": "VIN",
         "amount": "Գումար",
@@ -956,6 +1862,9 @@
       "mode": {
         "byCode": "Ըստ կոդի",
         "byAttributes": "Ըստ պարամետրերի"
+      },
+      "placeholder": {
+        "bucketGroupCode": "օր. newT1"
       },
       "label": {
         "bucketGroupCode": "Զամբյուղի խմբի կոդ",
@@ -1021,6 +1930,10 @@
         "assigned": "Նշանակված աշխատակից՝ {{employee}}",
         "none": "Այսօր այս կատեգորիայում հերթապահ աշխատակից չի գտնվել։"
       },
+      "programming": {
+        "loading": "Բեռնվում են ընտրված մեքենայի ծրագրավորման գները...",
+        "noProgrammer": "Այս մեքենայի համար ծրագրավոր չկա"
+      },
       "totalAmount": "Ընդհանուր գումար",
       "createOrder": "Ստեղծել պատվերը",
       "receipt": {
@@ -1047,6 +1960,7 @@
         "createFailed": "Չհաջողվեց ստեղծել աշխատանոցի պատվերը",
         "loadVehicleDefinitionsFailed": "Չհաջողվեց բեռնել մեքենայի տվյալները։",
         "loadProductsFailed": "Չհաջողվեց բեռնել խանութի ապրանքացանկը։",
+        "loadProgrammingServicesFailed": "Չհաջողվեց բեռնել ընտրված մեքենայի ծրագրավորման ծառայությունները։",
         "requiredVehicleFields": "Լրացրեք մեքենայի բոլոր պարտադիր դաշտերը։",
         "templateNotFound": "Ընտրված մեքենայի համար գնագոյացման ձևանմուշ չի գտնվել։",
         "selectAtLeastOneService": "Գնահատման համար ընտրեք առնվազն մեկ ծառայություն։",
@@ -1058,13 +1972,194 @@
     },
     "tabSwitchWarning": "Տաբը փոխելու դեպքում ընթացիկ տվյալները կմաքրվեն։ Վստա՞հ եք, որ ցանկանում եք շարունակել։"
   },
-  "customers": {},
-  "pageControl": {},
-  "OTP": {},
-  "catalystPricing": {},
-  "warehouse": {},
-  "powderSales": {},
-  "calculator": {},
+  "customers": {
+    "createOrGet": "Գտնել հաճախորդ",
+    "createOrGetButton": "Որոնել հաճախորդ",
+    "editCustomer": "Խմբագրել հաճախորդին",
+    "customersList": "Հաճախորդների ցուցակ",
+    "loading": "Հաճախորդները բեռնվում են...",
+    "emptyState": "Հաճախորդներ չեն գտնվել։",
+    "createCustomer": "Ստեղծել հաճախորդ",
+    "actions": {
+      "resetFilters": "Մաքրել ֆիլտրերը",
+      "openFilters": "Բացել ֆիլտրերը",
+      "addCustomer": "Ավելացնել հաճախորդ"
+    },
+    "form": {
+      "phone": "Հեռախոս",
+      "phonePlaceholder": "Ավելացրեք հեռախոսահամար",
+      "fullName": "Ամբողջական անուն",
+      "fullNamePlaceholder": "Մուտքագրեք ամբողջական անունը",
+      "gender": "Սեռ",
+      "customerType": "Հաճախորդի տեսակ",
+      "selectCustomerType": "Ընտրեք հաճախորդի տեսակը",
+      "allTypes": "Բոլոր տեսակները",
+      "notes": "Նշումներ"
+    },
+    "validation": {
+      "phoneRequired": "Հեռախոսահամարը պարտադիր է",
+      "customerTypeRequired": "Հաճախորդի տեսակը պարտադիր է"
+    },
+    "columns": {
+      "id": "ID",
+      "phone": "Հեռախոս",
+      "customerType": "Հաճախորդի տեսակ",
+      "bonusPercent": "Բոնուսի տոկոս",
+      "isActive": "Կարգավիճակ"
+    },
+    "confirmation": {
+      "deleteTitle": "Ջնջել հաճախորդին",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{code}}» հաճախորդին։ Այս գործողությունը հետադարձելի չէ։",
+      "deleting": "Ջնջվում է...",
+      "delete": "Ջնջել"
+    },
+    "success": {
+      "customerCreated": "Հաճախորդը հաջողությամբ ստեղծվեց",
+      "customerUpdated": "Հաճախորդի տեսակը հաջողությամբ թարմացվեց"
+    },
+    "error": {
+      "failedToLoad": "Չհաջողվեց բեռնել հաճախորդներին",
+      "failedToCreate": "Չհաջողվեց ստեղծել կամ գտնել հաճախորդին",
+      "failedToUpdate": "Չհաջողվեց թարմացնել հաճախորդի տվյալները"
+    }
+  },
+  "pageControl": {
+    "title": "Էջերի կառավարում",
+    "columns": {
+      "name": "Անվանում",
+      "isVerified": "Ստուգված"
+    },
+    "toast": {
+      "noChanges": "Պահպանելու փոփոխություններ չկան",
+      "pagesUpdated": "Էջերը հաջողությամբ թարմացվեցին"
+    }
+  },
+  "OTP": {
+    "title": "Էջի հաստատում",
+    "description": "Շարունակելու համար խնդրում ենք ստանալ մեկանգամյա կոդ (OTP)։",
+    "requestOtp": "Ստանալ OTP",
+    "verifyOtp": "Հաստատել OTP",
+    "sendingOtp": "OTP-ն ուղարկվում է...",
+    "verifyingOtp": "OTP-ի ստուգում...",
+    "cancel": "Չեղարկել",
+    "requiredVerification": "Այս էջը դիտելու համար անհրաժեշտ է հաստատում։ Խնդրում ենք վերադառնալ հիմնական վահանակ։",
+    "goBack": "Վերադառնալ հիմնական վահանակ",
+    "accessDenied": "Մուտքն արգելված է։ Դուք չունեք այս էջը դիտելու իրավունք։"
+  },
+  "catalystPricing": {
+    "title": "Կատալիզատորի գնագոյացում",
+    "editPricing": "Խմբագրել կատալիզատորի գնագոյացումը",
+    "columns": {
+      "id": "ID",
+      "pdReducePercent": "Պալադիումի նվազեցման տոկոս",
+      "rhReducePercent": "Ռոդիումի նվազեցման տոկոս",
+      "ptReducePercent": "Պլատինի նվազեցման տոկոս",
+      "commissionPercent": "Միջնորդավճարի տոկոս",
+      "transportCost1UsdPerKg": "Տրանսպորտի ծախս 1 (USD/կգ)",
+      "transportCost2UsdPerKg": "Տրանսպորտի ծախս 2 (USD/կգ)",
+      "updatedAt": "Թարմացման ամսաթիվ",
+      "profitMargin": "Շահույթի տոկոս",
+      "customerMargins": "Կանխատեսվող շահույթի տոկոս՝ ըստ հաճախորդի տեսակի"
+    }
+  },
+  "warehouse": {
+    "dailyProfit": {
+      "columns": {
+        "date": "Ամսաթիվ",
+        "revenueAmd": "Շրջանառություն (AMD)",
+        "costAmd": "Ինքնարժեք (AMD)",
+        "profitAmd": "Շահույթ (AMD)",
+        "soldPowderKg": "Վաճառված փոշի (կգ)"
+      },
+      "filters": {
+        "fromDate": "Սկսած ամսաթիվ",
+        "toDate": "Մինչև ամսաթիվ"
+      }
+    },
+    "navigation": {
+      "dailyProfit": "Պահեստի օրական շահույթի հաշվետվություններ"
+    },
+    "form": {
+      "selectWarehouse": "Ընտրեք պահեստը",
+      "loading": "Բեռնվում է...",
+      "emptyState": "Այս պահեստում ապրանքներ չեն գտնվել։"
+    }
+  },
+  "powderSales": {
+    "adjustments": {
+      "columns": {
+        "id": "ID",
+        "powderSaleId": "ID",
+        "oldAmount": "Սկզբնական",
+        "newAmount": "Նոր",
+        "difference": "Տարբեր.",
+        "currencyCode": "Արժույթ",
+        "oldAmountAmd": "Հին (AMD)",
+        "newAmountAmd": "Նոր (AMD)",
+        "differenceAmd": "Տարբեր. (AMD)",
+        "exchangeRate": "Փոխարժեք",
+        "reason": "Պատճառ",
+        "createdAt": "Ամսաթիվ"
+      },
+      "title": "Ճշգրտված վաճառքներ"
+    }
+  },
+  "calculator": {
+    "title": "Հաշվիչ",
+    "liveBadge": "ՈՒՂԻՂ",
+    "columns": {
+      "weight": "Քաշեր",
+      "price": "Գներ",
+      "result": "Արդյունք",
+      "noResult": "Որոնում",
+      "totals": "Ընդհանուր",
+      "details": "Մանրամասներ"
+    },
+    "form": {
+      "powderKg": "Փոշի (կգ)",
+      "pt_g": "Պլատին (Pt, գ)",
+      "pd_g": "Պալադիում (Pd, գ)",
+      "rh_g": "Ռոդիում (Rh, գ)",
+      "priceMode": "Ավտո ռեժիմ",
+      "priceMode.manual": "Ձեռքով",
+      "priceMode.auto": "Ավտոմատ",
+      "priceMode.calculate": "Հաշվել",
+      "ptPrice": "Պլատինի (Pt) գին",
+      "pdPrice": "Պալադիումի (Pd) գին",
+      "rhPrice": "Ռոդիումի (Rh) գին",
+      "exchange": "USD փոխարժեք",
+      "totals": "Քաշեր ըստ պարամետրերի՝ ընդհանուր քաշում",
+      "details": "Քաշեր ըստ պարամետրերի՝ 1 կգ-ում",
+      "customerBonus": "Հաճախորդի բոնուս (%)",
+      "minProfit": "Նվազագույն շահույթ (%)",
+      "maxCustomerPercent": "Հաճախորդի շահույթի տոկոս",
+      "kitko": "Kitco (AMD)",
+      "finalBase": "Ինքնարժեք",
+      "offer": "Առաջարկ",
+      "profit": "Շահույթ",
+      "profitPercent": "Շահույթի տոկոս",
+      "button": {
+        "calculating": "Հաշվարկվում է...",
+        "calculate": "Հաշվել",
+        "cancel": "Չեղարկել"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Մուտքագրեք փոշու քաշը",
+      "pt_g": "Մուտքագրեք պլատինի քաշը",
+      "pd_g": "Մուտքագրեք պալադիումի քաշը",
+      "rh_g": "Մուտքագրեք ռոդիումի քաշը",
+      "ptPrice": "Մուտքագրեք պլատինի գինը",
+      "pdPrice": "Մուտքագրեք պալադիումի գինը",
+      "rhPrice": "Մուտքագրեք ռոդիումի գինը",
+      "exchange": "Մուտքագրեք փոխարժեքը",
+      "customerBonus": "Մուտքագրեք հաճախորդի բոնուսի տոկոսը",
+      "minProfit": "Մուտքագրեք նվազագույն շահույթի տոկոսը"
+    },
+    "error": {
+      "failedToCalculate": "Չհաջողվեց կատարել վաճառքի խմբի հաշվարկը"
+    }
+  },
   "carCatalyst": {
     "title": "Մեքենայի կատալիտիկ կոնվերտորներ",
 
@@ -1183,12 +2278,14 @@
       "pricing": "Մեքենայի ծառայությունների գնագոյացում",
       "categories": "Ծառայությունների կատեգորիաներ",
       "employees": "Աշխատակիցներ",
-      "services": "Ծառայություններ"
+      "services": "Ծառայություններ",
+      "programmers": "Ծրագրավորողների գրառումներ"
     },
 
     "actions": {
       "create": "Ստեղծել",
       "update": "Թարմացնել",
+      "addCategory": "Ավելացնել կատեգորիա",
       "addService": "Ավելացնել ծառայություն",
       "loadPricing": "Բեռնել մեքենայի գները",
       "viewItems": "Դիտել կազմը",
@@ -1225,6 +2322,7 @@
       "notes": "Նշումներ",
       "servicePrice": "Ծառայության գին",
       "servicesTotal": "Ծառայությունների ընդհանուր արժեք",
+      "autoResolved": "Ինքնաշխատ որոշվում է",
       "totalAmount": "Ընդհանուր արժեք",
       "vehicleDefinitionId": "Մեքենայի սահմանման ID",
       "status": "Կարգավիճակ",
@@ -1239,6 +2337,8 @@
       "internalCost": "Ներքին ինքնարժեք",
       "servicePrice": "Ծառայության գին",
       "profit": "Շահույթ",
+      "bestProgrammer": "Լավագույն ծրագրավորող",
+      "programmerCost": "Ծրագրավորողի ինքնարժեք",
       "marginPercent": "Մարժա %",
       "serviceCategory": "Ծառայության կատեգորիա",
       "services": "Ծառայություններ",
@@ -1255,7 +2355,46 @@
       "validationFailed": "Լրացրեք մեքենայի, կատեգորիայի և ծառայությունների բոլոր պարտադիր դաշտերը։",
       "selectVehicleFirst": "Նախ ընտրեք մեքենայի մակնիշը, մոդելը, տարին, վառելիքի տեսակը, շարժիչը և տեղակայությունը։",
       "vehicleNotFound": "Ընտրված պարամետրերով մեքենայի ձևանմուշ չի գտնվել։",
+      "programmingPriceAutoResolved": "Գինը որոշվում է ավտոմատ՝ ծրագրավորողների գրառումների հիման վրա։",
+      "noProgrammerForVehicle": "Այս մեքենայի համար հասանելի ծրագրավորող չկա։",
       "loadFailed": "Չհաջողվեց բեռնել մեքենայի ծառայությունների գնագոյացման տվյալները։"
+    },
+    "programmerAdmin": {
+      "badge": "Ադմին վահանակ",
+      "title": "Ծրագրավորողների գների վերահսկում",
+      "subtitle": "Դիտեք ծրագրավորողների բոլոր գրառումները և անհրաժեշտության դեպքում փոխեք վաճառքի գինը՝ առանց ինքնարժեքը փոխելու։",
+      "hint": "Ցուցադրվում են բոլոր ծրագրավորողների բոլոր ծրագրավորման գրառումները։",
+      "columns": {
+        "vehicle": "Մեքենա",
+        "programmerPrices": "Ծրագրավորողների գներ",
+        "location": "Տեղակայություն",
+        "serviceCost": "Ինքնարժեք",
+        "sellingPrice": "Վաճառքի գին",
+        "profit": "Շահույթ",
+        "created": "Ստեղծվել է"
+      },
+      "actions": {
+        "editSellingPrice": "Փոխել վաճառքի գինը",
+        "applyFilters": "Կիրառել ֆիլտրերը",
+        "resetFilters": "Մաքրել ֆիլտրերը"
+      },
+      "filters": {
+        "programmerUsername": "Ծրագրավորողի օգտանուն",
+        "allProgrammers": "Բոլոր ծրագրավորողները",
+        "programmerUsernamePlaceholder": "օր.` john_prog",
+        "brand": "Մեքենայի մակնիշ",
+        "allBrands": "Բոլոր մակնիշները",
+        "model": "Մեքենայի մոդել",
+        "allModels": "Բոլոր մոդելները"
+      },
+      "messages": {
+        "loadFailed": "Չհաջողվեց բեռնել ծրագրավորողների գրառումները։",
+        "invalidSellingPrice": "Վաճառքի գինը պետք է լինի ճիշտ թիվ։",
+        "sellingPriceUpdated": "Վաճառքի գինը հաջողությամբ թարմացվեց։",
+        "updateFailed": "Չհաջողվեց թարմացնել վաճառքի գինը։",
+        "noEntries": "Ծրագրավորողների գնային գրառումներ չեն գտնվել։",
+        "searchFailed": "Չհաջողվեց որոնել ծրագրավորողների գրառումները։"
+      }
     },
     "employeeManagement": {
       "tabs": {
@@ -1369,6 +2508,96 @@
         "selectEmployeeHint": "Ընտրեք աշխատակցին՝ ավանսը և պատմությունը տեսնելու համար։",
         "selectEmployeeForSalaryHistory": "Աշխատավարձի պատմությունը տեսնելու համար ընտրեք աշխատակցին։"
       }
+    }
+  },
+  "programmerPage": {
+    "badge": "Ծրագրավորման կատեգորիա",
+    "title": "Ծրագրավորողի գնագոյացման կառավարման վահանակ",
+    "subtitle": "Ընտրեք մեքենայի պարամետրերը, ծրագրավորման ծառայությունը, ապա լրացրեք ինքնարժեքն ու վաճառքի գինը։",
+    "sections": {
+      "vehicleLookup": "1. Ընտրեք մեքենայի պարամետրերը",
+      "createPricing": "2. Ստեղծել ծրագրավորման գին",
+      "myEntries": "Իմ ծրագրավորման գրառումները"
+    },
+    "tabs": {
+      "add": "Ավելացնել",
+      "entries": "Իմ ծրագրավորման գրառումները"
+    },
+    "user": {
+      "username": "Մուտք եք գործել որպես"
+    },
+    "fields": {
+      "category": "Կատեգորիա",
+      "brand": "Բրենդ",
+      "model": "Մոդել",
+      "fuelType": "Վառելիքի տեսակ",
+      "engine": "Շարժիչ",
+      "location": "Շուկա/Տարածք",
+      "driveType": "Քարշակի տեսակ",
+      "horsePower": "Ձիաուժ",
+      "year": "Տարեթիվ",
+      "selectedVehicle": "Ընտրված մեքենա",
+      "programmingService": "Ծրագրավորման ծառայություն",
+      "notes": "Նշում",
+      "serviceCost": "Ինքնարժեք",
+      "sellingPrice": "Վաճառքի գին"
+    },
+    "values": {
+      "programming": "Ծրագրավորում"
+    },
+    "placeholders": {
+      "selectBrand": "Ընտրեք բրենդը",
+      "selectModel": "Ընտրեք մոդելը",
+      "selectFuelType": "Ընտրեք վառելիքի տեսակը",
+      "selectEngine": "Ընտրեք շարժիչը",
+      "selectLocation": "Ընտրեք շուկան/տարածքը",
+      "selectDriveType": "Ընտրեք քարշակի տեսակը",
+      "horsePower": "150",
+      "selectYear": "Ընտրեք տարեթիվը",
+      "chooseService": "Ընտրեք ծառայությունը",
+      "notes": "Կամընտրական նշում",
+      "serviceCost": "80.00",
+      "sellingPrice": "150.00"
+    },
+    "actions": {
+      "searchVehicles": "Որոնել մեքենաները",
+      "searching": "Որոնում...",
+      "resetFilters": "Մաքրել ֆիլտրերը",
+      "addPricing": "Ավելացնել ծրագրավորման գին",
+      "saving": "Պահպանվում է...",
+      "editCost": "Փոխել ինքնարժեքը",
+      "editPricing": "Փոխել գները"
+    },
+    "states": {
+      "noVehicleLoaded": "Մեքենայի տվյալներ դեռ բեռնված չեն։",
+      "noVehicleSelected": "Մեքենա ընտրված չէ",
+      "resolvingVehicle": "Ընտրված պարամետրերով մեքենայի որոնում...",
+      "noEntries": "Ձեր օգտահաշվի համար ծրագրավորման գրառումներ չկան։"
+    },
+    "table": {
+      "vehicle": "Մեքենա",
+      "service": "Ծառայություն",
+      "myServiceCost": "Իմ ինքնարժեքը",
+      "sellingPrice": "Վաճառքի գին",
+      "profit": "Շահույթ",
+      "updatedAt": "Թարմացվել է"
+    },
+    "messages": {
+      "loadDataFailed": "Չհաջողվեց բեռնել տվյալները։",
+      "refreshFailed": "Չհաջողվեց թարմացնել գրառումները։",
+      "noVehiclesMatched": "Ընտրված ֆիլտրերին համապատասխան մեքենա չի գտնվել։",
+      "vehicleSearchFailed": "Մեքենայի որոնումը ձախողվեց։",
+      "selectVehicleAndService": "Խնդրում ենք ընտրել և՛ մեքենան, և՛ ծրագրավորման ծառայությունը։",
+      "invalidCosts": "Ինքնարժեքն ու վաճառքի գինը պետք է լինեն ճիշտ թվեր։",
+      "created": "Ծրագրավորման գնագոյացման գրառումը ստեղծվեց։",
+      "createFailed": "Չհաջողվեց ստեղծել գրառումը։",
+      "invalidServiceCost": "Ինքնարժեքը պետք է լինի ճիշտ թիվ։",
+      "costUpdated": "Գինը հաջողությամբ թարմացվեց։",
+      "updateCostFailed": "Չհաջողվեց թարմացնել գինը։"
+    },
+    "logout": {
+      "title": "Ելք",
+      "description": "Վստա՞հ եք, որ ցանկանում եք դուրս գալ ծրագրավորողի վահանակից։"
     }
   }
 }

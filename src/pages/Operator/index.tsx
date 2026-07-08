@@ -17,7 +17,6 @@ import {
   BuyIron,
   CalculateMode,
   WorkshopMode,
-  ServiceTasksTab,
 } from "./components";
 
 // stores
@@ -31,7 +30,7 @@ import { useOperator, type TabType } from "./hooks";
 import styles from "./OperatorPage.module.css";
 import { AlertTriangle } from "lucide-react";
 
-type MainTabType = "buy" | "calculate" | "workshop" | "services";
+type MainTabType = "buy" | "calculate" | "workshop";
 
 export const OperatorPage = () => {
   const { t } = useTranslation();
@@ -43,8 +42,7 @@ export const OperatorPage = () => {
   const rawMainTab = searchParams.get("view");
   const mainTab =
     rawMainTab === "calculate" ||
-    rawMainTab === "workshop" ||
-    rawMainTab === "services"
+    rawMainTab === "workshop"
       ? (rawMainTab as MainTabType)
       : "buy";
 
@@ -165,12 +163,6 @@ export const OperatorPage = () => {
           active={mainTab === "workshop"}
           text={t("operatorPage.tabs.workshop")}
           onClick={() => setMainTabWithCheck("workshop")}
-        />
-        <Tab
-          variant="underline"
-          active={mainTab === "services"}
-          text={t("operatorPage.tabs.services")}
-          onClick={() => setMainTabWithCheck("services")}
         />
       </div>
 
@@ -347,17 +339,6 @@ export const OperatorPage = () => {
                 />
               </div>
             </div>
-          </div>
-        </div>
-      ) : mainTab === "services" ? (
-        <div className={styles.buyLayoutWrapper}>
-          <div className={styles.contentArea}>
-            <ServiceTasksTab
-              cashRegisterId={userData?.cashRegisterId}
-              onSuccess={() => {
-                actions.refreshBalance();
-              }}
-            />
           </div>
         </div>
       ) : (

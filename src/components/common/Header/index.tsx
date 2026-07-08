@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, type FC } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -6,25 +7,45 @@ import { useNavigate } from "react-router-dom";
 import { Tab } from "@/ui-kit";
 
 // stores
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
+import { fetchLanguages } from "@/store/slices/languagesSlice";
 
 // icons
-import { Bell, LogOut } from "lucide-react";
+import { Bell, Check, Languages, LogOut } from "lucide-react";
 import logoImage from "@/assets/icons/Subtract.svg";
 
 // hooks
 import { useActiveRoute } from "@/hooks/useIsActive";
 
+// services
+import {
+  getUserLanguagePreference,
+  setUserLanguagePreference,
+} from "@/services/userLanguage";
+
+// utils
+import {
+  getApiErrorMessage,
+  mapApiCodeToI18nCode,
+} from "@/utils";
+
 // styles
 import styles from "./Header.module.css";
 
 export const Header: FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { languages } = useAppSelector((state) => state.languages);
+  const user = useAppSelector((state) => state.auth.user);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLanguageLoading, setIsLanguageLoading] = useState(false);
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState(
+    i18n.resolvedLanguage || i18n.language,
+  );
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const avatarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -61,10 +82,88 @@ export const Header: FC = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isDropdownOpen]);
 
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const updateDropdownPosition = () => {
+      if (!avatarRef.current) return;
+
+      const rect = avatarRef.current.getBoundingClientRect();
+      const dropdownWidth =
+        window.innerWidth <= 480 ? 200 : window.innerWidth <= 768 ? 220 : 250;
+      const horizontalPadding = 8;
+
+      const nextTop = rect.bottom + 8;
+      const maxLeft = window.innerWidth - dropdownWidth - horizontalPadding;
+      const preferredLeft = rect.right - dropdownWidth;
+      const nextLeft = Math.max(horizontalPadding, Math.min(preferredLeft, maxLeft));
+
+      setDropdownPosition({ top: nextTop, left: nextLeft });
+    };
+
+    updateDropdownPosition();
+
+    window.addEventListener("resize", updateDropdownPosition);
+    window.addEventListener("scroll", updateDropdownPosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updateDropdownPosition);
+      window.removeEventListener("scroll", updateDropdownPosition, true);
+    };
+  }, [isDropdownOpen]);
+
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
     setIsDropdownOpen(false);
+  };
+
+  const enabledLanguages = languages.filter((lang) => lang.isEnabled);
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const loadLanguageData = async () => {
+      setIsLanguageLoading(true);
+
+      try {
+        if (languages.length === 0) {
+          await dispatch(fetchLanguages());
+        }
+
+        const preference = await getUserLanguagePreference();
+        const languageCodeFromPreference = preference.language
+          ? mapApiCodeToI18nCode(preference.language)
+          : i18n.resolvedLanguage || i18n.language;
+
+        setSelectedLanguageCode(languageCodeFromPreference);
+      } catch (error) {
+        console.error("Failed to load user language preference", error);
+      } finally {
+        setIsLanguageLoading(false);
+      }
+    };
+
+    loadLanguageData();
+  }, [dispatch, i18n.language, i18n.resolvedLanguage, isDropdownOpen, languages.length]);
+
+  const handleSetLanguage = async (languageCode: string) => {
+    try {
+      setIsLanguageLoading(true);
+
+      const response = await setUserLanguagePreference(languageCode);
+      const i18nCode = mapApiCodeToI18nCode(response.language || languageCode);
+
+      if (i18n.hasResourceBundle(i18nCode, "translation")) {
+        await i18n.changeLanguage(i18nCode);
+        localStorage.setItem("i18nextLng", i18nCode);
+        setSelectedLanguageCode(i18nCode);
+      }
+    } catch (error) {
+      console.error(getApiErrorMessage(error, "Failed to set language"));
+    } finally {
+      setIsLanguageLoading(false);
+    }
   };
 
   return (
@@ -72,7 +171,7 @@ export const Header: FC = () => {
       <header className={styles.header}>
         <div
           className={styles.logoContainer}
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/finance-reports/dashboard")}
           style={{ cursor: "pointer" }}
         >
           <img src={logoImage} alt="Logo" className={styles.logoImage} />
@@ -119,12 +218,6 @@ export const Header: FC = () => {
 />
             <Tab
               variant="underline"
-              active={isActive("/carCatalyst")}
-              text={t("header.carCatalyst")}
-              onClick={() => navigate("/carCatalyst")}
-            />
-            <Tab
-              variant="underline"
               active={isActive("/customers")}
               text={t("header.customers")}
               onClick={() => navigate("/customers")}
@@ -157,6 +250,10 @@ export const Header: FC = () => {
               <Bell className={styles.bellIcon} />
             </button>
 
+            {user?.username ? (
+              <span className={styles.usernameLabel}>{user.username}</span>
+            ) : null}
+
             <div className={styles.avatarContainer} ref={avatarRef}>
               <button
                 className={styles.avatarButton}
@@ -172,22 +269,61 @@ export const Header: FC = () => {
                   />
                 </div>
               </button>
-
-              {isDropdownOpen && (
-                <div className={styles.dropdown} ref={dropdownRef}>
-                  <button
-                    className={styles.dropdownItem}
-                    onClick={handleLogout}
-                  >
-                    <LogOut className={styles.dropdownIcon} size={16} />
-                    <span>{t("header.logout")}</span>
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </header>
+
+      {isDropdownOpen
+        ? createPortal(
+            <div
+              className={styles.dropdown}
+              ref={dropdownRef}
+              style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+            >
+              <div className={styles.dropdownBody}>
+                <div className={styles.dropdownSectionTitle}>
+                  <Languages size={14} />
+                  <span>{t("header.language")}</span>
+                </div>
+
+                {isLanguageLoading ? (
+                  <div className={styles.languageLoadingText}>
+                    {t("header.languageLoading")}
+                  </div>
+                ) : (
+                  <div className={styles.languageList}>
+                    {enabledLanguages.map((lang) => {
+                      const langI18nCode = mapApiCodeToI18nCode(lang.code);
+                      const isSelected = selectedLanguageCode === langI18nCode;
+
+                      return (
+                        <button
+                          key={lang.id}
+                          className={styles.dropdownItem}
+                          onClick={() => handleSetLanguage(lang.code)}
+                        >
+                          <span>{lang.name}</span>
+                          {isSelected && (
+                            <Check className={styles.dropdownIcon} size={16} />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.dropdownFooter}>
+                <button className={styles.dropdownItem} onClick={handleLogout}>
+                  <LogOut className={styles.dropdownIcon} size={16} />
+                  <span>{t("header.logout")}</span>
+                </button>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 };
