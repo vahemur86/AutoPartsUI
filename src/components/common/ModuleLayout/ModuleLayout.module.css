@@ -37,6 +37,17 @@
   position: relative;
 }
 
+@keyframes tooltipFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
 .sidebarTooltip {
   position: fixed;
   transform: translateY(-50%);
@@ -53,6 +64,20 @@
   box-shadow: 0 8px 20px rgba(2, 6, 23, 0.45);
   pointer-events: none;
   z-index: 12000;
+  animation: tooltipFadeSlide 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.sidebarTooltip::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 6px solid rgba(9, 12, 20, 0.96);
 }
 
 .content {

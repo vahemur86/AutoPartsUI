@@ -46,6 +46,12 @@ export const Header: FC = () => {
     i18n.resolvedLanguage || i18n.language,
   );
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [tooltip, setTooltip] = useState<{ label: string; top: number; left: number; visible: boolean }>({
+    label: "",
+    top: 0,
+    left: 0,
+    visible: false,
+  });
   const avatarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -166,6 +172,23 @@ export const Header: FC = () => {
     }
   };
 
+  const handleShowTooltip = (target: HTMLElement, label: string) => {
+    const rect = target.getBoundingClientRect();
+    const nextTop = rect.top + rect.height / 2;
+    const nextLeft = rect.left - 8;
+
+    setTooltip({
+      label,
+      top: nextTop,
+      left: nextLeft,
+      visible: true,
+    });
+  };
+
+  const handleHideTooltip = () => {
+    setTooltip((prev) => ({ ...prev, visible: false }));
+  };
+
   return (
     <div className={styles.headerContainer}>
       <header className={styles.header}>
@@ -179,76 +202,140 @@ export const Header: FC = () => {
 
         <div className={styles.rightContent}>
           <nav className={styles.nav}>
-            <Tab
-              variant="underline"
-              active={isActive("/settings")}
-              text={t("header.settings")}
-              onClick={() => navigate("/settings")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/products")}
-              text={t("header.products")}
-              onClick={() => navigate("/products")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/warehouses")}
-              text={t("header.warehouses")}
-              onClick={() => navigate("/warehouses")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/shops")}
-              text={t("header.shops")}
-              onClick={() => navigate("/shops")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/users")}
-              text={t("header.users")}
-              onClick={() => navigate("/users")}
-            />
-
-           <Tab
-  variant="underline"
-  active={isActive("/service-templates")}
-  text={t("header.workshop")}
-  onClick={() => navigate("/service-templates")}
-/>
-            <Tab
-              variant="underline"
-              active={isActive("/customers")}
-              text={t("header.customers")}
-              onClick={() => navigate("/customers")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/reports")}
-              text={t("header.reports")}
-              onClick={() => navigate("/reports")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/finance-reports")}
-              text={t("header.financeReports")}
-              onClick={() => navigate("/finance-reports")}
-            />
-            <Tab
-              variant="underline"
-              active={isActive("/calculator")}
-              text={t("header.calculator")}
-              onClick={() => navigate("/calculator")}
-            />
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.settings"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/settings")}
+                text={t("header.settings")}
+                onClick={() => navigate("/settings")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.products"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/products")}
+                text={t("header.products")}
+                onClick={() => navigate("/products")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.warehouses"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/warehouses")}
+                text={t("header.warehouses")}
+                onClick={() => navigate("/warehouses")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.shops"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/shops")}
+                text={t("header.shops")}
+                onClick={() => navigate("/shops")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.users"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/users")}
+                text={t("header.users")}
+                onClick={() => navigate("/users")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.workshop"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/service-templates")}
+                text={t("header.workshop")}
+                onClick={() => navigate("/service-templates")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.customers"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/customers")}
+                text={t("header.customers")}
+                onClick={() => navigate("/customers")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.reports"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/reports")}
+                text={t("header.reports")}
+                onClick={() => navigate("/reports")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.financeReports"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/finance-reports")}
+                text={t("header.financeReports")}
+                onClick={() => navigate("/finance-reports")}
+              />
+            </div>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.calculator"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/calculator")}
+                text={t("header.calculator")}
+                onClick={() => navigate("/calculator")}
+              />
+            </div>
           </nav>
 
           <div className={styles.actions}>
-            <button
-              className={styles.bellButton}
-              aria-label={t("header.notifications")}
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.notifications"))}
+              onMouseLeave={handleHideTooltip}
             >
-              <Bell className={styles.bellIcon} />
-            </button>
+              <button
+                className={styles.bellButton}
+                aria-label={t("header.notifications")}
+              >
+                <Bell className={styles.bellIcon} />
+              </button>
+            </div>
 
             {user?.username ? (
               <span className={styles.usernameLabel}>{user.username}</span>
@@ -320,6 +407,22 @@ export const Header: FC = () => {
                   <span>{t("header.logout")}</span>
                 </button>
               </div>
+            </div>,
+            document.body,
+          )
+        : null}
+
+      {tooltip.visible
+        ? createPortal(
+            <div
+              className={styles.headerTooltip}
+              style={{
+                top: `${tooltip.top}px`,
+                left: `${tooltip.left}px`,
+              }}
+              role="tooltip"
+            >
+              {tooltip.label}
             </div>,
             document.body,
           )
