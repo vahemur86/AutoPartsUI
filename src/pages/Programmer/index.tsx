@@ -346,8 +346,8 @@ export const ProgrammerPage = () => {
     }
   };
 
-  const handleConfirmLogout = () => {
-    dispatch(logout());
+  const handleConfirmLogout = async () => {
+    await dispatch(logout());
     navigate("/login", { replace: true });
   };
 

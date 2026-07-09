@@ -17,3 +17,12 @@ export const login = async ({ username, password }: Credentials) => {
     throw new Error(getApiErrorMessage(error, "Failed to login."));
   }
 };
+
+export const logoutRequest = async () => {
+  try {
+    const response = await api.post(`/auth/logout`);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Logout failed."));
+  }
+};

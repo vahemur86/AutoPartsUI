@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 
 // services
-import { login as loginRequest } from "@/services/auth";
+import { login as loginRequest, logoutRequest } from "@/services/auth";
 
 // types
 import type { Credentials, LoginResponse } from "@/types/auth";
@@ -66,18 +66,21 @@ export const setPassword = createAsyncThunk<
   }
 });
 
+export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      await logoutRequest();
+    } catch (error: unknown) {
+      return rejectWithValue(getApiErrorMessage(error, "Logout failed"));
+    }
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
-      state.token = null;
-      state.user = null;
-      state.isAuthenticated = false;
-      state.error = null;
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("user_data");
-    },
     clearAuthError: (state) => {
       state.error = null;
     },
@@ -115,9 +118,31 @@ const authSlice = createSlice({
       .addCase(setPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to set password";
+      })
+      .addCase(logout.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.isLoading = false;
+        state.token = null;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = null;
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user_data");
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Logout failed";
+        state.token = null;
+        state.user = null;
+        state.isAuthenticated = false;
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user_data");
       });
   },
 });
 
-export const { logout, clearAuthError } = authSlice.actions;
+export const { clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

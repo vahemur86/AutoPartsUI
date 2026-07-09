@@ -157,8 +157,8 @@ export const Header: FC = () => {
     };
   }, [isDropdownOpen]);
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logout());
     navigate("/login");
     setIsDropdownOpen(false);
   };

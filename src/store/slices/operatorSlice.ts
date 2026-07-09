@@ -139,11 +139,17 @@ const operatorSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(logout, (state) => {
-      state.intake = null;
-      state.newPropose = null;
-      state.error = null;
-    });
+    builder
+      .addCase(logout.fulfilled, (state) => {
+        state.intake = null;
+        state.newPropose = null;
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state) => {
+        state.intake = null;
+        state.newPropose = null;
+        state.error = null;
+      });
 
     builder
       .addCase(fetchIntake.pending, (state) => {

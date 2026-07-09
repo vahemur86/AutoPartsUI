@@ -426,8 +426,8 @@ export const OperatorPage = () => {
           }
           title={t("header.logout")}
           description={t("common.areYouSure")}
-          onConfirm={() => {
-            dispatch(logout());
+          onConfirm={async () => {
+            await dispatch(logout());
             navigate("/login");
           }}
           onCancel={() =>
