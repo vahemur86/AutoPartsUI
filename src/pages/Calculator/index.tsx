@@ -294,6 +294,7 @@ export const NewCalculator: FC = () => {
           <TextField
             placeholder={t("calculator.placeholder.customerBonus")}
             type="number"
+            disabled={!isManualMode}
             value={displayValue(form.customerBonusPercent)}
             onChange={(e: any) =>
               update("customerBonusPercent", e.target.value)
@@ -306,6 +307,7 @@ export const NewCalculator: FC = () => {
           <TextField
             placeholder={t("calculator.placeholder.minProfit")}
             type="number"
+            disabled={!isManualMode}
             value={displayValue(form.minProfitMarginPercent)}
             onChange={(e: any) =>
               update("minProfitMarginPercent", e.target.value)
