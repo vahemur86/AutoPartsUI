@@ -1,6 +1,12 @@
 {
   "header": {
+    "dashboard": "Панель",
+    "operations": "Операции",
+    "administration": "Администрирование",
+    "analytics": "Аналитика",
+    "notifications": "Уведомления",
     "settings": "Настройки",
+    "locations": "Подразделения организации",
     "warehouses": "Склады",
     "shops": "Магазины",
     "products": "Товары",
@@ -8,6 +14,7 @@
     "customers": "Клиенты",
     "logout": "Выйти",
     "userMenu": "Меню пользователя",
+    "today": "Сегодня",
     "language": "Язык",
     "languageLoading": "Загрузка языков...",
     "useGlobalDefault": "Использовать общий язык",
@@ -687,10 +694,40 @@
       "warehouseRequired": "Выберите склад"
     },
     "success": {
-      "userCreated": "Пользователь успешно создан"
+      "userCreated": "Пользователь успешно создан",
+      "userUpdated": "Пользователь успешно обновлен"
     },
     "error": {
-      "failedToCreate": "Не удалось создать пользователя"
+      "failedToCreate": "Не удалось создать пользователя",
+      "failedToLoad": "Не удалось загрузить пользователей",
+      "failedToUpdate": "Не удалось обновить пользователя"
+    },
+    "tabs": {
+      "list": "Список пользователей",
+      "create": "Создать пользователя"
+    },
+    "actions": {
+      "addUser": "Добавить пользователя"
+    },
+    "table": {
+      "title": "Пользователи",
+      "id": "ID",
+      "username": "Имя пользователя",
+      "email": "Эл. почта",
+      "role": "Роль",
+      "userType": "Тип пользователя",
+      "shop": "Магазин",
+      "warehouse": "Склад",
+      "active": "Статус",
+      "createdAt": "Создано",
+      "noUsers": "Пользователи не найдены"
+    },
+    "loading": "Загрузка пользователей...",
+    "editModal": {
+      "title": "Редактировать пользователя",
+      "password": "Пароль",
+      "enterPassword": "Введите новый пароль",
+      "active": "Активен"
     }
   },
   "shops": {

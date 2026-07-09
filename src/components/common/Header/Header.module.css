@@ -52,6 +52,12 @@
   scrollbar-width: none;
 }
 
+.menuItemIcon {
+  margin-right: 8px;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
 .nav::-webkit-scrollbar {
   display: none;
 }
@@ -103,9 +109,28 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 8px;
+  gap: 16px;
   position: relative;
   overflow: visible;
+}
+
+.timeInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  color: var(--color-white);
+  font-size: 12px;
+}
+
+.timeLabel {
+  color: var(--color-secondary-500);
+  font-size: 11px;
+}
+
+.timeValue {
+  color: var(--color-white);
+  font-weight: 500;
 }
 
 .bellButton {
@@ -144,6 +169,40 @@
   opacity: 0.9;
 }
 
+.menuDropdown {
+  width: 220px;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menuItem {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: var(--color-white);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.menuItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.menuItemActive {
+  color: var(--color-primary-400);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+}
+
 .avatarButton {
   background: none;
   border: none;
@@ -157,6 +216,32 @@
 
 .avatarButton:hover {
   opacity: 0.8;
+}
+
+.locationItem {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--color-white);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.locationItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.locationItemActive {
+  color: var(--color-primary-400);
+}
+
+.locationsDropdown {
+  width: 220px;
+  padding: 8px 0;
 }
 
 .avatarButton:focus {

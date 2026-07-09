@@ -1,0 +1,11 @@
+<svg width="160" height="64" viewBox="0 0 160 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="64" rx="12" fill="black" />
+  <path d="M22 42C28 32 38 28 52 28C66 28 76 34 82 42C88 50 98 52 110 48" stroke="#FF2D2D" stroke-width="4" stroke-linecap="round" />
+  <path d="M22 42C30 38 38 34 52 34C66 34 76 40 82 46C88 52 98 54 110 50" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+  <path d="M44 18C52 10 68 8 82 14C88 18 92 24 92 24" stroke="#FF2D2D" stroke-width="4" stroke-linecap="round" />
+  <path d="M42 30H110" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <path d="M36 30L42 24" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <path d="M110 30L104 24" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <text x="10" y="60" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">PRP</text>
+  <text x="82" y="60" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="14" letter-spacing="0.5">Service</text>
+</svg>

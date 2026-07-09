@@ -1,6 +1,12 @@
 {
   "header": {
+    "dashboard": "Դաշբորդ",
+    "operations": "Օպերացիաներ",
+    "administration": "Մասնավորումներ",
+    "analytics": "Վերլուծություն",
+    "notifications": "Ծանուցումներ",
     "settings": "Կարգավորումներ",
+    "locations": "Կազմակերպության ստորաբաժանումներ",
     "warehouses": "Պահեստներ",
     "shops": "Խանութներ",
     "products": "Ապրանքներ",
@@ -8,6 +14,7 @@
     "customers": "Հաճախորդներ",
     "logout": "Ելք",
     "userMenu": "Օգտատիրոջ ընտրացանկ",
+    "today": "Այսօր",
     "language": "Լեզու",
     "languageLoading": "Լեզուները բեռնվում են...",
     "useGlobalDefault": "Օգտագործել ընդհանուր լռելյայնը",
@@ -15,7 +22,7 @@
     "financeReports": "Ֆինանսներ և հաշվետվություններ",
     "calculator": "Հաշվիչ",
     "carCatalyst": "Բաքեր",
-     "workshop": "Արհեստանոց"
+    "workshop": "Աշխատանոց"
   },
   "common": {
     "add": "Ավելացնել",
@@ -662,10 +669,40 @@
       "warehouseRequired": "Ընտրեք պահեստը"
     },
     "success": {
-      "userCreated": "Օգտատերը հաջողությամբ ստեղծվեց"
+      "userCreated": "Օգտատերը հաջողությամբ ստեղծվեց",
+      "userUpdated": "Օգտատերը հաջողությամբ թարմացվեց"
     },
     "error": {
-      "failedToCreate": "Չհաջողվեց ստեղծել օգտատիրոջը"
+      "failedToCreate": "Չհաջողվեց ստեղծել օգտատիրոջը",
+      "failedToLoad": "Չհաջողվեց բեռնել օգտատերերը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել օգտատիրոջը"
+    },
+    "tabs": {
+      "list": "Օգտատերերի ցանկ",
+      "create": "Ստեղծել օգտատեր"
+    },
+    "actions": {
+      "addUser": "Ավելացնել օգտատեր"
+    },
+    "table": {
+      "title": "Օգտատերեր",
+      "id": "ID",
+      "username": "Օգտատիրոջ անուն",
+      "email": "Էլ. փոստ",
+      "role": "Դեր",
+      "userType": "Օգտատիրոջ տեսակ",
+      "shop": "Խանութ",
+      "warehouse": "Պահեստ",
+      "active": "Կարգավիճակ",
+      "createdAt": "Ստեղծվել է",
+      "noUsers": "Օգտատերեր չեն գտնվել"
+    },
+    "loading": "Օգտատերերը բեռվում են...",
+    "editModal": {
+      "title": "Փոփոխել օգտատիրոջը",
+      "password": "Գաղտնաբառ",
+      "enterPassword": "Մերեք նոր գաղտնաբառը",
+      "active": "Ակտիվ"
     }
   },
   "shops": {

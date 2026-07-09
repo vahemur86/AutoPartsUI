@@ -1,6 +1,12 @@
 {
   "header": {
+    "dashboard": "Dashboard",
+    "operations": "Operations",
+    "administration": "Administration",
+    "analytics": "Analytics",
+    "notifications": "Notifications",
     "settings": "Settings",
+    "locations": "Organization Units",
     "warehouses": "Warehouses",
     "shops": "Shops",
     "products": "Products",
@@ -8,10 +14,11 @@
     "customers": "Customers",
     "logout": "Logout",
     "userMenu": "User menu",
+    "today": "Today",
     "language": "Language",
     "languageLoading": "Loading languages...",
     "useGlobalDefault": "Use global default",
-      "addCategory": "Add Category",
+    "addCategory": "Add Category",
     "reports": "Reports",
     "financeReports": "Finance & Reports",
     "calculator": "Calculator",
@@ -688,10 +695,40 @@
       "warehouseRequired": "Warehouse is required"
     },
     "success": {
-      "userCreated": "User created successfully"
+      "userCreated": "User created successfully",
+      "userUpdated": "User updated successfully"
     },
     "error": {
-      "failedToCreate": "Failed to create user"
+      "failedToCreate": "Failed to create user",
+      "failedToLoad": "Failed to load users",
+      "failedToUpdate": "Failed to update user"
+    },
+    "tabs": {
+      "list": "User list",
+      "create": "Create user"
+    },
+    "actions": {
+      "addUser": "Add user"
+    },
+    "table": {
+      "title": "Users",
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "role": "Role",
+      "userType": "User type",
+      "shop": "Shop",
+      "warehouse": "Warehouse",
+      "active": "Status",
+      "createdAt": "Created at",
+      "noUsers": "No users found"
+    },
+    "loading": "Loading users...",
+    "editModal": {
+      "title": "Edit user",
+      "password": "Password",
+      "enterPassword": "Enter new password",
+      "active": "Active"
     }
   },
   "shops": {
