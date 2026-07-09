@@ -375,7 +375,8 @@
       "sections": {
         "overview": "Оперативная сводка",
         "lowStock": "Оповещения о низком остатке",
-        "outOfStock": "Оповещения об отсутствии товара"
+        "outOfStock": "Оповещения об отсутствии товара",
+        "otherExpenses": "Прочие расходы"
       },
       "kpi": {
         "todayRevenue": "Выручка за сегодня",
@@ -389,6 +390,9 @@
         "totalRevenue": "Общая выручка",
         "lowStockAlertsCount": "Оповещения о низком остатке",
         "outOfStockCount": "Оповещения об отсутствии товара",
+        "monthlyOtherExpenses": "Прочие расходы за месяц",
+        "monthlyNetProfit": "Чистая прибыль за месяц",
+        "todayNetProfit": "Чистая прибыль за сегодня",
         "threshold": "Порог оповещений"
       },
       "charts": {
