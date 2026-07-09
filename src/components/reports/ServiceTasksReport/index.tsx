@@ -146,7 +146,33 @@ export const ServiceTasksReport = () => {
 
       <div className={styles.tableContainer}>
         {isLoading ? (
-          <div className={styles.loading}>{t("reports.serviceTasks.loading")}</div>
+          <div className={styles.skeletonState} aria-busy="true" aria-live="polite">
+            <div className={styles.filterSkeleton}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+            </div>
+            <div className={styles.totalsSkeleton}>
+              <div className={styles.totalCardSkeleton} />
+              <div className={styles.totalCardSkeleton} />
+              <div className={styles.totalCardSkeleton} />
+            </div>
+            <div className={styles.tableSkeleton}>
+              <div className={styles.tableSkeletonHeader}>
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+              </div>
+              <div className={styles.tableSkeletonRows}>
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className={styles.tableSkeletonRow}>
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
           <DataTable
             columns={columns}

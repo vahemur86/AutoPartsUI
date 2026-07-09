@@ -56,7 +56,21 @@ const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
   };
 
   if (isLoading && selectedZReport?.sessionId !== sessionId) {
-    return <div className={styles.detailLoading}>{t("common.loading")}</div>;
+    return (
+      <div className={styles.detailSkeleton} aria-busy="true" aria-live="polite">
+        <div className={styles.detailSkeletonHeader}>
+          <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+        </div>
+        <div className={styles.detailSkeletonGrid}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className={styles.detailSkeletonCard}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (!selectedZReport || selectedZReport.sessionId !== sessionId) {
@@ -153,7 +167,9 @@ const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
 export const ZReports: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { zReports } = useAppSelector((state) => state.cashboxSessions);
+  const { zReports, isLoading } = useAppSelector(
+    (state) => state.cashboxSessions,
+  );
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -233,21 +249,39 @@ export const ZReports: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        <DataTable
-          columns={columns}
-          data={zReports?.results || []}
-          pageSize={PAGE_SIZE}
-          manualPagination
-          pageCount={totalPages}
-          pageIndex={currentPage}
-          getRowClassName={(row) =>
-            checkIsToday(row.openedAt) ? styles.todayRow : ""
-          }
-          onPaginationChange={setCurrentPage}
-          renderSubComponent={({ row }) => (
-            <ZReportDetailView sessionId={row.original.sessionId} />
-          )}
-        />
+        {isLoading && !zReports?.results?.length ? (
+          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.tableSkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.tableSkeletonRows}>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className={styles.tableSkeletonRow}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={zReports?.results || []}
+            pageSize={PAGE_SIZE}
+            manualPagination
+            pageCount={totalPages}
+            pageIndex={currentPage}
+            getRowClassName={(row) =>
+              checkIsToday(row.openedAt) ? styles.todayRow : ""
+            }
+            onPaginationChange={setCurrentPage}
+            renderSubComponent={({ row }) => (
+              <ZReportDetailView sessionId={row.original.sessionId} />
+            )}
+          />
+        )}
       </div>
     </div>
   );

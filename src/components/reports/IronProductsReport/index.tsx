@@ -32,7 +32,9 @@ export const IronProductsReport: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { purchases } = useAppSelector((state) => state.adminProducts);
+  const { purchases, isLoading } = useAppSelector(
+    (state) => state.adminProducts,
+  );
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -124,18 +126,36 @@ export const IronProductsReport: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        <DataTable
-          manualPagination
-          columns={columns}
-          data={purchases?.results || []}
-          pageSize={PAGE_SIZE}
-          pageCount={totalPages}
-          pageIndex={currentPage}
-          getRowClassName={(row) =>
-            checkIsToday(row.purchasedAt) ? styles.todayRow : ""
-          }
-          onPaginationChange={setCurrentPage}
-        />
+        {isLoading && !purchases?.results?.length ? (
+          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.tableSkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.tableSkeletonRows}>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className={styles.tableSkeletonRow}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            manualPagination
+            columns={columns}
+            data={purchases?.results || []}
+            pageSize={PAGE_SIZE}
+            pageCount={totalPages}
+            pageIndex={currentPage}
+            getRowClassName={(row) =>
+              checkIsToday(row.purchasedAt) ? styles.todayRow : ""
+            }
+            onPaginationChange={setCurrentPage}
+          />
+        )}
       </div>
     </div>
   );

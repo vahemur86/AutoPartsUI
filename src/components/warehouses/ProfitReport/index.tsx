@@ -180,7 +180,20 @@ export const ProfitReport = () => {
             {t("warehouses.form.selectWarehouse")}
           </div>
         ) : isLoading ? (
-          <div className={styles.loading}>{t("warehouses.profit.loading")}</div>
+          <div className={styles.summarySkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.summarySkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.summarySkeletonCards}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className={styles.summarySkeletonCard}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                </div>
+              ))}
+            </div>
+          </div>
         ) : !profitData ? (
           <div className={styles.emptyState}>
             {t("warehouses.profit.emptyState")}

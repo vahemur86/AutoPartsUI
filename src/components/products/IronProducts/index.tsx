@@ -36,7 +36,9 @@ export const IronProducts = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { ironProducts } = useAppSelector((state) => state.adminProducts);
+  const { ironProducts, isLoading } = useAppSelector(
+    (state) => state.adminProducts,
+  );
 
   const [isEditing, setIsEditing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IronProduct | null>(
@@ -97,7 +99,26 @@ export const IronProducts = () => {
   return (
     <div className={styles.productsWrapper}>
       <div className={contentStyles.productsContent}>
-        <DataTable columns={columns} data={ironProducts} pageSize={10} />
+        {isLoading && ironProducts.length === 0 ? (
+          <div className={contentStyles.skeletonPanel} aria-busy="true" aria-live="polite">
+            <div className={contentStyles.skeletonHeader}>
+              <div className={`${contentStyles.skeletonLine} ${contentStyles.skeletonLineWide}`} />
+              <div className={`${contentStyles.skeletonLine} ${contentStyles.skeletonLineShort}`} />
+            </div>
+            <div className={contentStyles.skeletonTable}>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className={contentStyles.skeletonRow}>
+                  <div className={`${contentStyles.skeletonLine} ${contentStyles.skeletonLineMedium}`} />
+                  <div className={`${contentStyles.skeletonLine} ${contentStyles.skeletonLineMedium}`} />
+                  <div className={`${contentStyles.skeletonLine} ${contentStyles.skeletonLineMedium}`} />
+                  <div className={`${contentStyles.skeletonLine} ${contentStyles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <DataTable columns={columns} data={ironProducts} pageSize={10} />
+        )}
       </div>
 
       <EditPriceDropdown

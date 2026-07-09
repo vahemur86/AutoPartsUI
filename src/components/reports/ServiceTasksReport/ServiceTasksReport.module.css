@@ -7,6 +7,23 @@
 .totalCard { background: var(--surface); padding:12px 16px; border-radius:10px; border:1px solid var(--divider); min-width:180px; }
 .totalLabel { color:var(--muted); font-size:0.9rem; }
 .totalValue { font-weight:700; font-size:1.05rem; margin-top:6px; }
+.skeletonState { display:flex; flex-direction:column; gap:16px; }
+.filterSkeleton { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.totalsSkeleton { display:flex; gap:12px; flex-wrap:wrap; }
+.totalCardSkeleton { height:64px; width:180px; border-radius:10px; background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.16), rgba(255,255,255,0.08)); background-size:200% 100%; animation:skeletonPulse 1.2s infinite linear; }
+.tableSkeleton { display:flex; flex-direction:column; gap:12px; padding:16px; border:1px solid rgba(255,255,255,0.08); border-radius:12px; background:rgba(15,23,42,0.45); }
+.tableSkeletonHeader { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.tableSkeletonRows { display:flex; flex-direction:column; gap:10px; }
+.tableSkeletonRow { display:grid; grid-template-columns:1fr 1fr 0.6fr; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.skeletonLine { height:12px; border-radius:999px; background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.16), rgba(255,255,255,0.08)); background-size:200% 100%; animation:skeletonPulse 1.2s infinite linear; }
+.skeletonLineWide { width:180px; }
+.skeletonLineMedium { width:100%; }
+.skeletonLineShort { width:70px; }
+@keyframes skeletonPulse {
+  0% { background-position:200% 0; }
+  100% { background-position:-200% 0; }
+}
 @media (max-width: 1024px) {
   .filterRow { grid-template-columns:1fr; }
+  .filterSkeleton { grid-template-columns:1fr; }
 }

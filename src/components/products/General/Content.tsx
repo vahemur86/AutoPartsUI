@@ -93,7 +93,22 @@ export const ProductsContent = ({ onEdit }: ProductsContentProps) => {
   if (isLoading && products.length === 0) {
     return (
       <div className={styles.loadingContainer}>
-        <p>{t("products.loading")}</p>
+        <div className={styles.skeletonPanel} aria-busy="true" aria-live="polite">
+          <div className={styles.skeletonHeader}>
+            <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+            <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+          </div>
+          <div className={styles.skeletonTable}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className={styles.skeletonRow}>
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

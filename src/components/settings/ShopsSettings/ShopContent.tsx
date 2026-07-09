@@ -78,7 +78,21 @@ export const ShopContent: FC<ShopContentProps> = ({
       {activeTab === "shops-history" && (
         <div className={styles.historyContainer}>
           {isLoading ? (
-            <div className={styles.loadingState}>{t("shops.loading")}</div>
+            <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+              <div className={styles.tableSkeletonHeader}>
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+              </div>
+              <div className={styles.tableSkeletonRows}>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div key={index} className={styles.tableSkeletonRow}>
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : shops.length === 0 ? (
             <div className={styles.emptyState}>{t("shops.emptyState")}</div>
           ) : (

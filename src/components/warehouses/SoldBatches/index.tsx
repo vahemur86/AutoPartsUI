@@ -176,8 +176,20 @@ export const SoldBatches: FC = () => {
 
       <div className={styles.tableContainer}>
         {isLoading && !data ? (
-          <div className={styles.loading}>
-            {t("warehouses.soldBatches.loading")}
+          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.tableSkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.tableSkeletonRows}>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className={styles.tableSkeletonRow}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
           </div>
         ) : data?.results.length === 0 ? (
           <div className={styles.emptyState}>

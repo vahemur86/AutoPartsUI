@@ -241,7 +241,21 @@ export const Customers = () => {
 
           <div className={styles.tableWrapper}>
             {isLoading ? (
-              <div className={styles.loading}>{t("customers.loading")}</div>
+              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+                <div className={styles.tableSkeletonHeader}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+                <div className={styles.tableSkeletonRows}>
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className={styles.tableSkeletonRow}>
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <DataTable
                 data={customers ?? []}

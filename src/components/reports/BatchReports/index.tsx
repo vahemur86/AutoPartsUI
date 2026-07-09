@@ -63,7 +63,21 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
   }, [sessionId, dispatch, batchDetails?.sessionId, isLoading, t]);
 
   if (isLoading && batchDetails?.sessionId !== sessionId) {
-    return <div className={styles.detailLoading}>{t("common.loading")}</div>;
+    return (
+      <div className={styles.detailSkeleton} aria-busy="true" aria-live="polite">
+        <div className={styles.detailSkeletonHeader}>
+          <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+        </div>
+        <div className={styles.detailSkeletonGrid}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className={styles.detailSkeletonCard}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (!batchDetails || batchDetails.sessionId !== sessionId) {
@@ -325,7 +339,9 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
 export const BatchReports: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { batches } = useAppSelector((state) => state.cashboxSessions);
+  const { batches, isLoading } = useAppSelector(
+    (state) => state.cashboxSessions,
+  );
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
   const { batchDetailsForFilter } = useAppSelector(
     (state) => state.cashDashboard,
@@ -451,21 +467,39 @@ export const BatchReports: FC = () => {
 
       {!hasClientFilter && (
         <div className={styles.tableContainer}>
-          <DataTable
-            columns={columns}
-            data={batches?.results || []}
-            pageSize={PAGE_SIZE}
-            manualPagination
-            pageCount={totalPages}
-            pageIndex={currentPage}
-            getRowClassName={(row) =>
-              checkIsToday(row.createdAt) ? styles.todayRow : ""
-            }
-            onPaginationChange={setCurrentPage}
-            renderSubComponent={({ row }) => (
-              <BatchDetailView sessionId={row.original.sessionId} />
-            )}
-          />
+          {isLoading && !batches?.results?.length ? (
+            <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+              <div className={styles.tableSkeletonHeader}>
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+              </div>
+              <div className={styles.tableSkeletonRows}>
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className={styles.tableSkeletonRow}>
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={batches?.results || []}
+              pageSize={PAGE_SIZE}
+              manualPagination
+              pageCount={totalPages}
+              pageIndex={currentPage}
+              getRowClassName={(row) =>
+                checkIsToday(row.createdAt) ? styles.todayRow : ""
+              }
+              onPaginationChange={setCurrentPage}
+              renderSubComponent={({ row }) => (
+                <BatchDetailView sessionId={row.original.sessionId} />
+              )}
+            />
+          )}
         </div>
       )}
       {hasClientFilter && (
@@ -485,16 +519,28 @@ export const BatchReports: FC = () => {
                 />
               )}
 
-              <div className={styles.itemsGrid}>
-                {batchDetailsForFilter?.items?.map((batch) => (
-                  <FilteredBatchCard
-                    key={batch.id}
-                    batch={batch}
-                    t={t}
-                    styles={styles}
-                  />
-                ))}
-              </div>
+              {isLoading && !batchDetailsForFilter?.items?.length ? (
+                <div className={styles.filterSkeletonGrid}>
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className={styles.filterSkeletonCard}>
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.itemsGrid}>
+                  {batchDetailsForFilter?.items?.map((batch) => (
+                    <FilteredBatchCard
+                      key={batch.id}
+                      batch={batch}
+                      t={t}
+                      styles={styles}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

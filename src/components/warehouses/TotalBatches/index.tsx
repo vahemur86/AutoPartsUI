@@ -228,8 +228,20 @@ export const TotalBatches = () => {
             {t("warehouses.form.selectWarehouse")}
           </div>
         ) : isLoading ? (
-          <div className={styles.loading}>
-            {t("warehouses.totalBatches.loading")}
+          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.tableSkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.tableSkeletonRows}>
+              {Array.from({ length: 7 }).map((_, index) => (
+                <div key={index} className={styles.tableSkeletonRow}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
           </div>
         ) : inventoryLots.length === 0 ? (
           <div className={styles.emptyState}>

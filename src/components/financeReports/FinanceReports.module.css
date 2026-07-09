@@ -240,6 +240,158 @@
     rgba(15, 23, 42, 0.55);
 }
 
+/* Skeleton loading styles */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255,255,255,0.03);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  height: 100%;
+  width: 150px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  animation: skeleton-loading 1.2s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { left: -150px; }
+  100% { left: 100%; }
+}
+
+.skeletonText {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+}
+
+.skeletonTextXL {
+  height: 18px;
+  width: 220px;
+}
+
+.skeletonTextLg {
+  height: 20px;
+  width: 70%;
+}
+
+.skeletonTextMd {
+  height: 12px;
+  width: 160px;
+}
+
+.skeletonTextSm {
+  height: 11px;
+  width: 72px;
+}
+
+.skeletonTextXs {
+  height: 10px;
+  width: 60px;
+}
+
+.skeletonCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+.skeletonChip {
+  height: 30px;
+  width: 110px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+}
+
+.dashboardSkeleton {
+  gap: 14px;
+}
+
+.dashboardSkeletonHero {
+  min-height: 126px;
+}
+
+.dashboardSkeletonHeroContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboardSkeletonBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.dashboardSkeletonHeroActions {
+  display: flex;
+  gap: 8px;
+}
+
+.dashboardSkeletonCard {
+  min-height: 88px;
+  justify-content: center;
+  gap: 10px;
+}
+
+.dashboardSkeletonChartCard {
+  min-height: 280px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboardSkeletonChartTitle {
+  width: 180px;
+}
+
+.dashboardSkeletonTableCard {
+  min-height: 220px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboardSkeletonTableRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.dashboardSkeletonTableRows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dashboardSkeletonChart {
+  flex: 1;
+  min-height: 200px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+}
+
+/* Fade-in for loaded content */
+.fadeIn {
+  animation: fade-in 320ms ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .dashboardHeroTitle h3 {
   margin: 0;
   font-size: 20px;
@@ -362,6 +514,15 @@
 }
 
 @media (max-width: 1200px) {
+  .dashboardSkeletonHero {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dashboardSkeletonHeroActions {
+    align-self: flex-start;
+  }
+
   .filters {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
   }

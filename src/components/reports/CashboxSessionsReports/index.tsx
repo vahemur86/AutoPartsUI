@@ -28,7 +28,9 @@ export const CashboxSessionsReports: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { cashboxReport } = useAppSelector((state) => state.cashboxSessions);
+  const { cashboxReport, isLoading } = useAppSelector(
+    (state) => state.cashboxSessions,
+  );
   const { shops } = useAppSelector((state) => state.shops);
   const { cashRegisters } = useAppSelector((state) => state.cashRegisters);
 
@@ -269,15 +271,33 @@ export const CashboxSessionsReports: FC = () => {
       </div>
 
       <div className={styles.tableContainer}>
-        <DataTable
-          columns={columns}
-          data={tableData}
-          pageSize={1}
-          manualPagination={false}
-          getRowClassName={(row) =>
-            checkIsToday(row.date) ? styles.todayRow : ""
-          }
-        />
+        {isLoading && !cashboxReport ? (
+          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.tableSkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.tableSkeletonRows}>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className={styles.tableSkeletonRow}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={tableData}
+            pageSize={1}
+            manualPagination={false}
+            getRowClassName={(row) =>
+              checkIsToday(row.date) ? styles.todayRow : ""
+            }
+          />
+        )}
       </div>
     </div>
   );

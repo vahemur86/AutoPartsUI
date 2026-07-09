@@ -24,7 +24,7 @@ const PAGE_SIZE = 10;
 export const OpenSessions: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { openSessionsSummary } = useAppSelector(
+  const { openSessionsSummary, isLoading } = useAppSelector(
     (state) => state.cashDashboard,
   );
 
@@ -64,20 +64,38 @@ export const OpenSessions: FC = () => {
       </header>
 
       <div className={styles.tableContainer}>
-        <DataTable
-          columns={columns}
-          data={paginatedData}
-          pageSize={PAGE_SIZE}
-          manualPagination
-          pageCount={totalPages}
-          pageIndex={currentPage}
-          getRowClassName={(row) =>
-            checkIsToday(row.openedAt) ? styles.todayRow : ""
-          }
-          onPaginationChange={(pageIndex) => {
-            setCurrentPage(pageIndex);
-          }}
-        />
+        {isLoading && openSessionsSummary.length === 0 ? (
+          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.tableSkeletonHeader}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+            </div>
+            <div className={styles.tableSkeletonRows}>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className={styles.tableSkeletonRow}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={paginatedData}
+            pageSize={PAGE_SIZE}
+            manualPagination
+            pageCount={totalPages}
+            pageIndex={currentPage}
+            getRowClassName={(row) =>
+              checkIsToday(row.openedAt) ? styles.todayRow : ""
+            }
+            onPaginationChange={(pageIndex) => {
+              setCurrentPage(pageIndex);
+            }}
+          />
+        )}
       </div>
     </div>
   );

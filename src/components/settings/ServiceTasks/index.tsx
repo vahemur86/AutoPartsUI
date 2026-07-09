@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import styles from "./ServiceTasks.module.css";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
@@ -285,7 +286,25 @@ export const ServiceTasks = () => {
         )}
       </div>
 
-      {isLoading ? <div>{t("common.loading")}</div> : <DataTable data={rows} columns={columns} pageSize={10} />}
+      {isLoading ? (
+        <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+          <div className={styles.tableSkeletonHeader}>
+            <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+            <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+          </div>
+          <div className={styles.tableSkeletonRows}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className={styles.tableSkeletonRow}>
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <DataTable data={rows} columns={columns} pageSize={10} />
+      )}
 
       <ConfirmationModal
         open={!!deletingRow}

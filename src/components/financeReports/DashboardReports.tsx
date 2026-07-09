@@ -64,6 +64,67 @@ const formatDateTime = (value?: string): string => {
   return parsed.toLocaleString();
 };
 
+const DashboardSkeleton = () => (
+  <div className={`${styles.panel} ${styles.dashboardSkeleton}`} aria-busy="true" aria-live="polite" aria-label="Dashboard is loading">
+    <div className={`${styles.dashboardHero} ${styles.dashboardSkeletonHero}`}>
+      <div className={styles.dashboardSkeletonHeroContent}>
+        <div className={`${styles.skeletonText} ${styles.skeletonTextXL} ${styles.skeleton}`} />
+        <div className={`${styles.skeletonText} ${styles.skeletonTextMd} ${styles.skeleton}`} />
+        <div className={styles.dashboardSkeletonBadges}>
+          <div className={`${styles.skeletonChip} ${styles.skeleton}`} />
+          <div className={`${styles.skeletonChip} ${styles.skeleton}`} />
+        </div>
+      </div>
+      <div className={styles.dashboardSkeletonHeroActions}>
+        <div className={`${styles.skeletonCircle} ${styles.skeleton}`} />
+        <div className={`${styles.skeletonCircle} ${styles.skeleton}`} />
+      </div>
+    </div>
+
+    <div className={styles.kpiGrid}>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <article key={index} className={`${styles.kpiCard} ${styles.dashboardSkeletonCard} ${styles.skeleton}`}>
+          <div className={`${styles.skeletonText} ${styles.skeletonTextSm}`} />
+          <div className={`${styles.skeletonText} ${styles.skeletonTextLg}`} />
+        </article>
+      ))}
+    </div>
+
+    <section className={styles.dashboardChartsGrid}>
+      {Array.from({ length: 3 }).map((_, index) => (
+        <article key={index} className={`${styles.dashboardChartCard} ${styles.dashboardSkeletonChartCard} ${styles.skeleton}`}>
+          <div className={`${styles.skeletonText} ${styles.skeletonTextMd} ${styles.dashboardSkeletonChartTitle}`} />
+          <div className={`${styles.skeletonChart} ${styles.skeleton}`} />
+        </article>
+      ))}
+    </section>
+
+    <section className={styles.inventoryTablesGrid}>
+      <article className={`${styles.chartCard} ${styles.dashboardSkeletonTableCard} ${styles.skeleton}`}>
+        <div className={`${styles.skeletonText} ${styles.skeletonTextSm}`} />
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className={styles.dashboardSkeletonTableRow}>
+            <div className={`${styles.skeletonText} ${styles.skeletonTextXs}`} />
+            <div className={`${styles.skeletonText} ${styles.skeletonTextXs}`} />
+          </div>
+        ))}
+      </article>
+      <article className={`${styles.chartCard} ${styles.dashboardSkeletonTableCard} ${styles.skeleton}`}>
+        <div className={`${styles.skeletonText} ${styles.skeletonTextSm}`} />
+        <div className={styles.dashboardSkeletonTableRows}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className={styles.dashboardSkeletonTableRow}>
+              <div className={`${styles.skeletonText} ${styles.skeletonTextXs}`} />
+              <div className={`${styles.skeletonText} ${styles.skeletonTextXs}`} />
+              <div className={`${styles.skeletonText} ${styles.skeletonTextXs}`} />
+            </div>
+          ))}
+        </div>
+      </article>
+    </section>
+  </div>
+);
+
 export const DashboardReports = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -74,7 +135,7 @@ export const DashboardReports = () => {
   const [warehouseId, setWarehouseId] = useState<number>(0);
   const [lowStockThreshold, setLowStockThreshold] = useState<string>("5");
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [report, setReport] = useState<DashboardReportResponse | null>(null);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(0), []);
@@ -267,10 +328,12 @@ export const DashboardReports = () => {
         </Button>
       </div>
 
-      {!hasData ? (
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : !hasData ? (
         <div className={styles.info}>{t("financeReports.dashboard.empty")}</div>
       ) : (
-        <>
+        <div className={styles.fadeIn}>
           <section className={styles.dashboardHero}>
             <div className={styles.dashboardHeroTitle}>
               <h3>{t("financeReports.dashboard.sections.overview")}</h3>
@@ -463,7 +526,7 @@ export const DashboardReports = () => {
               <DataTable data={report?.outOfStockAlerts || []} columns={alertColumns} pageSize={10} />
             </article>
           </section>
-        </>
+        </div>
       )}
     </div>
   );

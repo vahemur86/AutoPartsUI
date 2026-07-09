@@ -171,7 +171,7 @@ export const ServiceTemplatePage = () => {
   const { definitions, isDefinitionsLoading } = useAppSelector(
     (state) => state.vehicles,
   );
-  const { items: serviceCategories } = useAppSelector(
+  const { items: serviceCategories, isLoading: isServiceCategoriesLoading } = useAppSelector(
     (state) => state.serviceCategory,
   );
   const { items: employees, isLoading: isEmployeesLoading } = useAppSelector(
@@ -1133,7 +1133,21 @@ export const ServiceTemplatePage = () => {
             </div>
 
             {isPricingLoading ? (
-              <div className={styles.loading}>{t("common.loading")}</div>
+              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+                <div className={styles.tableSkeletonHeader}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+                <div className={styles.tableSkeletonRows}>
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className={styles.tableSkeletonRow}>
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <DataTable
                 data={filteredPricingItems}
@@ -1729,9 +1743,26 @@ export const ServiceTemplatePage = () => {
           </div>
 
           <div className={`${styles.section} ${styles.tableSection}`}>
-            <DataTable
-              data={serviceCategories ?? []}
-              columns={[
+            {isServiceCategoriesLoading && serviceCategories.length === 0 ? (
+              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+                <div className={styles.tableSkeletonHeader}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+                <div className={styles.tableSkeletonRows}>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div key={index} className={styles.tableSkeletonRow}>
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <DataTable
+                data={serviceCategories ?? []}
+                columns={[
                 {
                   header: t("serviceTemplates.fields.code"),
                   accessorKey: "code",
@@ -1784,8 +1815,9 @@ export const ServiceTemplatePage = () => {
                     </div>
                   ),
                 },
-              ]}
-            />
+                ]}
+              />
+            )}
           </div>
         </>
       )}
@@ -2081,7 +2113,21 @@ export const ServiceTemplatePage = () => {
 
           <div className={`${styles.section} ${styles.tableSection}`}>
             {isServiceCatalogLoading ? (
-              <div className={styles.loading}>{t("common.loading")}</div>
+              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
+                <div className={styles.tableSkeletonHeader}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                </div>
+                <div className={styles.tableSkeletonRows}>
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className={styles.tableSkeletonRow}>
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <DataTable
                 data={serviceCatalog ?? []}
