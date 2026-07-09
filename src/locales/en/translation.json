@@ -2415,6 +2415,11 @@
     }
   },
 
+  "auth": {
+    "login": {
+      "welcomeBack": "Welcome back!"
+    }
+  },
   "OTP": {
     "title": "Verify Page",
     "description": "To continue, please request a One-Time Password (OTP).",

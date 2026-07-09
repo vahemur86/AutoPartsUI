@@ -1,4 +1,8 @@
 import axios from "axios";
+import { store } from "@/store/store";
+import { logout } from "@/store/slices/authSlice";
+
+let isRedirectingToLogin = false;
 
 //  Azure API base URL
 const DEFAULT_API_BASE_URL =
@@ -45,7 +49,7 @@ api.interceptors.response.use(
       return new Promise((resolve, reject) => {
         const event = new CustomEvent("otp:required", {
           detail: {
-            pageKey,  // ← pass it along
+            pageKey,
             onVerified: async () => {
               try {
                 const response = await api.request(error.config);
@@ -59,6 +63,14 @@ api.interceptors.response.use(
         });
         window.dispatchEvent(event);
       });
+    }
+
+    if (error.response?.status === 401 && !isRedirectingToLogin) {
+      isRedirectingToLogin = true;
+      store.dispatch(logout());
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login");
+      }
     }
 
     return Promise.reject(error);

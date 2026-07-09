@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   createSlice,
   createAsyncThunk,
@@ -72,6 +73,9 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
     try {
       await logoutRequest();
     } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        return;
+      }
       return rejectWithValue(getApiErrorMessage(error, "Logout failed"));
     }
   },

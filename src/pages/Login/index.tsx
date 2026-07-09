@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // stores
@@ -24,6 +25,7 @@ import styles from "./Login.module.css";
 export const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { isLoading, error, isAuthenticated, user } = useAppSelector(
     (state) => state.auth,
@@ -84,7 +86,7 @@ export const Login = () => {
       const userRole = resultAction.payload.role.toLowerCase();
 
       await initializeDefaultLanguage();
-      toast.success("Welcome back!");
+      toast.success(t("auth.login.welcomeBack"));
 
       if (userRole === "cashier") {
         navigate("/shop-operator", { replace: true });
