@@ -8,14 +8,13 @@ import type { CountryCode } from "libphonenumber-js";
 import sharedStyles from "../../OperatorPage.module.css";
 import styles from "./WorkshopMode.module.css";
 import {
-  getEmployeeServicePercentagesByService,
   getEmployeesOnDuty,
   getProgrammingServicesWithPricing,
   getServiceCategories,
 } from "@/services/settings/workshopPricing";
 import { getCategoriesTree } from "@/services/settings/productSettings";
 import { getShopProducts } from "@/services/warehouses/warehouseProduct";
-import type { CategoryNode, EmployeeItem, EmployeeServicePercentageItem, ServiceCategoryItem } from "@/types/settings";
+import type { CategoryNode, EmployeeItem, ServiceCategoryItem } from "@/types/settings";
 import type { VehicleServiceTemplateItem } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 import { isProgrammingServiceCategory } from "@/constants/serviceCategories";
@@ -135,18 +134,16 @@ export const WorkshopMode = ({
   const [selectedProductId, setSelectedProductId] = useState("");
   const [productLines, setProductLines] = useState<WorkshopProductLine[]>([]);
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
-  const [onDutyEmployees, setOnDutyEmployees] = useState<EmployeeItem[]>([]);
+  const [onDutyEmployeesByCategory, setOnDutyEmployeesByCategory] = useState<
+    Record<number, EmployeeItem[]>
+  >({});
   const [selectedEmployeeByServiceId, setSelectedEmployeeByServiceId] = useState<Record<number, number>>({});
   const [serviceCategories, setServiceCategories] = useState<ServiceCategoryItem[]>([]);
-  const [serviceEmployeePercentagesByServiceId, setServiceEmployeePercentagesByServiceId] = useState<
-    Record<number, EmployeeServicePercentageItem[]>
-  >({});
   const [programmingVehicleServices, setProgrammingVehicleServices] = useState<
     NormalizedTemplate["items"] | null
   >(null);
   const [isProgrammingServicesLoading, setIsProgrammingServicesLoading] = useState(false);
   const [isOnDutyLoading, setIsOnDutyLoading] = useState(false);
-  const [isServiceEmployeePercentagesLoading, setIsServiceEmployeePercentagesLoading] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [createdEstimate, setCreatedEstimate] = useState<{
     id: number;
@@ -584,7 +581,7 @@ export const WorkshopMode = ({
 
   useEffect(() => {
     setSelectedServiceIds([]);
-    setOnDutyEmployees([]);
+    setOnDutyEmployeesByCategory({});
     setSelectedEmployeeByServiceId({});
     setProgrammingVehicleServices(null);
     setHasCalculated(false);
@@ -696,19 +693,25 @@ export const WorkshopMode = ({
 
   useEffect(() => {
     const selectedIds = new Set(selectedServiceIds);
-    const selectedProgrammerServices = (selectedTemplate?.items ?? []).filter(
+    const selectedServices = (selectedTemplate?.items ?? []).filter(
       (item) =>
-        item.isProgrammerService &&
         selectedIds.has(Number(item.serviceId || 0)) &&
         Number(item.serviceId || 0) > 0,
     );
 
-    const programmerCategoryId = selectedProgrammerServices.find(
-      (item) => Number(item.serviceCategoryId || 0) > 0,
-    )?.serviceCategoryId;
+    const categoryIds = Array.from(
+      new Set(
+        selectedServices
+          .map((item) =>
+            Number(item.serviceCategoryId || 0) ||
+            Number(selectedTemplate?.serviceCategoryId || 0),
+          )
+          .filter((id) => id > 0),
+      ),
+    );
 
-    if (!shopId || !programmerCategoryId || selectedProgrammerServices.length === 0) {
-      setOnDutyEmployees([]);
+    if (!shopId || categoryIds.length === 0) {
+      setOnDutyEmployeesByCategory({});
       return;
     }
 
@@ -716,15 +719,34 @@ export const WorkshopMode = ({
       try {
         setIsOnDutyLoading(true);
         const today = new Date().toISOString().slice(0, 10);
-        const employees = await getEmployeesOnDuty({
-          shopId,
-          serviceCategoryId: Number(programmerCategoryId || 0),
-          date: today,
-          cashRegisterId,
-        });
-        setOnDutyEmployees(employees);
+
+        const results = await Promise.all(
+          categoryIds.map(async (serviceCategoryId) => {
+            try {
+              const employees = await getEmployeesOnDuty({
+                shopId,
+                serviceCategoryId,
+                date: today,
+                cashRegisterId,
+              });
+              return { serviceCategoryId, employees };
+            } catch {
+              return { serviceCategoryId, employees: [] as EmployeeItem[] };
+            }
+          }),
+        );
+
+        setOnDutyEmployeesByCategory(
+          results.reduce<Record<number, EmployeeItem[]>>(
+            (acc, result) => ({
+              ...acc,
+              [result.serviceCategoryId]: result.employees,
+            }),
+            {},
+          ),
+        );
       } catch {
-        setOnDutyEmployees([]);
+        setOnDutyEmployeesByCategory({});
       } finally {
         setIsOnDutyLoading(false);
       }
@@ -898,125 +920,57 @@ export const WorkshopMode = ({
     [renderedServiceLines, selectedServiceIds],
   );
 
-  const selectedNonProgrammerServiceIds = useMemo(
-    () =>
-      selectedServiceLines
-        .filter((line) => !line.isProgrammerService)
-        .map((line) => Number(line.serviceId || 0))
-        .filter((id) => id > 0),
-    [selectedServiceLines],
-  );
+  const getServiceCategoryId = (line: NormalizedTemplate["items"][number]) =>
+    Number(line.serviceCategoryId || 0) || Number(selectedTemplate?.serviceCategoryId || 0);
+
+  const getOnDutyForLine = (line: NormalizedTemplate["items"][number]) =>
+    onDutyEmployeesByCategory[getServiceCategoryId(line)] ?? [];
 
   const assignedEmployeeByServiceId = useMemo(() => {
     const assignments = new Map<number, EmployeeItem | null>();
     if (!selectedServiceLines.length) return assignments;
 
-    let onDutyIndex = 0;
+    const onDutyIndexByCategory = new Map<number, number>();
+
     selectedServiceLines.forEach((line) => {
       const serviceId = Number(line.serviceId || 0);
       if (serviceId <= 0) return;
 
       const templateEmployeeId = Number(line.employeeId || 0);
+      const serviceCategoryId = getServiceCategoryId(line);
+      const onDutyForCategory = getOnDutyForLine(line);
 
-      if (line.isProgrammerService) {
-        if (templateEmployeeId > 0) {
-          const fromOnDutyTemplate = onDutyEmployees.find(
-            (employee) => Number(employee.id || 0) === templateEmployeeId,
-          );
-          assignments.set(serviceId, fromOnDutyTemplate ?? null);
-          return;
-        }
-
-        if (!onDutyEmployees.length) {
-          assignments.set(serviceId, null);
-          return;
-        }
-
-        const assigned = onDutyEmployees[onDutyIndex % onDutyEmployees.length] ?? null;
-        onDutyIndex += 1;
-        assignments.set(serviceId, assigned);
-        return;
-      }
-
-      const percentages = serviceEmployeePercentagesByServiceId[serviceId] ?? [];
-      if (templateEmployeeId > 0) {
-        const matchedTemplateEmployee = percentages.find(
-          (item) => Number(item.employeeId || 0) === templateEmployeeId,
-        );
-
-        if (matchedTemplateEmployee) {
-          assignments.set(serviceId, {
-            id: Number(matchedTemplateEmployee.employeeId || 0),
-            fullName:
-              matchedTemplateEmployee.employeeFullName ||
-              `#${matchedTemplateEmployee.employeeId}`,
-          } as EmployeeItem);
-          return;
-        }
-      }
-
-      if (!percentages.length) {
+      if (!serviceCategoryId) {
         assignments.set(serviceId, null);
         return;
       }
 
-      const bestByPercentage = percentages.reduce((best, current) =>
-        Number(current.percentage || 0) < Number(best.percentage || 0)
-          ? current
-          : best,
-      );
+      if (templateEmployeeId > 0) {
+        const fromOnDutyTemplate = onDutyForCategory.find(
+          (employee) => Number(employee.id || 0) === templateEmployeeId,
+        );
+        assignments.set(serviceId, fromOnDutyTemplate ?? null);
+        return;
+      }
 
-      assignments.set(serviceId, {
-        id: Number(bestByPercentage.employeeId || 0),
-        fullName: bestByPercentage.employeeFullName || `#${bestByPercentage.employeeId}`,
-      } as EmployeeItem);
+      if (!onDutyForCategory.length) {
+        assignments.set(serviceId, null);
+        return;
+      }
+
+      const currentIndex = onDutyIndexByCategory.get(serviceCategoryId) ?? 0;
+      const assigned =
+        onDutyForCategory[currentIndex % onDutyForCategory.length] ?? null;
+      onDutyIndexByCategory.set(serviceCategoryId, currentIndex + 1);
+      assignments.set(serviceId, assigned);
     });
 
     return assignments;
   }, [
-    onDutyEmployees,
+    onDutyEmployeesByCategory,
     selectedServiceLines,
-    serviceEmployeePercentagesByServiceId,
+    selectedTemplate,
   ]);
-
-  useEffect(() => {
-    if (selectedNonProgrammerServiceIds.length === 0) {
-      setServiceEmployeePercentagesByServiceId({});
-      return;
-    }
-
-    const loadServiceEmployeePercentages = async () => {
-      try {
-        setIsServiceEmployeePercentagesLoading(true);
-        const serviceIds = Array.from(new Set(selectedNonProgrammerServiceIds));
-
-        const results = await Promise.all(
-          serviceIds.map((serviceId) =>
-            getEmployeeServicePercentagesByService(serviceId, cashRegisterId).then((items) => ({
-              serviceId,
-              items,
-            })),
-          ),
-        );
-
-        setServiceEmployeePercentagesByServiceId(
-          results.reduce<Record<number, EmployeeServicePercentageItem[]>>(
-            (acc, result) => ({
-              ...acc,
-              [result.serviceId]: Array.isArray(result.items) ? result.items : [],
-            }),
-            {},
-          ),
-        );
-      } catch {
-        setServiceEmployeePercentagesByServiceId({});
-      } finally {
-        setIsServiceEmployeePercentagesLoading(false);
-      }
-    };
-
-    void loadServiceEmployeePercentages();
-  }, [cashRegisterId, selectedNonProgrammerServiceIds]);
 
   const servicesPrice = useMemo(
     () =>
@@ -1167,7 +1121,7 @@ export const WorkshopMode = ({
     setSelectedProductId("");
     setProductLines([]);
     setSelectedServiceIds([]);
-    setOnDutyEmployees([]);
+    setOnDutyEmployeesByCategory({});
     // When keepEstimate is true, preserve `createdEstimate` so printing remains available
     if (!options?.keepEstimate) {
       setHasCalculated(false);
@@ -1373,8 +1327,7 @@ export const WorkshopMode = ({
                 const serviceId = Number(line.serviceId || 0);
                 const checked = selectedServiceIds.includes(serviceId);
                 const assignedEmployee = assignedEmployeeByServiceId.get(serviceId) ?? null;
-                const servicePercentageEmployees =
-                  serviceEmployeePercentagesByServiceId[serviceId] ?? [];
+                const onDutyForService = getOnDutyForLine(line);
                 return (
                   <div key={serviceId} className={styles.serviceLine}>
                     <Checkbox
@@ -1395,34 +1348,21 @@ export const WorkshopMode = ({
                     </div>
                     {checked && (
                       <div className={styles.emptyProducts}>
-                        {isOnDutyLoading || isServiceEmployeePercentagesLoading ? (
+                        {isOnDutyLoading ? (
                           t("operatorPage.workshop.onDuty.loading")
-                        ) : line.isProgrammerService && assignedEmployee ? (
-                          t("operatorPage.workshop.onDuty.assigned", {
-                            employee: assignedEmployee.fullName,
-                          })
-                        ) : line.isProgrammerService && onDutyEmployees.length ? (
-                          <div>
-                            {onDutyEmployees.map((emp, idx) => (
-                              <span key={emp.id}>
-                                {emp.fullName}
-                                {idx < onDutyEmployees.length - 1 ? ", " : ""}
-                              </span>
-                            ))}
-                          </div>
-                        ) : !line.isProgrammerService && servicePercentageEmployees.length ? (
-                          <div>
-                            {servicePercentageEmployees.map((emp, idx) => (
-                              <span key={`${serviceId}-${emp.employeeId}`}>
-                                {emp.employeeFullName || `#${emp.employeeId}`}
-                                {idx < servicePercentageEmployees.length - 1 ? ", " : ""}
-                              </span>
-                            ))}
-                          </div>
                         ) : assignedEmployee ? (
                           t("operatorPage.workshop.onDuty.assigned", {
                             employee: assignedEmployee.fullName,
                           })
+                        ) : onDutyForService.length ? (
+                          <div>
+                            {onDutyForService.map((emp, idx) => (
+                              <span key={emp.id}>
+                                {emp.fullName}
+                                {idx < onDutyForService.length - 1 ? ", " : ""}
+                              </span>
+                            ))}
+                          </div>
                         ) : (
                           t("operatorPage.workshop.onDuty.none")
                         )}
@@ -1695,18 +1635,8 @@ export const WorkshopMode = ({
                 <div className={styles.receiptProductsList}>
                   {selectedServiceLines.map((line) => {
                       const serviceId = Number(line.serviceId || 0);
-                      const assignedEmployee = selectedEmployeeByServiceId[serviceId]
-                        ? onDutyEmployees.find((e) => Number(e.id) === Number(selectedEmployeeByServiceId[Number(line.serviceId || 0)]))
-                        : assignedEmployeeByServiceId.get(serviceId);
-                      const servicePercentageEmployees =
-                        serviceEmployeePercentagesByServiceId[serviceId] ?? [];
-                      const employeeLabel = line.isProgrammerService
-                        ? assignedEmployee?.fullName || "-"
-                        : servicePercentageEmployees.length > 0
-                          ? servicePercentageEmployees
-                              .map((employee) => employee.employeeFullName || `#${employee.employeeId}`)
-                              .join(", ")
-                          : assignedEmployee?.fullName || "-";
+                      const assignedEmployee = assignedEmployeeByServiceId.get(serviceId);
+                      const employeeLabel = assignedEmployee?.fullName || "-";
 
                       return (
                         <div key={line.serviceId} className={styles.receiptProductRow}>

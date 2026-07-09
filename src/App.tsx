@@ -224,25 +224,27 @@ export const App = () => {
                   <Route path="service-task-reports" element={<ServiceTasksReport />} />
                 </Route>
 
-                <Route path="finance-reports" element={<FinanceReports />}>
+                <Route path="finance-reports">
                   <Route
                     index
-                    element={<Navigate to="dashboard" replace />}
+                    element={<Navigate to="shop-reports" replace />}
                   />
                   <Route path="dashboard" element={<DashboardReports />} />
-                  <Route path="shop-reports" element={<ShopReports />} />
-                  <Route path="service-reports" element={<ServiceReports />} />
-                  <Route path="warehouse-reports" element={<WarehouseReports />} />
-                  <Route path="sales-reports" element={<SalesReports />} />
-                  <Route path="profit-summary" element={<ProfitSummary />} />
-                  <Route path="profit-detailed" element={<ProfitDetailed />} />
-                  <Route path="sale-profit" element={<SaleProfitLookup />} />
-                  <Route
-                    path="warehouse-inventory"
-                    element={<WarehouseInventoryStatus />}
-                  />
-                  <Route path="shop-inventory" element={<ShopInventoryStatus />} />
-                  <Route path="other-expenses" element={<OtherExpensesReports />} />
+                  <Route element={<FinanceReports />}>
+                    <Route path="shop-reports" element={<ShopReports />} />
+                    <Route path="service-reports" element={<ServiceReports />} />
+                    <Route path="warehouse-reports" element={<WarehouseReports />} />
+                    <Route path="sales-reports" element={<SalesReports />} />
+                    <Route path="profit-summary" element={<ProfitSummary />} />
+                    <Route path="profit-detailed" element={<ProfitDetailed />} />
+                    <Route path="sale-profit" element={<SaleProfitLookup />} />
+                    <Route
+                      path="warehouse-inventory"
+                      element={<WarehouseInventoryStatus />}
+                    />
+                    <Route path="shop-inventory" element={<ShopInventoryStatus />} />
+                    <Route path="other-expenses" element={<OtherExpensesReports />} />
+                  </Route>
                 </Route>
 
                 <Route path="warehouses" element={<Warehouses />}>

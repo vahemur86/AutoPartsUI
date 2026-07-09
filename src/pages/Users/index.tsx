@@ -1,23 +1,28 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 // components
 import { SectionHeader } from "@/components/common";
+import { UsersDropdown } from "./usersActions/UsersDropdown";
 
 // icons
 import userIcon from "@/assets/icons/userVector.svg";
 
 // ui-kit
-import { Button, TextField, Select } from "@/ui-kit";
+import { Button, TextField, Select, Switch, DataTable, Modal } from "@/ui-kit";
 
 // services
-import { createUser } from "@/services/users";
+import { createUser, getUsers, updateUser } from "@/services/users";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchShops } from "@/store/slices/shopsSlice";
 import { fetchWarehouses } from "@/store/slices/warehousesSlice";
+
+// types
+import type { User, CreateUserPayload } from "@/types/users";
+import type { ColumnDef } from "@tanstack/react-table";
 
 // constants
 import { ROLES, USER_TYPES } from "@/constants/settings/users";
@@ -32,60 +37,37 @@ export const UserManagement = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { user: currentUser } = useAppSelector((state) => state.auth);
+    const { user: currentUser } = useAppSelector((state) => state.auth);
   const { shops } = useAppSelector((state) => state.shops);
   const { warehouses } = useAppSelector((state) => state.warehouses);
 
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [userType, setUserType] = useState("");
-  const [shopId, setShopId] = useState("");
-  const [warehouseId, setWarehouseId] = useState("");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editRole, setEditRole] = useState("");
+  const [editUserType, setEditUserType] = useState("");
+  const [editShopId, setEditShopId] = useState("");
+  const [editWarehouseId, setEditWarehouseId] = useState("");
+  const [editPassword, setEditPassword] = useState("");
+  const [editIsActive, setEditIsActive] = useState(true);
+  const [isMutatingEdit, setIsMutatingEdit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
+  const addButtonRef = useRef<HTMLDivElement>(null);
 
   const isSuperAdmin = currentUser?.role === "SuperAdmin";
   const isAdmin = currentUser?.role === "Admin";
-  const isCashier = role === "Cashier";
-
-  const isShopRequired =
-    isCashier ||
-    userType === "Shop" ||
-    (userType === "System" && !isSuperAdmin);
-  const isWarehouseRequired =
-    userType === "Warehouse" || (userType === "System" && !isSuperAdmin);
-
-  const isEmailValid = /\S+@\S+\.\S+/.test(email);
-  const isRoleValid = !!role;
-  const isUserTypeValid = !!userType;
-
-  const isShopValid = isShopRequired ? !!shopId : true;
-  const isWarehouseValid = isWarehouseRequired ? !!warehouseId : true;
-
-  const isFormValid =
-    isEmailValid &&
-    isRoleValid &&
-    isUserTypeValid &&
-    isShopValid &&
-    isWarehouseValid;
 
   const filteredRoles = useMemo(() => {
     if (isSuperAdmin) return ROLES;
     return ROLES.filter((r) => r.value !== "SuperAdmin");
   }, [isSuperAdmin]);
 
-  useEffect(() => {
-    if (isAdmin && currentUser) {
-      setUserType(currentUser.userType || "");
-      if (currentUser.userType === "Shop") {
-        setShopId(String(currentUser.shopId || ""));
-        setWarehouseId("0");
-      } else if (currentUser.userType === "Warehouse") {
-        setWarehouseId(String(currentUser.warehouseId || ""));
-        setShopId("0");
-      }
-    }
-  }, [isAdmin, currentUser]);
+  const filteredEditRoles = useMemo(() => {
+    if (isSuperAdmin) return ROLES;
+    return ROLES.filter((r) => r.value !== "SuperAdmin");
+  }, [isSuperAdmin]);
 
   useEffect(() => {
     if (shops.length === 0) dispatch(fetchShops());
@@ -93,58 +75,189 @@ export const UserManagement = () => {
   }, [dispatch, shops.length, warehouses.length]);
 
   useEffect(() => {
-    if (role === "Cashier") {
-      setUserType("Shop");
-      setWarehouseId("");
+    if (editRole === "Cashier") {
+      setEditUserType("Shop");
+      setEditWarehouseId("");
     }
-  }, [role]);
+  }, [editRole]);
 
-  const handleCancel = () => {
-    setEmail("");
-    setRole("");
-    setUserType("");
-    setShopId("");
-    setWarehouseId("");
-    setHasTriedSubmit(false);
+  const loadUsers = useCallback(async () => {
+    setIsLoadingUsers(true);
+    try {
+      const loadedUsers = await getUsers();
+      setUsers(Array.isArray(loadedUsers) ? loadedUsers : []);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, t("users.error.failedToLoad")));
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void loadUsers();
+  }, [loadUsers]);
+
+  const handleOpenEdit = (user: User) => {
+    setEditingUser(user);
+    setEditRole(user.role || "");
+    setEditUserType(user.userType || "");
+    setEditShopId(user.shopId !== null ? String(user.shopId) : "");
+    setEditWarehouseId(user.warehouseId !== null ? String(user.warehouseId) : "");
+    setEditPassword("");
+    setEditIsActive(user.isActive);
+    setIsEditModalOpen(true);
   };
 
-  const handleSubmit = async () => {
-    setHasTriedSubmit(true);
+  const handleCloseEdit = () => {
+    setIsEditModalOpen(false);
+    setEditingUser(null);
+    setEditPassword("");
+  };
 
-    if (!isFormValid) return;
+  const isEditShopRequired =
+    editRole === "Cashier" ||
+    editUserType === "Shop" ||
+    (editUserType === "System" && !isSuperAdmin);
+  const isEditWarehouseRequired =
+    editUserType === "Warehouse" ||
+    (editUserType === "System" && !isSuperAdmin);
 
+  const isEditFormValid =
+    !!editRole &&
+    !!editUserType &&
+    (isEditShopRequired ? !!editShopId : true) &&
+    (isEditWarehouseRequired ? !!editWarehouseId : true);
+
+  const handleSaveEdit = async () => {
+    if (!editingUser) return;
+    if (!isEditFormValid) {
+      toast.error(t("users.validation.fillAllFields"));
+      return;
+    }
+
+    setIsMutatingEdit(true);
+    try {
+      const finalShopId =
+        editRole === "Cashier"
+          ? parseInt(editShopId || "0")
+          : editUserType === "Shop"
+          ? parseInt(editShopId || "0")
+          : null;
+
+      const finalWarehouseId =
+        editRole === "Cashier"
+          ? null
+          : editUserType === "Warehouse"
+          ? parseInt(editWarehouseId || "0")
+          : null;
+
+      await updateUser({
+        id: editingUser.id,
+        role: editRole,
+        userType: editUserType,
+        shopId: finalShopId,
+        warehouseId: finalWarehouseId,
+        isActive: editIsActive,
+        ...(editPassword.trim() ? { password: editPassword.trim() } : {}),
+      });
+
+      toast.success(t("users.success.userUpdated"));
+      handleCloseEdit();
+      void loadUsers();
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, t("users.error.failedToUpdate")));
+    } finally {
+      setIsMutatingEdit(false);
+    }
+  };
+
+  const columns = useMemo<ColumnDef<User, any>[]>(
+    () => [
+      {
+        accessorKey: "id",
+        header: t("users.table.id"),
+      },
+      {
+        accessorKey: "username",
+        header: t("users.table.username"),
+      },
+      {
+        accessorKey: "email",
+        header: t("users.table.email"),
+      },
+      {
+        accessorKey: "role",
+        header: t("users.table.role"),
+      },
+      {
+        accessorKey: "userType",
+        header: t("users.table.userType"),
+      },
+      {
+        accessorKey: "shopId",
+        header: t("users.table.shop"),
+        cell: (info) => info.getValue() || "-",
+      },
+      {
+        accessorKey: "warehouseId",
+        header: t("users.table.warehouse"),
+        cell: (info) => info.getValue() || "-",
+      },
+      {
+        accessorKey: "isActive",
+        header: t("users.table.active"),
+        cell: (info) =>
+          info.getValue() ? t("common.active") : t("common.inactive"),
+      },
+      {
+        accessorKey: "createdAt",
+        header: t("users.table.createdAt"),
+        cell: (info) =>
+          new Date(String(info.getValue())).toLocaleString() || "-",
+      },
+      {
+        id: "actions",
+        header: t("common.actions"),
+        cell: ({ row }) => (
+          <div className={styles.actionButtons}>
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => handleOpenEdit(row.original)}
+            >
+              {t("common.edit")}
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [t],
+  );
+
+  const handleOpenCreate = () => {
+    setIsCreateOpen(true);
+  };
+
+  const handleCloseCreate = () => {
+    setIsCreateOpen(false);
+  };
+
+  const handleSaveUser = async (payload: CreateUserPayload) => {
     setIsSubmitting(true);
-
-    const finalShopId =
-      role === "Cashier"
-        ? parseInt(shopId || "0")
-        : isSuperAdmin && userType === "System"
-        ? null
-        : userType === "Shop"
-        ? parseInt(shopId || "0")
-        : null;
-
-    const finalWarehouseId =
-      role === "Cashier"
-        ? null
-        : isSuperAdmin && userType === "System"
-        ? null
-        : userType === "Warehouse"
-        ? parseInt(warehouseId || "0")
-        : null;
 
     try {
       await createUser(
-        email,
-        role,
-        userType,
-        finalShopId,
-        finalWarehouseId,
-        email,
+        payload.email,
+        payload.role,
+        payload.userType,
+        payload.shopId,
+        payload.warehouseId,
+        payload.username,
       );
 
       toast.success(t("users.success.userCreated"));
-      handleCancel();
+      handleCloseCreate();
+      void loadUsers();
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, t("users.error.failedToCreate")));
     } finally {
@@ -160,150 +273,182 @@ export const UserManagement = () => {
       />
 
       <div className={styles.usersContainer}>
-        <div className={styles.formWrapper}>
-          <div className={styles.formContainer}>
-            <div className={styles.formRow}>
-              <div className={styles.formColumn}>
-                <TextField
-                  label={t("users.form.email")}
-                  placeholder={t("users.form.enterEmail")}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  error={hasTriedSubmit && !isEmailValid}
-                  helperText={
-                    hasTriedSubmit && !isEmailValid
-                      ? t("users.validation.emailInvalid")
-                      : ""
-                  }
-                  disabled={isSubmitting}
-                />
-              </div>
+        <div className={styles.tableSection}>
+          <div className={styles.tableHeader}>
+            <h3 className={styles.tableTitle}>{t("users.table.title")}</h3>
+            <div className={styles.headerActions}>
+              <Button
+              variant="secondary"
+              onClick={() => void loadUsers()}
+              disabled={isLoadingUsers}
+            >
+              {t("common.refresh")}
+            </Button>
+            <div ref={addButtonRef}>
+              <Button variant="primary" onClick={handleOpenCreate}>
+                {t("users.actions.addUser")}
+              </Button>
             </div>
-
-            <div className={styles.formRow}>
-              <div className={styles.formColumn}>
-                <Select
-                  label={t("users.form.role")}
-                  placeholder={t("users.form.selectRole")}
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  error={hasTriedSubmit && !isRoleValid}
-                  helperText={
-                    hasTriedSubmit && !isRoleValid
-                      ? t("users.validation.roleRequired")
-                      : ""
-                  }
-                  disabled={isSubmitting}
-                >
-                  {filteredRoles.map((roleOption) => (
-                    <option key={roleOption.value} value={roleOption.value}>
-                      {roleOption.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className={styles.formColumn}>
-                <Select
-                  label={t("users.form.userType")}
-                  placeholder={t("users.form.selectUserType")}
-                  value={userType}
-                  onChange={(e) => {
-                    setUserType(e.target.value);
-                    setShopId("");
-                    setWarehouseId("");
-                  }}
-                  error={hasTriedSubmit && !isUserTypeValid}
-                  helperText={
-                    hasTriedSubmit && !isUserTypeValid
-                      ? t("users.validation.userTypeRequired")
-                      : ""
-                  }
-                  disabled={isAdmin || isSubmitting || role === "Cashier"}
-                >
-                  {(role === "Cashier"
-                    ? USER_TYPES.filter((type) => type.value === "Shop")
-                    : USER_TYPES
-                  ).map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-            </div>
-
-            <div className={styles.formRow}>
-              {isShopRequired && (
-                <div className={styles.formColumn}>
-                  <Select
-                    label={t("users.form.shop")}
-                    placeholder={t("users.form.selectShop")}
-                    value={shopId}
-                    onChange={(e) => setShopId(e.target.value)}
-                    disabled={isSubmitting}
-                    error={hasTriedSubmit && !isShopValid}
-                    helperText={
-                      hasTriedSubmit && !isShopValid
-                        ? t("users.validation.shopRequired")
-                        : ""
-                    }
-                  >
-                    {shops.map((shop) => (
-                      <option key={shop.id} value={shop.id}>
-                        {shop.code}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              )}
-
-              {isWarehouseRequired && (
-                <div className={styles.formColumn}>
-                  <Select
-                    label={t("users.form.warehouse")}
-                    placeholder={t("users.form.selectWarehouse")}
-                    value={warehouseId}
-                    onChange={(e) => setWarehouseId(e.target.value)}
-                    disabled={
-                      (isAdmin && userType === "Warehouse") || isSubmitting
-                    }
-                    error={hasTriedSubmit && !isWarehouseValid}
-                    helperText={
-                      hasTriedSubmit && !isWarehouseValid
-                        ? t("users.validation.warehouseRequired")
-                        : ""
-                    }
-                  >
-                    {warehouses.map((warehouse) => (
-                      <option key={warehouse.id} value={warehouse.id}>
-                        {warehouse.code}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              )}
-            </div>
+            <UsersDropdown
+              open={isCreateOpen}
+              anchorRef={addButtonRef}
+              onOpenChange={setIsCreateOpen}
+              onSave={handleSaveUser}
+              userTypes={USER_TYPES}
+              roles={filteredRoles}
+              shops={shops.map((shop) => ({ id: String(shop.id), code: shop.code }))}
+              warehouses={warehouses.map((warehouse) => ({ id: String(warehouse.id), code: warehouse.code }))}
+              isSubmitting={isSubmitting}
+              isSuperAdmin={isSuperAdmin}
+              isAdmin={isAdmin}
+            />
+          </div>
           </div>
 
-          <div className={styles.actionButtons}>
+          <div className={styles.tableWrapper}>
+            {isLoadingUsers ? (
+              <div className={styles.loading}>
+                {t("users.loading")}
+              </div>
+            ) : users.length === 0 ? (
+              <div className={styles.emptyState}>
+                {t("users.table.noUsers")}
+              </div>
+            ) : (
+              <DataTable
+                data={users}
+                columns={columns}
+                pageSize={20}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      <Modal
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        title={t("users.editModal.title")}
+        footer={
+          <div className={styles.editModalFooter}>
             <Button
               variant="secondary"
-              onClick={handleCancel}
-              disabled={isSubmitting}
+              onClick={handleCloseEdit}
+              disabled={isMutatingEdit}
             >
               {t("common.cancel")}
             </Button>
             <Button
               variant="primary"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
+              onClick={handleSaveEdit}
+              disabled={isMutatingEdit}
             >
               {t("common.save")}
             </Button>
           </div>
+        }
+      >
+        <div className={styles.editModalBody}>
+          <div className={styles.formRow}>
+            <div className={styles.formColumn}>
+              <Select
+                label={t("users.form.role")}
+                placeholder={t("users.form.selectRole")}
+                value={editRole}
+                onChange={(e) => setEditRole(e.target.value)}
+                disabled={isMutatingEdit}
+              >
+                {filteredEditRoles.map((roleOption) => (
+                  <option key={roleOption.value} value={roleOption.value}>
+                    {roleOption.label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className={styles.formColumn}>
+              <Select
+                label={t("users.form.userType")}
+                placeholder={t("users.form.selectUserType")}
+                value={editUserType}
+                onChange={(e) => {
+                  setEditUserType(e.target.value);
+                  setEditShopId("");
+                  setEditWarehouseId("");
+                }}
+                disabled={editRole === "Cashier" || isMutatingEdit}
+              >
+                {(editRole === "Cashier"
+                  ? USER_TYPES.filter((type) => type.value === "Shop")
+                  : USER_TYPES
+                ).map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            {isEditShopRequired && (
+              <div className={styles.formColumn}>
+                <Select
+                  label={t("users.form.shop")}
+                  placeholder={t("users.form.selectShop")}
+                  value={editShopId}
+                  onChange={(e) => setEditShopId(e.target.value)}
+                  disabled={isMutatingEdit}
+                >
+                  {shops.map((shop) => (
+                    <option key={shop.id} value={shop.id}>
+                      {shop.code}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            )}
+
+            {isEditWarehouseRequired && (
+              <div className={styles.formColumn}>
+                <Select
+                  label={t("users.form.warehouse")}
+                  placeholder={t("users.form.selectWarehouse")}
+                  value={editWarehouseId}
+                  onChange={(e) => setEditWarehouseId(e.target.value)}
+                  disabled={isMutatingEdit}
+                >
+                  {warehouses.map((warehouse) => (
+                    <option key={warehouse.id} value={warehouse.id}>
+                      {warehouse.code}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColumn}>
+              <TextField
+                label={t("users.editModal.password")}
+                placeholder={t("users.editModal.enterPassword")}
+                type="password"
+                value={editPassword}
+                onChange={(e) => setEditPassword(e.target.value)}
+                disabled={isMutatingEdit}
+              />
+            </div>
+            <div className={styles.formColumn}>
+              <Switch
+                checked={editIsActive}
+                onCheckedChange={setEditIsActive}
+                label={t("users.editModal.active")}
+                disabled={isMutatingEdit}
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      </Modal>
     </>
   );
 };

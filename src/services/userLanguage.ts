@@ -1,8 +1,8 @@
 import api from "./index";
 
 // utils
-import { getApiErrorMessage } from "@/utils";
-
+import { getApiErrorMessage } from "@/utils";import { getCashRegisterId } from "@/utils/getCashRegisterId.util";
+import { getHeaders } from "@/utils/getHeaders.util";
 export interface UserLanguagePreferenceResponse {
   language: string | null;
   isPersonal: boolean;
@@ -21,6 +21,9 @@ export const getUserLanguagePreference = async () => {
   try {
     const response = await api.get<UserLanguagePreferenceResponse>(
       "/users/me/language",
+      {
+        headers: getHeaders(getCashRegisterId()),
+      },
     );
 
     return response.data;
@@ -36,6 +39,9 @@ export const setUserLanguagePreference = async (languageCode: string) => {
     const response = await api.put<SetUserLanguageResponse>(
       "/users/me/language",
       { languageCode },
+      {
+        headers: getHeaders(getCashRegisterId()),
+      },
     );
 
     return response.data;
@@ -50,6 +56,9 @@ export const resetUserLanguagePreference = async () => {
   try {
     const response = await api.delete<ResetUserLanguageResponse>(
       "/users/me/language",
+      {
+        headers: getHeaders(getCashRegisterId()),
+      },
     );
 
     return response.data;

@@ -48,20 +48,17 @@ export const deleteUser = async (id: number) => {
   }
 };
 
-export const updateUser = async (
-  email: string,
-  role: string,
-  userType: string,
-  shopId: number,
-  warehouseId: number,
-) => {
+import type { UpdateUserRequest } from "@/types/users";
+
+export const updateUser = async (payload: UpdateUserRequest) => {
   try {
-    const response = await api.put(`/Users`, {
-      email,
-      role,
-      userType,
-      shopId,
-      warehouseId,
+    const response = await api.put(`/Users/${payload.id}`, {
+      role: payload.role,
+      userType: payload.userType,
+      shopId: payload.shopId,
+      warehouseId: payload.warehouseId,
+      isActive: payload.isActive,
+      ...(payload.password ? { password: payload.password } : {}),
     });
     return response.data;
   } catch (error: unknown) {

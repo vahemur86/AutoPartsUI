@@ -8,6 +8,7 @@ export interface LoginResponse {
   username: string;
   role: string;
   userType: string;
+  avatarUrl?: string | null;
   shopId: number | null;
   warehouseId: number | null;
   cashRegisterId?: number | null;

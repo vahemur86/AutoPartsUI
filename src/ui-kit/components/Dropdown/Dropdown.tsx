@@ -6,6 +6,7 @@ import {
   type ReactNode,
   type FC,
 } from "react";
+import { createPortal } from "react-dom";
 import { Sheet } from "./Sheet";
 import { useIsMobile } from "@/hooks/isMobile";
 import { X } from "lucide-react";
@@ -191,7 +192,7 @@ export const Dropdown: FC<DropdownProps> = ({
 
   if (!open || !position) return null;
 
-  return (
+  return createPortal(
     <>
       <div
         className={styles.desktopOverlay}
@@ -207,6 +208,7 @@ export const Dropdown: FC<DropdownProps> = ({
       >
         {children}
       </div>
-    </>
+    </>,
+    document.body,
   );
 };

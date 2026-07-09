@@ -70,6 +70,95 @@
   }
 }
 
+.tabWrapper {
+  margin-top: 24px;
+}
+
+.tableSection {
+  width: 100%;
+  padding: 24px;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.formHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tableTitle {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  background-color: var(--color-black-2);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.dropdownContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 320px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 16px;
+}
+
+.dropdownContentInner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dropdownActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.loading,
+.emptyState {
+  padding: 32px;
+  text-align: center;
+  color: var(--color-secondary-500);
+}
+
+.editModalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.editModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 @media (max-width: 480px) {
   .formWrapper {
     padding: 12px;
