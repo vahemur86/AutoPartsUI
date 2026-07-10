@@ -1,6 +1,5 @@
 import axios from "axios";
-import { store } from "@/store/store";
-import { logout } from "@/store/slices/authSlice";
+// Note: avoid importing the store here to prevent circular imports.
 
 let isRedirectingToLogin = false;
 
@@ -67,9 +66,10 @@ api.interceptors.response.use(
 
     if (error.response?.status === 401 && !isRedirectingToLogin) {
       isRedirectingToLogin = true;
-      store.dispatch(logout());
+      // Notify the app to clear auth state without importing the store here
+      window.dispatchEvent(new CustomEvent("auth:logout"));
       if (window.location.pathname !== "/login") {
-        window.location.replace("/login");
+        window.location.href = "/login";
       }
     }
 

@@ -84,6 +84,10 @@ import { IronProducts } from "@/components/products/IronProducts";
 
 // Stores
 import { store } from "@/store/store";
+import { useEffect } from "react";
+import { useAppDispatch } from "@/store/hooks";
+import { forceLogout } from "@/store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 // Styles
 import "@/index.css";
@@ -115,11 +119,29 @@ const LanguageInitializer = () => {
 };
 
 export const App = () => {
+  const AuthEventListener = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const handler = () => {
+        dispatch(forceLogout());
+        navigate("/login", { replace: true });
+      };
+
+      window.addEventListener("auth:logout", handler);
+      return () => window.removeEventListener("auth:logout", handler);
+    }, [dispatch, navigate]);
+
+    return null;
+  };
+
   return (
     <Provider store={store}>
       <OtpGateProvider>
         <LanguageInitializer />
         <BrowserRouter>
+          <AuthEventListener />
           <Routes>
             {/* PUBLIC ROUTE */}
             <Route path="/login" element={<Login />} />
