@@ -606,11 +606,11 @@ export interface ProgrammingPricingEntry {
 export interface AddProgrammingPricingPayload {
   brandId: number;
   modelId: number;
-  year: number;
-  fuelTypeId: number;
-  engineId: number;
-  marketId: number;
-  location: string;
+  years?: number[];
+  fuelTypeIds?: number[];
+  engineIds?: number[];
+  marketIds?: number[];
+  locations?: string[];
   notes?: string;
   services: Array<{
     serviceId: number;

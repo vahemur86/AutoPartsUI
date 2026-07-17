@@ -13,6 +13,7 @@ import {
 import {
   Button,
   ConfirmationModal,
+  MultiSelect,
   Select,
   Tab,
   Table,
@@ -71,10 +72,10 @@ export const ProgrammerPage = () => {
 
   const [brandId, setBrandId] = useState("");
   const [modelId, setModelId] = useState("");
-  const [fuelTypeId, setFuelTypeId] = useState("");
-  const [engineId, setEngineId] = useState("");
-  const [locationId, setLocationId] = useState("");
-  const [year, setYear] = useState("");
+  const [selectedFuelTypeIds, setSelectedFuelTypeIds] = useState<string[]>([]);
+  const [selectedEngineIds, setSelectedEngineIds] = useState<string[]>([]);
+  const [selectedMarketIds, setSelectedMarketIds] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
 
   const [selectedServiceId, setSelectedServiceId] = useState("");
@@ -113,12 +114,12 @@ export const ProgrammerPage = () => {
       Boolean(
         brandId &&
           modelId &&
-          fuelTypeId &&
-          engineId &&
-          locationId &&
-          year,
+          selectedFuelTypeIds.length > 0 &&
+          selectedEngineIds.length > 0 &&
+          selectedMarketIds.length > 0 &&
+          selectedYears.length > 0,
       ),
-    [brandId, modelId, fuelTypeId, engineId, locationId, year],
+    [brandId, modelId, selectedFuelTypeIds, selectedEngineIds, selectedMarketIds, selectedYears],
   );
 
   const canSubmitPricing = useMemo(
@@ -220,25 +221,36 @@ export const ProgrammerPage = () => {
   const resetVehicleFilters = () => {
     setBrandId("");
     setModelId("");
-    setFuelTypeId("");
-    setEngineId("");
-    setLocationId("");
-    setYear("");
+    setSelectedFuelTypeIds([]);
+    setSelectedEngineIds([]);
+    setSelectedMarketIds([]);
+    setSelectedYears([]);
     setNotes("");
   };
 
   const handleCreatePricing = async () => {
     const parsedBrandId = Number(brandId);
     const parsedModelId = Number(modelId);
-    const parsedFuelTypeId = Number(fuelTypeId);
-    const parsedEngineId = Number(engineId);
-    const parsedMarketId = Number(locationId);
-    const parsedYear = Number(year);
+    const parsedFuelTypeIds = selectedFuelTypeIds
+      .map((value) => Number(value))
+      .filter((value) => !Number.isNaN(value));
+    const parsedEngineIds = selectedEngineIds
+      .map((value) => Number(value))
+      .filter((value) => !Number.isNaN(value));
+    const parsedMarketIds = selectedMarketIds
+      .map((value) => Number(value))
+      .filter((value) => !Number.isNaN(value));
+    const parsedYears = selectedYears
+      .map((value) => Number(value))
+      .filter((value) => !Number.isNaN(value));
     const serviceId = Number(selectedServiceId);
     const parsedServiceCost = Number(serviceCost);
     const parsedSellingPrice = Number(sellingPrice);
-    const locationName =
-      lookups.markets.find((item) => String(item.id) === locationId)?.name ?? "";
+    const locationNames = parsedMarketIds
+      .map((marketId) =>
+        lookups.markets.find((item) => String(item.id) === String(marketId))?.name,
+      )
+      .filter((name): name is string => Boolean(name));
 
     if (!hasAllVehicleParams || !serviceId) {
       toast.error(t("programmerPage.messages.selectVehicleAndService"));
@@ -249,20 +261,16 @@ export const ProgrammerPage = () => {
       [
         parsedBrandId,
         parsedModelId,
-        parsedFuelTypeId,
-        parsedEngineId,
-        parsedMarketId,
-        parsedYear,
         parsedServiceCost,
         parsedSellingPrice,
-      ].some((value) => Number.isNaN(value))
+      ].some((value) => Number.isNaN(value)) ||
+      parsedFuelTypeIds.length === 0 ||
+      parsedEngineIds.length === 0 ||
+      parsedMarketIds.length === 0 ||
+      parsedYears.length === 0 ||
+      locationNames.length === 0
     ) {
       toast.error(t("programmerPage.messages.invalidCosts"));
-      return;
-    }
-
-    if (!locationName) {
-      toast.error(t("programmerPage.messages.selectVehicleAndService"));
       return;
     }
 
@@ -271,11 +279,11 @@ export const ProgrammerPage = () => {
       await addProgrammingPricing({
         brandId: parsedBrandId,
         modelId: parsedModelId,
-        year: parsedYear,
-        fuelTypeId: parsedFuelTypeId,
-        engineId: parsedEngineId,
-        marketId: parsedMarketId,
-        location: locationName,
+        years: parsedYears,
+        fuelTypeIds: parsedFuelTypeIds,
+        engineIds: parsedEngineIds,
+        marketIds: parsedMarketIds,
+        locations: locationNames,
         ...(notes.trim() ? { notes: notes.trim() } : {}),
         services: [
           {
@@ -291,6 +299,10 @@ export const ProgrammerPage = () => {
       setServiceCost("");
       setSellingPrice("");
       setNotes("");
+      setSelectedFuelTypeIds([]);
+      setSelectedEngineIds([]);
+      setSelectedMarketIds([]);
+      setSelectedYears([]);
       await loadMyEntries();
     } catch (error: unknown) {
       toast.error(
@@ -427,10 +439,10 @@ export const ProgrammerPage = () => {
               onChange={(event) => {
                 setBrandId(event.target.value);
                 setModelId("");
-                setFuelTypeId("");
-                setEngineId("");
-                setLocationId("");
-                setYear("");
+                setSelectedFuelTypeIds([]);
+                setSelectedEngineIds([]);
+                setSelectedMarketIds([]);
+                setSelectedYears([]);
               }}
               placeholder={t("programmerPage.placeholders.selectBrand")}
             >
@@ -446,10 +458,10 @@ export const ProgrammerPage = () => {
               value={modelId}
               onChange={(event) => {
                 setModelId(event.target.value);
-                setFuelTypeId("");
-                setEngineId("");
-                setLocationId("");
-                setYear("");
+                setSelectedFuelTypeIds([]);
+                setSelectedEngineIds([]);
+                setSelectedMarketIds([]);
+                setSelectedYears([]);
               }}
               placeholder={t("programmerPage.placeholders.selectModel")}
             >
@@ -460,66 +472,53 @@ export const ProgrammerPage = () => {
               ))}
             </Select>
 
-            <Select
+            <MultiSelect
               label={t("programmerPage.fields.fuelType")}
-              value={fuelTypeId}
-              onChange={(event) => {
-                setFuelTypeId(event.target.value);
-                setEngineId("");
-                setLocationId("");
-                setYear("");
-              }}
+              value={selectedFuelTypeIds}
+              onChange={setSelectedFuelTypeIds}
               placeholder={t("programmerPage.placeholders.selectFuelType")}
-            >
-              {lookups.fuelTypes.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Select>
+              options={lookups.fuelTypes.map((item) => ({
+                value: String(item.id),
+                label: item.name,
+              }))}
+              searchable
+            />
 
-            <Select
+            <MultiSelect
               label={t("programmerPage.fields.engine")}
-              value={engineId}
-              onChange={(event) => {
-                setEngineId(event.target.value);
-                setLocationId("");
-                setYear("");
-              }}
+              value={selectedEngineIds}
+              onChange={setSelectedEngineIds}
               placeholder={t("programmerPage.placeholders.selectEngine")}
-            >
-              {lookups.engines.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Select>
+              options={lookups.engines.map((item) => ({
+                value: String(item.id),
+                label: item.name,
+              }))}
+              searchable
+            />
 
-            <Select
+            <MultiSelect
               label={t("programmerPage.fields.location")}
-              value={locationId}
-              onChange={(event) => setLocationId(event.target.value)}
+              value={selectedMarketIds}
+              onChange={setSelectedMarketIds}
               placeholder={t("programmerPage.placeholders.selectLocation")}
-            >
-              {lookups.markets.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Select>
+              options={lookups.markets.map((item) => ({
+                value: String(item.id),
+                label: item.name,
+              }))}
+              searchable
+            />
 
-            <Select
+            <MultiSelect
               label={t("programmerPage.fields.year")}
-              value={year}
-              onChange={(event) => setYear(event.target.value)}
+              value={selectedYears}
+              onChange={setSelectedYears}
               placeholder={t("programmerPage.placeholders.selectYear")}
-            >
-              {years.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </Select>
+              options={years.map((item) => ({
+                value: String(item),
+                label: String(item),
+              }))}
+              searchable
+            />
           </div>
 
           <div className={styles.actionsRow}>
