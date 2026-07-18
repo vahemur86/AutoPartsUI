@@ -18,6 +18,8 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  Line,
+  LineChart,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -27,7 +29,7 @@ import {
 } from "recharts";
 
 // ui-kit
-import { Button, DataTable, Select, TextField } from "@/ui-kit";
+import { Button, DataTable, DatePicker, Select, TextField } from "@/ui-kit";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -36,12 +38,17 @@ import { fetchWarehouses } from "@/store/slices/warehousesSlice";
 
 // services
 import { getAdminDashboardReport } from "@/services/financeReports";
+import {
+  getDailyProfitReport,
+  getProfitReport,
+} from "@/services/warehouses/reports";
 
 // utils
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
 
 // types
 import type { DashboardReportResponse, DashboardStockAlertItem } from "@/types/financeReports";
+import type { DailyProfitReportItem } from "@/types/warehouses/reports";
 
 // local
 import styles from "./FinanceReports.module.css";
@@ -134,9 +141,14 @@ export const DashboardReports = () => {
   const [shopId, setShopId] = useState<number>(0);
   const [warehouseId, setWarehouseId] = useState<number>(0);
   const [lowStockThreshold, setLowStockThreshold] = useState<string>("5");
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [report, setReport] = useState<DashboardReportResponse | null>(null);
+  const [warehouseProfitTrend, setWarehouseProfitTrend] = useState<
+    DailyProfitReportItem[]
+  >([]);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(0), []);
 
@@ -151,6 +163,35 @@ export const DashboardReports = () => {
     }
   }, [shops, shopId]);
 
+  const toSafeISO = useCallback((value: Date | null) => {
+    if (!value) return undefined;
+    const safeDate = new Date(value);
+    safeDate.setHours(12, 0, 0, 0);
+    return safeDate.toISOString();
+  }, []);
+
+  const loadWarehouseProfitData = useCallback(
+    async (selectedWarehouseId: number, fromUtc?: string, toUtc?: string) => {
+      const [, daily] = await Promise.all([
+        getProfitReport({
+          warehouseId: selectedWarehouseId > 0 ? selectedWarehouseId : undefined,
+          fromUtc,
+          toUtc,
+          cashRegisterId,
+        }),
+        getDailyProfitReport({
+          warehouseId: selectedWarehouseId > 0 ? selectedWarehouseId : undefined,
+          fromUtc,
+          toUtc,
+          cashRegisterId,
+        }),
+      ]);
+
+      setWarehouseProfitTrend(daily || []);
+    },
+    [cashRegisterId],
+  );
+
   const handleLoad = useCallback(async () => {
     if (!shopId) {
       toast.error(t("financeReports.validation.selectShop"));
@@ -160,6 +201,8 @@ export const DashboardReports = () => {
     const parsedThreshold = Number(lowStockThreshold);
     const resolvedThreshold =
       Number.isFinite(parsedThreshold) && parsedThreshold > 0 ? parsedThreshold : 5;
+    const fromUtc = toSafeISO(fromDate);
+    const toUtc = toSafeISO(toDate);
 
     setIsLoading(true);
     try {
@@ -171,12 +214,20 @@ export const DashboardReports = () => {
       });
 
       setReport(response);
+
+      try {
+        await loadWarehouseProfitData(warehouseId, fromUtc, toUtc);
+      } catch (profitError: unknown) {
+        toast.error(
+          getApiErrorMessage(profitError, t("financeReports.error.failedToLoad")),
+        );
+      }
     } catch (error: unknown) {
       toast.error(getApiErrorMessage(error, t("financeReports.error.failedToLoad")));
     } finally {
       setIsLoading(false);
     }
-  }, [shopId, warehouseId, lowStockThreshold, cashRegisterId, t]);
+  }, [shopId, warehouseId, lowStockThreshold, fromDate, toDate, cashRegisterId, loadWarehouseProfitData, t, toSafeISO]);
 
   useEffect(() => {
     if (!shopId) return;
@@ -192,6 +243,14 @@ export const DashboardReports = () => {
         });
 
         setReport(response);
+
+        try {
+          await loadWarehouseProfitData(warehouseId);
+        } catch (profitError: unknown) {
+          toast.error(
+            getApiErrorMessage(profitError, t("financeReports.error.failedToLoad")),
+          );
+        }
       } catch (error: unknown) {
         toast.error(getApiErrorMessage(error, t("financeReports.error.failedToLoad")));
       } finally {
@@ -200,7 +259,7 @@ export const DashboardReports = () => {
     };
 
     void loadInitialDashboard();
-  }, [shopId, warehouseId, cashRegisterId, t]);
+  }, [shopId, warehouseId, cashRegisterId, t, loadWarehouseProfitData]);
 
   const revenueMixData = useMemo(() => {
     if (!report) return [];
@@ -248,6 +307,22 @@ export const DashboardReports = () => {
       },
     ];
   }, [report, t]);
+
+  const warehouseProfitChartData = useMemo(() => {
+    if (!warehouseProfitTrend.length) return [];
+
+    return warehouseProfitTrend.map((item) => ({
+      name: item.date
+        ? new Date(item.date).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          })
+        : t("financeReports.dashboard.charts.period"),
+      revenue: Number(item.revenueAmd || 0),
+      cost: Number(item.costAmd || 0),
+      profit: Number(item.profitAmd || 0),
+    }));
+  }, [t, warehouseProfitTrend]);
 
   const alertColumns = useMemo(
     () => [
@@ -319,6 +394,31 @@ export const DashboardReports = () => {
           helperText={t("financeReports.dashboard.filters.lowStockThresholdHelp")}
           type="number"
           min="1"
+        />
+
+        <DatePicker
+          label={t("financeReports.filters.fromDate")}
+          selected={fromDate}
+          onChange={(date: Date | null) => setFromDate(date)}
+          dateFormat="MM/dd/yyyy"
+          placeholderText={t("financeReports.filters.fromDate")}
+          isClearable
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+        />
+
+        <DatePicker
+          label={t("financeReports.filters.toDate")}
+          selected={toDate}
+          onChange={(date: Date | null) => setToDate(date)}
+          dateFormat="MM/dd/yyyy"
+          placeholderText={t("financeReports.filters.toDate")}
+          isClearable
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+          minDate={fromDate || undefined}
         />
       </div>
 
@@ -456,6 +556,31 @@ export const DashboardReports = () => {
                     <Bar dataKey="profit" fill="#f97316" radius={[8, 8, 0, 0]} name={t("financeReports.dashboard.charts.profit")} />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            </article>
+
+            <article className={styles.dashboardChartCard}>
+              <div className={styles.chartTitleRow}>
+                <BarChart3 size={16} />
+                <h4>{t("financeReports.dashboard.charts.warehouseProfit")}</h4>
+              </div>
+              <div className={styles.dashboardChartWrap}>
+                {warehouseProfitChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={warehouseProfitChartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
+                      <XAxis dataKey="name" stroke="#94a3b8" minTickGap={12} />
+                      <YAxis stroke="#94a3b8" />
+                      <Tooltip formatter={(value) => money(Number(value || 0))} />
+                      <Legend />
+                      <Line type="monotone" dataKey="revenue" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.revenue")} />
+                      <Line type="monotone" dataKey="cost" stroke="#f97316" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.cost")} />
+                      <Line type="monotone" dataKey="profit" stroke="#34d399" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.profit")} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className={styles.chartEmpty}>{t("financeReports.dashboard.charts.noWarehouseProfit")}</p>
+                )}
               </div>
             </article>
 

@@ -15,6 +15,7 @@
     "logout": "Logout",
     "userMenu": "User menu",
     "today": "Today",
+    "exchangeRate": "Exchange Rate",
     "language": "Language",
     "languageLoading": "Loading languages...",
     "useGlobalDefault": "Use global default",
@@ -77,7 +78,8 @@
     "noComment": "No comment",
     "date": "Date",
     "confirm": "Confirm",
-    "warning": "Warning"
+    "warning": "Warning",
+    "copy": "Copy"
   },
   "currencies": {
     "USD": "US Dollar",
@@ -395,6 +397,7 @@
       "charts": {
         "revenueMix": "Revenue mix: products vs services",
         "performance": "Revenue and profit performance",
+        "warehouseProfit": "Warehouse profit trend",
         "orderStatus": "Order status distribution",
         "products": "Products",
         "services": "Services",
@@ -402,8 +405,11 @@
         "completedOrders": "Completed",
         "today": "Today",
         "month": "Month",
+        "period": "Period",
         "revenue": "Revenue",
-        "profit": "Profit"
+        "cost": "Cost",
+        "profit": "Profit",
+        "noWarehouseProfit": "No warehouse profit data for the selected range."
       },
       "columns": {
         "productCode": "Product code",
@@ -2570,23 +2576,38 @@
       "selectEngine": "Select engine"
     },
 
+    "actions": {
+      "save": "Save"
+    },
+
     "sections": {
-      "frontBuckets": "Front buckets",
-      "backBuckets": "Back buckets"
+      "frontBuckets": "Front casing",
+      "backBuckets": "Rear casing"
     },
 
     "table": {
       "code": "Code",
       "weight": "Weight(Kg)",
+      "pricePerKg": "Price per kg",
       "pt": "Platinum (Pt, g)",
       "pd": "Palladium (Pd, g)",
-      "rh": "Rhodium (Rh, g)"
+      "rh": "Rhodium (Rh, g)",
+      "bucketCode": "Bucket code",
+      "addComposition": "Add composition",
+      "compositionCode": "Composition code",
+      "compositionType": "Type",
+      "compositionTypes": {
+        "ceramic": "Ceramic",
+        "iron": "Iron",
+        "filter": "Filter"
+      }
     },
 
     "errors": {
       "loading": "Failed to load data",
       "required": "Please fill in all required fields",
-      "success": "Buckets added successfully"
+      "success": "Buckets added successfully",
+      "emptyBuckets": "No buckets added yet"
     },
     "details": {
       "title": "Catalytic Converter Search",
@@ -2619,6 +2640,10 @@
         "title": "Results",
         "foundCount": "{{count}} catalytic converters found",
         "converterCount": "{{count}} converters",
+        "bucketsSummary": "buckets",
+        "compositionsSummary": "compositions",
+        "compositions": "compositions",
+        "noCompositions": "no compositions",
         "engine": "Engine",
           "totalPrice": "Total price",
         "empty": "Select one result to see details",
@@ -2627,7 +2652,10 @@
         "totalPt": "Average Pt",
         "totalPd": "Average Pd",
         "totalRh": "Average Rh",
-        "totalPrice": "Total Price",
+        "totalPrice": "Total price",
+        "ceramicPrice": "Ceramic price",
+        "ironPrice": "Iron price",
+        "filterPrice": "Filter price",
         "weight": "Weight",
         "pt": "Pt",
         "pd": "Pd",

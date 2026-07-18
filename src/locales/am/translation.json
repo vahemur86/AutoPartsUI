@@ -15,6 +15,7 @@
     "logout": "Ելք",
     "userMenu": "Օգտատիրոջ ընտրացանկ",
     "today": "Այսօր",
+    "exchangeRate": "Փոխարժեք",
     "language": "Լեզու",
     "languageLoading": "Լեզուները բեռնվում են...",
     "useGlobalDefault": "Օգտագործել ընդհանուր լռելյայնը",
@@ -71,7 +72,8 @@
     "noComment": "Մեկնաբանություն չկա",
     "date": "Ամսաթիվ",
     "confirm": "Հաստատել",
-    "warning": "Զգուշացում"
+    "warning": "Զգուշացում",
+    "copy": "Կրկնօրինակել"
   },
 
   "currencies": {
@@ -367,6 +369,7 @@
       "charts": {
         "revenueMix": "Շրջանառության կառուցվածք․ ապրանքներ vs ծառայություններ",
         "performance": "Շրջանառության և շահույթի դինամիկա",
+        "warehouseProfit": "Պահեստի շահույթի միտում",
         "orderStatus": "Պատվերների կարգավիճակների բաշխում",
         "products": "Ապրանքներ",
         "services": "Ծառայություններ",
@@ -374,8 +377,11 @@
         "completedOrders": "Ավարտված",
         "today": "Այսօր",
         "month": "Ամիս",
+        "period": "Պարբերություն",
         "revenue": "Շրջանառություն",
-        "profit": "Շահույթ"
+        "cost": "Ինքնարժեք",
+        "profit": "Շահույթ",
+        "noWarehouseProfit": "Ընտրված միջակայքի համար պահեստի շահույթի տվյալներ չկան։"
       },
       "columns": {
         "productCode": "Ապրանքի կոդ",
@@ -775,6 +781,127 @@
       "error": {
         "noItemsSelected": "Վաճառք ստեղծելուց առաջ ավելացրեք առնվազն մեկ խումբ",
         "failedToCreateSale": "Չհաջողվեց ստեղծել վաճառքի խումբը"
+      }
+    },
+    "batchesToSale": {
+      "loading": "Վաճառքի համար պատրաստի խմբերը բեռնվում են...",
+      "emptyState": "Վաճառքի համար հասանելի խմբեր չեն գտնվել։",
+      "sale": "Վաճառել",
+      "saleModal": {
+        "title": "Ավարտել վաճառքը",
+        "description": "Սահմանեք մետաղների գները #{{id}} վաճառքի խմբի համար։",
+        "confirm": "Հաստատել վաճառքը",
+        "cancel": "Չեղարկել"
+      },
+      "saleForm": {
+        "currencyCode": "Արժույթի կոդ"
+      },
+      "success": {
+        "saleCompleted": "Վաճառքի խումբը հաջողությամբ վաճառվեց"
+      },
+      "error": {
+        "currencyRequired": "Խնդրում ենք նշել արժույթի կոդը",
+        "failedToSell": "Չհաջողվեց ավարտել վաճառքի խմբի գործարքը",
+        "failedToRecalculate": "Չհաջողվեց վերահաշվարկել վաճառքի խմբի տվյալները"
+      },
+      "recalculate": {
+        "button": "Վերահաշվարկել",
+        "loading": "Վերահաշվարկվում է...",
+        "resultLabel": "Վերահաշվարկի արդյունք"
+      },
+      "fields": {
+        "powderKg": "Փոշի (կգ)",
+        "pt_g": "Պլատին (գ)",
+        "pd_g": "Պալադիում (գ)",
+        "rh_g": "Ռոդիում (գ)",
+        "ptPrice": "Պլատինի գին",
+        "pdPrice": "Պալադիումի գին",
+        "rhPrice": "Ռոդիումի գին",
+        "usdRate": "USD փոխարժեք",
+        "revenueAmd": "Եկամուտ (AMD)"
+      },
+      "columns": {
+        "id": "ID",
+        "warehouseId": "Պահեստի ID",
+        "status": "Կարգավիճակ",
+        "itemsCostTotalAmd": "Ինքնարժեք",
+        "profit": "Շահույթ",
+        "ptTotal_g": "Pt",
+        "pdTotal_g": "Pd",
+        "rhTotal_g": "Rh",
+        "createdAt": "Ստեղծվել է",
+        "soldAt": "Վաճառվել է",
+        "totalPowderKg": "Քաշ",
+        "costTotalAmd": "Վաճառքի գին"
+      }
+    },
+    "soldBatches": {
+      "title": "Վաճառված խմբեր",
+      "loading": "Վաճառված խմբերը բեռնվում են...",
+      "emptyState": "Վաճառված խմբեր չեն գտնվել։",
+      "editSoldBatch": "Գնի ճշգրտում",
+      "filters": {
+        "fromDate": "Սկսած",
+        "toDate": "Մինչև",
+        "selectFromDate": "Ընտրեք սկսման ամսաթիվը",
+        "selectToDate": "Ընտրեք ավարտի ամսաթիվը"
+      },
+      "form": {
+        "finalAmount": "Վերջնական գին",
+        "comment": "Պատճառ",
+        "enterComment": "Մուտքագրեք մեկնաբանությունը..."
+      },
+      "dropdown": {
+        "powderKg": "Փոշու քաշ (կգ)",
+        "pt_g": "Պլատին (գ)",
+        "pd_g": "Պալադիում (գ)",
+        "rh_g": "Ռոդիում (գ)",
+        "ptPrice": "Պլատինի գին",
+        "pdPrice": "Պալադիումի գին",
+        "rhPrice": "Ռոդիումի գին",
+        "usdRate": "USD փոխարժեք",
+        "revenueAmd": "Եկամուտ (AMD)",
+        "saleId": "Վաճառքի ID",
+        "comparison": "Տարբերություններ",
+        "original": "Սկզբնական",
+        "current": "Ներկայիս",
+        "noDifferences": "Տարբերություններ չեն գտնվել"
+      },
+      "columns": {
+        "id": "ID",
+        "salesLotId": "Վաճառքի խմբի ID",
+        "warehouseId": "Պահեստի ID",
+        "currencyCode": "Արժույթ",
+        "revenueTotal": "Վաճառքի գին",
+        "revenueTotalAmd": "Վաճառքի գին (AMD)",
+        "costAmd": "Ինքնարժեք (AMD)",
+        "profitAmd": "Շահույթ (AMD)",
+        "soldPowderKg": "Խմբի քաշ (կգ)",
+        "createdAt": "Ստեղծվել է"
+      },
+      "errors": {
+        "failedToFetch": "Չհաջողվեց բեռնել վաճառված խմբերը"
+      }
+    },
+    "profit": {
+      "title": "Պահեստի շահույթ",
+      "loading": "Շահույթի հաշվետվությունը բեռնվում է...",
+      "emptyState": "Շահույթի տվյալներ չկան։ Փոփոխեք ֆիլտրերը և փորձեք կրկին։",
+      "loadReport": "Բեռնել հաշվետվությունը",
+      "filters": {
+        "fromDate": "Սկսած",
+        "toDate": "Մինչև",
+        "selectFromDate": "Ընտրեք սկսման ամսաթիվը",
+        "selectToDate": "Ընտրեք ավարտի ամսաթիվը"
+      },
+      "summary": {
+        "revenueAmd": "Եկամուտ (AMD)",
+        "costAmd": "Ինքնարժեք (AMD)",
+        "profitAmd": "Շահույթ (AMD)",
+        "soldPowderKg": "Վաճառված փոշի (կգ)"
+      },
+      "errors": {
+        "failedToFetch": "Չհաջողվեց բեռնել շահույթի հաշվետվությունը"
       }
     }
   },
@@ -2221,23 +2348,38 @@
       "selectEngine": "Ընտրեք շարժիչ"
     },
 
+    "actions": {
+      "save": "Պահպանել"
+    },
+
     "sections": {
-      "frontBuckets": "Առջևի բաժիններ",
-      "backBuckets": "Վերջի բաժիններ"
+      "frontBuckets": "Առջևի պատյան",
+      "backBuckets": "Հետևի պատյան"
     },
 
     "table": {
       "code": "Կոդ",
       "weight": "Քաշ (կգ)",
+      "pricePerKg": "1 կգ-ի գինը",
       "pt": "Պլատինա (Pt, գ)",
       "pd": "Պալադիում (Pd, գ)",
-      "rh": "Ռոդիում (Rh, գ)"
+      "rh": "Ռոդիում (Rh, գ)",
+      "bucketCode": "Բաքի կոդ",
+      "addComposition": "Ավելացնել բաղադրիչ",
+      "compositionCode": "Բաղադրիչի կոդ",
+      "compositionType": "Տեսակ",
+      "compositionTypes": {
+        "ceramic": "Կերամիկա",
+        "iron": "Երկաթ",
+        "filter": "Ֆիլտր"
+      }
     },
 
     "errors": {
       "loading": "Տվյալները չհաջողվեց ներբեռնել",
       "required": "Խնդրում ենք լրացնել բոլոր պարտադիր դաշտերը",
-      "success": "Բաժինները հաջողությամբ ավելացվեցին"
+      "success": "Բաժինները հաջողությամբ ավելացվեցին",
+      "emptyBuckets": "Դեռևս բաքեր չկան"
     },
 
     "details": {
@@ -2271,6 +2413,10 @@
         "title": "Արդյունքներ",
         "foundCount": "{{count}} կատալիտիկ փոխիչ է գտնվել",
         "converterCount": "{{count}} փոխիչ",
+        "bucketsSummary": "բաքեր",
+        "compositionsSummary": "բաղադրիչներ",
+        "compositions": "բաղադրիչ",
+        "noCompositions": "բաղադրիչներ չկան",
         "engine": "Շարժիչ",
         "totalPrice": "Ընդհանուր գին",
         "empty": "Արդյունք չկա դեռ"
@@ -2285,6 +2431,9 @@
         "totalPd": "Միջին Pd",
         "totalRh": "Միջին Rh",
         "totalPrice": "Ընդհանուր գին",
+        "ceramicPrice": "Կերամիկայի գին",
+        "ironPrice": "Երկաթի գին",
+        "filterPrice": "Ֆիլտրի գին",
         "weight": "Քաշ",
         "pt": "Pt",
         "pd": "Pd",
