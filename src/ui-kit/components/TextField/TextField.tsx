@@ -1,4 +1,9 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
+import {
+  forwardRef,
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from "react";
 import styles from "./TextField.module.css";
 
 export interface TextFieldProps extends Omit<
@@ -10,6 +15,8 @@ export interface TextFieldProps extends Omit<
   suffix?: string;
   error?: boolean;
   helperText?: string;
+  containerClassName?: string;
+  inputClassName?: string;
 }
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
@@ -21,14 +28,19 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       error = false,
       helperText,
       className = "",
+      containerClassName = "",
+      inputClassName = "",
       id,
       disabled = false,
+      type = "text",
+      inputMode,
+      step,
       ...props
     },
     ref,
   ) => {
-    const textFieldId =
-      id || `textfield-${Math.random().toString(36).substr(2, 9)}`;
+    const generatedId = useId();
+    const textFieldId = id || generatedId;
 
     return (
       <div className={`${styles.textFieldWrapper} ${className}`}>
@@ -40,14 +52,16 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <div
           className={`${styles.textFieldContainer} ${
             error ? styles.error : ""
-          } ${disabled ? styles.disabled : ""}`}
+          } ${disabled ? styles.disabled : ""} ${containerClassName}`}
         >
           <input
             ref={ref}
             id={textFieldId}
-            type="text"
-            className={styles.textFieldInput}
+            type={type}
+            className={`${styles.textFieldInput} ${inputClassName}`}
             disabled={disabled}
+            inputMode={inputMode ?? (type === "number" ? "decimal" : undefined)}
+            step={step ?? (type === "number" ? "any" : undefined)}
             {...props}
           />
           {suffix && (

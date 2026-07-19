@@ -171,6 +171,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 18px;
   padding-bottom: 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -180,6 +181,24 @@
   margin: 5px 0 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.52);
+}
+
+.resultsSummaryChip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.resultsSummaryChip span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5fd68b;
+  background: rgba(95, 214, 139, 0.12);
+  border: 1px solid rgba(95, 214, 139, 0.18);
 }
 
 .resultList {
@@ -262,6 +281,55 @@
   font-size: 13px;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.56);
+}
+
+.priceSummaryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.priceSummaryChipCeramic,
+.priceSummaryChipFilter,
+.priceSummaryChipIron,
+.priceSummaryChipTotal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.priceSummaryChipCeramic {
+  color: #ecf15e;
+  border-color: rgba(236, 241, 94, 0.24);
+  background: rgba(236, 241, 94, 0.12);
+}
+
+.priceSummaryChipFilter {
+  color: #b9c3d9;
+  border-color: rgba(185, 195, 217, 0.24);
+  background: rgba(185, 195, 217, 0.12);
+}
+
+.priceSummaryChipIron {
+  color: #f0c66e;
+  border-color: rgba(240, 198, 110, 0.24);
+  background: rgba(240, 198, 110, 0.12);
+}
+
+.priceSummaryChipTotal {
+  color: #5fd68b;
+  border-color: rgba(95, 214, 139, 0.24);
+  background: rgba(95, 214, 139, 0.12);
 }
 
 .bucketCount {
@@ -357,6 +425,91 @@
 .totalBox div:nth-child(4) {
   --total-accent: #5d93e9;
   --total-glow: rgba(93, 147, 233, 0.34);
+}
+
+.priceCardCeramic {
+  --total-accent: #ecf15e;
+  --total-glow: rgba(236, 241, 94, 0.34);
+}
+
+.priceCardIron {
+  --total-accent: #f0c66e;
+  --total-glow: rgba(240, 198, 110, 0.34);
+}
+
+.priceCardFilter {
+  --total-accent: #b9c3d9;
+  --total-glow: rgba(185, 195, 217, 0.28);
+}
+
+.priceCardTotal {
+  --total-accent: #5fd68b;
+  --total-glow: rgba(95, 214, 139, 0.34);
+}
+
+.priceCardCeramic,
+.priceCardIron,
+.priceCardFilter,
+.priceCardTotal {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 18px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 255, 255, 0.09),
+      transparent 42%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.025)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.priceCardCeramic::before,
+.priceCardIron::before,
+.priceCardFilter::before,
+.priceCardTotal::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--total-accent, var(--color-primary-500));
+  box-shadow: 0 0 18px var(--total-glow, rgba(236, 241, 94, 0.28));
+}
+
+.priceCardCeramic span,
+.priceCardIron span,
+.priceCardFilter span,
+.priceCardTotal span {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.52);
+  letter-spacing: 0.02em;
+}
+
+.priceCardCeramic strong,
+.priceCardIron strong,
+.priceCardFilter strong,
+.priceCardTotal strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  letter-spacing: -0.03em;
 }
 
 .totalBox span {
@@ -459,6 +612,58 @@
 .bucketGrid strong {
   color: rgba(255, 255, 255, 0.9);
   font-weight: 800;
+}
+
+.compositionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.compositionItem {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.compositionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.compositionHeader strong {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 13px;
+}
+
+.compositionHeader span {
+  color: var(--color-primary-500);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.compositionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+}
+
+.fallbackComposition {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
 }
 
 .bucketCalculation {

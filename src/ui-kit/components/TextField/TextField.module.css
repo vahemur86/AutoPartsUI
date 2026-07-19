@@ -64,6 +64,8 @@
   border: none;
   outline: none;
   color: var(--color-white);
+  -webkit-text-fill-color: var(--color-white);
+  caret-color: var(--color-white);
   font-size: 14px;
   font-family: "Manrope", sans-serif;
   padding: 0;

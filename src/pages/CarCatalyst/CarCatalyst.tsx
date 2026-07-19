@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-
 import { Button, IconButton, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   getVehicleDefinitions,
   getVehicleModels,
 } from "@/services/settings/vehicles";
-import autoParts from "@/assets/images/autoParts.png";
 import { fetchTags } from "@/store/slices/tagsSlice";
 
 import type {
@@ -23,27 +21,46 @@ import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
 import { Copy, ExternalLink, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-type UIBucket = Omit<
-  CarCatalystBucket,
-  "weightKg" | "pt_g" | "pd_g" | "rh_g"
-> & {
+type UICompositionType = 0 | 1 | 2;
+
+interface UIComposition {
+  id: string;
+  code: string;
+  type: UICompositionType;
   weightKg: string;
+  pricePerKg: string;
   pt_g: string;
   pd_g: string;
   rh_g: string;
+}
+
+type UIBucket = Omit<CarCatalystBucket, "compositions"> & {
+  compositions: UIComposition[];
 };
+
+const createCompositionId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+const emptyComposition = (): UIComposition => ({
+  id: createCompositionId(),
+  code: "",
+  type: 0,
+  weightKg: "0",
+  pricePerKg: "0",
+  pt_g: "0",
+  pd_g: "0",
+  rh_g: "0",
+});
 
 const emptyBucket = (side: number): UIBucket => ({
   side,
   code: "",
-  weightKg: "",
-  pt_g: "",
-  pd_g: "",
-  rh_g: "",
+  compositions: [emptyComposition()],
 });
 
-const sanitizeDecimal = (value: string) =>
+const sanitizeNumericInput = (value: string) =>
   value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+
+const shouldShowMetalFields = (type: number) => type !== 1;
 
 export const CarCatalystPage = () => {
   const { t } = useTranslation();
@@ -76,7 +93,7 @@ export const CarCatalystPage = () => {
         setDefinitions(data);
         setBrands(data.brands || []);
       } catch {
-        toast.error(t("carCatalyst.error.loading"));
+        toast.error(t("carCatalyst.errors.loading"));
       }
     };
     load();
@@ -102,7 +119,7 @@ export const CarCatalystPage = () => {
       const data = await getVehicleModels(id);
       setModels(data || []);
     } catch {
-      toast.error(t("carCatalyst.error.loading"));
+      toast.error(t("carCatalyst.errors.loading"));
     }
   };
 
@@ -129,36 +146,144 @@ export const CarCatalystPage = () => {
     setter((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const duplicateBucket = (
-  side: "front" | "back",
-  index: number,
-) => {
-  const setter = side === "front"
-    ? setFrontBuckets
-    : setBackBuckets;
+  const duplicateBucket = (side: "front" | "back", index: number) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
 
-  setter((prev) => {
-    const item = prev[index];
+    setter((prev) => {
+      const item = prev[index];
 
-    return [
-      ...prev,
-      {
-        ...item,
-      },
-    ];
-  });
-};
+      if (!item) return prev;
+
+      return [
+        ...prev,
+        {
+          ...item,
+          id: undefined,
+          compositions: item.compositions.map((composition) => ({
+            ...composition,
+            id: createCompositionId(),
+          })),
+        },
+      ];
+    });
+  };
 
   const updateBucket = (
     side: "front" | "back",
     index: number,
     field: keyof UIBucket,
-    value: any,
+    value: string | number,
   ) => {
     const setter = side === "front" ? setFrontBuckets : setBackBuckets;
     setter((prev) =>
-      prev.map((b, i) => (i === index ? { ...b, [field]: value } : b)),
+      prev.map((bucket, bucketIndex) =>
+        bucketIndex === index ? { ...bucket, [field]: value } : bucket,
+      ),
     );
+  };
+
+  const addComposition = (side: "front" | "back", bucketIndex: number) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+
+    setter((prev) =>
+      prev.map((bucket, index) =>
+        index === bucketIndex
+          ? {
+              ...bucket,
+              compositions: [...bucket.compositions, emptyComposition()],
+            }
+          : bucket,
+      ),
+    );
+  };
+
+  const deleteComposition = (
+    side: "front" | "back",
+    bucketIndex: number,
+    compositionIndex: number,
+  ) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+
+    setter((prev) =>
+      prev.map((bucket, index) => {
+        if (index !== bucketIndex) return bucket;
+
+        return {
+          ...bucket,
+          compositions: bucket.compositions.filter(
+            (_, compositionIdx) => compositionIdx !== compositionIndex,
+          ),
+        };
+      }),
+    );
+  };
+
+  const updateComposition = (
+    side: "front" | "back",
+    bucketIndex: number,
+    compositionIndex: number,
+    field: keyof UIComposition,
+    value: string | number,
+  ) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+
+    setter((prev) =>
+      prev.map((bucket, index) => {
+        if (index !== bucketIndex) return bucket;
+
+        return {
+          ...bucket,
+          compositions: bucket.compositions.map((composition, compositionIdx) =>
+            compositionIdx === compositionIndex
+              ? { ...composition, [field]: value }
+              : composition,
+          ),
+        };
+      }),
+    );
+  };
+
+  const validateBuckets = (buckets: UIBucket[]) => {
+    if (!buckets.length) {
+      toast.error(t("carCatalyst.errors.required"));
+      return false;
+    }
+
+    for (const bucket of buckets) {
+      if (!bucket.code.trim()) {
+        toast.error(t("carCatalyst.errors.required"));
+        return false;
+      }
+
+      if (!bucket.compositions.length) {
+        toast.error(t("carCatalyst.errors.required"));
+        return false;
+      }
+
+      for (const composition of bucket.compositions) {
+        if (!composition.code.trim()) {
+          toast.error(t("carCatalyst.errors.required"));
+          return false;
+        }
+
+        if (composition.type === 1) {
+          if (!composition.weightKg || composition.pricePerKg === "") {
+            toast.error(t("carCatalyst.errors.required"));
+            return false;
+          }
+        } else if (
+          !composition.weightKg ||
+          !composition.pt_g ||
+          !composition.pd_g ||
+          !composition.rh_g
+        ) {
+          toast.error(t("carCatalyst.errors.required"));
+          return false;
+        }
+      }
+    }
+
+    return true;
   };
 
   const handleSave = async () => {
@@ -167,13 +292,26 @@ export const CarCatalystPage = () => {
       return;
     }
 
-    const normalize = (b: UIBucket): CarCatalystBucket => ({
-      side: b.side,
-      code: b.code,
-      weightKg: Number(b.weightKg || 0),
-      pt_g: Number(b.pt_g || 0),
-      pd_g: Number(b.pd_g || 0),
-      rh_g: Number(b.rh_g || 0),
+    const buckets = [...frontBuckets, ...backBuckets];
+
+    if (!validateBuckets(buckets)) {
+      return;
+    }
+
+    const normalize = (bucket: UIBucket): CarCatalystBucket => ({
+      side: bucket.side,
+      code: bucket.code.trim(),
+      compositions: bucket.compositions.map((composition) => ({
+        code: composition.code.trim(),
+        type: Number(composition.type),
+        weightKg: Number(composition.weightKg || 0),
+        pt_g: composition.type === 1 ? 0 : Number(composition.pt_g || 0),
+        pd_g: composition.type === 1 ? 0 : Number(composition.pd_g || 0),
+        rh_g: composition.type === 1 ? 0 : Number(composition.rh_g || 0),
+        ...(composition.type === 1
+          ? { pricePerKg: Number(composition.pricePerKg || 0) }
+          : {}),
+      })),
     });
 
     const payload: CreateCarCatalyst = {
@@ -184,7 +322,7 @@ export const CarCatalystPage = () => {
       country: Number(country),
       engineVolume: Number(engineId),
       side: 0,
-      buckets: [...frontBuckets, ...backBuckets].map(normalize),
+      buckets: buckets.map(normalize),
     };
 
     try {
@@ -197,16 +335,16 @@ export const CarCatalystPage = () => {
   };
 
   const goToDetails = () => {
-    navigate("/settings/car-catalyst/details");
+    navigate("/car-catalyst/details");
   };
 
-  const renderTable = (
+  const renderBucketSection = (
     title: string,
     side: "front" | "back",
     data: UIBucket[],
   ) => (
-    <div className={styles.bucketTable}>
-      <div className={styles.tableHeader}>
+    <div className={styles.bucketSection}>
+      <div className={styles.sectionHeader}>
         <h3
           className={`${styles.sectionTitle} ${
             side === "front" ? styles.frontTitle : styles.backTitle
@@ -220,111 +358,200 @@ export const CarCatalystPage = () => {
         </Button>
       </div>
 
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>{t("carCatalyst.table.code")}</th>
-            <th>{t("carCatalyst.table.weight")}</th>
-            <th>{t("carCatalyst.table.pt")}</th>
-            <th>{t("carCatalyst.table.pd")}</th>
-            <th>{t("carCatalyst.table.rh")}</th>
-            <th>{t("common.copy")}</th>
-            <th>{t("common.delete")}</th>
-          </tr>
-        </thead>
+      <div className={styles.bucketList}>
+        {data.map((bucket, bucketIndex) => (
+          <div key={`${side}-${bucketIndex}`} className={styles.bucketCard}>
+            <div className={styles.bucketHeaderRow}>
+              <TextField
+                label={t("carCatalyst.table.bucketCode")}
+                value={bucket.code}
+                onChange={(e) =>
+                  updateBucket(side, bucketIndex, "code", e.target.value)
+                }
+              />
 
-        <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
-              <td>
-                <TextField
-                  value={row.code}
-                  onChange={(e) =>
-                    updateBucket(side, i, "code", e.target.value)
-                  }
-                />
-              </td>
+              <div className={styles.bucketActions}>
+                <Button
+                  size="small"
+                  onClick={() => addComposition(side, bucketIndex)}
+                >
+                  {t("carCatalyst.table.addComposition")}
+                </Button>
 
-              <td>
-                <TextField
-                  value={row.weightKg}
-                  placeholder="0"
-                  onChange={(e) =>
-                    updateBucket(
-                      side,
-                      i,
-                      "weightKg",
-                      sanitizeDecimal(e.target.value),
-                    )
-                  }
+                <IconButton
+                  size="medium"
+                  onClick={() => duplicateBucket(side, bucketIndex)}
+                  icon={<Copy size={18} />}
+                  ariaLabel="duplicate"
                 />
-              </td>
 
-              <td>
-                <TextField
-                  value={row.pt_g}
-                  placeholder="0"
-                  onChange={(e) =>
-                    updateBucket(
-                      side,
-                      i,
-                      "pt_g",
-                      sanitizeDecimal(e.target.value),
-                    )
-                  }
-                />
-              </td>
-
-              <td>
-                <TextField
-                  value={row.pd_g}
-                  placeholder="0"
-                  onChange={(e) =>
-                    updateBucket(
-                      side,
-                      i,
-                      "pd_g",
-                      sanitizeDecimal(e.target.value),
-                    )
-                  }
-                />
-              </td>
-
-              <td>
-                <TextField
-                  value={row.rh_g}
-                  placeholder="0"
-                  onChange={(e) =>
-                    updateBucket(
-                      side,
-                      i,
-                      "rh_g",
-                      sanitizeDecimal(e.target.value),
-                    )
-                  }
-                />
-              </td>
-<td>
-  <IconButton
-    size="medium"
-    onClick={() => duplicateBucket(side, i)}
-    icon={<Copy size={18} />}
-    ariaLabel="duplicate"
-  />
-</td>
-              <td>
                 <IconButton
                   className={styles.trashIconButton}
                   size="medium"
-                  onClick={() => deleteBucket(side, i)}
+                  onClick={() => deleteBucket(side, bucketIndex)}
                   icon={<Trash className={styles.trashIcon} />}
                   ariaLabel=""
                 />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            </div>
+
+            <div className={styles.compositionsList}>
+              {bucket.compositions.map((composition, compositionIndex) => (
+                <div key={composition.id} className={styles.compositionCard}>
+                  <div className={styles.compositionGrid}>
+                    <TextField
+                      label={t("carCatalyst.table.compositionCode")}
+                      value={composition.code}
+                      onChange={(e) =>
+                        updateComposition(
+                          side,
+                          bucketIndex,
+                          compositionIndex,
+                          "code",
+                          e.target.value,
+                        )
+                      }
+                    />
+
+                    <Select
+                      label={t("carCatalyst.table.compositionType")}
+                      value={composition.type}
+                      onChange={(e) =>
+                        updateComposition(
+                          side,
+                          bucketIndex,
+                          compositionIndex,
+                          "type",
+                          Number(e.target.value),
+                        )
+                      }
+                    >
+                      <option value={0}>
+                        {t("carCatalyst.table.compositionTypes.ceramic")}
+                      </option>
+                      <option value={1}>
+                        {t("carCatalyst.table.compositionTypes.iron")}
+                      </option>
+                      <option value={2}>
+                        {t("carCatalyst.table.compositionTypes.filter")}
+                      </option>
+                    </Select>
+
+                    <TextField
+                      label={t("carCatalyst.table.weight")}
+                      type="text"
+                      inputMode="decimal"
+                      value={composition.weightKg || "0"}
+                      placeholder="0"
+                      onChange={(e) =>
+                        updateComposition(
+                          side,
+                          bucketIndex,
+                          compositionIndex,
+                          "weightKg",
+                          sanitizeNumericInput(e.target.value),
+                        )
+                      }
+                    />
+
+                    {composition.type === 1 && (
+                      <TextField
+                        label={t("carCatalyst.table.pricePerKg")}
+                        type="text"
+                        inputMode="decimal"
+                        value={composition.pricePerKg || "0"}
+                        placeholder="0"
+                        onChange={(e) =>
+                          updateComposition(
+                            side,
+                            bucketIndex,
+                            compositionIndex,
+                            "pricePerKg",
+                            sanitizeNumericInput(e.target.value),
+                          )
+                        }
+                      />
+                    )}
+
+                    {shouldShowMetalFields(composition.type) && (
+                      <>
+                        <TextField
+                          label={t("carCatalyst.table.pt")}
+                          type="text"
+                          inputMode="decimal"
+                          value={composition.pt_g || "0"}
+                          placeholder="0"
+                          onChange={(e) =>
+                            updateComposition(
+                              side,
+                              bucketIndex,
+                              compositionIndex,
+                              "pt_g",
+                              sanitizeNumericInput(e.target.value),
+                            )
+                          }
+                        />
+
+                        <TextField
+                          label={t("carCatalyst.table.pd")}
+                          type="text"
+                          inputMode="decimal"
+                          value={composition.pd_g || "0"}
+                          placeholder="0"
+                          onChange={(e) =>
+                            updateComposition(
+                              side,
+                              bucketIndex,
+                              compositionIndex,
+                              "pd_g",
+                              sanitizeNumericInput(e.target.value),
+                            )
+                          }
+                        />
+
+                        <TextField
+                          label={t("carCatalyst.table.rh")}
+                          type="text"
+                          inputMode="decimal"
+                          value={composition.rh_g || "0"}
+                          placeholder="0"
+                          onChange={(e) =>
+                            updateComposition(
+                              side,
+                              bucketIndex,
+                              compositionIndex,
+                              "rh_g",
+                              sanitizeNumericInput(e.target.value),
+                            )
+                          }
+                        />
+                      </>
+                    )}
+
+                    {bucket.compositions.length > 1 && (
+                      <div className={styles.compositionDeleteWrap}>
+                        <IconButton
+                          className={styles.trashIconButton}
+                          size="medium"
+                          onClick={() =>
+                            deleteComposition(side, bucketIndex, compositionIndex)
+                          }
+                          icon={<Trash className={styles.trashIcon} />}
+                          ariaLabel=""
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {!data.length && (
+          <div className={styles.emptyState}>{t("carCatalyst.errors.emptyBuckets")}</div>
+        )}
+      </div>
     </div>
   );
 
@@ -343,7 +570,7 @@ export const CarCatalystPage = () => {
         </div>
 
         <Button variant="primary" size="small" onClick={handleSave}>
-          {t("common.save")}
+          {t("carCatalyst.actions.save")}
         </Button>
       </div>
 
@@ -436,22 +663,14 @@ export const CarCatalystPage = () => {
         </Select>
       </div>
 
-      <div className={styles.tablesRowWithImage}>
-        {renderTable(
+      <div className={styles.tablesRow}>
+        {renderBucketSection(
           t("carCatalyst.sections.frontBuckets"),
           "front",
           frontBuckets,
         )}
 
-        <div className={styles.centerImage}>
-          <img
-            src={autoParts}
-            alt="auto parts"
-            className={styles.centerImageImg}
-          />
-        </div>
-
-        {renderTable(
+        {renderBucketSection(
           t("carCatalyst.sections.backBuckets"),
           "back",
           backBuckets,

@@ -53,6 +53,36 @@ const getSafeNumber = (value: unknown) => {
   return Number.isFinite(numberValue) ? numberValue : 0;
 };
 
+const getBucketCompositionTotals = (bucket: CatalystBucket) => {
+  const compositions = Array.isArray(bucket.compositions)
+    ? bucket.compositions.filter(Boolean)
+    : [];
+
+  if (compositions.length > 0) {
+    return compositions.reduce(
+      (acc, composition) => ({
+        weight: acc.weight + getSafeNumber(composition.weightKg),
+        pt: acc.pt + getSafeNumber(composition.pt_g),
+        pd: acc.pd + getSafeNumber(composition.pd_g),
+        rh: acc.rh + getSafeNumber(composition.rh_g),
+      }),
+      {
+        weight: 0,
+        pt: 0,
+        pd: 0,
+        rh: 0,
+      },
+    );
+  }
+
+  return {
+    weight: getSafeNumber(bucket.weightKg),
+    pt: getSafeNumber(bucket.pt_g),
+    pd: getSafeNumber(bucket.pd_g),
+    rh: getSafeNumber(bucket.rh_g),
+  };
+};
+
 const getOfferField = (
   offer: CalculatorResultLike | null | undefined,
   key: string,
@@ -181,16 +211,18 @@ const years = useMemo(
 
   const buildBucketCalculatorRequest = useCallback(
     (bucket: CatalystBucket): SalesLotsCalculatorRequest => {
+      const totals = getBucketCompositionTotals(bucket);
+
       return {
         cashRegisterId,
 
         // IMPORTANT:
         // Do not send items: [...]
         // Backend expects these fields directly.
-        pt_g: getSafeNumber(bucket.pt_g),
-        pd_g: getSafeNumber(bucket.pd_g),
-        rh_g: getSafeNumber(bucket.rh_g),
-        powderKg: getSafeNumber(bucket.weightKg),
+        pt_g: totals.pt,
+        pd_g: totals.pd,
+        rh_g: totals.rh,
+        powderKg: totals.weight,
       } as unknown as SalesLotsCalculatorRequest;
     },
     [cashRegisterId],
@@ -324,6 +356,56 @@ const years = useMemo(
     return [selected, ...list];
   }, [list, selected]);
 
+  const getPriceBreakdownTotals = useCallback(
+    (item?: CarCatalyst | null) => {
+      const buckets = item?.buckets ?? [];
+      let ceramicPrice = 0;
+      let filterPrice = 0;
+      let hasCeramic = false;
+      let hasFilter = false;
+      let hasIron = false;
+
+      for (const [index, bucket] of buckets.entries()) {
+        const offer = bucketOffers[getBucketKey(item!.id, bucket, index)];
+        const customerOfferAmd = getCustomerOfferAmd(offer);
+
+        if (customerOfferAmd === null) continue;
+
+        const compositionTypes = (bucket.compositions ?? []).map(
+          (composition) => composition.type,
+        );
+
+        if (compositionTypes.includes(0)) {
+          hasCeramic = true;
+          ceramicPrice += customerOfferAmd;
+        }
+
+        if (compositionTypes.includes(2)) {
+          hasFilter = true;
+          filterPrice += customerOfferAmd;
+        }
+      }
+
+      const ironPrice = getSafeNumber(item?.totalIronPrice);
+      hasIron = ironPrice > 0;
+
+      return {
+        weight: getSafeNumber(item?.totalWeightKg),
+        pt: getSafeNumber(item?.averagePt_g),
+        pd: getSafeNumber(item?.averagePd_g),
+        rh: getSafeNumber(item?.averageRh_g),
+        ceramicPrice,
+        filterPrice,
+        ironPrice,
+        totalPrice: ceramicPrice + filterPrice + ironPrice,
+        hasCeramic,
+        hasFilter,
+        hasIron,
+      };
+    },
+    [bucketOffers, getBucketKey],
+  );
+
   const selectedTotals = useMemo(() => {
     if (!selected) {
       return {
@@ -331,38 +413,18 @@ const years = useMemo(
         pt: 0,
         pd: 0,
         rh: 0,
+        ceramicPrice: 0,
+        ironPrice: 0,
+        filterPrice: 0,
+        totalPrice: 0,
+        hasCeramic: false,
+        hasFilter: false,
+        hasIron: false,
       };
     }
 
-    // Use backend totals if available, otherwise calculate from buckets
-    if (selected.totalWeightKg !== undefined && selected.averagePt_g !== undefined &&
-        selected.averagePd_g !== undefined && selected.averageRh_g !== undefined) {
-      return {
-        weight: selected.totalWeightKg,
-        pt: selected.averagePt_g,
-        pd: selected.averagePd_g,
-        rh: selected.averageRh_g,
-      };
-    }
-
-    // Fallback to frontend calculation if backend totals are not available
-    return (selected.buckets ?? []).reduce(
-      (acc, item) => {
-        acc.weight += item.weightKg || 0;
-        acc.pt += item.pt_g || 0;
-        acc.pd += item.pd_g || 0;
-        acc.rh += item.rh_g || 0;
-
-        return acc;
-      },
-      {
-        weight: 0,
-        pt: 0,
-        pd: 0,
-        rh: 0,
-      },
-    );
-  }, [selected]);
+    return getPriceBreakdownTotals(selected);
+  }, [getPriceBreakdownTotals, selected]);
 
   const handleBrandChange = async (value: string) => {
     const id = value === "" ? "" : Number(value);
@@ -520,14 +582,6 @@ const searchByVehicle = async () => {
     );
   };
 
-  const getItemTotalPrice = (item: CarCatalyst) => {
-    return (item.buckets ?? []).reduce((total, bucket, index) => {
-      const offer = bucketOffers[getBucketKey(item.id, bucket, index)];
-      const customerOfferAmd = getCustomerOfferAmd(offer);
-      return total + (customerOfferAmd ?? 0);
-    }, 0);
-  };
-
   const getModelName = (brandIdValue: number, modelIdValue: number) => {
     return (
       modelsByBrandId[brandIdValue]?.find((item) => item.id === modelIdValue)
@@ -546,16 +600,6 @@ const searchByVehicle = async () => {
       t("carCatalyst.details.fallback.country", { id })
     );
   };
-
-  const selectedTotalOfferAmd = useMemo(() => {
-    if (!selected) return 0;
-
-    return (selected.buckets ?? []).reduce((total, bucket, index) => {
-      const offer = bucketOffers[getBucketKey(selected.id, bucket, index)];
-      const customerOfferAmd = getCustomerOfferAmd(offer);
-      return total + (customerOfferAmd ?? 0);
-    }, 0);
-  }, [selected, bucketOffers, getBucketKey]);
 
   useEffect(() => {
     if (!selected || expandedItemId !== selected.id) return;
@@ -604,9 +648,30 @@ const searchByVehicle = async () => {
             <strong>{selectedTotals.rh.toFixed(2)} g</strong>
           </div>
 
-          <div>
+          {selectedTotals.hasCeramic && (
+            <div className={styles.priceCardCeramic}>
+              <span>{t("carCatalyst.details.summary.ceramicPrice")}</span>
+              <strong>{selectedTotals.ceramicPrice.toFixed(2)} AMD</strong>
+            </div>
+          )}
+
+          {selectedTotals.hasIron && (
+            <div className={styles.priceCardIron}>
+              <span>{t("carCatalyst.details.summary.ironPrice")}</span>
+              <strong>{selectedTotals.ironPrice.toFixed(2)} AMD</strong>
+            </div>
+          )}
+
+          {selectedTotals.hasFilter && (
+            <div className={styles.priceCardFilter}>
+              <span>{t("carCatalyst.details.summary.filterPrice")}</span>
+              <strong>{selectedTotals.filterPrice.toFixed(2)} AMD</strong>
+            </div>
+          )}
+
+          <div className={styles.priceCardTotal}>
             <span>{t("carCatalyst.details.summary.totalPrice")}</span>
-            <strong>{selectedTotalOfferAmd.toFixed(2)} AMD</strong>
+            <strong>{selectedTotals.totalPrice.toFixed(2)} AMD</strong>
           </div>
         </div>
 
@@ -616,6 +681,7 @@ const searchByVehicle = async () => {
             const bucketOffer = bucketOffers[bucketKey];
             const customerOfferAmd = getCustomerOfferAmd(bucketOffer);
             const isCalculating = calculatingBucketKey === bucketKey;
+            const bucketTotals = getBucketCompositionTotals(bucket);
 
             return (
               <div key={bucketKey} className={styles.bucketCard}>
@@ -637,16 +703,58 @@ const searchByVehicle = async () => {
 
                 <div className={styles.bucketGrid}>
                   <span>{t("carCatalyst.details.summary.weight")}</span>
-                  <strong>{bucket.weightKg} kg</strong>
+                  <strong>{bucketTotals.weight.toFixed(3)} kg</strong>
 
                   <span>{t("carCatalyst.details.summary.pt")}</span>
-                  <strong>{bucket.pt_g} g</strong>
+                  <strong>{bucketTotals.pt.toFixed(2)} g</strong>
 
                   <span>{t("carCatalyst.details.summary.pd")}</span>
-                  <strong>{bucket.pd_g} g</strong>
+                  <strong>{bucketTotals.pd.toFixed(2)} g</strong>
 
                   <span>{t("carCatalyst.details.summary.rh")}</span>
-                  <strong>{bucket.rh_g} g</strong>
+                  <strong>{bucketTotals.rh.toFixed(2)} g</strong>
+                </div>
+
+                <div className={styles.compositionList}>
+                  {(bucket.compositions ?? []).length > 0 ? (
+                    (bucket.compositions ?? []).map((composition, compositionIndex) => (
+                      <div key={`${bucketKey}-${compositionIndex}`} className={styles.compositionItem}>
+                        <div className={styles.compositionHeader}>
+                          <strong>{composition.code || t("carCatalyst.table.compositionCode")}</strong>
+                          <span>
+                            {composition.type === 0
+                              ? t("carCatalyst.table.compositionTypes.ceramic")
+                              : composition.type === 1
+                                ? t("carCatalyst.table.compositionTypes.iron")
+                                : t("carCatalyst.table.compositionTypes.filter")}
+                          </span>
+                        </div>
+                        <div className={styles.compositionMeta}>
+                          <span>{t("carCatalyst.table.weight")}: {getSafeNumber(composition.weightKg).toFixed(3)} kg</span>
+                          {composition.type !== 1 && (
+                            <>
+                              <span>{t("carCatalyst.table.pt")}: {getSafeNumber(composition.pt_g).toFixed(2)} g</span>
+                              <span>{t("carCatalyst.table.pd")}: {getSafeNumber(composition.pd_g).toFixed(2)} g</span>
+                              <span>{t("carCatalyst.table.rh")}: {getSafeNumber(composition.rh_g).toFixed(2)} g</span>
+                            </>
+                          )}
+                          {getSafeNumber(composition.pricePerKg) > 0 && (
+                            <span>{t("carCatalyst.table.pricePerKg")}: {getSafeNumber(composition.pricePerKg).toFixed(2)} AMD/kg</span>
+                          )}
+                          {getSafeNumber(composition.totalPrice) > 0 && (
+                            <span>{t("carCatalyst.details.summary.totalPrice")}: {getSafeNumber(composition.totalPrice).toFixed(2)} AMD</span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className={styles.fallbackComposition}>
+                      <span>{t("carCatalyst.table.weight")}: {bucketTotals.weight.toFixed(3)} kg</span>
+                      <span>{t("carCatalyst.table.pt")}: {bucketTotals.pt.toFixed(2)} g</span>
+                      <span>{t("carCatalyst.table.pd")}: {bucketTotals.pd.toFixed(2)} g</span>
+                      <span>{t("carCatalyst.table.rh")}: {bucketTotals.rh.toFixed(2)} g</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.bucketCalculation}>
@@ -890,6 +998,15 @@ const searchByVehicle = async () => {
                 })}
               </p>
             </div>
+
+            <div className={styles.resultsSummaryChip}>
+              <span>
+                {displayedList.reduce((total, item) => total + (item.buckets?.length ?? 0), 0)} {t("carCatalyst.details.results.bucketsSummary")}
+              </span>
+              <span>
+                {displayedList.reduce((total, item) => total + ((item.buckets ?? []).reduce((bucketTotal, bucket) => bucketTotal + (Array.isArray(bucket.compositions) ? bucket.compositions.filter(Boolean).length : 0), 0)), 0)} {t("carCatalyst.details.results.compositionsSummary")}
+              </span>
+            </div>
           </div>
 
           <div className={styles.resultList}>
@@ -902,6 +1019,13 @@ const searchByVehicle = async () => {
                 selected?.id === item.id
                   ? (selected.buckets?.length ?? 0)
                   : (item.buckets?.length ?? 0);
+              const compositionCount = (item.buckets ?? []).reduce((total, bucket) => {
+                const compositions = Array.isArray(bucket.compositions)
+                  ? bucket.compositions.filter(Boolean)
+                  : [];
+                return total + compositions.length;
+              }, 0);
+              const itemPriceBreakdown = getPriceBreakdownTotals(item);
 
               return (
                 <div
@@ -926,12 +1050,33 @@ const searchByVehicle = async () => {
                               .filter(Boolean)
                               .join(" / ")}`
                           : ""}
-                        {getItemTotalPrice(item) > 0
-                          ? ` / ${t("carCatalyst.details.results.totalPrice")}: ${getItemTotalPrice(
-                              item,
-                            ).toLocaleString()}`
-                          : ""}
                       </h4>
+
+                      {itemPriceBreakdown.totalPrice > 0 && (
+                        <div className={styles.priceSummaryRow}>
+                          {itemPriceBreakdown.hasCeramic && (
+                            <span className={styles.priceSummaryChipCeramic}>
+                              {t("carCatalyst.details.summary.ceramicPrice")}: {itemPriceBreakdown.ceramicPrice.toLocaleString()}
+                            </span>
+                          )}
+
+                          {itemPriceBreakdown.hasFilter && (
+                            <span className={styles.priceSummaryChipFilter}>
+                              {t("carCatalyst.details.summary.filterPrice")}: {itemPriceBreakdown.filterPrice.toLocaleString()}
+                            </span>
+                          )}
+
+                          {itemPriceBreakdown.hasIron && (
+                            <span className={styles.priceSummaryChipIron}>
+                              {t("carCatalyst.details.summary.ironPrice")}: {itemPriceBreakdown.ironPrice.toLocaleString()}
+                            </span>
+                          )}
+
+                          <span className={styles.priceSummaryChipTotal}>
+                            {t("carCatalyst.details.results.totalPrice")}: {itemPriceBreakdown.totalPrice.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
 
                       <p>
                         {item.year} • {getCountryName(item.country)} •{" "}
@@ -942,7 +1087,10 @@ const searchByVehicle = async () => {
                       <span className={styles.bucketCount}>
                         {t("carCatalyst.details.results.converterCount", {
                           count: bucketCount,
-                        })}
+                        })}{" • "}
+                        {compositionCount > 0
+                          ? `${compositionCount} ${t("carCatalyst.details.results.compositions")}`
+                          : t("carCatalyst.details.results.noCompositions")}
                       </span>
                     </div>
 

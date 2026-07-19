@@ -210,7 +210,6 @@ export const App = () => {
                   <Route path="exchange-rates" element={<ExchangeRates />} />
                   <Route path="customer-types" element={<CustomerTypes />} />
                   <Route path="cash-registers" element={<CashRegisters />} />
-                  <Route path="service-tasks" element={<ServiceTasks />} />
                   <Route path="tags" element={<Tags />} />
                   <Route
                     path="offer-increase-options"
@@ -226,6 +225,10 @@ export const App = () => {
                   />
                   <Route path="iron-management" element={<IronManagement />} />
                 </Route>
+
+                <Route path="service-tasks" element={<ServiceTasks />} />
+                <Route path="car-catalyst" element={<CarCatalystPage />} />
+                <Route path="car-catalyst/details" element={<CarCatalystDetails />} />
 
                 <Route path="reports" element={<Reports />}>
                   <Route index element={<Navigate to="z-reports" replace />} />
@@ -297,7 +300,7 @@ export const App = () => {
                 <Route path="users" element={<UserManagement />} />
                 <Route
                   path="carCatalyst"
-                  element={<Navigate to="/settings/car-catalyst" replace />}
+                  element={<Navigate to="/car-catalyst" replace />}
                 />
                 <Route path="customers" element={<Customers />} />
                 <Route path="calculator" element={<NewCalculator />} />

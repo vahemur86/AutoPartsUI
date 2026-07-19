@@ -36,12 +36,29 @@ export const NewCalculator: FC = () => {
     null,
   );
   const [loading, setLoading] = useState(false);
+  const [inputValues, setInputValues] = useState<
+    Record<keyof SalesLotsCalculatorRequest, string>
+  >({} as Record<keyof SalesLotsCalculatorRequest, string>);
 
   const isManualMode = form.priceMode === 1;
 
-  const displayValue = (v: number) => (v === 0 && !result ? "" : String(v));
+  const displayValue = (key: keyof SalesLotsCalculatorRequest) => {
+    const rawValue = inputValues[key];
+
+    if (rawValue !== undefined) {
+      return rawValue;
+    }
+
+    const value = form[key];
+    return value === 0 && !result ? "" : String(value);
+  };
 
   const update = (key: keyof SalesLotsCalculatorRequest, value: string) => {
+    setInputValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+
     setForm((prev) => ({
       ...prev,
       [key]: value === "" ? 0 : Number(value),
@@ -104,6 +121,7 @@ export const NewCalculator: FC = () => {
 
   const onCancel = () => {
     setForm(structuredClone(initialState));
+    setInputValues({} as Record<keyof SalesLotsCalculatorRequest, string>);
     setResult(null);
     setLoading(false);
   };
@@ -144,7 +162,7 @@ export const NewCalculator: FC = () => {
           <TextField
             placeholder={t("calculator.placeholder.powderKg")}
             type="number"
-            value={displayValue(form.powderKg)}
+            value={displayValue("powderKg")}
             onChange={(e: any) => update("powderKg", e.target.value)}
           />
 
@@ -154,7 +172,7 @@ export const NewCalculator: FC = () => {
           <TextField
             placeholder={t("calculator.placeholder.pt_g")}
             type="number"
-            value={displayValue(form.pt_g)}
+            value={displayValue("pt_g")}
             onChange={(e: any) => update("pt_g", e.target.value)}
           />
 
@@ -164,7 +182,7 @@ export const NewCalculator: FC = () => {
           <TextField
             placeholder={t("calculator.placeholder.pd_g")}
             type="number"
-            value={displayValue(form.pd_g)}
+            value={displayValue("pd_g")}
             onChange={(e: any) => update("pd_g", e.target.value)}
           />
 
@@ -174,7 +192,7 @@ export const NewCalculator: FC = () => {
           <TextField
             placeholder={t("calculator.placeholder.rh_g")}
             type="number"
-            value={displayValue(form.rh_g)}
+            value={displayValue("rh_g")}
             onChange={(e: any) => update("rh_g", e.target.value)}
           />
           {result && (
@@ -251,7 +269,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.ptPrice")}
             type="number"
             disabled={!isManualMode}
-            value={displayValue(form.ptPrice)}
+            value={displayValue("ptPrice")}
             onChange={(e: any) => update("ptPrice", e.target.value)}
           />
 
@@ -262,7 +280,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.pdPrice")}
             type="number"
             disabled={!isManualMode}
-            value={displayValue(form.pdPrice)}
+            value={displayValue("pdPrice")}
             onChange={(e: any) => update("pdPrice", e.target.value)}
           />
 
@@ -273,7 +291,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.rhPrice")}
             type="number"
             disabled={!isManualMode}
-            value={displayValue(form.rhPrice)}
+            value={displayValue("rhPrice")}
             onChange={(e: any) => update("rhPrice", e.target.value)}
           />
 
@@ -284,7 +302,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.exchange")}
             type="number"
             disabled={!isManualMode}
-            value={displayValue(form.usdRate)}
+            value={displayValue("usdRate")}
             onChange={(e: any) => update("usdRate", e.target.value)}
           />
 
@@ -295,7 +313,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.customerBonus")}
             type="number"
             disabled={!isManualMode}
-            value={displayValue(form.customerBonusPercent)}
+            value={displayValue("customerBonusPercent")}
             onChange={(e: any) =>
               update("customerBonusPercent", e.target.value)
             }
@@ -308,7 +326,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.minProfit")}
             type="number"
             disabled={!isManualMode}
-            value={displayValue(form.minProfitMarginPercent)}
+            value={displayValue("minProfitMarginPercent")}
             onChange={(e: any) =>
               update("minProfitMarginPercent", e.target.value)
             }

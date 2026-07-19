@@ -70,12 +70,6 @@ export const Settings = () => {
       showCheckmark: true,
     },
     {
-      path: "/service-tasks",
-      label: t("settings.navigation.serviceTasks"),
-      icon: Wrench,
-      showCheckmark: true,
-    },
-    {
       path: "/tags",
       label: t("settings.navigation.tags"),
       icon: Tag,
@@ -96,12 +90,6 @@ export const Settings = () => {
     {
       path: "/catalyst-pricing",
       label: t("settings.navigation.catalystPricing"),
-      icon: DollarSign,
-      showCheckmark: true,
-    },
-    {
-      path: "/car-catalyst",
-      label: t("settings.navigation.carCatalyst"),
       icon: DollarSign,
       showCheckmark: true,
     },

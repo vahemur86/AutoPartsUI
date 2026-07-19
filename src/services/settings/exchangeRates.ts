@@ -4,7 +4,11 @@ import api from "..";
 import { getApiErrorMessage, getHeaders } from "@/utils";
 
 // types
-import type { CreateExchangeRate, ExchangeRate } from "@/types/settings";
+import type {
+  CreateExchangeRate,
+  CurrentUsdAmdExchangeRate,
+  ExchangeRate,
+} from "@/types/settings";
 
 export const getExchangeRates = async (
   params: { isActive?: boolean; cashRegisterId?: number } | void,
@@ -23,6 +27,21 @@ export const getExchangeRates = async (
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to fetch exchange rates."),
+    );
+  }
+};
+
+export const getCurrentUsdAmdExchangeRate = async (
+  cashRegisterId?: number,
+): Promise<CurrentUsdAmdExchangeRate> => {
+  try {
+    const response = await api.get("/ExchangeRate/usd-amd/current", {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch current USD/AMD exchange rate."),
     );
   }
 };

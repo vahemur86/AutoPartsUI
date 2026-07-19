@@ -36,10 +36,7 @@ import {
 } from "@/store/slices/cash/sessionsSlice";
 import { closeSession } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchOfferOptions } from "@/store/slices/offerOptionsSlice";
-import {
-  fetchExchangeRates,
-  clearExchangeRatesState,
-} from "@/store/slices/exchangeRatesSlice";
+import { clearExchangeRatesState } from "@/store/slices/exchangeRatesSlice";
 import { clearCustomersState } from "@/store/slices/customersSlice";
 import { fetchIronDropdown } from "@/store/slices/adminProductsSlice";
 import { fetchVehicleServiceTemplates } from "@/store/slices/vehicleServicePricingSlice";
@@ -55,6 +52,7 @@ import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 
 // services
 import { createServiceOrder } from "@/services/operator";
+import { getCurrentUsdAmdExchangeRate } from "@/services/settings/exchangeRates";
 import {
   getCashRegisters,
   getCashRegisterOperators,
@@ -185,6 +183,7 @@ export const useOperator = () => {
   const [hasTriedCalculateIron, setHasTriedCalculateIron] = useState(false);
   const [pendingTab, setPendingTab] = useState<TabType | null>(null);
   const [recalculationsAmount, setRecalculationsAmount] = useState(0);
+  const [currentUsdAmdRate, setCurrentUsdAmdRate] = useState<number | undefined>(undefined);
   const [initialOfferPrice, setInitialOfferPrice] = useState<number | null>(
     null,
   );
@@ -216,13 +215,37 @@ export const useOperator = () => {
     [selectors.languagesState.languages],
   );
 
-  const usdAmdRate = useMemo(
-    () =>
-      selectors.exchangeRates.exchangeRates.find(
-        (r) => r.baseCurrencyCode === "USD" && r.quoteCurrencyCode === "AMD",
-      )?.rate,
-    [selectors.exchangeRates.exchangeRates],
-  );
+  const isVipCustomer = useMemo(() => {
+    const linkedCustomerTypeId =
+      selectors.operator.intake?.customer?.customerTypeId ??
+      selectors.operator.intake?.customer?.customerType?.id;
+    const searchedCustomerTypeId = selectors.customers.items[0]?.customerTypeId;
+    const resolvedCustomerTypeId = linkedCustomerTypeId ?? searchedCustomerTypeId;
+
+    const linkedCustomerTypeCode = String(
+      selectors.operator.intake?.customer?.customerType?.code ?? "",
+    )
+      .trim()
+      .toLowerCase();
+    const searchedCustomerTypeCode = String(
+      selectors.customers.items[0]?.customerType?.code ?? "",
+    )
+      .trim()
+      .toLowerCase();
+    const resolvedCustomerTypeCode = linkedCustomerTypeCode || searchedCustomerTypeCode;
+
+    return (
+      Number(resolvedCustomerTypeId) === 2 ||
+      resolvedCustomerTypeCode === "vip"
+    );
+  }, [
+    selectors.customers.items,
+    selectors.operator.intake?.customer?.customerType?.code,
+    selectors.operator.intake?.customer?.customerType?.id,
+    selectors.operator.intake?.customer?.customerTypeId,
+  ]);
+
+  const usdAmdRate = currentUsdAmdRate;
 
   const isNonStandardCustomer = useMemo(() => {
     const searchedCustomerType =
@@ -342,12 +365,39 @@ export const useOperator = () => {
   }, [dispatch, userData?.cashRegisterId, refreshBalance]);
 
   useEffect(() => {
+    let isCancelled = false;
+
+    if (!isVipCustomer) {
+      setCurrentUsdAmdRate(undefined);
+      dispatch(clearExchangeRatesState());
+      return;
+    }
+
+    const loadCurrentUsdAmdRate = async () => {
+      try {
+        const response = await getCurrentUsdAmdExchangeRate(userData?.cashRegisterId);
+        if (!isCancelled) {
+          setCurrentUsdAmdRate(Number(response?.rate));
+        }
+      } catch (error) {
+        console.error("Failed to fetch current USD/AMD exchange rate", error);
+        if (!isCancelled) {
+          setCurrentUsdAmdRate(undefined);
+        }
+      }
+    };
+
+    void loadCurrentUsdAmdRate();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [dispatch, isVipCustomer]);
+
+  useEffect(() => {
     const crId = userData?.cashRegisterId;
     if (crId && isNonStandardCustomer) {
-      dispatch(fetchExchangeRates({ isActive: true, cashRegisterId: crId }));
       dispatch(fetchMetalPrices(crId));
-    } else {
-      dispatch(clearExchangeRatesState());
     }
   }, [dispatch, isNonStandardCustomer, userData?.cashRegisterId]);
 

@@ -32,6 +32,8 @@ import {
   Hammer,
   FileText,
   PieChart,
+  Wrench,
+  FlaskConical,
 } from "lucide-react";
 import logoImage from "@/assets/icons/prp-logo.svg";
 import adminAvatarImage from "@/assets/icons/userVector.svg";
@@ -44,6 +46,7 @@ import {
   getUserLanguagePreference,
   setUserLanguagePreference,
 } from "@/services/userLanguage";
+import { getCurrentUsdAmdExchangeRate } from "@/services/settings/exchangeRates";
 
 // utils
 import {
@@ -70,6 +73,7 @@ export const Header: FC = () => {
     i18n.resolvedLanguage || i18n.language,
   );
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [tooltip, setTooltip] = useState<{ label: string; top: number; left: number; visible: boolean }>({
     label: "",
@@ -89,6 +93,8 @@ export const Header: FC = () => {
     isActive("/customers") ||
     isActive("/service-templates") ||
     isActive("/users") ||
+    isActive("/service-tasks") ||
+    isActive("/car-catalyst") ||
     isActive("/settings") ||
     isActive("/calculator");
   const isLocationsActive =
@@ -172,6 +178,32 @@ export const Header: FC = () => {
 
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadExchangeRate = async () => {
+      try {
+        const response = await getCurrentUsdAmdExchangeRate(
+          Number(user?.cashRegisterId) || undefined,
+        );
+        if (!isCancelled) {
+          setExchangeRate(Number(response?.rate));
+        }
+      } catch (error) {
+        console.error("Failed to fetch current USD/AMD exchange rate", error);
+        if (!isCancelled) {
+          setExchangeRate(null);
+        }
+      }
+    };
+
+    void loadExchangeRate();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [user?.cashRegisterId]);
 
   useEffect(() => {
     if (!isDropdownOpen) return;
@@ -323,6 +355,28 @@ export const Header: FC = () => {
               </button>
               <button
                 type="button"
+                className={`${styles.menuItem} ${isActive("/service-tasks") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/service-tasks");
+                  setOpenDropdown(null);
+                }}
+              >
+                <Wrench className={styles.menuItemIcon} size={16} />
+                {t("settings.navigation.serviceTasks")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/car-catalyst") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/car-catalyst");
+                  setOpenDropdown(null);
+                }}
+              >
+                <FlaskConical className={styles.menuItemIcon} size={16} />
+                {t("settings.navigation.carCatalyst")}
+              </button>
+              <button
+                type="button"
                 className={`${styles.menuItem} ${isActive("/settings") ? styles.menuItemActive : ""}`}
                 onClick={() => {
                   navigate("/settings");
@@ -456,6 +510,13 @@ export const Header: FC = () => {
           </nav>
 
           <div className={styles.actions}>
+            {exchangeRate != null ? (
+              <div className={styles.exchangeRateInfo}>
+                <span className={styles.timeLabel}>{t("header.exchangeRate")}</span>
+                <span className={styles.exchangeRateValue}>$ 1 / {exchangeRate.toLocaleString()} AMD</span>
+              </div>
+            ) : null}
+
             <div className={styles.timeInfo}>
               <span className={styles.timeLabel}>{t("header.today")}</span>
               <span className={styles.timeValue}>

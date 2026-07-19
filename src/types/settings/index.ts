@@ -426,6 +426,12 @@ export interface ExchangeRate {
   createdByUserId: number;
 }
 
+export interface CurrentUsdAmdExchangeRate {
+  rate: number;
+  scrapedAt?: string;
+  source?: string;
+}
+
 export interface CreateExchangeRate {
   baseCurrencyCode: string;
   quoteCurrencyCode: string;
@@ -744,13 +750,27 @@ export interface CustomMargins {
 }
 
 // Car Catalyst
+export interface CarCatalystComposition {
+  id?: number;
+  code?: string;
+  type: number;
+  weightKg?: number | null;
+  pt_g?: number | null;
+  pd_g?: number | null;
+  rh_g?: number | null;
+  pricePerKg?: number | null;
+  totalPrice?: number | null;
+}
+
 export interface CarCatalystBucket {
+  id?: number;
   side: number;
   code: string;
-  weightKg: number;
-  pt_g: number;
-  pd_g: number;
-  rh_g: number;
+  compositions?: CarCatalystComposition[];
+  weightKg?: number;
+  pt_g?: number;
+  pd_g?: number;
+  rh_g?: number;
 }
 
 export interface CreateCarCatalyst {
@@ -779,6 +799,7 @@ export interface CarCatalyst {
   averagePt_g?: number;
   averagePd_g?: number;
   averageRh_g?: number;
+  totalIronPrice?: number;
 }
 export interface CarCatalystSearchParams {
   code?: string;

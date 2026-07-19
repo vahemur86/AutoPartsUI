@@ -99,8 +99,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const processOption = (opt: ReactElement<any>) => {
           if (opt.type === "option") {
+            const rawValue = opt.props.value;
+            const normalizedValue =
+              rawValue === undefined || rawValue === null ? "" : String(rawValue);
+
             options.push({
-              value: String(opt.props.value || ""),
+              value: normalizedValue,
               label: getTextFromChildren(opt.props.children),
               originalChildren: opt.props.children,
               disabled: !!opt.props.disabled,
@@ -117,7 +121,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         }
       });
 
-      return options.filter((opt) => opt.value !== "");
+      return options;
     }, [children, getTextFromChildren]);
 
     const filteredOptions = useMemo(() => {
