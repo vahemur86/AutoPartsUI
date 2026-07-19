@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 24px;
   padding: 20px 24px 32px;
+  min-width: 0;
 }
 
 .header {
@@ -42,10 +43,11 @@
 
 .tablesRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
   align-items: start;
   padding: 4px 0 0;
+  min-width: 0;
 }
 
 .bucketSection {
@@ -56,6 +58,8 @@
   background: var(--color-black-2);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .sectionHeader {
@@ -122,9 +126,10 @@
 
 .compositionGrid {
   display: grid;
-  grid-template-columns: minmax(160px, 1.1fr) minmax(140px, 0.9fr) minmax(120px, 0.8fr) repeat(3, minmax(110px, 0.8fr)) auto;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
   align-items: end;
+  min-width: 0;
 }
 
 .compositionDeleteWrap {
@@ -181,7 +186,7 @@
 
 @media (max-width: 900px) {
   .compositionGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

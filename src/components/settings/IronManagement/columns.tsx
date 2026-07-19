@@ -24,8 +24,10 @@ import styles from "./IronManagement.module.css";
 export const getCarModelColumns = (
   {
     onDelete,
+    onEdit,
   }: {
     onDelete: (carModel: CarModel) => void;
+    onEdit?: (carModel: CarModel) => void;
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<CarModel, any>[] => [
@@ -40,6 +42,11 @@ export const getCarModelColumns = (
     header: i18next.t("common.actions"),
     cell: ({ row }) => (
       <div className={styles.actionButtonsCell}>
+        {onEdit && (
+          <Button variant="secondary" size="small" onClick={() => onEdit(row.original)}>
+            {i18next.t("common.edit")}
+          </Button>
+        )}
         <Button
           variant="danger"
           size="small"
@@ -54,7 +61,13 @@ export const getCarModelColumns = (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronTypeColumns = (
-  { onDelete }: { onDelete?: (ironType: IronType) => void } = {}
+  {
+    onDelete,
+    onEdit,
+  }: {
+    onDelete?: (ironType: IronType) => void;
+    onEdit?: (ironType: IronType) => void;
+  } = {},
 ): ColumnDef<IronType, any>[] => [
   ironTypeColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
@@ -69,10 +82,19 @@ export const getIronTypeColumns = (
           header: i18next.t("common.actions"),
           cell: ({ row }) => (
             <div className={styles.actionButtonsCell}>
+              {onEdit && (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => onEdit(row.original)}
+                >
+                  {i18next.t("common.edit")}
+                </Button>
+              )}
               <Button
                 variant="danger"
                 size="small"
-                onClick={() => onDelete(row.original)}
+                onClick={() => onDelete?.(row.original)}
               >
                 {i18next.t("common.delete")}
               </Button>

@@ -59,6 +59,7 @@ const emptyBucket = (side: number): UIBucket => ({
 
 const sanitizeNumericInput = (value: string) =>
   value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+const sanitizeIntegerInput = (value: string) => value.replace(/[^0-9]/g, "");
 
 const shouldShowMetalFields = (type: number) => type !== 1;
 
@@ -441,6 +442,8 @@ export const CarCatalystPage = () => {
                       label={t("carCatalyst.table.weight")}
                       type="text"
                       inputMode="decimal"
+                      pattern="[0-9.]*"
+                      step="any"
                       value={composition.weightKg || "0"}
                       placeholder="0"
                       onChange={(e) =>
@@ -459,6 +462,8 @@ export const CarCatalystPage = () => {
                         label={t("carCatalyst.table.pricePerKg")}
                         type="text"
                         inputMode="decimal"
+                        pattern="[0-9.]*"
+                        step="any"
                         value={composition.pricePerKg || "0"}
                         placeholder="0"
                         onChange={(e) =>
@@ -479,6 +484,8 @@ export const CarCatalystPage = () => {
                           label={t("carCatalyst.table.pt")}
                           type="text"
                           inputMode="decimal"
+                          pattern="[0-9.]*"
+                          step="any"
                           value={composition.pt_g || "0"}
                           placeholder="0"
                           onChange={(e) =>
@@ -496,6 +503,8 @@ export const CarCatalystPage = () => {
                           label={t("carCatalyst.table.pd")}
                           type="text"
                           inputMode="decimal"
+                          pattern="[0-9.]*"
+                          step="any"
                           value={composition.pd_g || "0"}
                           placeholder="0"
                           onChange={(e) =>
@@ -513,6 +522,8 @@ export const CarCatalystPage = () => {
                           label={t("carCatalyst.table.rh")}
                           type="text"
                           inputMode="decimal"
+                          pattern="[0-9.]*"
+                          step="any"
                           value={composition.rh_g || "0"}
                           placeholder="0"
                           onChange={(e) =>
@@ -622,12 +633,13 @@ export const CarCatalystPage = () => {
           label={t("carCatalyst.fields.year")}
           type="text"
           inputMode="numeric"
+          pattern="[0-9]*"
           value={year}
           onChange={(e) =>
             setYear(
               e.target.value === ""
                 ? ""
-                : Number(e.target.value.replace(/[^0-9]/g, "")),
+                : Number(sanitizeIntegerInput(e.target.value)),
             )
           }
         />

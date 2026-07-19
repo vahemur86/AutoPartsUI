@@ -14,6 +14,9 @@ import {
   addCarModel,
   addIronType,
   addIronPrice,
+  updateCarModel,
+  updateIronType,
+  updateIronTypePrices,
   recalculateStep,
   getIronPrices,
   recalculateIron,
@@ -39,6 +42,7 @@ import type {
   RecalculateStepPayload,
   RecalculatePayload,
   RecalculateResponse,
+  UpdateIronTypePricesPayload,
 } from "@/types/ironCarShop";
 
 interface IronCarShopState {
@@ -237,6 +241,70 @@ export const createIronPrice = createAsyncThunk<
   },
 );
 
+export const updateCarModelName = createAsyncThunk<
+  CarModel,
+  {
+    id: number;
+    payload: { code: string; translations: Record<string, string> };
+    cashRegisterId: number;
+    lang: string;
+  },
+  { rejectValue: string }
+>(
+  "ironCarShop/updateCarModelName",
+  async ({ id, payload, cashRegisterId, lang }, { rejectWithValue }) => {
+    try {
+      return await updateCarModel(id, payload, cashRegisterId, lang);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to update car model"),
+      );
+    }
+  },
+);
+
+export const updateIronTypeName = createAsyncThunk<
+  IronType,
+  {
+    id: number;
+    payload: { code: string; translations: Record<string, string> };
+    cashRegisterId: number;
+    lang: string;
+  },
+  { rejectValue: string }
+>(
+  "ironCarShop/updateIronTypeName",
+  async ({ id, payload, cashRegisterId, lang }, { rejectWithValue }) => {
+    try {
+      return await updateIronType(id, payload, cashRegisterId, lang);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to update iron type"),
+      );
+    }
+  },
+);
+
+export const updateIronTypePricesBulk = createAsyncThunk<
+  void,
+  {
+    payload: UpdateIronTypePricesPayload;
+    cashRegisterId: number;
+  },
+  { rejectValue: string }
+>(
+  "ironCarShop/updateIronTypePricesBulk",
+  async ({ payload, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      await updateIronTypePrices(payload, cashRegisterId);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to update iron prices"),
+      );
+    }
+  },
+);
+
 export const createRecalculationPrice = createAsyncThunk<
   void,
   { payload: RecalculateStepPayload; cashRegisterId: number },
@@ -374,6 +442,9 @@ const ironCarShopSlice = createSlice({
         state.ironTypes.push(action.payload);
       })
       .addCase(createIronPrice.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateIronTypePricesBulk.fulfilled, (state) => {
         state.isLoading = false;
       })
       .addCase(createRecalculationPrice.fulfilled, (state) => {

@@ -1154,15 +1154,23 @@
     },
     "success": {
       "carModelCreated": "Մեքենայի մոդելը հաջողությամբ ստեղծվեց",
+      "carModelUpdated": "Մեքենայի մոդելը հաջողությամբ թարմացվեց",
+      "carModelDeleted": "Մեքենայի մոդելը հաջողությամբ ջնջվեց",
       "ironTypeCreated": "Երկաթի տեսակը հաջողությամբ ստեղծվեց",
+      "ironTypeUpdated": "Երկաթի տեսակը հաջողությամբ թարմացվեց",
       "ironPriceCreated": "Երկաթի գինը հաջողությամբ ստեղծվեց",
+      "ironPricesUpdated": "Երկաթի գները հաջողությամբ թարմացվեցին",
       "recalculationPriceCreated": "Վերահաշվարկի գինը հաջողությամբ ավելացվեց"
     },
     "error": {
       "failedToCreateCarModel": "Չհաջողվեց ստեղծել մեքենայի մոդելը",
+      "failedToUpdateCarModel": "Չհաջողվեց թարմացնել մեքենայի մոդելը",
+      "failedToDeleteCarModel": "Չհաջողվեց ջնջել մեքենայի մոդելը",
       "failedToCreateIronType": "Չհաջողվեց ստեղծել երկաթի տեսակը",
+      "failedToUpdateIronType": "Չհաջողվեց թարմացնել երկաթի տեսակը",
       "failedToCreateIronPrice": "Չհաջողվեց ստեղծել երկաթի գինը",
       "failedToCreateRecalculationPrice": "Չհաջողվեց ավելացնել վերահաշվարկի գինը",
+      "failedToUpdateIronPrices": "Չհաջողվեց թարմացնել երկաթի գները",
       "selectCarModel": "Նախ ընտրեք մեքենայի մոդելը"
     }
   },

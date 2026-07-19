@@ -215,7 +215,7 @@ export const useOperator = () => {
     [selectors.languagesState.languages],
   );
 
-  const isVipCustomer = useMemo(() => {
+  const shouldShowExchangeRate = useMemo(() => {
     const linkedCustomerTypeId =
       selectors.operator.intake?.customer?.customerTypeId ??
       selectors.operator.intake?.customer?.customerType?.id;
@@ -232,11 +232,12 @@ export const useOperator = () => {
     )
       .trim()
       .toLowerCase();
-    const resolvedCustomerTypeCode = linkedCustomerTypeCode || searchedCustomerTypeCode;
+    const resolvedCustomerTypeCode =
+      linkedCustomerTypeCode || searchedCustomerTypeCode;
 
     return (
-      Number(resolvedCustomerTypeId) === 2 ||
-      resolvedCustomerTypeCode === "vip"
+      Number(resolvedCustomerTypeId) !== 1 &&
+      resolvedCustomerTypeCode !== "standard"
     );
   }, [
     selectors.customers.items,
@@ -367,7 +368,7 @@ export const useOperator = () => {
   useEffect(() => {
     let isCancelled = false;
 
-    if (!isVipCustomer) {
+    if (!shouldShowExchangeRate) {
       setCurrentUsdAmdRate(undefined);
       dispatch(clearExchangeRatesState());
       return;
@@ -392,7 +393,7 @@ export const useOperator = () => {
     return () => {
       isCancelled = true;
     };
-  }, [dispatch, isVipCustomer]);
+  }, [dispatch, shouldShowExchangeRate, userData?.cashRegisterId]);
 
   useEffect(() => {
     const crId = userData?.cashRegisterId;

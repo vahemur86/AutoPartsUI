@@ -6,6 +6,8 @@ export interface CarModel {
 export interface IronType {
   id: number;
   name: string;
+  code?: string;
+  translations?: Record<string, string>;
 }
 
 export interface IronTypePrice {
@@ -69,6 +71,8 @@ export interface IronTypePriceByCustomer {
 export interface IronTypeByCar {
   ironTypeId: number;
   name: string;
+  code?: string;
+  translations?: Record<string, string>;
   prices: {
     customerTypeId: number;
     customerTypeName: string;
@@ -80,6 +84,17 @@ export interface AddIronPricePayload {
   id: number;
   customerTypeId: number;
   pricePerKg: number;
+}
+
+export interface IronTypePriceUpdate {
+  ironTypeId: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}
+
+export interface UpdateIronTypePricesPayload {
+  carModelId: number;
+  priceUpdates: IronTypePriceUpdate[];
 }
 
 export interface CarModelPayload {

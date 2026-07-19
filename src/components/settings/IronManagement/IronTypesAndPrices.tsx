@@ -12,7 +12,15 @@ import { toast } from "react-toastify";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 // ui-kit
-import { ConfirmationModal, DataTable, IconButton, Select } from "@/ui-kit";
+import {
+  Button,
+  ConfirmationModal,
+  DataTable,
+  IconButton,
+  Modal,
+  Select,
+  TextField,
+} from "@/ui-kit";
 import type { AnchorRect } from "@/ui-kit";
 
 // icons
@@ -24,6 +32,9 @@ import {
   getCashRegisterId,
   mapI18nCodeToApiCode,
 } from "@/utils";
+
+// services
+import { getVehicleDefinitions } from "@/services/settings/vehicles";
 
 // components
 import {
@@ -42,10 +53,10 @@ import {
   createIronType,
   createIronPrice,
   createRecalculationPrice,
-  fetchCarModels,
   fetchIronTypes,
   fetchIronTypesByCar,
   removeIronType,
+  updateIronTypePricesBulk,
 } from "@/store/slices/ironCarShopSlice";
 import { fetchLanguages } from "@/store/slices/languagesSlice";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
@@ -57,13 +68,14 @@ import styles from "./IronManagement.module.css";
 export interface FlatIronTypeRow {
   ironTypeId: number;
   name: string;
+  code?: string;
   prices: Record<number, number | null>;
 }
 
 export const IronTypesAndPrices: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { carModels, ironTypesByCar, isLoading } = useAppSelector(
+  const { ironTypesByCar, isLoading } = useAppSelector(
     (state) => state.ironCarShop,
   );
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
@@ -72,6 +84,10 @@ export const IronTypesAndPrices: FC = () => {
   const [selectedCarModelId, setSelectedCarModelId] = useState<number | null>(
     null,
   );
+  const [brandOptions, setBrandOptions] = useState<
+    Array<{ id: number; code: string; name: string }>
+  >([]);
+  const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
   const [deletingIronType, setDeletingIronType] = useState<{
     id: number;
@@ -87,6 +103,11 @@ export const IronTypesAndPrices: FC = () => {
     number | null
   >(null);
   const [isMutating, setIsMutating] = useState(false);
+  const [editingIronType, setEditingIronType] = useState<{
+    ironTypeId: number;
+    name: string;
+    prices: Record<number, string>;
+  } | null>(null);
   /** Captured at click when opening from table so dropdown positions correctly */
   const [priceAnchorRect, setPriceAnchorRect] = useState<AnchorRect | null>(
     null,
@@ -100,19 +121,36 @@ export const IronTypesAndPrices: FC = () => {
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
-    const apiLang = mapI18nCodeToApiCode(i18n.language);
-    dispatch(fetchCarModels({ cashRegisterId, lang: apiLang }));
+    const loadBrands = async () => {
+      const apiLang = mapI18nCodeToApiCode(i18n.language);
+      try {
+        setIsLoadingBrands(true);
+        const data = await getVehicleDefinitions(undefined, apiLang, cashRegisterId);
+        const nextBrands = Array.isArray(data?.brands)
+          ? data.brands.filter(
+              (item): item is { id: number; code: string; name: string } =>
+                Boolean(item?.id && item?.name),
+            )
+          : [];
+        setBrandOptions(nextBrands);
+        if (nextBrands.length > 0 && selectedCarModelId === null) {
+          setSelectedCarModelId(nextBrands[0].id);
+        } else if (nextBrands.length === 0) {
+          setSelectedCarModelId(null);
+        }
+      } catch (error) {
+        console.error("Failed to load vehicle definition brands:", error);
+      } finally {
+        setIsLoadingBrands(false);
+      }
+    };
+
+    void loadBrands();
     dispatch(fetchCustomerTypes());
     if (languages.length === 0) {
       dispatch(fetchLanguages());
     }
   }, [dispatch, cashRegisterId, languages.length]);
-
-  useEffect(() => {
-    if (carModels.length > 0 && selectedCarModelId === null) {
-      setSelectedCarModelId(carModels[0].id);
-    }
-  }, [carModels, selectedCarModelId]);
 
   useEffect(() => {
     if (selectedCarModelId) {
@@ -138,6 +176,7 @@ export const IronTypesAndPrices: FC = () => {
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const carModelId = Number(e.target.value);
       setSelectedCarModelId(carModelId || null);
+      setEditingIronType(null);
     },
     [],
   );
@@ -365,11 +404,98 @@ export const IronTypesAndPrices: FC = () => {
       .filter((ct): ct is NonNullable<typeof ct> => ct != null);
   }, [ironTypesByCar, customerTypes]);
 
+  const handleOpenEditIronType = useCallback(
+    (row: FlatIronTypeRow) => {
+      setEditingIronType({
+        ironTypeId: row.ironTypeId,
+        name: row.name,
+        prices: Object.fromEntries(
+          customerTypesWithData.map((ct) => [
+            ct.id,
+            row.prices[ct.id] != null ? String(row.prices[ct.id]) : "",
+          ]),
+        ),
+      });
+    },
+    [customerTypesWithData],
+  );
+
+  const handleEditingPriceChange = useCallback((customerTypeId: number, value: string) => {
+    setEditingIronType((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        prices: {
+          ...prev.prices,
+          [customerTypeId]: value,
+        },
+      };
+    });
+  }, []);
+
+  const handleSaveIronTypeEdit = useCallback(async () => {
+    if (!selectedCarModelId || !editingIronType) return;
+
+    const priceUpdates = Object.entries(editingIronType.prices).flatMap(
+      ([customerTypeIdRaw, value]) => {
+        if (value.trim() === "") return [];
+
+        const customerTypeId = Number(customerTypeIdRaw);
+        const pricePerKg = Number(value);
+
+        if (!Number.isFinite(pricePerKg)) return [];
+
+        return [{ ironTypeId: editingIronType.ironTypeId, customerTypeId, pricePerKg }];
+      },
+    );
+
+    try {
+      setIsMutating(true);
+      const apiLang = mapI18nCodeToApiCode(i18n.language);
+
+      if (priceUpdates.length > 0) {
+        await dispatch(
+          updateIronTypePricesBulk({
+            payload: {
+              carModelId: selectedCarModelId,
+              priceUpdates,
+            },
+            cashRegisterId,
+          }),
+        ).unwrap();
+      }
+
+      if (priceUpdates.length > 0) {
+        toast.success(t("ironManagement.success.ironPricesUpdated"));
+      }
+      await dispatch(
+        fetchIronTypesByCar({
+          carModelId: selectedCarModelId,
+          cashRegisterId,
+          lang: apiLang,
+        }),
+      ).unwrap();
+      setEditingIronType(null);
+    } catch (error: unknown) {
+      const errorMessage = getApiErrorMessage(
+        error,
+        t("ironManagement.error.failedToUpdateIronPrices"),
+      );
+      toast.error(errorMessage);
+    } finally {
+      setIsMutating(false);
+    }
+  }, [cashRegisterId, dispatch, editingIronType, ironTypesByCar, selectedCarModelId, t]);
+
   const flatColumns = useMemo((): ColumnDef<FlatIronTypeRow, unknown>[] => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cols: ColumnDef<FlatIronTypeRow, any>[] = [
-      flatRowHelper.accessor("name", {
+      flatRowHelper.display({
+        id: "name",
         header: t("ironManagement.columns.name"),
+        cell: ({ row }) => {
+          return <span className={styles.readOnlyValue}>{row.original.name}</span>;
+        },
       }),
       ...customerTypesWithData.map(
         (ct): ColumnDef<FlatIronTypeRow, unknown> =>
@@ -377,8 +503,12 @@ export const IronTypesAndPrices: FC = () => {
             id: `price_${ct.id}`,
             header: ct.code,
             cell: ({ row }) => {
-              const val = row.original.prices[ct.id];
-              return val != null ? val.toLocaleString() : "—";
+              const currentValue = row.original.prices[ct.id];
+              return (
+                <span className={styles.readOnlyValue}>
+                  {currentValue != null ? String(currentValue) : "—"}
+                </span>
+              );
             },
           }),
       ),
@@ -388,6 +518,16 @@ export const IronTypesAndPrices: FC = () => {
         cell: ({ row }) => {
           return (
             <div className={styles.actionsCellWrapper}>
+              <div className={styles.addButtonWrapper}>
+                <IconButton
+                  ariaLabel={t("common.edit")}
+                  size="small"
+                  variant="primary"
+                  icon={<Plus size={12} color="#0e0f11" />}
+                  onClick={() => handleOpenEditIronType(row.original)}
+                />
+                <span className={styles.addButtonText}>{t("common.edit")}</span>
+              </div>
               <div className={styles.addButtonWrapper}>
                 <IconButton
                   ariaLabel={t("ironManagement.addIronPrice")}
@@ -445,12 +585,15 @@ export const IronTypesAndPrices: FC = () => {
     customerTypesWithData,
     handleOpenAddPrice,
     handleOpenAddRecalculationPrice,
+    handleOpenEditIronType,
+    isMutating,
   ]);
 
   const flatData = useMemo((): FlatIronTypeRow[] => {
     return ironTypesByCar.map((item) => ({
       ironTypeId: item.ironTypeId,
       name: item.name,
+      code: item.code,
       prices: customerTypes.reduce<Record<number, number | null>>((acc, ct) => {
         acc[ct.id] =
           item.prices.find((p) => p.customerTypeId === ct.id)?.pricePerKg ??
@@ -497,30 +640,32 @@ export const IronTypesAndPrices: FC = () => {
           label={t("ironManagement.selectCarModel")}
           value={selectedCarModelId?.toString() || ""}
           onChange={handleCarModelChange}
-          disabled={isLoading || carModels.length === 0}
+          disabled={isLoading || isLoadingBrands || brandOptions.length === 0}
         >
           <option value="">{t("ironManagement.selectCarModel")}</option>
-          {carModels.map((model) => (
-            <option key={model.id} value={model.id}>
-              {model.name}
+          {brandOptions.map((brand) => (
+            <option key={brand.id} value={brand.id}>
+              {brand.name || brand.code}
             </option>
           ))}
         </Select>
       </div>
 
       <div className={styles.header}>
-        <div className={styles.addButtonWrapper}>
-          <IconButton
-            ariaLabel={t("ironManagement.addIronType")}
-            size="small"
-            variant="primary"
-            icon={<Plus size={12} color="#0e0f11" />}
-            onClick={handleOpenAddType}
-            disabled={!selectedCarModelId || isLoading}
-          />
-          <span className={styles.addButtonText}>
-            {t("ironManagement.addIronType")}
-          </span>
+        <div className={styles.headerActions}>
+          <div className={styles.addButtonWrapper}>
+            <IconButton
+              ariaLabel={t("ironManagement.addIronType")}
+              size="small"
+              variant="primary"
+              icon={<Plus size={12} color="#0e0f11" />}
+              onClick={handleOpenAddType}
+              disabled={!selectedCarModelId || isLoading}
+            />
+            <span className={styles.addButtonText}>
+              {t("ironManagement.addIronType")}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -579,6 +724,70 @@ export const IronTypesAndPrices: FC = () => {
         }}
         onSave={handleSaveRecalculationPrice}
       />
+
+      <Modal
+        open={!!editingIronType}
+        onOpenChange={(open) => {
+          if (!open) setEditingIronType(null);
+        }}
+        title={t("common.edit")}
+        width="560px"
+      >
+        {editingIronType && (
+          <div className={styles.editModalContent}>
+            <TextField
+              label={t("ironManagement.columns.name")}
+              value={editingIronType.name}
+              onChange={(event) => {
+                setEditingIronType((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    name: event.target.value,
+                  };
+                });
+              }}
+              disabled={isMutating}
+            />
+
+            <div className={styles.editModalGrid}>
+              {customerTypesWithData.map((ct) => (
+                <TextField
+                  key={ct.id}
+                  label={ct.code}
+                  type="text"
+                  inputMode="decimal"
+                  value={editingIronType.prices[ct.id] ?? ""}
+                  onChange={(event) =>
+                    handleEditingPriceChange(ct.id, event.target.value)
+                  }
+                  disabled={isMutating}
+                  placeholder="0"
+                />
+              ))}
+            </div>
+
+            <div className={styles.headerActions}>
+              <Button
+                variant="secondary"
+                size="medium"
+                onClick={() => setEditingIronType(null)}
+                disabled={isMutating}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="primary"
+                size="medium"
+                onClick={handleSaveIronTypeEdit}
+                disabled={isMutating}
+              >
+                {t("common.update")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {!!deletingIronType && (
         <ConfirmationModal

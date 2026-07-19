@@ -1280,6 +1280,7 @@
     "addIronPrice": "Add Iron Price",
     "addPrice": "Add price",
     "addRecalculationPrice": "Add recalculation price",
+    "saveChanges": "Save changes",
     "selectCarModel": "Select Car Model",
     "selectIronType": "Select Iron Type",
     "loading": "Loading…",
@@ -1303,15 +1304,23 @@
     },
     "success": {
       "carModelCreated": "Car model created successfully",
+      "carModelUpdated": "Car model updated successfully",
+      "carModelDeleted": "Car model deleted successfully",
       "ironTypeCreated": "Iron type created successfully",
+      "ironTypeUpdated": "Iron type updated successfully",
       "ironPriceCreated": "Iron price created successfully",
+      "ironPricesUpdated": "Iron prices updated successfully",
       "recalculationPriceCreated": "Recalculation price added successfully"
     },
     "error": {
       "failedToCreateCarModel": "Failed to create car model",
+      "failedToUpdateCarModel": "Failed to update car model",
+      "failedToDeleteCarModel": "Failed to delete car model",
       "failedToCreateIronType": "Failed to create iron type",
+      "failedToUpdateIronType": "Failed to update iron type",
       "failedToCreateIronPrice": "Failed to create iron price",
       "failedToCreateRecalculationPrice": "Failed to add recalculation price",
+      "failedToUpdateIronPrices": "Failed to update iron prices",
       "selectCarModel": "Please select a car model first",
       "selectIronType": "Please select an iron type first"
     }

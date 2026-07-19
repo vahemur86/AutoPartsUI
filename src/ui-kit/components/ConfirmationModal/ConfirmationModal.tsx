@@ -7,6 +7,7 @@ import {
   type SyntheticEvent,
 } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import styles from "./ConfirmationModal.module.css";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
@@ -37,8 +38,8 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   onOpenChange,
   title = "Confirm action",
   description,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText,
+  cancelText,
   onConfirm,
   onCancel,
   confirmDisabled = false,
@@ -46,7 +47,11 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   preventClose = false,
   children,
 }) => {
+  const { t } = useTranslation();
   const { isMobile, mounted } = useIsMobile();
+
+  const resolvedConfirmText = confirmText ?? t("common.confirm");
+  const resolvedCancelText = cancelText ?? t("common.cancel");
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const headingId = useId();
@@ -140,7 +145,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
             onClick={handleCancelClick}
             disabled={confirmLoading}
           >
-            {cancelText}
+            {resolvedCancelText}
           </Button>
 
           <Button
@@ -148,7 +153,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
             onClick={handleConfirm}
             disabled={confirmDisabled || confirmLoading}
           >
-            {confirmLoading ? "Working..." : confirmText}
+            {confirmLoading ? "Working..." : resolvedConfirmText}
           </Button>
         </footer>
       </div>

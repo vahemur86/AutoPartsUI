@@ -11,7 +11,7 @@ import i18n from "i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, IconButton, Select } from "@/ui-kit";
+import { Button, DataTable, IconButton, Modal, Select, TextField } from "@/ui-kit";
 
 // icons
 import { Plus } from "lucide-react";
@@ -38,6 +38,7 @@ import {
   createIronType,
   fetchCarModels,
   fetchIronTypes,
+  updateIronTypeName,
 } from "@/store/slices/ironCarShopSlice";
 import { fetchLanguages } from "@/store/slices/languagesSlice";
 
@@ -57,6 +58,12 @@ export const IronTypes: FC = () => {
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
+  const [editingIronType, setEditingIronType] = useState<{
+    id: number;
+    code: string;
+    name: string;
+    translations: Record<string, string>;
+  } | null>(null);
 
   const anchorRef = useRef<HTMLElement | null>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
@@ -100,6 +107,18 @@ export const IronTypes: FC = () => {
     [selectedCarModelId, t],
   );
 
+  const handleOpenEdit = useCallback(
+    (ironType: { id: number; name: string; code?: string; translations?: Record<string, string> }) => {
+      setEditingIronType({
+        id: ironType.id,
+        code: ironType.code ?? "",
+        name: ironType.name ?? "",
+        translations: ironType.translations ?? {},
+      });
+    },
+    [],
+  );
+
   const handleSaveIronType = useCallback(
     async (data: IronTypeForm) => {
       if (!selectedCarModelId) {
@@ -140,6 +159,48 @@ export const IronTypes: FC = () => {
     [dispatch, selectedCarModelId, cashRegisterId, t],
   );
 
+  const handleSaveIronTypeEdit = useCallback(async () => {
+    if (!editingIronType || !selectedCarModelId) return;
+
+    try {
+      setIsMutating(true);
+      const apiLang = mapI18nCodeToApiCode(i18n.language);
+      await dispatch(
+        updateIronTypeName({
+          id: editingIronType.id,
+          payload: {
+            code: editingIronType.code.trim() || editingIronType.name.trim(),
+            translations: Object.fromEntries(
+              Object.entries(editingIronType.translations).filter(
+                ([, value]) => value.trim().length > 0,
+              ),
+            ),
+          },
+          cashRegisterId,
+          lang: apiLang,
+        }),
+      ).unwrap();
+
+      toast.success(t("ironManagement.success.ironTypeUpdated"));
+      await dispatch(
+        fetchIronTypes({
+          carModelId: selectedCarModelId,
+          cashRegisterId,
+          lang: apiLang,
+        }),
+      ).unwrap();
+      setEditingIronType(null);
+    } catch (error: unknown) {
+      const errorMessage = getApiErrorMessage(
+        error,
+        t("ironManagement.error.failedToUpdateIronType"),
+      );
+      toast.error(errorMessage);
+    } finally {
+      setIsMutating(false);
+    }
+  }, [cashRegisterId, dispatch, editingIronType, selectedCarModelId, t]);
+
   const handleCarModelChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const carModelId = Number(e.target.value);
@@ -148,7 +209,10 @@ export const IronTypes: FC = () => {
     [],
   );
 
-  const columns = useMemo(() => getIronTypeColumns(), []);
+  const columns = useMemo(
+    () => getIronTypeColumns({ onEdit: handleOpenEdit }),
+    [handleOpenEdit],
+  );
 
   return (
     <div className={styles.ironTypesWrapper}>
@@ -207,6 +271,89 @@ export const IronTypes: FC = () => {
         onOpenChange={setIsDropdownOpen}
         onSave={handleSaveIronType}
       />
+
+      <Modal
+        open={!!editingIronType}
+        onOpenChange={(open) => {
+          if (!open) setEditingIronType(null);
+        }}
+        title={t("common.edit")}
+        width="560px"
+      >
+        {editingIronType && (
+          <div className={styles.editModalContent}>
+            <TextField
+              label={t("ironManagement.form.code")}
+              value={editingIronType.code}
+              onChange={(event) =>
+                setEditingIronType((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    code: event.target.value,
+                  };
+                })
+              }
+              disabled={isMutating}
+            />
+
+            <TextField
+              label={t("ironManagement.columns.name")}
+              value={editingIronType.name}
+              onChange={(event) =>
+                setEditingIronType((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    name: event.target.value,
+                  };
+                })
+              }
+              disabled={isMutating}
+            />
+
+            {languages.map((lang) => (
+              <TextField
+                key={lang.code}
+                label={`${t("ironManagement.form.name")} (${lang.name})`}
+                value={editingIronType.translations[lang.code] ?? ""}
+                onChange={(event) => {
+                  setEditingIronType((prev) => {
+                    if (!prev) return prev;
+                    return {
+                      ...prev,
+                      translations: {
+                        ...prev.translations,
+                        [lang.code]: event.target.value,
+                      },
+                    };
+                  });
+                }}
+                disabled={isMutating}
+              />
+            ))}
+
+            <div className={styles.headerActions}>
+              <Button
+                variant="secondary"
+                size="medium"
+                onClick={() => setEditingIronType(null)}
+                disabled={isMutating}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="primary"
+                size="medium"
+                onClick={handleSaveIronTypeEdit}
+                disabled={isMutating}
+              >
+                {t("common.update")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       <div className={styles.tableWrapper}>
         <DataTable data={ironTypes} columns={columns} pageSize={10} />

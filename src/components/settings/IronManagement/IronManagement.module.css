@@ -47,6 +47,14 @@
   align-items: center;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .addButtonWrapper {
   display: flex;
   align-items: center;
@@ -76,6 +84,52 @@
 .tableWrapper {
   width: 100%;
   flex: 1;
+}
+
+.inputCellWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 110px;
+  box-sizing: border-box;
+}
+
+.priceInput {
+  width: 100%;
+  min-width: 90px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-secondary-500);
+  border-radius: 6px;
+  background: var(--color-black-800);
+  color: var(--color-white);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.priceInput:focus {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 1px;
+}
+
+.readOnlyValue {
+  display: block;
+  min-width: 72px;
+  color: var(--color-secondary-100);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.editModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: min(480px, 90vw);
+}
+
+.editModalGrid {
+  display: grid;
+  gap: 12px;
 }
 
 .selectWrapper {

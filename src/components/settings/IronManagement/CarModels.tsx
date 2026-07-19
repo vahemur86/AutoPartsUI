@@ -11,7 +11,14 @@ import i18n from "i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
+import {
+  Button,
+  ConfirmationModal,
+  DataTable,
+  IconButton,
+  Modal,
+  TextField,
+} from "@/ui-kit";
 
 // icons
 import { Plus } from "lucide-react";
@@ -38,6 +45,7 @@ import {
   createCarModel,
   fetchCarModels,
   removeCarModel,
+  updateCarModelName,
 } from "@/store/slices/ironCarShopSlice";
 import { fetchLanguages } from "@/store/slices/languagesSlice";
 
@@ -52,6 +60,12 @@ export const CarModels: FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
+  const [editingCarModel, setEditingCarModel] = useState<{
+    id: number;
+    code: string;
+    name: string;
+    translations: Record<string, string>;
+  } | null>(null);
   const [deletingCarModel, setDeletingCarModel] = useState<CarModel | null>(
     null,
   );
@@ -105,6 +119,51 @@ export const CarModels: FC = () => {
     [dispatch, cashRegisterId, t],
   );
 
+  const handleOpenEdit = useCallback((carModel: CarModel) => {
+    setEditingCarModel({
+      id: carModel.id,
+      code: "",
+      name: carModel.name ?? "",
+      translations: {},
+    });
+  }, []);
+
+  const handleSaveCarModelEdit = useCallback(async () => {
+    if (!editingCarModel) return;
+
+    try {
+      setIsMutating(true);
+      const apiLang = mapI18nCodeToApiCode(i18n.language);
+      await dispatch(
+        updateCarModelName({
+          id: editingCarModel.id,
+          payload: {
+            code: editingCarModel.code.trim() || editingCarModel.name.trim(),
+            translations: Object.fromEntries(
+              Object.entries(editingCarModel.translations).filter(
+                ([, value]) => value.trim().length > 0,
+              ),
+            ),
+          },
+          cashRegisterId,
+          lang: apiLang,
+        }),
+      ).unwrap();
+
+      toast.success(t("ironManagement.success.carModelUpdated"));
+      await dispatch(fetchCarModels({ cashRegisterId, lang: apiLang })).unwrap();
+      setEditingCarModel(null);
+    } catch (error: unknown) {
+      const errorMessage = getApiErrorMessage(
+        error,
+        t("ironManagement.error.failedToUpdateCarModel"),
+      );
+      toast.error(errorMessage);
+    } finally {
+      setIsMutating(false);
+    }
+  }, [cashRegisterId, dispatch, editingCarModel, t]);
+
   const handleDeleteCarModel = useCallback(
     async (carModel: CarModel) => {
       try {
@@ -135,9 +194,10 @@ export const CarModels: FC = () => {
   const columns = useMemo(
     () =>
       getCarModelColumns({
+        onEdit: handleOpenEdit,
         onDelete: (carModel) => setDeletingCarModel(carModel),
       }),
-    [],
+    [handleOpenEdit],
   );
 
   return (
@@ -200,6 +260,89 @@ export const CarModels: FC = () => {
           onCancel={() => setDeletingCarModel(null)}
         />
       )}
+
+      <Modal
+        open={!!editingCarModel}
+        onOpenChange={(open) => {
+          if (!open) setEditingCarModel(null);
+        }}
+        title={t("common.edit")}
+        width="560px"
+      >
+        {editingCarModel && (
+          <div className={styles.editModalContent}>
+            <TextField
+              label={t("ironManagement.form.code")}
+              value={editingCarModel.code}
+              onChange={(event) =>
+                setEditingCarModel((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    code: event.target.value,
+                  };
+                })
+              }
+              disabled={isMutating}
+            />
+
+            <TextField
+              label={t("ironManagement.columns.name")}
+              value={editingCarModel.name}
+              onChange={(event) =>
+                setEditingCarModel((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    name: event.target.value,
+                  };
+                })
+              }
+              disabled={isMutating}
+            />
+
+            {languages.map((lang) => (
+              <TextField
+                key={lang.code}
+                label={`${t("ironManagement.form.name")} (${lang.name})`}
+                value={editingCarModel.translations[lang.code] ?? ""}
+                onChange={(event) => {
+                  setEditingCarModel((prev) => {
+                    if (!prev) return prev;
+                    return {
+                      ...prev,
+                      translations: {
+                        ...prev.translations,
+                        [lang.code]: event.target.value,
+                      },
+                    };
+                  });
+                }}
+                disabled={isMutating}
+              />
+            ))}
+
+            <div className={styles.headerActions}>
+              <Button
+                variant="secondary"
+                size="medium"
+                onClick={() => setEditingCarModel(null)}
+                disabled={isMutating}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="primary"
+                size="medium"
+                onClick={handleSaveCarModelEdit}
+                disabled={isMutating}
+              >
+                {t("common.update")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       <div className={styles.tableWrapper}>
         <DataTable data={carModels} columns={columns} pageSize={10} />

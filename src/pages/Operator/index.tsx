@@ -398,6 +398,8 @@ export const OperatorPage = () => {
           }
           title={t("finalOffer.rejectButton")}
           description={t("common.areYouSure")}
+          confirmText={t("common.confirm")}
+          cancelText={t("common.cancel")}
           onConfirm={() => {
             actions.handleConfirmReject();
             actions.handleResetForm();
@@ -417,6 +419,8 @@ export const OperatorPage = () => {
           }
           title={t("operatorPage.closeSession")}
           description={t("common.areYouSure")}
+          confirmText={t("common.confirm")}
+          cancelText={t("common.cancel")}
           onConfirm={() => actions.handleToggleSession("close")}
           onCancel={() =>
             setUiState((p) => ({ ...p, isCloseSessionModalOpen: false }))
@@ -432,6 +436,8 @@ export const OperatorPage = () => {
           }
           title={t("header.logout")}
           description={t("common.areYouSure")}
+          confirmText={t("common.confirm")}
+          cancelText={t("common.cancel")}
           onConfirm={async () => {
             await dispatch(logout());
             navigate("/login");
@@ -450,6 +456,8 @@ export const OperatorPage = () => {
           }
           title={t("common.warning")}
           description={t("operatorPage.tabSwitchWarning")}
+          confirmText={t("common.confirm")}
+          cancelText={t("common.cancel")}
           onConfirm={() => {
             if (pendingMainTab) {
               actions.handleResetForm();
