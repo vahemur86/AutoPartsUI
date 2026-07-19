@@ -1837,7 +1837,9 @@
       "noIntake": "Заявка не найдена",
       "noIntakeId": "Отсутствует ID заявки",
       "failedToOffer": "Не удалось рассчитать предложение",
-      "failedToReject": "Не удалось отклонить предложение"
+      "failedToReject": "Не удалось отклонить предложение",
+      "invalidStatusTransition": "Недопустимый переход статуса. Текущий статус: Предложено.",
+      "invalidStatusTransitionDraft": "Недопустимый переход статуса. Текущий статус: Черновик."
     }
   },
   "pricingBreakdown": {

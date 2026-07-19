@@ -237,6 +237,10 @@ export const OperatorPage = () => {
                       onSubmit={actions.handleSubmit}
                       isLoading={uiState.isSubmitting}
                       hasTriedSubmit={uiState.hasTriedSubmit}
+                      isDisabled={
+                        !!selectors.operator.intake?.id &&
+                        (initialOfferPrice ?? selectors.operator.intake?.offerPrice ?? 0) > 0
+                      }
                     />
                     <FinalOffer
                       withRecalculate={!isNonStandardCustomer}
@@ -245,9 +249,7 @@ export const OperatorPage = () => {
                         selectors.operator.intake?.offerPrice ??
                         0
                       }
-                      currencyCode={
-                        selectors.operator.intake?.currencyCode || "USD"
-                      }
+                      currencyCode="AMD"
                       userData={userData}
                       isRecalculationsLimitReached={
                         recalculationsAmount >=
@@ -315,6 +317,10 @@ export const OperatorPage = () => {
                   }}
                   wide={true}
                   activeTab={activeTab}
+                  isOfferCalculated={
+                    !!selectors.operator.intake?.id &&
+                    (initialOfferPrice ?? selectors.operator.intake?.offerPrice ?? 0) > 0
+                  }
                 />
               </div>
             </div>

@@ -1836,7 +1836,9 @@
       "noIntake": "No intake found",
       "noIntakeId": "Intake ID is missing",
       "failedToOffer": "Failed to calculate offer",
-      "failedToReject": "Failed to reject offer"
+      "failedToReject": "Failed to reject offer",
+      "invalidStatusTransition": "Invalid status transition. Current status: Offered.",
+      "invalidStatusTransitionDraft": "Invalid status transition. Current status: Draft."
     }
   },
   "pricingBreakdown": {

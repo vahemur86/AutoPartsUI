@@ -452,6 +452,20 @@ export const useOperator = () => {
 
   // --- Error Handling ---
   useEffect(() => {
+    const translateOperatorError = (msg: string | null | undefined) => {
+      if (!msg) return msg;
+
+      if (msg === "Invalid status transition. Current: Offered.") {
+        return t("finalOffer.error.invalidStatusTransition");
+      }
+
+      if (msg === "Invalid status transition. Current: Draft.") {
+        return t("finalOffer.error.invalidStatusTransitionDraft");
+      }
+
+      return msg;
+    };
+
     const errors = [
       {
         msg: selectors.metalRates.error,
@@ -471,7 +485,10 @@ export const useOperator = () => {
       { msg: selectors.ironCarShop.error },
     ];
     errors.forEach(({ msg }) => {
-      if (msg) toast.error(msg, { toastId: msg });
+      if (msg) {
+        const translatedMessage = translateOperatorError(msg);
+        toast.error(translatedMessage, { toastId: msg });
+      }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

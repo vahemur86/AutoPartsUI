@@ -64,6 +64,7 @@ interface PricingBreakdownProps {
   onSubmit: () => void;
   isLoading?: boolean;
   hasTriedSubmit: boolean;
+  isDisabled?: boolean;
 }
 
 export const PricingBreakdown = ({
@@ -72,6 +73,7 @@ export const PricingBreakdown = ({
   onSubmit,
   isLoading,
   hasTriedSubmit,
+  isDisabled = false,
 }: PricingBreakdownProps) => {
   const { t } = useTranslation();
   const isInvalid = (val: string) => val.trim() === "" || isNaN(Number(val));
@@ -104,7 +106,7 @@ export const PricingBreakdown = ({
           <Button
             variant="primary"
             onClick={onSubmit}
-            disabled={isLoading}
+            disabled={isLoading || isDisabled}
             style={{ width: "100%" }}
           >
             <Send size={18} style={{ marginRight: "8px" }} />

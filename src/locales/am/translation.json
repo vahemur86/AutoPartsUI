@@ -1878,7 +1878,9 @@
       "noIntake": "Մուտք չի գտնվել",
       "noIntakeId": "Մուտքի ID-ն բացակայում է",
       "failedToOffer": "Չհաջողվեց հաշվարկել առաջարկը",
-      "failedToReject": "Չհաջողվեց մերժել առաջարկը"
+      "failedToReject": "Չհաջողվեց մերժել առաջարկը",
+      "invalidStatusTransition": "Անվավեր կարգավիճակի անցում։ Ներկա կարգավիճակը՝ առաջարկված է։",
+      "invalidStatusTransitionDraft": "Անվավեր կարգավիճակի անցում։ Ներկա կարգավիճակը՝ Սևագիր։"
     }
   },
   "pricingBreakdown": {

@@ -45,6 +45,7 @@ interface CustomerDetailsProps {
   onSuccess?: () => void;
   wide?: boolean;
   activeTab: "catalyst" | "iron" | "workshop";
+  isOfferCalculated?: boolean;
 }
 
 export const CustomerDetails = ({
@@ -54,6 +55,7 @@ export const CustomerDetails = ({
   onSuccess,
   wide = false,
   activeTab = "catalyst",
+  isOfferCalculated = false,
 }: CustomerDetailsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -238,7 +240,7 @@ export const CustomerDetails = ({
             }}
             onSearch={handleSearch}
             error={phoneError || (localHasTriedAccept && !isPhoneValid)}
-            disabled={isGlobalLoading}
+            disabled={isGlobalLoading || isOfferCalculated}
           />
         </div>
         <div
