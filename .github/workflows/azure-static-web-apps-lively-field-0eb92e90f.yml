@@ -29,12 +29,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Update Yarn
-        run: |
-          npm install -g yarn@1.22.22
-          yarn --version
-
-      - name: Install OIDC Client from Core Package
+      - name: Install OIDC Client
         run: |
           npm install @actions/core@1.6.0 @actions/http-client
 
@@ -56,7 +51,7 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: "dist"
-          app_build_command: "yarn build"
+          app_build_command: "npm install -g yarn@1.22.22 && yarn install && yarn build"
           github_id_token: ${{ steps.idtoken.outputs.result }}
 
   close_pull_request_job:
