@@ -229,7 +229,31 @@
       "cashboxSessionsReports": "Դրամարկղի հերթափոխերի հաշվետվություններ",
       "ironProducts": "Երկաթյա արտադրանք",
       "ironSale": "Երկաթի վաճառք",
+      "ironPurchases": "Երկաթի գնումներ",
       "serviceTasks": "Ծառայության վճարումներ"
+    },
+    "ironPurchases": {
+      "filters": {
+        "dictBrandId": "Ապրանքանիշի ID",
+        "ironTypeId": "Երկաթի տեսակ ID",
+        "operatorUserId": "Օպերատոր",
+        "sessionId": "Սեսիայի ID",
+        "customerPhone": "Վառորդի հեռախոսը",
+        "pageSize": "Էջի չափը"
+      },
+      "columns": {
+        "purchaseId": "Գնում",
+        "dictBrandId": "Ապրանքանիշի ID",
+        "brandName": "Ապրանքանիշ",
+        "ironTypeName": "Երկաթի տեսակ",
+        "operatorUserId": "Օպերատոր",
+        "sessionId": "Սեսիա",
+        "customerPhone": "Հեռախոս",
+        "weightKg": "Քաշը",
+        "pricePerKg": "Գին/կգ",
+        "totalAmount": "Ընդամենը",
+        "purchasedAt": "Գնելու ամսաթիվը"
+      }
     },
     "workshopOrders": {
       "loading": "Բեռնում է աշխատարանի պատվերները...",
@@ -1113,11 +1137,19 @@
     "tabs": {
       "carModels": "Ավտոմեքենայի մոդելներ",
       "ironTypes": "Երկաթի տեսակներ",
+      "brands": "Մակարդակներ",
+      "priceRules": "Գնի կանոններ",
       "ironTypesAndPrices": "Երկաթի տեսակներ և գներ",
       "prices": "Գներ"
     },
     "ariaLabels": {
       "ironManagementSections": "Երկաթի կառավարման բաժիններ"
+    },
+    "title": "Երկաթի խանութի կարգավորումներ",
+    "section": {
+      "ironTypes": "Երկաթի տեսակներ",
+      "brands": "Մակարդակներ",
+      "priceRules": "Գնի կանոններ"
     },
     "confirmation": {
       "deleteTitle": "Ջնջել մեքենայի մոդելը",
@@ -1126,11 +1158,33 @@
       "deleteIronTypeTitle": "Ջնջել մետաղի տեսակը",
       "deleteIronTypeDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել։ Այս գործողությունը հետադարձելի չէ։"
     },
+    "note": {
+      "basePriceHint": "Ընտրեք բրենդը և երկաթի տեսակը, այնուհետև մուտքագրեք գները բոլոր հաճախորդի տեսակների համար",
+      "recalculationStepHint": "Ընտրեք բրենդը և երկաթի տեսակը, այնուհետև ավելացրեք քայլերի գները ստանդարտ հաճախորդների համար (Քայլ 1, Քայլ 2 և այլն)",
+      "standardRecalculation": "Ստանդարտ հաճախորդի տեսակով գինն օգտագործվում է որպես վերահաշվարկի քայլ։",
+      "formHint": "Համապատասխան ստանդարտ հաճախորդի տեսակով ներմուծված գինը կդառնա հաշվարկի քայլ։"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Անվանում",
+      "brand": "Բրենդ",
+      "ironType": "Երկաթի տեսակ",
+      "customerType": "Հաճախորդի տեսակ",
+      "pricePerKg": "Գին",
+      "recalculateStepCount": "Հաշվարկի քայլեր",
+      "recalculateSteps": "Հաշվարկի քայլերի գներ"
+    },
+    "recalculateStepLabel": "Քայլ {{step}}:",
+    "noRecalculateSteps": "Քայլեր չկան",
+    "unknownCustomerType": "Չճանաչված հաճախորդի տեսակ",
     "addCarModel": "Ավելացնել մեքենայի մոդել",
+    "editCarModel": "Խմբագրել մեքենայի մոդելը",
     "addIronType": "Ավելացնել երկաթի տեսակ",
     "addIronPrice": "Ավելացնել երկաթի գին",
-    "addPrice": "Ավելացնել գին",
+    "addPrice": "Ստեղծել հիմնական գինը",
+    "addRecalculationStep": "Ավելացնել վերահաշվարկի քայլ",
     "addRecalculationPrice": "Ավելացնել վերահաշվարկի գին",
+    "pricesByCustomerType": "Գներ ըստ հաճախորդի տեսակի",
     "selectCarModel": "Ընտրեք մեքենայի մոդելը",
     "selectIronType": "Ընտրեք երկաթի տեսակը",
     "loading": "Բեռնվում է…",
@@ -1142,15 +1196,16 @@
       "name": "Անվանում",
       "enterName": "Մուտքագրեք անվանումը...",
       "language": "Լեզու",
-      "pricePerKg": "Գին",
+      "pricePerKg": "Գինը մեկ կգ",
+      "standardPrice": "Ստանդարտ գինը մեկ կգ",
+      "vipPrice": "VIP գինը մեկ կգ",
       "customerType": "Հաճախորդի տեսակ",
-      "selectCustomerType": "Ընտրեք հաճախորդի տեսակը..."
-    },
-    "columns": {
-      "id": "ID",
-      "name": "Անվանում",
-      "customerType": "Հաճախորդի տեսակ",
-      "pricePerKg": "Գին"
+      "selectCustomerType": "Ընտրեք հաճախորդի տեսակը...",
+      "selectBrand": "Ընտրեք բրենդը",
+      "selectIronType": "Ընտրեք երկաթի տեսակը",
+      "en": "EN",
+      "hy": "HY",
+      "ru": "RU"
     },
     "success": {
       "carModelCreated": "Մեքենայի մոդելը հաջողությամբ ստեղծվեց",
@@ -1159,7 +1214,10 @@
       "ironTypeCreated": "Երկաթի տեսակը հաջողությամբ ստեղծվեց",
       "ironTypeUpdated": "Երկաթի տեսակը հաջողությամբ թարմացվեց",
       "ironPriceCreated": "Երկաթի գինը հաջողությամբ ստեղծվեց",
+      "basePriceCreated": "Հիմնական գները հաջողությամբ ստեղծվեցին",
+      "recalculationStepAdded": "Վերահաշվարկի քայլը հաջողությամբ ավելացվեց",
       "ironPricesUpdated": "Երկաթի գները հաջողությամբ թարմացվեցին",
+      "ironPriceDeleted": "Գինը հաջողությամբ ջնջվեց",
       "recalculationPriceCreated": "Վերահաշվարկի գինը հաջողությամբ ավելացվեց"
     },
     "error": {
@@ -1170,8 +1228,15 @@
       "failedToUpdateIronType": "Չհաջողվեց թարմացնել երկաթի տեսակը",
       "failedToCreateIronPrice": "Չհաջողվեց ստեղծել երկաթի գինը",
       "failedToCreateRecalculationPrice": "Չհաջողվեց ավելացնել վերահաշվարկի գինը",
+      "failedToCreateRecalculationStep": "Չհաջողվեց ավելացնել վերահաշվարկի քայլը",
       "failedToUpdateIronPrices": "Չհաջողվեց թարմացնել երկաթի գները",
-      "selectCarModel": "Նախ ընտրեք մեքենայի մոդելը"
+      "pricePerKgGreaterThanZero": "Մեկ կգ-ի գինը պետք է մեծ լինի զրոյից",
+      "standardPriceGreaterThanZero": "Ստանդարտ գինը պետք է մեծ լինի զրոյից",
+      "vipPriceGreaterThanZero": "VIP գինը պետք է մեծ լինի զրոյից",
+      "selectCarModel": "Նախ ընտրեք մեքենայի մոդելը",
+      "selectIronType": "Նախ ընտրեք երկաթի տեսակը",
+      "selectAtLeastOnePrice": "Խնդրում ենք մուտքագրել գինը գոնե մեկ հաճախորդի տեսակի համար",
+      "basePriceAlreadyExists": "Հիմնական գինը արդեն գոյություն ունի այս Բրենդ + Երկաթ տեսակ + Հաճախորդի տեսակ համակցման համար"
     }
   },
   "cashRegisters": {
@@ -2028,10 +2093,18 @@
     },
     "ironCarShop": {
       "carModel": "Ավտոմեքենայի մոդել",
+      "brand": "Բրենդ",
       "price": "Գին",
       "calculate": "Հաշվել",
-      "selectCustomerToCalculate": "Գնի հաշվարկից առաջ ընտրեք կամ ստեղծեք հաճախորդ։"
+      "selectCustomerToCalculate": "Գնի հաշվարկից առաջ ընտրեք կամ ստեղծեք հաճախորդ։",
+      "failedToLoadIronTypes": "Չհաջողվեց բեռնել երկաթի տեսակները",
+      "calculationResult": "Հաշվարկի արդյունք",
+      "lineFormat": "{{name}} {{weight}} կգ × {{price}} AMD = {{total}} AMD",
+      "total": "Ընդհանուր",
+      "recalculate": "Վերախմբել",
+      "stepLabel": "Քայլ {{step}}"
     },
+    "offerFinished": "Վերջնական առաջարկը պատրաստ է",
     "calculate": {
       "mode": {
         "byCode": "Ըստ կոդի",

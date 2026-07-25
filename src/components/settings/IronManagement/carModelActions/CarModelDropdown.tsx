@@ -19,6 +19,8 @@ interface CarModelDropdownProps {
   open: boolean;
   anchorRef?: RefObject<HTMLElement | null>;
   isLoading?: boolean;
+  mode?: "create" | "edit";
+  initialValues?: CarModelForm | null;
   onOpenChange: (open: boolean) => void;
   onSave: (data: CarModelForm) => void;
 }
@@ -27,6 +29,8 @@ export const CarModelDropdown = ({
   open,
   anchorRef,
   isLoading = false,
+  mode = "create",
+  initialValues = null,
   onOpenChange,
   onSave,
 }: CarModelDropdownProps) => {
@@ -37,23 +41,25 @@ export const CarModelDropdown = ({
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      setCode("");
-      setTranslations({});
-      setHasTriedSave(false);
-    }
-  }, [open]);
+  const buildTranslations = (source?: Record<string, string>) => {
+    const nextTranslations: Record<string, string> = {};
+    languages.forEach((lang) => {
+      nextTranslations[lang.code] = source?.[lang.code] ?? "";
+    });
+    return nextTranslations;
+  };
 
   useEffect(() => {
-    if (open && languages.length > 0) {
-      const initialTranslations: Record<string, string> = {};
-      languages.forEach((lang) => {
-        initialTranslations[lang.code] = "";
-      });
-      setTranslations(initialTranslations);
-    }
-  }, [open, languages]);
+    if (!open) return;
+
+    setCode(mode === "edit" ? initialValues?.code ?? "" : "");
+    setTranslations(
+      buildTranslations(
+        mode === "edit" ? initialValues?.translations : undefined,
+      ),
+    );
+    setHasTriedSave(false);
+  }, [open, mode, initialValues, languages]);
 
   const isCodeValid = code.trim().length > 0;
   const areTranslationsValid = Object.values(translations).some(
@@ -83,7 +89,10 @@ export const CarModelDropdown = ({
     });
   };
 
-  const titleText = t("ironManagement.addCarModel");
+  const titleText =
+    mode === "edit"
+      ? t("ironManagement.editCarModel")
+      : t("ironManagement.addCarModel");
 
   return (
     <Dropdown

@@ -13,12 +13,9 @@ import type {
   VehicleDefinitionSearchResponse,
 } from "@/types/settings";
 
-const toApiLang = (lang: string) => {
-  if (lang === "am") {
-    return "arm";
-  }
-  return lang;
-};
+import { mapI18nCodeToApiCode } from "@/utils";
+
+const toApiLang = (lang: string) => mapI18nCodeToApiCode(lang);
 
 const normalizeProgrammingEntry = (item: any): ProgrammingPricingEntry => {
   const brandName = item?.brandName ?? "";
@@ -46,7 +43,7 @@ const normalizeProgrammingEntry = (item: any): ProgrammingPricingEntry => {
 };
 
 export const getVehicleDefinitionLookups = async (
-  lang: string = "arm",
+  lang: string = "hy",
   brandId?: number,
 ): Promise<VehicleDefinitionLookups> => {
   try {
@@ -81,7 +78,7 @@ export const searchVehicleDefinitions = async (
     const response = await api.get("/vehicle-definitions/search", {
       params: {
         ...params,
-        lang: toApiLang(params.lang ?? "arm"),
+        lang: toApiLang(params.lang ?? "hy"),
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 20,
       },

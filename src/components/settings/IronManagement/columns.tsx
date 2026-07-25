@@ -27,7 +27,7 @@ export const getCarModelColumns = (
     onEdit,
   }: {
     onDelete: (carModel: CarModel) => void;
-    onEdit?: (carModel: CarModel) => void;
+    onEdit: (carModel: CarModel, anchorElement: HTMLElement) => void;
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<CarModel, any>[] => [
@@ -42,11 +42,13 @@ export const getCarModelColumns = (
     header: i18next.t("common.actions"),
     cell: ({ row }) => (
       <div className={styles.actionButtonsCell}>
-        {onEdit && (
-          <Button variant="secondary" size="small" onClick={() => onEdit(row.original)}>
-            {i18next.t("common.edit")}
-          </Button>
-        )}
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={(event) => onEdit(row.original, event.currentTarget)}
+        >
+          {i18next.t("common.edit")}
+        </Button>
         <Button
           variant="danger"
           size="small"
@@ -61,13 +63,7 @@ export const getCarModelColumns = (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronTypeColumns = (
-  {
-    onDelete,
-    onEdit,
-  }: {
-    onDelete?: (ironType: IronType) => void;
-    onEdit?: (ironType: IronType) => void;
-  } = {},
+  { onDelete }: { onDelete?: (ironType: IronType) => void } = {}
 ): ColumnDef<IronType, any>[] => [
   ironTypeColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),
@@ -82,19 +78,10 @@ export const getIronTypeColumns = (
           header: i18next.t("common.actions"),
           cell: ({ row }) => (
             <div className={styles.actionButtonsCell}>
-              {onEdit && (
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={() => onEdit(row.original)}
-                >
-                  {i18next.t("common.edit")}
-                </Button>
-              )}
               <Button
                 variant="danger"
                 size="small"
-                onClick={() => onDelete?.(row.original)}
+                onClick={() => onDelete(row.original)}
               >
                 {i18next.t("common.delete")}
               </Button>

@@ -5,7 +5,7 @@ let isRedirectingToLogin = false;
 
 //  Azure API base URL
 const DEFAULT_API_BASE_URL =
-  "https://autoparts-ambpc7hjbqhxeebx.canadacentral-01.azurewebsites.net/api";
+  "https://prpservice-grdag3gqdhgba5by.canadacentral-01.azurewebsites.net/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 

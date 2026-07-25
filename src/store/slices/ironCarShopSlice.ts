@@ -10,7 +10,7 @@ import {
   getIronTypesByModel,
   getIronTypesByCar,
   getIronTypesPrices,
-  bulkPurchaseIron,
+  purchaseIron,
   addCarModel,
   addIronType,
   addIronPrice,
@@ -35,7 +35,7 @@ import type {
   IronTypePrice,
   IronPricesResponse,
   PurchaseIronResponse,
-  BulkPurchasePayload,
+  PurchaseIronApiPayload,
   IronPrice,
   CarModelPayload,
   AddIronPricePayload,
@@ -51,6 +51,7 @@ interface IronCarShopState {
   ironTypesByCar: IronTypeByCar[];
   ironPrices: IronTypePrice[];
   ironPriceList: IronPrice[];
+  selectedBrandId: number | null;
   ironTotals: {
     weightKgTotal: number;
     totalAmountTotal: number;
@@ -68,6 +69,7 @@ const initialState: IronCarShopState = {
   ironTypesByCar: [],
   ironPrices: [],
   ironPriceList: [],
+  selectedBrandId: null,
   ironTotals: null,
   recalculationResult: null,
   lastPurchase: null,
@@ -161,13 +163,18 @@ export const recalculatePrices = createAsyncThunk<
 
 export const submitBulkPurchase = createAsyncThunk<
   PurchaseIronResponse[],
-  { payload: BulkPurchasePayload; cashRegisterId: number; lang: string },
+  { payload: PurchaseIronApiPayload[]; cashRegisterId: number },
   { rejectValue: string }
 >(
   "ironCarShop/submitBulkPurchase",
-  async ({ payload, cashRegisterId, lang }, { rejectWithValue }) => {
+  async ({ payload, cashRegisterId }, { rejectWithValue }) => {
     try {
-      return await bulkPurchaseIron(payload, cashRegisterId, lang);
+      const results: PurchaseIronResponse[] = [];
+      for (const purchase of payload) {
+        const response = await purchaseIron(purchase, cashRegisterId);
+        results.push(response);
+      }
+      return results;
     } catch (error) {
       return rejectWithValue(getApiErrorMessage(error, "Bulk purchase failed"));
     }
@@ -392,6 +399,25 @@ const ironCarShopSlice = createSlice({
       state.error = null;
     },
     resetShopState: () => initialState,
+    clearCalculation: (state) => {
+      state.ironPrices = [];
+      state.ironTotals = null;
+      state.recalculationResult = null;
+      state.selectedBrandId = null;
+    },
+    setLocalCalculation: (
+      state,
+      action: PayloadAction<{
+        selectedBrandId: number;
+        items: IronTypePrice[];
+        ironTotals: { weightKgTotal: number; totalAmountTotal: number };
+      }>,
+    ) => {
+      state.selectedBrandId = action.payload.selectedBrandId;
+      state.ironPrices = action.payload.items;
+      state.ironTotals = action.payload.ironTotals;
+      state.recalculationResult = null;
+    },
     clearPrices: (state) => {
       state.ironPrices = [];
       state.ironTotals = null;
@@ -520,6 +546,8 @@ const ironCarShopSlice = createSlice({
 export const {
   clearShopError,
   resetShopState,
+  clearCalculation,
+  setLocalCalculation,
   clearPrices,
   clearIronPriceList,
 } = ironCarShopSlice.actions;

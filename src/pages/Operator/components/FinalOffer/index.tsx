@@ -29,6 +29,30 @@ export const FinalOffer: FC<{
   userData: any;
   isRecalculationsLimitReached?: boolean;
   withRecalculate?: boolean;
+  ironItems?: Array<{
+    ironTypeId: number;
+    name: string;
+    pricePerKg: number;
+    weightKg: number;
+    totalAmount: number;
+  }>;
+  ironTotals?: {
+    weightKgTotal: number;
+    totalAmountTotal: number;
+  };
+  recalculationResult?: {
+    currentStep: number;
+    nextStep: number;
+    isLastStep: boolean;
+    totalWeight: number;
+    totalAmount: number;
+    items: Array<{
+      ironTypeId: number;
+      weightKg: number;
+      pricePerKg: number;
+      totalAmount: number;
+    }>;
+  } | null;
   onReset?: () => void;
   onAccept?: () => Promise<void>;
   onRecalculate?: () => Promise<void>;
@@ -40,6 +64,9 @@ export const FinalOffer: FC<{
   offerPrice = 0,
   currencyCode = "AMD",
   userData = {},
+  ironItems,
+  ironTotals,
+  recalculationResult,
   onReset,
   onAccept,
   onRecalculate,
@@ -105,6 +132,21 @@ export const FinalOffer: FC<{
 
   const isAnyActionLoading = isOffering || isInternalRecalculating || isLoading;
 
+  const lineItems = recalculationResult?.items?.map((item) => ({
+    ...item,
+    name:
+      ironItems?.find((ironItem) => ironItem.ironTypeId === item.ironTypeId)
+        ?.name ??
+      `#${item.ironTypeId}`,
+  })) ?? ironItems;
+  const totalWeight = recalculationResult?.totalWeight ?? ironTotals?.weightKgTotal;
+  const totalAmount = recalculationResult?.totalAmount ?? ironTotals?.totalAmountTotal;
+  const stepLabel = recalculationResult?.currentStep
+    ? t("operatorPage.ironCarShop.stepLabel", {
+        step: recalculationResult.currentStep,
+      })
+    : undefined;
+
   const hasNewCatalystOffer = !!newPropose;
   const displayPrice = hasNewCatalystOffer
     ? newPropose.offeredAmountAmd
@@ -131,6 +173,34 @@ export const FinalOffer: FC<{
           </div>
         </div>
         <div className={sharedStyles.divider} />
+        {lineItems && lineItems.length > 0 && (
+          <div className={styles.calculationSummary}>
+            <div className={styles.calculationSummaryList}>
+              {lineItems.map((item) => (
+                <div key={item.ironTypeId} className={styles.calculationSummaryRow}>
+                  <span>{item.name}</span>
+                  <span>
+                    {t("operatorPage.ironCarShop.lineFormat", {
+                      name: item.name,
+                      weight: item.weightKg,
+                      price: item.pricePerKg.toLocaleString(),
+                      total: item.totalAmount.toLocaleString(),
+                    })}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className={styles.calculationSummaryTotals}>
+              <strong>{t("operatorPage.ironCarShop.total")}: </strong>
+              <span>
+                {totalWeight ?? 0} kg — {totalAmount?.toLocaleString() ?? 0} AMD
+              </span>
+            </div>
+            {stepLabel && (
+              <div className={styles.calculationStepLabel}>{stepLabel}</div>
+            )}
+          </div>
+        )}
         <div className={styles.finalOfferActions}>
           <Button
             variant="primary"

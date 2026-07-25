@@ -1,4 +1,5 @@
 import { useState, useMemo, Fragment, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useReactTable,
   getCoreRowModel,
@@ -40,6 +41,9 @@ interface DataTableProps<TData, TValue> {
   renderSubComponent?: (props: { row: Row<TData> }) => ReactNode;
   frozenConfig?: { left?: string[]; right?: string[] };
   freezeHeader?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
+  noResultsText?: string;
 }
 
 export const DataTable = <TData, TValue>({
@@ -58,7 +62,14 @@ export const DataTable = <TData, TValue>({
   renderSubComponent,
   frozenConfig,
   freezeHeader = true,
+  isLoading = false,
+  loadingText,
+  noResultsText,
 }: DataTableProps<TData, TValue>) => {
+  const { t } = useTranslation();
+
+  const resolvedLoadingText = loadingText ?? t("common.loading");
+  const resolvedNoResultsText = noResultsText ?? t("common.noData");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [grouping, setGrouping] = useState<GroupingState>(groupBy);
@@ -301,7 +312,7 @@ export const DataTable = <TData, TValue>({
                   colSpan={tableColumns.length}
                   style={{ textAlign: "center" }}
                 >
-                  No results.
+                  {isLoading ? resolvedLoadingText : resolvedNoResultsText}
                 </TableCell>
               </TableRow>
             )}
@@ -314,19 +325,19 @@ export const DataTable = <TData, TValue>({
         <div className={styles.pagination}>
           <button
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            disabled={isLoading || !table.getCanPreviousPage()}
           >
-            Previous
+            {t("common.previous")}
           </button>
           <span>
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {t("common.page")} {table.getState().pagination.pageIndex + 1}{" "}
+            {t("common.of")} {table.getPageCount()}
           </span>
           <button
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            disabled={isLoading || !table.getCanNextPage()}
           >
-            Next
+            {t("common.next")}
           </button>
         </div>
       </div>

@@ -304,6 +304,7 @@ export const IronPrices: FC = () => {
             data={priceListWithCustomerTypes}
             columns={columns}
             pageSize={10}
+            isLoading={isLoading}
           />
         </div>
       )}

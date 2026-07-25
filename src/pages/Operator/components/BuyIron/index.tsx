@@ -12,9 +12,15 @@ import { Calculator } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchCarModels,
-  fetchIronTypes,
-  calculateIronPrices,
+  setLocalCalculation,
+  clearCalculation,
 } from "@/store/slices/ironCarShopSlice";
+
+// types
+import type { IronTypePrice } from "@/types/ironCarShop";
+
+// services
+import { getAvailableIronTypes } from "@/services/ironCarShop";
 
 // styles
 import styles from "./BuyIron.module.css";
@@ -38,7 +44,7 @@ export const BuyIron: FC<BuyIronProps> = ({
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { carModels, ironTypes, isLoading, ironPrices } = useAppSelector(
+  const { carModels, ironPrices } = useAppSelector(
     (state) => state.ironCarShop,
   );
   const { items: searchedCustomers } = useAppSelector(
@@ -46,7 +52,9 @@ export const BuyIron: FC<BuyIronProps> = ({
   );
   const { intake } = useAppSelector((state) => state.operator);
 
-  const [selectedModelId, setSelectedModelId] = useState<string>("");
+  const [selectedBrandId, setSelectedBrandId] = useState<string>("");
+  const [availableIronTypes, setAvailableIronTypes] = useState<any[]>([]);
+  const [isLoadingIronTypes, setIsLoadingIronTypes] = useState(false);
   const [ironRows, setIronRows] = useState<Record<number, IronRowState>>({});
 
   const isCustomerFound = useMemo(
@@ -66,14 +74,14 @@ export const BuyIron: FC<BuyIronProps> = ({
       (row) => row.isSelected,
     );
 
-    if (isLoading || !selectedModelId || selectedEntries.length === 0) {
+    if (isLoadingIronTypes || !selectedBrandId || selectedEntries.length === 0) {
       return true;
     }
 
     return selectedEntries.some(
       (row) => !row.weight || row.weight === "." || parseFloat(row.weight) <= 0,
     );
-  }, [ironRows, selectedModelId, isLoading]);
+  }, [ironRows, selectedBrandId, isLoadingIronTypes]);
 
   useEffect(() => {
     if (cashRegisterId) {
@@ -87,50 +95,60 @@ export const BuyIron: FC<BuyIronProps> = ({
   }, [dispatch, cashRegisterId, i18n.language]);
 
   useEffect(() => {
-    if (ironPrices && ironPrices.length > 0) {
-      setIronRows((prev) => {
-        const next = { ...prev };
-        Object.keys(next).forEach((id) => {
-          if (next[Number(id)]) next[Number(id)].price = 0;
-        });
-        ironPrices.forEach((item) => {
-          if (next[item.ironTypeId]) {
-            next[item.ironTypeId].price = item.totalAmount;
-          }
-        });
-        return next;
-      });
-    }
-  }, [ironPrices]);
-
-  useEffect(() => {
     if (ironPrices.length === 0) {
-      setSelectedModelId("");
+      setSelectedBrandId("");
       setIronRows({});
     }
   }, [ironPrices.length]);
 
-  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value;
-    setSelectedModelId(id);
-    if (id) {
-      dispatch(
-        fetchIronTypes({
-          carModelId: Number(id),
+  // Load available iron types when brand and customer type are selected
+  const handleBrandChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const brandId = e.target.value;
+    setSelectedBrandId(brandId);
+    
+    if (brandId && customerTypeId) {
+      setIsLoadingIronTypes(true);
+      try {
+        const types = await getAvailableIronTypes(
+          Number(brandId),
+          customerTypeId,
           cashRegisterId,
-          lang: i18n.language,
-        }),
-      );
+          i18n.language,
+        );
+            setAvailableIronTypes(types);
+        dispatch(clearCalculation());
+        const initialRows: Record<number, IronRowState> = {};
+        types.forEach((type) => {
+          const price = type.prices?.[0]?.pricePerKg || 0;
+          initialRows[type.ironTypeId] = {
+            weight: "",
+            isSelected: false,
+            price,
+          };
+        });
+      } catch (error) {
+        toast.error(t("operatorPage.ironCarShop.failedToLoadIronTypes", "Failed to load iron types"));
+        setAvailableIronTypes([]);
+        setIronRows({});
+      } finally {
+        setIsLoadingIronTypes(false);
+      }
+    } else {
+      setAvailableIronTypes([]);
+      setIronRows({});
     }
   };
 
+            
+
   useEffect(() => {
     const initialRows: Record<number, IronRowState> = {};
-    ironTypes.forEach((type) => {
-      initialRows[type.id] = { weight: "", isSelected: false, price: 0 };
+    availableIronTypes.forEach((type) => {
+      const price = type.prices?.[0]?.pricePerKg || 0;
+      initialRows[type.ironTypeId] = { weight: "", isSelected: false, price };
     });
     setIronRows(initialRows);
-  }, [ironTypes]);
+  }, [availableIronTypes]);
 
   const updateRow = (id: number, updates: Partial<IronRowState>) => {
     setIronRows((prev) => ({
@@ -159,25 +177,41 @@ export const BuyIron: FC<BuyIronProps> = ({
 
     onCalculateAttempt();
 
-    const selectedEntries = Object.entries(ironRows).filter(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ([_, data]) => data.isSelected,
+    const selectedEntries = Object.entries(ironRows).filter(([, data]) =>
+      data.isSelected,
     );
 
-    const weightsMap: Record<string, number> = {};
-    selectedEntries.forEach(([id, data]) => {
-      weightsMap[id] = parseFloat(data.weight);
+    const items: IronTypePrice[] = [];
+    let weightKgTotal = 0;
+    let totalAmountTotal = 0;
+
+    selectedEntries.forEach(([idStr, data]) => {
+      const id = Number(idStr);
+      const weight = parseFloat(data.weight || "0");
+      const pricePerKg = data.price || 0;
+      const totalAmount = +(weight * pricePerKg).toFixed(2);
+      const type = availableIronTypes.find((t) => t.ironTypeId === id);
+
+      items.push({
+        ironTypeId: id,
+        name: type?.name || "",
+        pricePerKg,
+        weightKg: weight,
+        totalAmount,
+      });
+
+      weightKgTotal += weight;
+      totalAmountTotal += totalAmount;
     });
 
     dispatch(
-      calculateIronPrices({
-        params: {
-          carModelId: Number(selectedModelId),
-          customerTypeId,
-          weightsJson: " " + JSON.stringify(weightsMap),
-          lang: i18n.language,
+      setLocalCalculation({
+        selectedBrandId: Number(selectedBrandId),
+        items,
+        ironTotals: {
+          weightKgTotal,
+          totalAmountTotal,
         },
-        cashRegisterId,
       }),
     );
   };
@@ -191,16 +225,16 @@ export const BuyIron: FC<BuyIronProps> = ({
         <div className={styles.modelSelectWrapper}>
           <Select
             searchable
-            label={t("operatorPage.ironCarShop.carModel")}
-            value={selectedModelId}
-            onChange={handleModelChange}
+            label={t("operatorPage.ironCarShop.brand")}
+            value={selectedBrandId}
+            onChange={handleBrandChange}
             placeholder={t("common.select")}
-            disabled={isLoading}
+            disabled={!isCustomerFound || isLoadingIronTypes}
             containerClassName={styles.wideSelect}
           >
-            {carModels.map((model) => (
-              <option key={model.id} value={model.id}>
-                {model.name}
+            {carModels.map((brand) => (
+              <option key={brand.id} value={brand.id}>
+                {brand.name}
               </option>
             ))}
           </Select>
@@ -208,23 +242,23 @@ export const BuyIron: FC<BuyIronProps> = ({
       </div>
 
       <div className={styles.ironList}>
-        {selectedModelId &&
-          ironTypes.map((type) => {
-            const row = ironRows[type.id] || {
+        {selectedBrandId &&
+          availableIronTypes.map((type) => {
+            const row = ironRows[type.ironTypeId] || {
               weight: "",
               isSelected: false,
-              price: 0,
+              price: type.prices?.[0]?.pricePerKg || 0,
             };
             return (
               <div
-                key={type.id}
+                key={type.ironTypeId}
                 className={`${styles.ironRow} ${row.isSelected ? styles.activeRow : ""}`}
               >
                 <div className={styles.checkGroup}>
                   <Checkbox
                     checked={row.isSelected}
                     onChange={(e) =>
-                      updateRow(type.id, {
+                      updateRow(type.ironTypeId, {
                         isSelected: e.currentTarget.checked,
                       })
                     }
@@ -246,7 +280,7 @@ export const BuyIron: FC<BuyIronProps> = ({
                     placeholder="0.00"
                     value={row.weight}
                     onChange={(e) =>
-                      handleWeightChange(type.id, e.target.value)
+                      handleWeightChange(type.ironTypeId, e.target.value)
                     }
                     disabled={!row.isSelected}
                     className={styles.weightInput}
@@ -257,7 +291,7 @@ export const BuyIron: FC<BuyIronProps> = ({
           })}
       </div>
 
-      {selectedModelId && ironTypes.length > 0 && (
+      {selectedBrandId && availableIronTypes.length > 0 && (
         <div className={styles.footerActions}>
           <Button
             fullWidth

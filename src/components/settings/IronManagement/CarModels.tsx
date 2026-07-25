@@ -11,14 +11,7 @@ import i18n from "i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import {
-  Button,
-  ConfirmationModal,
-  DataTable,
-  IconButton,
-  Modal,
-  TextField,
-} from "@/ui-kit";
+import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
 
 // icons
 import { Plus } from "lucide-react";
@@ -56,19 +49,21 @@ import type { CarModel } from "@/types/ironCarShop";
 export const CarModels: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { carModels } = useAppSelector((state) => state.ironCarShop);
+  const { carModels, isLoading } = useAppSelector((state) => state.ironCarShop);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-  const [editingCarModel, setEditingCarModel] = useState<{
-    id: number;
-    code: string;
-    name: string;
-    translations: Record<string, string>;
-  } | null>(null);
   const [deletingCarModel, setDeletingCarModel] = useState<CarModel | null>(
     null,
   );
+  const [editingCarModel, setEditingCarModel] = useState<CarModel | null>(
+    null,
+  );
+  const [dropdownMode, setDropdownMode] = useState<"create" | "edit">(
+    "create",
+  );
+  const [dropdownInitialValues, setDropdownInitialValues] =
+    useState<CarModelForm | null>(null);
 
   const anchorRef = useRef<HTMLElement | null>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
@@ -85,7 +80,36 @@ export const CarModels: FC = () => {
 
   const handleOpenAdd = useCallback((e: React.MouseEvent<HTMLElement>) => {
     anchorRef.current = e.currentTarget;
+    setDropdownMode("create");
+    setEditingCarModel(null);
+    setDropdownInitialValues(null);
     setIsDropdownOpen(true);
+  }, []);
+
+  const handleOpenEdit = useCallback(
+    (carModel: CarModel, anchorElement: HTMLElement) => {
+      anchorRef.current = anchorElement;
+      const initialTranslations = Object.fromEntries(
+        languages.map((lang) => [lang.code, carModel.name || ""]),
+      );
+      setDropdownMode("edit");
+      setEditingCarModel(carModel);
+      setDropdownInitialValues({
+        code: carModel.name || "",
+        translations: initialTranslations,
+      });
+      setIsDropdownOpen(true);
+    },
+    [languages],
+  );
+
+  const handleDropdownOpenChange = useCallback((open: boolean) => {
+    if (!open) {
+      setEditingCarModel(null);
+      setDropdownInitialValues(null);
+      setDropdownMode("create");
+    }
+    setIsDropdownOpen(open);
   }, []);
 
   const handleSaveCarModel = useCallback(
@@ -93,76 +117,50 @@ export const CarModels: FC = () => {
       try {
         setIsMutating(true);
         const apiLang = mapI18nCodeToApiCode(i18n.language);
-        await dispatch(
-          createCarModel({
-            payload: data,
-            cashRegisterId,
-            lang: apiLang,
-          }),
-        ).unwrap();
-        toast.success(t("ironManagement.success.carModelCreated"));
+
+        if (editingCarModel) {
+          await dispatch(
+            updateCarModelName({
+              id: editingCarModel.id,
+              payload: data,
+              cashRegisterId,
+              lang: apiLang,
+            }),
+          ).unwrap();
+          toast.success(t("ironManagement.success.carModelUpdated"));
+        } else {
+          await dispatch(
+            createCarModel({
+              payload: data,
+              cashRegisterId,
+              lang: apiLang,
+            }),
+          ).unwrap();
+          toast.success(t("ironManagement.success.carModelCreated"));
+        }
+
         await dispatch(
           fetchCarModels({ cashRegisterId, lang: apiLang }),
         ).unwrap();
+        setEditingCarModel(null);
+        setDropdownInitialValues(null);
+        setDropdownMode("create");
         setIsDropdownOpen(false);
       } catch (error: unknown) {
         console.error("Failed to save car model:", error);
         const errorMessage = getApiErrorMessage(
           error,
-          t("ironManagement.error.failedToCreateCarModel"),
+          editingCarModel
+            ? t("ironManagement.error.failedToUpdateCarModel")
+            : t("ironManagement.error.failedToCreateCarModel"),
         );
         toast.error(errorMessage);
       } finally {
         setIsMutating(false);
       }
     },
-    [dispatch, cashRegisterId, t],
+    [dispatch, cashRegisterId, editingCarModel, t],
   );
-
-  const handleOpenEdit = useCallback((carModel: CarModel) => {
-    setEditingCarModel({
-      id: carModel.id,
-      code: "",
-      name: carModel.name ?? "",
-      translations: {},
-    });
-  }, []);
-
-  const handleSaveCarModelEdit = useCallback(async () => {
-    if (!editingCarModel) return;
-
-    try {
-      setIsMutating(true);
-      const apiLang = mapI18nCodeToApiCode(i18n.language);
-      await dispatch(
-        updateCarModelName({
-          id: editingCarModel.id,
-          payload: {
-            code: editingCarModel.code.trim() || editingCarModel.name.trim(),
-            translations: Object.fromEntries(
-              Object.entries(editingCarModel.translations).filter(
-                ([, value]) => value.trim().length > 0,
-              ),
-            ),
-          },
-          cashRegisterId,
-          lang: apiLang,
-        }),
-      ).unwrap();
-
-      toast.success(t("ironManagement.success.carModelUpdated"));
-      await dispatch(fetchCarModels({ cashRegisterId, lang: apiLang })).unwrap();
-      setEditingCarModel(null);
-    } catch (error: unknown) {
-      const errorMessage = getApiErrorMessage(
-        error,
-        t("ironManagement.error.failedToUpdateCarModel"),
-      );
-      toast.error(errorMessage);
-    } finally {
-      setIsMutating(false);
-    }
-  }, [cashRegisterId, dispatch, editingCarModel, t]);
 
   const handleDeleteCarModel = useCallback(
     async (carModel: CarModel) => {
@@ -194,8 +192,8 @@ export const CarModels: FC = () => {
   const columns = useMemo(
     () =>
       getCarModelColumns({
-        onEdit: handleOpenEdit,
         onDelete: (carModel) => setDeletingCarModel(carModel),
+        onEdit: handleOpenEdit,
       }),
     [handleOpenEdit],
   );
@@ -236,7 +234,9 @@ export const CarModels: FC = () => {
         open={isDropdownOpen}
         anchorRef={anchorRef}
         isLoading={isMutating}
-        onOpenChange={setIsDropdownOpen}
+        mode={dropdownMode}
+        initialValues={dropdownInitialValues}
+        onOpenChange={handleDropdownOpenChange}
         onSave={handleSaveCarModel}
       />
 
@@ -261,91 +261,13 @@ export const CarModels: FC = () => {
         />
       )}
 
-      <Modal
-        open={!!editingCarModel}
-        onOpenChange={(open) => {
-          if (!open) setEditingCarModel(null);
-        }}
-        title={t("common.edit")}
-        width="560px"
-      >
-        {editingCarModel && (
-          <div className={styles.editModalContent}>
-            <TextField
-              label={t("ironManagement.form.code")}
-              value={editingCarModel.code}
-              onChange={(event) =>
-                setEditingCarModel((prev) => {
-                  if (!prev) return prev;
-                  return {
-                    ...prev,
-                    code: event.target.value,
-                  };
-                })
-              }
-              disabled={isMutating}
-            />
-
-            <TextField
-              label={t("ironManagement.columns.name")}
-              value={editingCarModel.name}
-              onChange={(event) =>
-                setEditingCarModel((prev) => {
-                  if (!prev) return prev;
-                  return {
-                    ...prev,
-                    name: event.target.value,
-                  };
-                })
-              }
-              disabled={isMutating}
-            />
-
-            {languages.map((lang) => (
-              <TextField
-                key={lang.code}
-                label={`${t("ironManagement.form.name")} (${lang.name})`}
-                value={editingCarModel.translations[lang.code] ?? ""}
-                onChange={(event) => {
-                  setEditingCarModel((prev) => {
-                    if (!prev) return prev;
-                    return {
-                      ...prev,
-                      translations: {
-                        ...prev.translations,
-                        [lang.code]: event.target.value,
-                      },
-                    };
-                  });
-                }}
-                disabled={isMutating}
-              />
-            ))}
-
-            <div className={styles.headerActions}>
-              <Button
-                variant="secondary"
-                size="medium"
-                onClick={() => setEditingCarModel(null)}
-                disabled={isMutating}
-              >
-                {t("common.cancel")}
-              </Button>
-              <Button
-                variant="primary"
-                size="medium"
-                onClick={handleSaveCarModelEdit}
-                disabled={isMutating}
-              >
-                {t("common.update")}
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
-
       <div className={styles.tableWrapper}>
-        <DataTable data={carModels} columns={columns} pageSize={10} />
+        <DataTable
+          data={carModels}
+          columns={columns}
+          pageSize={10}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

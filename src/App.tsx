@@ -40,7 +40,7 @@ import { ExchangeRates } from "@/components/settings/ExchangeRates";
 import { CashRegisters } from "@/components/settings/CashRegisters";
 import { OfferIncreaseOptions } from "@/components/settings/OfferOptions";
 import { SalePercentages } from "@/components/settings/SalePercentages";
-import { IronManagement } from "@/components/settings/IronManagement";
+import { IronShopSettings } from "@/components/settings/IronShop";
 import { ServiceTasks } from "@/components/settings/ServiceTasks";
 import { Tags } from "@/components/settings/Tags";
 import { ProgrammingPricingAdmin } from "@/components/settings/ProgrammingPricingAdmin";
@@ -53,6 +53,7 @@ import { PowderBatches } from "@/components/reports/PowderBatches";
 import { CashboxSessionsReports } from "@/components/reports/CashboxSessionsReports";
 import { IronProductsReport } from "@/components/reports/IronProductsReport";
 import { IronSaleReport } from "@/components/reports/IronSaleReport";
+import { IronPurchasesReport } from "@/components/reports/IronPurchasesReport";
 import { WorkshopOrdersReport } from "@/components/reports/WorkshopOrdersReport";
 import { ServiceTasksReport } from "@/components/reports/ServiceTasksReport";
 
@@ -223,7 +224,7 @@ export const App = () => {
                     path="programming-pricing"
                     element={<ProgrammingPricingAdmin />}
                   />
-                  <Route path="iron-management" element={<IronManagement />} />
+                  <Route path="iron-management" element={<IronShopSettings />} />
                 </Route>
 
                 <Route path="service-tasks" element={<ServiceTasks />} />
@@ -245,6 +246,7 @@ export const App = () => {
                     element={<IronProductsReport />}
                   />
                   <Route path="iron-sale" element={<IronSaleReport />} />
+                  <Route path="iron-purchases" element={<IronPurchasesReport />} />
                   <Route path="workshop-orders" element={<WorkshopOrdersReport />} />
                   <Route path="service-task-reports" element={<ServiceTasksReport />} />
                 </Route>

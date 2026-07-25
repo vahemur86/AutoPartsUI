@@ -1,7 +1,7 @@
 import api from "..";
 
 // utils
-import { getApiErrorMessage, getHeaders } from "@/utils";
+import { getApiErrorMessage, getHeaders, mapI18nCodeToApiCode } from "@/utils";
 
 // types
 import type {
@@ -12,8 +12,6 @@ import type {
 } from "@/types/settings";
 import type { PaginatedResponse } from "@/types/cash";
 
-const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
-
 export const getVehicleDefinitions = async (
   brandId?: number,
   lang: string = "am",
@@ -23,7 +21,7 @@ export const getVehicleDefinitions = async (
     const response = await api.get(`/lookups/vehicle-definitions`, {
       params: {
         ...(brandId != null && { brandId }),
-        lang: formatLang(lang),
+        lang: mapI18nCodeToApiCode(lang),
       },
       headers: getHeaders(cashRegisterId),
     });
@@ -135,7 +133,7 @@ export const getVehicleModels = async (
     const response = await api.get(`/lookups/models`, {
       params: {
         ...(brandId != null && { brandId }),
-        lang: formatLang(lang),
+        lang: mapI18nCodeToApiCode(lang),
       },
       headers: getHeaders(cashRegisterId),
     });

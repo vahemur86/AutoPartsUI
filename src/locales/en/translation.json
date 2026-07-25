@@ -230,8 +230,32 @@
       "cashboxSessionsReports": "Cash Register Sessions",
       "ironProducts": "Iron Product Reports",
       "ironSale": "Iron Sales",
+      "ironPurchases": "Iron Purchases",
       "workshopOrders": "Workshop Orders",
       "serviceTasks": "Service Payments"
+    },
+    "ironPurchases": {
+      "filters": {
+        "dictBrandId": "Brand ID",
+        "ironTypeId": "Iron Type ID",
+        "operatorUserId": "Operator",
+        "sessionId": "Session ID",
+        "customerPhone": "Customer Phone",
+        "pageSize": "Page size"
+      },
+      "columns": {
+        "purchaseId": "Purchase",
+        "dictBrandId": "Brand ID",
+        "brandName": "Brand",
+        "ironTypeName": "Iron Type",
+        "operatorUserId": "Operator",
+        "sessionId": "Session",
+        "customerPhone": "Customer Phone",
+        "weightKg": "Weight",
+        "pricePerKg": "Price/kg",
+        "totalAmount": "Total",
+        "purchasedAt": "Purchased At"
+      }
     },
     "workshopOrders": {
       "loading": "Loading workshop orders...",
@@ -1262,11 +1286,19 @@
     "tabs": {
       "carModels": "Car Models",
       "ironTypes": "Iron Types",
+      "brands": "Brands",
+      "priceRules": "Price Rules",
       "ironTypesAndPrices": "Iron Types & Prices",
       "prices": "Prices"
     },
     "ariaLabels": {
       "ironManagementSections": "Iron Management Sections"
+    },
+    "title": "Iron Shop Settings",
+    "section": {
+      "ironTypes": "Iron Types",
+      "brands": "Brands",
+      "priceRules": "Price Rules"
     },
     "confirmation": {
       "deleteTitle": "Delete vehicle model",
@@ -1276,10 +1308,13 @@
       "deleteIronTypeDescription": "Are you sure you want to delete? This action is irreversible."
     },
     "addCarModel": "Add Car Model",
+    "editCarModel": "Edit Car Model",
     "addIronType": "Add Iron Type",
     "addIronPrice": "Add Iron Price",
-    "addPrice": "Add price",
+    "addPrice": "Create Base Price",
+    "addRecalculationStep": "Add Recalculation Step",
     "addRecalculationPrice": "Add recalculation price",
+    "pricesByCustomerType": "Prices by Customer Type",
     "saveChanges": "Save changes",
     "selectCarModel": "Select Car Model",
     "selectIronType": "Select Iron Type",
@@ -1292,15 +1327,26 @@
       "name": "Name",
       "enterName": "Enter name...",
       "language": "Language",
-      "pricePerKg": "Price",
+      "pricePerKg": "Price Per Kg",
+      "standardPrice": "Standard Price Per Kg",
+      "vipPrice": "VIP Price Per Kg",
       "customerType": "Customer Type",
-      "selectCustomerType": "Select customer type..."
+      "selectCustomerType": "Select customer type...",
+      "selectBrand": "Select brand",
+      "selectIronType": "Select iron type",
+      "en": "EN",
+      "hy": "HY",
+      "ru": "RU"
     },
     "columns": {
       "id": "ID",
       "name": "Name",
+      "brand": "Brand",
+      "ironType": "Iron Type",
       "customerType": "Customer Type",
-      "pricePerKg": "Price"
+      "pricePerKg": "Price per Kg",
+      "recalculateStepCount": "Recalc steps",
+      "recalculateSteps": "Recalc step prices"
     },
     "success": {
       "carModelCreated": "Car model created successfully",
@@ -1309,20 +1355,45 @@
       "ironTypeCreated": "Iron type created successfully",
       "ironTypeUpdated": "Iron type updated successfully",
       "ironPriceCreated": "Iron price created successfully",
+      "basePriceCreated": "Base prices created successfully",
+      "recalculationStepAdded": "Recalculation step added successfully",
       "ironPricesUpdated": "Iron prices updated successfully",
+      "ironPriceDeleted": "Iron price deleted successfully",
       "recalculationPriceCreated": "Recalculation price added successfully"
     },
+    "confirmation": {
+      "deletePriceDescription": "Are you sure you want to delete this price entry?"
+    },
+    "note": {
+      "basePriceHint": "Select brand and iron type, then input prices for all customer types",
+      "recalculationStepHint": "Select brand and iron type, then add step prices for Standard customers (Step 1, Step 2, etc.)",
+      "standardRecalculation": "Standard customer type creates a recalculation step instead of a regular brand price.",
+      "formHint": "For Standard customer type, the entered price becomes a recalculation step."
+    },
+    "recalculateStepLabel": "Step {{step}}:",
+    "noRecalculateSteps": "No steps",
+    "unknownCustomerType": "Unknown customer type",
+    "noRecalculateSteps": "No steps",
     "error": {
       "failedToCreateCarModel": "Failed to create car model",
+      "pricePerKgGreaterThanZero": "Price per kg must be greater than zero",
+      "standardPriceGreaterThanZero": "Standard price must be greater than zero",
+      "vipPriceGreaterThanZero": "VIP price must be greater than zero",
       "failedToUpdateCarModel": "Failed to update car model",
       "failedToDeleteCarModel": "Failed to delete car model",
       "failedToCreateIronType": "Failed to create iron type",
       "failedToUpdateIronType": "Failed to update iron type",
       "failedToCreateIronPrice": "Failed to create iron price",
+      "failedToDeleteIronPrice": "Failed to delete iron price",
       "failedToCreateRecalculationPrice": "Failed to add recalculation price",
+      "failedToCreateRecalculationStep": "Failed to add recalculation step",
       "failedToUpdateIronPrices": "Failed to update iron prices",
+      "codeRequired": "Code is required",
+      "translationRequired": "At least one translation is required",
       "selectCarModel": "Please select a car model first",
-      "selectIronType": "Please select an iron type first"
+      "selectIronType": "Please select an iron type first",
+      "selectAtLeastOnePrice": "Please enter price for at least one customer type",
+      "basePriceAlreadyExists": "Base price already exists for this Brand + Iron Type + Customer Type combination"
     }
   },
   "cashRegisters": {
@@ -1990,10 +2061,18 @@
     },
     "ironCarShop": {
       "carModel": "Car Model",
+      "brand": "Brand",
       "price": "Price",
       "calculate": "Calculate",
-      "selectCustomerToCalculate": "Please search for or create a customer before running the calculation."
+      "selectCustomerToCalculate": "Please search for or create a customer before running the calculation.",
+      "failedToLoadIronTypes": "Failed to load iron types",
+      "calculationResult": "Calculation result",
+      "lineFormat": "{{name}} {{weight}} kg × {{price}} AMD = {{total}} AMD",
+      "total": "Total",
+      "recalculate": "Recalculate",
+      "stepLabel": "Step {{step}}"
     },
+    "offerFinished": "Final offer reached",
     "calculate": {
       "mode": {
         "byCode": "By Code",

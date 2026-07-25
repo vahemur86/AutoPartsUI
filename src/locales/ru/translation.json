@@ -229,8 +229,32 @@
       "cashboxSessionsReports": "Отчеты по сессиям кассы",
       "ironProducts": "Отчеты по железным изделиям",
       "ironSale": "Отчеты по продажам железа",
+      "ironPurchases": "Отчеты по покупкам железа",
       "workshopOrders": "Заказы мастерской",
       "serviceTasks": "Платежи по сервисным задачам"
+    },
+    "ironPurchases": {
+      "filters": {
+        "dictBrandId": "ID бренда",
+        "ironTypeId": "ID типа железа",
+        "operatorUserId": "Оператор",
+        "sessionId": "ID сессии",
+        "customerPhone": "Телефон клиента",
+        "pageSize": "Размер страницы"
+      },
+      "columns": {
+        "purchaseId": "Покупка",
+        "dictBrandId": "ID бренда",
+        "brandName": "Бренд",
+        "ironTypeName": "Тип железа",
+        "operatorUserId": "Оператор",
+        "sessionId": "Сессия",
+        "customerPhone": "Телефон клиента",
+        "weightKg": "Вес",
+        "pricePerKg": "Цена/кг",
+        "totalAmount": "Итого",
+        "purchasedAt": "Дата покупки"
+      }
     },
     "workshopOrders": {
       "loading": "Загрузка заказов мастерской...",
@@ -1264,11 +1288,19 @@
     "tabs": {
       "carModels": "Модели автомобилей",
       "ironTypes": "Типы металла",
+      "brands": "Бренды",
+      "priceRules": "Правила цен",
       "ironTypesAndPrices": "Типы металла и цены",
       "prices": "Цены"
     },
     "ariaLabels": {
       "ironManagementSections": "Разделы управления металлоломом"
+    },
+    "title": "Настройки ломбарда",
+    "section": {
+      "ironTypes": "Типы металла",
+      "brands": "Бренды",
+      "priceRules": "Правила цен"
     },
     "confirmation": {
       "deleteTitle": "Удалить модель автомобиля",
@@ -1278,10 +1310,13 @@
       "deleteIronTypeDescription": "Вы уверены, что хотите удалить? Это действие необратимо."
     },
     "addCarModel": "Добавить модель автомобиля",
+    "editCarModel": "Изменить модель автомобиля",
     "addIronType": "Добавить тип металла",
     "addIronPrice": "Добавить цену металла",
-    "addPrice": "Добавить цену",
+    "addPrice": "Создать базовую цену",
+    "addRecalculationStep": "Добавить шаг перерасчёта",
     "addRecalculationPrice": "Добавить цену перерасчёта",
+    "pricesByCustomerType": "Цены по типам клиентов",
     "saveChanges": "Сохранить изменения",
     "selectCarModel": "Выберите модель автомобиля",
     "selectIronType": "Выберите тип металла",
@@ -1294,15 +1329,26 @@
       "name": "Название",
       "enterName": "Введите название...",
       "language": "Язык",
-      "pricePerKg": "Цена",
+      "pricePerKg": "Цена за кг",
+      "standardPrice": "Стандартная цена за кг",
+      "vipPrice": "VIP цена за кг",
       "customerType": "Тип клиента",
-      "selectCustomerType": "Выберите тип клиента..."
+      "selectCustomerType": "Выберите тип клиента...",
+      "selectBrand": "Выберите бренд",
+      "selectIronType": "Выберите тип металла",
+      "en": "EN",
+      "hy": "HY",
+      "ru": "RU"
     },
     "columns": {
       "id": "ID",
       "name": "Название",
+      "brand": "Бренд",
+      "ironType": "Тип металла",
       "customerType": "Тип клиента",
-      "pricePerKg": "Цена"
+      "pricePerKg": "Цена",
+      "recalculateStepCount": "Шагов",
+      "recalculateSteps": "Цены шагов"
     },
     "success": {
       "carModelCreated": "Модель автомобиля успешно создана",
@@ -1310,21 +1356,47 @@
       "carModelDeleted": "Модель автомобиля успешно удалена",
       "ironTypeCreated": "Тип металла успешно создан",
       "ironTypeUpdated": "Тип металла успешно обновлён",
+      "ironTypeDeleted": "Тип металла успешно удалён",
       "ironPriceCreated": "Цена металла успешно создана",
+      "basePriceCreated": "Базовые цены успешно созданы",
+      "recalculationStepAdded": "Шаг перерасчёта успешно добавлен",
       "ironPricesUpdated": "Цены металла успешно обновлены",
+      "ironPriceDeleted": "Цена успешно удалена",
       "recalculationPriceCreated": "Цена перерасчёта успешно добавлена"
     },
+    "confirmation": {
+      "deletePriceDescription": "Вы уверены, что хотите удалить эту цену?"
+    },
+    "note": {
+      "basePriceHint": "Выберите бренд и тип металла, затем введите цены для всех типов клиентов",
+      "recalculationStepHint": "Выберите бренд и тип металла, затем добавьте цены шагов для стандартных клиентов (Шаг 1, Шаг 2 и т.д.)",
+      "standardRecalculation": "Стандартный тип клиента создаёт шаг перерасчёта вместо обычной цены на бренд.",
+      "formHint": "Для стандартного типа клиента введённая цена становится шагом перерасчёта."
+    },
+    "recalculateStepLabel": "Шаг {{step}}:",
+    "noRecalculateSteps": "Нет шагов",
+    "unknownCustomerType": "Неизвестный тип клиента",
+    "noRecalculateSteps": "Нет шагов",
     "error": {
       "failedToCreateCarModel": "Не удалось создать модель автомобиля",
+      "pricePerKgGreaterThanZero": "Цена за кг должна быть больше нуля",
+      "standardPriceGreaterThanZero": "Стандартная цена должна быть больше нуля",
+      "vipPriceGreaterThanZero": "VIP цена должна быть больше нуля",
       "failedToUpdateCarModel": "Не удалось обновить модель автомобиля",
       "failedToDeleteCarModel": "Не удалось удалить модель автомобиля",
       "failedToCreateIronType": "Не удалось создать тип металла",
       "failedToUpdateIronType": "Не удалось обновить тип металла",
       "failedToCreateIronPrice": "Не удалось создать цену металла",
+      "failedToDeleteIronPrice": "Не удалось удалить цену металла",
       "failedToCreateRecalculationPrice": "Не удалось добавить цену перерасчёта",
+      "failedToCreateRecalculationStep": "Не удалось добавить шаг перерасчёта",
       "failedToUpdateIronPrices": "Не удалось обновить цены металла",
+      "codeRequired": "Требуется код",
+      "translationRequired": "Требуется как минимум один перевод",
       "selectCarModel": "Сначала выберите модель автомобиля",
-      "selectIronType": "Сначала выберите тип металла"
+      "selectIronType": "Сначала выберите тип металла",
+      "selectAtLeastOnePrice": "Пожалуйста, введите цену хотя бы для одного типа клиента",
+      "basePriceAlreadyExists": "Базовая цена уже существует для этой комбинации Бренда + Типа металла + Типа клиента"
     }
   },
   "cashRegisters": {
@@ -1985,10 +2057,18 @@
     },
     "ironCarShop": {
       "carModel": "Модель машины",
+      "brand": "Бренд",
       "price": "Цена",
       "calculate": "Рассчитать",
-      "selectCustomerToCalculate": "Перед выполнением расчета найдите или создайте клиента."
+      "selectCustomerToCalculate": "Перед выполнением расчета найдите или создайте клиента.",
+      "failedToLoadIronTypes": "Не удалось загрузить типы металла",
+      "calculationResult": "Результат расчёта",
+      "lineFormat": "{{name}} {{weight}} кг × {{price}} AMD = {{total}} AMD",
+      "total": "Итого",
+      "recalculate": "Пересчитать",
+      "stepLabel": "Шаг {{step}}"
     },
+    "offerFinished": "Достигнута последняя ставка",
     "calculate": {
       "mode": {
         "byCode": "По коду",

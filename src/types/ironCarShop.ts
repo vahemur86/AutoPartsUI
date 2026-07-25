@@ -29,6 +29,15 @@ export interface BulkPurchaseItem {
   weightKg: number;
 }
 
+export interface PurchaseIronApiPayload {
+  dictBrandId: number;
+  ironTypeId: number;
+  customerPhone: string;
+  customerTypeId: number;
+  weightKg: number;
+  notes: string;
+}
+
 export interface PurchaseIronPayload {
   customerId: number;
   ironTypeId: number;
@@ -105,6 +114,43 @@ export interface CarModelPayload {
 export interface GetIronSalesParams {
   customerId?: number;
   lang?: string;
+}
+
+export interface GetIronPurchasesReportParams {
+  from?: string;
+  to?: string;
+  dictBrandId?: number;
+  ironTypeId?: number;
+  operatorUserId?: number;
+  sessionId?: number;
+  customerPhone?: string;
+  page?: number;
+  pageSize?: number;
+  lang?: string;
+}
+
+export interface IronPurchasesReportItem {
+  purchaseId?: number;
+  id?: number;
+  dictBrandId?: number;
+  brandName?: string;
+  ironTypeId?: number;
+  ironTypeName?: string;
+  operatorUserId?: number;
+  sessionId?: number;
+  customerPhone?: string;
+  customerTypeId?: number;
+  weightKg?: number;
+  pricePerKg?: number;
+  totalAmount?: number;
+  purchasedAt?: string;
+}
+
+export interface IronPurchasesReportResponse {
+  items: IronPurchasesReportItem[];
+  totalItems: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface RecalculateStepPayload {

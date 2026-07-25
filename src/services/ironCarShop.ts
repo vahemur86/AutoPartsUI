@@ -2,7 +2,7 @@
 import api from ".";
 
 // utils
-import { getApiErrorMessage, getHeaders } from "@/utils";
+import { getApiErrorMessage, getHeaders, mapI18nCodeToApiCode } from "@/utils";
 
 // types
 import type {
@@ -10,32 +10,43 @@ import type {
   IronType,
   IronTypeByCar,
   IronPricesResponse,
-  BulkPurchasePayload,
+  PurchaseIronApiPayload,
   PurchaseIronResponse,
   IronPrice,
   AddIronPricePayload,
   CarModelPayload,
   GetIronSalesParams,
+  GetIronPurchasesReportParams,
+  IronPurchasesReportResponse,
   RecalculateStepPayload,
   RecalculatePayload,
   RecalculateResponse,
   UpdateIronTypePricesPayload,
 } from "@/types/ironCarShop";
 
-const BASE_URL = "/admin/carmodels";
+const BASE_URL = "/admin/iron-shop";
 
-const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
+const formatLang = (lang: string) => mapI18nCodeToApiCode(lang);
 
 export const getCarModels = async (
   cashRegisterId: number,
   lang: string = "en",
 ): Promise<CarModel[]> => {
   try {
-    const response = await api.get(`${BASE_URL}/GetCarModels`, {
+    const response = await api.get(`${BASE_URL}/brands`, {
       params: { lang: formatLang(lang) },
       headers: getHeaders(cashRegisterId),
     });
-    return response.data;
+
+    const items = Array.isArray(response.data) ? response.data : [];
+    const translationKey = mapI18nCodeToApiCode(lang);
+
+    // Normalize items to ensure a `name` field is available for the UI
+    return items.map((it: any) => ({
+      id: it.id,
+      name:
+        it.name || (it.translations && it.translations[translationKey]) || it.code || "",
+    }));
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch car models."));
   }
@@ -75,6 +86,27 @@ export const getIronTypesByCar = async (
     throw new Error(
       getApiErrorMessage(error, "Failed to fetch iron types by car."),
     );
+  }
+};
+
+export const getAvailableIronTypes = async (
+  dictBrandId: number,
+  customerTypeId: number,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<any[]> => {
+  try {
+    const response = await api.get(`${BASE_URL}/available-types`, {
+      params: { 
+        dictBrandId, 
+        customerTypeId,
+        lang: formatLang(lang) 
+      },
+      headers: getHeaders(cashRegisterId),
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch available iron types."));
   }
 };
 
@@ -119,19 +151,17 @@ export const recalculateIron = async (
   }
 };
 
-export const bulkPurchaseIron = async (
-  payload: BulkPurchasePayload,
+export const purchaseIron = async (
+  payload: PurchaseIronApiPayload,
   cashRegisterId: number,
-  lang: string = "en",
-): Promise<PurchaseIronResponse[]> => {
+): Promise<PurchaseIronResponse> => {
   try {
-    const response = await api.post(`${BASE_URL}/BulkPurchase`, payload, {
-      params: { lang: formatLang(lang) },
+    const response = await api.post(`${BASE_URL}/purchase`, payload, {
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, "Failed bulk purchase."));
+    throw new Error(getApiErrorMessage(error, "Failed to submit purchase."));
   }
 };
 
@@ -153,13 +183,32 @@ export const getIronSales = async (
   }
 };
 
+export const getIronPurchasesReport = async (
+  params: GetIronPurchasesReportParams,
+  cashRegisterId: number,
+): Promise<IronPurchasesReportResponse> => {
+  try {
+    const response = await api.get(`${BASE_URL}/reports/purchases`, {
+      params: {
+        ...params,
+        lang: params.lang ? formatLang(params.lang) : undefined,
+      },
+      headers: getHeaders(cashRegisterId),
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch iron purchases report."));
+  }
+};
+
 export const addCarModel = async (
   payload: CarModelPayload,
   cashRegisterId: number,
   lang: string = "en",
 ): Promise<CarModel> => {
   try {
-    const response = await api.post(`${BASE_URL}/AddCarModel`, payload, {
+    const response = await api.post(`${BASE_URL}/iron-types`, payload, {
       params: { lang: formatLang(lang) },
       headers: getHeaders(cashRegisterId),
     });
@@ -203,53 +252,6 @@ export const addIronPrice = async (
     });
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to add iron price."));
-  }
-};
-
-export const updateIronType = async (
-  id: number,
-  payload: { code: string; translations: Record<string, string> },
-  cashRegisterId: number,
-  lang: string = "en",
-): Promise<IronType> => {
-  try {
-    const response = await api.put(`/admin/carmodels/iron-types/${id}`, payload, {
-      params: { lang: formatLang(lang) },
-      headers: getHeaders(cashRegisterId),
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error, "Failed to update iron type."));
-  }
-};
-
-export const updateCarModel = async (
-  id: number,
-  payload: { code: string; translations: Record<string, string> },
-  cashRegisterId: number,
-  lang: string = "en",
-): Promise<CarModel> => {
-  try {
-    const response = await api.put(`${BASE_URL}/car-models/${id}`, payload, {
-      params: { lang: formatLang(lang) },
-      headers: getHeaders(cashRegisterId),
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error, "Failed to update car model."));
-  }
-};
-
-export const updateIronTypePrices = async (
-  payload: UpdateIronTypePricesPayload,
-  cashRegisterId: number,
-): Promise<void> => {
-  try {
-    await api.put(`${BASE_URL}/UpdateIronTypesPrices`, payload, {
-      headers: getHeaders(cashRegisterId),
-    });
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error, "Failed to update iron prices."));
   }
 };
 
@@ -306,6 +308,53 @@ export const getIronPrices = async (
       : (response.data.items ?? []);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch iron prices."));
+  }
+};
+
+export const updateCarModel = async (
+  id: number,
+  payload: CarModelPayload,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<CarModel> => {
+  try {
+    const response = await api.put(`${BASE_URL}/iron-types/${id}`, payload, {
+      params: { lang: formatLang(lang) },
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to update car model."));
+  }
+};
+
+export const updateIronType = async (
+  id: number,
+  payload: CarModelPayload,
+  cashRegisterId: number,
+  lang: string = "en",
+): Promise<IronType> => {
+  try {
+    const response = await api.put(`${BASE_URL}/UpdateIronType/${id}`, payload, {
+      params: { lang: formatLang(lang) },
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to update iron type."));
+  }
+};
+
+export const updateIronTypePrices = async (
+  payload: UpdateIronTypePricesPayload,
+  cashRegisterId: number,
+): Promise<void> => {
+  try {
+    await api.post(`${BASE_URL}/UpdateIronTypePrices`, payload, {
+      headers: getHeaders(cashRegisterId),
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to update iron prices."));
   }
 };
 

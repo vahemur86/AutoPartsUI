@@ -1,7 +1,7 @@
 import api from ".";
 
 // utils
-import { getApiErrorMessage, getHeaders } from "@/utils";
+import { getApiErrorMessage, getHeaders, mapI18nCodeToApiCode } from "@/utils";
 
 // types
 import type {
@@ -12,8 +12,6 @@ import type {
 } from "@/types/adminProducts";
 
 const BASE_URL = "/admin";
-
-const formatLang = (lang: string) => (lang === "am" ? "arm" : lang);
 
 export const buyIron = async (
   payload: BuyIronPayload,
@@ -57,7 +55,7 @@ export const getIronProducts = async ({
 }) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron`, {
-      params: { lang: formatLang(lang) },
+      params: { lang: mapI18nCodeToApiCode(lang) },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -77,7 +75,7 @@ export const getIronDropdown = async ({
 }) => {
   try {
     const response = await api.get(`${BASE_URL}/products/iron-dropdown`, {
-      params: { lang: formatLang(lang) },
+      params: { lang: mapI18nCodeToApiCode(lang) },
       headers: getHeaders(cashRegisterId),
     });
     return response.data;
@@ -98,7 +96,7 @@ export const createOrderLine = async (
       `${BASE_URL}/products/order-line`,
       payload,
       {
-        params: { lang: formatLang(lang) },
+        params: { lang: mapI18nCodeToApiCode(lang) },
         headers: getHeaders(cashRegisterId),
       },
     );
@@ -116,7 +114,7 @@ export const getIronPurchases = async (
     const response = await api.get(`${BASE_URL}/products/GetIronPurchases`, {
       params: {
         ...params,
-        ...(params.lang != null && { lang: formatLang(params.lang) }),
+        ...(params.lang != null && { lang: mapI18nCodeToApiCode(params.lang) }),
       },
       headers: getHeaders(cashRegisterId),
     });

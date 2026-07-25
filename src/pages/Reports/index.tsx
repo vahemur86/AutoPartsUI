@@ -62,6 +62,12 @@ export const Reports = () => {
       showCheckmark: true,
     },
     {
+      path: "/iron-purchases",
+      label: t("reports.navigation.ironPurchases"),
+      icon: ShoppingCart,
+      showCheckmark: true,
+    },
+    {
       path: "/workshop-orders",
       label: t("reports.navigation.workshopOrders"),
       icon: ShoppingCart,

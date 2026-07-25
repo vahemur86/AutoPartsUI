@@ -287,6 +287,9 @@ export const OperatorPage = () => {
                       isRecalculationsLimitReached={
                         !!selectors.ironCarShop.recalculationResult?.isLastStep
                       }
+                      ironItems={selectors.ironCarShop.ironPrices}
+                      ironTotals={selectors.ironCarShop.ironTotals ?? undefined}
+                      recalculationResult={selectors.ironCarShop.recalculationResult}
                       onReset={() =>
                         setUiState((prev) => ({
                           ...prev,
@@ -396,13 +399,16 @@ export const OperatorPage = () => {
           onOpenChange={(v) =>
             setUiState((p) => ({ ...p, isRejectConfirmationOpen: v }))
           }
-          title={t("finalOffer.rejectButton")}
+          title={
+            activeTab === "iron"
+              ? t("operatorPage.ironCarShop.cancelPurchase")
+              : t("finalOffer.rejectButton")
+          }
           description={t("common.areYouSure")}
           confirmText={t("common.confirm")}
           cancelText={t("common.cancel")}
           onConfirm={() => {
             actions.handleConfirmReject();
-            actions.handleResetForm();
             setHasTriedCalculateIron(false);
           }}
           onCancel={() =>

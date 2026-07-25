@@ -723,20 +723,23 @@ export const useOperator = () => {
   const handleBulkPurchase = async () => {
     const customer =
       selectors.operator.intake?.customer || selectors.customers.items[0];
-    if (!customer || selectors.ironCarShop.ironPrices.length === 0) return;
+    const brandId = selectors.ironCarShop.selectedBrandId;
+    if (!customer || selectors.ironCarShop.ironPrices.length === 0 || !brandId) return;
+
+    const purchases = selectors.ironCarShop.ironPrices.map((item) => ({
+      dictBrandId: brandId,
+      ironTypeId: item.ironTypeId,
+      customerPhone: customer.phone || "",
+      customerTypeId: customer.customerTypeId,
+      weightKg: item.weightKg,
+      notes: "",
+    }));
+
     try {
       await dispatch(
         submitBulkPurchase({
-          payload: {
-            customerId: customer.id,
-            customerTypeId: customer.customerTypeId,
-            items: selectors.ironCarShop.ironPrices.map((item) => ({
-              ironTypeId: item.ironTypeId,
-              weightKg: item.weightKg,
-            })),
-          },
+          payload: purchases,
           cashRegisterId: userData?.cashRegisterId,
-          lang: i18n.language,
         }),
       ).unwrap();
       toast.success(t("operatorPage.success.purchaseCompleted"));
