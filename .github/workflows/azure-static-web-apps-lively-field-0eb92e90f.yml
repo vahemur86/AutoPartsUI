@@ -24,6 +24,12 @@ jobs:
           submodules: true
           lfs: false
 
+      - name: Update Yarn
+        run: npm install -g yarn@1.22.22
+
+      - name: Install Dependencies
+        run: yarn install
+
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
 
