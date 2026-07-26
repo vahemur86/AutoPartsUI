@@ -651,6 +651,26 @@ export interface VehicleBestProgrammerPricingService {
   bestProgrammerProfit: number | null;
 }
 
+export interface ProgrammerReportByServiceItem {
+  serviceEstimateId: number;
+  serviceId: number;
+  serviceName: string;
+  timesPerformed: number;
+  totalProgrammerCost: number;
+}
+
+export interface ProgrammerReportResponse {
+  programmerUserId: number | null;
+  employeeId: number;
+  from: string | null;
+  to: string | null;
+  totalServicesPerformed: number;
+  totalProgrammerCost: number;
+  totalPaidToProgrammer: number;
+  remainingToPay: number;
+  byService: ProgrammerReportByServiceItem[];
+}
+
 export interface VehicleBestProgrammerPricingResponse {
   vehicleDefinitionId: number;
   vehicleName: string;

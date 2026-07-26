@@ -5,6 +5,7 @@ import type {
   AddProgrammingPricingPayload,
   ProgrammingPricingEntry,
   ProgrammingServiceItem,
+  ProgrammerReportResponse,
   UpdateProgrammingAdminSellingPricePayload,
   UpdateProgrammingMyCostPayload,
   VehicleBestProgrammerPricingResponse,
@@ -241,5 +242,23 @@ export const getVehiclePricingWithBestProgrammer = async (
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to load vehicle pricing."));
+  }
+};
+
+export const getMyProgrammerReport = async (params?: {
+  from?: string;
+  to?: string;
+}): Promise<ProgrammerReportResponse> => {
+  try {
+    const response = await api.post("/admin/reports/programmer", {
+      programmerUserId: 0,
+      employeeId: 0,
+      ...(params?.from ? { from: params.from } : {}),
+      ...(params?.to ? { to: params.to } : {}),
+    });
+
+    return response.data as ProgrammerReportResponse;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to load programmer report."));
   }
 };

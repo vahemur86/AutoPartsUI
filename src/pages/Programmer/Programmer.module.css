@@ -210,6 +210,20 @@
   margin-bottom: 12px;
 }
 
+.reportSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.summaryCard {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .summaryLabel {
   margin: 0;
   font-size: 12px;
@@ -277,7 +291,8 @@
   }
 
   .filtersGrid,
-  .formGrid {
+  .formGrid,
+  .reportSummaryGrid {
     grid-template-columns: 1fr;
   }
 

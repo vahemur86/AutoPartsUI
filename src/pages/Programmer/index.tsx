@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import {
   addProgrammingPricing,
+  getMyProgrammerReport,
   getMyProgrammingPricing,
   getProgrammingServices,
   getVehicleDefinitionLookups,
@@ -29,13 +30,15 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import type {
   ProgrammingPricingEntry,
   ProgrammingServiceItem,
+  ProgrammerReportResponse,
   VehicleDefinitionLookups,
 } from "@/types/settings";
 import { mapApiCodeToI18nCode, mapI18nCodeToApiCode } from "@/utils/languageMapping";
 
 import styles from "./Programmer.module.css";
+import { normalizeProgrammerReport } from "./reportUtils";
 
-type ProgrammerTab = "add" | "entries";
+type ProgrammerTab = "add" | "entries" | "report";
 
 const defaultLookups: VehicleDefinitionLookups = {
   brands: [],
@@ -63,6 +66,8 @@ export const ProgrammerPage = () => {
   const [lookups, setLookups] = useState<VehicleDefinitionLookups>(defaultLookups);
   const [services, setServices] = useState<ProgrammingServiceItem[]>([]);
   const [myEntries, setMyEntries] = useState<ProgrammingPricingEntry[]>([]);
+  const [report, setReport] = useState<ProgrammerReportResponse | null>(null);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
 
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -171,6 +176,25 @@ export const ProgrammerPage = () => {
           ? error.message
           : t("programmerPage.messages.refreshFailed"),
       );
+    }
+  };
+
+  const loadReport = async () => {
+    setIsLoadingReport(true);
+    try {
+      const reportData = await getMyProgrammerReport({
+        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        to: new Date().toISOString(),
+      });
+      setReport(normalizeProgrammerReport(reportData));
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("programmerPage.messages.reportFailed"),
+      );
+    } finally {
+      setIsLoadingReport(false);
     }
   };
 
@@ -424,6 +448,17 @@ export const ProgrammerPage = () => {
           active={activeTab === "entries"}
           text={t("programmerPage.tabs.entries")}
           onClick={() => setActiveTab("entries")}
+        />
+        <Tab
+          variant="underline"
+          active={activeTab === "report"}
+          text={t("programmerPage.tabs.report")}
+          onClick={() => {
+            setActiveTab("report");
+            if (!report) {
+              void loadReport();
+            }
+          }}
         />
       </div>
 
@@ -700,6 +735,63 @@ export const ProgrammerPage = () => {
           </TableBody>
         </Table>
       </section>
+      )}
+
+      {activeTab === "report" && (
+        <section className={styles.tableSection}>
+          <div className={styles.tableHeaderRow}>
+            <h2 className={styles.cardTitle}>{t("programmerPage.sections.report")}</h2>
+            <Button variant="secondary" onClick={() => void loadReport()} disabled={isLoadingReport}>
+              {isLoadingReport ? t("programmerPage.actions.saving") : t("common.refresh")}
+            </Button>
+          </div>
+
+          <div className={styles.reportSummaryGrid}>
+            <div className={styles.summaryCard}>
+              <p className={styles.summaryLabel}>{t("programmerPage.table.timesPerformed")}</p>
+              <p className={styles.summaryValue}>{report?.totalServicesPerformed ?? 0}</p>
+            </div>
+            <div className={styles.summaryCard}>
+              <p className={styles.summaryLabel}>{t("programmerPage.table.programmerCost")}</p>
+              <p className={styles.summaryValue}>{formatMoney(report?.totalProgrammerCost ?? 0)}</p>
+            </div>
+            <div className={styles.summaryCard}>
+              <p className={styles.summaryLabel}>{t("programmerPage.table.paid")}</p>
+              <p className={styles.summaryValue}>{formatMoney(report?.totalPaidToProgrammer ?? 0)}</p>
+            </div>
+            <div className={styles.summaryCard}>
+              <p className={styles.summaryLabel}>{t("programmerPage.table.remaining")}</p>
+              <p className={styles.summaryValue}>{formatMoney(report?.remainingToPay ?? 0)}</p>
+            </div>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableCell asHeader>{t("programmerPage.table.service")}</TableCell>
+                <TableCell asHeader>{t("programmerPage.table.timesPerformed")}</TableCell>
+                <TableCell asHeader>{t("programmerPage.table.programmerCost")}</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {report?.byService?.length ? (
+                report.byService.map((item) => (
+                  <TableRow key={`${item.serviceId}-${item.serviceEstimateId}`}>
+                    <TableCell>{item.serviceName}</TableCell>
+                    <TableCell>{item.timesPerformed}</TableCell>
+                    <TableCell>{formatMoney(item.totalProgrammerCost)}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} className={styles.emptyTableCell}>
+                    {t("programmerPage.states.noReport")}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </section>
       )}
 
       <ConfirmationModal

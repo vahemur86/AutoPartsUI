@@ -2781,11 +2781,13 @@
     "sections": {
       "vehicleLookup": "1. Select Vehicle Parameters",
       "createPricing": "2. Create Programming Price",
-      "myEntries": "My Programming Entries"
+      "myEntries": "My Programming Entries",
+      "report": "My Work Report"
     },
     "tabs": {
       "add": "Add",
-      "entries": "My Programming Entries"
+      "entries": "My Programming Entries",
+      "report": "Report"
     },
     "user": {
       "username": "Logged in as"
@@ -2836,7 +2838,8 @@
       "noVehicleLoaded": "No vehicle loaded yet.",
       "noVehicleSelected": "No vehicle selected",
       "resolvingVehicle": "Resolving vehicle by selected parameters...",
-      "noEntries": "No programming entries found for your account."
+      "noEntries": "No programming entries found for your account.",
+      "noReport": "No report data is available yet."
     },
     "table": {
       "vehicle": "Vehicle",
@@ -2844,11 +2847,16 @@
       "myServiceCost": "My Service Cost",
       "sellingPrice": "Selling Price",
       "profit": "Profit",
-      "updatedAt": "Updated At"
+      "updatedAt": "Updated At",
+      "timesPerformed": "Times Performed",
+      "programmerCost": "Programmer Cost",
+      "paid": "Paid",
+      "remaining": "Remaining"
     },
     "messages": {
       "loadDataFailed": "Failed to load data.",
       "refreshFailed": "Failed to refresh entries.",
+      "reportFailed": "Failed to load the report.",
       "noVehiclesMatched": "No vehicles matched current filters.",
       "vehicleSearchFailed": "Vehicle search failed.",
       "selectVehicleAndService": "Please select both vehicle and programming service.",
