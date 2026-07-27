@@ -31,6 +31,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build Vite app
+        env:
+          VITE_API_URL: https://prpservice05-g6chfkhxgzducefh.canadacentral-01.azurewebsites.net
         run: yarn build
 
       - name: Copy Static Web App config
@@ -55,7 +57,7 @@ jobs:
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
-    name: Close Pull Request Job
+    name: Close Pull Request
 
     steps:
       - name: Close Pull Request
