@@ -20,8 +20,9 @@ import styles from "./CarCatalyst.module.css";
 import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
 import { Copy, ExternalLink, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getYearOptions } from "./yearOptions";
 
-type UICompositionType = 0 | 1 | 2;
+type UICompositionType = 0 | 1 | 2 | 3;
 
 interface UIComposition {
   id: string;
@@ -59,7 +60,6 @@ const emptyBucket = (side: number): UIBucket => ({
 
 const sanitizeNumericInput = (value: string) =>
   value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-const sanitizeIntegerInput = (value: string) => value.replace(/[^0-9]/g, "");
 
 const shouldShowMetalFields = (type: number) => type !== 1;
 
@@ -86,6 +86,7 @@ export const CarCatalystPage = () => {
 
   const [frontBuckets, setFrontBuckets] = useState<UIBucket[]>([]);
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
+  const yearOptions = getYearOptions();
 
   useEffect(() => {
     const load = async () => {
@@ -436,6 +437,9 @@ export const CarCatalystPage = () => {
                       <option value={2}>
                         {t("carCatalyst.table.compositionTypes.filter")}
                       </option>
+                      <option value={3}>
+                        {t("carCatalyst.table.compositionTypes.diesel")}
+                      </option>
                     </Select>
 
                     <TextField
@@ -589,6 +593,8 @@ export const CarCatalystPage = () => {
         <Select
           label={t("carCatalyst.fields.brand")}
           value={brandId}
+          searchable
+          searchPlaceholder={t("common.search")}
           onChange={(e) => handleBrandChange(e.target.value)}
         >
           <option value="">{t("carCatalyst.fields.selectBrand")}</option>
@@ -602,6 +608,8 @@ export const CarCatalystPage = () => {
         <Select
           label={t("carCatalyst.fields.model")}
           value={modelId}
+          searchable
+          searchPlaceholder={t("common.search")}
           onChange={(e) =>
             setModelId(e.target.value === "" ? "" : Number(e.target.value))
           }
@@ -617,6 +625,8 @@ export const CarCatalystPage = () => {
         <Select
           label={t("carCatalyst.fields.birka")}
           value={birkaId}
+          searchable
+          searchPlaceholder={t("common.search")}
           onChange={(e) =>
             setBirkaId(e.target.value === "" ? "" : Number(e.target.value))
           }
@@ -629,24 +639,28 @@ export const CarCatalystPage = () => {
           ))}
         </Select>
 
-        <TextField
+        <Select
           label={t("carCatalyst.fields.year")}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
           value={year}
+          searchable
+          searchPlaceholder={t("common.search")}
           onChange={(e) =>
-            setYear(
-              e.target.value === ""
-                ? ""
-                : Number(sanitizeIntegerInput(e.target.value)),
-            )
+            setYear(e.target.value === "" ? "" : Number(e.target.value))
           }
-        />
+        >
+          <option value="">{t("carCatalyst.fields.selectYear")}</option>
+          {yearOptions.map((optionYear) => (
+            <option key={optionYear} value={optionYear}>
+              {optionYear}
+            </option>
+          ))}
+        </Select>
 
         <Select
           label={t("carCatalyst.fields.country")}
           value={country}
+          searchable
+          searchPlaceholder={t("common.search")}
           onChange={(e) =>
             setCountry(e.target.value === "" ? "" : Number(e.target.value))
           }
@@ -662,6 +676,8 @@ export const CarCatalystPage = () => {
         <Select
           label={t("carCatalyst.fields.engine")}
           value={engineId}
+          searchable
+          searchPlaceholder={t("common.search")}
           onChange={(e) =>
             setEngineId(e.target.value === "" ? "" : Number(e.target.value))
           }

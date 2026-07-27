@@ -2428,7 +2428,8 @@
       "selectModel": "Ընտրեք մոդելը",
       "selectBirka": "Ընտրեք բիրկան",
       "selectCountry": "Ընտրեք երկիր",
-      "selectEngine": "Ընտրեք շարժիչ"
+      "selectEngine": "Ընտրեք շարժիչ",
+      "selectYear": "Ընտրեք տարի"
     },
 
     "actions": {
@@ -2454,7 +2455,8 @@
       "compositionTypes": {
         "ceramic": "Կերամիկա",
         "iron": "Երկաթ",
-        "filter": "Ֆիլտր"
+        "filter": "Ֆիլտր",
+        "diesel": "Դիզել"
       }
     },
 

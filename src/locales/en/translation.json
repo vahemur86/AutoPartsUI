@@ -2663,7 +2663,8 @@
       "selectModel": "Select model",
       "selectBirka": "Select Birka",
       "selectCountry": "Select country",
-      "selectEngine": "Select engine"
+      "selectEngine": "Select engine",
+      "selectYear": "Select year"
     },
 
     "actions": {
@@ -2689,7 +2690,8 @@
       "compositionTypes": {
         "ceramic": "Ceramic",
         "iron": "Iron",
-        "filter": "Filter"
+        "filter": "Filter",
+        "diesel": "Diesel"
       }
     },
 

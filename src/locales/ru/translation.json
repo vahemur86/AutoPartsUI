@@ -2658,7 +2658,8 @@
       "selectModel": "Выберите модель",
       "selectBirka": "Выберите бирку",
       "selectCountry": "Выберите страну",
-      "selectEngine": "Выберите двигатель"
+      "selectEngine": "Выберите двигатель",
+      "selectYear": "Выберите год"
     },
 
     "actions": {
@@ -2684,7 +2685,8 @@
       "compositionTypes": {
         "ceramic": "Керамика",
         "iron": "Железо",
-        "filter": "Фильтр"
+        "filter": "Фильтр",
+        "diesel": "Дизель"
       }
     },
 
