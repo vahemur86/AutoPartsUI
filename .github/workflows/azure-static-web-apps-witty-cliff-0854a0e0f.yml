@@ -3,12 +3,12 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - main
+      - Production
 
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
-      - main
+      - Production
 
 jobs:
   build_and_deploy_job:
@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
@@ -29,16 +31,20 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build Vite app
+        env:
+          VITE_API_URL: https://prpservice05-g6chfkhxgzducefh.canadacentral-01.azurewebsites.net
         run: yarn build
 
-      - name: Copy static web app config
+      - name: Copy Static Web App config
         run: |
-          if [ -f staticwebapp.config.json ]; then cp staticwebapp.config.json dist/; fi
+          if [ -f staticwebapp.config.json ]; then
+            cp staticwebapp.config.json dist/
+          fi
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_WATER_08340B30F }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WITTY_CLIFF_0854A0E0F }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
 
@@ -51,11 +57,11 @@ jobs:
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
-    name: Close Pull Request Job
+    name: Close Pull Request
 
     steps:
       - name: Close Pull Request
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_WATER_08340B30F }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WITTY_CLIFF_0854A0E0F }}
           action: close
