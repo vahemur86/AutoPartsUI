@@ -1,0 +1,2877 @@
+﻿{
+  "header": {
+    "dashboard": "Панель",
+    "operations": "Операции",
+    "administration": "Администрирование",
+    "analytics": "Аналитика",
+    "notifications": "Уведомления",
+    "settings": "Настройки",
+    "locations": "Подразделения организации",
+    "warehouses": "Склады",
+    "shops": "Магазины",
+    "products": "Товары",
+    "users": "Управление пользователями",
+    "customers": "Клиенты",
+    "logout": "Выйти",
+    "userMenu": "Меню пользователя",
+    "today": "Сегодня",
+    "exchangeRate": "Курс валют",
+    "language": "Язык",
+    "languageLoading": "Загрузка языков...",
+    "useGlobalDefault": "Использовать общий язык",
+    "reports": "Отчеты",
+    "financeReports": "Финансы и отчеты",
+    "calculator": "Калькулятор",
+    "workshop": "Мастерская",
+    "carCatalyst": "Баки"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "deleting": "Удаление...",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "update": "Обновить",
+    "actions": "Действия",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "enabled": "Включено",
+    "yes": "Да",
+    "no": "Нет",
+    "filters": "Фильтры",
+    "reset": "Сбросить",
+    "refresh": "Обновить",
+    "search": "Поиск",
+    "noName": "Без названия",
+    "front": "Передний",
+    "back": "Задний",
+    "unknown": "Неизвестно",
+    "noOptionsAvailable": "Нет доступных вариантов",
+    "previous": "Предыдущая",
+    "next": "Следующая",
+    "page": "Страница",
+    "of": "из",
+    "close": "Закрыть",
+    "areYouSure": "Вы уверены, что хотите продолжить?",
+    "loading": "Загрузка...",
+    "noData": "Данные отсутствуют",
+    "select": "Выберите",
+    "apply": "Применить",
+    "all": "Все",
+    "correct": "Корректировка",
+    "createdAt": "Дата создания",
+    "details": "Детали",
+    "buy": "Купить",
+    "total": "Итого",
+    "gender": {
+      "unknown": "Неизвестно",
+      "male": "Мужской",
+      "female": "Женский"
+    },
+    "error": {
+      "missingData": "Отсутствуют необходимые данные (ID кассы)"
+    },
+    "amount": "Сумма",
+    "comment": "Комментарий",
+    "noComment": "Нет комментария",
+    "date": "Дата",
+    "confirm": "Подтвердить",
+    "warning": "Предупреждение",
+    "copy": "Копировать"
+  },
+  "currencies": {
+    "USD": "Доллар США",
+    "EUR": "Евро",
+    "RUB": "Российский рубль",
+    "AMD": "Армянский драм"
+  },
+  "actions": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "activate": "Активировать",
+    "deactivate": "Деактивировать"
+  },
+  "settings": {
+    "navigation": {
+      "projectLanguages": "Языки проекта",
+      "pageControl": "Управление страницами",
+      "translation": "Перевод",
+      "warehouse": "Склад",
+      "shops": "Магазины",
+      "offerIncreaseOptions": "Варианты увеличения предложения",
+      "productSettings": "Настройки товаров",
+      "vehicleManagement": "Управление транспортными средствами",
+      "serviceTasks": "Сервисные задачи",
+      "tags": "Теги",
+      "metalRates": "Курсы металлов",
+      "catalystBuckets": "Коды",
+      "catalystPricing": "Ценообразование катализатора",
+      "carCatalyst": "Баки",
+      "customerTypes": "Типы клиентов",
+      "exchangeRates": "Курсы валют",
+      "cashRegisters": "Кассовые аппараты",
+      "ironManagement": "Управление металлоломом",
+      "salePercentages": "Проценты продаж"
+    },
+    "otherExpenses": {
+      "fields": {
+        "entityType": "Тип объекта",
+        "entity": "Магазин / Склад",
+        "name": "Название расхода",
+        "price": "Сумма",
+        "paymentDay": "День оплаты"
+      },
+      "placeholders": {
+        "name": "Введите название расхода",
+        "price": "Введите сумму",
+        "paymentDay": "Введите день месяца"
+      },
+      "entityTypes": {
+        "shop": "Магазин",
+        "warehouse": "Склад"
+      },
+      "columns": {
+        "name": "Название",
+        "entityType": "Тип",
+        "entity": "Объект",
+        "price": "Сумма",
+        "paymentDay": "День оплаты"
+      },
+      "confirmation": {
+        "deleteTitle": "Удалить расход",
+        "deleteDescription": "Вы уверены, что хотите удалить расход {{name}}?"
+      },
+      "validation": {
+        "nameRequired": "Введите название расхода",
+        "entityRequired": "Выберите магазин или склад",
+        "priceRequired": "Введите корректную сумму",
+        "paymentDayRequired": "Введите корректный день оплаты от 1 до 31"
+      },
+      "success": {
+        "created": "Расход успешно создан",
+        "updated": "Расход успешно обновлен",
+        "deleted": "Расход успешно удален"
+      },
+      "error": {
+        "loadFailed": "Не удалось загрузить расходы",
+        "saveFailed": "Не удалось сохранить расход",
+        "deleteFailed": "Не удалось удалить расход"
+      }
+    }
+  },
+  "tags": {
+    "addTag": "Добавить тег",
+    "editTag": "Редактировать тег",
+    "form": {
+      "name": "Название тега",
+      "enterTagName": "Введите название тега",
+      "nameRequired": "Название тега обязательно"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить тег",
+      "deleteDescription": "Вы уверены, что хотите удалить тег {{name}}?",
+      "delete": "Удалить",
+      "deleting": "Удаление..."
+    },
+    "success": {
+      "created": "Тег успешно создан",
+      "updated": "Тег успешно обновлен",
+      "deleted": "Тег успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить теги",
+      "failedToCreate": "Не удалось создать тег",
+      "failedToUpdate": "Не удалось обновить тег",
+      "failedToDelete": "Не удалось удалить тег"
+    }
+  },
+  "offers": {
+    "selectShop": "Выберите магазин",
+    "shop": "Магазин",
+    "addOption": "Добавить",
+    "addNew": "Добавить новый",
+    "editOption": "Редактировать вариант",
+    "deleteOption": "Удалить вариант",
+    "increase": "Увеличение",
+    "loading": "Загрузка вариантов предложения...",
+    "emptyState": "Варианты предложения не найдены. Добавьте свой первый вариант.",
+    "status": {
+      "active": "Активен",
+      "inactive": "Неактивен"
+    },
+    "form": {
+      "percent": "Процент",
+      "active": "Активен"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить вариант предложения",
+      "deleteDescription": "Вы уверены, что хотите удалить вариант увеличения на {{percent}}%? Это действие нельзя отменить."
+    },
+    "success": {
+      "optionCreated": "Вариант предложения успешно создан",
+      "optionUpdated": "Вариант предложения успешно обновлен",
+      "optionDeleted": "Вариант предложения успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить варианты предложения",
+      "failedToSave": "Не удалось сохранить вариант предложения",
+      "failedToDelete": "Не удалось удалить вариант предложения"
+    }
+  },
+  "reports": {
+    "navigation": {
+      "zReports": "Z-отчеты",
+      "batchReports": "Отчеты по партиям",
+      "openSessions": "Открытые сессии",
+      "powderBatches": "Партии порошка",
+      "cashboxSessionsReports": "Отчеты по сессиям кассы",
+      "ironProducts": "Отчеты по железным изделиям",
+      "ironSale": "Отчеты по продажам железа",
+      "ironPurchases": "Отчеты по покупкам железа",
+      "workshopOrders": "Заказы мастерской",
+      "serviceTasks": "Платежи по сервисным задачам"
+    },
+    "ironPurchases": {
+      "filters": {
+        "dictBrandId": "ID бренда",
+        "ironTypeId": "ID типа железа",
+        "operatorUserId": "Оператор",
+        "sessionId": "ID сессии",
+        "customerPhone": "Телефон клиента",
+        "pageSize": "Размер страницы"
+      },
+      "columns": {
+        "purchaseId": "Покупка",
+        "dictBrandId": "ID бренда",
+        "brandName": "Бренд",
+        "ironTypeName": "Тип железа",
+        "operatorUserId": "Оператор",
+        "sessionId": "Сессия",
+        "customerPhone": "Телефон клиента",
+        "weightKg": "Вес",
+        "pricePerKg": "Цена/кг",
+        "totalAmount": "Итого",
+        "purchasedAt": "Дата покупки"
+      }
+    },
+    "workshopOrders": {
+      "loading": "Загрузка заказов мастерской...",
+      "columns": {
+        "id": "ID",
+        "templateId": "Шаблон",
+        "isManualMode": "Ручной режим",
+        "mechanicPrice": "Цена механика",
+        "electricianPrice": "Цена электрика",
+        "sparePartsPrice": "Цена запчастей",
+        "totalAmount": "Итого",
+        "comment": "Комментарий",
+        "operatorUserId": "Оператор",
+        "cashRegisterId": "Касса",
+        "sessionId": "Сессия",
+        "createdAt": "Создано"
+      }
+    },
+    "serviceTasks": {
+      "loading": "Загрузка платежей по сервисным задачам...",
+      "filters": {
+        "from": "Дата с",
+        "to": "Дата по",
+        "userId": "ID пользователя",
+        "paymentType": "Тип оплаты"
+      },
+      "columns": {
+        "paymentId": "ID платежа",
+        "createdAt": "Создано",
+        "createdByUserId": "Создал",
+        "totalAmount": "Итого",
+        "cashTotal": "Наличные итого",
+        "nonCashTotal": "Безналичные итого",
+        "serviceTaskCode": "Код услуги",
+        "price": "Цена",
+        "paymentType": "Тип оплаты"
+      },
+      "paymentTypes": {
+        "all": "Все",
+        "cash": "Наличные",
+        "nonCash": "Безналичные"
+      }
+    },
+    "ironProducts": {
+      "columns": {
+        "productId": "ID Продукта"
+      }
+    },
+    "ironSale": {
+      "loading": "Загрузка продаж железа...",
+      "filters": {
+        "customerId": "ID клиента"
+      },
+      "columns": {
+        "customerPhone": "Телефон клиента",
+        "ironTypeName": "Тип железа",
+        "pricePerKg": "Цена"
+      }
+    },
+    "filters": {
+      "fromUtc": "Дата с (UTC)",
+      "toUtc": "Дата по (UTC)",
+      "selectDate": "Выберите дату",
+      "operatorUserId": "Оператор",
+      "cashRegisterId": "Касса"
+    },
+    "errors": {
+      "failedToFetch": "Не удалось загрузить отчеты"
+    }
+  },
+  "financeReports": {
+    "navigation": {
+      "dashboard": "Дашборд",
+      "shopReports": "Отчеты магазина",
+      "serviceReports": "Отчеты по услугам",
+      "warehouseReports": "Складские отчеты",
+      "salesReports": "Отчеты по продажам",
+      "profitSummary": "Сводка прибыли",
+      "profitDetailed": "Детальная прибыль",
+      "saleProfit": "Прибыль по продажам",
+      "warehouseInventory": "Остатки склада",
+      "shopInventory": "Остатки магазина",
+      "otherExpenses": "Прочие расходы"
+    },
+    "otherExpenses": {
+      "monthlyTotal": "Прочие расходы за месяц",
+      "rowsCount": "Записи за месяц",
+      "empty": "За текущий месяц прочие расходы не найдены.",
+      "loadFailed": "Не удалось загрузить отчет по прочим расходам.",
+      "columns": {
+        "locationName": "Объект",
+        "name": "Название расхода",
+        "entityType": "Тип",
+        "price": "Сумма",
+        "paymentDay": "День оплаты",
+        "totalMonthlyExpense": "Итог за месяц"
+      },
+      "entityTypes": {
+        "shop": "Магазин",
+        "warehouse": "Склад"
+      }
+    },
+    "filters": {
+      "shop": "Магазин",
+        "otherExpenses": "Прочие расходы",
+      "selectShop": "Выберите магазин",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад",
+      "fromDate": "Дата с",
+      "toDate": "Дата по",
+      "saleId": "ID продажи",
+      "productId": "ID товара",
+      "productIdOptional": "ID товара (необязательно)"
+    },
+        "monthlyOtherExpenses": "Прочие расходы за месяц",
+        "monthlyNetProfit": "Чистая прибыль за месяц",
+    "actions": {
+        "todayNetProfit": "Чистая прибыль за сегодня",
+      "load": "Показать отчет"
+    },
+    "validation": {
+      "selectShop": "Пожалуйста, выберите магазин",
+      "selectWarehouse": "Пожалуйста, выберите склад",
+      "enterSaleId": "Пожалуйста, введите корректный ID продажи"
+      },
+      "otherExpenses": {
+        "empty": "Для дашборда нет прочих расходов.",
+        "paymentDay": "День оплаты"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить финансовые данные"
+    },
+    "empty": "Установите фильтры и нажмите «Показать отчет», чтобы увидеть данные.",
+    "dashboard": {
+      "empty": "Выберите фильтры и нажмите «Показать отчет», чтобы загрузить аналитику дашборда.",
+      "generatedAt": "Сформировано",
+      "filters": {
+        "warehouse": "Склад",
+        "allWarehouses": "Все склады",
+        "lowStockThreshold": "Порог низкого остатка",
+        "lowStockThresholdHelp": "Необязательно. Товары с количеством на уровне или ниже этого порога попадут в оповещения.",
+        "lowStockThresholdPlaceholder": "По умолчанию: 5"
+      },
+      "sections": {
+        "overview": "Оперативная сводка",
+        "lowStock": "Оповещения о низком остатке",
+        "outOfStock": "Оповещения об отсутствии товара",
+        "otherExpenses": "Прочие расходы"
+      },
+      "kpi": {
+        "todayRevenue": "Выручка за сегодня",
+        "todayProfit": "Прибыль за сегодня",
+        "todaySalesCount": "Продаж за сегодня",
+        "monthlyRevenue": "Выручка за месяц",
+        "monthlyProfit": "Прибыль за месяц",
+        "monthlySalesCount": "Продаж за месяц",
+        "totalProductRevenue": "Выручка по товарам",
+        "totalServiceRevenue": "Выручка по услугам",
+        "totalRevenue": "Общая выручка",
+        "lowStockAlertsCount": "Оповещения о низком остатке",
+        "outOfStockCount": "Оповещения об отсутствии товара",
+        "monthlyOtherExpenses": "Прочие расходы за месяц",
+        "monthlyNetProfit": "Чистая прибыль за месяц",
+        "todayNetProfit": "Чистая прибыль за сегодня",
+        "threshold": "Порог оповещений"
+      },
+      "charts": {
+        "revenueMix": "Структура выручки: товары vs услуги",
+        "performance": "Динамика выручки и прибыли",
+        "warehouseProfit": "Динамика прибыли склада",
+        "orderStatus": "Распределение статусов заказов",
+        "products": "Товары",
+        "services": "Услуги",
+        "pendingOrders": "В ожидании",
+        "completedOrders": "Завершено",
+        "today": "Сегодня",
+        "month": "Месяц",
+        "period": "Период",
+        "revenue": "Выручка",
+        "cost": "Себестоимость",
+        "profit": "Прибыль",
+        "noWarehouseProfit": "Нет данных по прибыли склада за выбранный период."
+      },
+      "columns": {
+        "productCode": "Код товара",
+        "productSku": "SKU товара",
+        "quantity": "Количество",
+        "salePrice": "Цена продажи",
+        "stockValue": "Стоимость остатка"
+      }
+    },
+    "shopReports": {
+      "empty": "Выберите магазин и диапазон дат, затем нажмите «Показать отчет», чтобы загрузить аналитику магазина.",
+      "filters": {
+        "take": "Количество топ-товаров",
+        "lowStockThreshold": "Порог низкого остатка",
+        "takeLabel": "Сколько топ-товаров показать",
+        "takeHelp": "Необязательно. Если оставить пустым, будет использовано значение 10.",
+        "takePlaceholder": "По умолчанию: 10",
+        "lowStockThresholdLabel": "Порог низкого остатка (количество)",
+        "lowStockThresholdHelp": "Необязательно. Товары с количеством на уровне или ниже этого порога попадут в раздел «Низкий остаток». По умолчанию: 5.",
+        "lowStockThresholdPlaceholder": "По умолчанию: 5"
+      },
+      "sections": {
+        "summary": "Сводка продаж",
+        "bestSelling": "Самые продаваемые товары",
+        "highestProfit": "Товары с наибольшей прибылью",
+        "inventory": "Обзор остатков",
+        "lowStock": "Товары с низким остатком",
+        "outOfStock": "Товары без остатка",
+        "allInventory": "Все товары в остатке (стоимость по каждому товару)"
+      },
+      "kpi": {
+        "revenue": "Выручка от продаж товаров",
+        "profit": "Прибыль от продаж товаров",
+        "productsSold": "Продано товаров",
+        "salesCount": "Количество продаж",
+        "currentInventoryValue": "Текущая стоимость остатков",
+        "currentInventoryCostValue": "Текущая стоимость остатков по себестоимости",
+        "lowStockCount": "Товары с низким остатком",
+        "outOfStockCount": "Товары без остатка"
+      },
+      "charts": {
+        "byQuantity": "Топ товаров по проданному количеству",
+        "byProfit": "Топ товаров по полученной прибыли"
+      },
+      "columns": {
+        "productCode": "Код товара",
+        "productSku": "SKU товара",
+        "quantitySold": "Продано (шт)",
+        "revenue": "Выручка",
+        "cost": "Себестоимость",
+        "profit": "Прибыль",
+        "quantity": "Количество",
+        "salePrice": "Цена продажи",
+        "avgCostPrice": "Средняя себестоимость",
+        "inventoryValue": "Стоимость остатка",
+        "inventoryValueAtSalePrice": "Стоимость остатка по цене продажи",
+        "inventoryValueAtCost": "Стоимость остатка по себестоимости"
+      },
+      "noRows": "По выбранным фильтрам записи не найдены."
+    },
+    "serviceReports": {
+      "empty": "Выберите фильтры и нажмите «Показать отчет», чтобы загрузить аналитику по услугам.",
+      "filters": {
+        "serviceCategory": "Категория услуги",
+        "allCategories": "Все категории",
+        "topNLabel": "Количество топ-услуг",
+        "topNHelp": "Необязательно. Если оставить пустым, будет использовано значение 10.",
+        "topNPlaceholder": "По умолчанию: 10"
+      },
+      "sections": {
+        "summary": "Сводка по услугам",
+        "grouped": "Выручка и прибыль по типам услуг",
+        "topServices": "Рейтинг услуг",
+        "mostFrequent": "Самые часто выполняемые услуги",
+        "mostProfitable": "Самые прибыльные услуги",
+        "reportRows": "Исходные заказы"
+      },
+      "kpi": {
+        "revenue": "Выручка от услуг",
+        "baseRate": "Сумма базовой ставки",
+        "employeeSalaryCost": "Затраты на зарплату сотрудников",
+        "profit": "Прибыль от услуг",
+        "performed": "Количество выполненных услуг",
+        "averagePrice": "Средняя цена услуги"
+      },
+      "charts": {
+        "revenueByType": "Выручка в разрезе типов услуг"
+      },
+      "columns": {
+        "categoryOrService": "Тип услуги / Услуга",
+        "revenue": "Выручка",
+        "baseRate": "Базовая ставка",
+        "employeeSalaryCost": "Зарплатные затраты",
+        "profit": "Прибыль",
+        "count": "Количество",
+        "averagePrice": "Средняя цена"
+      },
+      "orders": {
+        "estimate": "Оценка",
+        "vehicle": "Автомобиль",
+        "servicesCount": "Услуг",
+        "servicesRevenue": "Выручка по услугам",
+        "servicesCost": "Базовая ставка услуг",
+        "servicesProfit": "Прибыль по услугам",
+        "createdAt": "Создано",
+        "status": "Статус",
+        "servicesLines": "Строки услуг",
+        "productsLines": "Строки товаров",
+        "service": "Услуга",
+        "category": "Категория",
+        "internalCost": "Внутренняя себестоимость",
+        "customerPrice": "Цена для клиента",
+        "profit": "Прибыль",
+        "productCode": "Код товара",
+        "quantity": "Количество",
+        "unitPrice": "Цена за единицу",
+        "lineTotal": "Сумма строки",
+        "share": "Доля в заказе"
+      },
+      "statuses": {
+        "completed": "Завершено",
+        "pending": "В ожидании",
+        "cancelled": "Отменено",
+        "inProgress": "В процессе",
+        "open": "Открыто"
+      },
+      "reportRowsHint": "По выбранным фильтрам найдено {{count}} заказов по услугам.",
+      "noRows": "По выбранным фильтрам записи по услугам не найдены."
+    },
+    "warehouseReports": {
+      "empty": "Выберите склад и фильтры, затем нажмите «Показать отчет», чтобы загрузить складскую аналитику.",
+      "filters": {
+        "topNLabel": "Количество топ-товаров",
+        "topNHelp": "Необязательно. Если оставить пустым, будет использовано значение 20.",
+        "topNPlaceholder": "По умолчанию: 20",
+        "slowMovingDaysLabel": "Порог медленно оборачиваемых (дни)",
+        "slowMovingDaysHelp": "Необязательно. Товары, не продававшиеся минимум столько дней, будут считаться медленно оборачиваемыми. По умолчанию: 30.",
+        "slowMovingDaysPlaceholder": "По умолчанию: 30"
+      },
+      "sections": {
+        "stock": "Оценка остатков",
+        "movements": "Движение запасов",
+        "purchases": "История закупок",
+        "velocity": "Быстрые / Медленные / Непродаваемые",
+        "fastMoving": "Быстрооборачиваемые товары",
+        "slowMoving": "Медленнооборачиваемые товары",
+        "notSold": "Непродаваемые товары",
+        "turnover": "Оборачиваемость запасов"
+      },
+      "kpi": {
+        "totalValueAtCost": "Общая стоимость по себестоимости",
+        "totalValueAtSalePrice": "Общая стоимость по цене продажи",
+        "totalProducts": "Всего товаров",
+        "totalUnits": "Всего единиц"
+      },
+      "charts": {
+        "turnover": "Топ товаров по коэффициенту оборачиваемости"
+      },
+      "movementTypes": {
+        "in": "Приход",
+        "out": "Расход",
+        "unknown": "Неизвестно"
+      },
+      "columns": {
+        "productCode": "Код товара",
+        "productSku": "SKU товара",
+        "quantity": "Количество",
+        "purchaseCost": "Себестоимость закупки",
+        "salePrice": "Цена продажи",
+        "stockValueAtCost": "Стоимость остатка по себестоимости",
+        "stockValueAtSalePrice": "Стоимость остатка по цене продажи",
+        "movementType": "Тип движения",
+        "unitCost": "Себестоимость за единицу",
+        "targetShopId": "Целевой магазин",
+        "createdBy": "Создал",
+        "occurredAt": "Время операции",
+        "quantityAdded": "Добавленное количество",
+        "totalCost": "Общая себестоимость",
+        "purchasedAt": "Дата закупки",
+        "currentWarehouseStock": "Текущий остаток на складе",
+        "totalUnitsSold": "Всего продано единиц",
+        "lastSoldAt": "Последняя продажа",
+        "daysSinceLastSale": "Дней с последней продажи",
+        "unitsSold": "Продано единиц",
+        "avgStockOnHand": "Средний остаток",
+        "turnoverRate": "Коэффициент оборачиваемости"
+      },
+      "noRows": "По выбранным фильтрам записи склада не найдены."
+    },
+    "salesReports": {
+      "empty": "Выберите фильтры и нажмите «Показать отчет», чтобы загрузить аналитику продаж.",
+      "filters": {
+        "allShops": "Все магазины",
+        "groupBy": "Группировка по периоду"
+      },
+      "groupBy": {
+        "day": "День",
+        "week": "Неделя",
+        "month": "Месяц",
+        "year": "Год"
+      },
+      "sections": {
+        "summary": "Сводка выручки",
+        "byPeriod": "Выручка по периодам",
+        "byEmployee": "Выручка по сотрудникам",
+        "byPaymentMethod": "Выручка по способам оплаты"
+      },
+      "kpi": {
+        "totalRevenue": "Общая выручка",
+        "totalProductSalesRevenue": "Выручка от продаж товаров",
+        "totalServiceOrdersRevenue": "Выручка от заказов услуг",
+        "totalCashRevenue": "Наличная выручка",
+        "totalNonCashRevenue": "Безналичная выручка",
+        "productSalesCount": "Количество продаж товаров",
+        "serviceOrdersCount": "Количество заказов услуг"
+      },
+      "charts": {
+        "byPeriod": "Динамика выручки по периодам",
+        "byEmployee": "Распределение выручки по сотрудникам",
+        "byPaymentMethod": "Наличные vs Безналичные"
+      },
+      "columns": {
+        "period": "Период",
+        "periodStart": "Начало периода",
+        "periodEnd": "Конец периода",
+        "productSalesRevenue": "Выручка от продаж товаров",
+        "serviceOrdersRevenue": "Выручка от заказов услуг",
+        "totalRevenue": "Общая выручка",
+        "productSalesCount": "Количество продаж товаров",
+        "serviceOrdersCount": "Количество заказов услуг",
+        "employeeId": "Сотрудник",
+        "transactionCount": "Транзакции",
+        "paymentMethod": "Способ оплаты",
+        "amount": "Сумма",
+        "percentage": "Процент"
+      },
+      "noRows": "По выбранным фильтрам записи продаж не найдены."
+    }
+  },
+  "exchangeRates": {
+    "createNew": "Создать курсы валют",
+    "addExchangeRate": "Добавить курс валют",
+    "updateRates": "Обновить курсы",
+    "baseCurrency": "Базовая валюта",
+    "quoteCurrency": "Котируемая валюта",
+    "rate": "Курс",
+    "placeholders": {
+      "rate": "0.0000"
+    },
+    "success": {
+      "created": "Курс валют успешно создан",
+      "updated": "Курс валют успешно обновлен",
+      "deleted": "Курс валют успешно удален",
+      "statusChanged": "Статус успешно обновлен"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать курс валют",
+      "failedToUpdate": "Не удалось обновить курс валют",
+      "failedToChangeStatus": "Не удалось изменить статус",
+      "addFailed": "Не удалось добавить курс:",
+      "saveFailed": "Не удалось сохранить курс:",
+      "statusUpdateFailed": "Не удалось {{action}} курс:"
+    }
+  },
+  "users": {
+    "iconAlt": "Иконка пользователей",
+    "form": {
+      "username": "Имя пользователя",
+      "enterUsername": "Введите имя пользователя",
+      "password": "Пароль",
+      "enterPassword": "Введите пароль",
+      "role": "Роль",
+      "email": "Электронная почта",
+      "enterEmail": "Пожалуйста, введите ваш адрес электронной почты",
+      "selectRole": "Выберите роль",
+      "userType": "Тип пользователя",
+      "selectUserType": "Выберите тип пользователя",
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад"
+    },
+    "validation": {
+      "fillAllFields": "Пожалуйста, заполните все поля",
+      "emailInvalid": "Введите корректный адрес электронной почты",
+      "roleRequired": "Выберите роль",
+      "userTypeRequired": "Выберите тип пользователя",
+      "shopRequired": "Выберите магазин",
+      "warehouseRequired": "Выберите склад"
+    },
+    "success": {
+      "userCreated": "Пользователь успешно создан",
+      "userUpdated": "Пользователь успешно обновлен"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать пользователя",
+      "failedToLoad": "Не удалось загрузить пользователей",
+      "failedToUpdate": "Не удалось обновить пользователя"
+    },
+    "tabs": {
+      "list": "Список пользователей",
+      "create": "Создать пользователя"
+    },
+    "actions": {
+      "addUser": "Добавить пользователя"
+    },
+    "table": {
+      "title": "Пользователи",
+      "id": "ID",
+      "username": "Имя пользователя",
+      "email": "Эл. почта",
+      "role": "Роль",
+      "userType": "Тип пользователя",
+      "shop": "Магазин",
+      "warehouse": "Склад",
+      "active": "Статус",
+      "createdAt": "Создано",
+      "noUsers": "Пользователи не найдены"
+    },
+    "loading": "Загрузка пользователей...",
+    "editModal": {
+      "title": "Редактировать пользователя",
+      "password": "Пароль",
+      "enterPassword": "Введите новый пароль",
+      "active": "Активен"
+    }
+  },
+  "shops": {
+    "tabs": {
+      "addNew": "Добавить новый магазин",
+      "shopsHistory": "История магазинов",
+      "shopPricing": "Процент наценки магазина"
+    },
+    "form": {
+      "shopKey": "Код магазина",
+      "type": "Тип",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад"
+    },
+    "validation": {
+      "enterShopKey": "Пожалуйста, введите код магазина",
+      "selectWarehouse": "Пожалуйста, выберите склад"
+    },
+    "success": {
+      "shopCreated": "Магазин успешно создан",
+      "shopUpdated": "Магазин успешно обновлен",
+      "shopDeleted": "Магазин успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать магазин",
+      "failedToUpdate": "Не удалось обновить магазин",
+      "failedToDelete": "Не удалось удалить магазин"
+    },
+    "loading": "Загрузка магазинов...",
+    "emptyState": "Магазины не найдены.",
+    "products": {
+      "title": "Товары магазина",
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "loading": "Загрузка товаров магазина...",
+      "emptyState": "В этом магазине товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "productId": "ID товара",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено"
+      }
+    },
+    "pricing": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "markupPercentage": "Процент продажи",
+      "markupPlaceholder": "Введите процент",
+      "save": "Сохранить процент",
+      "applyToExisting": "Применить к текущим остаткам",
+      "loading": "Загрузка настроек наценки...",
+      "noSettings": "Для этого магазина настройки наценки не найдены.",
+      "currentMarkup": "Текущая наценка",
+      "isActive": "Активно",
+      "updatedAt": "Последнее обновление",
+      "validation": {
+        "selectShop": "Пожалуйста, выберите магазин",
+        "enterValidMarkup": "Пожалуйста, введите корректный процент"
+      },
+      "success": {
+        "saved": "Процент продажи магазина успешно сохранен",
+        "applied": "Наценка применена к текущим остаткам магазина"
+      },
+      "error": {
+        "failedToLoad": "Не удалось загрузить настройки наценки",
+        "failedToSave": "Не удалось сохранить настройки наценки",
+        "failedToApply": "Не удалось применить наценку к текущим остаткам"
+      }
+    }
+  },
+  "warehouses": {
+    "navigation": {
+      "totalBatches": "Всего партий",
+      "batchesToSale": "Партии к продаже",
+      "soldBatches": "Проданные партии",
+      "adjustedSales": "Скорректированные продажи",
+      "profit": "Прибыль",
+      "addProduct": "Добавить товар",
+      "products": "Товары",
+      "transferToShop": "Передать в магазин"
+    },
+    "tabs": {
+      "addNew": "Добавить новый склад",
+      "warehousesHistory": "История складов"
+    },
+    "form": {
+      "warehouseKey": "Код склада",
+      "type": "Тип",
+      "warehouse": "Склад",
+      "selectWarehouse": "Выберите склад"
+    },
+    "validation": {
+      "enterWarehouseCode": "Пожалуйста, введите код склада"
+    },
+    "success": {
+      "warehouseCreated": "Склад успешно создан",
+      "warehouseUpdated": "Склад успешно обновлен",
+      "warehouseDeleted": "Склад успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать склад",
+      "failedToUpdate": "Не удалось обновить склад",
+      "failedToDelete": "Не удалось удалить склад"
+    },
+    "loading": "Загрузка складов...",
+    "emptyState": "Склады не найдены.",
+    "totalBatches": {
+      "loading": "Загрузка партий...",
+      "emptyState": "Партии не найдены.",
+      "createSale": "Создать продажу",
+      "creating": "Создание...",
+      "previewAndCreateSale": "Предпросмотр и создание продажи",
+      "previewTitle": "Предпросмотр продажи",
+      "totalPowder": "Всего порошка",
+      "totalCost": "Общая стоимость",
+      "details": {
+        "individualIntakes": "Индивидуальные приемы"
+      },
+      "columns": {
+        "id": "ID",
+        "powderBatchId": "ID партии порошка",
+        "remainingPowderKg": "Остаток",
+        "remainingCostAmd": "Стоимость",
+        "remainingPt_g": "Pt (г)",
+        "remainingPd_g": "Pd (г)",
+        "remainingRh_g": "Rh (г)",
+        "initialPowderKg": "Начальный",
+        "initialCostAmd": "Стоимость",
+        "status": "Статус",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено",
+        "selectedKg": "Выбранный кг",
+        "totalPowderKg": "Общий"
+      },
+      "preview": {
+        "totalCostAmd": "Стоимость продажи",
+        "totalCost": "Стоимость",
+        "totalRevenueAmd": "Общая выручка",
+        "totalPowderKg": "Общий вес порошка (кг)"
+      },
+      "success": {
+        "itemAdded": "Партия #{{id}} добавлена с {{kg}} кг",
+        "saleCreated": "Партия продажи успешно создана"
+      },
+      "error": {
+        "noItemsSelected": "Пожалуйста, добавьте хотя бы одну партию перед созданием продажи",
+        "failedToCreateSale": "Не удалось создать партию продажи"
+      }
+    },
+    "batchesToSale": {
+      "loading": "Загрузка партий к продаже...",
+      "emptyState": "Партии для продажи не найдены.",
+      "sale": "Продать",
+      "saleModal": {
+        "title": "Завершить продажу",
+        "description": "Укажите цены металлов для партии продажи #{{id}}.",
+        "confirm": "Подтвердить продажу",
+        "cancel": "Отмена"
+      },
+      "saleForm": {
+        "currencyCode": "Код валюты"
+      },
+      "success": {
+        "saleCompleted": "Партия успешно продана"
+      },
+      "error": {
+        "currencyRequired": "Пожалуйста, укажите код валюты",
+        "failedToSell": "Не удалось завершить продажу партии",
+        "failedToRecalculate": "Не удалось пересчитать партию продажи"
+      },
+      "recalculate": {
+        "button": "Пересчитать",
+        "loading": "Пересчёт...",
+        "resultLabel": "Результат пересчёта"
+      },
+      "fields": {
+        "powderKg": "Порошок (кг)",
+        "pt_g": "Платина (г)",
+        "pd_g": "Палладий (г)",
+        "rh_g": "Родий (г)",
+        "ptPrice": "Цена платины",
+        "pdPrice": "Цена палладия",
+        "rhPrice": "Цена родия",
+        "usdRate": "Курс USD",
+        "revenueAmd": "Доход (AMD)"
+      },
+      "columns": {
+        "id": "ID",
+        "warehouseId": "ID склада",
+        "status": "Статус",
+        "totalPowderKg": "Вес",
+        "itemsCostTotalAmd": "Себестоимость",
+        "profit": "Прибыль",
+        "costTotalAmd": "Цена продажи",
+        "ptTotal_g": "Pt",
+        "pdTotal_g": "Pd",
+        "rhTotal_g": "Rh",
+        "createdAt": "Создано",
+        "soldAt": "Продано"
+      }
+    },
+    "soldBatches": {
+      "title": "Проданные партии",
+      "loading": "Загрузка проданных партий...",
+      "emptyState": "Проданные партии не найдены.",
+      "editSoldBatch": "Корректировка цены",
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "По дату",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания"
+      },
+      "dropdown": {
+        "powderKg": "Вес порошка (кг)",
+        "pt_g": "Платина (г)",
+        "pd_g": "Палладий (г)",
+        "rh_g": "Родий (г)",
+        "ptPrice": "Цена платины",
+        "pdPrice": "Цена палладия",
+        "rhPrice": "Цена родия",
+        "usdRate": "Курс USD",
+        "revenueAmd": "Цена продажи (AMD)",
+        "saleId": "ID продажи",
+        "comparison": "Различия",
+        "original": "Исходные",
+        "current": "Текущие",
+        "noDifferences": "Нет различий"
+      },
+      "form": {
+        "finalAmount": "Изменённая цена",
+        "comment": "Причина",
+        "enterComment": "Введите комментарий..."
+      },
+      "columns": {
+        "id": "ID",
+        "salesLotId": "ID партии продажи",
+        "warehouseId": "ID склада",
+        "currencyCode": "Валюта",
+        "revenueTotal": "Продажная цена",
+        "revenueTotalAmd": "Продажная цена (AMD)",
+        "costAmd": "Инвестиции",
+        "profitAmd": "Прибыль (AMD)",
+        "soldPowderKg": "Вес лота (кг)",
+        "createdAt": "Создано"
+      },
+      "errors": {
+        "failedToFetch": "Не удалось загрузить проданные партии"
+      }
+    },
+    "profit": {
+      "title": "Прибыль склада",
+      "loading": "Загрузка отчета о прибыли...",
+      "emptyState": "Данные о прибыли отсутствуют. Измените фильтры и попробуйте снова.",
+      "loadReport": "Загрузить отчет",
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "По дату",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания"
+      },
+      "summary": {
+        "revenueAmd": "Выручка (AMD)",
+        "costAmd": "Себестоимость (AMD)",
+        "profitAmd": "Прибыль (AMD)",
+        "soldPowderKg": "Проданный порошок (кг)"
+      },
+      "errors": {
+        "failedToFetch": "Не удалось загрузить отчет о прибыли"
+      }
+    },
+    "addProduct": {
+      "loading": "Загрузка товаров...",
+      "emptyState": "Товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "code": "Код",
+        "sku": "SKU",
+        "brand": "Бренд",
+        "category": "Категория",
+        "unitType": "Тип единицы",
+        "originalPrice": "Первоначальная цена",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество"
+      },
+      "success": {
+        "productAdded": "Товар {{code}} успешно добавлен на склад"
+      },
+      "error": {
+        "invalidInputs": "Пожалуйста, заполните все поля (первоначальная цена, цена продажи и количество)",
+        "failedToAdd": "Не удалось добавить товар на склад"
+      }
+    },
+    "products": {
+      "loading": "Загрузка товаров на складе...",
+      "emptyState": "На этом складе товары не найдены.",
+      "columns": {
+        "id": "ID",
+        "productId": "ID товара",
+        "originalPrice": "Первоначальная цена",
+        "salePrice": "Цена продажи",
+        "quantity": "Количество",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено"
+      }
+    },
+    "transfer": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "quantity": "Количество для передачи",
+      "transfer": "Передать",
+      "transferring": "Передача...",
+      "success": "Товары успешно переданы",
+      "error": "Не удалось передать товары",
+      "validationError": "Пожалуйста, выберите склад, магазин и хотя бы один товар с действительным количеством",
+      "noValidProducts": "Нет действительных товаров для передачи"
+    }
+  },
+  "vehicles": {
+    "tabs": {
+      "tasks": "Задачи",
+      "vehicles": "Транспортные средства"
+    },
+    "tasks": {
+      "addTask": "Добавить задачу",
+      "editTask": "Редактировать задачу",
+      "deleteTask": "Удалить задачу",
+      "form": {
+        "taskService": "Задача / Услуга",
+        "enterTaskName": "Введите название задачи...",
+        "laborCost": "Стоимость труда (USD)",
+        "taskNameRequired": "Название задачи обязательно",
+        "enterValidCost": "Введите действительную стоимость",
+        "enabled": "Включено"
+      },
+      "columns": {
+        "code": "Код",
+        "laborCost": "Стоимость труда (USD)",
+        "status": "Статус",
+        "actions": "Действия",
+        "active": "Активен",
+        "inactive": "Неактивен"
+      },
+      "confirmation": {
+        "deleteTitle": "Удалить задачу",
+        "deleteDescription": "Вы уверены, что хотите удалить «{{code}}»? Это действие нельзя отменить.",
+        "deleting": "Удаление...",
+        "delete": "Удалить"
+      }
+    },
+    "vehicles": {
+      "addVehicle": "Добавить транспортное средство",
+      "actions": {
+        "viewBuckets": "Баки",
+        "calculatePrice": "Рассчитать цену",
+        "withBuckets": "С баками"
+      },
+      "form": {
+        "brand": "Марка",
+        "selectBrand": "Выберите марку...",
+        "model": "Модель",
+        "enterModel": "Введите модель...",
+        "selectModel": "Выберите модель...",
+        "year": "Год",
+        "enterYear": "Введите год...",
+        "engine": "Двигатель",
+        "enterEngine": "Введите двигатель...",
+        "selectEngine": "Выберите двигатель...",
+        "fuelType": "Тип топлива",
+        "selectFuelType": "Выберите тип топлива...",
+        "market": "Рынок",
+        "selectMarket": "Выберите рынок...",
+        "horsePower": "Лошадиная сила",
+        "enterHorsePower": "Введите лошадиную силу...",
+        "hpMin": "Л.с. (Мин)",
+        "selectHPMin": "Мин",
+        "hpMax": "Л.с. (Макс)",
+        "selectHPMax": "Макс",
+        "driveType": "Тип привода",
+        "selectDriveType": "Выберите тип привода...",
+        "status": "Статус"
+      },
+      "columns": {
+        "brand": "Марка",
+        "model": "Модель",
+        "year": "Год",
+        "engine": "Двигатель",
+        "fuelType": "Тип топлива",
+        "market": "Рынок",
+        "horsePower": "Лошадиная сила",
+        "driveType": "Тип привода",
+        "status": "Статус"
+      }
+    },
+    "ariaLabels": {
+      "addNewTask": "Добавить новую задачу",
+      "addNewVehicle": "Добавить новое транспортное средство",
+      "editVehicle": "Редактировать транспортное средство",
+      "deleteVehicle": "Удалить транспортное средство",
+      "vehicleManagementSections": "Разделы управления транспортными средствами"
+    }
+  },
+  "metals": {
+    "addRate": "Добавить цену металла",
+    "editRate": "Редактировать цену металла",
+    "columns": {
+      "currency": "Валюта",
+      "platinum": "Платина (за грамм)",
+      "palladium": "Палладий (за грамм)",
+      "rhodium": "Родий (за грамм)",
+      "effectiveFrom": "Действует с",
+      "status": "Статус"
+    },
+    "form": {
+      "currency": "Код валюты",
+      "platinum": "Цена платины",
+      "palladium": "Цена палладия",
+      "rhodium": "Цена родия"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить цену металла",
+      "deleteDescription": "Вы уверены, что хотите удалить цену для «{{name}}»? Это действие нельзя отменить."
+    }
+  },
+  "catalystBuckets": {
+    "title": "Коды",
+    "addBucket": "Добавить катализаторный бак",
+    "editBucket": "Редактировать катализаторный бак",
+    "totalPrice": "Общая стоимость",
+    "tabs": {
+      "catalystBuckets": "Коды",
+      "groupCodes": "Групповые коды"
+    },
+    "form": {
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "codeRequired": "Код обязателен",
+      "weight": "Вес (г)",
+      "ptWeight": "Вес платины (г)",
+      "pdWeight": "Вес палладия (г)",
+      "rhWeight": "Вес родия (г)",
+      "enterValidWeight": "Введите действительный вес",
+      "enabled": "Включено",
+      "type": "Тип бака катализатора",
+      "selectType": "Выберите тип...",
+      "frontType": "Передний бак",
+      "backType": "Задний бак"
+    },
+    "columns": {
+      "code": "Код",
+      "name": "Наименование",
+      "type": "Тип",
+      "price": "Цена",
+      "weight": "Вес",
+      "ptWeight": "Вес платины",
+      "pdWeight": "Вес палладия",
+      "rhWeight": "Вес родия",
+      "status": "Статус",
+      "active": "Активен",
+      "inactive": "Неактивен"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить катализаторный бак",
+      "deleteDescription": "Вы уверены, что хотите удалить «{{code}}»? Это действие нельзя отменить.",
+      "deleting": "Удаление...",
+      "delete": "Удалить"
+    },
+    "ariaLabels": {
+      "addNewBucket": "Добавить новый катализаторный бак"
+    },
+    "searchBucket": "Прикрепленные баки",
+    "searchGroup": "Поиск по групповому коду",
+    "messages": {
+      "searchToSeeResults": "Пожалуйста, выполните поиск по коду, чтобы увидеть результаты"
+    },
+    "search": {
+      "notFound": "Катализаторный бак не найден",
+      "error": "Не удалось найти катализаторный бак"
+    },
+    "success": {
+      "bucketsUpdated": "Баки успешно обновлены",
+      "bucketCreated": "Бак успешно создан",
+      "bucketDeleted": "Бак успешно удален"
+    },
+    "error": {
+      "failedToFetch": "Не удалось загрузить катализаторные баки",
+      "failedToUpdate": "Не удалось обновить баки",
+      "failedToCreate": "Не удалось создать бак",
+      "failedToDelete": "Не удалось удалить бак"
+    }
+  },
+  "customerTypes": {
+    "addCustomerType": "Добавить тип клиента",
+    "editCustomerType": "Редактировать тип клиента",
+    "confirmation": {
+      "deleteTitle": "Удалить тип клиента",
+      "deleteDescription": "Вы уверены, что хотите удалить тип клиента \"{{code}}\"? Это действие нельзя отменить.",
+      "deleting": "Удаление...",
+      "delete": "Удалить"
+    },
+    "form": {
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "bonusPercent": "Процент бонуса (%)",
+      "isDefault": "По умолчанию"
+    },
+    "columns": {
+      "code": "Код",
+      "isDefault": "По умолчанию",
+      "bonusPercent": "Процент бонуса",
+      "status": "Статус"
+    },
+    "success": {
+      "created": "Тип клиента успешно создан",
+      "updated": "Тип клиента успешно обновлен"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать тип клиента",
+      "failedToUpdate": "Не удалось обновить тип клиента"
+    }
+  },
+  "ironManagement": {
+    "tabs": {
+      "carModels": "Модели автомобилей",
+      "ironTypes": "Типы металла",
+      "brands": "Бренды",
+      "priceRules": "Правила цен",
+      "ironTypesAndPrices": "Типы металла и цены",
+      "prices": "Цены"
+    },
+    "ariaLabels": {
+      "ironManagementSections": "Разделы управления металлоломом"
+    },
+    "title": "Настройки ломбарда",
+    "section": {
+      "ironTypes": "Типы металла",
+      "brands": "Бренды",
+      "priceRules": "Правила цен"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить модель автомобиля",
+      "deleteDescription": "Вы уверены, что хотите удалить? Это действие необратимо.",
+      "delete": "Удалить",
+      "deleteIronTypeTitle": "Удалить тип металла",
+      "deleteIronTypeDescription": "Вы уверены, что хотите удалить? Это действие необратимо."
+    },
+    "addCarModel": "Добавить модель автомобиля",
+    "editCarModel": "Изменить модель автомобиля",
+    "addIronType": "Добавить тип металла",
+    "addIronPrice": "Добавить цену металла",
+    "addPrice": "Создать базовую цену",
+    "addRecalculationStep": "Добавить шаг перерасчёта",
+    "addRecalculationPrice": "Добавить цену перерасчёта",
+    "pricesByCustomerType": "Цены по типам клиентов",
+    "saveChanges": "Сохранить изменения",
+    "selectCarModel": "Выберите модель автомобиля",
+    "selectIronType": "Выберите тип металла",
+    "loading": "Загрузка…",
+    "noIronTypesForCarModel": "Нет типов металла для этой модели. Добавьте выше.",
+    "noPricesYet": "Нет цен. Нажмите +, чтобы добавить.",
+    "form": {
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "name": "Название",
+      "enterName": "Введите название...",
+      "language": "Язык",
+      "pricePerKg": "Цена за кг",
+      "standardPrice": "Стандартная цена за кг",
+      "vipPrice": "VIP цена за кг",
+      "customerType": "Тип клиента",
+      "selectCustomerType": "Выберите тип клиента...",
+      "selectBrand": "Выберите бренд",
+      "selectIronType": "Выберите тип металла",
+      "en": "EN",
+      "hy": "HY",
+      "ru": "RU"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Название",
+      "brand": "Бренд",
+      "ironType": "Тип металла",
+      "customerType": "Тип клиента",
+      "pricePerKg": "Цена",
+      "recalculateStepCount": "Шагов",
+      "recalculateSteps": "Цены шагов"
+    },
+    "success": {
+      "carModelCreated": "Модель автомобиля успешно создана",
+      "carModelUpdated": "Модель автомобиля успешно обновлена",
+      "carModelDeleted": "Модель автомобиля успешно удалена",
+      "ironTypeCreated": "Тип металла успешно создан",
+      "ironTypeUpdated": "Тип металла успешно обновлён",
+      "ironTypeDeleted": "Тип металла успешно удалён",
+      "ironPriceCreated": "Цена металла успешно создана",
+      "basePriceCreated": "Базовые цены успешно созданы",
+      "recalculationStepAdded": "Шаг перерасчёта успешно добавлен",
+      "ironPricesUpdated": "Цены металла успешно обновлены",
+      "ironPriceDeleted": "Цена успешно удалена",
+      "recalculationPriceCreated": "Цена перерасчёта успешно добавлена"
+    },
+    "confirmation": {
+      "deletePriceDescription": "Вы уверены, что хотите удалить эту цену?"
+    },
+    "note": {
+      "basePriceHint": "Выберите бренд и тип металла, затем введите цены для всех типов клиентов",
+      "recalculationStepHint": "Выберите бренд и тип металла, затем добавьте цены шагов для стандартных клиентов (Шаг 1, Шаг 2 и т.д.)",
+      "standardRecalculation": "Стандартный тип клиента создаёт шаг перерасчёта вместо обычной цены на бренд.",
+      "formHint": "Для стандартного типа клиента введённая цена становится шагом перерасчёта."
+    },
+    "recalculateStepLabel": "Шаг {{step}}:",
+    "noRecalculateSteps": "Нет шагов",
+    "unknownCustomerType": "Неизвестный тип клиента",
+    "noRecalculateSteps": "Нет шагов",
+    "error": {
+      "failedToCreateCarModel": "Не удалось создать модель автомобиля",
+      "pricePerKgGreaterThanZero": "Цена за кг должна быть больше нуля",
+      "standardPriceGreaterThanZero": "Стандартная цена должна быть больше нуля",
+      "vipPriceGreaterThanZero": "VIP цена должна быть больше нуля",
+      "failedToUpdateCarModel": "Не удалось обновить модель автомобиля",
+      "failedToDeleteCarModel": "Не удалось удалить модель автомобиля",
+      "failedToCreateIronType": "Не удалось создать тип металла",
+      "failedToUpdateIronType": "Не удалось обновить тип металла",
+      "failedToCreateIronPrice": "Не удалось создать цену металла",
+      "failedToDeleteIronPrice": "Не удалось удалить цену металла",
+      "failedToCreateRecalculationPrice": "Не удалось добавить цену перерасчёта",
+      "failedToCreateRecalculationStep": "Не удалось добавить шаг перерасчёта",
+      "failedToUpdateIronPrices": "Не удалось обновить цены металла",
+      "codeRequired": "Требуется код",
+      "translationRequired": "Требуется как минимум один перевод",
+      "selectCarModel": "Сначала выберите модель автомобиля",
+      "selectIronType": "Сначала выберите тип металла",
+      "selectAtLeastOnePrice": "Пожалуйста, введите цену хотя бы для одного типа клиента",
+      "basePriceAlreadyExists": "Базовая цена уже существует для этой комбинации Бренда + Типа металла + Типа клиента"
+    }
+  },
+  "cashRegisters": {
+    "addCashRegister": "Добавить кассовый аппарат",
+    "editCashRegister": "Редактировать кассовый аппарат",
+    "fetchingBalance": "Загрузка баланса...",
+    "form": {
+      "shop": "Магазин",
+      "selectShop": "Выберите магазин",
+      "code": "Код",
+      "enterCode": "Введите код...",
+      "description": "Описание",
+      "enterDescription": "Введите описание..."
+    },
+    "columns": {
+      "code": "Код",
+      "description": "Описание",
+      "shopId": "ID магазина",
+      "status": "Статус"
+    },
+    "success": {
+      "created": "Кассовый аппарат успешно создан",
+      "updated": "Кассовый аппарат успешно обновлен",
+      "deleted": "Кассовый аппарат успешно удален"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать кассовый аппарат",
+      "failedToUpdate": "Не удалось обновить кассовый аппарат",
+      "failedToDelete": "Не удалось удалить кассовый аппарат"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить кассовый аппарат",
+      "deleteDescription": "Вы уверены, что хотите удалить кассовый аппарат \"{{name}}\"? Это действие нельзя отменить."
+    },
+    "topUp": {
+      "button": "Пополнить",
+      "title": "Пополнение кассового аппарата",
+      "currentBalance": "Текущий баланс",
+      "sessionOpen": "Сессия открыта",
+      "amount": "Сумма",
+      "enterAmount": "Введите сумму...",
+      "currencyCode": "AMD",
+      "comment": "Комментарий",
+      "enterComment": "Введите комментарий...",
+      "submit": "Пополнить",
+      "loadingBalance": "Загрузка баланса...",
+      "success": "Кассовый аппарат успешно пополнен",
+      "error": "Не удалось пополнить кассовый аппарат"
+    },
+    "assignOperator": {
+      "button": "Назначить оператора",
+      "title": "Назначение оператора кассе",
+      "operator": "Оператор",
+      "selectOperator": "Выберите оператора",
+      "loading": "Загрузка операторов...",
+      "submit": "Назначить",
+      "success": "Оператор успешно назначен",
+      "error": "Не удалось назначить оператора"
+    }
+  },
+  "cashbox": {
+    "zReports": {
+      "title": "Z-отчеты",
+      "columns": {
+        "openedAt": "Открыт в",
+        "closedAt": "Закрыт в",
+        "intakeCount": "Кол-во заявок",
+        "totalPurchases": "Всего покупок",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "difference": "Разница"
+      },
+      "details": {
+        "timeline": "Хронология смены",
+        "financials": "Финансовый обзор",
+        "operations": "Операции",
+        "duration": "Длительность",
+        "operator": "ID оператора",
+        "finalDiff": "Итоговая разница",
+        "catalystCashOut": "Выплата за катализатор",
+        "ironCashOut": "Выплата за железо"
+      },
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "По дату",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания"
+      }
+    },
+    "batches": {
+      "title": "Отчеты по партиям",
+      "filters": {
+        "fromDate": "Дата от",
+        "toDate": "Дата до",
+        "selectFromDate": "Выберите дату от",
+        "selectToDate": "Выберите дату до",
+        "clientName": "Имя клиента",
+        "clientPhone": "Телефон клиента",
+        "clientTypeId": "ID типа клиента",
+        "customerType": "Тип клиента",
+        "selectCustomerType": "Выберите тип клиента",
+        "placeholderClientName": "По имени клиента",
+        "placeholderClientPhone": "По телефону клиента",
+        "placeholderClientTypeId": "По ID типа клиента"
+      },
+      "columns": {
+        "createdAt": "Создано в",
+        "intakes": "Кол-во заявок",
+        "weight": "Общий вес",
+        "status": "Статус"
+      },
+      "details": {
+        "individualIntakes": "Отдельные приемы",
+        "analysis": "Анализ партии",
+        "intakeId": "Заявка",
+        "powder": "Порошок",
+        "pt": "Платина (Pt)",
+        "pd": "Палладий (Pd)",
+        "rh": "Родий (Rh)",
+        "cost": "Издержки",
+        "totalCost": "Общие издержки",
+        "sales": "Оценочные продажи",
+        "profit": "Оценочная прибыль",
+        "percent": "Процент прибыли",
+        "fxRate": "Курс (AMD)",
+        "offerIncreaseStepOrder": "Шаг увеличения предложения",
+        "offerIncreasePercent": "Процент увеличения предложения",
+        "estimatedSalesAmdAtPurchase": "Оценочные продажи (на момент покупки)",
+        "estimatedSalesDiffPercent": "Изменение оценочных продаж",
+        "expectedProfitAmd": "Ожидаемая прибыль (AMD)",
+        "liveProfitPercent": "Текущая процентная прибыль (сейчас)",
+        "purchaseProfitAmd": "Прибыль от покупки (AMD)",
+        "purchaseProfitPercent": "Процент прибыли от покупки",
+        "profitDiffAmd": "Разница в прибыли",
+        "profitDiffPercent": "Разница в прибыли (%)",
+        "customerRealPercent": "Реальная процентная ставка клиентаս"
+      }
+    },
+    "openSessions": {
+      "title": "Открытые сессии",
+      "columns": {
+        "sessionId": "ID сессии",
+        "cashBoxCode": "Код",
+        "operator": "Оператор",
+        "openedAt": "Открыта в",
+        "intakesOffered": "Предложено заявок",
+        "intakesAccepted": "Принято заявок",
+        "powderKg": "Порошок",
+        "purchases": "Покупки",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "difference": "Разница",
+        "lastActivity": "Последняя активность"
+      }
+    },
+    "powderBatches": {
+      "title": "Партии порошка",
+      "columns": {
+        "createdAt": "Создано в",
+        "intakes": "Кол-во заявок",
+        "weight": "Общий",
+        "ptTotal": "Pt всего",
+        "pdTotal": "Pd всего",
+        "rhTotal": "Rh всего",
+        "ptPerKg_g": "Pt",
+        "pdPerKg_g": "Pd",
+        "rhPerKg_g": "Rh",
+        "status": "Статус",
+        "avgPdPricePerKg": "Сред. Pd",
+        "avgPtPricePerKg": "Сред. Pt",
+        "avgRhPricePerKg": "Сред. Rh",
+        "avgFxRateToAmd": "Сред. курс",
+        "avgCustomerPercent": "Сред. % клиента"
+      },
+      "summary": {
+        "title": "Сводка по порошку",
+        "button": "Сводка",
+        "tooltip": "Показать общий порошок и металлы по всем партиям",
+        "empty": "Нет доступных сводных данных.",
+        "thisMonth": "Этот месяц",
+        "totalPowderKg": "Всего",
+        "ptTotal": "Всего платины (г)",
+        "pdTotal": "Всего палладия (г)",
+        "rhTotal": "Всего родия (г)",
+        "batchCount": "Количество партий",
+        "metalsTitle": "Драгоценные металлы",
+        "averagesTitle": "Средние показатели",
+        "metals": {
+          "pt": "Платина",
+          "pd": "Палладий",
+          "rh": "Родий"
+        },
+        "units": {
+          "kg": "кг",
+          "g": "г",
+          "batches": "партии"
+        }
+      },
+      "details": {
+        "analysis": "Анализ партии порошка",
+        "intakeId": "Заявка",
+        "powder": "Порошок",
+        "pt": "Платина (Pt)",
+        "pd": "Палладий (Pd)",
+        "rh": "Родий (Rh)",
+        "individualIntakes": "Отдельные заявки",
+        "summaryInfo": "Эта партия содержит {{count}} заявку(и). Подробная информация доступна в сводке партии выше."
+      },
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "По дату",
+        "cashRegisterId": "ID кассового аппарата",
+        "selectFromDate": "Выберите дату начала",
+        "selectToDate": "Выберите дату окончания",
+        "enterCashRegisterId": "Введите ID кассового аппарата"
+      }
+    },
+    "cashboxReport": {
+      "title": "Отчет по кассе",
+      "shopLabel": "Магазин",
+      "registerLabel": "Кассовый аппарат",
+      "dateLabel": "Дата",
+      "selectShop": "Выберите магазин",
+      "selectRegister": "Выберите кассовый аппарат",
+      "selectDatePlaceholder": "Выберите дату (необязательно)",
+      "load": "Загрузить отчет",
+      "validation": {
+        "shopRequired": "Необходимо выбрать магазин",
+        "registerRequired": "Необходимо выбрать кассовый аппарат"
+      },
+      "columns": {
+        "cashBoxId": "ID кассы",
+        "date": "Дата",
+        "openingBalance": "Начальный остаток",
+        "cashIn": "Наличные вх.",
+        "cashOut": "Наличные исх.",
+        "expectedClosingBalance": "Ожидаемый остаток при закрытии"
+      }
+    },
+    "errors": {
+      "failedToFetchZReports": "Не удалось загрузить Z-отчеты",
+      "failedToFetchZReport": "Не удалось загрузить детали Z-отчета",
+      "failedToFetchBatches": "Не удалось загрузить партии",
+      "failedToFetchBatchDetails": "Не удалось загрузить элементы партии",
+      "failedToFetchOpenSessionsSummary": "Не удалось загрузить сводку открытых сессий",
+      "failedToFetchPowderBatches": "Не удалось загрузить партии порошка",
+      "failedToFetchCashboxReport": "Не удалось загрузить отчет по кассе"
+    }
+  },
+  "products": {
+    "iconAlt": "Иконка товаров",
+    "addNew": "Добавить новый",
+    "loading": "Загрузка товаров...",
+    "emptyState": "Товары не найдены. Нажмите \"Добавить новый\", чтобы создать первый товар.",
+    "loadingGeneric": "Загрузка...",
+    "navigation": {
+      "products": "Продукты",
+      "ironProducts": "Железные изделия"
+    },
+    "columns": {
+      "productKey": "Код товара",
+      "sku": "SKU",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "code": "Код",
+      "name": "Наименование",
+      "price": "Цена за единицу",
+      "actions": "Действия"
+    },
+    "mobile": {
+      "actions": "Действия",
+      "sku": "SKU",
+      "code": "Код",
+      "brand": "Бренд",
+      "category": "Категория",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "viewMore": "Показать больше",
+      "viewLess": "Показать меньше"
+    },
+    "form": {
+      "addProduct": "Добавить товар",
+      "addNewProduct": "Добавить новый товар",
+      "editProduct": "Редактировать товар",
+      "productKey": "Код товара",
+      "sku": "SKU",
+      "brand": "Бренд",
+      "category": "Категория",
+      "rootCategory": "Родительская категория",
+      "childCategory": "Дочерняя категория",
+      "categoryLevel": "Уровень категории {{level}}",
+      "unitType": "Тип единицы",
+      "boxSize": "Размер коробки",
+      "vehicleDependent": "Зависит от транспорта",
+      "type": "Введите",
+      "editPrice": "Изменить цену",
+      "unitPrice": "Цена за единицу",
+      "select": "Выберите"
+    },
+    "success": {
+      "productCreated": "Товар успешно создан",
+      "productUpdated": "Товар успешно обновлен",
+      "productDeleted": "Товар успешно удален",
+      "priceUpdated": "Цена товара успешно обновлена"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать товар",
+      "failedToUpdate": "Не удалось обновить товар",
+      "failedToDelete": "Не удалось удалить товар",
+      "failedToUpdatePrice": "Не удалось обновить цену товара"
+    },
+    "pagination": {
+      "previous": "Предыдущая",
+      "next": "Следующая"
+    },
+    "idPrefix": "ID: "
+  },
+  "translation": {
+    "tabs": {
+      "addNew": "Добавить новый перевод",
+      "history": "История переводов"
+    },
+    "ariaLabel": "Разделы переводов",
+    "form": {
+      "entityName": "Имя сущности",
+      "entityId": "ID сущности",
+      "fieldName": "Имя поля",
+      "fieldValue": "Значение поля",
+      "languageCode": "Код языка",
+      "type": "Тип",
+      "select": "Выберите"
+    },
+    "columns": {
+      "entityName": "Имя сущности",
+      "entityId": "ID сущности",
+      "fieldName": "Имя поля",
+      "languageCode": "Код языка",
+      "value": "Значение"
+    }
+  },
+  "languages": {
+    "addNew": "Добавить новый",
+    "addLanguage": "Добавить язык",
+    "editLanguageTitle": "Редактировать язык",
+    "deleteLanguage": "Удалить язык",
+    "loading": "Загрузка языков...",
+    "emptyState": "Языки не найдены. Добавьте первый язык.",
+    "disabled": "Отключено",
+    "editLanguage": "Редактировать {{name}}",
+    "form": {
+      "languageKey": "Код языка",
+      "displayName": "Отображаемое имя",
+      "defaultLanguage": "Язык по умолчанию",
+      "useAsDefault": "Использовать как язык по умолчанию",
+      "enabled": "Включено"
+    },
+    "success": {
+      "languageCreated": "Язык успешно создан",
+      "languageUpdated": "Язык успешно обновлен",
+      "languageDeleted": "Язык успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить языки",
+      "failedToCreate": "Не удалось создать язык",
+      "failedToUpdate": "Не удалось обновить язык",
+      "failedToDelete": "Не удалось удалить язык",
+      "failedToUpdateDefault": "Не удалось обновить язык по умолчанию"
+    }
+  },
+  "salePercentages": {
+    "addNew": "Добавить новый",
+    "addSalePercentage": "Добавить продажи",
+    "editSalePercentageTitle": "Редактировать продажи",
+    "deleteSalePercentage": "Удалить продажи",
+    "editSalePercentage": "Редактировать {{percent}}%",
+    "loading": "Загрузка процентов продаж...",
+    "emptyState": "Проценты продаж не найдены. Добавьте первый.",
+    "form": {
+      "percent": "Процент",
+      "enabled": "Включено",
+      "activePercentage": "Активный процент",
+      "useAsActive": "Использовать как активный процент"
+    },
+    "success": {
+      "salePercentageCreated": "Процент продажи успешно создан",
+      "salePercentageUpdated": "Процент продажи успешно обновлен",
+      "salePercentageDeleted": "Процент продажи успешно удален"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить проценты продаж",
+      "failedToCreate": "Не удалось создать процент продажи",
+      "failedToUpdate": "Не удалось обновить процент продажи",
+      "failedToDelete": "Не удалось удалить процент продажи",
+      "failedToUpdateActive": "Не удалось обновить активный процент продажи"
+    }
+  },
+  "productSettings": {
+    "tabs": {
+      "category": "Категории",
+      "brand": "Бренды",
+      "unitType": "Единицы измерения",
+      "boxSize": "Размеры коробок"
+    },
+    "createNew": "Создать",
+    "keyHere": "Введите код",
+    "existing": "Список",
+    "loading": "Загрузка...",
+    "noItems": "Пока нет записей",
+    "success": {
+      "created": "{{type}} успешно создан",
+      "updated": "{{type}} успешно обновлен",
+      "deleted": "{{type}} успешно удален"
+    },
+    "categoryTree": {
+      "createTitle": "Создать категорию",
+      "createDescription": "Добавляйте корневые категории или создавайте подкатегории внутри существующего родителя.",
+      "createButton": "Создать категорию",
+      "treeTitle": "Дерево категорий",
+      "editTitle": "Редактировать категорию",
+      "codeLabel": "Код категории",
+      "parentLabel": "Родительская категория",
+      "root": "Корневая категория",
+      "displayOrderLabel": "Порядок отображения",
+      "activeLabel": "Категория активна",
+      "rootBadge": "Корень",
+      "confirmDelete": "Удалить {{name}}?",
+      "noItems": "Категории пока отсутствуют.",
+      "success": {
+        "created": "Категория успешно создана",
+        "updated": "Категория успешно обновлена",
+        "deleted": "Категория успешно удалена"
+      },
+      "error": {
+        "load": "Не удалось загрузить дерево категорий",
+        "create": "Не удалось создать категорию",
+        "update": "Не удалось обновить категорию",
+        "delete": "Не удалось удалить категорию",
+        "codeRequired": "Требуется код категории",
+        "displayOrder": "Порядок отображения должен быть не меньше 1",
+        "invalidParent": "Нельзя переместить категорию в саму себя или в свою дочернюю категорию"
+      }
+    },
+    "error": {
+      "failedToAction": "Не удалось {{action}} {{type}}"
+    }
+  },
+  "columns": {
+    "id": "ID",
+    "code": "Код",
+    "warehouseId": "ID склада",
+    "actions": "Действия",
+    "editShop": "Редактировать магазин",
+    "deleteShop": "Удалить магазин",
+    "editWarehouse": "Редактировать склад",
+    "deleteWarehouse": "Удалить склад"
+  },
+  "customerDetails": {
+    "title": "Данные клиента",
+    "client": "Клиент",
+    "discount": "Скидка",
+    "phone": "Телефон",
+    "phonePlaceholder": "Добавить номер телефона",
+    "autoModel": "Модель автомобиля",
+    "acceptAndPurchase": "Купить",
+    "search": "Найти клиента",
+    "searchByCountryCode": "Поиск по коду",
+    "fullName": "ФИО",
+    "fullNamePlaceholder": "Введите полное имя",
+    "gender": "Пол",
+    "clientType": {
+      "label": "Тип клиента",
+      "regular": "Обычный"
+    },
+    "validation": {
+      "enterPhoneNumber": "Пожалуйста, введите номер телефона",
+      "enterCustomerPhone": "Пожалуйста, введите номер телефона клиента",
+      "enterFullName": "Пожалуйста, введите полное имя",
+      "invalidPhone": "Неверный номер телефона"
+    },
+    "success": {
+      "customerFound": "Клиент найден",
+      "customerAccepted": "Клиент принят"
+    },
+    "error": {
+      "failedToSearch": "Не удалось найти клиента",
+      "missingData": "Необходимые данные отсутствуют"
+    },
+    "info": {
+      "newCustomer": "Клиент не найден. Вы можете зарегистрировать нового."
+    }
+  },
+  "liveMarketPrices": {
+    "title": "Рыночные цены",
+    "live": "В ЭФИРЕ",
+    "exchangeRate": "Курс валют",
+    "platinum": "Платина",
+    "palladium": "Палладий",
+    "rhodium": "Родий",
+    "source": "Kitco",
+    "bankSource": "Курс (USD / AMD)",
+    "loading": "Загрузка...",
+    "updated": "Обновлено {{time}}"
+  },
+  "finalOffer": {
+    "title": "Финальное предложение",
+    "offerButton": "Принять предложение",
+    "rejectButton": "Отклонить предложение",
+    "recalculateButton": "Пересчитать предложение",
+    "success": {
+      "offered": "Предложение успешно рассчитано",
+      "rejected": "Предложение успешно отклонено",
+      "recalculated": "Предложение успешно пересчитано"
+    },
+    "error": {
+      "noIntake": "Заявка не найдена",
+      "noIntakeId": "Отсутствует ID заявки",
+      "failedToOffer": "Не удалось рассчитать предложение",
+      "failedToReject": "Не удалось отклонить предложение",
+      "invalidStatusTransition": "Недопустимый переход статуса. Текущий статус: Предложено.",
+      "invalidStatusTransitionDraft": "Недопустимый переход статуса. Текущий статус: Черновик."
+    }
+  },
+  "pricingBreakdown": {
+    "title": "Расчет стоимости",
+    "metals": {
+      "platinum": "Платина",
+      "palladium": "Палладий",
+      "rhodium": "Родий"
+    },
+    "platinumWeight": "Вес платины:",
+    "palladiumWeight": "Вес палладия:",
+    "rhodiumWeight": "Вес родия:",
+    "createIntake": "Рассчитать предложение",
+    "totalMetalValue": "Общая стоимость металлов:",
+    "clientCoefficient": "Коэффициент клиента:",
+    "finalOffer": "Финальное предложение:"
+  },
+  "powderExtraction": {
+    "title": "Извлечение порошка",
+    "extractionWeight": "Вес извлечения (кг)",
+    "shopId": "ID магазина:",
+    "username": "Имя пользователя:",
+    "cashRegisterName": "ID кассы:"
+  },
+  "operatorPage": {
+    "title": "Терминал оператора",
+    "languageLoading": "Загрузка языков...",
+    "openSession": "Открыть смену",
+    "closeSession": "Закрыть смену",
+    "cashAmount": "Наличные в кассе",
+    "cashAmountPlaceholder": "Введите текущую сумму наличных",
+    "buyIron": "Купить железо",
+    "ironType": "Тип железа",
+    "weightKg": "Вес",
+    "tabs": {
+      "buy": "Купить",
+      "cashier": "Касса",
+      "calculate": "Рассчитать",
+      "catalyst": "Катализатор",
+      "iron": "Железо",
+      "workshop": "Мастерская"
+    },
+    "cashier": {
+      "title": "Касса",
+      "description": "Выберите товары, добавьте их в корзину и завершите оплату наличным или безналичным способом.",
+      "missingCashRegisterHeader": "Отсутствует или некорректный ID кассы.",
+      "selectShop": "Выберите магазин",
+      "productsList": "Доступные товары",
+      "loadingProducts": "Загрузка товаров...",
+      "noProducts": "Нет доступных товаров.",
+      "scanOrEnterSku": "Сканируйте штрихкод или введите SKU",
+      "scanPlaceholder": "Сканируйте или введите SKU и нажмите Enter",
+      "searchButton": "Добавить по SKU",
+      "enterSku": "Введите SKU продукта.",
+      "productNotFound": "Продукт с этим SKU не найден.",
+      "productNotInShop": "Продукт недоступен в выбранном магазине.",
+      "addedToCart": "Товар {{sku}} добавлен в корзину.",
+      "table": {
+        "product": "Товар",
+        "sku": "SKU",
+        "salePrice": "Цена",
+        "quantity": "Количество",
+        "actions": "Действия"
+      },
+      "cartTitle": "Корзина",
+      "emptyCart": "Корзина пуста.",
+      "unitPrice": "Цена за единицу",
+      "quantity": "Количество",
+      "remove": "Удалить",
+      "total": "Итого",
+      "paymentMethods": {
+        "cash": "Наличные",
+        "nonCash": "Безналичные",
+        "mixed": "Смешанный"
+      },
+      "shopLabel": "Магазин",
+      "loadingShop": "Загрузка магазина...",
+      "cashReceived": "Получено наличными",
+      "cashPaid": "Наличными",
+      "nonCashPaid": "Безналично",
+      "nonCashReference": "Карта / референс",
+      "nonCashReferencePlaceholder": "напр. Card-XXXX1234",
+      "nonCashReferenceRequired": "Укажите референс карты или платежа.",
+      "completeSale": "Завершить продажу",
+      "processing": "Обработка...",
+      "amountPaid": "Оплачено",
+      "change": "Сдача",
+      "paymentConfirmed": "Платеж подтвержден",
+      "saleCompleted": "Продажа завершена",
+      "saleError": "Не удалось завершить продажу.",
+      "estimate": {
+        "label": "Номер оценки",
+        "placeholder": "Введите номер оценки (напр. EST-2024-06-0001)",
+        "findButton": "Найти оценку",
+        "enterNumber": "Введите номер оценки.",
+        "found": "Оценка найдена.",
+        "notFound": "Оценка не найдена.",
+        "number": "Оценка",
+        "summaryTitle": "Сводка оценки",
+        "status": "Статус",
+        "pending": "В ожидании",
+        "vehicle": "Автомобиль",
+        "vin": "VIN",
+        "amount": "Сумма",
+        "servicesSection": "Услуги",
+        "noServices": "В оценке нет услуг.",
+        "productsSection": "Товары",
+        "noProducts": "В оценке нет товаров.",
+        "servicesTotal": "Сумма услуг",
+        "productsTotal": "Сумма товаров",
+        "orderTotal": "Итог заказа",
+        "invalidAmount": "Сумма оценки некорректна.",
+        "insufficientPayment": "Введенная оплата меньше общей суммы оценки.",
+        "confirmButton": "Подтвердить оплату",
+        "confirmed": "Оплата оценки подтверждена.",
+        "confirmFailed": "Не удалось подтвердить оплату оценки."
+      }
+    },
+    "modals": {
+      "pendingTopUpTitle": "Подтверждение ожидаемого пополнения",
+      "noOffersTitle": "Данный товар не соответствует заданным условиям."
+    },
+    "notifications": {
+      "cashUpdated": "Баланс кассы был обновлен",
+      "sessionNotOpen": "Перед созданием заказов откройте смену."
+    },
+    "success": {
+      "sessionOpened": "Смена успешно открыта",
+      "sessionClosed": "Смена успешно закрыта",
+      "intakeCreated": "Заявка успешно создана",
+      "ironSold": "Железо успешно куплено",
+      "transactionConfirmed": "Транзакция успешно подтверждена",
+      "purchaseCompleted": "Покупка успешно завершена"
+    },
+    "ironCarShop": {
+      "carModel": "Модель машины",
+      "brand": "Бренд",
+      "price": "Цена",
+      "calculate": "Рассчитать",
+      "selectCustomerToCalculate": "Перед выполнением расчета найдите или создайте клиента.",
+      "failedToLoadIronTypes": "Не удалось загрузить типы металла",
+      "calculationResult": "Результат расчёта",
+      "lineFormat": "{{name}} {{weight}} кг × {{price}} AMD = {{total}} AMD",
+      "total": "Итого",
+      "recalculate": "Пересчитать",
+      "stepLabel": "Шаг {{step}}"
+    },
+    "offerFinished": "Достигнута последняя ставка",
+    "calculate": {
+      "mode": {
+        "byCode": "По коду",
+        "byAttributes": "По параметрам"
+      },
+      "placeholder": {
+        "bucketGroupCode": "напр. newT1"
+      },
+      "label": {
+        "bucketGroupCode": "Код группы корзин",
+        "brandId": "ID Марки",
+        "modelId": "ID Модели",
+        "fuelTypeId": "ID типа топлива",
+        "engineId": "ID двигателя",
+        "marketId": "ID рынка",
+        "driveTypeId": "ID типа привода",
+        "year": "Год",
+        "hpMin": "Л.С. мин.",
+        "hpMax": "Л.С. макс."
+      },
+      "specs": {
+        "engine": "Двигатель",
+        "fuel": "Топливо",
+        "weight": "Вес",
+        "price": "Цена"
+      },
+      "summary": {
+        "totalPrice": "Общая стоимость",
+        "totalWeight": "Общий вес"
+      },
+      "linkedBuckets": "Связанные корзины",
+      "noResults": "Результаты не найдены",
+      "group": "Группа"
+    },
+    "workshop": {
+      "title": "Услуги мастерской",
+      "fields": {
+        "brand": "Марка",
+        "model": "Модель",
+        "fuelType": "Тип топлива",
+        "engine": "Двигатель",
+        "location": "Локация",
+        "year": "Год",
+        "services": "Услуги",
+        "parentCategory": "Категория",
+        "childCategory": "Подкатегория",
+        "categoryLevel": "Уровень категории {{level}}",
+        "product": "Товар",
+        "quantity": "Количество",
+        "vinCode": "VIN код",
+        "customerPhone": "Телефон клиента",
+        "mileageKm": "Пробег (км)"
+      },
+      "orderInfo": {
+        "title": "Данные заказа"
+      },
+      "actions": {
+        "addProduct": "Добавить товар",
+        "calculate": "Рассчитать",
+        "printCheck": "Распечатать чек"
+      },
+      "mechanicPrice": "Стоимость механических работ",
+      "electricianPrice": "Стоимость электротехнических работ",
+      "sparePartsPrice": "Стоимость запчастей",
+      "commentLabel": "Примечание",
+      "commentPlaceholder": "Введите дополнительное примечание...",
+      "emptyProducts": "Товары не выбраны.",
+      "onDuty": {
+        "loading": "Проверяем дежурных сотрудников...",
+        "assigned": "Назначенный сотрудник: {{employee}}",
+        "none": "На сегодня для этой категории нет дежурного сотрудника."
+      },
+      "programming": {
+        "loading": "Загружаем цены программирования для выбранного автомобиля...",
+        "noProgrammer": "Для этого автомобиля нет доступного программиста"
+      },
+      "totalAmount": "Общая сумма",
+      "createOrder": "Создать заказ-наряд",
+      "receipt": {
+        "title": "Чек на обслуживание",
+        "subtitle": "Сводка по заказу-наряду",
+        "cashRegister": "Касса",
+        "operator": "Оператор",
+        "estimateNumber": "Номер заказа",
+        "vehicleSection": "Автомобиль",
+        "servicesSection": "Выбранные услуги",
+        "assignedEmployee": "Назначенный сотрудник",
+        "productsSection": "Выбранные товары",
+        "productSku": "SKU код",
+        "summarySection": "Итоговая сводка",
+        "serviceTotal": "Стоимость услуг",
+        "electricityTotal": "Стоимость электротехнических работ",
+        "productsTotal": "Стоимость товаров"
+      },
+      "success": {
+        "orderCreated": "Заказ-наряд успешно создан",
+        "moveToCashDesk": "Чек распечатан. Перейдите в кассу для оплаты."
+      },
+      "error": {
+        "createFailed": "Не удалось создать заказ-наряд",
+        "loadVehicleDefinitionsFailed": "Не удалось загрузить данные автомобиля.",
+        "loadProductsFailed": "Не удалось загрузить ассортимент магазина.",
+        "loadProgrammingServicesFailed": "Не удалось загрузить услуги программирования для выбранного автомобиля.",
+        "requiredVehicleFields": "Заполните все обязательные поля автомобиля.",
+        "templateNotFound": "Для выбранного автомобиля не найден шаблон ценообразования.",
+        "selectAtLeastOneService": "Выберите хотя бы одну услугу для оценки.",
+        "calculateBeforePrint": "Перед печатью чека сначала выполните расчет.",
+        "createBeforePrint": "Сначала создайте заказ, чтобы номер заказа попал в чек.",
+        "estimateNeedsServices": "Оценка должна содержать хотя бы одну услугу.",
+        "requiredOrderFields": "Перед созданием заказа заполните VIN, пробег, телефон клиента и примечание."
+      }
+    },
+    "services": {
+      "title": "Оплата сервисных задач",
+      "noItems": "Нет доступных сервисных задач.",
+      "columns": {
+        "code": "Код услуги",
+        "price": "Цена",
+        "paymentType": "Тип оплаты"
+      },
+      "selectedCount": "Выбранные услуги",
+      "paymentTypes": {
+        "cash": "Наличные",
+        "nonCash": "Безналичные"
+      },
+      "totalAmount": "Общая сумма",
+      "cashTotal": "Наличные всего",
+      "nonCashTotal": "Безналично всего",
+      "pay": "Оплатить выбранные услуги",
+      "success": {
+        "paid": "Оплата сервисных задач успешно завершена"
+      },
+      "error": {
+        "loadFailed": "Не удалось загрузить сервисные задачи.",
+        "nothingSelected": "Пожалуйста, выберите хотя бы одну услугу и введите цену.",
+        "payFailed": "Не удалось завершить оплату сервисных задач."
+      }
+    },
+    "tabSwitchWarning": "Переключение вкладки приведет к сбросу всех форм и очистке введенных данных. Вы уверены, что хотите продолжить?"
+  },
+  "serviceTemplates": {
+    "title": "Шаблоны услуг",
+    "tabs": {
+      "pricing": "Тарификация услуг по автомобилю",
+      "categories": "Категории услуг",
+      "employees": "Сотрудники",
+      "services": "Услуги",
+      "programmers": "Записи программистов"
+    },
+    "actions": {
+      "create": "Создать",
+      "update": "Обновить",
+      "addCategory": "Добавить категорию",
+      "addService": "Добавить услугу",
+      "loadPricing": "Загрузить тарификацию по автомобилю",
+      "viewItems": "Показать состав",
+      "hideItems": "Скрыть состав"
+    },
+    "fields": {
+      "name": "Название шаблона",
+      "vehicleBrand": "Марка",
+      "vehicleModel": "Модель",
+      "year": "Год",
+      "fuelType": "Тип топлива",
+      "engine": "Двигатель",
+      "allFuelTypes": "Все типы топлива",
+      "allEngines": "Все двигатели",
+      "location": "Локация",
+      "electricityPrice": "Стоимость электротехнических работ",
+      "serviceCategory": "Категория услуги",
+      "code": "Код",
+      "description": "Описание",
+      "displayOrder": "Порядок отображения",
+      "estimatedDurationMinutes": "Ориентировочная длительность (мин.)",
+      "allCategories": "Все категории",
+      "filterByCategory": "Фильтр по категории",
+      "services": "Услуги",
+      "service": "Услуга",
+      "employee": "Сотрудник",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "fullName": "ФИО",
+      "email": "Электронная почта",
+      "phone": "Телефон",
+      "hireDate": "Дата найма",
+      "notes": "Примечание",
+      "servicePrice": "Стоимость услуги",
+      "servicesTotal": "Общая стоимость услуг",
+      "autoResolved": "Определяется автоматически",
+      "totalAmount": "Общая стоимость",
+      "vehicleDefinitionId": "ID определения авто",
+      "status": "Статус",
+      "inactive": "Неактивно"
+    },
+    "table": {
+      "name": "Шаблон",
+      "vehicle": "Автомобиль",
+      "location": "Локация",
+      "service": "Услуга",
+      "internalCost": "Внутренняя стоимость",
+      "servicePrice": "Цена услуги",
+      "profit": "Прибыль",
+      "bestProgrammer": "Лучший программист",
+      "programmerCost": "Себестоимость программиста",
+      "marginPercent": "Маржа %",
+      "serviceCategory": "Категория услуги",
+      "services": "Услуги",
+      "totalAmount": "Общая стоимость",
+      "status": "Статус",
+      "actions": "Действия"
+    },
+    "messages": {
+      "created": "Шаблон успешно создан",
+      "updated": "Изменения успешно сохранены",
+      "createFailed": "Не удалось создать шаблон",
+      "updateFailed": "Не удалось обновить шаблон",
+      "validationFailed": "Заполните все обязательные поля автомобиля, категории и стоимости услуг.",
+      "selectVehicleFirst": "Сначала выберите марку, модель, год, тип топлива, двигатель и локацию автомобиля.",
+      "vehicleNotFound": "Для выбранных параметров шаблон автомобиля не найден.",
+      "programmingPriceAutoResolved": "Цена определяется автоматически по записям программистов.",
+      "noProgrammerForVehicle": "Для этого автомобиля нет доступного программиста.",
+      "loadFailed": "Не удалось загрузить данные по тарификации услуг для автомобиля."
+    },
+    "programmerAdmin": {
+      "badge": "Панель администратора",
+      "title": "Контроль цен программистов",
+      "subtitle": "Просматривайте все записи программистов и корректируйте цену продажи, не изменяя их себестоимость.",
+      "hint": "Показаны все записи по программированию от всех программистов.",
+      "columns": {
+        "vehicle": "Автомобиль",
+        "programmerPrices": "Цены программистов",
+        "location": "Локация",
+        "serviceCost": "Себестоимость",
+        "sellingPrice": "Цена продажи",
+        "profit": "Прибыль",
+        "created": "Создано"
+      },
+      "actions": {
+        "editSellingPrice": "Изменить цену продажи",
+        "applyFilters": "Применить фильтры",
+        "resetFilters": "Сбросить фильтры"
+      },
+      "filters": {
+        "programmerUsername": "Имя пользователя программиста",
+        "allProgrammers": "Все программисты",
+        "programmerUsernamePlaceholder": "например, john_prog",
+        "brand": "Марка автомобиля",
+        "allBrands": "Все марки",
+        "model": "Модель автомобиля",
+        "allModels": "Все модели"
+      },
+      "messages": {
+        "loadFailed": "Не удалось загрузить записи программистов.",
+        "invalidSellingPrice": "Цена продажи должна быть корректным числом.",
+        "sellingPriceUpdated": "Цена продажи успешно обновлена.",
+        "updateFailed": "Не удалось обновить цену продажи.",
+        "noEntries": "Записи цен программистов не найдены.",
+        "searchFailed": "Не удалось выполнить поиск записей программистов."
+      }
+    },
+    "employeeManagement": {
+      "tabs": {
+        "employees": "Сотрудники",
+        "percentages": "Проценты по услугам",
+        "deposits": "Депозиты",
+        "attendance": "Посещаемость",
+        "payroll": "Начисление зарплаты"
+      },
+      "actions": {
+        "save": "Сохранить",
+        "giveDeposit": "Выдать аванс",
+        "saveAttendance": "Сохранить посещаемость",
+        "calculate": "Рассчитать зарплату",
+        "markPaid": "Отметить как выплаченную"
+      },
+      "fields": {
+        "shop": "Магазин",
+        "salaryType": "Тип зарплаты",
+        "fixedDailySalary": "Фиксированная дневная зарплата",
+        "selectShop": "Выберите магазин",
+        "selectEmployee": "Выберите сотрудника",
+        "allEmployees": "Все сотрудники",
+        "selectService": "Выберите услугу",
+        "percentage": "Процент",
+        "amount": "Сумма",
+        "notes": "Примечания",
+        "workDate": "Дата работы",
+        "allShops": "Все магазины",
+        "allDeposits": "Все авансы",
+        "activeOnly": "Только активные",
+        "fromDate": "С даты",
+        "toDate": "По дату"
+      },
+      "salaryTypes": {
+        "FixedDaily": "Фиксированная дневная зарплата",
+        "PercentageBased": "Процентная зарплата"
+      },
+      "attendanceStatus": {
+        "Present": "Присутствует",
+        "Absent": "Отсутствует"
+      },
+      "labels": {
+        "activeDeposit": "Активный аванс",
+        "presentCount": "Присутствуют",
+        "absentCount": "Отсутствуют",
+        "paid": "Выплачено",
+        "unpaid": "Не выплачено"
+      },
+      "sections": {
+        "employeeForm": "Форма сотрудника",
+        "employeeList": "Список сотрудников",
+        "servicePercentages": "Настройка процентов по услугам",
+        "byEmployee": "Проценты по сотруднику",
+        "byService": "Проценты по услуге",
+        "deposits": "Выдача аванса",
+        "depositHistory": "История авансов",
+        "depositsAll": "Авансы всех сотрудников",
+        "depositsByEmployee": "Текущий баланс",
+        "attendance": "Дневная посещаемость",
+        "attendanceHistory": "История посещаемости",
+        "payroll": "Дневная зарплата",
+        "salaryHistory": "История зарплаты"
+      },
+      "confirmation": {
+        "markPaidTitle": "Подтвердите выплату зарплаты",
+        "markPaidDescription": "Отметить зарплату сотрудника {{employee}} в размере {{amount}} как выплаченную?"
+      },
+      "columns": {
+        "fullName": "Полное имя",
+        "shop": "Магазин",
+        "serviceCategory": "Категория услуги",
+        "salaryType": "Тип зарплаты",
+        "fixedDailySalary": "Фиксированная дневная зарплата",
+        "phone": "Телефон",
+        "status": "Статус",
+        "serviceName": "Услуга",
+        "employee": "Сотрудник",
+        "percentage": "Процент",
+        "amount": "Сумма",
+        "remainingBalance": "Остаток",
+        "fullyRecoveredAt": "Погашен",
+        "workDate": "Дата работы",
+        "notes": "Примечания",
+        "grossSalary": "Валовая зарплата",
+        "depositDeduction": "Удержание из аванса",
+        "depositRemainingAfter": "Остаток после зарплаты",
+        "netPayable": "К выплате",
+        "paidStatus": "Статус выплаты",
+        "paidAt": "Выплачено в"
+      },
+      "messages": {
+        "validationFailed": "Заполните обязательные данные сотрудника.",
+        "created": "Сотрудник успешно создан",
+        "updated": "Данные сотрудника успешно обновлены",
+        "saveFailed": "Не удалось сохранить данные сотрудника",
+        "statusUpdated": "Статус сотрудника обновлен",
+        "statusUpdateFailed": "Не удалось обновить статус сотрудника",
+        "saved": "Изменения успешно сохранены",
+        "loadFailed": "Не удалось загрузить данные сотрудника",
+        "attendanceLoadFailed": "Не удалось загрузить данные посещаемости",
+        "attendanceSaveFailed": "Не удалось сохранить данные посещаемости",
+        "depositsAllLoadFailed": "Не удалось загрузить авансы всех сотрудников",
+        "calculated": "Зарплата успешно рассчитана",
+        "salaryFailed": "Не удалось рассчитать зарплату",
+        "salaryByDateLoadFailed": "Не удалось загрузить зарплаты за выбранную дату",
+        "salaryHistoryLoadFailed": "Не удалось загрузить историю зарплат",
+        "salaryMarkedPaid": "Зарплата отмечена как выплаченная",
+        "salaryMarkPaidFailed": "Не удалось отметить зарплату как выплаченную",
+        "salaryRecordIdMissing": "Отсутствует ID записи зарплаты",
+        "selectEmployeeHint": "Выберите сотрудника, чтобы увидеть аванс и историю.",
+        "selectEmployeeForSalaryHistory": "Выберите сотрудника, чтобы посмотреть историю зарплаты."
+      }
+    }
+  },
+  "customers": {
+    "createOrGet": "Найти клиента",
+    "createOrGetButton": "Поиск клиента",
+    "editCustomer": "Редактировать клиента",
+    "customersList": "Список клиентов",
+    "loading": "Загрузка клиентов...",
+    "emptyState": "Клиенты не найдены.",
+    "createCustomer": "Создать клиента",
+    "actions": {
+      "resetFilters": "Сбросить фильтры",
+      "openFilters": "Открыть фильтры",
+      "addCustomer": "Добавить клиента"
+    },
+    "form": {
+      "phone": "Телефон",
+      "phonePlaceholder": "Добавить номер телефона",
+      "fullName": "ФИО",
+      "fullNamePlaceholder": "Введите ФИО",
+      "gender": "Пол",
+      "customerType": "Тип клиента",
+      "selectCustomerType": "Выберите тип клиента",
+      "allTypes": "Все типы",
+      "notes": "Заметки"
+    },
+    "validation": {
+      "phoneRequired": "Номер телефона обязателен",
+      "customerTypeRequired": "Тип клиента обязателен"
+    },
+    "columns": {
+      "id": "ID",
+      "phone": "Телефон",
+      "customerType": "Тип клиента",
+      "bonusPercent": "Процент бонуса",
+      "isActive": "Статус"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить тип клиента",
+      "deleteDescription": "Вы уверены, что хотите удалить клиента \"{{code}}\"? Это действие нельзя отменить.",
+      "deleting": "Удаление...",
+      "delete": "Удалить"
+    },
+    "success": {
+      "customerCreated": "Клиент успешно создан или получен",
+      "customerUpdated": "Тип клиента успешно обновлен"
+    },
+    "error": {
+      "failedToLoad": "Не удалось загрузить клиентов",
+      "failedToCreate": "Не удалось создать или найти клиента",
+      "failedToUpdate": "Не удалось обновить данные клиента"
+    }
+  },
+
+  "pageControl": {
+    "title": "Управление страницей",
+    "columns": {
+      "name": "Имя",
+      "isVerified": "Проверено"
+    },
+    "toast": {
+      "noChanges": "Нет изменений для сохранения",
+      "pagesUpdated": "Страницы успешно обновлены!"
+    }
+  },
+
+  "auth": {
+    "login": {
+      "welcomeBack": "С возвращением!"
+    }
+  },
+  "OTP": {
+    "title": "Проверить страницу",
+    "description": "Чтобы продолжить, запросите одноразовый пароль (OTP).",
+    "requestOtp": "Запросить OTP",
+    "verifyOtp": "Проверить OTP",
+    "sendingOtp": "Отправка OTP...",
+    "verifyingOtp": "Проверка OTP...",
+    "cancel": "Отмена",
+    "requiredVerification": "Для просмотра этой страницы требуется проверка. Пожалуйста, вернитесь на панель управления.",
+    "goBack": "Вернуться на панель управления",
+    "accessDenied": "Доступ запрещен. У вас нет прав для просмотра этой страницы."
+  },
+  "catalystPricing": {
+    "title": "Ценообразование катализатора",
+    "editPricing": "Редактировать ценообразование катализатора",
+    "columns": {
+      "id": "ID",
+      "pdReducePercent": "Процент снижения палладия",
+      "rhReducePercent": "Процент снижения родия",
+      "ptReducePercent": "Процент снижения платины",
+      "commissionPercent": "Процент комиссии",
+      "transportCost1UsdPerKg": "Стоимость доставки 1 (USD/kg)",
+      "transportCost2UsdPerKg": "Стоимость доставки 2 (USD/kg)",
+      "updatedAt": "Обновлено в",
+      "profitMargin": "Процент прибыли",
+      "customerMargins": "Прогнозируемый процент прибыли в зависимости от типа клиента"
+    }
+  },
+  "warehouse": {
+    "dailyProfit": {
+      "columns": {
+        "date": "Дата",
+        "revenueAmd": "Выручка",
+        "costAmd": "Себестоимость",
+        "profitAmd": "Прибыль",
+        "soldPowderKg": "Проданный порошок (кг)"
+      },
+      "filters": {
+        "fromDate": "С даты",
+        "toDate": "Дата до"
+      }
+    },
+    "navigation": {
+      "dailyProfit": "Ежедневный отчет о прибыли склада"
+    },
+    "form": {
+      "selectWarehouse": "Пожалуйста, выберите склад",
+      "loading": "Загрузка...",
+      "emptyState": "На этом складе товары не найдены."
+    }
+  },
+  "powderSales": {
+    "adjustments": {
+      "columns": {
+        "id": "Id",
+        "powderSaleId": "ID",
+        "oldAmount": "Исходн.",
+        "newAmount": "Новая",
+        "difference": "Разн.",
+        "currencyCode": "Валюта",
+        "oldAmountAmd": "Старая (AMD)",
+        "newAmountAmd": "Новая (AMD)",
+        "differenceAmd": "Разн. (AMD)",
+        "exchangeRate": "Курс",
+        "reason": "Причина",
+        "createdAt": "Дата"
+      },
+      "title": "Скорректированные продажи"
+    }
+  },
+  "calculator": {
+    "title": "Калькулятор",
+    "liveBadge": "LIVE",
+    "columns": {
+      "weight": "Вес",
+      "price": "Цены",
+      "result": "Результат",
+      "noResult": "Поиск"
+    },
+    "form": {
+      "powderKg": "Порошок (кг)",
+      "pt_g": "Платина (Pt, г)",
+      "pd_g": "Палладий (Pd, г)",
+      "rh_g": "Родий (Rh, г)",
+
+      "priceMode": "Авто режим",
+      "priceMode.manual": "Вручную",
+      "priceMode.auto": "Автоматически",
+      "priceMode.calculate": "Рассчитать",
+
+      "ptPrice": "Цена платины (Pt)",
+      "pdPrice": "Цена палладия (Pd)",
+      "rhPrice": "Цена родия (Rh)",
+      "exchange": "Курс доллара США",
+      "totals": "Вес в зависимости от настроек - в общем весе",
+      "details": "Вес в зависимости от настроек - в 1 кг",
+      "customerBonus": "Бонус клиента (%)",
+      "minProfit": "Минимальная прибыль (%)",
+      "maxCustomerPercent": "Прибыль клиента",
+      "kitko": "Kitco (AMD)",
+      "finalBase": "Стоимость",
+      "offer": "Предложение",
+      "profit": "Прибыль",
+      "profitPercent": "Процент прибыли",
+
+      "button": {
+        "calculating": "Расчёт...",
+        "calculate": "Рассчитать",
+        "cancel": "Отмена"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Введите вес порошка",
+      "pt_g": "Введите вес платины",
+      "pd_g": "Введите вес палладия",
+      "rh_g": "Введите вес родия",
+
+      "ptPrice": "Введите цену платины",
+      "pdPrice": "Введите цену палладия",
+      "rhPrice": "Введите цену родия",
+      "exchange": "Введите курс",
+
+      "customerBonus": "Введите бонус клиента (%)",
+      "minProfit": "Введите минимальную прибыль (%)"
+    },
+    "error": {
+      "failedToCalculate": "Не удалось выполнить расчет партии"
+    }
+  },
+  "carCatalyst": {
+    "title": "Блоки катализатора автомобиля",
+
+    "fields": {
+      "category": "Категория",
+      "brand": "Бренд",
+      "model": "Модель",
+      "year": "Год",
+      "fromYear": "Год от",
+      "toYear": "Год до",
+      "country": "Страна",
+      "engine": "Двигатель",
+      "birka": "Бирка",
+      "selectBrand": "Выберите бренд",
+      "selectModel": "Выберите модель",
+      "selectBirka": "Выберите бирку",
+      "selectCountry": "Выберите страну",
+      "selectEngine": "Выберите двигатель",
+      "selectYear": "Выберите год"
+    },
+
+    "actions": {
+      "save": "Сохранить"
+    },
+
+    "sections": {
+      "frontBuckets": "Передний корпус",
+      "backBuckets": "Задний корпус"
+    },
+
+    "table": {
+      "code": "Код",
+      "weight": "Вес(кг)",
+      "pricePerKg": "Цена за 1 кг",
+      "pt": "Платина (Pt, г)",
+      "pd": "Палладий (Pd, г)",
+      "rh": "Родий (Rh, г)",
+      "bucketCode": "Код бака",
+      "addComposition": "Добавить композицию",
+      "compositionCode": "Код композиции",
+      "compositionType": "Тип",
+      "compositionTypes": {
+        "ceramic": "Керамика",
+        "iron": "Железо",
+        "filter": "Фильтр",
+        "diesel": "Дизель"
+      }
+    },
+
+    "errors": {
+      "loading": "Не удалось загрузить данные",
+      "required": "Заполните все обязательные поля",
+      "success": "Баки успешно добавлены",
+      "emptyBuckets": "Баков пока нет"
+    },
+    "details": {
+      "title": "Поиск каталитического нейтрализатора",
+      "subtitle": "Ищите по коду катализатора или по данным автомобиля",
+
+      "tabs": {
+        "code": "Поиск по коду",
+        "vehicle": "Поиск по автомобилю"
+      },
+
+      "codeSearch": {
+        "title": "Код катализатора",
+        "label": "Введите код катализатора",
+        "placeholder": "Например: kt0271"
+      },
+
+      "vehicleSearch": {
+        "title": "Данные автомобиля"
+      },
+
+      "actions": {
+        "back": "Назад",
+        "search": "Поиск",
+        "searchVehicles": "Найти автомобили",
+        "openDetails": "Открыть детали",
+        "deleteFilters": "Очистить фильтры"
+      },
+
+      "results": {
+        "title": "Результаты",
+        "foundCount": "Найдено катализаторов: {{count}}",
+        "converterCount": "Катализаторов: {{count}}",
+        "bucketsSummary": "баков",
+        "compositionsSummary": "композиций",
+        "compositions": "композиций",
+        "noCompositions": "без композиций",
+        "engine": "Двигатель",
+        "totalPrice": "Общая цена",
+        "empty": "Результатов пока нет"
+      },
+
+      "summary": {
+        "title": "Детали",
+        "empty": "Выберите результат, чтобы увидеть детали",
+        "emptyBuckets": "Баки не найдены",
+        "totalWeight": "Общий вес",
+        "totalPt": "Средний Pt",
+        "totalPd": "Средний Pd",
+        "totalRh": "Средний Rh",
+        "totalPrice": "Общая цена",
+        "ceramicPrice": "Цена керамики",
+        "ironPrice": "Цена железа",
+        "filterPrice": "Цена фильтра",
+        "weight": "Вес",
+        "pt": "Pt",
+        "pd": "Pd",
+        "rh": "Rh"
+      },
+
+      "offer": {
+        "title": "Лучшее предложение",
+        "calculating": "Расчет...",
+        "calculate": "Рассчитать",
+        "notAvailable": "Предложение недоступно",
+        "description": "Предложение рассчитано на основе содержания металлов в выбранных катализаторах",
+        "error": "Не удалось рассчитать предложение"
+      },
+
+      "sides": {
+        "front": "Передний",
+        "rear": "Задний"
+      },
+
+      "fallback": {
+        "brand": "Бренд #{{id}}",
+        "model": "Модель #{{id}}",
+        "country": "Страна #{{id}}",
+        "birka": "Бирка #{{id}}"
+      }
+    }
+  },
+  "programmerPage": {
+    "badge": "Категория программирования",
+    "title": "Панель управления ценами программиста",
+    "subtitle": "Выберите параметры автомобиля, затем услугу программирования и укажите себестоимость и цену продажи.",
+    "sections": {
+      "vehicleLookup": "1. Выберите параметры автомобиля",
+      "createPricing": "2. Добавить цену программирования",
+      "myEntries": "Мои записи по программированию",
+      "report": "Мой отчет по работе"
+    },
+    "tabs": {
+      "add": "Добавить",
+      "entries": "Мои записи по программированию",
+      "report": "Отчет"
+    },
+    "user": {
+      "username": "Вы вошли как"
+    },
+    "fields": {
+      "category": "Категория",
+      "brand": "Бренд",
+      "model": "Модель",
+      "fuelType": "Тип топлива",
+      "engine": "Двигатель",
+      "location": "Локация",
+      "driveType": "Тип привода",
+      "horsePower": "Мощность (л.с.)",
+      "year": "Год",
+      "selectedVehicle": "Выбранный автомобиль",
+      "programmingService": "Услуга программирования",
+      "notes": "Примечание",
+      "serviceCost": "Себестоимость",
+      "sellingPrice": "Цена продажи"
+    },
+    "values": {
+      "programming": "Программирование"
+    },
+    "placeholders": {
+      "selectBrand": "Выберите бренд",
+      "selectModel": "Выберите модель",
+      "selectFuelType": "Выберите тип топлива",
+      "selectEngine": "Выберите двигатель",
+      "selectLocation": "Выберите локацию",
+      "selectDriveType": "Выберите тип привода",
+      "horsePower": "150",
+      "selectYear": "Выберите год",
+      "chooseService": "Выберите услугу",
+      "notes": "Необязательное примечание",
+      "serviceCost": "80.00",
+      "sellingPrice": "150.00"
+    },
+    "actions": {
+      "searchVehicles": "Найти автомобили",
+      "searching": "Поиск...",
+      "resetFilters": "Сбросить фильтры",
+      "addPricing": "Добавить цену программирования",
+      "saving": "Сохранение...",
+      "editCost": "Изменить себестоимость",
+      "editPricing": "Изменить цены"
+    },
+    "states": {
+      "noVehicleLoaded": "Автомобили еще не загружены.",
+      "noVehicleSelected": "Автомобиль не выбран",
+      "resolvingVehicle": "Подбираем автомобиль по выбранным параметрам...",
+      "noEntries": "Для вашей учетной записи записи не найдены.",
+      "noReport": "Данные отчета пока недоступны."
+    },
+    "table": {
+      "vehicle": "Автомобиль",
+      "service": "Услуга",
+      "myServiceCost": "Моя себестоимость",
+      "sellingPrice": "Цена продажи",
+      "profit": "Прибыль",
+      "updatedAt": "Обновлено",
+      "timesPerformed": "Количество выполнений",
+      "programmerCost": "Стоимость программиста",
+      "paid": "Оплачено",
+      "remaining": "Осталось"
+    },
+    "messages": {
+      "loadDataFailed": "Не удалось загрузить данные.",
+      "refreshFailed": "Не удалось обновить записи.",
+      "reportFailed": "Не удалось загрузить отчет.",
+      "noVehiclesMatched": "По текущим фильтрам автомобили не найдены.",
+      "vehicleSearchFailed": "Ошибка поиска автомобилей.",
+      "selectVehicleAndService": "Пожалуйста, выберите автомобиль и услугу программирования.",
+      "invalidCosts": "Себестоимость и цена продажи должны быть корректными числами.",
+      "created": "Запись по программированию успешно создана.",
+      "createFailed": "Не удалось создать запись.",
+      "invalidServiceCost": "Себестоимость должна быть корректным числом.",
+      "costUpdated": "Себестоимость успешно обновлена.",
+      "updateCostFailed": "Не удалось обновить себестоимость."
+    },
+    "logout": {
+      "title": "Выход",
+      "description": "Выйти из панели программиста?"
+    }
+  }
+}

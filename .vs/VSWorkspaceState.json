@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\components",
+    "\\src\\components\\reports",
+    "\\src\\components\\reports\\SpecialLotsReport",
+    "\\src\\pages",
+    "\\src\\pages\\Reports",
+    "\\src\\services"
+  ],
+  "SelectedNode": "\\src\\App.tsx",
+  "PreviewInSolutionExplorer": false
+}

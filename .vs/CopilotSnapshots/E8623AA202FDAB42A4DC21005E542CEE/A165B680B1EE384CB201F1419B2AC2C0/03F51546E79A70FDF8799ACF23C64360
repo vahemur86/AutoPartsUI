@@ -1,0 +1,186 @@
+﻿import { type FC, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+
+// ui-kit
+import { DataTable, Select, Button, DatePicker } from "@/ui-kit";
+
+// columns
+import { getSpecialLotsColumns } from "./columns";
+
+// store
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchSpecialLotsReport } from "@/store/slices/warehouses/reportsSlice";
+import { fetchWarehouses } from "@/store/slices/warehousesSlice";
+
+// utils
+import { getCashRegisterId, getApiErrorMessage } from "@/utils";
+
+// styles
+import styles from "./SpecialLotsReport.module.css";
+
+const toSafeISO = (date: Date | null) => {
+  if (!date) return undefined;
+  const safeDate = new Date(date);
+  safeDate.setHours(12, 0, 0, 0);
+  return safeDate.toISOString();
+};
+
+const kg = (value: number) =>
+  value.toLocaleString(undefined, {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  });
+
+const amd = (value: number) => `${Math.round(value).toLocaleString()} AMD`;
+
+export const SpecialLotsReport: FC = () => {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const { specialLotsReport, isLoading } = useAppSelector(
+    (state) => state.warehousesReports,
+  );
+  const { warehouses } = useAppSelector((state) => state.warehouses);
+
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
+    null,
+  );
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
+
+  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+  const columns = useMemo(() => getSpecialLotsColumns(), []);
+
+  useEffect(() => {
+    dispatch(fetchWarehouses());
+  }, [dispatch]);
+
+  const loadReport = useMemo(
+    () => async () => {
+      try {
+        await dispatch(
+          fetchSpecialLotsReport({
+            cashRegisterId,
+            warehouseId: selectedWarehouseId ?? undefined,
+            fromUtc: toSafeISO(fromDate),
+            toUtc: toSafeISO(toDate),
+          }),
+        ).unwrap();
+      } catch (error) {
+        toast.error(
+          getApiErrorMessage(error, t("specialLots.errors.failedToFetch")),
+        );
+      }
+    },
+    [dispatch, cashRegisterId, selectedWarehouseId, fromDate, toDate, t],
+  );
+
+  useEffect(() => {
+    loadReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, cashRegisterId]);
+
+  const summaryCards = specialLotsReport
+    ? [
+        {
+          label: t("specialLots.summary.totalLots"),
+          value: specialLotsReport.totalSpecialLotsCreated.toLocaleString(),
+        },
+        {
+          label: t("specialLots.summary.uniqueCustomers"),
+          value: specialLotsReport.uniqueSpecialCustomersCount.toLocaleString(),
+        },
+        {
+          label: t("specialLots.summary.totalPowderKg"),
+          value: `${kg(specialLotsReport.totalSpecialPowderKg)} kg`,
+        },
+        {
+          label: t("specialLots.summary.totalCostAmd"),
+          value: amd(specialLotsReport.totalSpecialCostAmd),
+        },
+        {
+          label: t("specialLots.summary.remainingPowderKg"),
+          value: `${kg(specialLotsReport.remainingSpecialPowderKg)} kg`,
+        },
+        {
+          label: t("specialLots.summary.remainingCostAmd"),
+          value: amd(specialLotsReport.remainingSpecialCostAmd),
+        },
+      ]
+    : [];
+
+  return (
+    <div className={styles.wrapper}>
+      <h1 className={styles.title}>{t("specialLots.title")}</h1>
+
+      <div className={styles.filters}>
+        <div className={styles.filterItem}>
+          <DatePicker
+            label={t("common.from")}
+            selected={fromDate}
+            onChange={setFromDate}
+          />
+        </div>
+        <div className={styles.filterItem}>
+          <DatePicker
+            label={t("common.to")}
+            selected={toDate}
+            onChange={setToDate}
+          />
+        </div>
+        <div className={styles.filterItem}>
+          <Select
+            label={t("warehouses.form.warehouse")}
+            value={selectedWarehouseId ? String(selectedWarehouseId) : ""}
+            onChange={(e) =>
+              setSelectedWarehouseId(Number(e.target.value) || null)
+            }
+            disabled={isLoading}
+          >
+            <option value="">{t("specialLots.allWarehouses")}</option>
+            {warehouses.map((warehouse) => (
+              <option key={warehouse.id} value={warehouse.id}>
+                {warehouse.code}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        <Button variant="primary" onClick={loadReport} disabled={isLoading}>
+          {t("specialLots.generateReport")}
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => window.print()}
+          disabled={isLoading || !specialLotsReport}
+        >
+          {t("specialLots.printReport")}
+        </Button>
+      </div>
+
+      <div className={styles.summaryCards}>
+        {summaryCards.map((card) => (
+          <div key={card.label} className={styles.card}>
+            <span className={styles.cardLabel}>{card.label}</span>
+            <strong className={styles.cardValue}>{card.value}</strong>
+          </div>
+        ))}
+      </div>
+
+      <h2 className={styles.sectionTitle}>{t("specialLots.byCustomer")}</h2>
+
+      {isLoading ? (
+        <div className={styles.emptyState}>{t("common.loading")}</div>
+      ) : !specialLotsReport?.byCustomer?.length ? (
+        <div className={styles.emptyState}>{t("common.noData")}</div>
+      ) : (
+        <DataTable
+          data={specialLotsReport.byCustomer}
+          columns={columns}
+          pageSize={10}
+        />
+      )}
+    </div>
+  );
+};
