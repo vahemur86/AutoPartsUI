@@ -3,11 +3,12 @@ import axios from "axios";
 
 let isRedirectingToLogin = false;
 
-//  Azure API base URL
-const DEFAULT_API_BASE_URL =
-  "https://prpservice-grdag3gqdhgba5by.canadacentral-01.azurewebsites.net/api";
+// Azure API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+if (!API_BASE_URL) {
+    throw new Error("VITE_API_BASE_URL is not configured.");
+}
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
