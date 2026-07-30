@@ -188,17 +188,22 @@ export const getIronPurchasesReport = async (
   cashRegisterId: number,
 ): Promise<IronPurchasesReportResponse> => {
   try {
-    const response = await api.get(`${BASE_URL}/reports/purchases`, {
-      params: {
+    const response = await api.post(
+      `${BASE_URL}/reports/purchases`,
+      {
         ...params,
         lang: params.lang ? formatLang(params.lang) : undefined,
       },
-      headers: getHeaders(cashRegisterId),
-    });
+      {
+        headers: getHeaders(cashRegisterId),
+      },
+    );
 
     return response.data;
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, "Failed to fetch iron purchases report."));
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch iron purchases report."),
+    );
   }
 };
 

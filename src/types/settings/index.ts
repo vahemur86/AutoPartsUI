@@ -820,6 +820,9 @@ export interface CarCatalyst {
   averagePd_g?: number;
   averageRh_g?: number;
   totalIronPrice?: number;
+  hasCeramic?: boolean;
+  hasFilter?: boolean;
+  hasDiesel?: boolean;
 }
 export interface CarCatalystSearchParams {
   code?: string;

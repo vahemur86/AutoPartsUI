@@ -375,12 +375,34 @@ const years = useMemo(
           (composition) => composition.type,
         );
 
-        if (compositionTypes.includes(0)) {
+        const hasCeramicComposition = compositionTypes.includes(0);
+        const hasFilterComposition = compositionTypes.includes(2);
+        const hasDieselComposition = compositionTypes.includes(3);
+
+        const ceramicEnabled =
+          item?.hasCeramic != null
+            ? item.hasCeramic
+            : hasCeramicComposition;
+        const filterEnabled =
+          item?.hasFilter != null
+            ? item.hasFilter
+            : hasFilterComposition;
+        const dieselEnabled =
+          item?.hasDiesel != null
+            ? item.hasDiesel
+            : hasDieselComposition;
+
+        if (ceramicEnabled) {
           hasCeramic = true;
           ceramicPrice += customerOfferAmd;
         }
 
-        if (compositionTypes.includes(2)) {
+        if (filterEnabled) {
+          hasFilter = true;
+          filterPrice += customerOfferAmd;
+        }
+
+        if (dieselEnabled) {
           hasFilter = true;
           filterPrice += customerOfferAmd;
         }
@@ -726,7 +748,9 @@ const searchByVehicle = async () => {
                               ? t("carCatalyst.table.compositionTypes.ceramic")
                               : composition.type === 1
                                 ? t("carCatalyst.table.compositionTypes.iron")
-                                : t("carCatalyst.table.compositionTypes.filter")}
+                                : composition.type === 2
+                                  ? t("carCatalyst.table.compositionTypes.filter")
+                                  : t("carCatalyst.table.compositionTypes.diesel")}
                           </span>
                         </div>
                         <div className={styles.compositionMeta}>
@@ -882,6 +906,8 @@ const searchByVehicle = async () => {
               <Select
                 label={t("carCatalyst.fields.brand")}
                 value={brandId}
+                searchable
+                searchPlaceholder={t("common.search")}
                 onChange={(e) => handleBrandChange(e.target.value)}
               >
                 <option value="">{t("carCatalyst.fields.selectBrand")}</option>
@@ -895,6 +921,8 @@ const searchByVehicle = async () => {
               <Select
                 label={t("carCatalyst.fields.model")}
                 value={modelId}
+                searchable
+                searchPlaceholder={t("common.search")}
                 onChange={(e) =>
                   setModelId(
                     e.target.value === "" ? "" : Number(e.target.value),
@@ -913,6 +941,8 @@ const searchByVehicle = async () => {
   <Select
     label={t("carCatalyst.fields.fromYear")}
     value={fromYear}
+    searchable
+    searchPlaceholder={t("common.search")}
     onChange={(e) =>
       setFromYear(e.target.value ? Number(e.target.value) : "")
     }
@@ -928,6 +958,8 @@ const searchByVehicle = async () => {
   <Select
     label={t("carCatalyst.fields.toYear")}
     value={toYear}
+    searchable
+    searchPlaceholder={t("common.search")}
     onChange={(e) =>
       setToYear(e.target.value ? Number(e.target.value) : "")
     }
@@ -945,6 +977,8 @@ const searchByVehicle = async () => {
               <Select
                 label={t("carCatalyst.fields.country")}
                 value={countryId}
+                searchable
+                searchPlaceholder={t("common.search")}
                 onChange={(e) =>
                   setCountryId(
                     e.target.value === "" ? "" : Number(e.target.value),
