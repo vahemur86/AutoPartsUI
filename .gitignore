@@ -26,3 +26,8 @@ build
 
 *storybook.log
 storybook-static
+/.vs/AutoPartsUI/FileContentIndex
+/.vs/AutoPartsUI
+/.vs/slnx.sqlite
+/.vs
+/.env
