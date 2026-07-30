@@ -4,6 +4,7 @@ export interface CustomerType {
   bonusPercent?: number;
   isActive?: boolean;
   isDefault?: boolean;
+  preventInventoryMerge?: boolean;
 }
 
 export interface Customer {

@@ -33,8 +33,15 @@
 .switchWrapper {
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   padding-top: 4px;
   grid-column: span 2;
+}
+
+.switchHint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .actionswithoutDelete {

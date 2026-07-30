@@ -56,6 +56,7 @@ import { IronSaleReport } from "@/components/reports/IronSaleReport";
 import { IronPurchasesReport } from "@/components/reports/IronPurchasesReport";
 import { WorkshopOrdersReport } from "@/components/reports/WorkshopOrdersReport";
 import { ServiceTasksReport } from "@/components/reports/ServiceTasksReport";
+import { SpecialLotsReport } from "@/components/reports/SpecialLotsReport";
 
 // Finance Reports components
 import { ProfitSummary } from "@/components/financeReports/ProfitSummary";
@@ -249,6 +250,7 @@ export const App = () => {
                   <Route path="iron-purchases" element={<IronPurchasesReport />} />
                   <Route path="workshop-orders" element={<WorkshopOrdersReport />} />
                   <Route path="service-task-reports" element={<ServiceTasksReport />} />
+                  <Route path="special-lots" element={<SpecialLotsReport />} />
                 </Route>
 
                 <Route path="finance-reports">

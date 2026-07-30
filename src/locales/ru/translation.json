@@ -231,7 +231,40 @@
       "ironSale": "Отчеты по продажам железа",
       "ironPurchases": "Отчеты по покупкам железа",
       "workshopOrders": "Заказы мастерской",
-      "serviceTasks": "Платежи по сервисным задачам"
+      "serviceTasks": "Платежи по сервисным задачам",
+      "specialLots": "Партии особых клиентов"
+    },
+    "specialLots": {
+      "title": "Отчет по партиям особых клиентов",
+      "generate": "Сформировать отчет",
+      "exportToExcel": "Экспорт в Excel",
+      "print": "Печать отчета",
+      "emptyState": "Партии особых клиентов не найдены.",
+      "filters": {
+        "fromDate": "Дата с",
+        "toDate": "Дата по",
+        "allWarehouses": "Все склады"
+      },
+      "summary": {
+        "totalSpecialLotsCreated": "Всего создано особых партий",
+        "uniqueSpecialCustomersCount": "Уникальных особых клиентов",
+        "totalSpecialPowderKg": "Всего особого порошка",
+        "totalSpecialCostAmd": "Общая стоимость особых партий"
+      },
+      "columns": {
+        "customerName": "Клиент",
+        "totalLots": "Всего партий",
+        "totalPowderKg": "Всего порошка",
+        "totalCostAmd": "Общая стоимость",
+        "remainingPowderKg": "Остаток",
+        "remainingCostAmd": "Стоимость остатка",
+        "soldPercent": "Продано %",
+        "revenueAmd": "Выручка",
+        "profitAmd": "Прибыль"
+      },
+      "error": {
+        "failedToFetch": "Не удалось загрузить отчет по особым партиям"
+      }
     },
     "ironPurchases": {
       "filters": {
@@ -896,13 +929,26 @@
         "createdAt": "Создано",
         "updatedAt": "Обновлено",
         "selectedKg": "Выбранный кг",
-        "totalPowderKg": "Общий"
+        "totalPowderKg": "Общий",
+        "lotType": "Тип",
+        "specialCustomer": "Клиент"
+      },
+      "lotType": {
+        "special": "Партия особого клиента",
+        "general": "Общая партия",
+        "mergedFromMultiple": "(Объединено из нескольких)"
+      },
+      "filters": {
+        "showGeneralLots": "Показать общие партии",
+        "showSpecialLots": "Показать партии особых клиентов",
+        "allSpecialCustomers": "Все особые клиенты"
       },
       "preview": {
         "totalCostAmd": "Стоимость продажи",
         "totalCost": "Стоимость",
         "totalRevenueAmd": "Общая выручка",
-        "totalPowderKg": "Общий вес порошка (кг)"
+        "totalPowderKg": "Общий вес порошка (кг)",
+        "composition": "Состав партии продажи"
       },
       "success": {
         "itemAdded": "Партия #{{id}} добавлена с {{kg}} кг",
@@ -1267,12 +1313,15 @@
       "code": "Код",
       "enterCode": "Введите код...",
       "bonusPercent": "Процент бонуса (%)",
-      "isDefault": "По умолчанию"
+      "isDefault": "По умолчанию",
+      "preventInventoryMerge": "Запретить объединение запасов",
+      "preventInventoryMergeHint": "Порошок этого типа клиента НЕ будет объединяться с общими запасами"
     },
     "columns": {
       "code": "Код",
       "isDefault": "По умолчанию",
       "bonusPercent": "Процент бонуса",
+      "preventInventoryMerge": "Отдельные партии",
       "status": "Статус"
     },
     "success": {

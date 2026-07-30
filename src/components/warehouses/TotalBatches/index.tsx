@@ -44,8 +44,48 @@ export const TotalBatches = () => {
     Array<{ inventoryLotId: number; powderKg: number }>
   >([]);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [showGeneralLots, setShowGeneralLots] = useState(true);
+  const [showSpecialLots, setShowSpecialLots] = useState(true);
+  const [selectedSpecialCustomerId, setSelectedSpecialCustomerId] = useState<
+    number | null
+  >(null);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+
+  const specialCustomers = useMemo(() => {
+    const map = new Map<number, string>();
+    inventoryLots.forEach((lot) => {
+      if (lot.isSpecialCustomerLot && lot.specialCustomerId) {
+        map.set(
+          lot.specialCustomerId,
+          lot.specialCustomerName ?? `#${lot.specialCustomerId}`,
+        );
+      }
+    });
+    return Array.from(map, ([id, name]) => ({ id, name }));
+  }, [inventoryLots]);
+
+  const filteredLots = useMemo(
+    () =>
+      inventoryLots.filter((lot) => {
+        const isSpecial = !!lot.isSpecialCustomerLot;
+        if (isSpecial && !showSpecialLots) return false;
+        if (!isSpecial && !showGeneralLots) return false;
+        if (
+          selectedSpecialCustomerId !== null &&
+          lot.specialCustomerId !== selectedSpecialCustomerId
+        ) {
+          return false;
+        }
+        return true;
+      }),
+    [
+      inventoryLots,
+      showGeneralLots,
+      showSpecialLots,
+      selectedSpecialCustomerId,
+    ],
+  );
 
   const totalKgCount = useMemo(() => {
     return selectedItems.reduce((acc, item) => acc + item.powderKg, 0);
@@ -222,6 +262,50 @@ export const TotalBatches = () => {
         </div>
       </div>
 
+      <div className={styles.lotFilters}>
+        <label className={styles.lotFilterItem}>
+          <input
+            type="checkbox"
+            checked={showGeneralLots}
+            onChange={(e) => setShowGeneralLots(e.target.checked)}
+          />
+          {t("warehouses.totalBatches.filters.showGeneralLots")}
+        </label>
+
+        <label className={styles.lotFilterItem}>
+          <input
+            type="checkbox"
+            checked={showSpecialLots}
+            onChange={(e) => setShowSpecialLots(e.target.checked)}
+          />
+          {t("warehouses.totalBatches.filters.showSpecialLots")}
+        </label>
+
+        <div className={styles.lotFilterSelect}>
+          <Select
+            value={
+              selectedSpecialCustomerId === null
+                ? ""
+                : String(selectedSpecialCustomerId)
+            }
+            onChange={(e) =>
+              setSelectedSpecialCustomerId(
+                e.target.value ? Number(e.target.value) : null,
+              )
+            }
+          >
+            <option value="">
+              {t("warehouses.totalBatches.filters.allSpecialCustomers")}
+            </option>
+            {specialCustomers.map((customer) => (
+              <option key={customer.id} value={customer.id}>
+                {customer.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+      </div>
+
       <div className={styles.tableSection}>
         {!selectedWarehouseId ? (
           <div className={styles.emptyState}>
@@ -249,7 +333,7 @@ export const TotalBatches = () => {
           </div>
         ) : (
           <DataTable
-            data={inventoryLots}
+            data={filteredLots}
             columns={columns}
             pageSize={10}
             meta={{
@@ -259,7 +343,11 @@ export const TotalBatches = () => {
               onAdd: handleAdd,
             }}
             getRowClassName={(row) =>
-              checkIsToday(row.createdAt) ? styles.todayRow : ""
+              row.isSpecialCustomerLot
+                ? styles.specialRow
+                : checkIsToday(row.createdAt)
+                  ? styles.todayRow
+                  : ""
             }
             frozenConfig={{
               right: ["actions"],

@@ -9,6 +9,8 @@ export interface GetInventoryLotsReportParams {
   id: number;
   status?: number;
   cashRegisterId: number;
+  isSpecialCustomerLot?: boolean;
+  specialCustomerId?: number;
 }
 
 export interface ProfitReportResponse {
@@ -44,6 +46,40 @@ export interface InventoryLot {
   status: number;
   createdAt: string;
   updatedAt: string;
+  isSpecialCustomerLot?: boolean;
+  specialCustomerId?: number | null;
+  specialCustomerName?: string | null;
 }
 
 export type InventoryLotsReportResponse = InventoryLot[];
+
+export interface GetSpecialLotsReportParams {
+  fromDate?: string;
+  toDate?: string;
+  warehouseId?: number;
+  cashRegisterId: number;
+}
+
+export interface SpecialCustomerBreakdown {
+  specialCustomerId: number;
+  specialCustomerName: string;
+  totalLotsCount: number;
+  totalPowderKg: number;
+  totalCostAmd: number;
+  remainingPowderKg: number;
+  remainingCostAmd: number;
+  revenueAmd: number;
+  profitAmd: number;
+}
+
+export interface SpecialLotsReportResponse {
+  totalSpecialLotsCreated: number;
+  uniqueSpecialCustomersCount: number;
+  totalSpecialPowderKg: number;
+  totalSpecialCostAmd: number;
+  remainingSpecialPowderKg: number;
+  remainingSpecialCostAmd: number;
+  byCustomer: SpecialCustomerBreakdown[];
+  reportFromDate: string;
+  reportToDate: string;
+}

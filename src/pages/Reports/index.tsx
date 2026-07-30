@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Database,
   ShoppingCart,
+  Boxes,
 } from "lucide-react";
 
 // components
@@ -77,6 +78,12 @@ export const Reports = () => {
       path: "/service-task-reports",
       label: t("reports.navigation.serviceTasks"),
       icon: ClipboardList,
+      showCheckmark: true,
+    },
+    {
+      path: "/special-lots",
+      label: t("reports.navigation.specialLots"),
+      icon: Boxes,
       showCheckmark: true,
     },
   ];

@@ -7,6 +7,9 @@ import { SelectedKgCell } from "./SelectedKg";
 // types
 import type { InventoryLot } from "@/types/warehouses/reports";
 
+// styles
+import styles from "./TotalBatches.module.css";
+
 const columnHelper = createColumnHelper<InventoryLot>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,6 +17,40 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
   columnHelper.accessor("id", {
     header: i18next.t("warehouses.totalBatches.columns.id"),
     cell: (info) => `#${info.getValue()}`,
+  }),
+
+  columnHelper.display({
+    id: "lotType",
+    header: i18next.t("warehouses.totalBatches.columns.lotType"),
+    cell: ({ row }) =>
+      row.original.isSpecialCustomerLot ? (
+        <span className={`${styles.badge} ${styles.badgeWarning}`}>
+          {i18next.t("warehouses.totalBatches.lotType.special")}
+        </span>
+      ) : (
+        <span className={`${styles.badge} ${styles.badgeInfo}`}>
+          {i18next.t("warehouses.totalBatches.lotType.general")}
+        </span>
+      ),
+  }),
+
+  columnHelper.display({
+    id: "specialCustomer",
+    header: i18next.t("warehouses.totalBatches.columns.specialCustomer"),
+    cell: ({ row }) => {
+      const lot = row.original;
+      if (!lot.isSpecialCustomerLot) {
+        return (
+          <span className={styles.mutedText}>
+            {i18next.t("warehouses.totalBatches.lotType.mergedFromMultiple")}
+          </span>
+        );
+      }
+      return (
+        lot.specialCustomerName ??
+        (lot.specialCustomerId ? `#${lot.specialCustomerId}` : "-")
+      );
+    },
   }),
 
   columnHelper.accessor("initialPowderKg", {

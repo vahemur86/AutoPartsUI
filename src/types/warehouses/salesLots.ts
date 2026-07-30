@@ -21,6 +21,9 @@ export interface LotItem {
   pt_g: number;
   pd_g: number;
   rh_g: number;
+  fromSpecialCustomerLot?: boolean;
+  specialCustomerId?: number | null;
+  specialCustomerName?: string | null;
 }
 
 export interface GetSalesLotsParams {
@@ -116,6 +119,9 @@ export interface SalesLotPreviewItem {
   ptPerKg_g: number;
   pdPerKg_g: number;
   rhPerKg_g: number;
+  fromSpecialCustomerLot?: boolean;
+  specialCustomerId?: number | null;
+  specialCustomerName?: string | null;
 }
 
 export interface SalesLotPreviewRequest {

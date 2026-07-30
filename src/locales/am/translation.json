@@ -230,7 +230,40 @@
       "ironProducts": "Երկաթյա արտադրանք",
       "ironSale": "Երկաթի վաճառք",
       "ironPurchases": "Երկաթի գնումներ",
-      "serviceTasks": "Ծառայության վճարումներ"
+      "serviceTasks": "Ծառայության վճարումներ",
+      "specialLots": "Հատուկ հաճախորդների խմբեր"
+    },
+    "specialLots": {
+      "title": "Հատուկ հաճախորդների խմբերի հաշվետվություն",
+      "generate": "Ստեղծել հաշվետվություն",
+      "exportToExcel": "Արտահանել Excel",
+      "print": "Տպել հաշվետվությունը",
+      "emptyState": "Հատուկ հաճախորդների խմբեր չեն գտնվել։",
+      "filters": {
+        "fromDate": "Սկսած",
+        "toDate": "Մինչև",
+        "allWarehouses": "Բոլոր պահեստները"
+      },
+      "summary": {
+        "totalSpecialLotsCreated": "Ստեղծված հատուկ խմբեր",
+        "uniqueSpecialCustomersCount": "Եզակի հատուկ հաճախորդներ",
+        "totalSpecialPowderKg": "Ընդհանուր հատուկ փոշի",
+        "totalSpecialCostAmd": "Ընդհանուր հատուկ արժեք"
+      },
+      "columns": {
+        "customerName": "Հաճախորդ",
+        "totalLots": "Ընդհանուր խմբեր",
+        "totalPowderKg": "Ընդհանուր փոշի",
+        "totalCostAmd": "Ընդհանուր արժեք",
+        "remainingPowderKg": "Մնացորդ",
+        "remainingCostAmd": "Մնացորդի արժեք",
+        "soldPercent": "Վաճառված %",
+        "revenueAmd": "Հասույթ",
+        "profitAmd": "Շահույթ"
+      },
+      "error": {
+        "failedToFetch": "Չհաջողվեց բեռնել հատուկ խմբերի հաշվետվությունը"
+      }
     },
     "ironPurchases": {
       "filters": {
@@ -790,13 +823,26 @@
         "createdAt": "Ստեղծվել է",
         "updatedAt": "Թարմացվել է",
         "selectedKg": "Ընտրված կգ",
-        "totalPowderKg": "Ընդհանուր"
+        "totalPowderKg": "Ընդհանուր",
+        "lotType": "Տեսակ",
+        "specialCustomer": "Հաճախորդ"
+      },
+      "lotType": {
+        "special": "Հատուկ հաճախորդի խմբ",
+        "general": "Ընդհանուր խմբ",
+        "mergedFromMultiple": "(Միավորված մի քանիսից)"
+      },
+      "filters": {
+        "showGeneralLots": "Ցույց տալ ընդհանուր խմբերը",
+        "showSpecialLots": "Ցույց տալ հատուկ խմբերը",
+        "allSpecialCustomers": "Բոլոր հատուկ հաճախորդները"
       },
       "preview": {
         "totalCostAmd": "Վաճառքի գին",
         "totalCost": "Ընդհանուր ինքնարժեք",
         "totalRevenueAmd": "Ընդհանուր հասույթ",
-        "totalPowderKg": "Ընդհանուր փոշի (կգ)"
+        "totalPowderKg": "Ընդհանուր փոշի (կգ)",
+        "composition": "Վաճառքի խմբի կազմը"
       },
       "success": {
         "itemAdded": "#{{id}} խումբն ավելացվեց {{kg}} կգ քաշով",
@@ -1115,12 +1161,15 @@
       "code": "Կոդ",
       "enterCode": "Մուտքագրեք կոդը...",
       "bonusPercent": "Բոնուսի տոկոս (%)",
-      "isDefault": "Լռելյայն"
+      "isDefault": "Լռելյայն",
+      "preventInventoryMerge": "Արգելել պահեստի միավորումը",
+      "preventInventoryMergeHint": "Այս տեսակի հաճախորդի փոշին ՉԻ միավորվի ընդհանուր պահեստի հետ"
     },
     "columns": {
       "code": "Կոդ",
       "isDefault": "Լռելյայն",
       "bonusPercent": "Բոնուսի տոկոս",
+      "preventInventoryMerge": "Առանձին խմբեր",
       "status": "Կարգավիճակ"
     },
     "success": {

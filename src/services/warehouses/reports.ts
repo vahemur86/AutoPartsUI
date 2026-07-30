@@ -11,6 +11,8 @@ import type {
   GetInventoryLotsReportParams,
   InventoryLotsReportResponse,
   DailyProfitReportResponse,
+  GetSpecialLotsReportParams,
+  SpecialLotsReportResponse,
 } from "@/types/warehouses/reports";
 import { ROUTE_PAGE_KEYS } from "@/constants/pageKeys";
 
@@ -70,6 +72,8 @@ export const getInventoryLotsReport = ({
   id,
   cashRegisterId,
   status,
+  isSpecialCustomerLot,
+  specialCustomerId,
 }: GetInventoryLotsReportParams) => {
   const pageKey = ROUTE_PAGE_KEYS.warehouse;
 
@@ -78,7 +82,7 @@ export const getInventoryLotsReport = ({
       api.get<InventoryLotsReportResponse>(
         `/admin/reports/${id}/inventory/lots`,
         {
-          params: { status },
+          params: { status, isSpecialCustomerLot, specialCustomerId },
           headers,
         },
       ),
@@ -87,3 +91,17 @@ export const getInventoryLotsReport = ({
     pageKey,
   );
 };
+
+export const getSpecialLotsReport = ({
+  cashRegisterId,
+  ...params
+}: GetSpecialLotsReportParams) =>
+  performRequest(
+    (headers) =>
+      api.get<SpecialLotsReportResponse>(`/admin/reports/special-lots`, {
+        params,
+        headers,
+      }),
+    cashRegisterId,
+    "Failed to fetch special lots report.",
+  );

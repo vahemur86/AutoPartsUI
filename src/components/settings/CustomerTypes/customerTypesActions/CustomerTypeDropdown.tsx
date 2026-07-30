@@ -37,6 +37,7 @@ export const CustomerTypeDropdown = ({
   const [isDefault, setIsDefault] = useState(false);
   const [bonusPercent, setBonusPercent] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [preventInventoryMerge, setPreventInventoryMerge] = useState(false);
   const [hasTriedSave, setHasTriedSave] = useState(false);
 
   const isEditMode = !!initialData;
@@ -49,6 +50,7 @@ export const CustomerTypeDropdown = ({
         initialData ? String(initialData.bonusPercent) : "0",
       );
       setIsActive(initialData?.isActive ?? true);
+      setPreventInventoryMerge(initialData?.preventInventoryMerge ?? false);
       setHasTriedSave(false);
     }
   }, [open, initialData]);
@@ -67,6 +69,7 @@ export const CustomerTypeDropdown = ({
       code: code.trim(),
       isDefault,
       bonusPercent: numBonusPercent,
+      preventInventoryMerge,
       ...(isEditMode && { isActive }),
     });
   };
@@ -115,6 +118,17 @@ export const CustomerTypeDropdown = ({
               onCheckedChange={setIsDefault}
               label={t("customerTypes.form.isDefault")}
             />
+          </div>
+
+          <div className={styles.switchWrapper}>
+            <Switch
+              checked={preventInventoryMerge}
+              onCheckedChange={setPreventInventoryMerge}
+              label={t("customerTypes.form.preventInventoryMerge")}
+            />
+            <span className={styles.switchHint}>
+              {t("customerTypes.form.preventInventoryMergeHint")}
+            </span>
           </div>
 
           {isEditMode && (

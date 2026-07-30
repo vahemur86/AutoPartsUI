@@ -39,6 +39,11 @@ export const getCustomerTypeColumns = (
     header: i18next.t("customerTypes.columns.bonusPercent"),
     cell: (info) => `${info.getValue()}%`,
   }),
+  columnHelper.accessor("preventInventoryMerge", {
+    header: i18next.t("customerTypes.columns.preventInventoryMerge"),
+    cell: (info) =>
+      info.getValue() ? i18next.t("common.yes") : i18next.t("common.no"),
+  }),
   columnHelper.accessor("isActive", {
     header: i18next.t("customerTypes.columns.status"),
     cell: (info) =>

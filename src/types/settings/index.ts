@@ -316,8 +316,8 @@ export interface VehicleServiceTemplateUpsertPayload {
   }>;
 }
 
-export interface VehicleServiceTemplateCreatePayload
-  extends VehicleServiceTemplateUpsertPayload {}
+export type VehicleServiceTemplateCreatePayload =
+  VehicleServiceTemplateUpsertPayload;
 
 export interface VehicleServiceTemplateUpdatePayload
   extends VehicleServiceTemplateUpsertPayload {
@@ -733,6 +733,7 @@ export interface CustomerType {
   isDefault: boolean;
   bonusPercent: number;
   isActive: boolean;
+  preventInventoryMerge: boolean;
 }
 
 export interface OfferIncreaseOption {

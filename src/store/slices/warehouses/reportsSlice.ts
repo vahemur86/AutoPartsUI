@@ -9,6 +9,7 @@ import {
   getProfitReport,
   getInventoryLotsReport,
   getDailyProfitReport,
+  getSpecialLotsReport,
 } from "@/services/warehouses/reports";
 
 // types
@@ -18,6 +19,8 @@ import type {
   GetInventoryLotsReportParams,
   InventoryLotsReportResponse,
   DailyProfitReportResponse,
+  GetSpecialLotsReportParams,
+  SpecialLotsReportResponse,
 } from "@/types/warehouses/reports";
 
 // utils
@@ -27,6 +30,7 @@ interface AdminReportsState {
   profitData: ProfitReportResponse | null;
   dailyProfitData: DailyProfitReportResponse | null;
   inventoryLots: InventoryLotsReportResponse;
+  specialLotsReport: SpecialLotsReportResponse | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -35,6 +39,7 @@ const initialState: AdminReportsState = {
   profitData: null,
   dailyProfitData: null,
   inventoryLots: [],
+  specialLotsReport: null,
   isLoading: false,
   error: null,
 };
@@ -81,6 +86,20 @@ export const fetchInventoryLotsReport = createAsyncThunk<
   }
 });
 
+export const fetchSpecialLotsReport = createAsyncThunk<
+  SpecialLotsReportResponse,
+  GetSpecialLotsReportParams,
+  { rejectValue: string }
+>("adminReports/fetchSpecialLots", async (params, { rejectWithValue }) => {
+  try {
+    return await getSpecialLotsReport(params);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to load special lots report"),
+    );
+  }
+});
+
 const adminReportsSlice = createSlice({
   name: "adminReports",
   initialState,
@@ -112,6 +131,14 @@ const adminReportsSlice = createSlice({
         (state, action: PayloadAction<DailyProfitReportResponse>) => {
           state.isLoading = false;
           state.dailyProfitData = action.payload;
+        },
+      )
+
+      .addCase(
+        fetchSpecialLotsReport.fulfilled,
+        (state, action: PayloadAction<SpecialLotsReportResponse>) => {
+          state.isLoading = false;
+          state.specialLotsReport = action.payload;
         },
       )
 

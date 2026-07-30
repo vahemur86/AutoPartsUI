@@ -232,7 +232,40 @@
       "ironSale": "Iron Sales",
       "ironPurchases": "Iron Purchases",
       "workshopOrders": "Workshop Orders",
-      "serviceTasks": "Service Payments"
+      "serviceTasks": "Service Payments",
+      "specialLots": "Special Customer Lots"
+    },
+    "specialLots": {
+      "title": "Special Customer Lots Report",
+      "generate": "Generate Report",
+      "exportToExcel": "Export to Excel",
+      "print": "Print Report",
+      "emptyState": "No special customer lots found.",
+      "filters": {
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "allWarehouses": "All Warehouses"
+      },
+      "summary": {
+        "totalSpecialLotsCreated": "Total Special Lots Created",
+        "uniqueSpecialCustomersCount": "Unique Special Customers",
+        "totalSpecialPowderKg": "Total Special Powder",
+        "totalSpecialCostAmd": "Total Special Cost"
+      },
+      "columns": {
+        "customerName": "Customer Name",
+        "totalLots": "Total Lots",
+        "totalPowderKg": "Total Powder",
+        "totalCostAmd": "Total Cost",
+        "remainingPowderKg": "Remaining",
+        "remainingCostAmd": "Remaining Cost",
+        "soldPercent": "Sold %",
+        "revenueAmd": "Revenue",
+        "profitAmd": "Profit"
+      },
+      "error": {
+        "failedToFetch": "Failed to load special lots report"
+      }
     },
     "ironPurchases": {
       "filters": {
@@ -893,13 +926,26 @@
         "createdAt": "Created At",
         "updatedAt": "Updated At",
         "selectedKg": "Selected kg",
-        "totalPowderKg": "Total"
+        "totalPowderKg": "Total",
+        "lotType": "Type",
+        "specialCustomer": "Customer"
+      },
+      "lotType": {
+        "special": "Special Customer Lot",
+        "general": "General Lot",
+        "mergedFromMultiple": "(Merged from multiple)"
+      },
+      "filters": {
+        "showGeneralLots": "Show General Lots",
+        "showSpecialLots": "Show Special Customer Lots",
+        "allSpecialCustomers": "All Special Customers"
       },
       "preview": {
         "totalCostAmd": "Sale Price",
         "totalCost": "Total Cost",
         "totalRevenueAmd": "Total Revenue",
-        "totalPowderKg": "Total powder (kg)"
+        "totalPowderKg": "Total powder (kg)",
+        "composition": "Sales Lot Composition"
       },
       "success": {
         "itemAdded": "Batch #{{id}} added with {{kg}} kg",
@@ -1265,12 +1311,15 @@
       "code": "Code",
       "enterCode": "Enter code...",
       "bonusPercent": "Bonus Percent (%)",
-      "isDefault": "Is Default"
+      "isDefault": "Is Default",
+      "preventInventoryMerge": "Prevent Inventory Merge",
+      "preventInventoryMergeHint": "Powder from this customer type will NOT be merged into general inventory"
     },
     "columns": {
       "code": "Code",
       "isDefault": "Is Default",
       "bonusPercent": "Bonus Percent",
+      "preventInventoryMerge": "Separate Lots",
       "status": "Status"
     },
     "success": {

@@ -1,0 +1,79 @@
+.reportWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filterItem {
+  min-width: 200px;
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background-color: var(--color-black-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardLabel {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cardValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.tableContainer {
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.specialRow {
+  background-color: rgba(255, 193, 7, 0.08) !important;
+}
+
+.specialRow td:first-child {
+  border-left: 3px solid #ffc107;
+}

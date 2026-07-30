@@ -131,6 +131,56 @@ export const SalesLotPreviewModal = ({
       maximumFractionDigits: decimals,
     });
 
+  const compositionRows = useMemo(() => {
+    const previewItems = previewData?.items ?? [];
+    const totalKg = previewItems.reduce((sum, i) => sum + i.powderKg, 0);
+
+    const generalKg = previewItems
+      .filter((i) => !i.fromSpecialCustomerLot)
+      .reduce((sum, i) => sum + i.powderKg, 0);
+
+    const specialMap = new Map<
+      number,
+      { key: string; label: string; totalKg: number; isSpecial: boolean }
+    >();
+
+    previewItems
+      .filter((i) => i.fromSpecialCustomerLot)
+      .forEach((item) => {
+        const customerId = item.specialCustomerId ?? 0;
+        const existing = specialMap.get(customerId);
+        if (existing) {
+          existing.totalKg += item.powderKg;
+        } else {
+          specialMap.set(customerId, {
+            key: `special-${customerId}`,
+            label:
+              item.specialCustomerName ??
+              t("warehouses.totalBatches.lotType.special"),
+            totalKg: item.powderKg,
+            isSpecial: true,
+          });
+        }
+      });
+
+    const rows = [
+      {
+        key: "general",
+        label: t("warehouses.totalBatches.lotType.general"),
+        totalKg: generalKg,
+        isSpecial: false,
+      },
+      ...Array.from(specialMap.values()),
+    ];
+
+    return rows
+      .filter((row) => row.totalKg > 0)
+      .map((row) => ({
+        ...row,
+        percent: totalKg > 0 ? (row.totalKg / totalKg) * 100 : 0,
+      }));
+  }, [previewData, t]);
+
   const getFinalItems = () =>
     items.map((item) => ({
       ...item,
@@ -260,6 +310,33 @@ export const SalesLotPreviewModal = ({
                     >
                       {formatValue(previewData.totalRevenueAmd, 0)} AMD
                     </strong>
+                  </div>
+                </div>
+
+                <div className={styles.summaryMetalsSection}>
+                  <h4 className={styles.summaryMetalsTitle}>
+                    {t("warehouses.totalBatches.preview.composition")}
+                  </h4>
+                  <div className={styles.summaryMetalsList}>
+                    {compositionRows.map((row) => (
+                      <div key={row.key} className={styles.summaryMetalRow}>
+                        <div className={styles.summaryMetalInfo}>
+                          <span
+                            className={`${styles.badge} ${
+                              row.isSpecial
+                                ? styles.badgeWarning
+                                : styles.badgeInfo
+                            }`}
+                          >
+                            {row.label}
+                          </span>
+                        </div>
+                        <strong className={styles.summaryMetalValue}>
+                          {formatValue(row.totalKg, 3)} kg (
+                          {formatValue(row.percent, 1)}%)
+                        </strong>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
