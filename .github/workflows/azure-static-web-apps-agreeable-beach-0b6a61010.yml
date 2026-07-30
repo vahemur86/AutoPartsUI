@@ -26,6 +26,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build Vite app
+        env:
+          VITE_API_BASE_URL: https://prpservice05-test-e2d9bpd0f8hqfyft.canadacentral-01.azurewebsites.net/api
         run: yarn build
 
       - name: Deploy to Azure Static Web Apps
