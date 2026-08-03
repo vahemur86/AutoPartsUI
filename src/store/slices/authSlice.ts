@@ -67,19 +67,21 @@ export const setPassword = createAsyncThunk<
   }
 });
 
-export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
-  "auth/logout",
-  async (_, { rejectWithValue }) => {
-    try {
-      await logoutRequest();
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        return;
-      }
-      return rejectWithValue(getApiErrorMessage(error, "Logout failed"));
+export const logout = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: string; state: { auth: AuthState } }
+>("auth/logout", async (_, { rejectWithValue, getState }) => {
+  try {
+    const cashRegisterId = getState().auth.user?.cashRegisterId;
+    await logoutRequest(cashRegisterId);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      return;
     }
-  },
-);
+    return rejectWithValue(getApiErrorMessage(error, "Logout failed"));
+  }
+});
 
 const authSlice = createSlice({
   name: "auth",
