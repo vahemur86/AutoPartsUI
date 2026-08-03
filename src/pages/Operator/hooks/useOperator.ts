@@ -301,7 +301,8 @@ export const useOperator = () => {
       return;
     }
 
-    const url = `https://autoparts-ambpc7hjbqhxeebx.canadacentral-01.azurewebsites.net/hubs/cash?cashRegisterId=${crId}`;
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+    const url = `${apiBase}/hubs/cash?cashRegisterId=${crId}`;
     const newConnection = new HubConnectionBuilder()
       .withUrl(url, {
         accessTokenFactory: () => token,
