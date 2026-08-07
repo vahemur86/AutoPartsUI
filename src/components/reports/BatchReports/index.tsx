@@ -224,7 +224,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
                   </div>
                   <div className={styles.infoRow}>
                     <span>{t("cashbox.batches.details.percent")}:</span>
-                    <strong>{item.supplierClientTypePercent * 100}%</strong>
+                                      <strong>{((item.supplierClientTypePercent ?? 0) * 100).toFixed(2)}%</strong>
                   </div>
 
                   <div className={styles.infoRow}>

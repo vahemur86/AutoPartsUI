@@ -58,8 +58,17 @@ const emptyBucket = (side: number): UIBucket => ({
   compositions: [emptyComposition()],
 });
 
-const sanitizeNumericInput = (value: string) =>
-  value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+const handleNumericChange = (value: string): string => {
+  // Keep only digits and one dot
+  let val = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  // Strip leading zeros before a digit (but not "0." prefix)
+  if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
+    val = val.replace(/^0+/, "") || "0";
+  }
+  // Allow lone dot as "0."
+  if (val === ".") val = "0.";
+  return val;
+};
 
 const shouldShowMetalFields = (type: number) => type !== 1;
 
@@ -448,7 +457,7 @@ export const CarCatalystPage = () => {
                       inputMode="decimal"
                       pattern="[0-9.]*"
                       step="any"
-                      value={composition.weightKg || "0"}
+                      value={composition.weightKg}
                       placeholder="0"
                       onChange={(e) =>
                         updateComposition(
@@ -456,9 +465,13 @@ export const CarCatalystPage = () => {
                           bucketIndex,
                           compositionIndex,
                           "weightKg",
-                          sanitizeNumericInput(e.target.value),
+                          handleNumericChange(e.target.value),
                         )
                       }
+                      onBlur={() => {
+                        if (composition.weightKg === "")
+                          updateComposition(side, bucketIndex, compositionIndex, "weightKg", "0");
+                      }}
                     />
 
                     {composition.type === 1 && (
@@ -468,7 +481,7 @@ export const CarCatalystPage = () => {
                         inputMode="decimal"
                         pattern="[0-9.]*"
                         step="any"
-                        value={composition.pricePerKg || "0"}
+                        value={composition.pricePerKg}
                         placeholder="0"
                         onChange={(e) =>
                           updateComposition(
@@ -476,9 +489,13 @@ export const CarCatalystPage = () => {
                             bucketIndex,
                             compositionIndex,
                             "pricePerKg",
-                            sanitizeNumericInput(e.target.value),
+                            handleNumericChange(e.target.value),
                           )
                         }
+                        onBlur={() => {
+                          if (composition.pricePerKg === "")
+                            updateComposition(side, bucketIndex, compositionIndex, "pricePerKg", "0");
+                        }}
                       />
                     )}
 
@@ -490,7 +507,7 @@ export const CarCatalystPage = () => {
                           inputMode="decimal"
                           pattern="[0-9.]*"
                           step="any"
-                          value={composition.pt_g || "0"}
+                          value={composition.pt_g}
                           placeholder="0"
                           onChange={(e) =>
                             updateComposition(
@@ -498,9 +515,13 @@ export const CarCatalystPage = () => {
                               bucketIndex,
                               compositionIndex,
                               "pt_g",
-                              sanitizeNumericInput(e.target.value),
+                              handleNumericChange(e.target.value),
                             )
                           }
+                          onBlur={() => {
+                            if (composition.pt_g === "")
+                              updateComposition(side, bucketIndex, compositionIndex, "pt_g", "0");
+                          }}
                         />
 
                         <TextField
@@ -509,7 +530,7 @@ export const CarCatalystPage = () => {
                           inputMode="decimal"
                           pattern="[0-9.]*"
                           step="any"
-                          value={composition.pd_g || "0"}
+                          value={composition.pd_g}
                           placeholder="0"
                           onChange={(e) =>
                             updateComposition(
@@ -517,9 +538,13 @@ export const CarCatalystPage = () => {
                               bucketIndex,
                               compositionIndex,
                               "pd_g",
-                              sanitizeNumericInput(e.target.value),
+                              handleNumericChange(e.target.value),
                             )
                           }
+                          onBlur={() => {
+                            if (composition.pd_g === "")
+                              updateComposition(side, bucketIndex, compositionIndex, "pd_g", "0");
+                          }}
                         />
 
                         <TextField
@@ -528,7 +553,7 @@ export const CarCatalystPage = () => {
                           inputMode="decimal"
                           pattern="[0-9.]*"
                           step="any"
-                          value={composition.rh_g || "0"}
+                          value={composition.rh_g}
                           placeholder="0"
                           onChange={(e) =>
                             updateComposition(
@@ -536,9 +561,13 @@ export const CarCatalystPage = () => {
                               bucketIndex,
                               compositionIndex,
                               "rh_g",
-                              sanitizeNumericInput(e.target.value),
+                              handleNumericChange(e.target.value),
                             )
                           }
+                          onBlur={() => {
+                            if (composition.rh_g === "")
+                              updateComposition(side, bucketIndex, compositionIndex, "rh_g", "0");
+                          }}
                         />
                       </>
                     )}
