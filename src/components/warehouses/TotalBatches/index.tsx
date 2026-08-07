@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Select, Button } from "@/ui-kit";
+import { DataTable, Button } from "@/ui-kit";
 
 // components
 import { getInventoryLotColumns } from "./columns";
@@ -101,7 +101,9 @@ export const TotalBatches = () => {
 
   useEffect(() => {
     if (warehouses.length > 0 && selectedWarehouseId === null) {
-      setSelectedWarehouseId(warehouses[0].id);
+      // Prefer warehouse with id === 1 (as requested). If not present, fall back to the first one.
+      const preferred = warehouses.find((w) => w.id === 1);
+      setSelectedWarehouseId(preferred ? preferred.id : warehouses[0].id);
     }
   }, [warehouses, selectedWarehouseId]);
 
@@ -207,13 +209,6 @@ export const TotalBatches = () => {
     }
   };
 
-  const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const warehouseId = Number(e.target.value);
-    setSelectedWarehouseId(warehouseId || null);
-    setSelectedItems([]);
-    setSelectedKg({});
-    setIsPreviewModalOpen(false);
-  };
 
   const columns = useMemo(() => getInventoryLotColumns(), []);
 
@@ -245,21 +240,6 @@ export const TotalBatches = () => {
           </Button>
         </div>
 
-        <div className={styles.warehouseSelector}>
-          <Select
-            placeholder={t("warehouses.form.selectWarehouse")}
-            value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
-            onChange={handleWarehouseChange}
-            disabled={isLoading}
-          >
-            <option value="">{t("warehouses.form.selectWarehouse")}</option>
-            {warehouses.map((warehouse) => (
-              <option key={warehouse.id} value={warehouse.id}>
-                {warehouse.code}
-              </option>
-            ))}
-          </Select>
-        </div>
       </div>
 
       <div className={styles.lotFilters}>
@@ -307,11 +287,7 @@ export const TotalBatches = () => {
       </div>
 
       <div className={styles.tableSection}>
-        {!selectedWarehouseId ? (
-          <div className={styles.emptyState}>
-            {t("warehouses.form.selectWarehouse")}
-          </div>
-        ) : isLoading ? (
+        {isLoading ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

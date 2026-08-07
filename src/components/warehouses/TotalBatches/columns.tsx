@@ -1,8 +1,14 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
 
+// utils
+import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
+
 // components
 import { SelectedKgCell } from "./SelectedKg";
+
+// styles
+import styles from "./TotalBatches.module.css";
 
 // types
 import type { InventoryLot } from "@/types/warehouses/reports";
@@ -13,7 +19,10 @@ import styles from "./TotalBatches.module.css";
 const columnHelper = createColumnHelper<InventoryLot>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
+export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => {
+  const STATUS_MAP = createStatusMap(styles);
+
+  return [
   columnHelper.accessor("id", {
     header: i18next.t("warehouses.totalBatches.columns.id"),
     cell: (info) => `#${info.getValue()}`,
@@ -105,16 +114,16 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
     cell: (info) => `${info.getValue()} g`,
   }),
 
-  // columnHelper.accessor("status", {
-  //   header: i18next.t("warehouses.totalBatches.columns.status"),
-  //   cell: (info) => {
-  //     const statusValue = info.getValue();
-  //     const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
-  //     return (
-  //       <span className={statusConfig.className}>{statusConfig.label}</span>
-  //     );
-  //   },
-  // }),
+  columnHelper.accessor("status", {
+    header: i18next.t("warehouses.totalBatches.columns.status"),
+    cell: (info) => {
+      const statusValue = info.getValue();
+      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
+      return (
+        <span className={statusConfig.className}>{statusConfig.label}</span>
+      );
+    },
+  }),
 
   columnHelper.accessor("createdAt", {
     header: i18next.t("warehouses.totalBatches.columns.createdAt"),
@@ -139,3 +148,4 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => [
       }),
   }),
 ];
+};
