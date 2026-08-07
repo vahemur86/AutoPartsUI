@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, Button } from "@/ui-kit";
+import { DataTable, Select, Button } from "@/ui-kit";
 
 // components
 import { getInventoryLotColumns } from "./columns";
