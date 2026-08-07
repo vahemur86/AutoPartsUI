@@ -75,7 +75,9 @@ export const OtpGateProvider = ({ children }: { children: ReactNode }) => {
       setOtpValue("");
       if (callbacks?.onVerified) callbacks.onVerified();
       dispatch(resetOtpState());
-    } catch (err: unknown) {}
+    } catch {
+      // error toast is handled by the OTP slice
+    }
   };
 
   const handleCancel = () => {

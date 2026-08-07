@@ -294,7 +294,7 @@ export const IronShopSettings = () => {
       resetPriceForm();
       void loadPrices(Number(selectedBrandId || 0) || undefined, Number(selectedIronTypeId || 0) || undefined);
     } catch (error) {
-      const axiosError = error as any;
+      const axiosError = error as { response?: { status?: number } };
       if (axiosError?.response?.status === 409) {
         toast.error(t("ironManagement.error.basePriceAlreadyExists", "Base price already exists for this Brand + Iron Type + Customer Type combination"));
       } else {

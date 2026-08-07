@@ -83,6 +83,7 @@ export const PageControl = () => {
 
   const columnHelper = createColumnHelper<PageItem>();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: ColumnDef<PageItem, any>[] = useMemo(
     () => [
       columnHelper.display({

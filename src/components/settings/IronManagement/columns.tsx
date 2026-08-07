@@ -61,9 +61,9 @@ export const getCarModelColumns = (
   }),
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronTypeColumns = (
   { onDelete }: { onDelete?: (ironType: IronType) => void } = {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<IronType, any>[] => [
   ironTypeColumnHelper.accessor("id", {
     header: i18next.t("ironManagement.columns.id"),

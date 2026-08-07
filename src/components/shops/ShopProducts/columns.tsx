@@ -27,8 +27,8 @@ export const getShopProductColumns =
   }: {
     onProductClick: (row: Row<ShopProductItem>) => void;
     getProductCode: (row: ShopProductItem) => string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): ColumnDef<ShopProductItem, any>[] =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [
     columnHelper.accessor("id", {
       header: i18next.t("shops.products.columns.id"),
