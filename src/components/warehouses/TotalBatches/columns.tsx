@@ -13,9 +13,6 @@ import styles from "./TotalBatches.module.css";
 // types
 import type { InventoryLot } from "@/types/warehouses/reports";
 
-// styles
-import styles from "./TotalBatches.module.css";
-
 const columnHelper = createColumnHelper<InventoryLot>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
