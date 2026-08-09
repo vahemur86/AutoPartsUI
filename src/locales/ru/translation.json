@@ -2103,7 +2103,8 @@
     },
     "notifications": {
       "cashUpdated": "Баланс кассы был обновлен",
-      "sessionNotOpen": "Перед созданием заказов откройте смену."
+      "sessionNotOpen": "Перед созданием заказов откройте смену.",
+      "noOpenCashboxSession": "У оператора нет открытой кассовой смены."
     },
     "success": {
       "sessionOpened": "Смена успешно открыта",

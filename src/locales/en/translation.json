@@ -2107,7 +2107,8 @@
     },
     "notifications": {
       "cashUpdated": "Cash register balance has been updated",
-      "sessionNotOpen": "Please open a session before creating orders."
+      "sessionNotOpen": "Please open a session before creating orders.",
+      "noOpenCashboxSession": "No open cashbox session for operator."
     },
     "success": {
       "sessionOpened": "Session opened successfully",
