@@ -93,7 +93,7 @@ export const NewCalculator: FC = () => {
         rhPrice: prev.priceMode === 1 ? prev.rhPrice : (rh?.price ?? 0),
         usdRate: prev.priceMode === 1 ? prev.usdRate : (usd?.rate ?? 0),
       }));
-    } catch {
+    } catch (e) {
       console.error("Failed to load defaults", e);
     }
   };

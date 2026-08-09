@@ -77,7 +77,14 @@ export const useOperator = () => {
     JSON.parse(localStorage.getItem("user_data") ?? "null"),
   );
 
-  const userData: any = useMemo(() => {
+  interface OperatorUserData extends Record<string, unknown> {
+    token?: string;
+    cashRegisterId?: number;
+    shopId?: number;
+    username?: string;
+  }
+
+  const userData = useMemo<OperatorUserData>(() => {
     const saved = (savedUserData as Record<string, unknown> | null) ?? {};
     const current = (authUser as Record<string, unknown> | null) ?? {};
 
@@ -539,7 +546,10 @@ export const useOperator = () => {
   }, [dispatch]);
 
   const isCashboxClosedError = (error: unknown) => {
-    const msg = typeof error === "string" ? error : (error as any)?.message;
+    const msg =
+      typeof error === "string"
+        ? error
+        : (error as { message?: string } | null | undefined)?.message;
 
     return msg === "No valid offer due to profit/customer constraints.";
   };
@@ -554,12 +564,12 @@ export const useOperator = () => {
 
     setUiState((p) => ({ ...p, isSubmitting: true }));
     try {
-      const crId = userData?.cashRegisterId;
+      const crId = userData?.cashRegisterId as number;
       const response = await dispatch(
         addIntake({
           intake: {
             ...formData,
-            shopId: userData?.shopId,
+            shopId: userData?.shopId as number,
             powderWeightTotal: Number(formData.powderWeight),
             ptWeight: Number(formData.platinumPrice),
             pdWeight: Number(formData.palladiumPrice),
@@ -573,7 +583,10 @@ export const useOperator = () => {
       toast.success(t("operatorPage.success.intakeCreated"));
       dispatch(fetchIntake({ intakeId: response.id, cashRegisterId: crId }));
       dispatch(
-        fetchOfferOptions({ shopId: userData?.shopId, cashRegisterId: crId }),
+        fetchOfferOptions({
+          shopId: userData?.shopId as number,
+          cashRegisterId: crId,
+        }),
       );
       setUiState((p) => ({ ...p, hasTriedSubmit: false }));
     } catch (e) {
@@ -709,7 +722,7 @@ export const useOperator = () => {
             currentStep: stepToFetch,
             items: itemsMap,
           },
-          cashRegisterId: userData?.cashRegisterId,
+          cashRegisterId: userData?.cashRegisterId as number,
         }),
       ).unwrap();
       toast.success(t("finalOffer.success.recalculated"));
@@ -744,7 +757,7 @@ export const useOperator = () => {
       await dispatch(
         submitBulkPurchase({
           payload: purchases,
-          cashRegisterId: userData?.cashRegisterId,
+          cashRegisterId: userData?.cashRegisterId as number,
         }),
       ).unwrap();
       toast.success(t("operatorPage.success.purchaseCompleted"));
@@ -761,7 +774,7 @@ export const useOperator = () => {
         await dispatch(
           rejectIntake({
             intakeId: selectors.operator.intake.id,
-            cashRegisterId: userData?.cashRegisterId,
+            cashRegisterId: userData?.cashRegisterId as number,
           }),
         ).unwrap();
         toast.success(t("finalOffer.success.rejected"));
