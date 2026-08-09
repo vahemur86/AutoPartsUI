@@ -53,7 +53,9 @@ export const BuyIron: FC<BuyIronProps> = ({
   const { intake } = useAppSelector((state) => state.operator);
 
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
-  const [availableIronTypes, setAvailableIronTypes] = useState<any[]>([]);
+  const [availableIronTypes, setAvailableIronTypes] = useState<
+    Awaited<ReturnType<typeof getAvailableIronTypes>>
+  >([]);
   const [isLoadingIronTypes, setIsLoadingIronTypes] = useState(false);
   const [ironRows, setIronRows] = useState<Record<number, IronRowState>>({});
 
@@ -126,7 +128,7 @@ export const BuyIron: FC<BuyIronProps> = ({
             price,
           };
         });
-      } catch (error) {
+      } catch {
         toast.error(t("operatorPage.ironCarShop.failedToLoadIronTypes", "Failed to load iron types"));
         setAvailableIronTypes([]);
         setIronRows({});

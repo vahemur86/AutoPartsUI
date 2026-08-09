@@ -32,7 +32,7 @@ interface OperatorHeaderProps {
   showCashAmount: boolean;
   onToggleVisibility: () => void;
   hasError: boolean;
-  userData: Record<string, string>;
+  userData: Record<string, unknown>;
 }
 
 export const OperatorHeader = ({
@@ -64,21 +64,21 @@ export const OperatorHeader = ({
             title={t("powderExtraction.shopId")}
           >
             <Store size={14} />
-            <span>{userData?.shopId || "—"}</span>
+            <span>{String(userData?.shopId ?? "") || "—"}</span>
           </div>
           <div
             className={styles.userInfoItem}
             title={t("powderExtraction.username")}
           >
             <User size={14} />
-            <span>{userData?.username || "—"}</span>
+            <span>{String(userData?.username ?? "") || "—"}</span>
           </div>
           <div
             className={styles.userInfoItem}
             title={t("powderExtraction.cashRegisterName")}
           >
             <Monitor size={14} />
-            <span>{userData?.cashRegisterName || "—"}</span>
+            <span>{String(userData?.cashRegisterName ?? "") || "—"}</span>
           </div>
         </div>
 

@@ -269,7 +269,7 @@ export const OperatorPage = () => {
                 <>
                   <div className={styles.leftColumn}>
                     <BuyIron
-                      cashRegisterId={userData?.cashRegisterId}
+                      cashRegisterId={userData?.cashRegisterId as number}
                       onCalculateAttempt={() => setHasTriedCalculateIron(true)}
                     />
                   </div>
