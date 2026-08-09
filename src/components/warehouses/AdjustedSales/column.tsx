@@ -25,6 +25,20 @@ export const getAdjustmentsColumns = (): ColumnDef<
     header: i18next.t("powderSales.adjustments.columns.powderSaleId"),
   }),
 
+  columnHelper.display({
+    id: "special",
+    header: () => null,
+    cell: ({ row }) =>
+      row.original.hasSpecialCustomerLots ? (
+        <span
+          className={styles.specialBadge}
+          title={i18next.t("warehouses.totalBatches.lotType.special")}
+        >
+          {i18next.t("warehouses.totalBatches.lotType.special")}
+        </span>
+      ) : null,
+  }),
+
   columnHelper.accessor("currencyCode", {
     header: i18next.t("powderSales.adjustments.columns.currencyCode"),
   }),

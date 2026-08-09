@@ -204,7 +204,12 @@ export const SoldBatches: FC = () => {
             pageCount={totalPages}
             pageIndex={currentPage}
             getRowClassName={(row) =>
-              checkIsToday(row.createdAt) ? styles.todayRow : ""
+              [
+                checkIsToday(row.createdAt) ? styles.todayRow : "",
+                row.hasSpecialCustomerLots ? styles.specialRow : "",
+              ]
+                .filter(Boolean)
+                .join(" ")
             }
             onPaginationChange={setCurrentPage}
             renderSubComponent={({ row }) => (

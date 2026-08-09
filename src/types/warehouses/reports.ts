@@ -18,6 +18,8 @@ export interface ProfitReportResponse {
   costAmd: number;
   profitAmd: number;
   soldPowderKg: number;
+  /** True when the report totals include special-customer sales. */
+  hasSpecialCustomerSalesIncluded?: boolean;
 }
 
 export type DailyProfitReportResponse = DailyProfitReportItem[];

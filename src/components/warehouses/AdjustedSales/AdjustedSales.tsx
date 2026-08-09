@@ -128,6 +128,9 @@ export const AdjustedSales = () => {
             manualPagination
             pageCount={pageCount}
             pageIndex={currentPageIndex}
+            getRowClassName={(row) =>
+              row.hasSpecialCustomerLots ? styles.specialRow : ""
+            }
             onPaginationChange={setCurrentPageIndex}
           />
         )}

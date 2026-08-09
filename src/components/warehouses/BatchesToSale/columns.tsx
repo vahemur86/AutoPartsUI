@@ -35,6 +35,19 @@ export const getSalesLotColumns = ({
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
   }),
+  columnHelper.display({
+    id: "special",
+    header: () => null,
+    cell: ({ row }) =>
+      row.original.hasSpecialItems ? (
+        <span
+          className={`${styles.specialBadge}`}
+          title={i18next.t("warehouses.totalBatches.lotType.special")}
+        >
+          {i18next.t("warehouses.totalBatches.lotType.special")}
+        </span>
+      ) : null,
+  }),
   columnHelper.accessor("status", {
     header: i18next.t("warehouses.batchesToSale.columns.status"),
     cell: (info) => {

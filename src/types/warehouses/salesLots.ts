@@ -11,6 +11,8 @@ export interface BaseLot {
   rhTotal_g: number;
   createdAt: string;
   soldAt: string | null;
+  /** True when the lot contains items from special-customer (prevent-merge) lots. */
+  hasSpecialItems?: boolean;
 }
 
 export interface LotItem {
@@ -108,6 +110,8 @@ export interface PowderSale {
   profitAmd: number;
   soldPowderKg: number;
   createdAt: string;
+  /** True when the sale includes special-customer lots. */
+  hasSpecialCustomerLots?: boolean;
 }
 
 export type GetPowderSalesResponse = PaginatedResponse<PowderSale>;
@@ -158,6 +162,8 @@ export interface PowderSaleAdjustments {
   exchangeRate: number;
   reason: string;
   createdAt: string;
+  /** True when the adjusted sale includes special-customer lots. */
+  hasSpecialCustomerLots?: boolean;
 }
 
 export type GetPowderSalesAdjustmentsResponse =

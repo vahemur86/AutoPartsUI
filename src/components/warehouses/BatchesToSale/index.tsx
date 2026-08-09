@@ -323,7 +323,12 @@ export const BatchesToSale = () => {
               right: ["actions"],
             }}
             getRowClassName={(row) =>
-              checkIsToday(row.createdAt) ? styles.todayRow : ""
+              [
+                checkIsToday(row.createdAt) ? styles.todayRow : "",
+                row.hasSpecialItems ? styles.specialRow : "",
+              ]
+                .filter(Boolean)
+                .join(" ")
             }
             onPaginationChange={handlePaginationChange}
           />

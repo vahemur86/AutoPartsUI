@@ -199,7 +199,16 @@ export const ProfitReport = () => {
             {t("warehouses.profit.emptyState")}
           </div>
         ) : (
-          <div className={styles.cardsGrid}>
+          <>
+            {profitData.hasSpecialCustomerSalesIncluded && (
+              <div
+                className={styles.specialNotice}
+                title={t("warehouses.profit.specialIncludedTooltip")}
+              >
+                ? {t("warehouses.profit.specialIncluded")}
+              </div>
+            )}
+            <div className={styles.cardsGrid}>
             <div className={styles.card}>
               <div className={styles.cardLabel}>
                 {t("warehouses.profit.summary.revenueAmd")}
@@ -232,7 +241,8 @@ export const ProfitReport = () => {
                 {profitData.soldPowderKg.toLocaleString()}
               </div>
             </div>
-          </div>
+            </div>
+          </>
         )}
       </section>
       <section>
