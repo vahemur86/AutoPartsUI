@@ -34,6 +34,11 @@ export interface BatchItem {
   profitDiffAmd: number;
   profitDiffPercent: number;
   customerRealPercent: number;
+  /**
+   * True when the item was purchased from a special customer type
+   * (PreventInventoryMerge = true) and must be isolated in its own batch.
+   */
+  customerTypeHasPreventMergeFlag?: boolean;
 }
 
 export interface Batch {
@@ -66,10 +71,27 @@ export interface Batch {
   totalLiveProfitAmd: number;
   totalProfitDiffAmd: number;
   totalLiveProfitPercent: number;
+  /**
+   * True when the batch contains special-customer (PreventInventoryMerge)
+   * items and is isolated from normal batch merging.
+   */
+  hasPreventMergeItems?: boolean;
 }
 
 export interface BatchDetails extends Batch {
   items: BatchItem[];
+}
+
+/**
+ * Session-level batch details: one entry per batch.
+ * Prevent-merge (special-customer) items are isolated into their own
+ * batches, so a session may have multiple batches.
+ */
+export type SessionBatchDetails = BatchDetails[];
+
+export interface CloseSessionResult {
+  report: ZReport;
+  batches: Batch[];
 }
 
 export interface ZReport {
@@ -97,5 +119,15 @@ export interface CashboxReport {
   expectedClosingBalanceAmd: number;
 }
 
-export type BatchResponse = PaginatedResponse<Batch>;
+export interface BatchResponse extends PaginatedResponse<Batch> {
+  /**
+   * Optional aggregate totals returned by the server
+   * when filtering by supplierClientId (special-customer-only mode).
+   */
+  totalPowderKg?: number;
+  totalCostAmd?: number;
+  avgPtPerKg_g?: number;
+  avgPdPerKg_g?: number;
+  avgRhPerKg_g?: number;
+}
 export type ZReportResponse = PaginatedResponse<ZReport>;

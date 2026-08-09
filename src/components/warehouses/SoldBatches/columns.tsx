@@ -18,6 +18,7 @@ export const getSoldBatchesColumns = ({
   onEdit,
 }: {
   onEdit: (row: PowderSale, e: MouseEvent<HTMLElement>) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): ColumnDef<PowderSale, any>[] => [
   columnHelper.display({
     id: "expander",

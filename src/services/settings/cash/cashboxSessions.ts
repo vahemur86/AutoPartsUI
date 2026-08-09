@@ -9,6 +9,8 @@ import type {
   Batch,
   BatchDetails,
   BatchResponse,
+  SessionBatchDetails,
+  CloseSessionResult,
   ZReport,
   ZReportResponse,
   CashboxReport,
@@ -21,14 +23,18 @@ export const closeCashRegisterSession = async ({
 }: {
   sessionId: number;
   cashRegisterId: number;
-}) => {
+}): Promise<CloseSessionResult> => {
   try {
     const response = await api.post(
       `/cashbox-sessions/${sessionId}/close`,
       {},
       { headers: getHeaders(cashRegisterId) },
     );
-    return response.data;
+    const data = response.data ?? {};
+    return {
+      report: data.report ?? data.Report,
+      batches: data.batches ?? data.Batches ?? [],
+    };
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to close session."));
   }
@@ -86,6 +92,8 @@ export const getBatches = async ({
   clientName?: string;
   clientPhone?: string;
   clientTypeId?: number;
+  supplierClientId?: number;
+  specialOnly?: boolean;
   cashRegisterId?: number;
   page?: number;
   pageSize?: number;
@@ -101,16 +109,37 @@ export const getBatches = async ({
   }
 };
 
-export const getBatch = async ({
+export const getSessionBatches = async ({
   sessionId,
   cashRegisterId,
 }: {
   sessionId: number;
-  cashRegisterId: number;
+  cashRegisterId?: number;
+}): Promise<Batch[]> => {
+  try {
+    const { data } = await api.get<Batch[] | Batch>(
+      `/cashbox-sessions/${sessionId}/batches`,
+      { headers: getHeaders(cashRegisterId) },
+    );
+    // Compatibility: older backend returned a single batch object.
+    return Array.isArray(data) ? data : data ? [data] : [];
+  } catch (error) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get session batches."),
+    );
+  }
+};
+
+export const getBatch = async ({
+  batchId,
+  cashRegisterId,
+}: {
+  batchId: number;
+  cashRegisterId?: number;
 }) => {
   try {
-    const { data } = await api.get<Batch>(
-      `/cashbox-sessions/${sessionId}/batch`,
+    const { data } = await api.get<BatchDetails>(
+      `/powder-batches/${batchId}`,
       { headers: getHeaders(cashRegisterId) },
     );
     return data;
@@ -122,16 +151,22 @@ export const getBatch = async ({
 export const getBatchDetails = async ({
   sessionId,
   cashRegisterId,
+  supplierClientId,
 }: {
   sessionId: number;
   cashRegisterId?: number;
-}) => {
+  supplierClientId?: number;
+}): Promise<SessionBatchDetails> => {
   try {
-    const { data } = await api.get<BatchDetails>(
+    const { data } = await api.get<BatchDetails[] | BatchDetails>(
       `/cashbox-sessions/${sessionId}/batch-details`,
-      { headers: getHeaders(cashRegisterId) },
+      {
+        params: supplierClientId != null ? { supplierClientId } : undefined,
+        headers: getHeaders(cashRegisterId),
+      },
     );
-    return data;
+    // Compatibility: older backend returned a single details object.
+    return Array.isArray(data) ? data : data ? [data] : [];
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to get batch details."));
   }

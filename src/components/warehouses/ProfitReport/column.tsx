@@ -17,6 +17,7 @@ const getNumberClass = (value: number) => {
 
 export const getDailyProfitColumns = (): ColumnDef<
   DailyProfitReportItem,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any
 >[] => [
   columnHelper.accessor("date", {

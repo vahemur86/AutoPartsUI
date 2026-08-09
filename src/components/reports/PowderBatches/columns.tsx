@@ -1,6 +1,9 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
 
+// icons
+import { Star } from "lucide-react";
+
 // types
 import type { PowderBatch } from "@/types/cash";
 
@@ -21,6 +24,20 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
+  }),
+  columnHelper.display({
+    id: "special",
+    header: () => null,
+    cell: ({ row }) =>
+      row.original.hasPreventMergeItems ? (
+        <span
+          className={styles.specialBadge}
+          title={i18next.t("cashbox.batches.filters.specialCustomerTooltip")}
+        >
+          <Star size={10} />
+          {i18next.t("cashbox.batches.special.badge")}
+        </span>
+      ) : null,
   }),
   columnHelper.accessor("createdAt", {
     header: i18next.t("cashbox.powderBatches.columns.createdAt"),

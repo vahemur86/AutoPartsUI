@@ -51,6 +51,15 @@
   color: var(--color-white);
 }
 
+.tooltipIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  vertical-align: middle;
+  color: var(--color-secondary-500);
+  cursor: help;
+}
+
 .primaryActions {
   display: flex;
   gap: 12px;

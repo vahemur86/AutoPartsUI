@@ -3,6 +3,8 @@ export type {
   BatchDetails,
   BatchItem,
   BatchResponse,
+  SessionBatchDetails,
+  CloseSessionResult,
   CashboxReport,
   PaginatedResponse,
   ZReport,

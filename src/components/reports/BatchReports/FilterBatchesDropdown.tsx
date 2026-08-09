@@ -10,7 +10,7 @@ import type { CustomerType } from "@/types/settings";
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCustomerNames } from "@/store/slices/customersSlice";
-import { Search } from "lucide-react";
+import { Search, Info } from "lucide-react";
 
 // styles
 import styles from "./FilterBatchesDropdown.module.css";
@@ -217,7 +217,13 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
 
         <div className={styles.inputWrapper}>
           <label className={styles.label}>
-            {t("cashbox.batches.filters.clientName")}
+            {t("cashbox.batches.filters.specialCustomer")}
+            <span
+              className={styles.tooltipIcon}
+              title={t("cashbox.batches.filters.specialCustomerTooltip")}
+            >
+              <Info size={13} />
+            </span>
           </label>
 
           <div className={styles.searchInputWrapper}>

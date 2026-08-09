@@ -231,7 +231,12 @@ export const PowderBatches: FC = () => {
             pageCount={totalPages}
             pageIndex={currentPage}
             getRowClassName={(row) =>
-              checkIsToday(row.createdAt) ? styles.todayRow : ""
+              [
+                checkIsToday(row.createdAt) ? styles.todayRow : "",
+                row.hasPreventMergeItems ? styles.specialRow : "",
+              ]
+                .filter(Boolean)
+                .join(" ")
             }
             onPaginationChange={(pageIndex) => {
               setCurrentPage(pageIndex);

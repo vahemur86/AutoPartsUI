@@ -2,7 +2,7 @@ import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
 
 // icons
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Star } from "lucide-react";
 
 // types
 import type { Batch } from "@/types/cash";
@@ -41,6 +41,20 @@ export const getBatchReportColumns = (): ColumnDef<Batch, any>[] => [
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
+  }),
+  columnHelper.display({
+    id: "special",
+    header: () => null,
+    cell: ({ row }) =>
+      row.original.hasPreventMergeItems ? (
+        <span
+          className={styles.specialBadge}
+          title={i18next.t("cashbox.batches.filters.specialCustomerTooltip")}
+        >
+          <Star size={10} />
+          {i18next.t("cashbox.batches.special.badge")}
+        </span>
+      ) : null,
   }),
   columnHelper.accessor("createdAt", {
     header: i18next.t("cashbox.batches.columns.createdAt"),

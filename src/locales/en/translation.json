@@ -1534,6 +1534,12 @@
     },
     "batches": {
       "title": "Batch Reports",
+      "special": {
+        "badge": "Special",
+        "totalsLabel": "Totals — special customer only (supplier id: {{id}})",
+        "emptyState": "No special-customer purchases found for selected filters.",
+        "emptyStateHint": "Selected supplier has no special-customer purchases in the date range."
+      },
       "filters": {
         "fromDate": "From Date",
         "toDate": "To Date",
@@ -1546,7 +1552,10 @@
         "selectCustomerType": "Select customer type",
         "placeholderClientName": "By client name",
         "placeholderClientPhone": "By client phone",
-        "placeholderClientTypeId": "By client type ID"
+        "placeholderClientTypeId": "By client type ID",
+        "specialCustomer": "Special customer",
+        "specialCustomerTooltip": "When selected, report includes only purchases from this special customer (kept separate, not mixed with other purchases). Totals are computed from those purchases only.",
+        "specialOnly": "Special-customer only"
       },
       "columns": {
         "createdAt": "Created At",

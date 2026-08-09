@@ -219,7 +219,7 @@ export const SoldBatches: FC = () => {
 
       <SoldBatchesDropdown
         open={isEditOpen}
-        anchorRef={{ current: editAnchorEl } as any}
+        anchorRef={{ current: editAnchorEl } as React.RefObject<HTMLElement>}
         initialData={
           editingRow
             ? {

@@ -18,6 +18,7 @@ const getNumberClass = (value: number) => {
 
 export const getAdjustmentsColumns = (): ColumnDef<
   PowderSaleAdjustments,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any
 >[] => [
   columnHelper.accessor("powderSaleId", {

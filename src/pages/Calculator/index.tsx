@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from "react";
+﻿import { useEffect, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./Calculator.module.css";
 import { Button, Switch, TextField } from "@/ui-kit";
@@ -93,7 +93,7 @@ export const NewCalculator: FC = () => {
         rhPrice: prev.priceMode === 1 ? prev.rhPrice : (rh?.price ?? 0),
         usdRate: prev.priceMode === 1 ? prev.usdRate : (usd?.rate ?? 0),
       }));
-    } catch (e) {
+    } catch {
       console.error("Failed to load defaults", e);
     }
   };
@@ -112,7 +112,7 @@ export const NewCalculator: FC = () => {
       const res = await calculateSalesLot(form);
       console.log("RESULT:", res);
       setResult(res);
-    } catch (e) {
+    } catch {
       toast.error(t("calculator.error.failedToCalculate"));
     } finally {
       setLoading(false);
@@ -135,7 +135,7 @@ export const NewCalculator: FC = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>🧮 {t("calculator.title")}</h2>
+        <h2 className={styles.title}>ðŸ§® {t("calculator.title")}</h2>
 
         <div className={styles.modeInline}>
           <span className={!isManualMode ? styles.active : ""}>
@@ -153,7 +153,7 @@ export const NewCalculator: FC = () => {
       <div className={styles.cardsGrid}>
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>
-            ⚖️ {t("calculator.columns.weight")}
+            âš–ï¸ {t("calculator.columns.weight")}
           </h3>
 
           <label>
@@ -163,7 +163,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.powderKg")}
             type="number"
             value={displayValue("powderKg")}
-            onChange={(e: any) => update("powderKg", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("powderKg", e.target.value)}
           />
 
           <label>
@@ -173,7 +173,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.pt_g")}
             type="number"
             value={displayValue("pt_g")}
-            onChange={(e: any) => update("pt_g", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("pt_g", e.target.value)}
           />
 
           <label>
@@ -183,7 +183,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.pd_g")}
             type="number"
             value={displayValue("pd_g")}
-            onChange={(e: any) => update("pd_g", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("pd_g", e.target.value)}
           />
 
           <label>
@@ -193,7 +193,7 @@ export const NewCalculator: FC = () => {
             placeholder={t("calculator.placeholder.rh_g")}
             type="number"
             value={displayValue("rh_g")}
-            onChange={(e: any) => update("rh_g", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("rh_g", e.target.value)}
           />
           {result && (
             <div className={styles.totalsWrapper}>
@@ -255,7 +255,7 @@ export const NewCalculator: FC = () => {
           }`}
         >
           <h3 className={styles.cardTitle}>
-            💰 {t("calculator.columns.price")}
+            ðŸ’° {t("calculator.columns.price")}
             {!isManualMode && (
               <span className={styles.autoBadge}>{t("calculator.liveBadge")}</span>
             )}
@@ -270,7 +270,7 @@ export const NewCalculator: FC = () => {
             type="number"
             disabled={!isManualMode}
             value={displayValue("ptPrice")}
-            onChange={(e: any) => update("ptPrice", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("ptPrice", e.target.value)}
           />
 
           <label>
@@ -281,7 +281,7 @@ export const NewCalculator: FC = () => {
             type="number"
             disabled={!isManualMode}
             value={displayValue("pdPrice")}
-            onChange={(e: any) => update("pdPrice", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("pdPrice", e.target.value)}
           />
 
           <label>
@@ -292,7 +292,7 @@ export const NewCalculator: FC = () => {
             type="number"
             disabled={!isManualMode}
             value={displayValue("rhPrice")}
-            onChange={(e: any) => update("rhPrice", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("rhPrice", e.target.value)}
           />
 
           <label>
@@ -303,7 +303,7 @@ export const NewCalculator: FC = () => {
             type="number"
             disabled={!isManualMode}
             value={displayValue("usdRate")}
-            onChange={(e: any) => update("usdRate", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => update("usdRate", e.target.value)}
           />
 
           <label>
@@ -314,7 +314,7 @@ export const NewCalculator: FC = () => {
             type="number"
             disabled={!isManualMode}
             value={displayValue("customerBonusPercent")}
-            onChange={(e: any) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               update("customerBonusPercent", e.target.value)
             }
           />
@@ -327,7 +327,7 @@ export const NewCalculator: FC = () => {
             type="number"
             disabled={!isManualMode}
             value={displayValue("minProfitMarginPercent")}
-            onChange={(e: any) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               update("minProfitMarginPercent", e.target.value)
             }
           />
@@ -347,7 +347,7 @@ export const NewCalculator: FC = () => {
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>
-            📊 {t("calculator.columns.result")}
+            ðŸ“Š {t("calculator.columns.result")}
           </h3>
 
           {!result ? (

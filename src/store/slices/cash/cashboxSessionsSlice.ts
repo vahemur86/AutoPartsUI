@@ -9,6 +9,7 @@ import {
   getBatches,
   getBatch,
   getBatchDetails,
+  getSessionBatches,
   getZReports,
   getZReport,
   getCashboxReport,
@@ -20,6 +21,8 @@ import type {
   Batch,
   BatchDetails,
   BatchResponse,
+  SessionBatchDetails,
+  CloseSessionResult,
   ZReport,
   ZReportResponse,
   PaginatedResponse,
@@ -30,9 +33,16 @@ import type {
 import { getApiErrorMessage } from "@/utils";
 
 interface CashReportsState {
-  batches: PaginatedResponse<Batch> | null;
-  batch: Batch | null;
-  batchDetails: BatchDetails | null;
+  batches: BatchResponse | null;
+  batch: BatchDetails | null;
+  /**
+   * All batches of a session with their items. Prevent-merge
+   * (special-customer) items are isolated into separate batches,
+   * so a session can have more than one batch.
+   */
+  batchDetails: SessionBatchDetails | null;
+  sessionBatches: Batch[] | null;
+  closeSessionResult: CloseSessionResult | null;
   zReports: PaginatedResponse<ZReport> | null;
   selectedZReport: ZReport | null;
   cashboxReport: CashboxReport | null;
@@ -44,6 +54,8 @@ const initialState: CashReportsState = {
   batches: null,
   batch: null,
   batchDetails: null,
+  sessionBatches: null,
+  closeSessionResult: null,
   zReports: null,
   selectedZReport: null,
   cashboxReport: null,
@@ -54,12 +66,12 @@ const initialState: CashReportsState = {
 // --- Async Thunks ---
 
 export const closeSession = createAsyncThunk<
-  void,
+  CloseSessionResult,
   { sessionId: number; cashRegisterId: number },
   { rejectValue: string }
 >("cashReports/closeSession", async (params, { rejectWithValue }) => {
   try {
-    await closeCashRegisterSession(params);
+    return await closeCashRegisterSession(params);
   } catch (error) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to close session"),
@@ -82,8 +94,8 @@ export const fetchBatches = createAsyncThunk<
 });
 
 export const fetchBatch = createAsyncThunk<
-  Batch,
-  { sessionId: number; cashRegisterId: number },
+  BatchDetails,
+  { batchId: number; cashRegisterId?: number },
   { rejectValue: string }
 >("cashReports/fetchBatch", async (params, { rejectWithValue }) => {
   try {
@@ -93,9 +105,23 @@ export const fetchBatch = createAsyncThunk<
   }
 });
 
-export const fetchBatchDetails = createAsyncThunk<
-  BatchDetails,
+export const fetchSessionBatches = createAsyncThunk<
+  Batch[],
   { sessionId: number; cashRegisterId?: number },
+  { rejectValue: string }
+>("cashReports/fetchSessionBatches", async (params, { rejectWithValue }) => {
+  try {
+    return await getSessionBatches(params);
+  } catch (error) {
+    return rejectWithValue(
+      getApiErrorMessage(error, "Failed to fetch session batches"),
+    );
+  }
+});
+
+export const fetchBatchDetails = createAsyncThunk<
+  SessionBatchDetails,
+  { sessionId: number; cashRegisterId?: number; supplierClientId?: number },
   { rejectValue: string }
 >("cashReports/fetchBatchDetails", async (params, { rejectWithValue }) => {
   try {
@@ -158,6 +184,7 @@ const cashReportsSlice = createSlice({
     clearSelection: (state) => {
       state.batch = null;
       state.batchDetails = null;
+      state.sessionBatches = null;
       state.selectedZReport = null;
       state.cashboxReport = null;
     },
@@ -165,9 +192,10 @@ const cashReportsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(closeSession.fulfilled, (state) => {
+      .addCase(closeSession.fulfilled, (state, action) => {
         state.isLoading = false;
         Object.assign(state, initialState);
+        state.closeSessionResult = action.payload;
       })
       .addCase(fetchBatches.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -176,6 +204,10 @@ const cashReportsSlice = createSlice({
       .addCase(fetchBatch.fulfilled, (state, action) => {
         state.isLoading = false;
         state.batch = action.payload;
+      })
+      .addCase(fetchSessionBatches.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.sessionBatches = action.payload;
       })
       .addCase(fetchBatchDetails.fulfilled, (state, action) => {
         state.isLoading = false;

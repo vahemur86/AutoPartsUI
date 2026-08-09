@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { DataTable, IconButton } from "@/ui-kit";
 
 // icons
-import { Filter, User, Phone, TrendingUp } from "lucide-react";
+import { Filter, User, Phone, TrendingUp, Star, Info } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -23,6 +23,9 @@ import {
   type BatchReportFilters,
 } from "./FilterBatchesDropdown";
 
+// types
+import type { BatchDetails } from "@/types/cash";
+
 // columns & utils
 import { getBatchReportColumns } from "./columns";
 import { getApiErrorMessage } from "@/utils";
@@ -38,18 +41,31 @@ const PAGE_SIZE = 10;
 
 interface BatchDetailViewProps {
   sessionId: number;
+  batchId: number;
+  supplierClientId?: number | null;
 }
 
-const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
+const BatchDetailView: FC<BatchDetailViewProps> = ({
+  sessionId,
+  batchId,
+  supplierClientId,
+}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { batchDetails, isLoading } = useAppSelector(
     (state) => state.cashboxSessions,
   );
 
+  const loadedSessionId = batchDetails?.[0]?.sessionId;
+
   useEffect(() => {
-    if (!isLoading && batchDetails?.sessionId !== sessionId) {
-      dispatch(fetchBatchDetails({ sessionId }))
+    if (!isLoading && loadedSessionId !== sessionId) {
+      dispatch(
+        fetchBatchDetails({
+          sessionId,
+          supplierClientId: supplierClientId ?? undefined,
+        }),
+      )
         .unwrap()
         .catch((error) => {
           toast.error(
@@ -60,9 +76,9 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
           );
         });
     }
-  }, [sessionId, dispatch, batchDetails?.sessionId, isLoading, t]);
+  }, [sessionId, dispatch, loadedSessionId, isLoading, supplierClientId, t]);
 
-  if (isLoading && batchDetails?.sessionId !== sessionId) {
+  if (isLoading && loadedSessionId !== sessionId) {
     return (
       <div className={styles.detailSkeleton} aria-busy="true" aria-live="polite">
         <div className={styles.detailSkeletonHeader}>
@@ -80,9 +96,50 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
     );
   }
 
-  if (!batchDetails || batchDetails.sessionId !== sessionId) {
+  if (!batchDetails?.length || loadedSessionId !== sessionId) {
     return <div className={styles.detailError}>{t("common.noData")}</div>;
   }
+
+  // Show only the batch that belongs to the expanded row. Prevent-merge
+  // (special-customer) items are isolated into their own batches, so the
+  // session may contain several batches — each list row represents one.
+  const visibleBatches = batchDetails.filter((b) => b.id === batchId);
+  const batchesToRender = visibleBatches.length ? visibleBatches : batchDetails;
+
+  return (
+    <div className={styles.batchDetailsList}>
+      {batchesToRender.map((batch, index) => (
+        <SingleBatchDetail
+          key={batch.id}
+          batch={batch}
+          batchIndex={index}
+          batchCount={batchesToRender.length}
+          supplierClientId={supplierClientId}
+        />
+      ))}
+    </div>
+  );
+};
+
+interface SingleBatchDetailProps {
+  batch: BatchDetails;
+  batchIndex: number;
+  batchCount: number;
+  supplierClientId?: number | null;
+}
+
+const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
+  batch: batchDetails,
+  batchIndex,
+  batchCount,
+  supplierClientId,
+}) => {
+  const { t } = useTranslation();
+
+  const isSpecialBatch =
+    supplierClientId != null ||
+    batchDetails.hasPreventMergeItems === true ||
+    batchDetails.items.some((item) => item.customerTypeHasPreventMergeFlag);
 
   const getNumberClass = (value: number) => {
     if (value < 0) return styles.negative;
@@ -91,11 +148,30 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
   };
 
   return (
-    <div className={styles.detailContainer}>
+    <div
+      className={`${styles.detailContainer} ${
+        isSpecialBatch ? styles.specialDetailContainer : ""
+      }`}
+    >
       <div className={styles.detailHeaderSection}>
         <div className={styles.infoGroup}>
           <h4 className={styles.sectionTitle}>
             {t("cashbox.batches.details.analysis")}
+            {batchCount > 1 && (
+              <span className={styles.batchIndexLabel}>
+                {" "}
+                #{batchDetails.id} ({batchIndex + 1}/{batchCount})
+              </span>
+            )}
+            {isSpecialBatch && (
+              <span
+                className={styles.specialBadge}
+                title={t("cashbox.batches.filters.specialCustomerTooltip")}
+              >
+                <Star size={11} />
+                {t("cashbox.batches.special.badge")}
+              </span>
+            )}
           </h4>
           <div className={styles.metaInfo}>
             <span>
@@ -202,11 +278,29 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({ sessionId }) => {
         </h5>
         <div className={styles.itemsGrid}>
           {batchDetails.items.map((item) => (
-            <div key={item.id} className={styles.itemCard}>
+            <div
+              key={item.id}
+              className={`${styles.itemCard} ${
+                item.customerTypeHasPreventMergeFlag
+                  ? styles.specialItemCard
+                  : ""
+              }`}
+            >
               <div className={styles.itemCardHeader}>
                 <div className={styles.intakeMain}>
                   <span>#{item.intakeId}</span>
                   <strong>{item.powderKg} kg</strong>
+                  {item.customerTypeHasPreventMergeFlag && (
+                    <span
+                      className={styles.specialBadge}
+                      title={t(
+                        "cashbox.batches.filters.specialCustomerTooltip",
+                      )}
+                    >
+                      <Star size={10} />
+                      {t("cashbox.batches.special.badge")}
+                    </span>
+                  )}
                 </div>
                 <div className={styles.supplierTag}>
                   <User size={10} />
@@ -365,18 +459,22 @@ export const BatchReports: FC = () => {
 
   const hasClientFilter =
     activeFilters.superClientId != null ||
-    activeFilters.supplierClientId != null ||
     !!activeFilters.clientPhone ||
     activeFilters.clientTypeId != null;
 
+  const isSpecialMode = activeFilters.supplierClientId != null;
+
   useEffect(() => {
-    if (!hasClientFilter) {
+    if (!hasClientFilter || isSpecialMode) {
       dispatch(
         fetchBatches({
           page: currentPage + 1,
           pageSize: PAGE_SIZE,
           fromDate: activeFilters.fromDate ?? undefined,
           toDate: activeFilters.toDate ?? undefined,
+          supplierClientId: activeFilters.supplierClientId ?? undefined,
+          clientPhone: activeFilters.clientPhone ?? undefined,
+          clientTypeId: activeFilters.clientTypeId ?? undefined,
         }),
       )
         .unwrap()
@@ -390,10 +488,10 @@ export const BatchReports: FC = () => {
     return () => {
       dispatch(clearSelection());
     };
-  }, [dispatch, activeFilters, currentPage, hasClientFilter, t]);
+  }, [dispatch, activeFilters, currentPage, hasClientFilter, isSpecialMode, t]);
 
   useEffect(() => {
-    if (hasClientFilter) {
+    if (hasClientFilter && !isSpecialMode) {
       dispatch(
         fetchBatchDetailsForFilter({
           page: currentPage + 1,
@@ -418,7 +516,7 @@ export const BatchReports: FC = () => {
           );
         });
     }
-  }, [dispatch, activeFilters, currentPage, hasClientFilter, t]);
+  }, [dispatch, activeFilters, currentPage, hasClientFilter, isSpecialMode, t]);
 
   const handleApplyFilters = (filters: BatchReportFilters) => {
     setActiveFilters(filters);
@@ -429,10 +527,6 @@ export const BatchReports: FC = () => {
   const columns = useMemo(() => getBatchReportColumns(), []);
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
 
-  console.log(
-    "🚀 ~ BatchReports ~ batchDetailsForFilter?.items:",
-    batchDetailsForFilter?.items,
-  );
   return (
     <div className={styles.batchReportsWrapper}>
       <header className={styles.header}>
@@ -465,9 +559,43 @@ export const BatchReports: FC = () => {
         customerTypes={customerTypes}
       />
 
-      {!hasClientFilter && (
+      {(!hasClientFilter || isSpecialMode) && (
         <div className={styles.tableContainer}>
-          {isLoading && !batches?.results?.length ? (
+          {isSpecialMode && (
+            <div
+              className={styles.specialBanner}
+              title={t("cashbox.batches.filters.specialCustomerTooltip")}
+            >
+              <Star size={14} />
+              <span>
+                {t("cashbox.batches.special.totalsLabel", {
+                  id: activeFilters.supplierClientId,
+                })}
+              </span>
+              <Info size={13} className={styles.specialBannerInfo} />
+            </div>
+          )}
+
+          {isSpecialMode && batches && (
+            <FilteredBatchSummaryCard
+              data={{
+                totalPowderKg: batches.totalPowderKg,
+                totalCostAmd: batches.totalCostAmd,
+                avgPtPerKg_g: batches.avgPtPerKg_g,
+                avgPdPerKg_g: batches.avgPdPerKg_g,
+                avgRhPerKg_g: batches.avgRhPerKg_g,
+              }}
+              t={t}
+              styles={styles}
+            />
+          )}
+
+          {isSpecialMode && !isLoading && !batches?.results?.length ? (
+            <div className={styles.emptyState}>
+              <p>{t("cashbox.batches.special.emptyState")}</p>
+              <small>{t("cashbox.batches.special.emptyStateHint")}</small>
+            </div>
+          ) : isLoading && !batches?.results?.length ? (
             <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
               <div className={styles.tableSkeletonHeader}>
                 <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -492,17 +620,26 @@ export const BatchReports: FC = () => {
               pageCount={totalPages}
               pageIndex={currentPage}
               getRowClassName={(row) =>
-                checkIsToday(row.createdAt) ? styles.todayRow : ""
+                [
+                  checkIsToday(row.createdAt) ? styles.todayRow : "",
+                  row.hasPreventMergeItems ? styles.specialRow : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")
               }
               onPaginationChange={setCurrentPage}
               renderSubComponent={({ row }) => (
-                <BatchDetailView sessionId={row.original.sessionId} />
+                <BatchDetailView
+                  sessionId={row.original.sessionId}
+                  batchId={row.original.id}
+                  supplierClientId={activeFilters.supplierClientId}
+                />
               )}
             />
           )}
         </div>
       )}
-      {hasClientFilter && (
+      {hasClientFilter && !isSpecialMode && (
         <div className={styles.tableContainer}>
           <div className={styles.detailContainer}>
             <div className={styles.itemsSection}>

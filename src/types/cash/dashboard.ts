@@ -62,6 +62,11 @@ export interface PowderBatch {
   avgRhPricePerKg: number;
   status: number;
   createdAt: string;
+  /**
+   * True when the batch contains special-customer (PreventInventoryMerge)
+   * items and is isolated from normal batch merging.
+   */
+  hasPreventMergeItems?: boolean;
 }
 
 export interface PowderBatchDetails extends PowderBatch {
