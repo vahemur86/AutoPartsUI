@@ -7,6 +7,8 @@ import { getApiErrorMessage } from "@/utils";
 // types
 import type {
   CreateSalesLotRequest,
+  DollarCalculatorRequest,
+  DollarCalculatorResponse,
   GetLotDetailsResponse,
   GetLotPreviewResponse,
   GetPowderSalesAdjustmentsResponse,
@@ -190,3 +192,14 @@ export const calculateSalesLot = ({
     cashRegisterId,
     "Failed to calculate sales lot.",
   );
+
+export const calculateDollarSalesLot = (body: DollarCalculatorRequest) => {
+  try {
+    return api.post<DollarCalculatorResponse>(
+      `/admin/sales-lots/calculator/dollar`,
+      body,
+    );
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to calculate dollar sales lot."));
+  }
+};

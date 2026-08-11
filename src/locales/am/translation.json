@@ -2427,6 +2427,10 @@
   "calculator": {
     "title": "Հաշվիչ",
     "liveBadge": "ՈՒՂԻՂ",
+    "tabs": {
+      "catalyst": "Հաշվիչ",
+      "dollar": "Վաճառքի հաշվիչ"
+    },
     "columns": {
       "weight": "Քաշեր",
       "price": "Գներ",
@@ -2478,6 +2482,53 @@
     },
     "error": {
       "failedToCalculate": "Չհաջողվեց կատարել վաճառքի խմբի հաշվարկը"
+    }
+  },
+  "dollarCalculator": {
+    "title": "Վաճառքի հաշվիչ",
+    "columns": {
+      "input": "Փոշի և մետաղներ",
+      "reduction": "Նվազեցումներ և ծախս",
+      "result": "Արդյունք"
+    },
+    "form": {
+      "powderKg": "Փոշի, կգ",
+      "pt_g": "Pt, գ/կգ",
+      "pd_g": "Pd, գ/կգ",
+      "rh_g": "Rh, գ/կգ",
+      "ptReduce": "Pt նվազեցում, %",
+      "pdReduce": "Pd նվազեցում, %",
+      "rhReduce": "Rh նվազեցում, %",
+      "moisture": "Խոնավություն, % (ոչ պարտադիր)",
+      "dollarCost": "Դոլարային ծախս, $/կգ (ոչ պարտադիր)",
+      "button": {
+        "calculate": "Հաշվարկել",
+        "calculating": "Հաշվարկվում է...",
+        "cancel": "Չեղարկել"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Փոշու քանակը կգ-ով",
+      "pt_g": "Պլատին գրամ/կգ",
+      "pd_g": "Պալադիում գրամ/կգ",
+      "rh_g": "Ռոդիում գրամ/կգ",
+      "percent": "0-100",
+      "dollarCost": "$/կգ"
+    },
+    "result": {
+      "noResult": "Արդյունք դեռ չկա",
+      "kitcoPricePerKg": "Kitco գին / կգ",
+      "kitcoTotal": "Kitco ընդհանուր",
+      "originalPowder": "Մուտքային փոշի",
+      "actualPowder": "Մաքուր փոշի",
+      "dollarCostPerKg": "Դոլարային ծախս / կգ",
+      "totalDollarCost": "Դոլարային ծախս",
+      "finalTotal": "Վերջնական գումար",
+      "metalsPerKg": "Մետաղներ (գ/կգ)",
+      "metalsTotal": "Ընդհանուր"
+    },
+    "error": {
+      "failedToCalculate": "Չհաջողվեց կատարել հաշվարկը"
     }
   },
   "carCatalyst": {

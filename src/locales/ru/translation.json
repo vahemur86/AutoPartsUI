@@ -2644,6 +2644,10 @@
   "calculator": {
     "title": "Калькулятор",
     "liveBadge": "LIVE",
+    "tabs": {
+      "catalyst": "Калькулятор",
+      "dollar": "Калькулятор продаж"
+    },
     "columns": {
       "weight": "Вес",
       "price": "Цены",
@@ -2698,6 +2702,53 @@
     },
     "error": {
       "failedToCalculate": "Не удалось выполнить расчет партии"
+    }
+  },
+  "dollarCalculator": {
+    "title": "Калькулятор продаж",
+    "columns": {
+      "input": "Порошок и металлы",
+      "reduction": "Снижения и затраты",
+      "result": "Результат"
+    },
+    "form": {
+      "powderKg": "Порошок, кг",
+      "pt_g": "Pt, г/кг",
+      "pd_g": "Pd, г/кг",
+      "rh_g": "Rh, г/кг",
+      "ptReduce": "Снижение Pt, %",
+      "pdReduce": "Снижение Pd, %",
+      "rhReduce": "Снижение Rh, %",
+      "moisture": "Влажность, % (необязательно)",
+      "dollarCost": "Долларовые затраты, $/кг (необязательно)",
+      "button": {
+        "calculate": "Рассчитать",
+        "calculating": "Расчёт...",
+        "cancel": "Отмена"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Введите вес порошка в кг",
+      "pt_g": "Платина г/кг",
+      "pd_g": "Палладий г/кг",
+      "rh_g": "Родий г/кг",
+      "percent": "0-100",
+      "dollarCost": "$/кг"
+    },
+    "result": {
+      "noResult": "Пока нет результата",
+      "kitcoPricePerKg": "Цена Kitco / кг",
+      "kitcoTotal": "Итого Kitco",
+      "originalPowder": "Исходный порошок",
+      "actualPowder": "Чистый порошок",
+      "dollarCostPerKg": "Долларовые затраты / кг",
+      "totalDollarCost": "Долларовые затраты",
+      "finalTotal": "Итоговая сумма",
+      "metalsPerKg": "Металлы (г/кг)",
+      "metalsTotal": "Итого"
+    },
+    "error": {
+      "failedToCalculate": "Не удалось выполнить расчет"
     }
   },
   "carCatalyst": {

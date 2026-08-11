@@ -1,0 +1,5 @@
+data = open(r'src/pages/Calculator/index.tsx', 'rb').read()
+text = data.decode('utf-8')
+idx = text.find('\u0540\u0561\u0577\u057e\u056b\u0579')
+print(idx)
+print(repr(text[195:230]))

@@ -2648,6 +2648,10 @@
   "calculator": {
     "title": "Calculator",
     "liveBadge": "LIVE",
+    "tabs": {
+      "catalyst": "Calculator",
+      "dollar": "Sales Calculator"
+    },
     "columns": {
       "weight": "Weights",
       "price": "Prices",
@@ -2703,6 +2707,53 @@
     },
     "error": {
       "failedToCalculate": "Failed to calculate sales lot"
+    }
+  },
+  "dollarCalculator": {
+    "title": "Sales Calculator",
+    "columns": {
+      "input": "Powder & Metals",
+      "reduction": "Reductions & Cost",
+      "result": "Result"
+    },
+    "form": {
+      "powderKg": "Powder, kg",
+      "pt_g": "Pt, g/kg",
+      "pd_g": "Pd, g/kg",
+      "rh_g": "Rh, g/kg",
+      "ptReduce": "Pt reduction, %",
+      "pdReduce": "Pd reduction, %",
+      "rhReduce": "Rh reduction, %",
+      "moisture": "Moisture, % (optional)",
+      "dollarCost": "Dollar cost, $/kg (optional)",
+      "button": {
+        "calculate": "Calculate",
+        "calculating": "Calculating...",
+        "cancel": "Cancel"
+      }
+    },
+    "placeholder": {
+      "powderKg": "Enter powder weight in kg",
+      "pt_g": "Platinum g/kg",
+      "pd_g": "Palladium g/kg",
+      "rh_g": "Rhodium g/kg",
+      "percent": "0-100",
+      "dollarCost": "$/kg"
+    },
+    "result": {
+      "noResult": "No result yet",
+      "kitcoPricePerKg": "Kitco price / kg",
+      "kitcoTotal": "Kitco total",
+      "originalPowder": "Original powder",
+      "actualPowder": "Net powder",
+      "dollarCostPerKg": "Dollar cost / kg",
+      "totalDollarCost": "Dollar cost",
+      "finalTotal": "Final total",
+      "metalsPerKg": "Metals (g/kg)",
+      "metalsTotal": "Total"
+    },
+    "error": {
+      "failedToCalculate": "Failed to calculate"
     }
   },
   "carCatalyst": {

@@ -1,14 +1,16 @@
-﻿import { useEffect, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./Calculator.module.css";
 import { Button, Switch, TextField } from "@/ui-kit";
-import { calculateSalesLot } from "@/services/warehouses/salesLots";
-import { DollarSign, Scale, Calculator, Weight, CoinsIcon } from "lucide-react";
+import { calculateSalesLot, calculateDollarSalesLot } from "@/services/warehouses/salesLots";
+import { DollarSign, Scale, Calculator, Weight, CoinsIcon, ChevronDown, BarChart3 } from "lucide-react";
 import type {
+  DollarCalculatorRequest,
+  DollarCalculatorResponse,
   SalesLotsCalculatorRequest,
   SalesLotsCalculatorResponse,
 } from "@/types/warehouses/salesLots";
-import { fetchExchangeRates } from "@/store/slices/exchangeRatesSlice";
+import { getCurrentUsdAmdExchangeRate } from "@/services/settings/exchangeRates";
 import { useAppDispatch } from "@/store/hooks";
 import { toast } from "react-toastify";
 import { fetchMetalPrices } from "@/store/slices/metalPricesSlice";
@@ -28,17 +30,39 @@ const initialState: SalesLotsCalculatorRequest = {
   usdRate: 0,
 };
 
+const dollarInitialState: DollarCalculatorRequest = {
+  powderKg: 0,
+  pt_g: 0,
+  pd_g: 0,
+  rh_g: 0,
+  ptReducePercent: 0,
+  pdReducePercent: 0,
+  rhReducePercent: 0,
+  moisturePercent: null,
+  dollarCostPerKg: null,
+};
+
 export const NewCalculator: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const [activeTab, setActiveTab] = useState<"catalyst" | "dollar">("catalyst");
   const [form, setForm] = useState<SalesLotsCalculatorRequest>(initialState);
   const [result, setResult] = useState<SalesLotsCalculatorResponse | null>(
     null,
   );
   const [loading, setLoading] = useState(false);
+  const [showHiddenItems, setShowHiddenItems] = useState(false);
   const [inputValues, setInputValues] = useState<
     Record<keyof SalesLotsCalculatorRequest, string>
   >({} as Record<keyof SalesLotsCalculatorRequest, string>);
+
+  // Dollar calculator state
+  const [dollarForm, setDollarForm] = useState<DollarCalculatorRequest>(dollarInitialState);
+  const [dollarResult, setDollarResult] = useState<DollarCalculatorResponse | null>(null);
+  const [dollarLoading, setDollarLoading] = useState(false);
+  const [dollarInputValues, setDollarInputValues] = useState<
+    Record<keyof DollarCalculatorRequest, string>
+  >({} as Record<keyof DollarCalculatorRequest, string>);
 
   const isManualMode = form.priceMode === 1;
 
@@ -71,27 +95,18 @@ export const NewCalculator: FC = () => {
         fetchMetalPrices(form.cashRegisterId),
       ).unwrap();
 
-      const exchangeRes = await dispatch(
-        fetchExchangeRates({ cashRegisterId: form.cashRegisterId }),
-      ).unwrap();
+      const exchangeRes = await getCurrentUsdAmdExchangeRate(form.cashRegisterId);
 
       const pt = metalRes.find((m) => m.metalName === "Platinum");
       const pd = metalRes.find((m) => m.metalName === "Palladium");
       const rh = metalRes.find((m) => m.metalName === "Rhodium");
-
-      const usd = exchangeRes.find(
-        (e) =>
-          e.baseCurrencyCode === "USD" &&
-          e.quoteCurrencyCode === "AMD" &&
-          e.isActive,
-      );
 
       setForm((prev) => ({
         ...prev,
         ptPrice: prev.priceMode === 1 ? prev.ptPrice : (pt?.price ?? 0),
         pdPrice: prev.priceMode === 1 ? prev.pdPrice : (pd?.price ?? 0),
         rhPrice: prev.priceMode === 1 ? prev.rhPrice : (rh?.price ?? 0),
-        usdRate: prev.priceMode === 1 ? prev.usdRate : (usd?.rate ?? 0),
+        usdRate: prev.priceMode === 1 ? prev.usdRate : (exchangeRes?.rate ?? 0),
       }));
     } catch (e) {
       console.error("Failed to load defaults", e);
@@ -126,6 +141,50 @@ export const NewCalculator: FC = () => {
     setLoading(false);
   };
 
+  // Dollar calculator functions
+  const dollarDisplayValue = (key: keyof DollarCalculatorRequest) => {
+    const rawValue = dollarInputValues[key];
+    if (rawValue !== undefined) {
+      return rawValue;
+    }
+    const value = dollarForm[key];
+    return value === 0 || value === null ? "" : String(value);
+  };
+
+  const dollarUpdate = (key: keyof DollarCalculatorRequest, value: string) => {
+    setDollarInputValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+
+    const numValue = value === "" ? 0 : Number(value);
+    setDollarForm((prev) => ({
+      ...prev,
+      [key]: key === "moisturePercent" || key === "dollarCostPerKg" 
+        ? (value === "" ? null : numValue)
+        : numValue,
+    }));
+  };
+
+  const onDollarCalculate = async () => {
+    setDollarLoading(true);
+    try {
+      const res = await calculateDollarSalesLot(dollarForm);
+      setDollarResult(res.data);
+    } catch {
+      toast.error(t("calculator.error.failedToCalculate"));
+    } finally {
+      setDollarLoading(false);
+    }
+  };
+
+  const onDollarCancel = () => {
+    setDollarForm(structuredClone(dollarInitialState));
+    setDollarInputValues({} as Record<keyof DollarCalculatorRequest, string>);
+    setDollarResult(null);
+    setDollarLoading(false);
+  };
+
   useEffect(() => {
     if (form.priceMode === 0) {
       loadDefaults();
@@ -134,8 +193,32 @@ export const NewCalculator: FC = () => {
 
   return (
     <div className={styles.wrapper}>
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${activeTab === "catalyst" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("catalyst")}
+        >
+          <Calculator size={18} />
+          {t("calculator.tabs.catalyst")}
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === "dollar" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("dollar")}
+        >
+          <DollarSign size={18} />
+          {t("calculator.tabs.dollar")}
+        </button>
+      </div>
+
+      {/* Catalyst Calculator */}
+      {activeTab === "catalyst" && (
+        <div className={styles.calculatorContent}>
       <div className={styles.header}>
-        <h2 className={styles.title}>ðŸ§® {t("calculator.title")}</h2>
+        <h2 className={styles.title}>
+          <Calculator size={24} style={{ marginRight: '8px' }} />
+          {t("calculator.title")}
+        </h2>
 
         <div className={styles.modeInline}>
           <span className={!isManualMode ? styles.active : ""}>
@@ -153,7 +236,8 @@ export const NewCalculator: FC = () => {
       <div className={styles.cardsGrid}>
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>
-            âš–ï¸ {t("calculator.columns.weight")}
+            <Weight size={18} />
+            {t("calculator.columns.weight")}
           </h3>
 
           <label>
@@ -255,7 +339,8 @@ export const NewCalculator: FC = () => {
           }`}
         >
           <h3 className={styles.cardTitle}>
-            ðŸ’° {t("calculator.columns.price")}
+            <DollarSign size={18} />
+            {t("calculator.columns.price")}
             {!isManualMode && (
               <span className={styles.autoBadge}>{t("calculator.liveBadge")}</span>
             )}
@@ -347,7 +432,8 @@ export const NewCalculator: FC = () => {
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>
-            ðŸ“Š {t("calculator.columns.result")}
+            <BarChart3 size={18} />
+            {t("calculator.columns.result")}
           </h3>
 
           {!result ? (
@@ -364,42 +450,303 @@ export const NewCalculator: FC = () => {
               </span>
             </div>
           ) : (
-            <div className={styles.resultGrid}>
-              <div>
-                <span> {t("calculator.form.kitko")}</span>
-                <b>{result.kitcoAmd.toFixed(2)}</b>
+            <>
+              <div className={styles.resultGrid}>
+                <div>
+                  <span>{t("calculator.form.offer")}</span>
+                  <b>{result.customerOfferAmd.toFixed(2)}</b>
+                </div>
+
+                <div>
+                  <span>{t("calculator.form.maxCustomerPercent")}</span>
+                  <b>{result.maxCustomerPercent.toFixed(2)}%</b>
+                </div>
               </div>
 
-              <div>
-                <span>{t("calculator.form.finalBase")}</span>
-                <b>{result.finalBaseAmd.toFixed(2)}</b>
-              </div>
+              {showHiddenItems && (
+                <div className={styles.resultGrid}>
+                  <div>
+                    <span>{t("calculator.form.kitko")}</span>
+                    <b>{result.kitcoAmd.toFixed(2)}</b>
+                  </div>
 
-              <div>
-                <span>{t("calculator.form.offer")}</span>
-                <b>{result.customerOfferAmd.toFixed(2)}</b>
-              </div>
+                  <div>
+                    <span>{t("calculator.form.finalBase")}</span>
+                    <b>{result.finalBaseAmd.toFixed(2)}</b>
+                  </div>
 
-              <div>
-                <span>{t("calculator.form.maxCustomerPercent")}</span>
-                <b>{result.maxCustomerPercent.toFixed(2)}%</b>
-              </div>
+                  <div>
+                    <span>{t("calculator.form.profit")}</span>
+                    <b className={styles.profit}>{result.profitAmd.toFixed(2)}</b>
+                  </div>
 
-              <div>
-                <span>{t("calculator.form.profit")}</span>
-                <b className={styles.profit}>{result.profitAmd.toFixed(2)}</b>
-              </div>
+                  <div>
+                    <span>{t("calculator.form.profitPercent")}</span>
+                    <b className={styles.profit}>
+                      {result.profitPercent.toFixed(2)}%
+                    </b>
+                  </div>
+                </div>
+              )}
 
-              <div>
-                <span>{t("calculator.form.profitPercent")}</span>
-                <b className={styles.profit}>
-                  {result.profitPercent.toFixed(2)}%
-                </b>
-              </div>
-            </div>
+              <button
+                className={`${styles.toggleButton} ${showHiddenItems ? styles.expanded : ""}`}
+                onClick={() => setShowHiddenItems(!showHiddenItems)}
+                title={showHiddenItems ? "Hide details" : "Show details"}
+              >
+                <ChevronDown size={16} />
+              </button>
+            </>
           )}
         </div>
       </div>
+        </div>
+      )}
+
+      {/* Dollar Calculator */}
+      {activeTab === "dollar" && (
+        <div className={styles.calculatorContent}>
+          <div className={styles.header}>
+            <h2 className={styles.title}>
+              <DollarSign size={24} style={{ marginRight: '8px' }} />
+              {t("dollarCalculator.title")}
+            </h2>
+          </div>
+
+          <div className={styles.cardsGrid}>
+            {/* Inputs Card */}
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>
+                <Weight size={18} />
+                {t("dollarCalculator.columns.input")}
+              </h3>
+
+              <label>
+                <Weight size={14} /> {t("dollarCalculator.form.powderKg")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.powderKg")}
+                type="number"
+                value={dollarDisplayValue("powderKg")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("powderKg", e.target.value)}
+              />
+
+              <label>
+                <Scale size={14} /> {t("dollarCalculator.form.pt_g")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.pt_g")}
+                type="number"
+                value={dollarDisplayValue("pt_g")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("pt_g", e.target.value)}
+              />
+
+              <label>
+                <Scale size={14} /> {t("dollarCalculator.form.pd_g")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.pd_g")}
+                type="number"
+                value={dollarDisplayValue("pd_g")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("pd_g", e.target.value)}
+              />
+
+              <label>
+                <Scale size={14} /> {t("dollarCalculator.form.rh_g")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.rh_g")}
+                type="number"
+                value={dollarDisplayValue("rh_g")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("rh_g", e.target.value)}
+              />
+            </div>
+
+            {/* Reduction & Options Card */}
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>
+                <CoinsIcon size={18} />
+                {t("dollarCalculator.columns.reduction")}
+              </h3>
+
+              <label>
+                <Scale size={14} /> {t("dollarCalculator.form.ptReduce")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.percent")}
+                type="number"
+                value={dollarDisplayValue("ptReducePercent")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("ptReducePercent", e.target.value)}
+              />
+
+              <label>
+                <Scale size={14} /> {t("dollarCalculator.form.pdReduce")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.percent")}
+                type="number"
+                value={dollarDisplayValue("pdReducePercent")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("pdReducePercent", e.target.value)}
+              />
+
+              <label>
+                <Scale size={14} /> {t("dollarCalculator.form.rhReduce")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.percent")}
+                type="number"
+                value={dollarDisplayValue("rhReducePercent")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("rhReducePercent", e.target.value)}
+              />
+
+              <label>
+                <Weight size={14} /> {t("dollarCalculator.form.moisture")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.percent")}
+                type="number"
+                value={dollarDisplayValue("moisturePercent")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("moisturePercent", e.target.value)}
+              />
+
+              <label>
+                <DollarSign size={14} /> {t("dollarCalculator.form.dollarCost")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.dollarCost")}
+                type="number"
+                value={dollarDisplayValue("dollarCostPerKg")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("dollarCostPerKg", e.target.value)}
+              />
+
+              <div className={styles.actions}>
+                <Button onClick={onDollarCalculate} disabled={dollarLoading} fullWidth>
+                  <Calculator size={18} />
+                  {dollarLoading ? t("dollarCalculator.form.button.calculating") : t("dollarCalculator.form.button.calculate")}
+                </Button>
+
+                <Button variant="secondary" onClick={onDollarCancel} fullWidth>
+                  {t("dollarCalculator.form.button.cancel")}
+                </Button>
+              </div>
+            </div>
+
+            {/* Results Card */}
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>
+                <BarChart3 size={18} />
+                {t("dollarCalculator.columns.result")}
+              </h3>
+
+              {!dollarResult ? (
+                <div className={styles.loaderWrapper}>
+                  <div
+                    className={`${styles.loader} ${
+                      dollarLoading ? styles.loaderActive : styles.loaderIdle
+                    }`}
+                  />
+                  <span className={styles.loaderText}>
+                    {dollarLoading ? t("dollarCalculator.form.button.calculating") : t("dollarCalculator.result.noResult")}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.resultGrid}>
+                    <div>
+                      <span>{t("dollarCalculator.result.kitcoPricePerKg")}</span>
+                      <b>${dollarResult.kitcoPricePerKgUsd.toFixed(2)}</b>
+                    </div>
+
+                    <div>
+                      <span>{t("dollarCalculator.result.kitcoTotal")}</span>
+                      <b>${dollarResult.kitcoTotalUsd.toFixed(2)}</b>
+                    </div>
+
+                    <div>
+                      <span>{t("dollarCalculator.result.originalPowder")}</span>
+                      <b>{dollarResult.originalPowderKg.toFixed(2)} kg</b>
+                    </div>
+
+                    <div>
+                      <span>{t("dollarCalculator.result.actualPowder")}</span>
+                      <b>{dollarResult.actualPowderKg.toFixed(2)} kg</b>
+                    </div>
+
+                    {dollarResult.dollarCostPerKgUsd > 0 && (
+                      <>
+                        <div>
+                          <span>{t("dollarCalculator.result.dollarCostPerKg")}</span>
+                          <b>${dollarResult.dollarCostPerKgUsd.toFixed(2)}</b>
+                        </div>
+
+                        <div>
+                          <span>{t("dollarCalculator.result.totalDollarCost")}</span>
+                          <b>${dollarResult.totalDollarCostUsd.toFixed(2)}</b>
+                        </div>
+                      </>
+                    )}
+
+                    <div style={{ gridColumn: "1 / -1", marginTop: "12px", padding: "16px", background: "rgba(34, 197, 94, 0.1)", borderRadius: "8px", border: "1px solid rgba(34, 197, 94, 0.3)" }}>
+                      <span style={{ fontSize: "14px", opacity: 0.8 }}>{t("dollarCalculator.result.finalTotal")}</span>
+                      <b style={{ display: "block", fontSize: "24px", color: "#22c55e", marginTop: "4px" }}>
+                        ${dollarResult.finalTotalUsd.toFixed(2)}
+                      </b>
+                    </div>
+                  </div>
+
+                  <div className={styles.totalsWrapper} style={{ marginTop: "20px" }}>
+                    <div className={styles.totalsSection}>
+                      <div className={styles.totalsHeader}>
+                        {t("dollarCalculator.result.metalsPerKg")}
+                      </div>
+                      <div className={styles.totalsGrid}>
+                        <div className={styles.totalCard}>
+                          <span>Pt</span>
+                          <b>{dollarResult.pt_g.toFixed(3)}</b>
+                          <small>g/kg</small>
+                        </div>
+                        <div className={styles.totalCard}>
+                          <span>Pd</span>
+                          <b>{dollarResult.pd_g.toFixed(3)}</b>
+                          <small>g/kg</small>
+                        </div>
+                        <div className={styles.totalCard}>
+                          <span>Rh</span>
+                          <b>{dollarResult.rh_g.toFixed(3)}</b>
+                          <small>g/kg</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={styles.totalsSection}>
+                      <div className={styles.totalsHeader}>
+                        {t("dollarCalculator.result.metalsTotal")}
+                      </div>
+                      <div className={styles.totalsGrid}>
+                        <div className={styles.totalCard}>
+                          <span>Pt</span>
+                          <b>{dollarResult.totalPt_g.toFixed(2)}</b>
+                          <small>g</small>
+                        </div>
+                        <div className={styles.totalCard}>
+                          <span>Pd</span>
+                          <b>{dollarResult.totalPd_g.toFixed(2)}</b>
+                          <small>g</small>
+                        </div>
+                        <div className={styles.totalCard}>
+                          <span>Rh</span>
+                          <b>{dollarResult.totalRh_g.toFixed(2)}</b>
+                          <small>g</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

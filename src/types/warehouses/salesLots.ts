@@ -257,3 +257,31 @@ export interface SalesLotsCalculatorResponse {
   pd_g: number;
   rh_g: number;
 }
+
+export interface DollarCalculatorRequest {
+  powderKg: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
+  ptReducePercent: number;
+  pdReducePercent: number;
+  rhReducePercent: number;
+  moisturePercent: number | null;
+  dollarCostPerKg: number | null;
+}
+
+export interface DollarCalculatorResponse {
+  kitcoPricePerKgUsd: number;
+  kitcoTotalUsd: number;
+  originalPowderKg: number;
+  actualPowderKg: number;
+  dollarCostPerKgUsd: number;
+  totalDollarCostUsd: number;
+  finalTotalUsd: number;
+  totalPt_g: number;
+  totalPd_g: number;
+  totalRh_g: number;
+  pt_g: number;
+  pd_g: number;
+  rh_g: number;
+}

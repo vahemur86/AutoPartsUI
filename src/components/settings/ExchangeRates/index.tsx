@@ -22,6 +22,9 @@ import {
   editExchangeRateActivityStatus,
 } from "@/store/slices/exchangeRatesSlice";
 
+// services
+import { getCurrentUsdAmdExchangeRate } from "@/services/settings/exchangeRates";
+
 // components
 import { TextField, Select, Button } from "@/ui-kit";
 
@@ -38,8 +41,9 @@ export const ExchangeRates: FC = () => {
     (state) => state.exchangeRates,
   );
 
-  const [newQuoteCurrency, setNewQuoteCurrency] = useState("EUR");
+  const [newQuoteCurrency, setNewQuoteCurrency] = useState("AMD");
   const [newRateValue, setNewRateValue] = useState("");
+  const [isLoadingRate, setIsLoadingRate] = useState(false);
 
   const [isExistingExpanded, setIsExistingExpanded] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -58,6 +62,24 @@ export const ExchangeRates: FC = () => {
   useEffect(() => {
     dispatch(fetchExchangeRates());
   }, [dispatch]);
+
+  useEffect(() => {
+    const loadCurrentRate = async () => {
+      if (newQuoteCurrency === "AMD") {
+        setIsLoadingRate(true);
+        try {
+          const response = await getCurrentUsdAmdExchangeRate();
+          setNewRateValue(response.rate.toString());
+        } catch (error) {
+          console.error("Failed to fetch current USD/AMD exchange rate", error);
+        } finally {
+          setIsLoadingRate(false);
+        }
+      }
+    };
+
+    void loadCurrentRate();
+  }, [newQuoteCurrency]);
 
   const handleAddRate = async () => {
     const rateNum = parseFloat(newRateValue);
@@ -127,6 +149,20 @@ export const ExchangeRates: FC = () => {
     }
   };
 
+  const handleRefreshRate = async () => {
+    if (newQuoteCurrency === "AMD") {
+      setIsLoadingRate(true);
+      try {
+        const response = await getCurrentUsdAmdExchangeRate();
+        setNewRateValue(response.rate.toString());
+      } catch (error) {
+        console.error("Failed to fetch current USD/AMD exchange rate", error);
+      } finally {
+        setIsLoadingRate(false);
+      }
+    }
+  };
+
   return (
     <div className={styles.exchangeRatesWrapper}>
       <div className={styles.exchangeRates}>
@@ -193,10 +229,10 @@ export const ExchangeRates: FC = () => {
               </Button>
               <Button
                 variant="primary"
-                onClick={() => dispatch(fetchExchangeRates())}
-                disabled={isLoading}
+                onClick={handleRefreshRate}
+                disabled={isLoadingRate || newQuoteCurrency !== "AMD"}
               >
-                {t("exchangeRates.updateRates")}
+                {isLoadingRate ? "..." : t("exchangeRates.updateRates")}
               </Button>
             </div>
           </div>

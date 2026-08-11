@@ -6,6 +6,58 @@
   font-family: Inter, system-ui, sans-serif;
 }
 
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-black-3);
+  padding-bottom: 0;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-secondary-300);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.6;
+  position: relative;
+  bottom: -1px;
+}
+
+.tab:hover {
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.activeTab {
+  color: var(--color-primary-300);
+  opacity: 1;
+  border-bottom-color: var(--color-primary-300);
+}
+
+.calculatorContent {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .title {
   font-size: 24px;
   font-weight: 800;
@@ -395,4 +447,173 @@ label {
     transform: scale(0.95);
     opacity: 0.5;
   }
+}
+
+/* Result Summary Styles */
+.resultSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.resultRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.01)
+  );
+  border: 1px solid var(--color-black-3);
+  transition: all 0.2s ease;
+}
+
+.resultRow:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+}
+
+.resultRow > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resultRow span {
+  font-size: 12px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.resultRow b {
+  font-size: 18px;
+  color: var(--color-primary-300);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.resultActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+/* Toggle button styling */
+.resultActions :global(button) {
+  background: transparent;
+  color: var(--color-secondary-400);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resultActions :global(button:hover) {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: var(--color-secondary-300);
+}
+
+/* Details grid - hidden by default, shown on toggle */
+.resultGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-black-3);
+  animation: slideDown 200ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.resultGrid div {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--color-black-1);
+  border: 1px solid var(--color-black-3);
+  transition: all 0.15s ease;
+}
+
+.resultGrid div:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.resultGrid span {
+  font-size: 12px;
+  opacity: 0.65;
+  font-weight: 500;
+}
+
+.resultGrid b {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary-300);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .resultRow {
+    grid-template-columns: 1fr;
+  }
+
+  .resultActions {
+    justify-content: flex-start;
+  }
+}
+
+/* Toggle button for hidden items */
+.toggleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-secondary-400);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 8px;
+  padding: 0;
+}
+
+.toggleButton:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-primary-300);
+}
+
+.toggleButton.expanded svg {
+  transform: rotate(180deg);
+  transition: transform 0.25s ease;
+}
+
+.toggleButton svg {
+  transition: transform 0.25s ease;
 }
