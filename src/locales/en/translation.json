@@ -2721,9 +2721,13 @@
       "pt_g": "Pt, g/kg",
       "pd_g": "Pd, g/kg",
       "rh_g": "Rh, g/kg",
+      "ptPrice": "Pt price, $/kg",
+      "pdPrice": "Pd price, $/kg",
+      "rhPrice": "Rh price, $/kg",
       "ptReduce": "Pt reduction, %",
       "pdReduce": "Pd reduction, %",
       "rhReduce": "Rh reduction, %",
+      "salePercent": "Sale percent, %",
       "moisture": "Moisture, % (optional)",
       "dollarCost": "Dollar cost, $/kg (optional)",
       "button": {
@@ -2737,6 +2741,9 @@
       "pt_g": "Platinum g/kg",
       "pd_g": "Palladium g/kg",
       "rh_g": "Rhodium g/kg",
+      "ptPrice": "Platinum price $/kg",
+      "pdPrice": "Palladium price $/kg",
+      "rhPrice": "Rhodium price $/kg",
       "percent": "0-100",
       "dollarCost": "$/kg"
     },

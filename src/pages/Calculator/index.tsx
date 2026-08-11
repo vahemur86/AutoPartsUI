@@ -35,9 +35,13 @@ const dollarInitialState: DollarCalculatorRequest = {
   pt_g: 0,
   pd_g: 0,
   rh_g: 0,
+  ptPrice: 0,
+  pdPrice: 0,
+  rhPrice: 0,
   ptReducePercent: 0,
   pdReducePercent: 0,
   rhReducePercent: 0,
+  salePercent: 0,
   moisturePercent: null,
   dollarCostPerKg: null,
 };
@@ -560,6 +564,36 @@ export const NewCalculator: FC = () => {
                 value={dollarDisplayValue("rh_g")}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("rh_g", e.target.value)}
               />
+
+              <label>
+                <DollarSign size={14} /> {t("dollarCalculator.form.ptPrice")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.ptPrice")}
+                type="number"
+                value={dollarDisplayValue("ptPrice")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("ptPrice", e.target.value)}
+              />
+
+              <label>
+                <DollarSign size={14} /> {t("dollarCalculator.form.pdPrice")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.pdPrice")}
+                type="number"
+                value={dollarDisplayValue("pdPrice")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("pdPrice", e.target.value)}
+              />
+
+              <label>
+                <DollarSign size={14} /> {t("dollarCalculator.form.rhPrice")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.rhPrice")}
+                type="number"
+                value={dollarDisplayValue("rhPrice")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("rhPrice", e.target.value)}
+              />
             </div>
 
             {/* Reduction & Options Card */}
@@ -597,6 +631,16 @@ export const NewCalculator: FC = () => {
                 type="number"
                 value={dollarDisplayValue("rhReducePercent")}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("rhReducePercent", e.target.value)}
+              />
+
+              <label>
+                <CoinsIcon size={14} /> {t("dollarCalculator.form.salePercent")}
+              </label>
+              <TextField
+                placeholder={t("dollarCalculator.placeholder.percent")}
+                type="number"
+                value={dollarDisplayValue("salePercent")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dollarUpdate("salePercent", e.target.value)}
               />
 
               <label>

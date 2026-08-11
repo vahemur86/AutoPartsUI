@@ -263,9 +263,13 @@ export interface DollarCalculatorRequest {
   pt_g: number;
   pd_g: number;
   rh_g: number;
+  ptPrice: number;
+  pdPrice: number;
+  rhPrice: number;
   ptReducePercent: number;
   pdReducePercent: number;
   rhReducePercent: number;
+  salePercent: number;
   moisturePercent: number | null;
   dollarCostPerKg: number | null;
 }
