@@ -1,0 +1,84 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: var(--color-black-1);
+  border-radius: 8px;
+  margin-top: 24px;
+  padding: 24px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  width: min(420px, 100%);
+}
+
+.tableSection {
+  background-color: var(--color-black-2);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tableTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.phoneFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  color: var(--color-white);
+}
+
+.fieldError {
+  color: #ff6b6b;
+  font-size: 12px;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.helperRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--color-secondary-400);
+  font-size: 13px;
+}
+
+.emptyText {
+  color: var(--color-secondary-400);
+}

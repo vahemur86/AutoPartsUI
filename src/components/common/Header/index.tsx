@@ -34,6 +34,8 @@ import {
   PieChart,
   Wrench,
   FlaskConical,
+  PackageSearch,
+  Truck,
 } from "lucide-react";
 import logoImage from "@/assets/icons/prp-logo.svg";
 import adminAvatarImage from "@/assets/icons/userVector.svg";
@@ -344,6 +346,17 @@ export const Header: FC = () => {
               </button>
               <button
                 type="button"
+                className={`${styles.menuItem} ${isActive("/catalytic-suppliers") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/catalytic-suppliers");
+                  setOpenDropdown(null);
+                }}
+              >
+                <Truck className={styles.menuItemIcon} size={16} />
+                {t("catalyticSuppliers.title")}
+              </button>
+              <button
+                type="button"
                 className={`${styles.menuItem} ${isActive("/users") ? styles.menuItemActive : ""}`}
                 onClick={() => {
                   navigate("/users");
@@ -374,6 +387,17 @@ export const Header: FC = () => {
               >
                 <FlaskConical className={styles.menuItemIcon} size={16} />
                 {t("settings.navigation.carCatalyst")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/catalytic-converters") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/catalytic-converters");
+                  setOpenDropdown(null);
+                }}
+              >
+                <PackageSearch className={styles.menuItemIcon} size={16} />
+                {t("catalyticConverters.title")}
               </button>
               <button
                 type="button"

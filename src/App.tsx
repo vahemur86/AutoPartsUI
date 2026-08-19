@@ -100,6 +100,9 @@ import { NewCalculator } from "./pages/Calculator";
 import { SetPassword } from "./pages/SetPassword/SetPassword";
 import { CarCatalystPage } from "./pages/CarCatalyst/CarCatalyst";
 import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
+import { CatalyticConverters } from "./pages/CatalyticConverters";
+import { CatalyticConverterDetails } from "./pages/CatalyticConverters/CatalyticConverterDetails";
+import { CatalyticSuppliers } from "./pages/CatalyticSuppliers";
 
 const toastOptions = {
   position: "top-right",
@@ -231,6 +234,14 @@ export const App = () => {
                 <Route path="service-tasks" element={<ServiceTasks />} />
                 <Route path="car-catalyst" element={<CarCatalystPage />} />
                 <Route path="car-catalyst/details" element={<CarCatalystDetails />} />
+                <Route
+                  path="catalytic-converters"
+                  element={<CatalyticConverters />}
+                />
+                <Route
+                  path="catalytic-converters/:id"
+                  element={<CatalyticConverterDetails />}
+                />
 
                 <Route path="reports" element={<Reports />}>
                   <Route index element={<Navigate to="z-reports" replace />} />
@@ -307,6 +318,7 @@ export const App = () => {
                   element={<Navigate to="/car-catalyst" replace />}
                 />
                 <Route path="customers" element={<Customers />} />
+                <Route path="catalytic-suppliers" element={<CatalyticSuppliers />} />
                 <Route path="calculator" element={<NewCalculator />} />
             <Route path="service-templates" element={<ServiceTemplatePage />} />
               </Route>

@@ -2758,6 +2758,156 @@
       "failedToCalculate": "Не удалось выполнить расчет"
     }
   },
+  "catalyticConverters": {
+    "title": "Каталитические конвертеры",
+    "list": "Список каталитических конвертеров",
+    "emptyState": "Каталитические конвертеры не найдены",
+    "columns": {
+      "code": "Код",
+      "description": "Описание",
+      "sellingPrice": "Цена продажи",
+      "available": "Доступно",
+      "batches": "Партии",
+      "priceRange": "Диапазон цен"
+    },
+    "filters": {
+      "brand": "Бренд",
+      "model": "Модель",
+      "engine": "Двигатель",
+      "fuelType": "Тип топлива",
+      "year": "Год",
+      "powerHp": "Мощность (л.с.)"
+    },
+    "actions": {
+      "createProduct": "Создать товар",
+      "viewDetails": "Подробности",
+      "createPurchase": "Создать закупку",
+      "addCompatibility": "Добавить совместимость"
+    },
+    "create": {
+      "title": "Создать каталитический конвертер"
+    },
+    "edit": {
+      "title": "Редактировать каталитический конвертер"
+    },
+    "form": {
+      "code": "Код",
+      "description": "Описание",
+      "sellingPrice": "Цена продажи",
+      "compatibilities": "Совместимость с автомобилями",
+      "compatibilitiesHint": "Добавьте ниже строки совместимости автомобилей. Годы выбираются из списков, чтобы данные были единообразными.",
+      "compatibilityItem": "Совместимость",
+      "engineDisplacement": "Объем двигателя",
+      "enginePowerHp": "Мощность (л.с.)",
+      "yearFrom": "Год от",
+      "yearTo": "Год до",
+      "maxMileageKm": "Макс. пробег (км)"
+    },
+    "validation": {
+      "codeRequired": "Код обязателен",
+      "codeExists": "Код уже существует",
+      "invalidSellingPrice": "Цена продажи должна быть >= 0"
+    },
+    "success": {
+      "created": "Каталитический конвертер успешно создан",
+      "updated": "Каталитический конвертер успешно обновлен"
+    },
+    "error": {
+      "failedToCreate": "Не удалось создать каталитический конвертер",
+      "failedToUpdate": "Не удалось обновить каталитический конвертер"
+    },
+    "errors": {
+      "loadingLookups": "Не удалось загрузить справочники"
+    },
+    "purchase": {
+      "title": "Создать закупку",
+      "success": "Закупка зафиксирована; партия создана.",
+      "form": {
+        "supplier": "Поставщик",
+        "supplierSearch": "Поиск поставщика",
+        "supplierSearchPlaceholder": "Поиск по имени или телефону",
+        "quantity": "Количество",
+        "purchasePrice": "Цена закупки",
+        "totalAmount": "Общая сумма",
+        "warehouse": "Склад",
+        "operator": "Оператор",
+        "purchasedAt": "Дата закупки"
+      },
+      "validation": {
+        "supplier": "Поставщик обязателен",
+        "quantity": "Количество должно быть больше 0",
+        "purchasePrice": "Цена закупки должна быть >= 0",
+        "warehouse": "Склад обязателен",
+        "operator": "Оператор обязателен",
+        "purchasedAt": "Дата закупки обязательна"
+      },
+      "error": {
+        "failedToCreate": "Не удалось создать закупку"
+      }
+    },
+    "details": {
+      "title": "Детали каталитического конвертера",
+      "summary": "Сводка по складу",
+      "compatibilities": "Совместимости",
+      "noCompatibilities": "Совместимости пока отсутствуют",
+      "batches": "Партии товара",
+      "noBatches": "Партий пока нет",
+      "notFound": "Каталитический конвертер не найден",
+      "batchColumns": {
+        "id": "ID партии",
+        "warehouse": "Склад",
+        "quantity": "Количество",
+        "remaining": "Остаток",
+        "purchasePrice": "Цена закупки",
+        "supplier": "Поставщик",
+        "createdAt": "Создано"
+      }
+    }
+  },
+  "catalyticSuppliers": {
+    "title": "Поставщики",
+    "list": "Список поставщиков",
+    "createTitle": "Создать поставщика",
+    "editTitle": "Редактировать поставщика",
+    "searchLabel": "Поиск",
+    "searchPlaceholder": "Поиск по имени поставщика или телефону",
+    "helperText": "На этой странице можно создавать, редактировать и удалять поставщиков.",
+    "emptyState": "Поставщики не найдены",
+    "actions": {
+      "create": "Создать поставщика"
+    },
+    "columns": {
+      "id": "ID",
+      "fullName": "Полное имя",
+      "phone": "Телефон",
+      "displayName": "Отображаемое имя"
+    },
+    "form": {
+      "fullName": "Полное имя",
+      "phone": "Телефон",
+      "notes": "Заметки"
+    },
+    "validation": {
+      "fullNameRequired": "Полное имя обязательно",
+      "phoneRequired": "Телефон обязателен",
+      "phoneMustStartWithPlus": "Телефон должен начинаться с +",
+      "phoneLength": "Некорректная длина телефона"
+    },
+    "success": {
+      "created": "Поставщик успешно создан",
+      "updated": "Поставщик успешно обновлен",
+      "deleted": "Поставщик успешно удален"
+    },
+    "errors": {
+      "failedToLoad": "Не удалось загрузить поставщиков",
+      "failedToSave": "Не удалось сохранить поставщика",
+      "failedToDelete": "Не удалось удалить поставщика"
+    },
+    "confirmation": {
+      "deleteTitle": "Удалить поставщика",
+      "deleteDescription": "Вы уверены, что хотите удалить {{name}}?"
+    }
+  },
   "carCatalyst": {
     "title": "Блоки катализатора автомобиля",
 

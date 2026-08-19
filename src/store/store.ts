@@ -36,6 +36,7 @@ import serviceCategoryReducer from "./slices/serviceCategorySlice";
 import employeesReducer from "./slices/employeesSlice";
 import servicesCatalogReducer from "./slices/servicesCatalogSlice";
 import vehicleServicePricingReducer from "./slices/vehicleServicePricingSlice";
+import catalyticConvertersReducer from "./slices/catalyticConvertersSlice";
 
 export const store = configureStore({
   reducer: {
@@ -76,6 +77,7 @@ export const store = configureStore({
     employees: employeesReducer,
     servicesCatalog: servicesCatalogReducer,
     vehicleServicePricing: vehicleServicePricingReducer,
+    catalyticConverters: catalyticConvertersReducer,
   },
 });
 

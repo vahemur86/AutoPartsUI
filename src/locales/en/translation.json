@@ -2763,6 +2763,156 @@
       "failedToCalculate": "Failed to calculate"
     }
   },
+  "catalyticConverters": {
+    "title": "Catalytic Converters",
+    "list": "Catalytic Converters List",
+    "emptyState": "No catalytic converters found",
+    "columns": {
+      "code": "Code",
+      "description": "Description",
+      "sellingPrice": "Selling Price",
+      "available": "Available",
+      "batches": "Batches",
+      "priceRange": "Price Range"
+    },
+    "filters": {
+      "brand": "Brand",
+      "model": "Model",
+      "engine": "Engine",
+      "fuelType": "Fuel Type",
+      "year": "Year",
+      "powerHp": "Power (HP)"
+    },
+    "actions": {
+      "createProduct": "Create Product",
+      "viewDetails": "View Details",
+      "createPurchase": "Create Purchase",
+      "addCompatibility": "Add Compatibility"
+    },
+    "create": {
+      "title": "Create Catalytic Converter"
+    },
+    "edit": {
+      "title": "Edit Catalytic Converter"
+    },
+    "form": {
+      "code": "Code",
+      "description": "Description",
+      "sellingPrice": "Selling Price",
+      "compatibilities": "Vehicle Compatibilities",
+      "compatibilitiesHint": "Add the vehicle compatibility rows below. Years are selected from the lists to keep the data consistent.",
+      "compatibilityItem": "Compatibility",
+      "engineDisplacement": "Engine Displacement",
+      "enginePowerHp": "Power (HP)",
+      "yearFrom": "Year From",
+      "yearTo": "Year To",
+      "maxMileageKm": "Max Mileage (km)"
+    },
+    "validation": {
+      "codeRequired": "Code is required",
+      "codeExists": "Code already exists",
+      "invalidSellingPrice": "Selling price must be >= 0"
+    },
+    "success": {
+      "created": "Catalytic converter created successfully",
+      "updated": "Catalytic converter updated successfully"
+    },
+    "error": {
+      "failedToCreate": "Failed to create catalytic converter",
+      "failedToUpdate": "Failed to update catalytic converter"
+    },
+    "errors": {
+      "loadingLookups": "Failed to load vehicle lookups"
+    },
+    "purchase": {
+      "title": "Create Purchase",
+      "success": "Purchase recorded; batch created.",
+      "form": {
+        "supplier": "Supplier",
+        "supplierSearch": "Search Supplier",
+        "supplierSearchPlaceholder": "Search by name or phone",
+        "quantity": "Quantity",
+        "purchasePrice": "Purchase Price",
+        "totalAmount": "Total Amount",
+        "warehouse": "Warehouse",
+        "operator": "Operator",
+        "purchasedAt": "Purchased At"
+      },
+      "validation": {
+        "supplier": "Supplier is required",
+        "quantity": "Quantity must be greater than 0",
+        "purchasePrice": "Purchase price must be >= 0",
+        "warehouse": "Warehouse is required",
+        "operator": "Operator is required",
+        "purchasedAt": "Purchase date is required"
+      },
+      "error": {
+        "failedToCreate": "Failed to create purchase"
+      }
+    },
+    "details": {
+      "title": "Catalytic Converter Details",
+      "summary": "Inventory Summary",
+      "compatibilities": "Compatibilities",
+      "noCompatibilities": "No compatibilities yet",
+      "batches": "Stock Batches",
+      "noBatches": "No batches yet",
+      "notFound": "Catalytic converter not found",
+      "batchColumns": {
+        "id": "Batch ID",
+        "warehouse": "Warehouse",
+        "quantity": "Quantity",
+        "remaining": "Remaining",
+        "purchasePrice": "Purchase Price",
+        "supplier": "Supplier",
+        "createdAt": "Created At"
+      }
+    }
+  },
+  "catalyticSuppliers": {
+    "title": "Suppliers",
+    "list": "Suppliers List",
+    "createTitle": "Create Supplier",
+    "editTitle": "Edit Supplier",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search by supplier name or phone",
+    "helperText": "Use this page to create, update, or remove suppliers.",
+    "emptyState": "No suppliers found",
+    "actions": {
+      "create": "Create Supplier"
+    },
+    "columns": {
+      "id": "ID",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "displayName": "Display Name"
+    },
+    "form": {
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "notes": "Notes"
+    },
+    "validation": {
+      "fullNameRequired": "Full name is required",
+      "phoneRequired": "Phone is required",
+      "phoneMustStartWithPlus": "Phone must start with +",
+      "phoneLength": "Phone length is invalid"
+    },
+    "success": {
+      "created": "Supplier created successfully",
+      "updated": "Supplier updated successfully",
+      "deleted": "Supplier deleted successfully"
+    },
+    "errors": {
+      "failedToLoad": "Failed to load suppliers",
+      "failedToSave": "Failed to save supplier",
+      "failedToDelete": "Failed to delete supplier"
+    },
+    "confirmation": {
+      "deleteTitle": "Delete supplier",
+      "deleteDescription": "Are you sure you want to delete {{name}}?"
+    }
+  },
   "carCatalyst": {
     "title": "Car Catalyst Buckets",
 
