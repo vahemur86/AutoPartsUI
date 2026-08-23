@@ -3140,5 +3140,59 @@
       "title": "Log Out",
       "description": "Are you sure you want to log out from the programmer panel?"
     }
+  },
+  "repaymentRules": {
+    "title": "Repayment Rules",
+    "createTitle": "Create Repayment Rule",
+    "create": "Create Repayment Rule",
+    "createVersion": "Create Version",
+    "loadingRules": "Loading Rules...",
+    "noRules": "No repayment rules found.",
+    "noVersions": "No versions have been created for this rule.",
+    "actions": {
+      "view": "View",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "expire": "Expire",
+      "createVersion": "Create Version"
+    },
+    "fields": {
+      "code": "Code",
+      "name": "Name",
+      "description": "Description",
+      "debtRepaymentPercent": "Debt Repayment %",
+      "agentPayoutPercent": "Agent Payout %",
+      "excessBusinessPercent": "Business %",
+      "excessAgentPercent": "Agent %",
+      "defaultRepaymentPeriodDays": "Default Repayment Period (days)",
+      "maximumExtensions": "Maximum Extensions",
+      "effectiveFrom": "Effective From",
+      "effectiveTo": "Effective To",
+      "notes": "Notes"
+    },
+    "validation": {
+      "percentRange": "Value must be between 0 and 100",
+      "debtAgentTotal": "Debt Repayment % + Agent Payout % must equal 100%",
+      "excessTotal": "Business % + Agent % must equal 100%",
+      "requiredFrom": "Effective From is required",
+      "datesOrder": "Effective From must be before Effective To",
+      "requiredFields": "Please fill required fields"
+    },
+    "messages": {
+      "created": "Repayment rule created",
+      "versionCreated": "Version created",
+      "activated": "Rule activated",
+      "deactivated": "Rule deactivated",
+      "versionActivated": "Version activated",
+      "versionExpired": "Version expired"
+    },
+    "errors": {
+      "loadFailed": "Failed to load repayment rules",
+      "saveFailed": "Failed to save repayment rule",
+      "versionSaveFailed": "Failed to save version",
+      "activateFailed": "Failed to activate",
+      "deactivateFailed": "Failed to deactivate",
+      "expireFailed": "Failed to expire version"
+    }
   }
 }

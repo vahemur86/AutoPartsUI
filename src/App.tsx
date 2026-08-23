@@ -25,6 +25,13 @@ import { FinanceReports } from "@/pages/FinanceReports";
 import { Products } from "@/pages/Products";
 import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage";
 
+// Repayment Rules pages
+import { RepaymentRules } from "@/pages/RepaymentRules";
+import { CreateRepaymentRule } from "@/pages/RepaymentRulesCreate";
+import { RepaymentRuleDetails } from "@/pages/RepaymentRuleDetails";
+import { CreateRepaymentRuleVersion } from "@/pages/CreateRepaymentRuleVersion";
+import { RepaymentRuleVersionDetails } from "@/pages/RepaymentRuleVersionDetails";
+
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
 import { PageControl } from "@/components/settings/PageControl";
@@ -320,6 +327,11 @@ export const App = () => {
                 <Route path="customers" element={<Customers />} />
                 <Route path="catalytic-suppliers" element={<CatalyticSuppliers />} />
                 <Route path="calculator" element={<NewCalculator />} />
+                <Route path="repayment-rules" element={<RepaymentRules />} />
+                <Route path="repayment-rules/create" element={<CreateRepaymentRule />} />
+                <Route path="repayment-rules/:id" element={<RepaymentRuleDetails />} />
+                <Route path="repayment-rules/:id/versions/create" element={<CreateRepaymentRuleVersion />} />
+                <Route path="repayment-rules/versions/:versionId" element={<RepaymentRuleVersionDetails />} />
             <Route path="service-templates" element={<ServiceTemplatePage />} />
               </Route>
             </Route>
