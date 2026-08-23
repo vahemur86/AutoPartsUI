@@ -118,12 +118,13 @@ export const RepaymentRuleDetails = () => {
       </div>
 
       <ConfirmationModal
-        isOpen={confirmExpire.open}
+        open={confirmExpire.open}
+        onOpenChange={(open) => { if (!open) setConfirmExpire({ open: false }); }}
         title="Confirm Expire"
-        text={`Are you sure you want to expire Version ${confirmExpire.version?.version ?? ""}? This cannot be undone.`}
+        description={`Are you sure you want to expire Version ${confirmExpire.version?.version ?? ""}? This cannot be undone.`}
         onConfirm={handleExpire}
         onCancel={() => setConfirmExpire({ open: false })}
-        isSubmitting={isMutating}
+        confirmLoading={isMutating}
       />
     </div>
   );

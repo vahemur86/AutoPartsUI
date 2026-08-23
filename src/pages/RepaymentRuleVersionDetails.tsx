@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SectionHeader } from "@/components/common";
-import { Button } from "@/ui-kit";
 import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { RepaymentRuleVersion } from "@/types/repaymentRules";
@@ -10,18 +9,14 @@ import type { RepaymentRuleVersion } from "@/types/repaymentRules";
 export const RepaymentRuleVersionDetails = () => {
   const { versionId } = useParams();
   const [version, setVersion] = useState<RepaymentRuleVersion | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const load = async () => {
     if (!versionId) return;
-    setIsLoading(true);
     try {
       const v = await repaymentRulesService.getRepaymentRuleVersion(versionId);
       setVersion(v);
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Failed to load version"));
-    } finally {
-      setIsLoading(false);
     }
   };
 

@@ -130,12 +130,13 @@ export const RepaymentRules = () => {
       </div>
 
       <ConfirmationModal
-        isOpen={confirm.open}
+        open={confirm.open}
+        onOpenChange={(open) => { if (!open) setConfirm({ open: false }); }}
         title="Confirm Deactivate"
-        text={`Are you sure you want to deactivate rule ${confirm.rule?.name || ""}?`}
+        description={`Are you sure you want to deactivate rule ${confirm.rule?.name || ""}?`}
         onConfirm={handleDeactivate}
         onCancel={() => setConfirm({ open: false })}
-        isSubmitting={isMutating}
+        confirmLoading={isMutating}
       />
     </div>
   );
