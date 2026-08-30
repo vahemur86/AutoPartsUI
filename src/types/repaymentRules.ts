@@ -3,12 +3,12 @@ export type RepaymentRule = {
   code: string;
   name: string;
   description?: string;
-  status: "Active" | "Inactive";
+  status: number | string | null;
   currentVersion?: number | null;
   createdAt: string;
 };
 
-export type RepaymentRuleVersionStatus = "Draft" | "Active" | "Expired";
+export type RepaymentRuleVersionStatus = number | string | null;
 
 export type RepaymentRuleVersion = {
   id: string;

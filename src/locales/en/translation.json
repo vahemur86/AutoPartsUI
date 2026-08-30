@@ -114,6 +114,7 @@
       "exchangeRates": "Exchange Rates",
       "cashRegisters": "Cash Registers",
       "salePercentages": "Sale Percentages",
+      "repaymentRules": "Repayment Rules",
       "ironManagement": "Iron Management"
     },
     "otherExpenses": {
@@ -3143,12 +3144,31 @@
   },
   "repaymentRules": {
     "title": "Repayment Rules",
+    "summary": {
+      "total": "Total Rules",
+      "active": "Active"
+    },
     "createTitle": "Create Repayment Rule",
     "create": "Create Repayment Rule",
     "createVersion": "Create Version",
+    "createVersionTitle": "Create Repayment Rule Version",
+    "creating": "Creating...",
+    "createButton": "Create",
     "loadingRules": "Loading Rules...",
+    "loadingVersions": "Loading Versions...",
+    "loadingVersion": "Loading...",
+    "versionTitle": "Version",
     "noRules": "No repayment rules found.",
     "noVersions": "No versions have been created for this rule.",
+    "section": {
+      "versionHistory": "Version History"
+    },
+    "confirm": {
+      "deactivateTitle": "Confirm Deactivate",
+      "deactivateDescription": "Are you sure you want to deactivate rule {{name}}?",
+      "expireTitle": "Confirm Expire",
+      "expireDescription": "Are you sure you want to expire Version {{version}}? This action cannot be undone."
+    },
     "actions": {
       "view": "View",
       "activate": "Activate",
@@ -3160,6 +3180,14 @@
       "code": "Code",
       "name": "Name",
       "description": "Description",
+      "status": "Status",
+      "version": "Version",
+      "currentVersion": "Current Version",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "distribution": "Distribution",
+      "periodDays": "Period (days)",
+      "extensions": "Extensions",
       "debtRepaymentPercent": "Debt Repayment %",
       "agentPayoutPercent": "Agent Payout %",
       "excessBusinessPercent": "Business %",
@@ -3168,13 +3196,20 @@
       "maximumExtensions": "Maximum Extensions",
       "effectiveFrom": "Effective From",
       "effectiveTo": "Effective To",
+      "effectiveToOptional": "Effective To (optional)",
+      "totalRepayment": "Total Repayment",
+      "totalExcess": "Total Excess",
+      "days": "days",
       "notes": "Notes"
     },
     "validation": {
+      "codeRequired": "Code is required",
+      "nameRequired": "Name is required",
       "percentRange": "Value must be between 0 and 100",
       "debtAgentTotal": "Debt Repayment % + Agent Payout % must equal 100%",
       "excessTotal": "Business % + Agent % must equal 100%",
       "requiredFrom": "Effective From is required",
+      "invalidEffectiveTo": "Effective To is invalid",
       "datesOrder": "Effective From must be before Effective To",
       "requiredFields": "Please fill required fields"
     },
@@ -3189,6 +3224,7 @@
     "errors": {
       "loadFailed": "Failed to load repayment rules",
       "saveFailed": "Failed to save repayment rule",
+      "versionLoadFailed": "Failed to load version",
       "versionSaveFailed": "Failed to save version",
       "activateFailed": "Failed to activate",
       "deactivateFailed": "Failed to deactivate",

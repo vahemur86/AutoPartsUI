@@ -124,6 +124,12 @@ export const Settings = () => {
       showCheckmark: true,
     },
     {
+      path: "/repayment-rules",
+      label: t("settings.navigation.repaymentRules"),
+      icon: Percent,
+      showCheckmark: true,
+    },
+    {
       path: "/iron-management",
       label: t("settings.navigation.ironManagement"),
       icon: Wrench,

@@ -111,7 +111,8 @@
       "exchangeRates": "Փոխարժեքներ",
       "cashRegisters": "Դրամարկղեր",
       "ironManagement": "Մետաղի կառավարում",
-      "salePercentages": "Վաճառքի տոկոսներ"
+      "salePercentages": "Վաճառքի տոկոսներ",
+      "repaymentRules": "Վճարումների կանոններ"
     },
     "otherExpenses": {
       "fields": {
@@ -3158,6 +3159,95 @@
     "logout": {
       "title": "Ելք",
       "description": "Վստա՞հ եք, որ ցանկանում եք դուրս գալ ծրագրավորողի վահանակից։"
+    }
+  },
+  "repaymentRules": {
+    "title": "Վճարումների կանոններ",
+    "summary": {
+      "total": "Ընդհանուր կանոններ",
+      "active": "Ակտիվ"
+    },
+    "createTitle": "Ստեղծել վճարումների կանոն",
+    "create": "Ստեղծել վճարումների կանոն",
+    "createVersion": "Ստեղծել տարբերակ",
+    "createVersionTitle": "Ստեղծել վճարումների կանոնի տարբերակ",
+    "creating": "Ստեղծվում է...",
+    "createButton": "Ստեղծել",
+    "loadingRules": "Կանոնները բեռնվում են...",
+    "loadingVersions": "Տարբերակները բեռնվում են...",
+    "loadingVersion": "Բեռնվում է...",
+    "versionTitle": "Տարբերակ",
+    "noRules": "Վճարումների կանոններ չկան։",
+    "noVersions": "Այս կանոնի համար դեռ տարբերակ չի ստեղծվել։",
+    "section": {
+      "versionHistory": "Տարբերակների պատմություն"
+    },
+    "confirm": {
+      "deactivateTitle": "Հաստատել դարձնել անգործուն",
+      "deactivateDescription": "Վստա՞հ եք, որ ուզում եք անգործուն դարձնել {{name}} կանոնը։",
+      "expireTitle": "Հաստատել ավարտումը",
+      "expireDescription": "Վստա՞հ եք, որ ուզում եք ավարտել {{version}} տարբերակը։ Այս գործողությունը չի կարող հետարկվել։"
+    },
+    "actions": {
+      "view": "Դիտել",
+      "activate": "Ակտիվացնել",
+      "deactivate": "Ապաակտիվացնել",
+      "expire": "Ավարտել",
+      "createVersion": "Ստեղծել տարբերակ"
+    },
+    "fields": {
+      "code": "Կոդ",
+      "name": "Անուն",
+      "description": "Նկարագրություն",
+      "status": "Կարգավիճակ",
+      "version": "Տարբերակ",
+      "currentVersion": "Ներկա տարբերակ",
+      "createdAt": "Ստեղծման ամսաթիվ",
+      "actions": "Գործողություններ",
+      "distribution": "Բաշխում",
+      "periodDays": "Պարբերություն (օրեր)",
+      "extensions": "Ընդլայնումներ",
+      "debtRepaymentPercent": "Պարտքի վերադարձ %",
+      "agentPayoutPercent": "Գործակալի վճար %",
+      "excessBusinessPercent": "Բիզնես %",
+      "excessAgentPercent": "Գործակալ %",
+      "defaultRepaymentPeriodDays": "Նորմալ վերադարձման ժամկետ (օրեր)",
+      "maximumExtensions": "Առավելագույն երկարացումներ",
+      "effectiveFrom": "Սկսած",
+      "effectiveTo": "Մինչ",
+      "effectiveToOptional": "Մինչ (ոչ պարտադիր)",
+      "totalRepayment": "Ընդհանուր վերադարձ",
+      "totalExcess": "Ընդհանուր ավելցուկ",
+      "days": "օր",
+      "notes": "Նշումներ"
+    },
+    "validation": {
+      "codeRequired": "Կոդը պարտադիր է",
+      "nameRequired": "Անունը պարտադիր է",
+      "percentRange": "Արժեքը պետք է լինի 0-ից 100 միջակայքում",
+      "debtAgentTotal": "Պարտքի վերադարձ % + Գործակալի վճար % պետք է հավասար լինի 100%-ի",
+      "excessTotal": "Բիզնես % + Գործակալ % պետք է հավասար լինի 100%-ի",
+      "requiredFrom": "Սկիզբի ամսաթիվը պարտադիր է",
+      "invalidEffectiveTo": "Վերջնական ամսաթիվը անվավեր է",
+      "datesOrder": "Սկզբի ամսաթիվը պետք է լինի ավելի շուտ, քան վերջնականը",
+      "requiredFields": "Լրացրեք պարտադիր դաշտերը"
+    },
+    "messages": {
+      "created": "Վճարումների կանոնը ստեղծվեց",
+      "versionCreated": "Տարբերակն ստեղծվեց",
+      "activated": "Կանոնը ակտիվացվեց",
+      "deactivated": "Կանոնը ապաակտիվացվեց",
+      "versionActivated": "Տարբերակը ակտիվացվեց",
+      "versionExpired": "Տարբերակը լրացել է"
+    },
+    "errors": {
+      "loadFailed": "Չհաջողվեց բեռնել վճարումների կանոնները",
+      "saveFailed": "Չհաջողվեց պահպանել վճարումների կանոնը",
+      "versionLoadFailed": "Չհաջողվեց բեռնել տարբերակը",
+      "versionSaveFailed": "Չհաջողվեց պահպանել տարբերակը",
+      "activateFailed": "Չհաջողվեց ակտիվացնել",
+      "deactivateFailed": "Չհաջողվեց ապաակտիվացնել",
+      "expireFailed": "Չհաջողվեց ավարտել տարբերակը"
     }
   }
 }

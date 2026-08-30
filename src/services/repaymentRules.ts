@@ -8,17 +8,17 @@ import type {
 
 export const repaymentRulesService = {
   createRepaymentRule: async (data: CreateRepaymentRuleRequest) => {
-    const res = await api.post<RepaymentRule>("/api/repayment-rules", data);
+    const res = await api.post<RepaymentRule>("/repayment-rules", data);
     return res.data;
   },
 
   getRepaymentRules: async () => {
-    const res = await api.get<RepaymentRule[]>("/api/repayment-rules");
+    const res = await api.get<RepaymentRule[]>("/repayment-rules");
     return res.data;
   },
 
   getRepaymentRule: async (id: string) => {
-    const res = await api.get<RepaymentRule>(`/api/repayment-rules/${id}`);
+    const res = await api.get<RepaymentRule>(`/repayment-rules/${id}`);
     return res.data;
   },
 
@@ -27,7 +27,7 @@ export const repaymentRulesService = {
     data: CreateRepaymentRuleVersionRequest,
   ) => {
     const res = await api.post<RepaymentRuleVersion>(
-      `/api/repayment-rules/${ruleId}/versions`,
+      `/repayment-rules/${ruleId}/versions`,
       data,
     );
     return res.data;
@@ -35,31 +35,31 @@ export const repaymentRulesService = {
 
   getRepaymentRuleVersions: async (ruleId: string) => {
     const res = await api.get<RepaymentRuleVersion[]>(
-      `/api/repayment-rules/${ruleId}/versions`,
+      `/repayment-rules/${ruleId}/versions`,
     );
     return res.data;
   },
 
   getRepaymentRuleVersion: async (versionId: string) => {
     const res = await api.get<RepaymentRuleVersion>(
-      `/api/repayment-rules/versions/${versionId}`,
+      `/repayment-rules/versions/${versionId}`,
     );
     return res.data;
   },
 
   activateRepaymentRule: async (ruleId: string) => {
-    await api.post(`/api/repayment-rules/${ruleId}/activate`);
+    await api.post(`/repayment-rules/${ruleId}/activate`);
   },
 
   deactivateRepaymentRule: async (ruleId: string) => {
-    await api.post(`/api/repayment-rules/${ruleId}/deactivate`);
+    await api.post(`/repayment-rules/${ruleId}/deactivate`);
   },
 
   activateRepaymentRuleVersion: async (versionId: string) => {
-    await api.post(`/api/repayment-rules/versions/${versionId}/activate`);
+    await api.post(`/repayment-rules/versions/${versionId}/activate`);
   },
 
   expireRepaymentRuleVersion: async (versionId: string) => {
-    await api.post(`/api/repayment-rules/versions/${versionId}/expire`);
+    await api.post(`/repayment-rules/versions/${versionId}/expire`);
   },
 };

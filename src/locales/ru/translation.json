@@ -113,7 +113,8 @@
       "exchangeRates": "Курсы валют",
       "cashRegisters": "Кассовые аппараты",
       "ironManagement": "Управление металлоломом",
-      "salePercentages": "Проценты продаж"
+      "salePercentages": "Проценты продаж",
+      "repaymentRules": "Правила выплат"
     },
     "otherExpenses": {
       "fields": {
@@ -3139,6 +3140,95 @@
     "logout": {
       "title": "Выход",
       "description": "Выйти из панели программиста?"
+    }
+  },
+  "repaymentRules": {
+    "title": "Правила выплат",
+    "summary": {
+      "total": "Всего правил",
+      "active": "Активных"
+    },
+    "createTitle": "Создать правило выплат",
+    "create": "Создать правило выплат",
+    "createVersion": "Создать версию",
+    "createVersionTitle": "Создать версию правила выплат",
+    "creating": "Создание...",
+    "createButton": "Создать",
+    "loadingRules": "Загрузка правил...",
+    "loadingVersions": "Загрузка версий...",
+    "loadingVersion": "Загрузка...",
+    "versionTitle": "Версия",
+    "noRules": "Правила выплат не найдены.",
+    "noVersions": "Для этого правила еще не создано ни одной версии.",
+    "section": {
+      "versionHistory": "История версий"
+    },
+    "confirm": {
+      "deactivateTitle": "Подтвердить деактивацию",
+      "deactivateDescription": "Вы уверены, что хотите деактивировать правило {{name}}?",
+      "expireTitle": "Подтвердить истечение",
+      "expireDescription": "Вы уверены, что хотите завершить версию {{version}}? Это действие нельзя отменить."
+    },
+    "actions": {
+      "view": "Просмотр",
+      "activate": "Активировать",
+      "deactivate": "Деактивировать",
+      "expire": "Истекать",
+      "createVersion": "Создать версию"
+    },
+    "fields": {
+      "code": "Код",
+      "name": "Название",
+      "description": "Описание",
+      "status": "Статус",
+      "version": "Версия",
+      "currentVersion": "Текущая версия",
+      "createdAt": "Дата создания",
+      "actions": "Действия",
+      "distribution": "Распределение",
+      "periodDays": "Период (дни)",
+      "extensions": "Продления",
+      "debtRepaymentPercent": "Долговой возврат %",
+      "agentPayoutPercent": "Выплата агенту %",
+      "excessBusinessPercent": "Бизнес %",
+      "excessAgentPercent": "Агент %",
+      "defaultRepaymentPeriodDays": "Период возврата по умолчанию (дни)",
+      "maximumExtensions": "Максимум продлений",
+      "effectiveFrom": "Действует с",
+      "effectiveTo": "Действует до",
+      "effectiveToOptional": "Действует до (необязательно)",
+      "totalRepayment": "Итоговый возврат",
+      "totalExcess": "Итоговый избыток",
+      "days": "дней",
+      "notes": "Примечания"
+    },
+    "validation": {
+      "codeRequired": "Код обязателен",
+      "nameRequired": "Название обязательно",
+      "percentRange": "Значение должно быть от 0 до 100",
+      "debtAgentTotal": "Долговой возврат % + Выплата агенту % должны быть равны 100%",
+      "excessTotal": "Бизнес % + Агент % должны быть равны 100%",
+      "requiredFrom": "Дата начала обязательна",
+      "invalidEffectiveTo": "Дата окончания указана неверно",
+      "datesOrder": "Дата начала должна быть раньше даты окончания",
+      "requiredFields": "Заполните обязательные поля"
+    },
+    "messages": {
+      "created": "Правило выплат создано",
+      "versionCreated": "Версия создана",
+      "activated": "Правило активировано",
+      "deactivated": "Правило деактивировано",
+      "versionActivated": "Версия активирована",
+      "versionExpired": "Версия истекла"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить правила выплат",
+      "saveFailed": "Не удалось сохранить правило выплат",
+      "versionLoadFailed": "Не удалось загрузить версию",
+      "versionSaveFailed": "Не удалось сохранить версию",
+      "activateFailed": "Не удалось активировать",
+      "deactivateFailed": "Не удалось деактивировать",
+      "expireFailed": "Не удалось завершить версию"
     }
   }
 }
