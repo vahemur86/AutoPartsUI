@@ -5,3 +5,9 @@ export { getCashRegisterId } from "./getCashRegisterId.util";
 export { mapI18nCodeToApiCode, mapApiCodeToI18nCode } from "./languageMapping";
 export { checkIsToday } from "./checkIsToday.utils";
 export { applyUserLanguagePreference } from "./applyUserLanguagePreference";
+export {
+  getAgentTypeIconConfig,
+  getAgentTypeIcon,
+  getAgentTypeColor,
+  agentTypeIconMap,
+} from "./agentTypeIcons";

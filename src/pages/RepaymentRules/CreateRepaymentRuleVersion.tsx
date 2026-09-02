@@ -79,10 +79,10 @@ export const CreateRepaymentRuleVersion = () => {
       }
       toast.success(t("repaymentRules.messages.versionCreated"));
       if (created?.id) {
-        navigate(`/settings/repayment-rules/versions/${created.id}`);
+        navigate(`/agents/repayment-rules/versions/${created.id}`);
         return;
       }
-      navigate(`/settings/repayment-rules/${id}`);
+      navigate(`/agents/repayment-rules/${id}`);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("repaymentRules.errors.versionSaveFailed")));
     } finally {

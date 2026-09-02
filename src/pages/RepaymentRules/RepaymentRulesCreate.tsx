@@ -34,10 +34,10 @@ export const CreateRepaymentRule = () => {
       const created = await repaymentRulesService.createRepaymentRule(payload);
       toast.success(t("repaymentRules.messages.created"));
       if (created?.id) {
-        navigate(`/settings/repayment-rules/${created.id}`);
+        navigate(`/agents/repayment-rules/${created.id}`);
         return;
       }
-      navigate("/settings/repayment-rules");
+      navigate("/agents/repayment-rules");
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("repaymentRules.errors.saveFailed")));
     } finally {

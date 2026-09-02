@@ -33,6 +33,19 @@ import {
   CreateRepaymentRuleVersion,
   RepaymentRuleVersionDetails,
 } from "@/pages/RepaymentRules";
+import {
+  AgentAdvanceDetails,
+  AgentAdvancesList,
+  AgentContractDetails,
+  AgentContractsList,
+  CreateAgentContract,
+} from "@/pages/AgentContracts";
+import {
+  CreatePowderDelivery,
+  PowderDeliveryDetails,
+  PowderDeliveryHistory,
+  PowderDeliveriesList,
+} from "@/pages/PowderDeliveries";
 
 // Settings components
 import { ProjectLanguages } from "@/components/settings/ProjectLanguages";
@@ -112,6 +125,13 @@ import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
 import { CatalyticConverters } from "./pages/CatalyticConverters";
 import { CatalyticConverterDetails } from "./pages/CatalyticConverters/CatalyticConverterDetails";
 import { CatalyticSuppliers } from "./pages/CatalyticSuppliers";
+import { Agents, CreateAgent, EditAgent, AgentDetails, ClassifyAgent, AgentTypes, CreateEditAgentType, ClassificationRules, CreateEditClassificationRule } from "./pages/Agents";
+import {
+  CapitalSourceDetails,
+  CapitalSourcesList,
+  CreateCapitalSource,
+  EditCapitalSource,
+} from "./pages/CapitalSources";
 
 const toastOptions = {
   position: "top-right",
@@ -238,13 +258,6 @@ export const App = () => {
                     element={<ProgrammingPricingAdmin />}
                   />
                   <Route path="iron-management" element={<IronShopSettings />} />
-
-                  {/* Repayment Rules under Settings */}
-                  <Route path="repayment-rules" element={<RepaymentRules />} />
-                  <Route path="repayment-rules/create" element={<CreateRepaymentRule />} />
-                  <Route path="repayment-rules/:id" element={<RepaymentRuleDetails />} />
-                  <Route path="repayment-rules/:id/versions/create" element={<CreateRepaymentRuleVersion />} />
-                  <Route path="repayment-rules/versions/:versionId" element={<RepaymentRuleVersionDetails />} />
                 </Route>
 
                 <Route path="service-tasks" element={<ServiceTasks />} />
@@ -329,11 +342,43 @@ export const App = () => {
 
                 <Route path="shops" element={<Shops />} />
                 <Route path="users" element={<UserManagement />} />
+                <Route path="agents" element={<Agents />} />
+                <Route path="agents/new" element={<CreateAgent />} />
+                <Route path="agents/:id" element={<AgentDetails />} />
+                <Route path="agents/:id/edit" element={<EditAgent />} />
+                <Route path="agents/:id/classify" element={<ClassifyAgent />} />
+                <Route path="agents/:id/powder-deliveries" element={<PowderDeliveryHistory kind="agent" />} />
+                <Route path="agent-types" element={<AgentTypes />} />
+                <Route path="agent-types/new" element={<CreateEditAgentType />} />
+                <Route path="agent-types/:id" element={<CreateEditAgentType />} />
+                <Route path="agent-classification-rules" element={<ClassificationRules />} />
+                <Route path="agent-classification-rules/new" element={<CreateEditClassificationRule />} />
+                <Route path="agent-classification-rules/:id" element={<CreateEditClassificationRule />} />
+                
+                {/* Repayment Rules under Agents business logic */}
+                <Route path="agents/repayment-rules" element={<RepaymentRules />} />
+                <Route path="agents/repayment-rules/create" element={<CreateRepaymentRule />} />
+                <Route path="agents/repayment-rules/:id" element={<RepaymentRuleDetails />} />
+                <Route path="agents/repayment-rules/:id/versions/create" element={<CreateRepaymentRuleVersion />} />
+                <Route path="agents/repayment-rules/versions/:versionId" element={<RepaymentRuleVersionDetails />} />
+                <Route path="agent-contracts" element={<AgentContractsList />} />
+                <Route path="agent-contracts/create" element={<CreateAgentContract />} />
+                <Route path="agent-contracts/:id" element={<AgentContractDetails />} />
+                <Route path="agent-contracts/:id/powder-deliveries" element={<PowderDeliveryHistory kind="contract" />} />
+                <Route path="agent-advances" element={<AgentAdvancesList />} />
+                <Route path="agent-advances/:id" element={<AgentAdvanceDetails />} />
+                <Route path="powder-deliveries" element={<PowderDeliveriesList />} />
+                <Route path="powder-deliveries/create" element={<CreatePowderDelivery />} />
+                <Route path="powder-deliveries/:id" element={<PowderDeliveryDetails />} />
                 <Route
                   path="carCatalyst"
                   element={<Navigate to="/car-catalyst" replace />}
                 />
                 <Route path="customers" element={<Customers />} />
+                <Route path="capital-sources" element={<CapitalSourcesList />} />
+                <Route path="capital-sources/create" element={<CreateCapitalSource />} />
+                <Route path="capital-sources/:id" element={<CapitalSourceDetails />} />
+                <Route path="capital-sources/:id/edit" element={<EditCapitalSource />} />
                 <Route path="catalytic-suppliers" element={<CatalyticSuppliers />} />
                 <Route path="calculator" element={<NewCalculator />} />
                 <Route path="service-templates" element={<ServiceTemplatePage />} />

@@ -36,6 +36,9 @@ import {
   FlaskConical,
   PackageSearch,
   Truck,
+  Tag,
+  PiggyBank,
+  FileSignature,
 } from "lucide-react";
 import logoImage from "@/assets/icons/prp-logo.svg";
 import adminAvatarImage from "@/assets/icons/userVector.svg";
@@ -70,6 +73,7 @@ export const Header: FC = () => {
   const [openDropdown, setOpenDropdown] = useState<
     "operations" | "locations" | "analytics" | null
   >(null);
+  const [openNestedDropdown, setOpenNestedDropdown] = useState<string | null>(null);
   const [isLanguageLoading, setIsLanguageLoading] = useState(false);
   const [selectedLanguageCode, setSelectedLanguageCode] = useState(
     i18n.resolvedLanguage || i18n.language,
@@ -93,12 +97,17 @@ export const Header: FC = () => {
   const isOperationsActive =
     isActive("/products") ||
     isActive("/customers") ||
+    isActive("/capital-sources") ||
     isActive("/service-templates") ||
     isActive("/users") ||
     isActive("/service-tasks") ||
     isActive("/car-catalyst") ||
     isActive("/settings") ||
-    isActive("/calculator");
+    isActive("/calculator") ||
+    isActive("/agents") ||
+    isActive("/agent-types") ||
+    isActive("/agent-classification-rules") ||
+    isActive("/agents/repayment-rules");
   const isLocationsActive =
     isActive("/warehouses") || isActive("/shops") || isActive("/service-templates");
   const isAnalyticsActive =
@@ -171,7 +180,31 @@ export const Header: FC = () => {
     setIsDropdownOpen(false);
   };
 
-  const enabledLanguages = languages.filter((lang) => lang.isEnabled);
+  const builtinLanguages = [
+    { id: -1, code: "en", name: "English", isDefault: true, isEnabled: true },
+    { id: -2, code: "ru", name: "Русский", isDefault: false, isEnabled: true },
+    { id: -3, code: "am", name: "Հայերեն", isDefault: false, isEnabled: true },
+  ];
+
+  const enabledLanguages = (() => {
+    const backendLanguages = languages.filter((lang) => lang.isEnabled);
+    const map = new Map<string, (typeof builtinLanguages)[number]>();
+
+    backendLanguages.forEach((lang) => {
+      const code = mapApiCodeToI18nCode(lang.code);
+      if (!map.has(code)) {
+        map.set(code, { ...lang, code, isEnabled: true });
+      }
+    });
+
+    builtinLanguages.forEach((lang) => {
+      if (!map.has(lang.code)) {
+        map.set(lang.code, lang);
+      }
+    });
+
+    return Array.from(map.values());
+  })();
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -346,6 +379,17 @@ export const Header: FC = () => {
               </button>
               <button
                 type="button"
+                className={`${styles.menuItem} ${isActive("/capital-sources") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/capital-sources");
+                  setOpenDropdown(null);
+                }}
+              >
+                <PiggyBank className={styles.menuItemIcon} size={16} />
+                Capital Sources
+              </button>
+              <button
+                type="button"
                 className={`${styles.menuItem} ${isActive("/catalytic-suppliers") ? styles.menuItemActive : ""}`}
                 onClick={() => {
                   navigate("/catalytic-suppliers");
@@ -366,6 +410,94 @@ export const Header: FC = () => {
                 <User className={styles.menuItemIcon} size={16} />
                 {t("header.users")}
               </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/agents") || isActive("/agent-types") || isActive("/agent-classification-rules") || isActive("/agents/repayment-rules") ? styles.menuItemActive : ""}`}
+                onClick={() =>
+                  setOpenNestedDropdown((current) =>
+                    current === "agents" ? null : "agents",
+                  )
+                }
+              >
+                <Users className={styles.menuItemIcon} size={16} />
+                {t("header.agents")}
+              </button>
+              {openNestedDropdown === "agents" && (
+                <div className={styles.nestedMenuContainer}>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agents") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/agents");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <Users className={styles.menuItemIcon} size={16} />
+                    {t("agents.list")}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agent-types") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/agent-types");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <Tag className={styles.menuItemIcon} size={16} />
+                    {t("settings.navigation.agentTypes")}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agent-classification-rules") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/agent-classification-rules");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <Layers className={styles.menuItemIcon} size={16} />
+                    {t("settings.navigation.classificationRules")}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agents/repayment-rules") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/agents/repayment-rules");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <FileText className={styles.menuItemIcon} size={16} />
+                    {t("header.repaymentRules")}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agent-contracts") || isActive("/agent-advances") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/agent-contracts");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <FileSignature className={styles.menuItemIcon} size={16} />
+                    Agent Contracts
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/powder-deliveries") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/powder-deliveries");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <Archive className={styles.menuItemIcon} size={16} />
+                    Powder Deliveries
+                  </button>
+                </div>
+              )}
               <button
                 type="button"
                 className={`${styles.menuItem} ${isActive("/service-tasks") ? styles.menuItemActive : ""}`}

@@ -93,7 +93,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
 
   const handleConfirm = () => {
     onConfirm();
-    close();
+    if (!preventClose) close();
   };
 
   const handleCancelClick = () => {

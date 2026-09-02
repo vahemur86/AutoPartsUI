@@ -11,6 +11,7 @@
     "shops": "Shops",
     "products": "Products",
     "users": "User Management",
+    "agents": "Agents",
     "customers": "Customers",
     "logout": "Logout",
     "userMenu": "User menu",
@@ -24,10 +25,13 @@
     "financeReports": "Finance & Reports",
     "calculator": "Calculator",
     "workshop": "Workshop",
-    "carCatalyst": "Buckets"
+    "carCatalyst": "Buckets",
+    "repaymentRules": "Repayment Rules",
+    "capitalSources": "Capital Sources"
   },
   "common": {
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "deleting": "Deleting...",
@@ -79,7 +83,8 @@
     "date": "Date",
     "confirm": "Confirm",
     "warning": "Warning",
-    "copy": "Copy"
+    "copy": "Copy",
+    "results": "Results {{from}}-{{to}} of {{total}}"
   },
   "currencies": {
     "USD": "US Dollar",
@@ -115,6 +120,9 @@
       "cashRegisters": "Cash Registers",
       "salePercentages": "Sale Percentages",
       "repaymentRules": "Repayment Rules",
+      "agents": "Agents",
+      "agentTypes": "Agent Types",
+      "classificationRules": "Classification Rules",
       "ironManagement": "Iron Management"
     },
     "otherExpenses": {
@@ -3142,6 +3150,167 @@
       "description": "Are you sure you want to log out from the programmer panel?"
     }
   },
+  "agents": {
+    "title": "Agents",
+    "list": "Agents List",
+    "createTitle": "Create Agent",
+    "creating": "Creating...",
+    "createButton": "Create Agent",
+    "loading": "Loading agents...",
+    "empty": "No agents found.",
+    "info": {
+      "metricsUnavailable": "Classification metrics become available once the Advances and Repayments modules are delivered. Rules configured now will apply automatically at that point."
+    },
+    "summary": {
+      "total": "Total",
+      "active": "Active",
+      "blocked": "Blocked"
+    },
+    "fields": {
+      "code": "Code",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "notes": "Notes",
+      "status": "Status",
+      "agentType": "Agent Type",
+      "registrationDate": "Registration Date",
+      "actions": "Actions"
+    },
+    "actions": {
+      "create": "New Agent",
+      "view": "View",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "suspend": "Suspend",
+      "block": "Block",
+      "classify": "Classify now"
+    },
+    "details": {
+      "title": "Details"
+    },
+    "history": {
+      "title": "Type History",
+      "date": "Date",
+      "transition": "Transition",
+      "reason": "Reason",
+      "changedBy": "Changed By",
+      "empty": "No type history available."
+    },
+    "messages": {
+      "created": "Agent created",
+      "statusUpdated": "Status updated",
+      "classifiedChanged": "Agent type changed to {{type}}",
+      "classifiedUnchanged": "Agent type unchanged ({{type}})",
+      "suspendConfirm": "Are you sure you want to suspend this agent?",
+      "blockConfirm": "Are you sure you want to block this agent? This action is restricted and should only be performed after careful consideration."
+    },
+    "errors": {
+      "loadFailed": "Failed to load agents",
+      "createFailed": "Failed to create agent",
+      "statusFailed": "Failed to update status",
+      "classifyFailed": "Failed to classify agent"
+    },
+    "validation": {
+      "codeRequired": "Code is required",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "phoneInvalid": "Phone must contain 8-16 digits",
+      "emailInvalid": "Email format is invalid",
+      "registrationRequired": "Registration date is required",
+      "registrationFuture": "Registration date cannot be in the future"
+    },
+    "classify": {
+      "title": "Classify Agent",
+      "button": "Classify now",
+      "classifying": "Classifying...",
+      "currentType": "Current type"
+    }
+  },
+  "agentTypes": {
+    "title": "Agent Types",
+    "createTitle": "Create Agent Type",
+    "editTitle": "Edit Agent Type",
+    "empty": "No agent types found.",
+    "fields": {
+      "code": "Code",
+      "name": "Name",
+      "description": "Description",
+      "priority": "Priority",
+      "system": "System",
+      "active": "Active"
+    },
+    "actions": {
+      "create": "New Agent Type"
+    },
+    "messages": {
+      "created": "Agent type created",
+      "updated": "Agent type updated",
+      "statusUpdated": "Status updated",
+      "newCannotDeactivate": "The NEW agent type cannot be deactivated"
+    },
+    "errors": {
+      "loadFailed": "Failed to load agent types",
+      "createFailed": "Failed to create agent type",
+      "updateFailed": "Failed to update agent type",
+      "statusFailed": "Failed to update status"
+    },
+    "validation": {
+      "codeRequired": "Code is required",
+      "nameRequired": "Name is required",
+      "priorityRequired": "Priority is required"
+    }
+  },
+  "classificationRules": {
+    "title": "Classification Rules",
+    "createTitle": "Create Classification Rule",
+    "editTitle": "Edit Classification Rule",
+    "empty": "No classification rules found.",
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "priority": "Priority",
+      "agentType": "Agent Type",
+      "conditions": "Conditions"
+    },
+    "actions": {
+      "create": "New Classification Rule"
+    },
+    "filters": {
+      "onlyActive": "Only Active"
+    },
+    "info": {
+      "metricsUnavailable": "Classification metrics become available once the Advances and Repayments modules are delivered. Rules configured now will apply automatically at that point."
+    },
+    "conditions": {
+      "title": "Conditions",
+      "empty": "No conditions yet",
+      "group": "Group {{number}}",
+      "addCondition": "Add Condition to Group",
+      "addGroup": "Add OR Group"
+    },
+    "messages": {
+      "created": "Classification rule created",
+      "updated": "Classification rule updated",
+      "statusUpdated": "Status updated"
+    },
+    "errors": {
+      "loadFailed": "Failed to load classification rules",
+      "createFailed": "Failed to create classification rule",
+      "updateFailed": "Failed to update classification rule",
+      "statusFailed": "Failed to update status"
+    },
+    "validation": {
+      "typeRequired": "Agent type is required",
+      "nameRequired": "Name is required",
+      "priorityRequired": "Priority is required",
+      "atLeastOneCondition": "At least one condition is required",
+      "uniqueOrderPerGroup": "Order must be unique within each logical group"
+    }
+  },
   "repaymentRules": {
     "title": "Repayment Rules",
     "summary": {
@@ -3229,6 +3398,59 @@
       "activateFailed": "Failed to activate",
       "deactivateFailed": "Failed to deactivate",
       "expireFailed": "Failed to expire version"
+    }
+  },
+  "capitalSources": {
+    "title": "Capital Sources",
+    "list": "Capital Sources List",
+    "createTitle": "Create Capital Source",
+    "editTitle": "Edit Capital Source",
+    "emptyState": "No capital sources found.",
+    "fields": {
+      "code": "Code",
+      "name": "Name",
+      "type": "Type",
+      "initialAmount": "Initial Amount",
+      "currentBalance": "Current Balance",
+      "interestRate": "Interest Rate (%)",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "types": {
+      "BankLoan": "Bank Loan",
+      "OwnerInvestment": "Owner Investment",
+      "Other": "Other"
+    },
+    "statuses": {
+      "Active": "Active",
+      "Inactive": "Inactive",
+      "Closed": "Closed"
+    },
+    "actions": {
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "close": "Close",
+      "receiveMoney": "Receive Money",
+      "returnMoney": "Return Money"
+    },
+    "messages": {
+      "created": "Capital source created successfully",
+      "updated": "Capital source updated successfully",
+      "activated": "Capital source activated",
+      "deactivated": "Capital source deactivated",
+      "closed": "Capital source closed",
+      "moneyReceived": "Money received successfully",
+      "moneyReturned": "Money returned successfully"
+    },
+    "errors": {
+      "loadFailed": "Failed to load capital sources",
+      "saveFailed": "Failed to save capital source",
+      "loadDetailsFailed": "Failed to load capital source details",
+      "actionFailed": "Failed to perform action",
+      "moneyActionFailed": "Failed to process money transaction"
     }
   }
 }

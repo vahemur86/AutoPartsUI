@@ -90,7 +90,7 @@ export const RepaymentRules = () => {
           const isActive = normalizeStatus(r.status) === "active";
           return (
             <div className={styles.actionsRow}>
-              <Button variant="secondary" size="small" onClick={() => navigate(`/settings/repayment-rules/${r.id}`)}>
+              <Button variant="secondary" size="small" onClick={() => navigate(`/agents/repayment-rules/${r.id}`)}>
                 {t("repaymentRules.actions.view")}
               </Button>
               {isActive ? (
@@ -152,7 +152,7 @@ export const RepaymentRules = () => {
         title={t("repaymentRules.title")}
         actions={
           <div style={{ display: "flex", gap: 8 }}>
-            <Button onClick={() => navigate(`/settings/repayment-rules/create`)}>
+            <Button onClick={() => navigate(`/agents/repayment-rules/create`)}>
               {t("repaymentRules.create")}
             </Button>
           </div>

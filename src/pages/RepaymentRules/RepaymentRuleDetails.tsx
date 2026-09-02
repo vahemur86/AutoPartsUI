@@ -82,7 +82,7 @@ export const RepaymentRuleDetails = () => {
         const isActive = normalizeStatus(v.status) === "active";
         return (
           <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/settings/repayment-rules/versions/${v.id}`)}>{t("repaymentRules.actions.view")}</Button>
+            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/repayment-rules/versions/${v.id}`)}>{t("repaymentRules.actions.view")}</Button>
             {isDraft && (
               <Button variant="primary" size="small" onClick={async () => {
                 try {
@@ -135,7 +135,7 @@ export const RepaymentRuleDetails = () => {
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <Button onClick={() => navigate(`/settings/repayment-rules/${id}/versions/create`)}>{t("repaymentRules.actions.createVersion")}</Button>
+          <Button onClick={() => navigate(`/agents/repayment-rules/${id}/versions/create`)}>{t("repaymentRules.actions.createVersion")}</Button>
         </div>
 
         <div style={{ marginTop: 16 }}>
