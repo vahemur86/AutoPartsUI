@@ -146,7 +146,7 @@ export const AgentDetails = () => {
 
   return (
     <div className={styles.page}>
-      <SectionHeader title={`${agent.code} — ${agent.firstName} ${agent.lastName}`} goBack />
+      <SectionHeader title={`${agent.code} — ${agent.customer?.fullName || "—"}`} goBack />
 
       <div className={styles.detailHeader}>
         <span className={`${styles.statusBadge} ${getStatusClass(agent.status)}`}>
@@ -191,9 +191,12 @@ export const AgentDetails = () => {
         <div className={styles.infoCard}>
           <h3>{t("agents.details.title")}</h3>
           <div className={styles.detailRow}><strong>{t("agents.fields.code")}:</strong> {agent.code}</div>
-          <div className={styles.detailRow}><strong>{t("agents.fields.fullName")}:</strong> {agent.firstName} {agent.lastName}</div>
-          <div className={styles.detailRow}><strong>{t("agents.fields.phone")}:</strong> {agent.phone}</div>
-          <div className={styles.detailRow}><strong>{t("agents.fields.email")}:</strong> {agent.email ?? "—"}</div>
+          <h3>{t("agents.details.customerInformation", { defaultValue: "Customer Information" })}</h3>
+          <div className={styles.detailRow}><strong>{t("agents.fields.fullName")}:</strong> {agent.customer?.fullName || "—"}</div>
+          <div className={styles.detailRow}><strong>{t("agents.fields.phone")}:</strong> {agent.customer?.phone || "—"}</div>
+          <div className={styles.detailRow}><strong>{t("agents.fields.email")}:</strong> {agent.customer?.email ?? "—"}</div>
+          <div className={styles.detailRow}><strong>{t("agents.fields.customerType", { defaultValue: "Customer Type" })}:</strong> {agent.customer?.customerType?.code || "—"}</div>
+          {agent.customerId && <Button variant="secondary" size="small" onClick={() => navigate(`/customers?customerId=${agent.customerId}`)}>{t("agents.actions.viewCustomer", { defaultValue: "View Customer" })}</Button>}
           <div className={styles.detailRow}><strong>{t("agents.fields.address")}:</strong> {agent.address ?? "—"}</div>
           <div className={styles.detailRow}><strong>{t("agents.fields.registrationDate")}:</strong> {agent.registrationDate}</div>
           <div className={styles.detailRow}><strong>{t("agents.fields.notes")}:</strong> {agent.notes ?? "—"}</div>

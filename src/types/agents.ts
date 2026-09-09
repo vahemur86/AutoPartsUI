@@ -57,10 +57,15 @@ export interface AgentTypeDto {
 export interface AgentDto {
   id: string;
   code: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email?: string | null;
+  customerId: number;
+  customer?: {
+    id: number;
+    fullName?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    customerTypeId?: number;
+    customerType?: { id?: number; code?: string } | null;
+  } | null;
   address?: string | null;
   registrationDate: string;
   status: AgentStatus;
@@ -97,17 +102,19 @@ export interface AgentClassificationRuleDto {
 }
 
 export interface CreateAgentRequest {
+  customerId: number;
   code: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email?: string | null;
+  agentTypeId: string;
   address?: string | null;
   registrationDate: string;
   notes?: string | null;
 }
 
-export type UpdateAgentRequest = Omit<CreateAgentRequest, "code">;
+export interface UpdateAgentRequest {
+  address?: string | null;
+  registrationDate: string;
+  notes?: string | null;
+}
 
 export interface AgentTypeRequest {
   code?: string | null;

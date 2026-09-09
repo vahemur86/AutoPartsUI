@@ -16,7 +16,7 @@ import styles from "./PowderDeliveries.module.css";
 const statuses: PowderDeliveryStatus[] = ["Draft", "Valuated", "Confirmed", "Cancelled"];
 const amount = (value: number | null | undefined, currency = "") => value == null ? "-" : `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value)}${currency}`;
 const timestamp = (value?: string | null) => value ? new Date(value).toLocaleString() : "-";
-const agentLabel = (agent: AgentDto) => `${agent.code} - ${agent.firstName} ${agent.lastName}`;
+const agentLabel = (agent: AgentDto) => `${agent.code} - ${agent.customer?.fullName || "—"}`;
 const active = (status: string) => status === "Active" || status === "1";
 
 const DeliveryStatus = ({ status }: { status: PowderDeliveryStatus }) => <span className={`${styles.status} ${styles[`status${status}`]}`}>{status}</span>;

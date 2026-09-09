@@ -19,7 +19,7 @@ const statuses: AgentContractStatus[] = ["Draft", "Active", "Completed", "Cancel
 const money = (amount?: number | null) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(amount ?? 0);
 const date = (value?: string | null) => value ? new Date(value).toLocaleDateString() : "-";
 const datetime = (value?: string | null) => value ? new Date(value).toLocaleString() : "-";
-const agentName = (agent: AgentDto) => `${agent.code} - ${agent.firstName} ${agent.lastName}`;
+const agentName = (agent: AgentDto) => `${agent.code} - ${agent.customer?.fullName || "—"}`;
 const isDraft = (status: string) => status === "Draft";
 const isActiveRuleVersion = (status: RepaymentRuleVersion["status"]) => {
   const value = String(status ?? "").trim().toLowerCase();

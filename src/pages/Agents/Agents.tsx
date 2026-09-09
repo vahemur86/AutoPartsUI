@@ -52,8 +52,7 @@ export const Agents = () => {
   
   // Parse query params
   const code = searchParams.get("code") || "";
-  const firstName = searchParams.get("firstName") || "";
-  const lastName = searchParams.get("lastName") || "";
+  const customerName = searchParams.get("customerName") || "";
   const phone = searchParams.get("phone") || "";
   const status = searchParams.get("status") || "";
   const agentTypeId = searchParams.get("agentTypeId") || "";
@@ -84,8 +83,7 @@ export const Agents = () => {
     try {
       const filters: any = {};
       if (code) filters.code = code;
-      if (firstName) filters.firstName = firstName;
-      if (lastName) filters.lastName = lastName;
+      if (customerName) filters.customerName = customerName;
       if (phone) filters.phone = phone;
       if (status) filters.status = Number(status);
       if (agentTypeId) filters.agentTypeId = agentTypeId;
@@ -103,7 +101,7 @@ export const Agents = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [code, firstName, lastName, phone, status, agentTypeId, page, pageSize, t]);
+  }, [code, customerName, phone, status, agentTypeId, page, pageSize, t]);
 
   useEffect(() => {
     void load();
@@ -153,7 +151,7 @@ export const Agents = () => {
         header: t("agents.fields.code"),
       },
       {
-        accessorFn: (row: AgentDto) => `${row.firstName} ${row.lastName}`.trim(),
+        accessorFn: (row: AgentDto) => row.customer?.fullName || "—",
         id: "fullName",
         header: t("agents.fields.fullName"),
       },
@@ -249,16 +247,10 @@ export const Agents = () => {
             onChange={(e) => handleDebounce("code", e.target.value)}
           />
           <TextField
-            label={t("agents.fields.firstName")}
+            label={t("agents.fields.fullName")}
             placeholder={t("common.search")}
-            value={firstName}
-            onChange={(e) => handleDebounce("firstName", e.target.value)}
-          />
-          <TextField
-            label={t("agents.fields.lastName")}
-            placeholder={t("common.search")}
-            value={lastName}
-            onChange={(e) => handleDebounce("lastName", e.target.value)}
+            value={customerName}
+            onChange={(e) => handleDebounce("customerName", e.target.value)}
           />
           <TextField
             label={t("agents.fields.phone")}
@@ -290,7 +282,7 @@ export const Agents = () => {
             ))}
           </Select>
         </div>
-        {(code || firstName || lastName || phone || status || agentTypeId) && (
+        {(code || customerName || phone || status || agentTypeId) && (
           <Button variant="secondary" size="small" onClick={resetFilters} style={{ marginTop: "8px" }}>
             {t("common.reset")}
           </Button>

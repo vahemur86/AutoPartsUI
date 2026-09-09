@@ -344,6 +344,68 @@
   padding: 24px;
 }
 
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.formSection h3 {
+  margin: 0;
+  color: var(--color-white);
+}
+
+.selectedCustomer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: var(--color-secondary-300);
+}
+
+.customerPicker {
+  position: relative;
+}
+
+.customerResults {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  margin-top: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: var(--color-black-2);
+}
+
+.customerResult {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: var(--color-white);
+  text-align: left;
+  cursor: pointer;
+}
+
+.customerResult:last-child {
+  border-bottom: 0;
+}
+
+.customerResult:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.customerResult span {
+  color: var(--color-secondary-300);
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
