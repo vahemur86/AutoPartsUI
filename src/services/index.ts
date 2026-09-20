@@ -20,7 +20,8 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("access_token");
+    const storage = typeof window !== "undefined" ? window.localStorage : null;
+    const token = storage ? storage.getItem("access_token") : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -47,6 +48,11 @@ api.interceptors.response.use(
       const pageKey = responseData?.pageKey ?? null;
 
       return new Promise((resolve, reject) => {
+        if (typeof window === "undefined") {
+          reject(error);
+          return;
+        }
+
         const event = new CustomEvent("otp:required", {
           detail: {
             pageKey,
@@ -67,10 +73,12 @@ api.interceptors.response.use(
 
     if (error.response?.status === 401 && !isRedirectingToLogin) {
       isRedirectingToLogin = true;
-      // Notify the app to clear auth state without importing the store here
-      window.dispatchEvent(new CustomEvent("auth:logout"));
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (typeof window !== "undefined") {
+        // Notify the app to clear auth state without importing the store here
+        window.dispatchEvent(new CustomEvent("auth:logout"));
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
       }
     }
 

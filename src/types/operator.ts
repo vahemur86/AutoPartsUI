@@ -137,6 +137,7 @@ export interface ServiceEstimateRequest {
   vinCode: string;
   mileage: number;
   notes: string;
+  referralPersonId?: number;
   services: ServiceEstimateRequestLine[];
   products: ServiceEstimateProductLine[];
 }

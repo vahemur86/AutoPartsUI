@@ -18,6 +18,7 @@ import type { CategoryNode, EmployeeItem, ServiceCategoryItem } from "@/types/se
 import type { VehicleServiceTemplateItem } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 import { isProgrammingServiceCategory } from "@/constants/serviceCategories";
+import { getReferralPersons, type ReferralPersonDto } from "@/services/referralPersons";
 
 interface WorkshopModeProps {
   vehicleTemplates: VehicleServiceTemplateItem[];
@@ -37,6 +38,7 @@ interface WorkshopModeProps {
     mileage: number;
     customerPhone: string;
     notes: string;
+    referralPersonId?: number;
     services: Array<{
       serviceId: number;
       customerPrice: number;
@@ -130,6 +132,9 @@ export const WorkshopMode = ({
   const [customerPhone, setCustomerPhone] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>("AM");
   const [orderComment, setOrderComment] = useState("");
+  const [referralPersonId, setReferralPersonId] = useState("");
+  const [referralPersons, setReferralPersons] = useState<ReferralPersonDto[]>([]);
+  const [isReferralPersonsLoading, setIsReferralPersonsLoading] = useState(false);
   const [selectedCategoryPath, setSelectedCategoryPath] = useState<number[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [productLines, setProductLines] = useState<WorkshopProductLine[]>([]);
@@ -149,6 +154,30 @@ export const WorkshopMode = ({
     id: number;
     estimateNumber: string;
   } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadReferralPersons = async () => {
+      setIsReferralPersonsLoading(true);
+      try {
+        const response = await getReferralPersons({
+          page: 1,
+          pageSize: 100,
+          cashRegisterId,
+        });
+        if (!cancelled) setReferralPersons(response.results);
+      } catch {
+        if (!cancelled) setReferralPersons([]);
+      } finally {
+        if (!cancelled) setIsReferralPersonsLoading(false);
+      }
+    };
+
+    void loadReferralPersons();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!cashRegisterId || !shopId) return;
@@ -1094,6 +1123,7 @@ export const WorkshopMode = ({
       mileage: Number(mileageKm),
       customerPhone: customerPhone.trim(),
       notes: orderComment.trim(),
+      ...(referralPersonId ? { referralPersonId: Number(referralPersonId) } : {}),
       services,
       products: productLines.map((line) => ({
         shopStockId: line.shopStockId,
@@ -1116,6 +1146,7 @@ export const WorkshopMode = ({
     setVinCode("");
     setMileageKm("");
     setCustomerPhone("");
+    setReferralPersonId("");
     setOrderComment("");
     setSelectedCategoryPath([]);
     setSelectedProductId("");
@@ -1311,6 +1342,32 @@ export const WorkshopMode = ({
             ))}
           </Select>
         </div>
+      </div>
+
+      <div className={styles.fieldBlock}>
+        <Select
+          label="Referral Person"
+          value={referralPersonId}
+          onChange={(e) => {
+            setReferralPersonId(e.target.value);
+            setHasCalculated(false);
+          }}
+          disabled={isReferralPersonsLoading}
+          searchable
+        >
+          <option value="">
+            {isReferralPersonsLoading
+              ? "Loading referral persons..."
+              : referralPersons.length
+                ? "Select referral person (optional)"
+                : "No active referral persons found"}
+          </option>
+          {referralPersons.map((person) => (
+            <option key={person.id} value={person.id}>
+              {person.name} ({person.code})
+            </option>
+          ))}
+        </Select>
       </div>
 
       <div className={styles.fieldBlock}>

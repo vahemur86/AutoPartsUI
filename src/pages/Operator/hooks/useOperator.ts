@@ -616,6 +616,7 @@ export const useOperator = () => {
     mileage: number;
     customerPhone: string;
     notes: string;
+    referralPersonId?: number;
     services: Array<{
       serviceId: number;
       customerPrice: number;
@@ -667,6 +668,9 @@ export const useOperator = () => {
         ]
           .filter(Boolean)
           .join("\n"),
+        ...(payload.referralPersonId
+          ? { referralPersonId: Number(payload.referralPersonId) }
+          : {}),
         services: payload.services.map((line) => ({
           serviceId: Number(line.serviceId),
           customerPrice: Number(line.customerPrice || 0),

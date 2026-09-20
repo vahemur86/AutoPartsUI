@@ -99,6 +99,8 @@ export const Header: FC = () => {
     isActive("/products") ||
     isActive("/customers") ||
     isActive("/capital-sources") ||
+    isActive("/referral-persons") ||
+    isActive("/commissions") ||
     isActive("/service-templates") ||
     isActive("/users") ||
     isActive("/service-tasks") ||
@@ -390,6 +392,46 @@ export const Header: FC = () => {
                 <PiggyBank className={styles.menuItemIcon} size={16} />
                 Capital Sources
               </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/referral-persons") || isActive("/commissions") ? styles.menuItemActive : ""}`}
+                onClick={() =>
+                  setOpenNestedDropdown((current) =>
+                    current === "referrals" ? null : "referrals",
+                  )
+                }
+              >
+                <Users className={styles.menuItemIcon} size={16} />
+                Referrals
+              </button>
+              {openNestedDropdown === "referrals" && (
+                <div className={styles.nestedMenuContainer}>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/referral-persons") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/referral-persons");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <Users className={styles.menuItemIcon} size={16} />
+                    Referral Persons
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/commissions") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/commissions");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <FileSignature className={styles.menuItemIcon} size={16} />
+                    Commissions
+                  </button>
+                </div>
+              )}
               <button
                 type="button"
                 className={`${styles.menuItem} ${isActive("/catalytic-suppliers") ? styles.menuItemActive : ""}`}

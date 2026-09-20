@@ -24,6 +24,14 @@ import { Reports } from "@/pages/Reports";
 import { FinanceReports } from "@/pages/FinanceReports";
 import { Products } from "@/pages/Products";
 import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage";
+import {
+  ReferralCommissionDetails,
+  ReferralCommissions,
+  ReferralPersonCommissionRuleForm,
+  ReferralPersonDetails,
+  ReferralPersonForm,
+  ReferralPersons,
+} from "@/pages/ReferralPersons";
 
 // Repayment Rules pages
 import {
@@ -383,6 +391,13 @@ export const App = () => {
                 <Route path="capital-sources/create" element={<CreateCapitalSource />} />
                 <Route path="capital-sources/:id" element={<CapitalSourceDetails />} />
                 <Route path="capital-sources/:id/edit" element={<EditCapitalSource />} />
+                <Route path="referral-persons" element={<ReferralPersons />} />
+                <Route path="referral-persons/create" element={<ReferralPersonForm />} />
+                <Route path="referral-persons/:id" element={<ReferralPersonDetails />} />
+                <Route path="referral-persons/:id/edit" element={<ReferralPersonForm />} />
+                <Route path="referral-persons/:personId/commission-rules/new" element={<ReferralPersonCommissionRuleForm />} />
+                <Route path="commissions" element={<ReferralCommissions />} />
+                <Route path="commissions/:id" element={<ReferralCommissionDetails />} />
                 <Route path="catalytic-suppliers" element={<CatalyticSuppliers />} />
                 <Route path="calculator" element={<NewCalculator />} />
                 <Route path="service-templates" element={<ServiceTemplatePage />} />
