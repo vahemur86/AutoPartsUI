@@ -57,6 +57,7 @@ import { getCurrentUsdAmdExchangeRate } from "@/services/settings/exchangeRates"
 import {
   getApiErrorMessage,
   mapApiCodeToI18nCode,
+  mapI18nCodeToApiCode,
 } from "@/utils";
 
 // styles
@@ -271,8 +272,9 @@ export const Header: FC = () => {
     try {
       setIsLanguageLoading(true);
 
-      const response = await setUserLanguagePreference(languageCode);
-      const i18nCode = mapApiCodeToI18nCode(response.language || languageCode);
+      const apiLanguageCode = mapI18nCodeToApiCode(languageCode);
+      const response = await setUserLanguagePreference(apiLanguageCode);
+      const i18nCode = mapApiCodeToI18nCode(response.language || apiLanguageCode);
 
       if (i18n.hasResourceBundle(i18nCode, "translation")) {
         await i18n.changeLanguage(i18nCode);
@@ -495,6 +497,18 @@ export const Header: FC = () => {
                   >
                     <Archive className={styles.menuItemIcon} size={16} />
                     Powder Deliveries
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/repayments") ? styles.menuItemActive : ""}`}
+                    onClick={() => {
+                      navigate("/repayments");
+                      setOpenDropdown(null);
+                      setOpenNestedDropdown(null);
+                    }}
+                  >
+                    <FileText className={styles.menuItemIcon} size={16} />
+                    Repayments
                   </button>
                 </div>
               )}

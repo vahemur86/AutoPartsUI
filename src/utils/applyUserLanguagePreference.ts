@@ -25,13 +25,20 @@ const resolveSupportedLanguage = (candidate: string | null | undefined): string 
   return "en";
 };
 
+const getPreferredLanguage = (
+  preference: Awaited<ReturnType<typeof getUserLanguagePreference>> | null,
+): string => {
+  if (typeof preference?.language === "string" && preference.language.trim()) {
+    return preference.language;
+  }
+
+  return navigator.language || localStorage.getItem("i18nextLng") || "en";
+};
+
 export const applyUserLanguagePreference = async () => {
   try {
     const preference = await getUserLanguagePreference();
-    const preferredLanguage = preference.isPersonal && preference.language
-      ? preference.language
-      : navigator.language || localStorage.getItem("i18nextLng") || "en";
-
+    const preferredLanguage = getPreferredLanguage(preference);
     const i18nCode = resolveSupportedLanguage(preferredLanguage);
 
     if (i18n.hasResourceBundle(i18nCode, "translation")) {

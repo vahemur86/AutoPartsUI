@@ -9,6 +9,7 @@ import { agentsService } from "@/services/agents";
 import { getApiErrorMessage, getAgentTypeIcon, getAgentTypeColor } from "@/utils";
 import type { AgentDto, AgentTypeDto } from "@/types/agents";
 import { AgentStatus } from "@/types/agents";
+import { getAgentSummaryCounts } from "./agentSummary";
 import styles from "./Agents.module.css";
 
 const getStatusLabel = (status?: AgentStatus | number | string | null) => {
@@ -43,6 +44,11 @@ const getStatusClass = (status?: AgentStatus | number | string | null) => {
     default:
       return styles.statusInactive;
   }
+};
+
+const getAgentFullName = (agent: AgentDto) => {
+  const fullName = [agent.firstName, agent.lastName].filter(Boolean).join(" ");
+  return fullName || agent.customer?.fullName || "—";
 };
 
 export const Agents = () => {
@@ -151,7 +157,7 @@ export const Agents = () => {
         header: t("agents.fields.code"),
       },
       {
-        accessorFn: (row: AgentDto) => row.customer?.fullName || "—",
+        accessorFn: (row: AgentDto) => getAgentFullName(row),
         id: "fullName",
         header: t("agents.fields.fullName"),
       },
@@ -205,7 +211,7 @@ export const Agents = () => {
   );
 
   const activeCount = items.filter((item) => Number(item.status) === AgentStatus.Active).length;
-  const blockedCount = items.filter((item) => Number(item.status) === AgentStatus.Blocked).length;
+  const { inactive: inactiveCount } = getAgentSummaryCounts(total, activeCount);
   const maxPage = Math.ceil(total / pageSize) || 1;
 
   return (
@@ -231,8 +237,8 @@ export const Agents = () => {
           <div className={styles.summaryValue}>{activeCount}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>{t("agents.summary.blocked")}</div>
-          <div className={styles.summaryValue}>{blockedCount}</div>
+          <div className={styles.summaryLabel}>{t("common.inactive")}</div>
+          <div className={styles.summaryValue}>{inactiveCount}</div>
         </div>
       </div>
 
