@@ -1,1 +1,2 @@
-export { AgentAdvanceDetails, AgentAdvancesList, AgentContractDetails, AgentContractsList, CreateAgentContract } from "./AgentContracts";
+export { AgentContractDetails, AgentContractsList, CreateAgentContract } from "./AgentContracts";
+export { AgentAdvanceDetails, AgentAdvancesList } from "./AgentAdvances";

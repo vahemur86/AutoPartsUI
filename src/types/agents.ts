@@ -58,6 +58,10 @@ export interface AgentDto {
   id: string;
   code: string;
   customerId: number;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  email?: string | null;
   customer?: {
     id: number;
     fullName?: string | null;
@@ -104,9 +108,12 @@ export interface AgentClassificationRuleDto {
 export interface CreateAgentRequest {
   customerId: number;
   code: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email?: string | null;
   agentTypeId: string;
   address?: string | null;
-  registrationDate: string;
   notes?: string | null;
 }
 
@@ -131,6 +138,74 @@ export interface AgentTypeHistoryDto {
   reason?: string | null;
   changedAt: string;
   changedBy: string;
+}
+
+export interface AgentContractFinancialSnapshotDto {
+  contractId: string;
+  contractNumber: string;
+  status: string;
+  totalAdvancedAmount: number;
+  totalRepaidAmount: number;
+  outstandingAmount: number;
+  activeAdvancesCount: number;
+}
+
+export interface AgentFinancialSummaryAgentDto {
+  id: string;
+  name: string;
+  code: string;
+  status: string;
+  totalAdvancedAmount: number;
+  totalRepaidAmount: number;
+  outstandingAmount: number;
+}
+
+export interface AgentFinancialSummaryContractDto {
+  id: string;
+  number: string;
+  status: string;
+  effectiveDate?: string | null;
+  debtRepaymentPercent?: number | null;
+  agentPayoutPercent?: number | null;
+  excessBusinessPercent?: number | null;
+  excessAgentPercent?: number | null;
+  defaultRepaymentPeriodDays?: number | null;
+  maximumExtensions?: number | null;
+}
+
+export interface AgentFinancialSummaryAdvanceDto {
+  id: string;
+  number: string;
+  date?: string | null;
+  amount: number;
+  outstanding: number;
+  status: string;
+}
+
+export interface AgentFinancialSummaryDeliveryDto {
+  id: string;
+  number: string;
+  date?: string | null;
+  valueAmd: number;
+  status: string;
+}
+
+export interface AgentFinancialSummaryRepaymentDto {
+  id: string;
+  number: string;
+  date?: string | null;
+  debtRepaymentAmd: number;
+  agentPayoutAmd: number;
+  outstandingAfterAmd: number;
+  source: string;
+}
+
+export interface AgentFinancialSummaryDto {
+  agent: AgentFinancialSummaryAgentDto;
+  contract: AgentFinancialSummaryContractDto;
+  advances: AgentFinancialSummaryAdvanceDto[];
+  recentDeliveries: AgentFinancialSummaryDeliveryDto[];
+  recentRepayments: AgentFinancialSummaryRepaymentDto[];
 }
 
 export interface SaveAgentClassificationRuleRequest {

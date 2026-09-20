@@ -9,6 +9,7 @@ import type {
   PagedResult,
   AgentTypeRequest,
   SaveAgentClassificationRuleRequest,
+  AgentFinancialSummaryDto,
 } from "@/types/agents";
 
 export const agentsService = {
@@ -18,12 +19,21 @@ export const agentsService = {
   },
 
   createAgent: async (data: CreateAgentRequest) => {
-    const res = await api.post<string>("/agents", data);
-    return res.data;
+    const res = await api.post<string | { id?: string; agentId?: string }>("/agents", data);
+    if (typeof res.data === "string") return res.data;
+
+    const createdId = res.data.id ?? res.data.agentId;
+    if (!createdId) throw new Error("The create agent response did not include an agent ID.");
+    return createdId;
   },
 
   getAgent: async (id: string) => {
     const res = await api.get<AgentDto>(`/agents/${id}`);
+    return res.data;
+  },
+
+  getAgentFinancialSummary: async (id: string) => {
+    const res = await api.get<AgentFinancialSummaryDto>(`/agents/${id}/financial-summary`);
     return res.data;
   },
 

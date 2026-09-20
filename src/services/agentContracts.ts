@@ -6,6 +6,8 @@ import type {
   AgentContractListItemDto,
   CapitalSourceAllocationDto,
   CreateAgentAdvanceRequest,
+  AgentAdvanceExtensionDto,
+  CreateAgentAdvanceExtensionRequest,
   PagedResult,
   SaveAgentContractRequest,
 } from "@/types/agentContracts";
@@ -51,6 +53,16 @@ export const agentContractsService = {
 
   getAdvance: async (id: string) => {
     const response = await api.get<AgentAdvanceDto>(`/agent-advances/${id}`);
+    return response.data;
+  },
+
+  getAdvanceExtensions: async (id: string) => {
+    const response = await api.get<AgentAdvanceExtensionDto[]>(`/agent-advances/${id}/extensions`);
+    return response.data ?? [];
+  },
+
+  createAdvanceExtension: async (id: string, data: CreateAgentAdvanceExtensionRequest) => {
+    const response = await api.post<AgentAdvanceExtensionDto>(`/agent-advances/${id}/extensions`, data);
     return response.data;
   },
 

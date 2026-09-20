@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Plus } from "lucide-react";
 import { toast } from "react-toastify";
 import { SectionHeader } from "@/components/common";
 import { Button, ConfirmationModal, DataTable, Select, Textarea, TextField } from "@/ui-kit";
@@ -10,10 +9,24 @@ import { powderDeliveriesService } from "@/services/powderDeliveries";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentDto } from "@/types/agents";
 import type { AgentAdvanceDto, AgentContractListItemDto } from "@/types/agentContracts";
-import type { PowderDeliveryListItemDto, PowderDeliveryStatus, PowderDeliveryDto } from "@/types/powderDeliveries";
+import { powderDeliveryStatusMap, type PowderDeliveryListItemDto, type PowderDeliveryStatus, type PowderDeliveryDto } from "@/types/powderDeliveries";
 import styles from "./PowderDeliveries.module.css";
 
 const statuses: PowderDeliveryStatus[] = ["Draft", "Valuated", "Confirmed", "Cancelled"];
+const toStatusLabel = (value?: unknown): PowderDeliveryStatus | "" => {
+  if (typeof value === "number") {
+    return (powderDeliveryStatusMap[value as keyof typeof powderDeliveryStatusMap] as PowderDeliveryStatus | undefined) ?? "";
+  }
+  if (typeof value === "string") {
+    const normalized = value.trim();
+    if (normalized.toLowerCase() === "draft") return "Draft";
+    if (normalized.toLowerCase() === "valuated") return "Valuated";
+    if (normalized.toLowerCase() === "confirmed") return "Confirmed";
+    if (normalized.toLowerCase() === "cancelled") return "Cancelled";
+  }
+  return "";
+};
+const normalizeStatus = (value?: unknown) => toStatusLabel(value)?.toLowerCase() ?? "";
 const amount = (value: number | null | undefined, currency = "") => value == null ? "-" : `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value)}${currency}`;
 const timestamp = (value?: string | null) => value ? new Date(value).toLocaleString() : "-";
 const agentLabel = (agent: AgentDto) => `${agent.code} - ${agent.customer?.fullName || "—"}`;
@@ -28,7 +41,7 @@ const useActiveAgents = () => {
   return agents;
 };
 
-const useDeliveryColumns = () => {
+const useDeliveryColumns = (confirmingId: string | null = null, onConfirm?: (id: string) => Promise<void>) => {
   const navigate = useNavigate();
   return useMemo(() => [
     { accessorKey: "deliveryNumber", header: "Delivery Number" },
@@ -38,25 +51,62 @@ const useDeliveryColumns = () => {
     { id: "advance", header: "Advance", cell: ({ row }: any) => row.original.advance?.advanceNumber ?? "-" },
     { id: "weight", header: "Net Weight (kg)", cell: ({ row }: any) => amount(row.original.netWeightKg) },
     { id: "value", header: "Total Value (AMD)", cell: ({ row }: any) => amount(row.original.totalValueAmd) },
-    { accessorKey: "status", header: "Status", cell: ({ row }: any) => <DeliveryStatus status={row.original.status} /> },
+    { accessorKey: "status", header: "Status", cell: ({ row }: any) => {
+        const label = toStatusLabel(row.original.status) || "Draft";
+        return <DeliveryStatus status={label as PowderDeliveryStatus} />;
+      } },
     { id: "created", header: "Created At", cell: ({ row }: any) => timestamp(row.original.createdAt) },
-    { id: "actions", header: "Actions", cell: ({ row }: any) => <Button size="small" variant="secondary" onClick={() => navigate(`/powder-deliveries/${row.original.id}`)}>View</Button> },
-  ], [navigate]);
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }: any) => (
+        <div className={styles.inlineActions}>
+          {onConfirm && normalizeStatus(row.original.status) === "valuated" ? (
+            <Button
+              size="small"
+              variant="primary"
+              disabled={confirmingId === row.original.id || confirmingId !== null}
+              onClick={() => void onConfirm(row.original.id)}
+            >
+              {confirmingId === row.original.id ? "Confirming..." : "Confirm"}
+            </Button>
+          ) : null}
+          <Button size="small" variant="secondary" onClick={() => navigate(`/powder-deliveries/${row.original.id}`)}>
+            View
+          </Button>
+        </div>
+      ),
+    },
+  ], [confirmingId, navigate, onConfirm]);
 };
 
 export const PowderDeliveriesList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const agents = useActiveAgents();
-  const columns = useDeliveryColumns();
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [results, setResults] = useState<PowderDeliveryListItemDto[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const page = Number(searchParams.get("page") || 1); const pageSize = Number(searchParams.get("pageSize") || 10);
   const agentId = searchParams.get("agentId") || ""; const contractId = searchParams.get("agentContractId") || ""; const advanceId = searchParams.get("agentAdvanceId") || ""; const status = searchParams.get("status") || ""; const number = searchParams.get("deliveryNumber") || ""; const from = searchParams.get("deliveryDateFrom") || ""; const to = searchParams.get("deliveryDateTo") || "";
   const filter = (key: string, value: string) => { const next = new URLSearchParams(searchParams); value ? next.set(key, value) : next.delete(key); next.set("page", "1"); setSearchParams(next); };
-  useEffect(() => { const load = async () => { setLoading(true); try { const response = await powderDeliveriesService.list({ page, pageSize, agentId: agentId || undefined, agentContractId: contractId || undefined, agentAdvanceId: advanceId || undefined, status: status || undefined, deliveryNumber: number || undefined, deliveryDateFrom: from || undefined, deliveryDateTo: to || undefined }); setResults(response.results ?? []); setTotal(response.totalItems); } catch (error) { toast.error(getApiErrorMessage(error, "Failed to load powder deliveries.")); } finally { setLoading(false); } }; void load(); }, [page, pageSize, agentId, contractId, advanceId, status, number, from, to]);
-  return <div className={styles.page}><SectionHeader title="Powder Deliveries" actions={<Button onClick={() => navigate("/powder-deliveries/create")}><Plus size={14} /> Create Delivery</Button>} /><div className={styles.filters}><Select value={agentId} onChange={(event) => filter("agentId", event.target.value)}><option value="">All agents</option>{agents.map((agent) => <option key={agent.id} value={agent.id}>{agentLabel(agent)}</option>)}</Select><Select value={status} onChange={(event) => filter("status", event.target.value)}><option value="">All statuses</option>{statuses.map((item) => <option key={item} value={item}>{item}</option>)}</Select><TextField label="Contract ID" value={contractId} onChange={(event) => filter("agentContractId", event.target.value)} /><TextField label="Advance ID" value={advanceId} onChange={(event) => filter("agentAdvanceId", event.target.value)} /><TextField label="Delivery Number" value={number} onChange={(event) => filter("deliveryNumber", event.target.value)} /><TextField label="From" type="date" value={from} onChange={(event) => filter("deliveryDateFrom", event.target.value)} /><TextField label="To" type="date" value={to} onChange={(event) => filter("deliveryDateTo", event.target.value)} /></div><div className={styles.summary}><span>{total} deliveries</span><Button variant="secondary" size="small" onClick={() => setSearchParams({ page: "1", pageSize: String(pageSize) })}>Reset</Button></div><DataTable columns={columns as any} data={results} isLoading={loading} manualPagination pageCount={Math.max(1, Math.ceil(total / pageSize))} pageIndex={page - 1} onPaginationChange={(index) => filter("page", String(index + 1))} noResultsText="No powder deliveries found" loadingText="Loading powder deliveries..." /></div>;
+  const load = async () => { setLoading(true); try { const response = await powderDeliveriesService.list({ page, pageSize, agentId: agentId || undefined, agentContractId: contractId || undefined, agentAdvanceId: advanceId || undefined, status: status || undefined, deliveryNumber: number || undefined, deliveryDateFrom: from || undefined, deliveryDateTo: to || undefined }); setResults(response.results ?? []); setTotal(response.totalItems); } catch (error) { toast.error(getApiErrorMessage(error, "Failed to load powder deliveries.")); } finally { setLoading(false); } };
+  const confirmDelivery = async (id: string) => {
+    if (confirmingId) return;
+    setConfirmingId(id);
+    try {
+      await powderDeliveriesService.confirm(id);
+      toast.success("Delivery confirmed successfully.");
+      await load();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Failed to confirm delivery."));
+    } finally {
+      setConfirmingId(null);
+    }
+  };
+  const columns = useDeliveryColumns(confirmingId, confirmDelivery);
+  useEffect(() => { void load(); }, [page, pageSize, agentId, contractId, advanceId, status, number, from, to]);
+  return <div className={styles.page}><SectionHeader title="Powder Deliveries" /><div className={styles.filters}><Select value={agentId} onChange={(event) => filter("agentId", event.target.value)}><option value="">All agents</option>{agents.map((agent) => <option key={agent.id} value={agent.id}>{agentLabel(agent)}</option>)}</Select><Select value={status} onChange={(event) => filter("status", event.target.value)}><option value="">All statuses</option>{statuses.map((item) => <option key={item} value={item}>{item}</option>)}</Select><TextField label="Contract ID" value={contractId} onChange={(event) => filter("agentContractId", event.target.value)} /><TextField label="Advance ID" value={advanceId} onChange={(event) => filter("agentAdvanceId", event.target.value)} /><TextField label="Delivery Number" value={number} onChange={(event) => filter("deliveryNumber", event.target.value)} /><TextField label="From" type="date" value={from} onChange={(event) => filter("deliveryDateFrom", event.target.value)} /><TextField label="To" type="date" value={to} onChange={(event) => filter("deliveryDateTo", event.target.value)} /></div><div className={styles.summary}><span>{total} deliveries</span><Button variant="secondary" size="small" onClick={() => setSearchParams({ page: "1", pageSize: String(pageSize) })}>Reset</Button></div><DataTable columns={columns as any} data={results} isLoading={loading} manualPagination pageCount={Math.max(1, Math.ceil(total / pageSize))} pageIndex={page - 1} onPaginationChange={(index) => filter("page", String(index + 1))} noResultsText="No powder deliveries found" loadingText="Loading powder deliveries..." /></div>;
 };
 
 export const CreatePowderDelivery = () => {
@@ -74,8 +124,11 @@ export const PowderDeliveryDetails = () => {
   const valuate = async () => { if (!id) return; setWorking(true); try { await powderDeliveriesService.valuate(id); toast.success("Delivery valuated."); await load(); } catch (error) { toast.error(getApiErrorMessage(error, "Failed to valuate delivery.")); } finally { setWorking(false); } };
   const execute = async () => { if (!id || !action) return; setWorking(true); try { if (action === "confirm") await powderDeliveriesService.confirm(id); else await powderDeliveriesService.cancel(id); toast.success(action === "confirm" ? "Delivery confirmed." : "Delivery cancelled."); await load(); } catch (error) { toast.error(getApiErrorMessage(error, `Failed to ${action} delivery.`)); } finally { setWorking(false); setAction(null); } };
   if (loading || !delivery) return <div className={styles.page}><SectionHeader title="Powder Delivery" goBack />Loading powder delivery...</div>;
-  const draft = delivery.status === "Draft"; const valuated = delivery.status === "Valuated"; const snapshot = delivery.priceSnapshot;
-  return <div className={styles.page}><SectionHeader title={delivery.deliveryNumber} goBack actions={<div className={styles.headerActions}><Button variant="secondary" onClick={() => navigate(`/agent-contracts/${delivery.contract.id}`)}>View Contract</Button>{draft && <Button onClick={valuate} disabled={working}>{working ? "Valuating..." : "Valuate"}</Button>}{valuated && <Button onClick={() => setAction("confirm")} disabled={working}>Confirm Delivery</Button>}{(draft || valuated) && <Button variant="danger" onClick={() => setAction("cancel")} disabled={working}>Cancel Delivery</Button>}</div>} /><div className={styles.lifecycle}>{statuses.slice(0, 3).map((status) => <span key={status} className={delivery.status === status ? styles.currentStep : ""}>{status}</span>)}</div>{delivery.status === "Cancelled" && <div className={styles.cancelled}>This delivery has been cancelled and is read-only.</div>}<section className={styles.section}><h2>Delivery</h2><div className={styles.detailGrid}><Field label="Status" value={<DeliveryStatus status={delivery.status} />} /><Field label="Delivery date" value={timestamp(delivery.deliveryDate)} /><Field label="Notes" value={delivery.notes} /></div></section><section className={styles.section}><h2>Relations</h2><div className={styles.detailGrid}><Field label="Agent" value={`${delivery.agent.code} - ${delivery.agent.fullName}`} /><Field label="Contract" value={delivery.contract.contractNumber} /><Field label="Advance" value={delivery.advance?.advanceNumber} /></div></section><section className={styles.section}><h2>Weights</h2><div className={styles.detailGrid}><Field label="Gross weight" value={`${amount(delivery.grossWeightKg)} kg`} /><Field label="Net weight" value={`${amount(delivery.netWeightKg)} kg`} /></div></section><section className={styles.section}><h2>Metal Content</h2><div className={styles.detailGrid}><Field label="Pt" value={`${amount(delivery.ptGrams)} g`} /><Field label="Pd" value={`${amount(delivery.pdGrams)} g`} /><Field label="Rh" value={`${amount(delivery.rhGrams)} g`} /></div></section><section className={styles.section}><h2>Valuation</h2><div className={styles.detailGrid}><Field label="Pt value" value={amount(delivery.ptValueUsd, " USD")} /><Field label="Pd value" value={amount(delivery.pdValueUsd, " USD")} /><Field label="Rh value" value={amount(delivery.rhValueUsd, " USD")} /><Field label="Total value" value={amount(delivery.totalValueUsd, " USD")} /><Field label="Total value" value={amount(delivery.totalValueAmd, " AMD")} /></div></section><section className={styles.section}><h2>Frozen Price Snapshot</h2>{snapshot ? <div className={styles.detailGrid}><Field label="Price date" value={timestamp(snapshot.priceDate)} /><Field label="Pt price" value={amount(snapshot.ptPriceUsdPerGram, " USD/g")} /><Field label="Pd price" value={amount(snapshot.pdPriceUsdPerGram, " USD/g")} /><Field label="Rh price" value={amount(snapshot.rhPriceUsdPerGram, " USD/g")} /><Field label="USD/AMD rate" value={amount(snapshot.usdAmdRate)} /><Field label="Source" value={snapshot.source} /><Field label="Captured at" value={timestamp(snapshot.capturedAt)} /><Field label="Created by" value={snapshot.createdBy} /></div> : <div className={styles.muted}>Not valuated yet.</div>}</section><ConfirmationModal open={Boolean(action)} onOpenChange={(open) => !open && setAction(null)} title={action === "confirm" ? "Confirm delivery" : "Cancel delivery"} description={action === "confirm" ? "Confirmation freezes this historical valuation." : "The cancelled delivery will become read-only."} confirmText={action === "confirm" ? "Confirm Delivery" : "Cancel Delivery"} confirmLoading={working} onConfirm={execute} /></div>;
+  const statusLabel = toStatusLabel(delivery.status) || "Draft";
+  const draft = statusLabel === "Draft";
+  const valuated = statusLabel === "Valuated";
+  const snapshot = delivery.priceSnapshot;
+  return <div className={styles.page}><SectionHeader title={delivery.deliveryNumber} goBack actions={<div className={styles.headerActions}><Button variant="secondary" onClick={() => navigate(`/agent-contracts/${delivery.contract.id}`)}>View Contract</Button>{draft && <Button onClick={valuate} disabled={working}>{working ? "Valuating..." : "Valuate"}</Button>}{valuated && <Button onClick={() => setAction("confirm")} disabled={working}>Confirm Delivery</Button>}{(draft || valuated) && <Button variant="danger" onClick={() => setAction("cancel")} disabled={working}>Cancel Delivery</Button>}</div>} /><div className={styles.lifecycle}>{statuses.slice(0, 3).map((status) => <span key={status} className={statusLabel === status ? styles.currentStep : ""}>{status}</span>)}</div>{statusLabel === "Cancelled" && <div className={styles.cancelled}>This delivery has been cancelled and is read-only.</div>}<section className={styles.section}><h2>Delivery</h2><div className={styles.detailGrid}><Field label="Status" value={<DeliveryStatus status={statusLabel as PowderDeliveryStatus} />} /><Field label="Delivery date" value={timestamp(delivery.deliveryDate)} /><Field label="Notes" value={delivery.notes} /></div></section><section className={styles.section}><h2>Relations</h2><div className={styles.detailGrid}><Field label="Agent" value={`${delivery.agent.code} - ${delivery.agent.fullName}`} /><Field label="Contract" value={delivery.contract.contractNumber} /><Field label="Advance" value={delivery.advance?.advanceNumber} /></div></section><section className={styles.section}><h2>Weights</h2><div className={styles.detailGrid}><Field label="Gross weight" value={`${amount(delivery.grossWeightKg)} kg`} /><Field label="Net weight" value={`${amount(delivery.netWeightKg)} kg`} /></div></section><section className={styles.section}><h2>Metal Content</h2><div className={styles.detailGrid}><Field label="Pt" value={`${amount(delivery.ptGrams)} g`} /><Field label="Pd" value={`${amount(delivery.pdGrams)} g`} /><Field label="Rh" value={`${amount(delivery.rhGrams)} g`} /></div></section><section className={styles.section}><h2>Valuation</h2><div className={styles.detailGrid}><Field label="Total value" value={amount(delivery.totalValueUsd, " USD")} /><Field label="Total value" value={amount(delivery.totalValueAmd, " AMD")} /></div></section><section className={styles.section}><h2>Frozen Price Snapshot</h2>{snapshot ? <div className={styles.detailGrid}><Field label="Price date" value={timestamp(snapshot.priceDate)} /><Field label="Pt price" value={amount(snapshot.ptPriceUsdPerGram, " USD/g")} /><Field label="Pd price" value={amount(snapshot.pdPriceUsdPerGram, " USD/g")} /><Field label="Rh price" value={amount(snapshot.rhPriceUsdPerGram, " USD/g")} /><Field label="USD/AMD rate" value={amount(snapshot.usdAmdRate)} /><Field label="Source" value={snapshot.source} /><Field label="Captured at" value={timestamp(snapshot.capturedAt)} /><Field label="Created by" value={snapshot.createdBy} /></div> : <div className={styles.muted}>Not valuated yet.</div>}</section><ConfirmationModal open={Boolean(action)} onOpenChange={(open) => !open && setAction(null)} title={action === "confirm" ? "Confirm delivery" : "Cancel delivery"} description={action === "confirm" ? "Confirmation freezes this historical valuation." : "The cancelled delivery will become read-only."} confirmText={action === "confirm" ? "Confirm Delivery" : "Cancel Delivery"} confirmLoading={working} onConfirm={execute} /></div>;
 };
 
 export const PowderDeliveryHistory = ({ kind }: { kind: "agent" | "contract" }) => {

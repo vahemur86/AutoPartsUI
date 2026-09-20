@@ -7,12 +7,14 @@ import { Button, ConfirmationModal, DataTable, Select, Textarea, TextField } fro
 import { agentsService } from "@/services/agents";
 import { agentContractsService } from "@/services/agentContracts";
 import { capitalSourcesService } from "@/services/capitalSources";
+import { powderDeliveriesService } from "@/services/powderDeliveries";
 import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentDto } from "@/types/agents";
 import type { CapitalSourceDto } from "@/types/capitalSources";
 import type { RepaymentRule, RepaymentRuleVersion } from "@/types/repaymentRules";
 import type { AgentAdvanceDto, AgentContractDto, AgentContractListItemDto, AgentContractStatus } from "@/types/agentContracts";
+import { isDraftAgentStatus, isActiveAgentStatus, normalizeAgentStatus } from "@/utils/agentStatus";
 import styles from "./AgentContracts.module.css";
 
 const statuses: AgentContractStatus[] = ["Draft", "Active", "Completed", "Cancelled", "Defaulted"];
@@ -20,13 +22,16 @@ const money = (amount?: number | null) => new Intl.NumberFormat("en-US", { maxim
 const date = (value?: string | null) => value ? new Date(value).toLocaleDateString() : "-";
 const datetime = (value?: string | null) => value ? new Date(value).toLocaleString() : "-";
 const agentName = (agent: AgentDto) => `${agent.code} - ${agent.customer?.fullName || "—"}`;
-const isDraft = (status: string) => status === "Draft";
+const isDraft = (status: string) => isDraftAgentStatus(status);
 const isActiveRuleVersion = (status: RepaymentRuleVersion["status"]) => {
   const value = String(status ?? "").trim().toLowerCase();
   return value === "active" || value === "1" || value === "enabled" || value === "true";
 };
 
-const StatusBadge = ({ status }: { status: string }) => <span className={`${styles.status} ${styles[`status${status}`] ?? ""}`}>{status}</span>;
+const StatusBadge = ({ status }: { status: string | number }) => {
+  const label = normalizeAgentStatus(status) || String(status ?? "");
+  return <span className={`${styles.status} ${styles[`status${label}`] ?? ""}`}>{label}</span>;
+};
 
 const useAgents = () => {
   const [agents, setAgents] = useState<AgentDto[]>([]);
@@ -98,15 +103,173 @@ const Terms = ({ terms, title = "Repayment Terms" }: { terms: Omit<RepaymentRule
 const Detail = ({ label, value }: { label: string; value: React.ReactNode }) => <div className={styles.detail}><span>{label}</span><strong>{value ?? "-"}</strong></div>;
 
 export const AgentContractDetails = () => {
-  const { id } = useParams(); const navigate = useNavigate(); const [contract, setContract] = useState<AgentContractDto | null>(null); const [loading, setLoading] = useState(true); const [cancelOpen, setCancelOpen] = useState(false); const [amount, setAmount] = useState(""); const [advanceDate, setAdvanceDate] = useState(new Date().toISOString().slice(0, 16)); const [notes, setNotes] = useState(""); const [saving, setSaving] = useState(false);
-  const load = async () => { if (!id) return; setLoading(true); try { setContract(await agentContractsService.getContract(id)); } catch (error) { toast.error(getApiErrorMessage(error, "Failed to load contract.")); } finally { setLoading(false); } };
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [contract, setContract] = useState<AgentContractDto | null>(null);
+  const [capitalSources, setCapitalSources] = useState<CapitalSourceDto[]>([]);
+  const [deliveries, setDeliveries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [advanceOpen, setAdvanceOpen] = useState(false);
+  const [advanceAmount, setAdvanceAmount] = useState("");
+  const [advanceDate, setAdvanceDate] = useState(new Date().toISOString().slice(0, 10));
+  const [advanceNotes, setAdvanceNotes] = useState("");
+  const [advanceSaving, setAdvanceSaving] = useState(false);
+
+  const load = async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const [contractResult, sourceResult] = await Promise.all([
+        agentContractsService.getContract(id),
+        capitalSourcesService.listCapitalSources({ page: 1, pageSize: 200 }),
+      ]);
+
+      setContract(contractResult);
+      setCapitalSources(sourceResult.results ?? []);
+
+      if (contractResult?.agent?.id) {
+        const deliveryResult = await powderDeliveriesService.listForAgent(contractResult.agent.id, { page: 1, pageSize: 200 });
+        setDeliveries(deliveryResult.results ?? []);
+      } else {
+        setDeliveries([]);
+      }
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Failed to load contract details."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => { void load(); }, [id]);
-  const createAdvance = async () => { const parsed = Number(amount); if (!(parsed > 0) || !advanceDate) { toast.error("Enter a positive amount and advance date."); return; } if (!id) return; setSaving(true); try { const advanceId = await agentContractsService.createAdvance(id, { amount: parsed, advanceDate: new Date(advanceDate).toISOString(), notes: notes.trim() || undefined }); navigate(`/agent-advances/${advanceId}`); } catch (error) { toast.error(getApiErrorMessage(error, "Failed to create advance.")); } finally { setSaving(false); } };
+
   const cancel = async () => { if (!id) return; try { await agentContractsService.cancelContract(id); toast.success("Contract cancelled."); void load(); } catch (error) { toast.error(getApiErrorMessage(error, "Failed to cancel contract.")); } };
+
+  const createAdvance = async () => {
+    if (!id || !advanceAmount || Number(advanceAmount) <= 0) {
+      toast.error("Please enter a valid advance amount.");
+      return;
+    }
+
+    setAdvanceSaving(true);
+    try {
+      await agentContractsService.createAdvance(id, {
+        amount: Number(advanceAmount),
+        advanceDate: new Date(advanceDate).toISOString(),
+        notes: advanceNotes.trim() || undefined,
+      });
+
+      toast.success("Advance created successfully.");
+      setAdvanceOpen(false);
+      setAdvanceAmount("");
+      setAdvanceNotes("");
+      setAdvanceDate(new Date().toISOString().slice(0, 10));
+      await load();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Failed to create advance."));
+    } finally {
+      setAdvanceSaving(false);
+    }
+  };
+
+  const fundingRows = useMemo(() => {
+    if (!contract) return [] as Array<{ id: string; name: string; status: string; amount: number; usedAmount: number; remainingAmount: number; contributionPercent: number }>;
+
+    const map = new Map<string, { id: string; name: string; status: string; amount: number; usedAmount: number; remainingAmount: number; contributionPercent: number }>();
+
+    for (const advance of contract.advances ?? []) {
+      for (const allocation of advance.allocations ?? []) {
+        const existing = map.get(allocation.capitalSourceId) ?? {
+          id: allocation.capitalSourceId,
+          name: allocation.capitalSourceName,
+          status: "Active",
+          amount: 0,
+          usedAmount: 0,
+          remainingAmount: 0,
+          contributionPercent: 0,
+        };
+
+        existing.amount += allocation.amount;
+        existing.usedAmount += Math.min(allocation.amount, contract.financials.totalAdvancedAmount || allocation.amount);
+        existing.remainingAmount = Math.max(0, existing.amount - existing.usedAmount);
+
+        const source = capitalSources.find((item) => item.id === allocation.capitalSourceId);
+        if (source) {
+          existing.name = source.name || allocation.capitalSourceName;
+          existing.status = source.status;
+        }
+
+        map.set(allocation.capitalSourceId, existing);
+      }
+    }
+
+    return Array.from(map.values()).map((row) => ({
+      ...row,
+      contributionPercent: contract.financials.totalAdvancedAmount ? Number(((row.usedAmount / contract.financials.totalAdvancedAmount) * 100).toFixed(2)) : 0,
+    }));
+  }, [capitalSources, contract]);
+
+  const totalAllocatedCapital = fundingRows.reduce((sum, row) => sum + row.amount, 0);
+  const totalUsedCapital = fundingRows.reduce((sum, row) => sum + row.usedAmount, 0);
+  const totalRemainingCapital = Math.max(0, totalAllocatedCapital - totalUsedCapital);
+
+  const deliveryColumns = useMemo(() => [
+    { accessorKey: "deliveryNumber", header: "Delivery ID" },
+    { id: "date", header: "Date", cell: ({ row }: any) => date(row.original.deliveryDate) },
+    { id: "weight", header: "Powder (kg)", cell: ({ row }: any) => money(row.original.netWeightKg) },
+    { id: "value", header: "Kitco Value", cell: ({ row }: any) => money(row.original.totalValueAmd) },
+    { id: "status", header: "Status", cell: ({ row }: any) => <StatusBadge status={row.original.status} /> },
+  ], []);
+
   if (loading || !contract) return <div className={styles.page}><SectionHeader title="Contract Details" goBack />Loading contract...</div>;
-  const advances = contract.advances ?? [];
-  const advanceColumns = [{ accessorKey: "advanceNumber", header: "Advance Number" }, { id: "amount", header: "Amount", cell: ({ row }: any) => money(row.original.advancedAmount) }, { id: "allocated", header: "Allocated", cell: ({ row }: any) => money(row.original.allocatedAmount) }, { id: "date", header: "Advance Date", cell: ({ row }: any) => datetime(row.original.advanceDate) }, { accessorKey: "status", header: "Status", cell: ({ row }: any) => <StatusBadge status={row.original.status} /> }, { id: "actions", header: "Actions", cell: ({ row }: any) => <Button size="small" variant="secondary" onClick={() => navigate(`/agent-advances/${row.original.id}`)}>View</Button> }];
-  return <div className={styles.page}><SectionHeader title={contract.contractNumber} goBack actions={<div className={styles.headerActions}><Button variant="secondary" onClick={() => navigate(`/agent-contracts/${contract.id}/powder-deliveries`)}>Delivery History</Button>{isDraft(contract.status) && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel Contract</Button>}</div>} /><div className={styles.detailGrid}><Detail label="Status" value={<StatusBadge status={contract.status} />} /><Detail label="Contract date" value={date(contract.contractDate)} /><Detail label="Agent" value={`${contract.agent.code} - ${contract.agent.fullName}`} /><Detail label="Notes" value={contract.notes} /></div><Terms terms={contract.repaymentTerms} /><section className={styles.section}><h2>Financials</h2><div className={styles.financials}><Detail label="Total advanced" value={money(contract.financials.totalAdvancedAmount)} /><Detail label="Total repaid" value={money(contract.financials.totalRepaidAmount)} /><Detail label="Outstanding" value={money(contract.financials.outstandingAmount)} /></div></section><section className={styles.section}><h2>Advances</h2>{(isDraft(contract.status) || contract.status === "Active") && <div className={styles.inlineForm}><TextField label="Amount" type="number" min="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} /><TextField label="Advance Date" type="datetime-local" value={advanceDate} onChange={(event) => setAdvanceDate(event.target.value)} /><Textarea label="Notes" value={notes} onChange={(event) => setNotes(event.target.value)} /><Button onClick={createAdvance} disabled={saving}>{saving ? "Creating..." : "Create Advance"}</Button></div>}<DataTable columns={advanceColumns as any} data={advances} noResultsText="No advances under this contract" /></section><ConfirmationModal open={cancelOpen} onOpenChange={setCancelOpen} title="Cancel contract" description="This can only be done for a draft contract without funded or active advances." confirmText="Cancel Contract" onConfirm={cancel} /></div>;
+
+  const activeRule = contract.repaymentTerms;
+  const hasActiveContract = isActiveAgentStatus(contract.status);
+  const hasActiveRule = Boolean(activeRule && (activeRule.debtRepaymentPercent > 0 || activeRule.agentPayoutPercent > 0 || activeRule.excessBusinessPercent > 0 || activeRule.excessAgentPercent > 0));
+  const hasFunding = fundingRows.length > 0 && totalAllocatedCapital > 0;
+
+  return <div className={styles.page}><SectionHeader title={contract.contractNumber} goBack actions={<div className={styles.headerActions}><Button variant="secondary" onClick={() => navigate(`/agent-contracts/${contract.id}/powder-deliveries`)}>Delivery History</Button>{isDraft(contract.status) && <Button onClick={() => setAdvanceOpen(true)}><Plus size={14} /> Create Advance</Button>}{isDraft(contract.status) && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel Contract</Button>}</div>} />
+    {!hasActiveContract || !hasActiveRule || !hasFunding ? <div className={styles.notice} style={{ marginBottom: 16 }}>
+      <strong>Automatic compliance check:</strong>
+      {!hasActiveContract && " No active contract. "}
+      {!hasActiveRule && " No active repayment rule. "}
+      {!hasFunding && " No capital source funding available. "}
+    </div> : null}
+
+    <section className={styles.section}>
+      <h2>Automatic Flow</h2>
+      <div className={styles.detailGrid}>
+        <div className={styles.detail}><span>Customer Purchase</span><strong>Completed</strong></div>
+        <div className={styles.detail}><span>Agent Detected</span><strong>{contract.agent.fullName}</strong></div>
+        <div className={styles.detail}><span>PowderDelivery Created</span><strong>Automatic</strong></div>
+        <div className={styles.detail}><span>Admin Confirms</span><strong>Settlement step</strong></div>
+        <div className={styles.detail}><span>Contract + Rule Applied</span><strong>{hasActiveRule ? "Applied" : "Missing"}</strong></div>
+        <div className={styles.detail}><span>Capital Source Updated</span><strong>{hasFunding ? "Available" : "Missing"}</strong></div>
+      </div>
+    </section>
+
+    <section className={styles.section}><h2>Agent Information</h2><div className={styles.detailGrid}><Detail label="Agent" value={`${contract.agent.code} - ${contract.agent.fullName}`} /><Detail label="Phone" value="-" /><Detail label="Agent type" value="-" /><Detail label="Contract number" value={contract.contractNumber} /><Detail label="Contract status" value={<StatusBadge status={contract.status} />} /></div></section>
+
+    <section className={styles.section}><h2>Active Contract Rule</h2><div className={styles.detailGrid}><Detail label="Rule version" value={activeRule.ruleVersion} /><Detail label="Debt repayment %" value={`${activeRule.debtRepaymentPercent}%`} /><Detail label="Agent payout %" value={`${activeRule.agentPayoutPercent}%`} /><Detail label="Excess business %" value={`${activeRule.excessBusinessPercent}%`} /><Detail label="Excess agent %" value={`${activeRule.excessAgentPercent}%`} /><Detail label="Repayment period" value={`${activeRule.defaultRepaymentPeriodDays} days`} /><Detail label="Maximum extensions" value={activeRule.maximumExtensions} /><Detail label="Effective from" value={date(contract.contractDate)} /><Detail label="Effective to" value="-" /></div></section>
+
+    <section className={styles.section}><h2>Capital Funding</h2>{fundingRows.length ? <DataTable columns={[{ accessorKey: "name", header: "Capital Source" }, { accessorKey: "status", header: "Status" }, { id: "contribution", header: "Contribution %", cell: ({ row }: any) => `${row.original.contributionPercent}%` }, { id: "allocated", header: "Allocated", cell: ({ row }: any) => money(row.original.amount) }, { id: "used", header: "Used", cell: ({ row }: any) => money(row.original.usedAmount) }, { id: "remaining", header: "Remaining", cell: ({ row }: any) => money(row.original.remainingAmount) }]} data={fundingRows as any} noResultsText="No capital funding found" /> : <div className={styles.muted}>No capital source allocation found for this agent.</div>}<div className={styles.financials} style={{ marginTop: 16 }}><Detail label="Total allocated capital" value={money(totalAllocatedCapital)} /><Detail label="Total used capital" value={money(totalUsedCapital)} /><Detail label="Total remaining capital" value={money(totalRemainingCapital)} /></div></section>
+
+    <section className={styles.section}><h2>Advance Funding</h2>{isDraft(contract.status) && <div style={{ marginBottom: 12 }}><Button onClick={() => setAdvanceOpen(true)}><Plus size={14} /> Create Advance</Button></div>}{(contract.advances ?? []).length ? <DataTable columns={[{ accessorKey: "advanceNumber", header: "Advance" }, { id: "amount", header: "Advanced", cell: ({ row }: any) => money(row.original.advancedAmount) }, { id: "allocated", header: "Allocated", cell: ({ row }: any) => money(row.original.allocatedAmount) }, { accessorKey: "status", header: "Status", cell: ({ row }: any) => <StatusBadge status={row.original.status} /> }, { id: "actions", header: "Actions", cell: ({ row }: any) => <div className={styles.inlineActions}><Button size="small" variant="secondary" onClick={() => navigate(`/agent-advances/${row.original.id}`)}>View</Button>{isDraftAgentStatus(row.original.status) && <Button size="small" onClick={() => navigate(`/agent-advances/${row.original.id}`)}>Add Allocation</Button>}</div> }]} data={contract.advances ?? []} noResultsText="No advances for this contract" /> : <div className={styles.muted}>No advances exist for this contract yet. Create the first advance to begin funding.</div>}</section>
+
+    <section className={styles.section}><h2>Automatic Powder Deliveries</h2>{deliveries.length ? <DataTable columns={deliveryColumns as any} data={deliveries} noResultsText="No confirmed powder deliveries" /> : <div className={styles.muted}>No powder deliveries found for this agent yet.</div>}</section>
+
+    <section className={styles.section}><h2>Repayment Summary</h2><div className={styles.financials}><Detail label="Initial debt" value={money(contract.financials.outstandingAmount)} /><Detail label="Total delivered value" value={money(deliveries.reduce((sum, item) => sum + (item.totalValueAmd ?? 0), 0))} /><Detail label="Total repaid" value={money(contract.financials.totalRepaidAmount)} /><Detail label="Remaining debt" value={money(contract.financials.outstandingAmount)} /><Detail label="Next deadline" value="-" /><Detail label="Extensions used" value="0" /><Detail label="Remaining extensions" value={activeRule.maximumExtensions} /></div></section>
+
+    <ConfirmationModal open={advanceOpen} onOpenChange={setAdvanceOpen} title="Create Advance" description="Create a new advance for this contract before funding it from capital sources." confirmText="Create Advance" confirmLoading={advanceSaving} onConfirm={createAdvance}>
+      <div className={styles.modalFields}>
+        <TextField label="Advance amount" type="number" min="0.01" value={advanceAmount} onChange={(event) => setAdvanceAmount(event.target.value)} />
+        <TextField label="Advance date" type="date" value={advanceDate} onChange={(event) => setAdvanceDate(event.target.value)} />
+        <Textarea label="Notes" value={advanceNotes} onChange={(event) => setAdvanceNotes(event.target.value)} />
+      </div>
+    </ConfirmationModal>
+
+    <ConfirmationModal open={cancelOpen} onOpenChange={setCancelOpen} title="Cancel contract" description="This can only be done for a draft contract without funded or active advances." confirmText="Cancel Contract" onConfirm={cancel} />
+  </div>;
 };
 
 export const AgentAdvancesList = () => {

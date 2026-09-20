@@ -48,6 +48,11 @@ const AGENT_STATUS_TRANSITIONS: Record<number, number[]> = {
   [AgentStatus.Blocked]: [AgentStatus.Active],
 };
 
+const getAgentFullName = (agent: AgentDto) => {
+  const fullName = [agent.firstName, agent.lastName].filter(Boolean).join(" ");
+  return fullName || agent.customer?.fullName || "—";
+};
+
 export const AgentDetails = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -143,10 +148,13 @@ export const AgentDetails = () => {
 
   const currentStatus = Number(agent.status ?? 0);
   const allowedNext = AGENT_STATUS_TRANSITIONS[currentStatus] ?? [];
+  const fullName = getAgentFullName(agent);
+  const phone = agent.phone || agent.customer?.phone || "—";
+  const email = agent.email || agent.customer?.email || "—";
 
   return (
     <div className={styles.page}>
-      <SectionHeader title={`${agent.code} — ${agent.customer?.fullName || "—"}`} goBack />
+      <SectionHeader title={`${agent.code} — ${fullName}`} goBack />
 
       <div className={styles.detailHeader}>
         <span className={`${styles.statusBadge} ${getStatusClass(agent.status)}`}>
@@ -179,6 +187,9 @@ export const AgentDetails = () => {
             {t("agents.actions.block")}
           </Button>
         )}
+        <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/financial-summary`)}>
+          Financial Summary
+        </Button>
         <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/classify`)}>
           {t("agents.actions.classify")}
         </Button>
@@ -192,9 +203,9 @@ export const AgentDetails = () => {
           <h3>{t("agents.details.title")}</h3>
           <div className={styles.detailRow}><strong>{t("agents.fields.code")}:</strong> {agent.code}</div>
           <h3>{t("agents.details.customerInformation", { defaultValue: "Customer Information" })}</h3>
-          <div className={styles.detailRow}><strong>{t("agents.fields.fullName")}:</strong> {agent.customer?.fullName || "—"}</div>
-          <div className={styles.detailRow}><strong>{t("agents.fields.phone")}:</strong> {agent.customer?.phone || "—"}</div>
-          <div className={styles.detailRow}><strong>{t("agents.fields.email")}:</strong> {agent.customer?.email ?? "—"}</div>
+          <div className={styles.detailRow}><strong>{t("agents.fields.fullName")}:</strong> {fullName}</div>
+          <div className={styles.detailRow}><strong>{t("agents.fields.phone")}:</strong> {phone}</div>
+          <div className={styles.detailRow}><strong>{t("agents.fields.email")}:</strong> {email}</div>
           <div className={styles.detailRow}><strong>{t("agents.fields.customerType", { defaultValue: "Customer Type" })}:</strong> {agent.customer?.customerType?.code || "—"}</div>
           {agent.customerId && <Button variant="secondary" size="small" onClick={() => navigate(`/customers?customerId=${agent.customerId}`)}>{t("agents.actions.viewCustomer", { defaultValue: "View Customer" })}</Button>}
           <div className={styles.detailRow}><strong>{t("agents.fields.address")}:</strong> {agent.address ?? "—"}</div>

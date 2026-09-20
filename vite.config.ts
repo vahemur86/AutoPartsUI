@@ -28,6 +28,14 @@ export default defineConfig({
   test: {
     projects: [
       {
+        test: {
+          name: "unit",
+          environment: "node",
+          include: ["src/**/*.test.ts"],
+          exclude: ["src/**/*.stories.*"],
+        },
+      },
+      {
         extends: true,
         plugins: [
           storybookTest({

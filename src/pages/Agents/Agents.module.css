@@ -40,6 +40,190 @@
   font-weight: 800;
 }
 
+.dashboardPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--color-black-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.kicker {
+  color: var(--color-secondary-300);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboardHeader h3 {
+  margin: 6px 0 0;
+  font-size: 24px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.progressCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.progressHeader,
+.progressMeta,
+.contractProgressHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.progressTrack,
+.progressTrackSmall {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressTrack {
+  height: 14px;
+  margin: 12px 0;
+}
+
+.progressTrackSmall {
+  height: 9px;
+  margin-top: 8px;
+}
+
+.progressBar,
+.progressBarSmall {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.progressMeta {
+  color: var(--color-secondary-300);
+  font-size: 12px;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 20px;
+}
+
+.dashboardCard {
+  background: var(--color-black-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.cardHeader {
+  margin-bottom: 16px;
+}
+
+.cardHeader h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.contractList,
+.activityList {
+  display: grid;
+  gap: 14px;
+}
+
+.contractRow {
+  display: grid;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.contractMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contractMain span {
+  color: var(--color-secondary-300);
+  font-size: 12px;
+}
+
+.contractNumbers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.contractNumbers div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contractNumbers small,
+.activityLabel {
+  color: var(--color-secondary-300);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.activityItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emptyState {
+  padding: 18px 0;
+  color: var(--color-secondary-300);
+}
+
+@media (max-width: 768px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .contractNumbers {
+    grid-template-columns: 1fr;
+  }
+}
+
 .statusBadge {
   display: inline-flex;
   align-items: center;
@@ -364,6 +548,12 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   color: var(--color-secondary-300);
+}
+
+.error {
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .customerPicker {

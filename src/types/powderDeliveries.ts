@@ -1,5 +1,12 @@
 import type { AgentSummaryDto, PagedResult } from "./agentContracts";
 
+export const powderDeliveryStatusMap = {
+  1: "Draft",
+  2: "Valuated",
+  3: "Confirmed",
+  4: "Cancelled",
+} as const;
+
 export type PowderDeliveryStatus = "Draft" | "Valuated" | "Confirmed" | "Cancelled";
 
 export interface AgentContractReferenceDto {

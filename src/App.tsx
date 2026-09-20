@@ -125,13 +125,14 @@ import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
 import { CatalyticConverters } from "./pages/CatalyticConverters";
 import { CatalyticConverterDetails } from "./pages/CatalyticConverters/CatalyticConverterDetails";
 import { CatalyticSuppliers } from "./pages/CatalyticSuppliers";
-import { Agents, CreateAgent, EditAgent, AgentDetails, ClassifyAgent, AgentTypes, CreateEditAgentType, ClassificationRules, CreateEditClassificationRule } from "./pages/Agents";
+import { Agents, CreateAgent, EditAgent, AgentDetails, AgentFinancialSummary, ClassifyAgent, AgentTypes, CreateEditAgentType, ClassificationRules, CreateEditClassificationRule } from "./pages/Agents";
 import {
   CapitalSourceDetails,
   CapitalSourcesList,
   CreateCapitalSource,
   EditCapitalSource,
 } from "./pages/CapitalSources";
+import { RepaymentDetails, RepaymentManagement } from "./pages/Repayments";
 
 const toastOptions = {
   position: "top-right",
@@ -345,6 +346,7 @@ export const App = () => {
                 <Route path="agents" element={<Agents />} />
                 <Route path="agents/new" element={<CreateAgent />} />
                 <Route path="agents/:id" element={<AgentDetails />} />
+                <Route path="agents/:id/financial-summary" element={<AgentFinancialSummary />} />
                 <Route path="agents/:id/edit" element={<EditAgent />} />
                 <Route path="agents/:id/classify" element={<ClassifyAgent />} />
                 <Route path="agents/:id/powder-deliveries" element={<PowderDeliveryHistory kind="agent" />} />
@@ -365,6 +367,8 @@ export const App = () => {
                 <Route path="agent-contracts/create" element={<CreateAgentContract />} />
                 <Route path="agent-contracts/:id" element={<AgentContractDetails />} />
                 <Route path="agent-contracts/:id/powder-deliveries" element={<PowderDeliveryHistory kind="contract" />} />
+                <Route path="repayments" element={<RepaymentManagement />} />
+                <Route path="repayments/:id" element={<RepaymentDetails />} />
                 <Route path="agent-advances" element={<AgentAdvancesList />} />
                 <Route path="agent-advances/:id" element={<AgentAdvanceDetails />} />
                 <Route path="powder-deliveries" element={<PowderDeliveriesList />} />

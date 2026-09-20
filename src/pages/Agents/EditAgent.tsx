@@ -12,6 +12,11 @@ import styles from "./Agents.module.css";
 
 const today = new Date().toISOString().slice(0, 10);
 
+const getAgentFullName = (agent: AgentDto) => {
+  const fullName = [agent.firstName, agent.lastName].filter(Boolean).join(" ");
+  return fullName || agent.customer?.fullName || "—";
+};
+
 export const EditAgent = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -78,9 +83,9 @@ export const EditAgent = () => {
         <div className={styles.formSection}>
           <h3>{t("agents.details.customerInformation", { defaultValue: "Customer Information" })}</h3>
           <div className={styles.selectedCustomer}>
-            <strong>{agent.customer?.fullName || "—"}</strong>
-            <div>{t("agents.fields.phone")}: {agent.customer?.phone || "—"}</div>
-            <div>{t("agents.fields.email")}: {agent.customer?.email || "—"}</div>
+            <strong>{getAgentFullName(agent)}</strong>
+            <div>{t("agents.fields.phone")}: {agent.phone || agent.customer?.phone || "—"}</div>
+            <div>{t("agents.fields.email")}: {agent.email || agent.customer?.email || "—"}</div>
             <div>{t("agents.fields.customerType", { defaultValue: "Customer Type" })}: {agent.customer?.customerType?.code || "—"}</div>
           </div>
         </div>

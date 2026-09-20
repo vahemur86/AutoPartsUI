@@ -11,6 +11,8 @@ export interface Customer {
   id: number;
   phone: string;
   fullName: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   email?: string | null;
   gender: number;
   notes: string | null;

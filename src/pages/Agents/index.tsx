@@ -2,6 +2,7 @@ export { default as Agents } from "./Agents";
 export { default as CreateAgent } from "./CreateAgent";
 export { default as EditAgent } from "./EditAgent";
 export { default as AgentDetails } from "./AgentDetails";
+export { default as AgentFinancialSummary } from "./AgentFinancialSummary";
 export { default as ClassifyAgent } from "./ClassifyAgent";
 export { default as AgentTypes } from "./AgentTypes";
 export { default as CreateEditAgentType } from "./CreateEditAgentType";

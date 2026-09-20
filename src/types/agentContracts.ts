@@ -46,6 +46,10 @@ export interface AgentAdvanceDto {
   advancedAmount: number;
   allocatedAmount: number;
   advanceDate: string;
+  repaymentDeadline?: string | null;
+  extensionCount?: number;
+  maximumExtensions?: number;
+  repaymentTerms?: RepaymentTermsSnapshotDto | null;
   status: AgentAdvanceStatus;
   notes: string | null;
   allocations: CapitalSourceAllocationDto[];
@@ -104,4 +108,20 @@ export interface AddCapitalSourceAllocationRequest {
   capitalSourceId: string;
   amount: number;
   description?: string;
+}
+
+export interface AgentAdvanceExtensionDto {
+  id: string;
+  extensionNumber: string;
+  agentAdvanceId: string;
+  previousDeadline: string;
+  newDeadline: string;
+  reason?: string | null;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface CreateAgentAdvanceExtensionRequest {
+  newDeadline: string;
+  reason?: string | null;
 }
