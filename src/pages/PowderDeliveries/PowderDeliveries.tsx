@@ -234,12 +234,16 @@ const MonthlyPowderReport = ({ active }: { active: boolean }) => {
   const columns = useMemo<ColumnDef<(typeof rows)[number]>[]>(
     () => [
       { id: "number", header: "#", cell: ({ row }) => row.index + 1 },
-      { accessorKey: "agentName", header: t("monthlyPowder.agent") },
+      {
+        accessorKey: "agentName",
+        header: t("monthlyPowder.agent"),
+        cell: ({ row }) => row.original.agentName || t("common.noName"),
+      },
       {
         id: "weight",
         header: t("monthlyPowder.powderWeight"),
         cell: ({ row }) =>
-          `${new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.original.totalGrossWeightKg)} kg`,
+          `${new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.original.totalPowderKg)} kg`,
       },
     ],
     [i18n.language, t],
