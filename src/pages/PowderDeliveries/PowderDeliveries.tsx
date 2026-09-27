@@ -190,11 +190,23 @@ const MonthlyPowderReport = ({ active }: { active: boolean }) => {
   const [results, setResults] = useState<MonthlyAgentPowderWeightDto[]>([]);
   const rows = results.map((item) => ({ ...item, id: item.agentId }));
   const [loading, setLoading] = useState(false);
+  const monthKeys = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+  ] as const;
   const monthOptions = Array.from({ length: 12 }, (_, index) => ({
     value: index + 1,
-    label: new Intl.DateTimeFormat(i18n.language, { month: "long" }).format(
-      new Date(Date.UTC(2024, index, 1)),
-    ),
+    label: t(`monthlyPowder.months.${monthKeys[index]}`),
   }));
   const yearOptions = Array.from(
     { length: 7 },
@@ -252,7 +264,7 @@ const MonthlyPowderReport = ({ active }: { active: boolean }) => {
   return (
     <div className={styles.monthlyReport}>
       <div className={styles.monthFilters}>
-        <label className={styles.periodField}>
+        <div className={styles.periodField}>
           <span>{t("monthlyPowder.month")}</span>
           <Select
             value={String(month)}
@@ -264,8 +276,8 @@ const MonthlyPowderReport = ({ active }: { active: boolean }) => {
               </option>
             ))}
           </Select>
-        </label>
-        <label className={styles.periodField}>
+        </div>
+        <div className={styles.periodField}>
           <span>{t("monthlyPowder.year")}</span>
           <Select
             value={String(year)}
@@ -279,7 +291,7 @@ const MonthlyPowderReport = ({ active }: { active: boolean }) => {
               </option>
             ))}
           </Select>
-        </label>
+        </div>
       </div>
       <h2 className={styles.reportTitle}>{t("monthlyPowder.totalPowder")}</h2>
       <DataTable

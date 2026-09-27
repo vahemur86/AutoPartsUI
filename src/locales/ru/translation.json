@@ -2480,6 +2480,7 @@
       "columns": {
         "fullName": "Полное имя",
         "shop": "Магазин",
+        "employeeType": "Тип сотрудника",
         "serviceCategory": "Категория услуги",
         "salaryType": "Тип зарплаты",
         "fixedDailySalary": "Фиксированная дневная зарплата",
@@ -3281,6 +3282,20 @@
     "deliveriesTab": "Поставки порошка",
     "month": "Месяц",
     "year": "Год",
+    "months": {
+      "january": "Январь",
+      "february": "Февраль",
+      "march": "Март",
+      "april": "Апрель",
+      "may": "Май",
+      "june": "Июнь",
+      "july": "Июль",
+      "august": "Август",
+      "september": "Сентябрь",
+      "october": "Октябрь",
+      "november": "Ноябрь",
+      "december": "Декабрь"
+    },
     "agent": "Агент",
     "powderWeight": "Вес порошка",
     "totalPowder": "Общий вес порошка",

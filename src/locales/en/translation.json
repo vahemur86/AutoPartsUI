@@ -2484,6 +2484,7 @@
       "columns": {
         "fullName": "Full name",
         "shop": "Shop",
+        "employeeType": "Employee type",
         "serviceCategory": "Service category",
         "salaryType": "Salary type",
         "fixedDailySalary": "Fixed daily salary",
@@ -3281,6 +3282,20 @@
     "deliveriesTab": "Powder Deliveries",
     "month": "Month",
     "year": "Year",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
     "agent": "Agent",
     "powderWeight": "Powder Weight",
     "totalPowder": "Total Powder",

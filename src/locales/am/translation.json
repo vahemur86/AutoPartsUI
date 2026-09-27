@@ -3041,6 +3041,7 @@
       "columns": {
         "fullName": "Լրիվ անուն",
         "shop": "Խանութ",
+        "employeeType": "Աշխատակցի տեսակ",
         "serviceCategory": "Ծառայության կատեգորիա",
         "salaryType": "Աշխատավարձի տեսակ",
         "fixedDailySalary": "Ֆիքսված օրական աշխատավարձ",
@@ -3301,6 +3302,20 @@
     "deliveriesTab": "Փոշու առաքումներ",
     "month": "Ամիս",
     "year": "Տարի",
+    "months": {
+      "january": "Հունվար",
+      "february": "Փետրվար",
+      "march": "Մարտ",
+      "april": "Ապրիլ",
+      "may": "Մայիս",
+      "june": "Հունիս",
+      "july": "Հուլիս",
+      "august": "Օգոստոս",
+      "september": "Սեպտեմբեր",
+      "october": "Հոկտեմբեր",
+      "november": "Նոյեմբեր",
+      "december": "Դեկտեմբեր"
+    },
     "agent": "Գործակալ",
     "powderWeight": "Փոշու քաշ",
     "totalPowder": "Փոշու ընդհանուր քաշ",
