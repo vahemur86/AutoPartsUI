@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -9,6 +10,7 @@ import { fetchServicesCatalog } from "@/store/slices/servicesCatalogSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export const ReferralPersonCommissionRuleForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { personId } = useParams();
   const dispatch = useAppDispatch();
@@ -35,14 +37,14 @@ export const ReferralPersonCommissionRuleForm = () => {
 
   const handleSubmit = async () => {
     if (!form.serviceId || !form.commissionPercent || !form.effectiveFrom) {
-      toast.error("Service, commission percentage, and effective from date are required.");
+      toast.error(t("referralPerson.rules.required"));
       return;
     }
 
     const serviceId = Number(form.serviceId);
     const percent = Number(form.commissionPercent);
     if (!serviceId || Number.isNaN(percent) || percent < 0 || percent > 100) {
-      toast.error("Commission percentage must be between 0 and 100.");
+      toast.error(t("referralPerson.rules.percentRange"));
       return;
     }
 
@@ -56,26 +58,26 @@ export const ReferralPersonCommissionRuleForm = () => {
           : null,
         notes: form.notes.trim() || null,
       });
-      toast.success("Commission rule saved.");
+      toast.success(t("referralPerson.rules.saved"));
       navigate(`/referral-persons/${personId}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save commission rule.");
+      toast.error(error instanceof Error ? error.message : t("referralPerson.errors.saveFailed"));
     }
   };
 
   return (
     <div style={{ padding: 24, display: "grid", gap: 16 }}>
-      <SectionHeader title="Add Commission Rule" goBack />
+      <SectionHeader title={t("referralPerson.rules.title")} goBack />
 
       <div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
         <Select
-          label="Service"
+          label={t("referralPerson.rules.service")}
           value={form.serviceId}
           disabled={servicesLoading}
           onChange={(e) => setForm((prev) => ({ ...prev, serviceId: e.target.value }))}
         >
           <option value="">
-            {servicesLoading ? "Loading services..." : "Select service"}
+            {servicesLoading ? t("referralPerson.rules.loadingServices") : t("referralPerson.rules.selectService")}
           </option>
           {activeServices.map((service) => (
             <option key={service.id} value={service.id}>
@@ -86,42 +88,42 @@ export const ReferralPersonCommissionRuleForm = () => {
 
         {selectedService && (
           <div style={{ color: "#475569", fontSize: 14 }}>
-            Service price: <strong>{Number(selectedService.internalCost || 0).toLocaleString()} AMD</strong>
+            {t("referralPerson.rules.servicePrice")}: <strong>{Number(selectedService.internalCost || 0).toLocaleString()} AMD</strong>
           </div>
         )}
 
         <TextField
-          label="Commission %"
+          label={t("referralPerson.rules.commissionPercent")}
           type="number"
           value={form.commissionPercent}
           onChange={(e) => setForm((prev) => ({ ...prev, commissionPercent: e.target.value }))}
         />
 
         <TextField
-          label="Effective From"
+          label={t("referralPerson.rules.effectiveFrom")}
           type="date"
           value={form.effectiveFrom}
           onChange={(e) => setForm((prev) => ({ ...prev, effectiveFrom: e.target.value }))}
         />
 
         <TextField
-          label="Effective To"
+          label={t("referralPerson.rules.effectiveTo")}
           type="date"
           value={form.effectiveTo}
           onChange={(e) => setForm((prev) => ({ ...prev, effectiveTo: e.target.value }))}
         />
 
         <Textarea
-          label="Notes"
+          label={t("referralPerson.fields.notes")}
           value={form.notes}
           onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
         />
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
           <Button variant="secondary" onClick={() => navigate(-1)}>
-            Cancel
+            {t("common.cancel")}
           </Button>
-          <Button onClick={handleSubmit}>Save</Button>
+          <Button onClick={handleSubmit}>{t("common.save")}</Button>
         </div>
       </div>
     </div>

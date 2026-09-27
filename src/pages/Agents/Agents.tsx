@@ -12,20 +12,20 @@ import { AgentStatus } from "@/types/agents";
 import { getAgentSummaryCounts } from "./agentSummary";
 import styles from "./Agents.module.css";
 
-const getStatusLabel = (status?: AgentStatus | number | string | null) => {
+const getStatusLabelKey = (status?: AgentStatus | number | string | null) => {
   const value = Number(status ?? 0);
 
   switch (value) {
     case AgentStatus.Active:
-      return "Active";
+      return "active";
     case AgentStatus.Inactive:
-      return "Inactive";
+      return "inactive";
     case AgentStatus.Suspended:
-      return "Suspended";
+      return "suspended";
     case AgentStatus.Blocked:
-      return "Blocked";
+      return "blocked";
     default:
-      return "Unknown";
+      return "unknown";
   }
 };
 
@@ -170,7 +170,7 @@ export const Agents = () => {
         header: t("agents.fields.status"),
         cell: ({ row }: any) => (
           <span className={`${styles.statusBadge} ${getStatusClass(row.original.status)}`}>
-            {getStatusLabel(row.original.status)}
+            {t(`agents.statuses.${getStatusLabelKey(row.original.status)}`)}
           </span>
         ),
       },
@@ -270,10 +270,10 @@ export const Agents = () => {
             onChange={(e) => updateQueryParam("status", e.target.value)}
           >
             <option value="">{t("common.all")}</option>
-            <option value={String(AgentStatus.Active)}>{getStatusLabel(AgentStatus.Active)}</option>
-            <option value={String(AgentStatus.Inactive)}>{getStatusLabel(AgentStatus.Inactive)}</option>
-            <option value={String(AgentStatus.Suspended)}>{getStatusLabel(AgentStatus.Suspended)}</option>
-            <option value={String(AgentStatus.Blocked)}>{getStatusLabel(AgentStatus.Blocked)}</option>
+            <option value={String(AgentStatus.Active)}>{t(`agents.statuses.${getStatusLabelKey(AgentStatus.Active)}`)}</option>
+            <option value={String(AgentStatus.Inactive)}>{t(`agents.statuses.${getStatusLabelKey(AgentStatus.Inactive)}`)}</option>
+            <option value={String(AgentStatus.Suspended)}>{t(`agents.statuses.${getStatusLabelKey(AgentStatus.Suspended)}`)}</option>
+            <option value={String(AgentStatus.Blocked)}>{t(`agents.statuses.${getStatusLabelKey(AgentStatus.Blocked)}`)}</option>
           </Select>
           <Select
             label={t("agents.fields.agentType")}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -15,6 +16,7 @@ import {
 } from "@/services/referralPersons";
 
 export const ReferralPersonDetails = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const [person, setPerson] = useState<ReferralPersonDto | null>(null);
@@ -32,7 +34,7 @@ export const ReferralPersonDetails = () => {
       setPerson(personData);
       setRules(personRules);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to load referral person.");
+      toast.error(error instanceof Error ? error.message : t("referralPerson.errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -49,10 +51,10 @@ export const ReferralPersonDetails = () => {
       if (!rule) return;
 
       await toggleReferralPersonRuleStatus(id, ruleId, rule.status === "Active" ? "Inactive" : "Active");
-      toast.success("Commission rule status updated.");
+      toast.success(t("referralPerson.messages.ruleStatusUpdated"));
       await load();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update rule status.");
+      toast.error(error instanceof Error ? error.message : t("referralPerson.errors.ruleStatusFailed"));
     }
   };
 
@@ -61,42 +63,42 @@ export const ReferralPersonDetails = () => {
     try {
       if (person.status === "Active") await deactivateReferralPerson(id);
       else await activateReferralPerson(id);
-      toast.success("Referral person status updated.");
+      toast.success(t("referralPerson.messages.statusUpdated"));
       await load();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update referral person status.");
+      toast.error(error instanceof Error ? error.message : t("referralPerson.errors.statusFailed"));
     }
   };
 
   const ruleColumns = useMemo(
     () => [
-      { accessorKey: "serviceName", header: "Service" },
-      { accessorKey: "serviceId", header: "Service ID" },
-      { accessorKey: "commissionPercent", header: "Commission %" },
-      { accessorKey: "effectiveFrom", header: "Effective From" },
-      { accessorKey: "effectiveTo", header: "Effective To" },
-      { accessorKey: "status", header: "Status" },
+      { accessorKey: "serviceName", header: t("referralPerson.rules.service") },
+      { accessorKey: "serviceId", header: t("referralPerson.rules.serviceId") },
+      { accessorKey: "commissionPercent", header: t("referralPerson.rules.commissionPercent") },
+      { accessorKey: "effectiveFrom", header: t("referralPerson.rules.effectiveFrom") },
+      { accessorKey: "effectiveTo", header: t("referralPerson.rules.effectiveTo") },
+      { accessorKey: "status", header: t("referralPerson.fields.status"), cell: ({ row }: any) => t(`referralPerson.statuses.${String(row.original.status).toLowerCase()}`, { defaultValue: row.original.status }) },
       {
         id: "actions",
-        header: "Actions",
+        header: t("common.actions"),
         cell: ({ row }: any) => (
           <div style={{ display: "flex", gap: 8 }}>
             <Button variant="secondary" size="small" onClick={() => handleRuleToggle(row.original.id)}>
-              {row.original.status === "Active" ? "Deactivate" : "Activate"}
+              {row.original.status === "Active" ? t("referralPerson.actions.deactivate") : t("referralPerson.actions.activate")}
             </Button>
           </div>
         ),
       },
     ],
-    [handleRuleToggle],
+    [handleRuleToggle, t],
   );
 
   if (loading) {
-    return <div style={{ padding: 24 }}><SectionHeader title="Referral Person" goBack />Loading...</div>;
+    return <div style={{ padding: 24 }}><SectionHeader title={t("referralPerson.details.title")} goBack />{t("referralPerson.form.loading")}</div>;
   }
 
   if (!person) {
-    return <div style={{ padding: 24 }}><SectionHeader title="Referral Person" goBack />No data found.</div>;
+    return <div style={{ padding: 24 }}><SectionHeader title={t("referralPerson.details.title")} goBack />{t("referralPerson.details.noData")}</div>;
   }
 
   return (
@@ -107,31 +109,31 @@ export const ReferralPersonDetails = () => {
         actions={
           <div style={{ display: "flex", gap: 8 }}>
             <Button variant="secondary" onClick={() => navigate(`/referral-persons/${person.id}/edit`)}>
-              Edit
+              {t("referralPerson.actions.edit")}
             </Button>
             <Button variant="secondary" onClick={handlePersonToggle}>
-              {person.status === "Active" ? "Deactivate" : "Activate"}
+              {person.status === "Active" ? t("referralPerson.actions.deactivate") : t("referralPerson.actions.activate")}
             </Button>
           </div>
         }
       />
 
       <div style={{ display: "grid", gap: 12, maxWidth: 720 }}>
-        <div><strong>Status:</strong> {person.status}</div>
-        <div><strong>Code:</strong> {person.code}</div>
-        <div><strong>Name:</strong> {person.name}</div>
-        <div><strong>Phone:</strong> {person.phone || "—"}</div>
-        <div><strong>Email:</strong> {person.email || "—"}</div>
-        <div><strong>Created:</strong> {new Date(person.createdAt).toLocaleString()}</div>
-        <div><strong>Updated:</strong> {person.updatedAt ? new Date(person.updatedAt).toLocaleString() : "—"}</div>
-        <div><strong>Notes:</strong> {person.notes || "—"}</div>
+        <div><strong>{t("referralPerson.fields.status")}:</strong> {t(`referralPerson.statuses.${String(person.status).toLowerCase()}`, { defaultValue: person.status })}</div>
+        <div><strong>{t("referralPerson.fields.code")}:</strong> {person.code}</div>
+        <div><strong>{t("referralPerson.fields.name")}:</strong> {person.name}</div>
+        <div><strong>{t("referralPerson.fields.phone")}:</strong> {person.phone || "—"}</div>
+        <div><strong>{t("referralPerson.fields.email")}:</strong> {person.email || "—"}</div>
+        <div><strong>{t("referralPerson.details.created")}:</strong> {new Date(person.createdAt).toLocaleString()}</div>
+        <div><strong>{t("referralPerson.details.updated")}:</strong> {person.updatedAt ? new Date(person.updatedAt).toLocaleString() : "—"}</div>
+        <div><strong>{t("referralPerson.fields.notes")}:</strong> {person.notes || "—"}</div>
       </div>
 
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <h3 style={{ margin: 0 }}>Commission Rules</h3>
+          <h3 style={{ margin: 0 }}>{t("referralPerson.details.commissionRules")}</h3>
           <Button onClick={() => navigate(`/referral-persons/${person.id}/commission-rules/new`)}>
-            Add Rule
+            {t("referralPerson.actions.addRule")}
           </Button>
         </div>
 
@@ -141,6 +143,7 @@ export const ReferralPersonDetails = () => {
           isLoading={false}
           pageSize={10}
           manualPagination={false}
+          noResultsText={t("referralPerson.list.empty")}
         />
       </div>
     </div>

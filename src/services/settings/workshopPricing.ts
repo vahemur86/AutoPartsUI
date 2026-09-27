@@ -47,17 +47,32 @@ const salaryTypeFromApi = (salaryType: unknown): "FixedDaily" | "PercentageBased
   return "FixedDaily";
 };
 
+const employeeTypeToApi = (employeeType: unknown): number =>
+  employeeType === 1 || employeeType === "1" || employeeType === "Director" ? 1 : 0;
+
+const employeeTypeFromApi = (employeeType: unknown): "Regular" | "Director" =>
+  employeeType === 1 || employeeType === "1" || employeeType === "Director"
+    ? "Director"
+    : "Regular";
+
 const normalizeEmployeeSalaryType = (employee: EmployeeItem): EmployeeItem => ({
   ...employee,
+  employeeType: employeeTypeFromApi(
+    (employee as unknown as Record<string, unknown>).employeeType,
+  ),
   salaryType: salaryTypeFromApi((employee as unknown as Record<string, unknown>).salaryType),
 });
 
 const normalizeSalaryRecordSalaryType = (
   record: EmployeeSalaryRecordItem,
-): EmployeeSalaryRecordItem => ({
-  ...record,
-  salaryType: salaryTypeFromApi((record as unknown as Record<string, unknown>).salaryType),
-});
+): EmployeeSalaryRecordItem => {
+  const rawRecord = record as unknown as Record<string, unknown>;
+  return {
+    ...record,
+    employeeType: employeeTypeFromApi(rawRecord.employeeType),
+    salaryType: salaryTypeFromApi(rawRecord.salaryType),
+  };
+};
 
 const attendanceStatusToApi = (status: unknown): number => {
   if (status === 0 || status === "0" || status === "Present") {
@@ -222,9 +237,22 @@ export const createEmployee = async (
   payload: EmployeeCreatePayload,
 ): Promise<EmployeeItem> => {
   try {
+    const {
+      employeeType,
+      powderBonusKgThreshold,
+      powderBonusAmount,
+      ...employeePayload
+    } = payload;
     const response = await api.post(employeeBase, {
-      ...payload,
+      ...employeePayload,
+      employeeType: employeeTypeToApi(employeeType),
       salaryType: salaryTypeToApi(payload.salaryType),
+      ...(employeeType === "Director"
+        ? {
+            powderBonusKgThreshold,
+            powderBonusAmount,
+          }
+        : {}),
     });
     return normalizeEmployeeSalaryType(response.data);
   } catch (error: unknown) {
@@ -236,9 +264,22 @@ export const updateEmployee = async (
   payload: EmployeeUpdatePayload,
 ): Promise<EmployeeItem> => {
   try {
+    const {
+      employeeType,
+      powderBonusKgThreshold,
+      powderBonusAmount,
+      ...employeePayload
+    } = payload;
     const response = await api.put(employeeBase, {
-      ...payload,
+      ...employeePayload,
+      employeeType: employeeTypeToApi(employeeType),
       salaryType: salaryTypeToApi(payload.salaryType),
+      ...(employeeType === "Director"
+        ? {
+            powderBonusKgThreshold,
+            powderBonusAmount,
+          }
+        : {}),
     });
     return normalizeEmployeeSalaryType(response.data);
   } catch (error: unknown) {

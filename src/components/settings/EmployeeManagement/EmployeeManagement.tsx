@@ -46,6 +46,7 @@ import type {
   EmployeeItem,
   EmployeeSalaryRecordItem,
   EmployeeSalaryType,
+  EmployeeType,
   EmployeeServicePercentageItem,
   EmployeeServicePercentagePayload,
   EmployeeUpdatePayload,
@@ -105,6 +106,9 @@ const emptyEmployeeForm = () => ({
   hireDate: todayValue(),
   salaryType: "FixedDaily" as EmployeeSalaryType,
   fixedDailySalary: 0,
+  employeeType: "Regular" as EmployeeType,
+  powderBonusKgThreshold: 0,
+  powderBonusAmount: 0,
   notes: "",
 });
 
@@ -397,6 +401,13 @@ export const EmployeeManagement = () => {
       phone: employeeForm.phone.trim(),
       shopId: employeeForm.shopId,
       serviceCategoryId: employeeForm.serviceCategoryId,
+      employeeType: employeeForm.employeeType,
+      ...(employeeForm.employeeType === "Director"
+        ? {
+            powderBonusKgThreshold: Number(employeeForm.powderBonusKgThreshold || 0),
+            powderBonusAmount: Number(employeeForm.powderBonusAmount || 0),
+          }
+        : {}),
       notes: employeeForm.notes.trim() || undefined,
       salaryType: employeeForm.salaryType,
       fixedDailySalary:
@@ -407,6 +418,15 @@ export const EmployeeManagement = () => {
 
     if (!payloadBase.firstName || !payloadBase.lastName || !payloadBase.phone || !payloadBase.shopId || !payloadBase.serviceCategoryId) {
       toast.error(t("serviceTemplates.employeeManagement.messages.validationFailed"));
+      return;
+    }
+
+    if (
+      employeeForm.employeeType === "Director" &&
+      (Number(employeeForm.powderBonusKgThreshold || 0) <= 0 ||
+        Number(employeeForm.powderBonusAmount || 0) < 0)
+    ) {
+      toast.error(t("serviceTemplates.employeeManagement.messages.directorBonusValidationFailed"));
       return;
     }
 
@@ -446,6 +466,9 @@ export const EmployeeManagement = () => {
       hireDate: employee.hireDate ? employee.hireDate.slice(0, 10) : todayValue(),
       salaryType: employee.salaryType || "FixedDaily",
       fixedDailySalary: Number(employee.fixedDailySalary || 0),
+      employeeType: employee.employeeType || "Regular",
+      powderBonusKgThreshold: Number(employee.powderBonusKgThreshold || 0),
+      powderBonusAmount: Number(employee.powderBonusAmount || 0),
       notes: employee.notes || "",
     });
     setActiveTab("employees");
@@ -697,6 +720,15 @@ export const EmployeeManagement = () => {
         cell: ({ row }) => row.original.serviceCategoryName || `#${row.original.serviceCategoryId}`,
       }),
       employeeColumnHelper.display({
+        id: "employeeType",
+        header: t("serviceTemplates.employeeManagement.columns.employeeType"),
+        cell: ({ row }) => (
+          <span className={row.original.employeeType === "Director" ? styles.directorBadge : undefined}>
+            {t(`serviceTemplates.employeeManagement.employeeTypes.${row.original.employeeType}`)}
+          </span>
+        ),
+      }),
+      employeeColumnHelper.display({
         id: "salaryType",
         header: t("serviceTemplates.employeeManagement.columns.salaryType"),
         cell: ({ row }) => t(`serviceTemplates.employeeManagement.salaryTypes.${row.original.salaryType}`),
@@ -814,7 +846,18 @@ export const EmployeeManagement = () => {
   );
 
   const salaryColumns = useMemo(
-    () => [
+    () => {
+      const isDirectorSalaryRecord = (record: EmployeeSalaryRecordItem): boolean =>
+        record.employeeType === "Director";
+
+      const salaryRecords = activeTab === "payroll" ? dailyPayroll : salaryHistory;
+      const showDirectorColumns = salaryRecords.some((record) =>
+        payrollEmployeeId > 0
+          ? record.employeeId === payrollEmployeeId && isDirectorSalaryRecord(record)
+          : isDirectorSalaryRecord(record),
+      );
+
+      const columns = [
       salaryColumnHelper.display({
         id: "employeeFullName",
         header: t("serviceTemplates.employeeManagement.columns.employee"),
@@ -825,6 +868,22 @@ export const EmployeeManagement = () => {
         header: t("serviceTemplates.employeeManagement.columns.salaryType"),
         cell: ({ row }) => t(`serviceTemplates.employeeManagement.salaryTypes.${row.original.salaryType}`),
       }),
+      ...(showDirectorColumns ? [
+        salaryColumnHelper.display({
+        id: "directorPowderQuantityKg",
+        header: t("serviceTemplates.employeeManagement.columns.powderQuantityKg"),
+        cell: ({ row }) => !isDirectorSalaryRecord(row.original) || row.original.directorPowderQuantityKg == null
+          ? "-"
+          : `${Number(row.original.directorPowderQuantityKg).toLocaleString()} kg`,
+      }),
+      salaryColumnHelper.display({
+        id: "directorPowderBonus",
+        header: t("serviceTemplates.employeeManagement.columns.powderBonus"),
+        cell: ({ row }) => !isDirectorSalaryRecord(row.original) || row.original.directorPowderBonus == null
+          ? "-"
+          : money(Number(row.original.directorPowderBonus)),
+        }),
+      ] : []),
       salaryColumnHelper.display({
         id: "grossSalary",
         header: t("serviceTemplates.employeeManagement.columns.grossSalary"),
@@ -898,8 +957,11 @@ export const EmployeeManagement = () => {
           );
         },
       }),
-    ],
-    [markingSalaryId, t],
+      ];
+
+      return columns;
+    },
+    [activeTab, dailyPayroll, payrollEmployeeId, salaryHistory, markingSalaryId, t],
   );
 
   const salaryHistoryColumns = useMemo(
@@ -993,6 +1055,20 @@ export const EmployeeManagement = () => {
                 <option value="FixedDaily">{t("serviceTemplates.employeeManagement.salaryTypes.FixedDaily")}</option>
                 <option value="PercentageBased">{t("serviceTemplates.employeeManagement.salaryTypes.PercentageBased")}</option>
               </Select>
+              <Select label={t("serviceTemplates.employeeManagement.fields.employeeType")} value={employeeForm.employeeType} onChange={(e) => setEmployeeForm((prev) => ({
+                ...prev,
+                employeeType: e.target.value as EmployeeType,
+                ...(e.target.value === "Regular" ? { powderBonusKgThreshold: 0, powderBonusAmount: 0 } : {}),
+              }))}>
+                <option value="Regular">{t("serviceTemplates.employeeManagement.employeeTypes.Regular")}</option>
+                <option value="Director">{t("serviceTemplates.employeeManagement.employeeTypes.Director")}</option>
+              </Select>
+              {employeeForm.employeeType === "Director" && (
+                <>
+                  <TextField label={t("serviceTemplates.employeeManagement.fields.powderBonusKgThreshold")} type="number" min="1" value={String(employeeForm.powderBonusKgThreshold || 0)} onChange={(e) => setEmployeeForm((prev) => ({ ...prev, powderBonusKgThreshold: Number(e.target.value) || 0 }))} />
+                  <TextField label={t("serviceTemplates.employeeManagement.fields.powderBonusAmount")} type="number" min="0" value={String(employeeForm.powderBonusAmount || 0)} onChange={(e) => setEmployeeForm((prev) => ({ ...prev, powderBonusAmount: Number(e.target.value) || 0 }))} />
+                </>
+              )}
               <TextField label={t("serviceTemplates.employeeManagement.fields.fixedDailySalary")} type="number" value={String(employeeForm.fixedDailySalary || 0)} onChange={(e) => setEmployeeForm((prev) => ({ ...prev, fixedDailySalary: Number(e.target.value) || 0 }))} disabled={employeeForm.salaryType !== "FixedDaily"} />
               <Textarea label={t("serviceTemplates.fields.notes")} value={employeeForm.notes} onChange={(e) => setEmployeeForm((prev) => ({ ...prev, notes: e.target.value }))} rows={4} />
             </div>

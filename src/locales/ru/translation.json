@@ -26,7 +26,13 @@
     "workshop": "Мастерская",
     "carCatalyst": "Баки",
     "repaymentRules": "Правила возмещения",
-    "capitalSources": "Источники капитала"
+    "capitalSources": "Источники капитала",
+    "referrals": "Реферальная программа",
+    "referralPersons": "Партнеры по рекомендациям",
+    "commissions": "Комиссии",
+    "agentContracts": "Договоры агентов",
+    "powderDeliveries": "Поставки порошка",
+    "repayments": "Погашения"
   },
   "common": {
     "save": "Сохранить",
@@ -2414,6 +2420,9 @@
       },
       "fields": {
         "shop": "Магазин",
+        "employeeType": "Тип сотрудника",
+        "powderBonusKgThreshold": "Порог бонуса за порошок (кг)",
+        "powderBonusAmount": "Сумма бонуса за порошок (AMD)",
         "salaryType": "Тип зарплаты",
         "fixedDailySalary": "Фиксированная дневная зарплата",
         "selectShop": "Выберите магазин",
@@ -2433,6 +2442,10 @@
       "salaryTypes": {
         "FixedDaily": "Фиксированная дневная зарплата",
         "PercentageBased": "Процентная зарплата"
+      },
+      "employeeTypes": {
+        "Regular": "Обычный сотрудник",
+        "Director": "Директор"
       },
       "attendanceStatus": {
         "Present": "Присутствует",
@@ -2485,10 +2498,15 @@
         "depositRemainingAfter": "Остаток после зарплаты",
         "netPayable": "К выплате",
         "paidStatus": "Статус выплаты",
-        "paidAt": "Выплачено в"
+        "paidAt": "Выплачено в",
+        "powderQuantityKg": "Количество порошка",
+        "powderBonusKgThreshold": "Порог бонуса за порошок",
+        "powderBonusAmount": "Сумма бонуса за порошок",
+        "powderBonus": "Бонус директора за порошок"
       },
       "messages": {
         "validationFailed": "Заполните обязательные данные сотрудника.",
+        "directorBonusValidationFailed": "Для директора укажите порог больше 0 и неотрицательную сумму бонуса.",
         "created": "Сотрудник успешно создан",
         "updated": "Данные сотрудника успешно обновлены",
         "saveFailed": "Не удалось сохранить данные сотрудника",
@@ -3178,7 +3196,12 @@
       "status": "Статус",
       "agentType": "Тип агента",
       "registrationDate": "Дата регистрации",
-      "actions": "Действия"
+      "actions": "Действия",
+      "customer": "Выберите клиента",
+      "customerType": "Тип клиента",
+      "createdBy": "Создал",
+      "updatedAt": "Обновлено",
+      "updatedBy": "Обновил"
     },
     "actions": {
       "create": "Новый агент",
@@ -3187,10 +3210,26 @@
       "deactivate": "Деактивировать",
       "suspend": "Приостановить",
       "block": "Блокировать",
-      "classify": "Классифицировать"
+      "classify": "Классифицировать",
+      "viewCustomer": "Открыть клиента",
+      "changeCustomer": "Изменить клиента",
+      "financialSummary": "Финансовая сводка",
+      "powderDeliveries": "Поставки порошка"
     },
     "details": {
-      "title": "Детали"
+      "title": "Детали",
+      "customerInformation": "Данные клиента"
+    },
+    "sections": {
+      "customer": "Клиент",
+      "details": "Данные агента"
+    },
+    "statuses": {
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "suspended": "Приостановлен",
+      "blocked": "Заблокирован",
+      "unknown": "Неизвестно"
     },
     "history": {
       "title": "История типов",
@@ -3198,6 +3237,7 @@
       "transition": "Переход",
       "reason": "Причина",
       "changedBy": "Изменил",
+      "initial": "Начальное состояние",
       "empty": "История типов отсутствует."
     },
     "messages": {
@@ -3212,7 +3252,9 @@
       "loadFailed": "Не удалось загрузить агентов",
       "createFailed": "Не удалось создать агента",
       "statusFailed": "Не удалось обновить статус",
-      "classifyFailed": "Не удалось классифицировать агента"
+      "classifyFailed": "Не удалось классифицировать агента",
+      "customerTypeNotConfigured": "Тип клиента для агента не настроен.",
+      "financialSummaryFailed": "Не удалось загрузить финансовую сводку агента."
     },
     "validation": {
       "codeRequired": "Код обязателен",
@@ -3221,13 +3263,596 @@
       "phoneInvalid": "Телефон должен содержать 8-16 цифр",
       "emailInvalid": "Некорректный формат email",
       "registrationRequired": "Дата регистрации обязательна",
-      "registrationFuture": "Дата регистрации не может быть в будущем"
+      "registrationFuture": "Дата регистрации не может быть в будущем",
+      "customerRequired": "Выберите клиента",
+      "agentTypeRequired": "Выберите тип агента",
+      "addressTooLong": "Адрес не может содержать более 500 символов",
+      "notesTooLong": "Примечания не могут содержать более 1000 символов"
     },
     "classify": {
       "title": "Классифицировать агента",
       "button": "Классифицировать",
       "classifying": "Классификация...",
       "currentType": "Текущий тип"
+    }
+  },
+  "monthlyPowder": {
+    "title": "Месячный отчет по порошку",
+    "deliveriesTab": "Поставки порошка",
+    "month": "Месяц",
+    "year": "Год",
+    "agent": "Агент",
+    "powderWeight": "Вес порошка",
+    "totalPowder": "Общий вес порошка",
+    "noData": "Нет данных",
+    "loading": "Загрузка месячного отчета..."
+  },
+  "powderDeliveries": {
+    "title": "Поставки порошка",
+    "statuses": {
+      "draft": "Черновик",
+      "valuated": "Оценена",
+      "confirmed": "Подтверждена",
+      "cancelled": "Отменена"
+    },
+    "fields": {
+      "deliveryNumber": "Номер поставки",
+      "deliveryDate": "Дата поставки",
+      "agent": "Агент",
+      "contract": "Договор",
+      "advance": "Аванс",
+      "netWeight": "Масса нетто (кг)",
+      "totalValue": "Общая стоимость (AMD)",
+      "status": "Статус",
+      "createdAt": "Дата создания",
+      "actions": "Действия",
+      "contractId": "ID договора",
+      "advanceId": "ID аванса",
+      "from": "С",
+      "to": "По",
+      "grossWeight": "Масса брутто (кг)",
+      "pt": "Pt (граммы)",
+      "pd": "Pd (граммы)",
+      "rh": "Rh (граммы)",
+      "notes": "Примечания",
+      "weight": "Масса",
+      "value": "Стоимость",
+      "date": "Дата",
+      "type": "Тип",
+      "reference": "Ссылка",
+      "price": "Цена",
+      "totalValueUsd": "Общая стоимость (USD)",
+      "totalValueAmd": "Общая стоимость (AMD)",
+      "priceDate": "Дата цены",
+      "ptPrice": "Цена Pt",
+      "pdPrice": "Цена Pd",
+      "rhPrice": "Цена Rh",
+      "usdAmdRate": "Курс USD/AMD",
+      "source": "Источник",
+      "capturedAt": "Зафиксировано",
+      "createdBy": "Создал"
+    },
+    "filters": {
+      "allAgents": "Все агенты",
+      "allStatuses": "Все статусы"
+    },
+    "list": {
+      "count": "Поставок: {{count}}",
+      "empty": "Поставки порошка не найдены",
+      "loading": "Загрузка поставок порошка..."
+    },
+    "actions": {
+      "confirm": "Подтвердить",
+      "view": "Просмотр",
+      "viewContract": "Открыть договор",
+      "valuate": "Оценить",
+      "valuating": "Оценка...",
+      "confirmDelivery": "Подтвердить поставку",
+      "cancelDelivery": "Отменить поставку",
+      "create": "Создать поставку",
+      "creating": "Создание..."
+    },
+    "create": {
+      "title": "Создать поставку порошка",
+      "selectActiveAgent": "Выберите активного агента",
+      "activeContract": "Действующий договор",
+      "selectActiveContract": "Выберите действующий договор",
+      "activeAdvanceOptional": "Действующий аванс (необязательно)",
+      "noAdvance": "Без аванса",
+      "metalsValidation": "Укажите неотрицательное количество металлов, хотя бы одно значение должно быть больше 0."
+    },
+    "details": {
+      "title": "Поставка порошка",
+      "loading": "Загрузка поставки порошка...",
+      "cancelledReadOnly": "Поставка отменена и доступна только для просмотра.",
+      "delivery": "Поставка",
+      "relations": "Связанные данные",
+      "weights": "Масса",
+      "grossWeight": "Масса брутто",
+      "netWeight": "Масса нетто",
+      "metalContent": "Содержание металлов",
+      "valuation": "Оценка",
+      "totalValue": "Общая стоимость",
+      "frozenPriceSnapshot": "Сохраненные данные оценки",
+      "notValuated": "Поставка еще не оценена.",
+      "confirmTitle": "Подтвердить поставку",
+      "cancelTitle": "Отменить поставку",
+      "confirmDescription": "Подтверждение фиксирует историческую оценку.",
+      "cancelDescription": "Отмененная поставка будет доступна только для просмотра."
+    },
+    "history": {
+      "agentTitle": "История поставок агента",
+      "contractTitle": "История поставок по договору"
+    },
+    "messages": {
+      "created": "Поставка порошка создана.",
+      "confirmed": "Поставка успешно подтверждена.",
+      "valuated": "Поставка оценена.",
+      "confirmedDetails": "Поставка подтверждена.",
+      "cancelled": "Поставка отменена."
+    },
+    "errors": {
+      "loadAgentsFailed": "Не удалось загрузить агентов.",
+      "loadContractsFailed": "Не удалось загрузить действующие договоры.",
+      "loadAdvancesFailed": "Не удалось загрузить действующие авансы.",
+      "loadFailed": "Не удалось загрузить поставки порошка.",
+      "confirmFailed": "Не удалось подтвердить поставку.",
+      "createFailed": "Не удалось создать поставку порошка.",
+      "detailsFailed": "Не удалось загрузить данные поставки порошка.",
+      "valuateFailed": "Не удалось оценить поставку.",
+      "actionFailed": "Не удалось выполнить действие «{{action}}» для поставки.",
+      "historyFailed": "Не удалось загрузить историю поставок."
+    },
+    "validation": {
+      "agentRequired": "Агент обязателен.",
+      "contractRequired": "Действующий договор обязателен.",
+      "dateRequired": "Дата поставки обязательна.",
+      "grossPositive": "Масса брутто должна быть больше 0.",
+      "netPositive": "Масса нетто должна быть больше 0.",
+      "netNotAboveGross": "Масса нетто не может превышать массу брутто."
+    }
+  },
+  "agentFinancialSummary": {
+    "title": "Финансовая сводка агента",
+    "empty": "Финансовая сводка недоступна.",
+    "loading": "Загрузка финансовой сводки...",
+    "overview": "Финансовый обзор агента",
+    "totalAdvanced": "Всего выдано",
+    "totalRepaid": "Всего погашено",
+    "outstanding": "Остаток задолженности",
+    "debtReductionProgress": "Погашение задолженности",
+    "repaid": "погашено",
+    "totalAdvancedCaption": "всего выдано",
+    "contractTerms": "Условия договора",
+    "contract": "Договор",
+    "status": "Статус",
+    "debtRepaymentPercent": "Процент погашения долга",
+    "agentPayoutPercent": "Процент выплаты агенту",
+    "defaultRepaymentPeriod": "Стандартный срок погашения",
+    "days": "дней",
+    "maximumExtensions": "Максимальное число продлений",
+    "recentDeliveries": "Последние поставки",
+    "noRecentDeliveries": "Нет недавних поставок.",
+    "date": "Дата",
+    "value": "Сумма",
+    "recentRepayments": "Последние погашения",
+    "noRecentRepayments": "Нет недавних погашений.",
+    "repaidAmount": "Погашено",
+    "outstandingAfter": "Остаток после погашения",
+    "advances": "Авансы",
+    "noAdvances": "Авансы не найдены.",
+    "amount": "Сумма",
+    "viewAgent": "Открыть агента",
+    "deliveries": "Поставки"
+  },
+  "referralPerson": {
+    "title": "Партнеры по рекомендациям",
+    "actions": {
+      "create": "Добавить партнера",
+      "commissions": "Реферальные комиссии",
+      "view": "Просмотр",
+      "edit": "Изменить",
+      "activate": "Активировать",
+      "deactivate": "Деактивировать",
+      "addRule": "Добавить правило"
+    },
+    "fields": {
+      "id": "ID",
+      "code": "Код",
+      "name": "Имя",
+      "phone": "Телефон",
+      "email": "Эл. почта",
+      "status": "Статус",
+      "created": "Создано",
+      "updated": "Обновлено",
+      "notes": "Примечания",
+      "search": "Поиск",
+      "pageSize": "Строк на странице"
+    },
+    "statuses": {
+      "all": "Все",
+      "active": "Активные",
+      "inactive": "Неактивные"
+    },
+    "list": {
+      "showing": "Показано {{shown}} из {{total}} партнеров",
+      "empty": "Партнеры не найдены.",
+      "loading": "Загрузка партнеров..."
+    },
+    "details": {
+      "title": "Партнер по рекомендациям",
+      "noData": "Данные не найдены.",
+      "created": "Создано",
+      "updated": "Обновлено",
+      "commissionRules": "Правила начисления комиссий"
+    },
+    "form": {
+      "addTitle": "Добавить партнера",
+      "editTitle": "Изменить партнера",
+      "loading": "Загрузка...",
+      "saving": "Сохранение...",
+      "create": "Создать",
+      "update": "Сохранить"
+    },
+    "rules": {
+      "title": "Добавить правило комиссии",
+      "service": "Услуга",
+      "serviceId": "ID услуги",
+      "commissionPercent": "Комиссия (%)",
+      "effectiveFrom": "Действует с",
+      "effectiveTo": "Действует до",
+      "servicePrice": "Стоимость услуги",
+      "selectService": "Выберите услугу",
+      "loadingServices": "Загрузка услуг...",
+      "required": "Услуга, процент комиссии и дата начала обязательны.",
+      "percentRange": "Процент комиссии должен быть от 0 до 100.",
+      "saved": "Правило комиссии сохранено."
+    },
+    "messages": {
+      "created": "Партнер успешно создан.",
+      "updated": "Данные партнера обновлены.",
+      "statusUpdated": "Статус партнера обновлен.",
+      "ruleStatusUpdated": "Статус правила комиссии обновлен."
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить данные партнера.",
+      "ruleStatusFailed": "Не удалось изменить статус правила.",
+      "statusFailed": "Не удалось изменить статус партнера.",
+      "saveFailed": "Не удалось сохранить правило комиссии."
+    },
+    "validation": {
+      "required": "Код и имя обязательны.",
+      "email": "Введите корректный адрес электронной почты."
+    }
+  },
+  "referralCommissions": {
+    "title": "Реферальные комиссии",
+    "description": "Комиссии создаются при оформлении заказа, если применяются партнер по рекомендациям и действующее правило. Здесь можно проверить ожидающие комиссии, утвердить их и отметить как выплаченные.",
+    "fields": {
+      "orderId": "ID заказа",
+      "referralPerson": "Партнер по рекомендациям",
+      "service": "Услуга",
+      "servicePrice": "Стоимость услуги",
+      "commissionAmount": "Сумма комиссии",
+      "status": "Статус",
+      "actions": "Действия",
+      "commissionPercent": "Комиссия (%)",
+      "created": "Создано",
+      "approved": "Утверждено",
+      "paid": "Выплачено",
+      "rejected": "Отклонено",
+      "approvalNotes": "Примечание к утверждению",
+      "reference": "Реквизит платежа",
+      "paymentNotes": "Примечание к выплате",
+      "rejectReason": "Причина отклонения"
+    },
+    "statuses": {
+      "all": "Все",
+      "pending": "Ожидает",
+      "approved": "Утверждена",
+      "paid": "Выплачена",
+      "rejected": "Отклонена",
+      "cancelled": "Отменена"
+    },
+    "actions": {
+      "view": "Просмотр",
+      "approve": "Утвердить",
+      "reject": "Отклонить",
+      "pay": "Выплатить",
+      "viewReceipt": "Посмотреть квитанцию"
+    },
+    "filters": {
+      "search": "Поиск",
+      "status": "Статус",
+      "service": "Услуга",
+      "allServices": "Все услуги",
+      "loadingServices": "Загрузка услуг...",
+      "pageSize": "Строк на странице"
+    },
+    "list": {
+      "showing": "Показано {{shown}} из {{total}} комиссий",
+      "empty": "Комиссии не найдены.",
+      "loading": "Загрузка комиссий..."
+    },
+    "details": {
+      "title": "Детали комиссии",
+      "number": "Комиссия №{{id}}"
+    },
+    "messages": {
+      "approved": "Комиссия утверждена",
+      "rejected": "Комиссия отклонена",
+      "paid": "Комиссия успешно выплачена"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить комиссии.",
+      "approveFailed": "Не удалось утвердить комиссию.",
+      "rejectFailed": "Не удалось отклонить комиссию.",
+      "payFailed": "Не удалось выплатить комиссию."
+    }
+  },
+  "agentContracts": {
+    "title": "Договоры агентов",
+    "createTitle": "Создать договор агента",
+    "detailsTitle": "Детали договора",
+    "statuses": {
+      "draft": "Черновик",
+      "active": "Активен",
+      "completed": "Завершен",
+      "cancelled": "Отменен",
+      "defaulted": "Не исполнен"
+    },
+    "fields": {
+      "contractNumber": "Номер договора",
+      "agent": "Агент",
+      "contractDate": "Дата договора",
+      "status": "Статус",
+      "advanced": "Выдано",
+      "repaid": "Погашено",
+      "outstanding": "Остаток долга",
+      "createdAt": "Дата создания",
+      "actions": "Действия",
+      "from": "С",
+      "to": "По",
+      "deliveryId": "ID поставки",
+      "date": "Дата",
+      "powderWeight": "Порошок (кг)",
+      "kitcoValue": "Стоимость Kitco",
+      "phone": "Телефон",
+      "agentType": "Тип агента",
+      "contractStatus": "Статус договора",
+      "capitalSource": "Источник капитала",
+      "contributionPercent": "Доля, %",
+      "allocated": "Распределено",
+      "used": "Использовано",
+      "remaining": "Остаток",
+      "advance": "Аванс",
+      "advancedAmount": "Выданная сумма",
+      "allocatedAmount": "Распределенная сумма",
+      "createdBy": "Создал",
+      "initialDebt": "Начальный долг",
+      "totalDeliveredValue": "Общая стоимость поставок",
+      "totalRepaid": "Всего погашено",
+      "remainingDebt": "Остаток долга",
+      "nextDeadline": "Следующий срок погашения",
+      "extensionsUsed": "Использовано продлений",
+      "remainingExtensions": "Осталось продлений",
+      "advanceAmount": "Сумма аванса",
+      "advanceDate": "Дата аванса"
+    },
+    "filters": {
+      "allAgents": "Все агенты",
+      "allStatuses": "Все статусы"
+    },
+    "actions": {
+      "createContract": "Создать договор",
+      "view": "Просмотр",
+      "deliveryHistory": "История поставок",
+      "createAdvance": "Создать аванс",
+      "cancelContract": "Отменить договор",
+      "addAllocation": "Добавить распределение"
+    },
+    "list": {
+      "count": "Договоров: {{count}}",
+      "empty": "Договоры не найдены",
+      "loading": "Загрузка договоров..."
+    },
+    "form": {
+      "selectAgent": "Выберите агента",
+      "repaymentRuleVersion": "Версия правила погашения",
+      "selectActiveRuleVersion": "Выберите действующую версию правила",
+      "ruleVersion": "{{name}} / Версия {{version}}",
+      "agentRequired": "Агент обязателен.",
+      "ruleRequired": "Версия правила погашения обязательна.",
+      "dateRequired": "Дата договора обязательна.",
+      "creating": "Создание...",
+      "termsPreview": "Предварительный просмотр условий погашения",
+      "termsTitle": "Условия погашения"
+    },
+    "terms": {
+      "debtRepayment": "Погашение долга",
+      "agentPayout": "Выплата агенту",
+      "excessBusiness": "Излишек бизнеса",
+      "excessAgent": "Излишек агента",
+      "repaymentPeriod": "Срок погашения",
+      "maximumExtensions": "Максимум продлений",
+      "ruleVersion": "Версия правила"
+    },
+    "details": {
+      "loading": "Загрузка договора...",
+      "automaticComplianceCheck": "Автоматическая проверка соответствия:",
+      "automaticFlow": "Автоматический процесс",
+      "customerPurchase": "Покупка клиента",
+      "completed": "Завершено",
+      "agentDetected": "Агент определен",
+      "powderDeliveryCreated": "Поставка порошка создана",
+      "automatic": "Автоматически",
+      "adminConfirms": "Подтверждение администратором",
+      "settlementStep": "Этап расчета",
+      "contractRuleApplied": "Договор и правило применены",
+      "capitalSourceUpdated": "Источник капитала обновлен",
+      "agentInformation": "Информация об агенте",
+      "activeContractRule": "Действующее правило договора",
+      "capitalFunding": "Финансирование из капитала",
+      "noCapitalFunding": "Для этого агента не найдено распределение средств источника капитала.",
+      "totalAllocatedCapital": "Всего распределено капитала",
+      "totalUsedCapital": "Всего использовано капитала",
+      "totalRemainingCapital": "Остаток капитала",
+      "advanceFunding": "Финансирование авансов",
+      "noAdvances": "По этому договору авансов нет",
+      "noAdvancesHint": "По этому договору еще нет авансов. Создайте первый аванс, чтобы начать финансирование.",
+      "automaticPowderDeliveries": "Автоматические поставки порошка",
+      "noConfirmedPowderDeliveries": "Нет подтвержденных поставок порошка",
+      "noPowderDeliveries": "Для этого агента пока нет поставок порошка.",
+      "repaymentSummary": "Сводка погашений",
+      "noCapitalFundingRows": "Финансирование из капитала не найдено",
+      "advanceDescription": "Создайте аванс по этому договору до его финансирования из источников капитала.",
+      "cancelDescription": "Можно отменить только черновой договор без профинансированных или активных авансов."
+    },
+    "compliance": {
+      "noActiveContract": "Нет действующего договора.",
+      "noActiveRule": "Нет действующего правила погашения.",
+      "noFunding": "Нет доступного финансирования из источников капитала.",
+      "applied": "Применено",
+      "missing": "Отсутствует",
+      "available": "Доступно"
+    },
+    "messages": {
+      "created": "Договор создан.",
+      "cancelled": "Договор отменен.",
+      "advanceCreated": "Аванс успешно создан."
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить договоры.",
+      "loadRulesFailed": "Не удалось загрузить правила погашения.",
+      "createFailed": "Не удалось создать договор.",
+      "loadDetailsFailed": "Не удалось загрузить данные договора.",
+      "cancelFailed": "Не удалось отменить договор.",
+      "advanceCreateFailed": "Не удалось создать аванс."
+    },
+    "validation": {
+      "advanceAmount": "Введите корректную сумму аванса."
+    }
+  },
+  "agentAdvances": {
+    "title": "Авансы агентов",
+    "detailsTitle": "Детали аванса",
+    "statuses": {
+      "draft": "Черновик",
+      "active": "Активен",
+      "completed": "Завершен",
+      "cancelled": "Отменен",
+      "defaulted": "Не исполнен"
+    },
+    "fields": {
+      "advanceNumber": "Аванс №",
+      "agent": "Агент",
+      "amount": "Сумма",
+      "status": "Статус",
+      "deadline": "Срок погашения",
+      "extensions": "Продления",
+      "actions": "Действия",
+      "contract": "Договор",
+      "advanceDate": "Дата аванса",
+      "advancedAmount": "Выданная сумма",
+      "allocatedAmount": "Распределенная сумма",
+      "remainingAmount": "Остаток суммы",
+      "capitalSourceCode": "Код источника капитала",
+      "capitalSource": "Источник капитала",
+      "createdAt": "Дата создания",
+      "createdBy": "Создал",
+      "currentDeadline": "Текущий срок погашения",
+      "extensionsGranted": "Предоставлено продлений",
+      "extendedUntil": "Продлено до",
+      "notes": "Примечания",
+      "fundingStatus": "Статус финансирования"
+    },
+    "fundingStatuses": {
+      "fullyAllocated": "Распределено полностью",
+      "partiallyFunded": "Частично профинансировано",
+      "notFunded": "Не профинансировано"
+    },
+    "list": {
+      "contracts": "Договоры",
+      "allAgents": "Все агенты",
+      "allStatuses": "Все статусы",
+      "empty": "Авансы не найдены",
+      "loading": "Загрузка авансов..."
+    },
+    "deadline": {
+      "overdue": "ПРОСРОЧЕНО ({{days}} дн.)",
+      "remaining": "Осталось {{days}} дн."
+    },
+    "history": {
+      "title": "История продлений",
+      "extensionNumber": "Продление №",
+      "previousDeadline": "Предыдущий срок",
+      "newDeadline": "Новый срок",
+      "daysAdded": "Добавлено дней",
+      "reason": "Причина",
+      "granted": "Предоставлено",
+      "empty": "Продления не предоставлялись",
+      "loading": "Загрузка продлений..."
+    },
+    "extension": {
+      "title": "Запросить продление срока",
+      "description": "Продлить аванс {{advanceNumber}}. Текущий срок: {{deadline}}. Использовано продлений: {{count}}/{{maximum}}.",
+      "submit": "Отправить запрос",
+      "dayOption": "+{{days}} дн. ({{date}})",
+      "newDeadlineSelection": "Выбор нового срока",
+      "customDate": "Выбрать дату",
+      "customDeadline": "Новый срок погашения",
+      "reasonOptional": "Причина (необязательно)",
+      "required": "Укажите новый срок погашения.",
+      "mustBeLater": "Новый срок должен быть позже текущего.",
+      "notPast": "Новый срок не может быть в прошлом.",
+      "maxOneYear": "Новый срок не может быть более чем через год.",
+      "reasonTooLong": "Причина не может содержать более 500 символов."
+    },
+    "sections": {
+      "repaymentInformation": "Информация о погашении",
+      "fundingSummary": "Сводка финансирования",
+      "allocations": "Распределения"
+    },
+    "actions": {
+      "view": "Просмотр",
+      "viewContract": "Открыть договор",
+      "allocateCapital": "Распределить капитал",
+      "activate": "Активировать аванс",
+      "requestExtension": "Запросить продление",
+      "addAllocation": "Добавить распределение",
+      "remove": "Удалить",
+      "add": "Добавить распределение"
+    },
+    "allocation": {
+      "title": "Добавить распределение",
+      "description": "Осталось распределить: {{amount}}",
+      "selectSource": "Выберите источник капитала",
+      "currentBalance": "текущий остаток: {{amount}}",
+      "amount": "Сумма",
+      "descriptionField": "Описание",
+      "empty": "Распределений пока нет",
+      "removeTitle": "Удалить распределение",
+      "removeDescription": "Удалить это распределение средств?",
+      "amountError": "Выберите источник капитала и укажите сумму, не превышающую остаток."
+    },
+    "activation": {
+      "title": "Активировать аванс",
+      "description": "Активировать этот аванс? Перед активацией все средства должны быть полностью распределены.",
+      "confirm": "Активировать аванс"
+    },
+    "messages": {
+      "allocationAdded": "Распределение добавлено.",
+      "allocationRemoved": "Распределение удалено.",
+      "activated": "Аванс активирован.",
+      "extensionGranted": "Продление успешно предоставлено."
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить авансы.",
+      "loadDetailsFailed": "Не удалось загрузить данные аванса.",
+      "addAllocationFailed": "Не удалось добавить распределение.",
+      "removeAllocationFailed": "Не удалось удалить распределение.",
+      "activateFailed": "Не удалось активировать аванс.",
+      "extensionFailed": "Не удалось создать продление."
     }
   },
   "agentTypes": {
@@ -3262,6 +3887,9 @@
       "codeRequired": "Код обязателен",
       "nameRequired": "Название обязательно",
       "priorityRequired": "Приоритет обязателен"
+    },
+    "placeholder": {
+      "code": "Например, PARTNER"
     }
   },
   "classificationRules": {
@@ -3290,7 +3918,23 @@
       "empty": "Условий еще нет",
       "group": "Группа {{number}}",
       "addCondition": "Добавить условие в группу",
-      "addGroup": "Добавить группу OR"
+      "addGroup": "Добавить группу ИЛИ",
+      "and": "И",
+      "or": "ИЛИ"
+    },
+    "metrics": {
+      "completedAdvances": "Завершенные авансы",
+      "totalAdvances": "Всего авансов",
+      "onTimeRepaymentPercent": "Процент своевременного погашения",
+      "lateRepaymentCount": "Количество просроченных погашений",
+      "overdueAdvanceCount": "Количество просроченных авансов",
+      "defaultCount": "Количество случаев неисполнения обязательств",
+      "totalExtensions": "Всего продлений",
+      "averageRepaymentDays": "Средний срок погашения (дни)",
+      "averageExtensionCount": "Среднее количество продлений",
+      "currentOutstandingAmount": "Текущая задолженность",
+      "totalRepaidAmount": "Всего погашено",
+      "totalPowderValue": "Общая стоимость порошка"
     },
     "messages": {
       "created": "Правило классификации создано",
@@ -3424,17 +4068,52 @@
       "OwnerInvestment": "Инвестиции собственника",
       "Other": "Прочие"
     },
+    "transactionTypes": {
+      "MoneyReceived": "Поступление средств",
+      "AgentAllocation": "Начисление агенту",
+      "MoneyReturned": "Возврат средств",
+      "OtherIncome": "Прочий доход",
+      "OtherExpense": "Прочий расход"
+    },
     "statuses": {
       "Active": "Активен",
       "Inactive": "Неактивен",
       "Closed": "Закрыт"
     },
     "actions": {
+      "create": "Создать",
+      "view": "Просмотр",
+      "edit": "Изменить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
       "activate": "Активировать",
       "deactivate": "Деактивировать",
       "close": "Закрыть",
       "receiveMoney": "Получить деньги",
-      "returnMoney": "Вернуть деньги"
+      "returnMoney": "Вернуть деньги",
+      "processing": "Обработка...",
+      "receive": "Получить",
+      "return": "Вернуть"
+    },
+    "filters": {
+      "allTypes": "Все типы",
+      "allStatuses": "Все статусы"
+    },
+    "summary": {
+      "totalItems": "Всего записей: {{count}}"
+    },
+    "transactions": {
+      "title": "Операции",
+      "empty": "Операции не найдены",
+      "fields": {
+        "dateTime": "Дата/время",
+        "amount": "Сумма",
+        "balanceBefore": "Баланс до операции",
+        "balanceAfter": "Баланс после операции",
+        "referenceType": "Тип ссылки",
+        "referenceId": "ID ссылки",
+        "createdBy": "Создал"
+      }
     },
     "messages": {
       "created": "Источник капитала успешно создан",
@@ -3451,6 +4130,12 @@
       "loadDetailsFailed": "Не удалось загрузить детали источника капитала",
       "actionFailed": "Не удалось выполнить действие",
       "moneyActionFailed": "Не удалось обработать денежную транзакцию"
+    },
+    "validation": {
+      "required": "Код, название и положительная начальная сумма обязательны.",
+      "dateOrder": "Дата окончания не может быть раньше даты начала.",
+      "interestRange": "Процентная ставка должна быть от 0 до 100.",
+      "amountPositive": "Сумма должна быть больше нуля."
     }
   }
 }

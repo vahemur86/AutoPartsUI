@@ -82,6 +82,7 @@ export interface ServiceCategoryUpdatePayload {
 }
 
 export type EmployeeSalaryType = "FixedDaily" | "PercentageBased";
+export type EmployeeType = "Regular" | "Director";
 export type EmployeeAttendanceStatus = "Present" | "Absent";
 
 export interface EmployeeItem {
@@ -97,6 +98,9 @@ export interface EmployeeItem {
   serviceCategoryName?: string;
   hireDate: string;
   isActive: boolean;
+  employeeType: EmployeeType;
+  powderBonusKgThreshold?: number | null;
+  powderBonusAmount?: number | null;
   salaryType: EmployeeSalaryType;
   fixedDailySalary: number;
   notes?: string | null;
@@ -112,6 +116,9 @@ export interface EmployeeCreatePayload {
   shopId: number;
   serviceCategoryId: number;
   hireDate: string;
+  employeeType: EmployeeType;
+  powderBonusKgThreshold?: number;
+  powderBonusAmount?: number;
   salaryType: EmployeeSalaryType;
   fixedDailySalary: number;
   notes?: string;
@@ -125,6 +132,9 @@ export interface EmployeeUpdatePayload {
   phone: string;
   shopId: number;
   serviceCategoryId: number;
+  employeeType: EmployeeType;
+  powderBonusKgThreshold?: number;
+  powderBonusAmount?: number;
   salaryType: EmployeeSalaryType;
   fixedDailySalary: number;
   notes?: string;
@@ -165,6 +175,7 @@ export interface EmployeeSalaryRecordItem {
   id?: number;
   employeeId: number;
   employeeFullName: string;
+  employeeType: EmployeeType;
   shopId?: number;
   workDate: string;
   salaryType: EmployeeSalaryType;
@@ -176,6 +187,10 @@ export interface EmployeeSalaryRecordItem {
   isPaid?: boolean;
   paidAt?: string | null;
   paidByUserId?: string | null;
+  directorPowderQuantityKg?: number | null;
+  directorPowderBonusKgThreshold?: number | null;
+  directorPowderBonusAmount?: number | null;
+  directorPowderBonus?: number | null;
 }
 
 export interface EmployeeServicePercentagePayload {

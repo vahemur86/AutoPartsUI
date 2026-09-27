@@ -57,7 +57,7 @@ export const CreateAgent = () => {
         const agentCustomerType = (customerTypes || []).find(
           (type: { id: number; code?: string; isActive?: boolean }) => type.isActive !== false && type.code?.toLowerCase() === "agent",
         );
-        if (!agentCustomerType) throw new Error("Agent customer type is not configured.");
+        if (!agentCustomerType) throw new Error(t("agents.errors.customerTypeNotConfigured"));
         const result = await getCustomers({ customerTypeId: agentCustomerType.id, page: 1, pageSize: 100 });
         setCustomers(result.results || []);
       } catch (error) {

@@ -75,3 +75,9 @@ export interface CreatePowderDeliveryRequest {
 }
 
 export type PagedPowderDeliveries = PagedResult<PowderDeliveryListItemDto>;
+
+export interface MonthlyAgentPowderWeightDto {
+  agentId: string;
+  agentName: string;
+  totalGrossWeightKg: number;
+}

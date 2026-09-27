@@ -11,18 +11,18 @@ import { AgentStatus } from "@/types/agents";
 import type { AgentDto } from "@/types/agents";
 import styles from "./Agents.module.css";
 
-const getStatusLabel = (status?: number | string | null) => {
+const getStatusLabelKey = (status?: number | string | null) => {
   switch (Number(status ?? 0)) {
     case AgentStatus.Active:
-      return "Active";
+      return "active";
     case AgentStatus.Inactive:
-      return "Inactive";
+      return "inactive";
     case AgentStatus.Suspended:
-      return "Suspended";
+      return "suspended";
     case AgentStatus.Blocked:
-      return "Blocked";
+      return "blocked";
     default:
-      return "Unknown";
+      return "unknown";
   }
 };
 
@@ -126,7 +126,7 @@ export const AgentDetails = () => {
     { accessorKey: "changedAt", header: t("agents.history.date") },
     {
       accessorFn: (row: any) => {
-        const prev = row.previousType?.code ?? "Initial";
+        const prev = row.previousType?.code ?? t("agents.history.initial");
         const next = row.newType?.code ?? "—";
         return `${prev} → ${next}`;
       },
@@ -158,7 +158,7 @@ export const AgentDetails = () => {
 
       <div className={styles.detailHeader}>
         <span className={`${styles.statusBadge} ${getStatusClass(agent.status)}`}>
-          {getStatusLabel(agent.status)}
+          {t(`agents.statuses.${getStatusLabelKey(agent.status)}`)}
         </span>
         <span className={styles.typeBadge}>{agent.agentType?.code ?? "NEW"}</span>
       </div>
@@ -188,13 +188,13 @@ export const AgentDetails = () => {
           </Button>
         )}
         <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/financial-summary`)}>
-          Financial Summary
+          {t("agents.actions.financialSummary")}
         </Button>
         <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/classify`)}>
           {t("agents.actions.classify")}
         </Button>
         <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/powder-deliveries`)}>
-          Powder Deliveries
+          {t("agents.actions.powderDeliveries")}
         </Button>
       </div>
 
@@ -213,9 +213,9 @@ export const AgentDetails = () => {
           <div className={styles.detailRow}><strong>{t("agents.fields.notes")}:</strong> {agent.notes ?? "—"}</div>
           <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
             <div className={styles.detailRow}><strong>{t("common.createdAt")}:</strong> {agent.createdAt}</div>
-            <div className={styles.detailRow}><strong>Created by:</strong> {agent.createdBy}</div>
-            {agent.updatedAt && <div className={styles.detailRow}><strong>Updated at:</strong> {agent.updatedAt}</div>}
-            {agent.updatedBy && <div className={styles.detailRow}><strong>Updated by:</strong> {agent.updatedBy}</div>}
+            <div className={styles.detailRow}><strong>{t("agents.fields.createdBy")}:</strong> {agent.createdBy}</div>
+            {agent.updatedAt && <div className={styles.detailRow}><strong>{t("agents.fields.updatedAt")}:</strong> {agent.updatedAt}</div>}
+            {agent.updatedBy && <div className={styles.detailRow}><strong>{t("agents.fields.updatedBy")}:</strong> {agent.updatedBy}</div>}
           </div>
         </div>
 

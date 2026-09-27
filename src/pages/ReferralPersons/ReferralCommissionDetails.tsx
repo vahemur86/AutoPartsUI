@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -13,6 +14,7 @@ import {
 } from "@/services/referralCommissions";
 
 export const ReferralCommissionDetails = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [commission, setCommission] = useState<ReferralCommissionDto | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
@@ -51,9 +53,9 @@ export const ReferralCommissionDetails = () => {
     try {
       await approveReferralCommission(id, notes || undefined);
       await load();
-      toast.success("Commission approved");
+      toast.success(t("referralCommissions.messages.approved"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to approve commission.");
+      toast.error(error instanceof Error ? error.message : t("referralCommissions.errors.approveFailed"));
     } finally {
       setActionBusy(false);
     }
@@ -65,9 +67,9 @@ export const ReferralCommissionDetails = () => {
     try {
       await rejectReferralCommission(id, reason);
       await load();
-      toast.success("Commission rejected");
+      toast.success(t("referralCommissions.messages.rejected"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to reject commission.");
+      toast.error(error instanceof Error ? error.message : t("referralCommissions.errors.rejectFailed"));
     } finally {
       setActionBusy(false);
     }
@@ -79,57 +81,57 @@ export const ReferralCommissionDetails = () => {
     try {
       await payReferralCommission(id, { reference: paymentReference || undefined });
       await load();
-      toast.success("Commission paid successfully");
+      toast.success(t("referralCommissions.messages.paid"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to pay commission.");
+      toast.error(error instanceof Error ? error.message : t("referralCommissions.errors.payFailed"));
     } finally {
       setActionBusy(false);
     }
   };
 
   if (!commission) {
-    return <div style={{ padding: 24 }}><SectionHeader title="Commission Details" goBack />Loading...</div>;
+    return <div style={{ padding: 24 }}><SectionHeader title={t("referralCommissions.details.title")} goBack />{t("common.loading")}</div>;
   }
 
   return (
     <div style={{ padding: 24, display: "grid", gap: 20 }}>
       <SectionHeader
-        title={`Commission #${commission.id}`}
+        title={t("referralCommissions.details.number", { id: commission.id })}
         goBack
         actions={
           <div style={{ display: "flex", gap: 8 }}>
             {statusActions.includes("Approve") && (
-              <Button onClick={handleApprove} disabled={actionBusy}>Approve</Button>
+              <Button onClick={handleApprove} disabled={actionBusy}>{t("referralCommissions.actions.approve")}</Button>
             )}
             {statusActions.includes("Reject") && (
-              <Button variant="secondary" onClick={handleReject} disabled={actionBusy}>Reject</Button>
+              <Button variant="secondary" onClick={handleReject} disabled={actionBusy}>{t("referralCommissions.actions.reject")}</Button>
             )}
             {statusActions.includes("Pay") && (
-              <Button onClick={handlePay} disabled={actionBusy}>Pay</Button>
+              <Button onClick={handlePay} disabled={actionBusy}>{t("referralCommissions.actions.pay")}</Button>
             )}
           </div>
         }
       />
 
       <div style={{ display: "grid", gap: 12, maxWidth: 800 }}>
-        <div><strong>Status:</strong> {commission.status}</div>
-        <div><strong>Order ID:</strong> {commission.serviceOrderId}</div>
-        <div><strong>Referral Person:</strong> {commission.referralPersonName}</div>
-        <div><strong>Service:</strong> {commission.serviceName}</div>
-        <div><strong>Service Price:</strong> ${commission.servicePrice.toFixed(2)}</div>
-        <div><strong>Commission %:</strong> {commission.commissionPercent}%</div>
-        <div><strong>Commission Amount:</strong> ${commission.commissionAmount.toFixed(2)}</div>
-        <div><strong>Created:</strong> {new Date(commission.createdAt).toLocaleString()}</div>
-        {commission.approvedAt && <div><strong>Approved:</strong> {new Date(commission.approvedAt).toLocaleString()}</div>}
-        {commission.paidAt && <div><strong>Paid:</strong> {new Date(commission.paidAt).toLocaleString()}</div>}
-        {commission.rejectedAt && <div><strong>Rejected:</strong> {new Date(commission.rejectedAt).toLocaleString()}</div>}
+        <div><strong>{t("referralCommissions.fields.status")}:</strong> {t(`referralCommissions.statuses.${commission.status.toLowerCase()}`, { defaultValue: commission.status })}</div>
+        <div><strong>{t("referralCommissions.fields.orderId")}:</strong> {commission.serviceOrderId}</div>
+        <div><strong>{t("referralCommissions.fields.referralPerson")}:</strong> {commission.referralPersonName}</div>
+        <div><strong>{t("referralCommissions.fields.service")}:</strong> {commission.serviceName}</div>
+        <div><strong>{t("referralCommissions.fields.servicePrice")}:</strong> ${commission.servicePrice.toFixed(2)}</div>
+        <div><strong>{t("referralCommissions.fields.commissionPercent")}:</strong> {commission.commissionPercent}%</div>
+        <div><strong>{t("referralCommissions.fields.commissionAmount")}:</strong> ${commission.commissionAmount.toFixed(2)}</div>
+        <div><strong>{t("referralCommissions.fields.created")}:</strong> {new Date(commission.createdAt).toLocaleString()}</div>
+        {commission.approvedAt && <div><strong>{t("referralCommissions.fields.approved")}:</strong> {new Date(commission.approvedAt).toLocaleString()}</div>}
+        {commission.paidAt && <div><strong>{t("referralCommissions.fields.paid")}:</strong> {new Date(commission.paidAt).toLocaleString()}</div>}
+        {commission.rejectedAt && <div><strong>{t("referralCommissions.fields.rejected")}:</strong> {new Date(commission.rejectedAt).toLocaleString()}</div>}
       </div>
 
       {(commission.status === "Pending" || commission.status === "Approved") && (
         <div style={{ display: "grid", gap: 12, maxWidth: 640 }}>
           {commission.status === "Pending" && (
             <Textarea
-              label="Approval Notes"
+              label={t("referralCommissions.fields.approvalNotes")}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -138,12 +140,12 @@ export const ReferralCommissionDetails = () => {
           {commission.status === "Approved" && (
             <>
               <TextField
-                label="Reference"
+                label={t("referralCommissions.fields.reference")}
                 value={paymentReference}
                 onChange={(e) => setPaymentReference(e.target.value)}
               />
               <Textarea
-                label="Payment Notes"
+                label={t("referralCommissions.fields.paymentNotes")}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
@@ -152,7 +154,7 @@ export const ReferralCommissionDetails = () => {
 
           {commission.status === "Pending" && (
             <Textarea
-              label="Reject Reason"
+              label={t("referralCommissions.fields.rejectReason")}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />

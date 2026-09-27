@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -24,6 +25,7 @@ const formatSigned = (type: string, amount: number) => {
 };
 
 export const CapitalSourceDetails = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ export const CapitalSourceDetails = () => {
       setSource(sourceData);
       setTransactions(history ?? []);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to load capital source details."));
+      toast.error(getApiErrorMessage(error, t("capitalSources.errors.loadDetailsFailed")));
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +66,7 @@ export const CapitalSourceDetails = () => {
     const amountValue = Number(mode === "receive" ? receiveAmount : returnAmount);
     const description = (mode === "receive" ? receiveDescription : returnDescription).trim();
     if (!amountValue || amountValue <= 0) {
-      toast.error("Amount must be greater than 0.");
+      toast.error(t("capitalSources.validation.amountPositive"));
       return;
     }
 
@@ -72,10 +74,10 @@ export const CapitalSourceDetails = () => {
     try {
       if (mode === "receive") {
         await capitalSourcesService.receiveMoney(id, { amount: amountValue, description });
-        toast.success("Money received successfully");
+        toast.success(t("capitalSources.messages.moneyReceived"));
       } else {
         await capitalSourcesService.returnMoney(id, { amount: amountValue, description });
-        toast.success("Money returned successfully");
+        toast.success(t("capitalSources.messages.moneyReturned"));
       }
       setReceiveAmount("");
       setReceiveDescription("");
@@ -85,7 +87,7 @@ export const CapitalSourceDetails = () => {
       setIsReturnOpen(false);
       await load();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to update capital source."));
+      toast.error(getApiErrorMessage(error, t("capitalSources.errors.moneyActionFailed")));
     } finally {
       setIsActionLoading(false);
     }
@@ -98,10 +100,15 @@ export const CapitalSourceDetails = () => {
       if (action === "activate") await capitalSourcesService.activateCapitalSource(id);
       if (action === "deactivate") await capitalSourcesService.deactivateCapitalSource(id);
       if (action === "close") await capitalSourcesService.closeCapitalSource(id);
-      toast.success(`${action[0].toUpperCase()}${action.slice(1)} action completed`);
+      const messageKeys = {
+        activate: "capitalSources.messages.activated",
+        deactivate: "capitalSources.messages.deactivated",
+        close: "capitalSources.messages.closed",
+      } as const;
+      toast.success(t(messageKeys[action]));
       await load();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, `Failed to ${action} capital source.`));
+      toast.error(getApiErrorMessage(error, t("capitalSources.errors.actionFailed")));
     } finally {
       setIsActionLoading(false);
     }
@@ -111,95 +118,95 @@ export const CapitalSourceDetails = () => {
     () => [
       {
         accessorKey: "createdAt",
-        header: "Date/Time",
+        header: t("capitalSources.transactions.fields.dateTime"),
         cell: ({ row }: any) => row.original.createdAt ? new Date(row.original.createdAt).toLocaleString() : "—",
       },
-      { accessorKey: "type", header: "Type" },
+      { accessorKey: "type", header: t("capitalSources.fields.type"), cell: ({ row }: any) => t(`capitalSources.transactionTypes.${row.original.type}`, { defaultValue: row.original.type }) },
       {
         accessorKey: "amount",
-        header: "Amount",
+        header: t("capitalSources.transactions.fields.amount"),
         cell: ({ row }: any) => formatSigned(row.original.type, row.original.amount),
       },
-      { accessorKey: "balanceBefore", header: "Balance Before", cell: ({ row }: any) => formatMoney(row.original.balanceBefore) },
-      { accessorKey: "balanceAfter", header: "Balance After", cell: ({ row }: any) => formatMoney(row.original.balanceAfter) },
-      { accessorKey: "referenceType", header: "Reference Type" },
-      { accessorKey: "referenceId", header: "Reference Id" },
-      { accessorKey: "description", header: "Description" },
-      { accessorKey: "createdBy", header: "Created By" },
+      { accessorKey: "balanceBefore", header: t("capitalSources.transactions.fields.balanceBefore"), cell: ({ row }: any) => formatMoney(row.original.balanceBefore) },
+      { accessorKey: "balanceAfter", header: t("capitalSources.transactions.fields.balanceAfter"), cell: ({ row }: any) => formatMoney(row.original.balanceAfter) },
+      { accessorKey: "referenceType", header: t("capitalSources.transactions.fields.referenceType") },
+      { accessorKey: "referenceId", header: t("capitalSources.transactions.fields.referenceId") },
+      { accessorKey: "description", header: t("capitalSources.fields.description") },
+      { accessorKey: "createdBy", header: t("capitalSources.transactions.fields.createdBy") },
     ],
-    [],
+    [t],
   );
 
   if (isLoading || !source) {
-    return <div>Loading capital source...</div>;
+    return <div>{t("common.loading")}</div>;
   }
 
   return (
     <div className={styles.page}>
       <SectionHeader title={source.name} goBack actions={
         <div className={styles.headerActions}>
-          <Button variant="secondary" onClick={() => navigate(`/capital-sources/${id}/edit`)}>Edit</Button>
-          <Button onClick={() => setIsReceiveOpen(true)}>Receive Money</Button>
-          <Button variant="secondary" onClick={() => setIsReturnOpen(true)}>Return Money</Button>
-          {source.status === "Inactive" && <Button variant="secondary" onClick={() => void handleStatusAction("activate")}>Activate</Button>}
-          {source.status === "Active" && <Button variant="secondary" onClick={() => void handleStatusAction("deactivate")}>Deactivate</Button>}
-          {source.status !== "Closed" && <Button variant="danger" onClick={() => void handleStatusAction("close")}>Close</Button>}
+          <Button variant="secondary" onClick={() => navigate(`/capital-sources/${id}/edit`)}>{t("capitalSources.actions.edit")}</Button>
+          <Button onClick={() => setIsReceiveOpen(true)}>{t("capitalSources.actions.receiveMoney")}</Button>
+          <Button variant="secondary" onClick={() => setIsReturnOpen(true)}>{t("capitalSources.actions.returnMoney")}</Button>
+          {source.status === "Inactive" && <Button variant="secondary" onClick={() => void handleStatusAction("activate")}>{t("capitalSources.actions.activate")}</Button>}
+          {source.status === "Active" && <Button variant="secondary" onClick={() => void handleStatusAction("deactivate")}>{t("capitalSources.actions.deactivate")}</Button>}
+          {source.status !== "Closed" && <Button variant="danger" onClick={() => void handleStatusAction("close")}>{t("capitalSources.actions.close")}</Button>}
         </div>
       } />
 
       <div className={styles.statsGrid}>
         <div className={styles.contentCard}>
-          <div className={styles.statLabel}>Current Balance</div>
+          <div className={styles.statLabel}>{t("capitalSources.fields.currentBalance")}</div>
           <h3 className={styles.statValue}>{formatMoney(source.currentBalance)}</h3>
         </div>
         <div className={styles.contentCard}>
-          <div className={styles.statLabel}>Initial Amount</div>
+          <div className={styles.statLabel}>{t("capitalSources.fields.initialAmount")}</div>
           <h3 className={styles.statValue}>{formatMoney(source.initialAmount)}</h3>
         </div>
         <div className={styles.contentCard}>
-          <div className={styles.statLabel}>Type</div>
-          <h3 className={styles.statValue}>{source.type}</h3>
+          <div className={styles.statLabel}>{t("capitalSources.fields.type")}</div>
+          <h3 className={styles.statValue}>{t(`capitalSources.types.${source.type}`, { defaultValue: source.type })}</h3>
         </div>
         <div className={styles.contentCard}>
-          <div className={styles.statLabel}>Status</div>
-          <h3 className={styles.statValue}>{source.status}</h3>
+          <div className={styles.statLabel}>{t("capitalSources.fields.status")}</div>
+          <h3 className={styles.statValue}>{t(`capitalSources.statuses.${source.status}`, { defaultValue: source.status })}</h3>
         </div>
       </div>
 
       <div className={styles.detailsGrid}>
-        <div><strong>Code:</strong> {source.code}</div>
-        <div><strong>Interest Rate:</strong> {source.interestRate != null ? `${source.interestRate}%` : "—"}</div>
-        <div><strong>Start Date:</strong> {source.startDate ? new Date(source.startDate).toLocaleDateString() : "—"}</div>
-        <div><strong>End Date:</strong> {source.endDate ? new Date(source.endDate).toLocaleDateString() : "—"}</div>
-        <div><strong>Description:</strong> {source.description || "—"}</div>
+        <div><strong>{t("capitalSources.fields.code")}:</strong> {source.code}</div>
+        <div><strong>{t("capitalSources.fields.interestRate")}:</strong> {source.interestRate != null ? `${source.interestRate}%` : "—"}</div>
+        <div><strong>{t("capitalSources.fields.startDate")}:</strong> {source.startDate ? new Date(source.startDate).toLocaleDateString() : "—"}</div>
+        <div><strong>{t("capitalSources.fields.endDate")}:</strong> {source.endDate ? new Date(source.endDate).toLocaleDateString() : "—"}</div>
+        <div><strong>{t("capitalSources.fields.description")}:</strong> {source.description || "—"}</div>
       </div>
 
       <div className={styles.section}>
-        <h3>Transactions</h3>
-        <DataTable columns={columns as any} data={transactions} noResultsText="No transactions found" />
+        <h3>{t("capitalSources.transactions.title")}</h3>
+        <DataTable columns={columns as any} data={transactions} isLoading={isLoading} noResultsText={t("capitalSources.transactions.empty")} loadingText={t("common.loading")} />
       </div>
 
-      <Modal open={isReceiveOpen} onOpenChange={setIsReceiveOpen} title="Receive Money" footer={
+      <Modal open={isReceiveOpen} onOpenChange={setIsReceiveOpen} title={t("capitalSources.actions.receiveMoney")} footer={
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => setIsReceiveOpen(false)}>Cancel</Button>
-          <Button onClick={() => void handleMoneyAction("receive")} disabled={isActionLoading}>{isActionLoading ? "Processing..." : "Receive"}</Button>
+          <Button variant="secondary" onClick={() => setIsReceiveOpen(false)}>{t("common.cancel")}</Button>
+          <Button onClick={() => void handleMoneyAction("receive")} disabled={isActionLoading}>{isActionLoading ? t("capitalSources.actions.processing") : t("capitalSources.actions.receive")}</Button>
         </div>
       }>
         <div className={styles.modalField}>
-          <TextField label="Amount" type="number" min="0" step="0.01" value={receiveAmount} onChange={(e) => setReceiveAmount(e.target.value)} />
-          <Textarea label="Description" value={receiveDescription} onChange={(e) => setReceiveDescription(e.target.value)} />
+          <TextField label={t("capitalSources.transactions.fields.amount")} type="number" min="0" step="0.01" value={receiveAmount} onChange={(e) => setReceiveAmount(e.target.value)} />
+          <Textarea label={t("capitalSources.fields.description")} value={receiveDescription} onChange={(e) => setReceiveDescription(e.target.value)} />
         </div>
       </Modal>
 
-      <Modal open={isReturnOpen} onOpenChange={setIsReturnOpen} title="Return Money To Source" footer={
+      <Modal open={isReturnOpen} onOpenChange={setIsReturnOpen} title={t("capitalSources.actions.returnMoney")} footer={
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => setIsReturnOpen(false)}>Cancel</Button>
-          <Button onClick={() => void handleMoneyAction("return")} disabled={isActionLoading}>{isActionLoading ? "Processing..." : "Return"}</Button>
+          <Button variant="secondary" onClick={() => setIsReturnOpen(false)}>{t("common.cancel")}</Button>
+          <Button onClick={() => void handleMoneyAction("return")} disabled={isActionLoading}>{isActionLoading ? t("capitalSources.actions.processing") : t("capitalSources.actions.return")}</Button>
         </div>
       }>
         <div className={styles.modalField}>
-          <TextField label="Amount" type="number" min="0" step="0.01" value={returnAmount} onChange={(e) => setReturnAmount(e.target.value)} />
-          <Textarea label="Description" value={returnDescription} onChange={(e) => setReturnDescription(e.target.value)} />
+          <TextField label={t("capitalSources.transactions.fields.amount")} type="number" min="0" step="0.01" value={returnAmount} onChange={(e) => setReturnAmount(e.target.value)} />
+          <Textarea label={t("capitalSources.fields.description")} value={returnDescription} onChange={(e) => setReturnDescription(e.target.value)} />
         </div>
       </Modal>
     </div>

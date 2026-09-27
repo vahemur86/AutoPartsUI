@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -17,6 +18,7 @@ const formatMoney = (value: number) =>
   }).format(value);
 
 const AgentFinancialSummary = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const [summary, setSummary] = useState<AgentFinancialSummaryDto | null>(null);
@@ -31,7 +33,7 @@ const AgentFinancialSummary = () => {
         const data = await agentsService.getAgentFinancialSummary(id);
         setSummary(data);
       } catch (error) {
-        toast.error(getApiErrorMessage(error, "Failed to load agent financial summary."));
+        toast.error(getApiErrorMessage(error, t("agents.errors.financialSummaryFailed")));
       } finally {
         setLoading(false);
       }
@@ -48,8 +50,8 @@ const AgentFinancialSummary = () => {
   if (!summary && !loading) {
     return (
       <div className={styles.page}>
-        <SectionHeader title="Agent Financial Summary" goBack />
-        <div className={styles.banner}>No financial summary available.</div>
+        <SectionHeader title={t("agentFinancialSummary.title")} goBack />
+        <div className={styles.banner}>{t("agentFinancialSummary.empty")}</div>
       </div>
     );
   }
@@ -57,51 +59,51 @@ const AgentFinancialSummary = () => {
   return (
     <div className={styles.page}>
       <SectionHeader
-        title={summary ? `${summary.agent.code} — ${summary.agent.name}` : "Agent Financial Summary"}
+        title={summary ? `${summary.agent.code} — ${summary.agent.name}` : t("agentFinancialSummary.title")}
         goBack
         actions={
           <div style={{ display: "flex", gap: 8 }}>
             <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${id}`)}>
-              View agent
+              {t("agentFinancialSummary.viewAgent")}
             </Button>
             <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${id}/powder-deliveries`)}>
-              Deliveries
+              {t("agentFinancialSummary.deliveries")}
             </Button>
           </div>
         }
       />
 
-      {loading && <div className={styles.banner}>Loading financial summary...</div>}
+      {loading && <div className={styles.banner}>{t("agentFinancialSummary.loading")}</div>}
 
       {summary && (
         <>
           <section className={styles.dashboardPanel}>
             <div className={styles.dashboardHeader}>
               <div>
-                <div className={styles.kicker}>Agent financial overview</div>
+                <div className={styles.kicker}>{t("agentFinancialSummary.overview")}</div>
                 <h3>{summary.agent.name}</h3>
               </div>
-              <div className={styles.statusPill}>{summary.agent.status}</div>
+              <div className={styles.statusPill}>{t(`agents.statuses.${summary.agent.status.toLowerCase()}`, { defaultValue: summary.agent.status })}</div>
             </div>
 
             <div className={styles.summaryGrid}>
               <div className={styles.summaryCard}>
-                <div className={styles.summaryLabel}>Total advanced</div>
+                <div className={styles.summaryLabel}>{t("agentFinancialSummary.totalAdvanced")}</div>
                 <div className={styles.summaryValue}>{formatMoney(summary.agent.totalAdvancedAmount)}</div>
               </div>
               <div className={styles.summaryCard}>
-                <div className={styles.summaryLabel}>Total repaid</div>
+                <div className={styles.summaryLabel}>{t("agentFinancialSummary.totalRepaid")}</div>
                 <div className={styles.summaryValue}>{formatMoney(summary.agent.totalRepaidAmount)}</div>
               </div>
               <div className={styles.summaryCard}>
-                <div className={styles.summaryLabel}>Outstanding</div>
+                <div className={styles.summaryLabel}>{t("agentFinancialSummary.outstanding")}</div>
                 <div className={styles.summaryValue}>{formatMoney(summary.agent.outstandingAmount)}</div>
               </div>
             </div>
 
             <div className={styles.progressCard}>
               <div className={styles.progressHeader}>
-                <strong>Debt reduction progress</strong>
+                <strong>{t("agentFinancialSummary.debtReductionProgress")}</strong>
                 <span>{progress.toFixed(1)}%</span>
               </div>
               <div className={styles.progressTrack}>
@@ -111,8 +113,8 @@ const AgentFinancialSummary = () => {
                 />
               </div>
               <div className={styles.progressMeta}>
-                <span>{formatMoney(summary.agent.totalRepaidAmount)} repaid</span>
-                <span>{formatMoney(summary.agent.totalAdvancedAmount)} total advanced</span>
+                <span>{formatMoney(summary.agent.totalRepaidAmount)} {t("agentFinancialSummary.repaid")}</span>
+                <span>{formatMoney(summary.agent.totalAdvancedAmount)} {t("agentFinancialSummary.totalAdvancedCaption")}</span>
               </div>
             </div>
           </section>
@@ -120,31 +122,31 @@ const AgentFinancialSummary = () => {
           <section className={styles.dashboardGrid}>
             <div className={styles.dashboardCard}>
               <div className={styles.cardHeader}>
-                <h4>Contract terms</h4>
+                <h4>{t("agentFinancialSummary.contractTerms")}</h4>
               </div>
               <div className={styles.activityList}>
                 <div className={styles.activityItem}>
-                  <span className={styles.activityLabel}>Contract</span>
+                  <span className={styles.activityLabel}>{t("agentFinancialSummary.contract")}</span>
                   <strong>{summary.contract.number}</strong>
                 </div>
                 <div className={styles.activityItem}>
-                  <span className={styles.activityLabel}>Status</span>
+                  <span className={styles.activityLabel}>{t("agentFinancialSummary.status")}</span>
                   <strong>{summary.contract.status}</strong>
                 </div>
                 <div className={styles.activityItem}>
-                  <span className={styles.activityLabel}>Debt repayment %</span>
+                  <span className={styles.activityLabel}>{t("agentFinancialSummary.debtRepaymentPercent")}</span>
                   <strong>{summary.contract.debtRepaymentPercent ?? 0}%</strong>
                 </div>
                 <div className={styles.activityItem}>
-                  <span className={styles.activityLabel}>Agent payout %</span>
+                  <span className={styles.activityLabel}>{t("agentFinancialSummary.agentPayoutPercent")}</span>
                   <strong>{summary.contract.agentPayoutPercent ?? 0}%</strong>
                 </div>
                 <div className={styles.activityItem}>
-                  <span className={styles.activityLabel}>Default repayment period</span>
-                  <strong>{summary.contract.defaultRepaymentPeriodDays ?? 0} days</strong>
+                  <span className={styles.activityLabel}>{t("agentFinancialSummary.defaultRepaymentPeriod")}</span>
+                  <strong>{summary.contract.defaultRepaymentPeriodDays ?? 0} {t("agentFinancialSummary.days")}</strong>
                 </div>
                 <div className={styles.activityItem}>
-                  <span className={styles.activityLabel}>Maximum extensions</span>
+                  <span className={styles.activityLabel}>{t("agentFinancialSummary.maximumExtensions")}</span>
                   <strong>{summary.contract.maximumExtensions ?? 0}</strong>
                 </div>
               </div>
@@ -152,10 +154,10 @@ const AgentFinancialSummary = () => {
 
             <div className={styles.dashboardCard}>
               <div className={styles.cardHeader}>
-                <h4>Recent deliveries</h4>
+                <h4>{t("agentFinancialSummary.recentDeliveries")}</h4>
               </div>
               {summary.recentDeliveries.length === 0 ? (
-                <div className={styles.emptyState}>No recent deliveries.</div>
+                <div className={styles.emptyState}>{t("agentFinancialSummary.noRecentDeliveries")}</div>
               ) : (
                 <div className={styles.contractList}>
                   {summary.recentDeliveries.map((delivery) => (
@@ -166,11 +168,11 @@ const AgentFinancialSummary = () => {
                       </div>
                       <div className={styles.contractNumbers}>
                         <div>
-                          <small>Date</small>
+                          <small>{t("agentFinancialSummary.date")}</small>
                           <strong>{delivery.date ? new Date(delivery.date).toLocaleDateString() : "—"}</strong>
                         </div>
                         <div>
-                          <small>Value</small>
+                          <small>{t("agentFinancialSummary.value")}</small>
                           <strong>{formatMoney(delivery.valueAmd)}</strong>
                         </div>
                       </div>
@@ -182,10 +184,10 @@ const AgentFinancialSummary = () => {
 
             <div className={styles.dashboardCard}>
               <div className={styles.cardHeader}>
-                <h4>Recent repayments</h4>
+                <h4>{t("agentFinancialSummary.recentRepayments")}</h4>
               </div>
               {summary.recentRepayments.length === 0 ? (
-                <div className={styles.emptyState}>No recent repayments.</div>
+                <div className={styles.emptyState}>{t("agentFinancialSummary.noRecentRepayments")}</div>
               ) : (
                 <div className={styles.contractList}>
                   {summary.recentRepayments.map((repayment) => (
@@ -196,15 +198,15 @@ const AgentFinancialSummary = () => {
                       </div>
                       <div className={styles.contractNumbers}>
                         <div>
-                          <small>Date</small>
+                          <small>{t("agentFinancialSummary.date")}</small>
                           <strong>{repayment.date ? new Date(repayment.date).toLocaleDateString() : "—"}</strong>
                         </div>
                         <div>
-                          <small>Repaid</small>
+                          <small>{t("agentFinancialSummary.repaidAmount")}</small>
                           <strong>{formatMoney(repayment.debtRepaymentAmd)}</strong>
                         </div>
                         <div>
-                          <small>Outstanding after</small>
+                          <small>{t("agentFinancialSummary.outstandingAfter")}</small>
                           <strong>{formatMoney(repayment.outstandingAfterAmd)}</strong>
                         </div>
                       </div>
@@ -216,10 +218,10 @@ const AgentFinancialSummary = () => {
 
             <div className={styles.dashboardCard}>
               <div className={styles.cardHeader}>
-                <h4>Advances</h4>
+                <h4>{t("agentFinancialSummary.advances")}</h4>
               </div>
               {summary.advances.length === 0 ? (
-                <div className={styles.emptyState}>No advances found.</div>
+                <div className={styles.emptyState}>{t("agentFinancialSummary.noAdvances")}</div>
               ) : (
                 <div className={styles.contractList}>
                   {summary.advances.map((advance) => (
@@ -230,15 +232,15 @@ const AgentFinancialSummary = () => {
                       </div>
                       <div className={styles.contractNumbers}>
                         <div>
-                          <small>Date</small>
+                          <small>{t("agentFinancialSummary.date")}</small>
                           <strong>{advance.date ? new Date(advance.date).toLocaleDateString() : "—"}</strong>
                         </div>
                         <div>
-                          <small>Amount</small>
+                          <small>{t("agentFinancialSummary.amount")}</small>
                           <strong>{formatMoney(advance.amount)}</strong>
                         </div>
                         <div>
-                          <small>Outstanding</small>
+                          <small>{t("agentFinancialSummary.outstanding")}</small>
                           <strong>{formatMoney(advance.outstanding)}</strong>
                         </div>
                       </div>

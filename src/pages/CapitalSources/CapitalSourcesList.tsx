@@ -12,17 +12,17 @@ import type { CapitalSourceDto, CapitalSourceStatus, CapitalSourceType } from "@
 import styles from "./CapitalSources.module.css";
 
 const typeOptions: Array<{ value: CapitalSourceType | ""; label: string }> = [
-  { value: "", label: "All types" },
-  { value: "BankLoan", label: "Bank Loan" },
-  { value: "OwnerInvestment", label: "Owner Investment" },
-  { value: "Other", label: "Other" },
+  { value: "", label: "capitalSources.filters.allTypes" },
+  { value: "BankLoan", label: "capitalSources.types.BankLoan" },
+  { value: "OwnerInvestment", label: "capitalSources.types.OwnerInvestment" },
+  { value: "Other", label: "capitalSources.types.Other" },
 ];
 
 const statusOptions: Array<{ value: CapitalSourceStatus | ""; label: string }> = [
-  { value: "", label: "All statuses" },
-  { value: "Active", label: "Active" },
-  { value: "Inactive", label: "Inactive" },
-  { value: "Closed", label: "Closed" },
+  { value: "", label: "capitalSources.filters.allStatuses" },
+  { value: "Active", label: "capitalSources.statuses.Active" },
+  { value: "Inactive", label: "capitalSources.statuses.Inactive" },
+  { value: "Closed", label: "capitalSources.statuses.Closed" },
 ];
 
 const formatMoney = (value?: number | null) => {
@@ -100,63 +100,63 @@ export const CapitalSourcesList = () => {
 
   const columns = useMemo(
     () => [
-      { accessorKey: "code", header: "Code" },
-      { accessorKey: "name", header: "Name" },
+      { accessorKey: "code", header: t("capitalSources.fields.code") },
+      { accessorKey: "name", header: t("capitalSources.fields.name") },
       {
         accessorKey: "type",
-        header: "Type",
-        cell: ({ row }: any) => row.original.type,
+        header: t("capitalSources.fields.type"),
+        cell: ({ row }: any) => t(`capitalSources.types.${row.original.type}`, { defaultValue: row.original.type }),
       },
       {
         accessorKey: "initialAmount",
-        header: "Initial Amount",
+        header: t("capitalSources.fields.initialAmount"),
         cell: ({ row }: any) => formatMoney(row.original.initialAmount),
       },
       {
         accessorKey: "currentBalance",
-        header: "Current Balance",
+        header: t("capitalSources.fields.currentBalance"),
         cell: ({ row }: any) => formatMoney(row.original.currentBalance),
       },
       {
         accessorKey: "interestRate",
-        header: "Interest Rate",
+        header: t("capitalSources.fields.interestRate"),
         cell: ({ row }: any) => (row.original.interestRate != null ? `${row.original.interestRate}%` : "—"),
       },
       {
         accessorKey: "startDate",
-        header: "Start Date",
+        header: t("capitalSources.fields.startDate"),
         cell: ({ row }: any) => row.original.startDate ? new Date(row.original.startDate).toLocaleDateString() : "—",
       },
       {
         accessorKey: "endDate",
-        header: "End Date",
+        header: t("capitalSources.fields.endDate"),
         cell: ({ row }: any) => row.original.endDate ? new Date(row.original.endDate).toLocaleDateString() : "—",
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: t("capitalSources.fields.status"),
         cell: ({ row }: any) => (
           <span className={`${styles.statusBadge} ${getStatusClass(row.original.status)}`}>
-            {row.original.status}
+            {t(`capitalSources.statuses.${row.original.status}`, { defaultValue: row.original.status })}
           </span>
         ),
       },
       {
         id: "actions",
-        header: "Actions",
+        header: t("capitalSources.fields.actions"),
         cell: ({ row }: any) => (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${row.original.id}`)}>
-              View
+              {t("capitalSources.actions.view")}
             </Button>
             <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${row.original.id}/edit`)}>
-              Edit
+              {t("capitalSources.actions.edit")}
             </Button>
           </div>
         ),
       },
     ],
-    [navigate],
+    [navigate, t],
   );
 
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
@@ -164,11 +164,11 @@ export const CapitalSourcesList = () => {
   return (
     <div className={styles.page}>
       <SectionHeader
-        title="Capital Sources"
+        title={t("capitalSources.title")}
         actions={
           <div className={styles.headerActions}>
             <Button onClick={() => navigate("/capital-sources/create")}>
-              <Plus size={14} /> Create
+              <Plus size={14} /> {t("capitalSources.actions.create")}
             </Button>
           </div>
         }
@@ -179,7 +179,7 @@ export const CapitalSourcesList = () => {
           <Select value={type} onChange={(e) => applyFilter("type", e.target.value)}>
             {typeOptions.map((option) => (
               <option key={option.value || "all"} value={option.value}>
-                {option.label}
+                {t(option.label)}
               </option>
             ))}
           </Select>
@@ -187,28 +187,28 @@ export const CapitalSourcesList = () => {
           <Select value={status} onChange={(e) => applyFilter("status", e.target.value)}>
             {statusOptions.map((option) => (
               <option key={option.value || "all"} value={option.value}>
-                {option.label}
+                {t(option.label)}
               </option>
             ))}
           </Select>
 
           <TextField
-            label="Code"
+            label={t("capitalSources.fields.code")}
             value={code}
             onChange={(e) => applyFilter("code", e.target.value)}
           />
 
           <TextField
-            label="Name"
+            label={t("capitalSources.fields.name")}
             value={name}
             onChange={(e) => applyFilter("name", e.target.value)}
           />
         </div>
 
         <div className={styles.summaryRow}>
-          <div className={styles.summaryText}>{totalItems} total items</div>
+          <div className={styles.summaryText}>{t("capitalSources.summary.totalItems", { count: totalItems })}</div>
           <Button variant="secondary" size="small" onClick={resetFilters}>
-            Reset
+            {t("common.reset")}
           </Button>
         </div>
 
@@ -225,8 +225,8 @@ export const CapitalSourcesList = () => {
             next.set("page", String(newPageIndex + 1));
             setSearchParams(next);
           }}
-          noResultsText="No capital sources found"
-          loadingText="Loading capital sources..."
+          noResultsText={t("capitalSources.emptyState")}
+          loadingText={t("common.loading")}
         />
       </div>
     </div>

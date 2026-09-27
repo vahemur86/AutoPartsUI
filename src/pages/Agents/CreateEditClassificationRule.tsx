@@ -12,18 +12,18 @@ import type { AgentTypeDto, AgentClassificationRuleConditionDto, SaveAgentClassi
 import styles from "./Agents.module.css";
 
 const METRIC_LABELS: Record<number, string> = {
-  0: "CompletedAdvances",
-  1: "TotalAdvances",
-  2: "OnTimeRepaymentPercent",
-  3: "LateRepaymentCount",
-  4: "OverdueAdvanceCount",
-  5: "DefaultCount",
-  6: "TotalExtensions",
-  7: "AverageRepaymentDays",
-  8: "AverageExtensionCount",
-  9: "CurrentOutstandingAmount",
-  10: "TotalRepaidAmount",
-  11: "TotalPowderValue",
+  0: "completedAdvances",
+  1: "totalAdvances",
+  2: "onTimeRepaymentPercent",
+  3: "lateRepaymentCount",
+  4: "overdueAdvanceCount",
+  5: "defaultCount",
+  6: "totalExtensions",
+  7: "averageRepaymentDays",
+  8: "averageExtensionCount",
+  9: "currentOutstandingAmount",
+  10: "totalRepaidAmount",
+  11: "totalPowderValue",
 };
 
 const OPERATOR_LABELS: Record<number, string> = {
@@ -266,7 +266,7 @@ export const CreateEditClassificationRule = () => {
 
               return (
                 <div key={group} className={styles.conditionGroup}>
-                  {groupIdx > 0 && <div style={{ textAlign: "center", margin: "12px 0" }}>OR</div>}
+                  {groupIdx > 0 && <div style={{ textAlign: "center", margin: "12px 0" }}>{t("classificationRules.conditions.or")}</div>}
 
                   <div style={{ background: "#f5f5f5", padding: "12px", borderRadius: "4px" }}>
                     <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
@@ -275,7 +275,7 @@ export const CreateEditClassificationRule = () => {
 
                     {groupConditions.map((cond, idx) => (
                       <div key={cond.tempId} style={{ display: "flex", gap: "8px", marginBottom: "8px", alignItems: "flex-end" }}>
-                        {idx > 0 && <div style={{ minWidth: "20px" }}>AND</div>}
+                        {idx > 0 && <div style={{ minWidth: "20px" }}>{t("classificationRules.conditions.and")}</div>}
 
                         <select
                           value={cond.metric}
@@ -284,7 +284,7 @@ export const CreateEditClassificationRule = () => {
                         >
                           {Object.entries(METRIC_LABELS).map(([key, label]) => (
                             <option key={key} value={key}>
-                              {label}
+                              {t(`classificationRules.metrics.${label}`)}
                             </option>
                           ))}
                         </select>

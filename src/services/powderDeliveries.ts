@@ -1,5 +1,5 @@
 import { api } from "@/services";
-import type { CreatePowderDeliveryRequest, PagedPowderDeliveries, PowderDeliveryDto } from "@/types/powderDeliveries";
+import type { CreatePowderDeliveryRequest, MonthlyAgentPowderWeightDto, PagedPowderDeliveries, PowderDeliveryDto } from "@/types/powderDeliveries";
 
 export const powderDeliveriesService = {
   create: async (data: CreatePowderDeliveryRequest) => {
@@ -23,6 +23,10 @@ export const powderDeliveriesService = {
   },
   listForContract: async (contractId: string, params?: Record<string, unknown>) => {
     const response = await api.get<PagedPowderDeliveries>(`/agent-contracts/${contractId}/powder-deliveries`, { params });
+    return response.data;
+  },
+  getMonthlyAgentPowder: async (year: number, month: number) => {
+    const response = await api.get<MonthlyAgentPowderWeightDto[]>("/agents/powder/monthly", { params: { year, month } });
     return response.data;
   },
 };

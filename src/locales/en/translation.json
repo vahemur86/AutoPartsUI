@@ -27,7 +27,13 @@
     "workshop": "Workshop",
     "carCatalyst": "Buckets",
     "repaymentRules": "Repayment Rules",
-    "capitalSources": "Capital Sources"
+    "capitalSources": "Capital Sources",
+    "referrals": "Referrals",
+    "referralPersons": "Referral Persons",
+    "commissions": "Commissions",
+    "agentContracts": "Agent Contracts",
+    "powderDeliveries": "Powder Deliveries",
+    "repayments": "Repayments"
   },
   "common": {
     "save": "Save",
@@ -2418,6 +2424,9 @@
       },
       "fields": {
         "shop": "Shop",
+        "employeeType": "Employee type",
+        "powderBonusKgThreshold": "Powder bonus threshold (kg)",
+        "powderBonusAmount": "Powder bonus amount (AMD)",
         "salaryType": "Salary type",
         "fixedDailySalary": "Fixed daily salary",
         "selectShop": "Select shop",
@@ -2437,6 +2446,10 @@
       "salaryTypes": {
         "FixedDaily": "Fixed daily salary",
         "PercentageBased": "Percentage-based salary"
+      },
+      "employeeTypes": {
+        "Regular": "Regular",
+        "Director": "Director"
       },
       "attendanceStatus": {
         "Present": "Present",
@@ -2489,10 +2502,15 @@
         "depositRemainingAfter": "Balance after salary",
         "netPayable": "Net payable",
         "paidStatus": "Payment status",
-        "paidAt": "Paid at"
+        "paidAt": "Paid at",
+        "powderQuantityKg": "Powder quantity",
+        "powderBonusKgThreshold": "Powder bonus threshold",
+        "powderBonusAmount": "Powder bonus amount",
+        "powderBonus": "Director powder bonus"
       },
       "messages": {
         "validationFailed": "Please fill in the required employee data.",
+        "directorBonusValidationFailed": "Enter a threshold greater than 0 and a non-negative bonus amount for a Director.",
         "created": "Employee created successfully",
         "updated": "Employee updated successfully",
         "saveFailed": "Failed to save employee data",
@@ -3178,7 +3196,12 @@
       "status": "Status",
       "agentType": "Agent Type",
       "registrationDate": "Registration Date",
-      "actions": "Actions"
+      "actions": "Actions",
+      "customer": "Select Customer",
+      "customerType": "Customer Type",
+      "createdBy": "Created by",
+      "updatedAt": "Updated at",
+      "updatedBy": "Updated by"
     },
     "actions": {
       "create": "New Agent",
@@ -3187,10 +3210,26 @@
       "deactivate": "Deactivate",
       "suspend": "Suspend",
       "block": "Block",
-      "classify": "Classify now"
+      "classify": "Classify now",
+      "viewCustomer": "View Customer",
+      "changeCustomer": "Change Customer",
+      "financialSummary": "Financial Summary",
+      "powderDeliveries": "Powder Deliveries"
     },
     "details": {
-      "title": "Details"
+      "title": "Details",
+      "customerInformation": "Customer Information"
+    },
+    "sections": {
+      "customer": "Customer",
+      "details": "Agent Details"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "blocked": "Blocked",
+      "unknown": "Unknown"
     },
     "history": {
       "title": "Type History",
@@ -3198,6 +3237,7 @@
       "transition": "Transition",
       "reason": "Reason",
       "changedBy": "Changed By",
+      "initial": "Initial",
       "empty": "No type history available."
     },
     "messages": {
@@ -3212,7 +3252,9 @@
       "loadFailed": "Failed to load agents",
       "createFailed": "Failed to create agent",
       "statusFailed": "Failed to update status",
-      "classifyFailed": "Failed to classify agent"
+      "classifyFailed": "Failed to classify agent",
+      "customerTypeNotConfigured": "Agent customer type is not configured.",
+      "financialSummaryFailed": "Failed to load agent financial summary."
     },
     "validation": {
       "codeRequired": "Code is required",
@@ -3221,13 +3263,596 @@
       "phoneInvalid": "Phone must contain 8-16 digits",
       "emailInvalid": "Email format is invalid",
       "registrationRequired": "Registration date is required",
-      "registrationFuture": "Registration date cannot be in the future"
+      "registrationFuture": "Registration date cannot be in the future",
+      "customerRequired": "Please select a customer",
+      "agentTypeRequired": "Please select an agent type",
+      "addressTooLong": "Address cannot exceed 500 characters",
+      "notesTooLong": "Notes cannot exceed 1000 characters"
     },
     "classify": {
       "title": "Classify Agent",
       "button": "Classify now",
       "classifying": "Classifying...",
       "currentType": "Current type"
+    }
+  },
+  "monthlyPowder": {
+    "title": "Monthly Powder",
+    "deliveriesTab": "Powder Deliveries",
+    "month": "Month",
+    "year": "Year",
+    "agent": "Agent",
+    "powderWeight": "Powder Weight",
+    "totalPowder": "Total Powder",
+    "noData": "No data",
+    "loading": "Loading monthly powder report..."
+  },
+  "powderDeliveries": {
+    "title": "Powder Deliveries",
+    "statuses": {
+      "draft": "Draft",
+      "valuated": "Valuated",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    },
+    "fields": {
+      "deliveryNumber": "Delivery Number",
+      "deliveryDate": "Delivery Date",
+      "agent": "Agent",
+      "contract": "Contract",
+      "advance": "Advance",
+      "netWeight": "Net Weight (kg)",
+      "totalValue": "Total Value (AMD)",
+      "status": "Status",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "contractId": "Contract ID",
+      "advanceId": "Advance ID",
+      "from": "From",
+      "to": "To",
+      "grossWeight": "Gross Weight (kg)",
+      "pt": "Pt (grams)",
+      "pd": "Pd (grams)",
+      "rh": "Rh (grams)",
+      "notes": "Notes",
+      "weight": "Weight",
+      "value": "Value",
+      "date": "Date",
+      "type": "Type",
+      "reference": "Reference",
+      "price": "Price",
+      "totalValueUsd": "Total value (USD)",
+      "totalValueAmd": "Total value (AMD)",
+      "priceDate": "Price date",
+      "ptPrice": "Pt price",
+      "pdPrice": "Pd price",
+      "rhPrice": "Rh price",
+      "usdAmdRate": "USD/AMD rate",
+      "source": "Source",
+      "capturedAt": "Captured at",
+      "createdBy": "Created by"
+    },
+    "filters": {
+      "allAgents": "All agents",
+      "allStatuses": "All statuses"
+    },
+    "list": {
+      "count": "{{count}} deliveries",
+      "empty": "No powder deliveries found",
+      "loading": "Loading powder deliveries..."
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "view": "View",
+      "viewContract": "View Contract",
+      "valuate": "Valuate",
+      "valuating": "Valuating...",
+      "confirmDelivery": "Confirm Delivery",
+      "cancelDelivery": "Cancel Delivery",
+      "create": "Create Delivery",
+      "creating": "Creating..."
+    },
+    "create": {
+      "title": "Create Powder Delivery",
+      "selectActiveAgent": "Select active agent",
+      "activeContract": "Active Contract",
+      "selectActiveContract": "Select active contract",
+      "activeAdvanceOptional": "Active Advance (optional)",
+      "noAdvance": "No advance",
+      "metalsValidation": "Enter non-negative metal amounts and at least one value greater than 0."
+    },
+    "details": {
+      "title": "Powder Delivery",
+      "loading": "Loading powder delivery...",
+      "cancelledReadOnly": "This delivery has been cancelled and is read-only.",
+      "delivery": "Delivery",
+      "relations": "Relations",
+      "weights": "Weights",
+      "grossWeight": "Gross weight",
+      "netWeight": "Net weight",
+      "metalContent": "Metal Content",
+      "valuation": "Valuation",
+      "totalValue": "Total value",
+      "frozenPriceSnapshot": "Frozen Price Snapshot",
+      "notValuated": "Not valuated yet.",
+      "confirmTitle": "Confirm delivery",
+      "cancelTitle": "Cancel delivery",
+      "confirmDescription": "Confirmation freezes this historical valuation.",
+      "cancelDescription": "The cancelled delivery will become read-only."
+    },
+    "history": {
+      "agentTitle": "Agent Delivery History",
+      "contractTitle": "Contract Delivery History"
+    },
+    "messages": {
+      "created": "Powder delivery created.",
+      "confirmed": "Delivery confirmed successfully.",
+      "valuated": "Delivery valuated.",
+      "confirmedDetails": "Delivery confirmed.",
+      "cancelled": "Delivery cancelled."
+    },
+    "errors": {
+      "loadAgentsFailed": "Failed to load agents.",
+      "loadContractsFailed": "Failed to load active contracts.",
+      "loadAdvancesFailed": "Failed to load active advances.",
+      "loadFailed": "Failed to load powder deliveries.",
+      "confirmFailed": "Failed to confirm delivery.",
+      "createFailed": "Failed to create powder delivery.",
+      "detailsFailed": "Failed to load powder delivery.",
+      "valuateFailed": "Failed to valuate delivery.",
+      "actionFailed": "Failed to {{action}} delivery.",
+      "historyFailed": "Failed to load delivery history."
+    },
+    "validation": {
+      "agentRequired": "Agent is required.",
+      "contractRequired": "Active contract is required.",
+      "dateRequired": "Delivery date is required.",
+      "grossPositive": "Gross weight must be greater than 0.",
+      "netPositive": "Net weight must be greater than 0.",
+      "netNotAboveGross": "Net weight cannot exceed gross weight."
+    }
+  },
+  "agentFinancialSummary": {
+    "title": "Agent Financial Summary",
+    "empty": "No financial summary available.",
+    "loading": "Loading financial summary...",
+    "overview": "Agent financial overview",
+    "totalAdvanced": "Total advanced",
+    "totalRepaid": "Total repaid",
+    "outstanding": "Outstanding",
+    "debtReductionProgress": "Debt reduction progress",
+    "repaid": "repaid",
+    "totalAdvancedCaption": "total advanced",
+    "contractTerms": "Contract terms",
+    "contract": "Contract",
+    "status": "Status",
+    "debtRepaymentPercent": "Debt repayment %",
+    "agentPayoutPercent": "Agent payout %",
+    "defaultRepaymentPeriod": "Default repayment period",
+    "days": "days",
+    "maximumExtensions": "Maximum extensions",
+    "recentDeliveries": "Recent deliveries",
+    "noRecentDeliveries": "No recent deliveries.",
+    "date": "Date",
+    "value": "Value",
+    "recentRepayments": "Recent repayments",
+    "noRecentRepayments": "No recent repayments.",
+    "repaidAmount": "Repaid",
+    "outstandingAfter": "Outstanding after",
+    "advances": "Advances",
+    "noAdvances": "No advances found.",
+    "amount": "Amount",
+    "viewAgent": "View agent",
+    "deliveries": "Deliveries"
+  },
+  "referralPerson": {
+    "title": "Referral Persons",
+    "actions": {
+      "create": "Add New Person",
+      "commissions": "Referral Commissions",
+      "view": "View",
+      "edit": "Edit",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "addRule": "Add Rule"
+    },
+    "fields": {
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "status": "Status",
+      "created": "Created",
+      "updated": "Updated",
+      "notes": "Notes",
+      "search": "Search",
+      "pageSize": "Page size"
+    },
+    "statuses": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "list": {
+      "showing": "Showing {{shown}} of {{total}} referral persons",
+      "empty": "No referral persons found.",
+      "loading": "Loading referral persons..."
+    },
+    "details": {
+      "title": "Referral Person",
+      "noData": "No data found.",
+      "created": "Created",
+      "updated": "Updated",
+      "commissionRules": "Commission Rules"
+    },
+    "form": {
+      "addTitle": "Add Referral Person",
+      "editTitle": "Edit Referral Person",
+      "loading": "Loading...",
+      "saving": "Saving...",
+      "create": "Create",
+      "update": "Update"
+    },
+    "rules": {
+      "title": "Add Commission Rule",
+      "service": "Service",
+      "serviceId": "Service ID",
+      "commissionPercent": "Commission %",
+      "effectiveFrom": "Effective From",
+      "effectiveTo": "Effective To",
+      "servicePrice": "Service price",
+      "selectService": "Select service",
+      "loadingServices": "Loading services...",
+      "required": "Service, commission percentage, and effective from date are required.",
+      "percentRange": "Commission percentage must be between 0 and 100.",
+      "saved": "Commission rule saved."
+    },
+    "messages": {
+      "created": "Referral person created successfully.",
+      "updated": "Referral person updated successfully.",
+      "statusUpdated": "Referral person status updated.",
+      "ruleStatusUpdated": "Commission rule status updated."
+    },
+    "errors": {
+      "loadFailed": "Failed to load referral person.",
+      "ruleStatusFailed": "Failed to update rule status.",
+      "statusFailed": "Failed to update referral person status.",
+      "saveFailed": "Failed to save commission rule."
+    },
+    "validation": {
+      "required": "Code and name are required.",
+      "email": "Please enter a valid email address."
+    }
+  },
+  "referralCommissions": {
+    "title": "Referral Commissions",
+    "description": "Commissions are created by the service-order workflow when an eligible referral person and active rule are applied. Review pending commissions here, approve them, then mark approved commissions as paid.",
+    "fields": {
+      "orderId": "Order ID",
+      "referralPerson": "Referral Person",
+      "service": "Service",
+      "servicePrice": "Service Price",
+      "commissionAmount": "Commission Amount",
+      "status": "Status",
+      "actions": "Actions",
+      "commissionPercent": "Commission %",
+      "created": "Created",
+      "approved": "Approved",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "approvalNotes": "Approval Notes",
+      "reference": "Reference",
+      "paymentNotes": "Payment Notes",
+      "rejectReason": "Reject Reason"
+    },
+    "statuses": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "actions": {
+      "view": "View",
+      "approve": "Approve",
+      "reject": "Reject",
+      "pay": "Pay",
+      "viewReceipt": "View Receipt"
+    },
+    "filters": {
+      "search": "Search",
+      "status": "Status",
+      "service": "Service",
+      "allServices": "All services",
+      "loadingServices": "Loading services...",
+      "pageSize": "Page size"
+    },
+    "list": {
+      "showing": "Showing {{shown}} of {{total}} commissions",
+      "empty": "No commissions found.",
+      "loading": "Loading commissions..."
+    },
+    "details": {
+      "title": "Commission Details",
+      "number": "Commission #{{id}}"
+    },
+    "messages": {
+      "approved": "Commission approved",
+      "rejected": "Commission rejected",
+      "paid": "Commission paid successfully"
+    },
+    "errors": {
+      "loadFailed": "Failed to load commissions.",
+      "approveFailed": "Failed to approve commission.",
+      "rejectFailed": "Failed to reject commission.",
+      "payFailed": "Failed to pay commission."
+    }
+  },
+  "agentContracts": {
+    "title": "Agent Contracts",
+    "createTitle": "Create Agent Contract",
+    "detailsTitle": "Contract Details",
+    "statuses": {
+      "draft": "Draft",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "defaulted": "Defaulted"
+    },
+    "fields": {
+      "contractNumber": "Contract Number",
+      "agent": "Agent",
+      "contractDate": "Contract Date",
+      "status": "Status",
+      "advanced": "Advanced",
+      "repaid": "Repaid",
+      "outstanding": "Outstanding",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "from": "From",
+      "to": "To",
+      "deliveryId": "Delivery ID",
+      "date": "Date",
+      "powderWeight": "Powder (kg)",
+      "kitcoValue": "Kitco Value",
+      "phone": "Phone",
+      "agentType": "Agent type",
+      "contractStatus": "Contract status",
+      "capitalSource": "Capital Source",
+      "contributionPercent": "Contribution %",
+      "allocated": "Allocated",
+      "used": "Used",
+      "remaining": "Remaining",
+      "advance": "Advance",
+      "advancedAmount": "Advanced amount",
+      "allocatedAmount": "Allocated amount",
+      "createdBy": "Created By",
+      "initialDebt": "Initial debt",
+      "totalDeliveredValue": "Total delivered value",
+      "totalRepaid": "Total repaid",
+      "remainingDebt": "Remaining debt",
+      "nextDeadline": "Next deadline",
+      "extensionsUsed": "Extensions used",
+      "remainingExtensions": "Remaining extensions",
+      "advanceAmount": "Advance amount",
+      "advanceDate": "Advance date"
+    },
+    "filters": {
+      "allAgents": "All agents",
+      "allStatuses": "All statuses"
+    },
+    "actions": {
+      "createContract": "Create Contract",
+      "view": "View",
+      "deliveryHistory": "Delivery History",
+      "createAdvance": "Create Advance",
+      "cancelContract": "Cancel Contract",
+      "addAllocation": "Add Allocation"
+    },
+    "list": {
+      "count": "{{count}} contracts",
+      "empty": "No contracts found",
+      "loading": "Loading contracts..."
+    },
+    "form": {
+      "selectAgent": "Select agent",
+      "repaymentRuleVersion": "Repayment Rule Version",
+      "selectActiveRuleVersion": "Select active rule version",
+      "ruleVersion": "{{name}} / Version {{version}}",
+      "agentRequired": "Agent is required.",
+      "ruleRequired": "Repayment rule version is required.",
+      "dateRequired": "Contract date is required.",
+      "creating": "Creating...",
+      "termsPreview": "Repayment Terms Preview",
+      "termsTitle": "Repayment Terms"
+    },
+    "terms": {
+      "debtRepayment": "Debt repayment",
+      "agentPayout": "Agent payout",
+      "excessBusiness": "Excess business",
+      "excessAgent": "Excess agent",
+      "repaymentPeriod": "Repayment period",
+      "maximumExtensions": "Maximum extensions",
+      "ruleVersion": "Rule version"
+    },
+    "details": {
+      "loading": "Loading contract...",
+      "automaticComplianceCheck": "Automatic compliance check:",
+      "automaticFlow": "Automatic Flow",
+      "customerPurchase": "Customer Purchase",
+      "completed": "Completed",
+      "agentDetected": "Agent Detected",
+      "powderDeliveryCreated": "Powder Delivery Created",
+      "automatic": "Automatic",
+      "adminConfirms": "Admin Confirms",
+      "settlementStep": "Settlement step",
+      "contractRuleApplied": "Contract + Rule Applied",
+      "capitalSourceUpdated": "Capital Source Updated",
+      "agentInformation": "Agent Information",
+      "activeContractRule": "Active Contract Rule",
+      "capitalFunding": "Capital Funding",
+      "noCapitalFunding": "No capital source allocation found for this agent.",
+      "totalAllocatedCapital": "Total allocated capital",
+      "totalUsedCapital": "Total used capital",
+      "totalRemainingCapital": "Total remaining capital",
+      "advanceFunding": "Advance Funding",
+      "noAdvances": "No advances for this contract",
+      "noAdvancesHint": "No advances exist for this contract yet. Create the first advance to begin funding.",
+      "automaticPowderDeliveries": "Automatic Powder Deliveries",
+      "noConfirmedPowderDeliveries": "No confirmed powder deliveries",
+      "noPowderDeliveries": "No powder deliveries found for this agent yet.",
+      "repaymentSummary": "Repayment Summary",
+      "noCapitalFundingRows": "No capital funding found",
+      "advanceDescription": "Create a new advance for this contract before funding it from capital sources.",
+      "cancelDescription": "This can only be done for a draft contract without funded or active advances."
+    },
+    "compliance": {
+      "noActiveContract": "No active contract.",
+      "noActiveRule": "No active repayment rule.",
+      "noFunding": "No capital source funding available.",
+      "applied": "Applied",
+      "missing": "Missing",
+      "available": "Available"
+    },
+    "messages": {
+      "created": "Contract created.",
+      "cancelled": "Contract cancelled.",
+      "advanceCreated": "Advance created successfully."
+    },
+    "errors": {
+      "loadFailed": "Failed to load contracts.",
+      "loadRulesFailed": "Failed to load repayment rules.",
+      "createFailed": "Failed to create contract.",
+      "loadDetailsFailed": "Failed to load contract details.",
+      "cancelFailed": "Failed to cancel contract.",
+      "advanceCreateFailed": "Failed to create advance."
+    },
+    "validation": {
+      "advanceAmount": "Please enter a valid advance amount."
+    }
+  },
+  "agentAdvances": {
+    "title": "Agent Advances",
+    "detailsTitle": "Advance Details",
+    "statuses": {
+      "draft": "Draft",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "defaulted": "Defaulted"
+    },
+    "fields": {
+      "advanceNumber": "Advance #",
+      "agent": "Agent",
+      "amount": "Amount",
+      "status": "Status",
+      "deadline": "Deadline",
+      "extensions": "Extensions",
+      "actions": "Actions",
+      "contract": "Contract",
+      "advanceDate": "Advance date",
+      "advancedAmount": "Advanced amount",
+      "allocatedAmount": "Allocated amount",
+      "remainingAmount": "Remaining amount",
+      "capitalSourceCode": "Capital Source Code",
+      "capitalSource": "Capital Source",
+      "createdAt": "Created At",
+      "createdBy": "Created By",
+      "currentDeadline": "Current deadline",
+      "extensionsGranted": "Extensions granted",
+      "extendedUntil": "Extended until",
+      "notes": "Notes",
+      "fundingStatus": "Funding status"
+    },
+    "fundingStatuses": {
+      "fullyAllocated": "Fully Allocated",
+      "partiallyFunded": "Partially Funded",
+      "notFunded": "Not Funded"
+    },
+    "list": {
+      "contracts": "Contracts",
+      "allAgents": "All agents",
+      "allStatuses": "All statuses",
+      "empty": "No advances found",
+      "loading": "Loading advances..."
+    },
+    "deadline": {
+      "overdue": "OVERDUE ({{days}} days)",
+      "remaining": "{{days}} days remaining"
+    },
+    "history": {
+      "title": "Extension History",
+      "extensionNumber": "Extension #",
+      "previousDeadline": "Previous Deadline",
+      "newDeadline": "New Deadline",
+      "daysAdded": "Days Added",
+      "reason": "Reason",
+      "granted": "Granted",
+      "empty": "No extensions granted",
+      "loading": "Loading extensions..."
+    },
+    "extension": {
+      "title": "Request Deadline Extension",
+      "description": "Extend {{advanceNumber}}. Current deadline: {{deadline}}. {{count}}/{{maximum}} extensions used.",
+      "submit": "Submit Request",
+      "dayOption": "+{{days}} days ({{date}})",
+      "newDeadlineSelection": "New Deadline Selection",
+      "customDate": "Custom date",
+      "customDeadline": "Custom Deadline",
+      "reasonOptional": "Reason (optional)",
+      "required": "New deadline is required.",
+      "mustBeLater": "New deadline must be after the current deadline.",
+      "notPast": "New deadline cannot be in the past.",
+      "maxOneYear": "New deadline cannot be more than one year away.",
+      "reasonTooLong": "Reason must not exceed 500 characters."
+    },
+    "sections": {
+      "repaymentInformation": "Repayment Information",
+      "fundingSummary": "Funding Summary",
+      "allocations": "Allocations"
+    },
+    "actions": {
+      "view": "View",
+      "viewContract": "View Contract",
+      "allocateCapital": "Allocate Capital",
+      "activate": "Activate Advance",
+      "requestExtension": "Request Extension",
+      "addAllocation": "Add Allocation",
+      "remove": "Remove",
+      "add": "Add Allocation"
+    },
+    "allocation": {
+      "title": "Add Allocation",
+      "description": "Remaining to allocate: {{amount}}",
+      "selectSource": "Select capital source",
+      "currentBalance": "current balance: {{amount}}",
+      "amount": "Amount",
+      "descriptionField": "Description",
+      "empty": "No allocations yet",
+      "removeTitle": "Remove allocation",
+      "removeDescription": "Remove this capital allocation?",
+      "amountError": "Choose a capital source and enter an amount up to the remaining balance."
+    },
+    "activation": {
+      "title": "Activate Advance",
+      "description": "Activate this advance? All funding allocations must be complete before activation.",
+      "confirm": "Activate Advance"
+    },
+    "messages": {
+      "allocationAdded": "Allocation added.",
+      "allocationRemoved": "Allocation removed.",
+      "activated": "Advance activated.",
+      "extensionGranted": "Extension granted successfully."
+    },
+    "errors": {
+      "loadFailed": "Failed to load advances.",
+      "loadDetailsFailed": "Failed to load advance.",
+      "addAllocationFailed": "Failed to add allocation.",
+      "removeAllocationFailed": "Failed to remove allocation.",
+      "activateFailed": "Failed to activate advance.",
+      "extensionFailed": "Failed to create extension."
     }
   },
   "agentTypes": {
@@ -3262,6 +3887,9 @@
       "codeRequired": "Code is required",
       "nameRequired": "Name is required",
       "priorityRequired": "Priority is required"
+    },
+    "placeholder": {
+      "code": "E.g., PARTNER"
     }
   },
   "classificationRules": {
@@ -3290,7 +3918,23 @@
       "empty": "No conditions yet",
       "group": "Group {{number}}",
       "addCondition": "Add Condition to Group",
-      "addGroup": "Add OR Group"
+      "addGroup": "Add OR Group",
+      "and": "AND",
+      "or": "OR"
+    },
+    "metrics": {
+      "completedAdvances": "Completed advances",
+      "totalAdvances": "Total advances",
+      "onTimeRepaymentPercent": "On-time repayment percentage",
+      "lateRepaymentCount": "Late repayment count",
+      "overdueAdvanceCount": "Overdue advance count",
+      "defaultCount": "Default count",
+      "totalExtensions": "Total extensions",
+      "averageRepaymentDays": "Average repayment days",
+      "averageExtensionCount": "Average extension count",
+      "currentOutstandingAmount": "Current outstanding amount",
+      "totalRepaidAmount": "Total repaid amount",
+      "totalPowderValue": "Total powder value"
     },
     "messages": {
       "created": "Classification rule created",
@@ -3424,17 +4068,52 @@
       "OwnerInvestment": "Owner Investment",
       "Other": "Other"
     },
+    "transactionTypes": {
+      "MoneyReceived": "Money received",
+      "AgentAllocation": "Agent allocation",
+      "MoneyReturned": "Money returned",
+      "OtherIncome": "Other income",
+      "OtherExpense": "Other expense"
+    },
     "statuses": {
       "Active": "Active",
       "Inactive": "Inactive",
       "Closed": "Closed"
     },
     "actions": {
+      "create": "Create",
+      "view": "View",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
       "activate": "Activate",
       "deactivate": "Deactivate",
       "close": "Close",
       "receiveMoney": "Receive Money",
-      "returnMoney": "Return Money"
+      "returnMoney": "Return Money",
+      "processing": "Processing...",
+      "receive": "Receive",
+      "return": "Return"
+    },
+    "filters": {
+      "allTypes": "All types",
+      "allStatuses": "All statuses"
+    },
+    "summary": {
+      "totalItems": "{{count}} total items"
+    },
+    "transactions": {
+      "title": "Transactions",
+      "empty": "No transactions found",
+      "fields": {
+        "dateTime": "Date/Time",
+        "amount": "Amount",
+        "balanceBefore": "Balance Before",
+        "balanceAfter": "Balance After",
+        "referenceType": "Reference Type",
+        "referenceId": "Reference ID",
+        "createdBy": "Created By"
+      }
     },
     "messages": {
       "created": "Capital source created successfully",
@@ -3451,6 +4130,12 @@
       "loadDetailsFailed": "Failed to load capital source details",
       "actionFailed": "Failed to perform action",
       "moneyActionFailed": "Failed to process money transaction"
+    },
+    "validation": {
+      "required": "Code, name, and a positive initial amount are required.",
+      "dateOrder": "End date cannot be earlier than start date.",
+      "interestRange": "Interest rate must be between 0 and 100.",
+      "amountPositive": "Amount must be greater than 0."
     }
   }
 }

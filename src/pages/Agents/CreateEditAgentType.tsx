@@ -121,7 +121,7 @@ export const CreateEditAgentType = () => {
               error={!!errors.code}
               helperText={errors.code}
               disabled={!!id || !!agentType?.isSystem}
-              placeholder="E.g., PARTNER"
+              placeholder={t("agentTypes.placeholder.code")}
             />
           </div>
           <div className={styles.fieldGroup}>

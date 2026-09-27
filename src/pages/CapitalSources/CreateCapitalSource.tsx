@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -13,9 +14,9 @@ import type {
 import styles from "./CapitalSources.module.css";
 
 const typeOptions = [
-  { value: "BankLoan", label: "Bank Loan" },
-  { value: "OwnerInvestment", label: "Owner Investment" },
-  { value: "Other", label: "Other" },
+  { value: "BankLoan" },
+  { value: "OwnerInvestment" },
+  { value: "Other" },
 ];
 
 const emptyForm = () => ({
@@ -30,6 +31,7 @@ const emptyForm = () => ({
 });
 
 export const CreateCapitalSource = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [form, setForm] = useState(emptyForm());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,12 +49,12 @@ export const CreateCapitalSource = () => {
     };
 
     if (!payload.code || !payload.name || !payload.initialAmount || Number(payload.initialAmount) <= 0) {
-      toast.error("Code, name, and positive initial amount are required.");
+      toast.error(t("capitalSources.validation.required"));
       return;
     }
 
     if (payload.startDate && payload.endDate && new Date(payload.endDate) < new Date(payload.startDate)) {
-      toast.error("End date cannot be earlier than start date.");
+      toast.error(t("capitalSources.validation.dateOrder"));
       return;
     }
 
@@ -60,17 +62,17 @@ export const CreateCapitalSource = () => {
       payload.interestRate != null &&
       (payload.interestRate < 0 || payload.interestRate > 100)
     ) {
-      toast.error("Interest rate must be between 0 and 100.");
+      toast.error(t("capitalSources.validation.interestRange"));
       return;
     }
 
     setIsSubmitting(true);
     try {
       const id = await capitalSourcesService.createCapitalSource(payload);
-      toast.success("Capital source created successfully");
+      toast.success(t("capitalSources.messages.created"));
       navigate(`/capital-sources/${id}`);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to create capital source."));
+      toast.error(getApiErrorMessage(error, t("capitalSources.errors.saveFailed")));
     } finally {
       setIsSubmitting(false);
     }
@@ -78,24 +80,24 @@ export const CreateCapitalSource = () => {
 
   return (
     <div>
-      <SectionHeader title="Create Capital Source" goBack />
+      <SectionHeader title={t("capitalSources.createTitle")} goBack />
       <div className={styles.form}>
-        <TextField label="Code" value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))} />
-        <TextField label="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
-        <Select label="Type" value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as typeof p.type }))}>
+        <TextField label={t("capitalSources.fields.code")} value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.name")} value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+        <Select label={t("capitalSources.fields.type")} value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as typeof p.type }))}>
           {typeOptions.map((option) => (
-            <option key={option.value} value={option.value}>{option.label}</option>
+            <option key={option.value} value={option.value}>{t(`capitalSources.types.${option.value}`)}</option>
           ))}
         </Select>
-        <TextField label="Initial Amount" type="number" min="0" step="0.01" value={form.initialAmount} onChange={(e) => setForm((p) => ({ ...p, initialAmount: e.target.value }))} />
-        <TextField label="Interest Rate (%)" type="number" min="0" max="100" step="0.01" value={form.interestRate} onChange={(e) => setForm((p) => ({ ...p, interestRate: e.target.value }))} />
-        <TextField label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))} />
-        <TextField label="End Date" type="date" value={form.endDate} onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))} />
-        <Textarea label="Description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.initialAmount")} type="number" min="0" step="0.01" value={form.initialAmount} onChange={(e) => setForm((p) => ({ ...p, initialAmount: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.interestRate")} type="number" min="0" max="100" step="0.01" value={form.interestRate} onChange={(e) => setForm((p) => ({ ...p, interestRate: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.startDate")} type="date" value={form.startDate} onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.endDate")} type="date" value={form.endDate} onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))} />
+        <Textarea label={t("capitalSources.fields.description")} value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
 
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>Cancel</Button>
-          <Button onClick={submit} disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Create"}</Button>
+          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+          <Button onClick={submit} disabled={isSubmitting}>{isSubmitting ? t("common.saving") : t("capitalSources.actions.create")}</Button>
         </div>
       </div>
     </div>
@@ -103,6 +105,7 @@ export const CreateCapitalSource = () => {
 };
 
 export const EditCapitalSource = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const [form, setForm] = useState(emptyForm());
@@ -126,14 +129,14 @@ export const EditCapitalSource = () => {
           description: source.description ?? "",
         });
       } catch (error) {
-        toast.error(getApiErrorMessage(error, "Failed to load capital source."));
+        toast.error(getApiErrorMessage(error, t("capitalSources.errors.loadFailed")));
       } finally {
         setIsLoading(false);
       }
     };
 
     void load();
-  }, [id]);
+  }, [id, t]);
 
   const submit = async () => {
     if (!id) return;
@@ -150,27 +153,27 @@ export const EditCapitalSource = () => {
     };
 
     if (!payload.code || !payload.name || Number(payload.initialAmount) <= 0) {
-      toast.error("Code, name, and positive initial amount are required.");
+      toast.error(t("capitalSources.validation.required"));
       return;
     }
 
     if (payload.startDate && payload.endDate && new Date(payload.endDate) < new Date(payload.startDate)) {
-      toast.error("End date cannot be earlier than start date.");
+      toast.error(t("capitalSources.validation.dateOrder"));
       return;
     }
 
     if (payload.interestRate != null && (payload.interestRate < 0 || payload.interestRate > 100)) {
-      toast.error("Interest rate must be between 0 and 100.");
+      toast.error(t("capitalSources.validation.interestRange"));
       return;
     }
 
     setIsSubmitting(true);
     try {
       await capitalSourcesService.updateCapitalSource(id, payload);
-      toast.success("Capital source updated successfully");
+      toast.success(t("capitalSources.messages.updated"));
       navigate(`/capital-sources/${id}`);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to update capital source."));
+      toast.error(getApiErrorMessage(error, t("capitalSources.errors.saveFailed")));
     } finally {
       setIsSubmitting(false);
     }
@@ -178,24 +181,24 @@ export const EditCapitalSource = () => {
 
   return (
     <div>
-      <SectionHeader title={isLoading ? "Loading..." : "Edit Capital Source"} goBack />
+      <SectionHeader title={isLoading ? t("common.loading") : t("capitalSources.editTitle")} goBack />
       <div className={styles.form}>
-        <TextField label="Code" value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))} />
-        <TextField label="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
-        <Select label="Type" value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as typeof p.type }))}>
+        <TextField label={t("capitalSources.fields.code")} value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.name")} value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+        <Select label={t("capitalSources.fields.type")} value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as typeof p.type }))}>
           {typeOptions.map((option) => (
-            <option key={option.value} value={option.value}>{option.label}</option>
+            <option key={option.value} value={option.value}>{t(`capitalSources.types.${option.value}`)}</option>
           ))}
         </Select>
-        <TextField label="Initial Amount" type="number" min="0" step="0.01" value={form.initialAmount} onChange={(e) => setForm((p) => ({ ...p, initialAmount: e.target.value }))} />
-        <TextField label="Interest Rate (%)" type="number" min="0" max="100" step="0.01" value={form.interestRate} onChange={(e) => setForm((p) => ({ ...p, interestRate: e.target.value }))} />
-        <TextField label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))} />
-        <TextField label="End Date" type="date" value={form.endDate} onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))} />
-        <Textarea label="Description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.initialAmount")} type="number" min="0" step="0.01" value={form.initialAmount} onChange={(e) => setForm((p) => ({ ...p, initialAmount: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.interestRate")} type="number" min="0" max="100" step="0.01" value={form.interestRate} onChange={(e) => setForm((p) => ({ ...p, interestRate: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.startDate")} type="date" value={form.startDate} onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))} />
+        <TextField label={t("capitalSources.fields.endDate")} type="date" value={form.endDate} onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))} />
+        <Textarea label={t("capitalSources.fields.description")} value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
 
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>Cancel</Button>
-          <Button onClick={submit} disabled={isSubmitting || isLoading}>{isSubmitting ? "Saving..." : "Save"}</Button>
+          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+          <Button onClick={submit} disabled={isSubmitting || isLoading}>{isSubmitting ? t("common.saving") : t("common.save")}</Button>
         </div>
       </div>
     </div>

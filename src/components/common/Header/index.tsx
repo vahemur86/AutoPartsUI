@@ -390,7 +390,7 @@ export const Header: FC = () => {
                 }}
               >
                 <PiggyBank className={styles.menuItemIcon} size={16} />
-                Capital Sources
+                {t("header.capitalSources")}
               </button>
               <button
                 type="button"
@@ -402,7 +402,7 @@ export const Header: FC = () => {
                 }
               >
                 <Users className={styles.menuItemIcon} size={16} />
-                Referrals
+                {t("header.referrals")}
               </button>
               {openNestedDropdown === "referrals" && (
                 <div className={styles.nestedMenuContainer}>
@@ -416,7 +416,7 @@ export const Header: FC = () => {
                     }}
                   >
                     <Users className={styles.menuItemIcon} size={16} />
-                    Referral Persons
+                    {t("header.referralPersons")}
                   </button>
                   <button
                     type="button"
@@ -428,7 +428,7 @@ export const Header: FC = () => {
                     }}
                   >
                     <FileSignature className={styles.menuItemIcon} size={16} />
-                    Commissions
+                    {t("header.commissions")}
                   </button>
                 </div>
               )}
@@ -526,7 +526,7 @@ export const Header: FC = () => {
                     }}
                   >
                     <FileSignature className={styles.menuItemIcon} size={16} />
-                    Agent Contracts
+                    {t("header.agentContracts")}
                   </button>
                   <button
                     type="button"
@@ -538,7 +538,7 @@ export const Header: FC = () => {
                     }}
                   >
                     <Archive className={styles.menuItemIcon} size={16} />
-                    Powder Deliveries
+                    {t("header.powderDeliveries")}
                   </button>
                   <button
                     type="button"
@@ -550,7 +550,7 @@ export const Header: FC = () => {
                     }}
                   >
                     <FileText className={styles.menuItemIcon} size={16} />
-                    Repayments
+                    {t("header.repayments")}
                   </button>
                 </div>
               )}

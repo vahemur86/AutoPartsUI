@@ -26,7 +26,13 @@
     "carCatalyst": "Բաքեր",
     "workshop": "Աշխատանոց",
     "repaymentRules": "Մարման կանոններ",
-    "capitalSources": "Կապիտալի աղբյուրներ"
+    "capitalSources": "Կապիտալի աղբյուրներ",
+    "referrals": "Ուղղորդումներ",
+    "referralPersons": "Ուղղորդող անձինք",
+    "commissions": "Միջնորդավճարներ",
+    "agentContracts": "Գործակալների պայմանագրեր",
+    "powderDeliveries": "Փոշու առաքումներ",
+    "repayments": "Մարումներ"
   },
   "common": {
     "save": "Պահպանել",
@@ -2975,6 +2981,9 @@
       },
       "fields": {
         "shop": "Խանութ",
+        "employeeType": "Աշխատակցի տեսակ",
+        "powderBonusKgThreshold": "Փոշու բոնուսի շեմ (կգ)",
+        "powderBonusAmount": "Փոշու բոնուսի գումար (դրամ)",
         "salaryType": "Աշխատավարձի տեսակ",
         "fixedDailySalary": "Ֆիքսված օրական աշխատավարձ",
         "selectShop": "Ընտրեք խանութը",
@@ -2994,6 +3003,10 @@
       "salaryTypes": {
         "FixedDaily": "Ֆիքսված օրական աշխատավարձ",
         "PercentageBased": "Տոկոսային աշխատավարձ"
+      },
+      "employeeTypes": {
+        "Regular": "Սովորական",
+        "Director": "Տնօրեն"
       },
       "attendanceStatus": {
         "Present": "Ներկա",
@@ -3046,10 +3059,15 @@
         "depositRemainingAfter": "Մնացորդը աշխատավարձից հետո",
         "netPayable": "Վճարման ենթակա",
         "paidStatus": "Վճարման կարգավիճակ",
-        "paidAt": "Վճարման ամսաթիվ"
+        "paidAt": "Վճարման ամսաթիվ",
+        "powderQuantityKg": "Փոշու քանակ",
+        "powderBonusKgThreshold": "Փոշու բոնուսի շեմ",
+        "powderBonusAmount": "Փոշու բոնուսի գումար",
+        "powderBonus": "Տնօրենի փոշու բոնուս"
       },
       "messages": {
         "validationFailed": "Լրացրեք աշխատակցի պարտադիր տվյալները։",
+        "directorBonusValidationFailed": "Տնօրենի համար նշեք զրոյից մեծ շեմ և ոչ բացասական բոնուսի գումար։",
         "created": "Աշխատակիցը հաջողությամբ ստեղծվեց",
         "updated": "Աշխատակցի տվյալները հաջողությամբ թարմացվեցին",
         "saveFailed": "Չհաջողվեց պահպանել աշխատակցի տվյալները",
@@ -3198,7 +3216,12 @@
       "status": "Կարգավիճակ",
       "agentType": "Գործակալի տիպ",
       "registrationDate": "Գրանցման ամսաթիվ",
-      "actions": "Գործողություններ"
+      "actions": "Գործողություններ",
+      "customer": "Ընտրել հաճախորդին",
+      "customerType": "Հաճախորդի տեսակ",
+      "createdBy": "Ստեղծել է",
+      "updatedAt": "Թարմացվել է",
+      "updatedBy": "Թարմացրել է"
     },
     "actions": {
       "create": "Նոր գործակալ",
@@ -3207,10 +3230,26 @@
       "deactivate": "Ապաակտիվացնել",
       "suspend": "Դադարեցնել",
       "block": "Արգելափակել",
-      "classify": "Դասակարգել"
+      "classify": "Դասակարգել",
+      "viewCustomer": "Դիտել հաճախորդին",
+      "changeCustomer": "Փոխել հաճախորդին",
+      "financialSummary": "Ֆինանսական ամփոփում",
+      "powderDeliveries": "Փոշու առաքումներ"
     },
     "details": {
-      "title": "Մանրամասներ"
+      "title": "Մանրամասներ",
+      "customerInformation": "Հաճախորդի տվյալներ"
+    },
+    "sections": {
+      "customer": "Հաճախորդ",
+      "details": "Գործակալի տվյալներ"
+    },
+    "statuses": {
+      "active": "Ակտիվ",
+      "inactive": "Ապաակտիվ",
+      "suspended": "Կասեցված",
+      "blocked": "Արգելափակված",
+      "unknown": "Անհայտ"
     },
     "history": {
       "title": "Տիպի պատմություն",
@@ -3218,6 +3257,7 @@
       "transition": "Փոփոխություն",
       "reason": "Պատճառ",
       "changedBy": "Փոխել է",
+      "initial": "Սկզբնական",
       "empty": "Տիպի պատմություն չկա։"
     },
     "messages": {
@@ -3232,7 +3272,9 @@
       "loadFailed": "Չհաջողվեց բեռնել գործակալներին",
       "createFailed": "Չհաջողվեց ստեղծել գործակալին",
       "statusFailed": "Չհաջողվեց թարմացնել կարգավիճակը",
-      "classifyFailed": "Չհաջողվեց դասակարգել գործակալին"
+      "classifyFailed": "Չհաջողվեց դասակարգել գործակալին",
+      "customerTypeNotConfigured": "Գործակալի հաճախորդի տեսակը կարգավորված չէ։",
+      "financialSummaryFailed": "Չհաջողվեց բեռնել գործակալի ֆինանսական ամփոփումը։"
     },
     "validation": {
       "codeRequired": "Կոդը պարտադիր է",
@@ -3241,13 +3283,596 @@
       "phoneInvalid": "Հեռախոսը պետք է պարունակի 8-16 թվանշան",
       "emailInvalid": "Email-ի ձևաչափը սխալ է",
       "registrationRequired": "Գրանցման ամսաթիվը պարտադիր է",
-      "registrationFuture": "Գրանցման ամսաթիվը չի կարող լինել ապագայում"
+      "registrationFuture": "Գրանցման ամսաթիվը չի կարող լինել ապագայում",
+      "customerRequired": "Խնդրում ենք ընտրել հաճախորդին",
+      "agentTypeRequired": "Խնդրում ենք ընտրել գործակալի տեսակը",
+      "addressTooLong": "Հասցեն չի կարող գերազանցել 500 նիշը",
+      "notesTooLong": "Նշումները չեն կարող գերազանցել 1000 նիշը"
     },
     "classify": {
       "title": "Դասակարգել գործակալին",
       "button": "Դասակարգել",
       "classifying": "Դասակարգվում է...",
       "currentType": "Ներկա տիպ"
+    }
+  },
+  "monthlyPowder": {
+    "title": "Ամսական փոշու հաշվետվություն",
+    "deliveriesTab": "Փոշու առաքումներ",
+    "month": "Ամիս",
+    "year": "Տարի",
+    "agent": "Գործակալ",
+    "powderWeight": "Փոշու քաշ",
+    "totalPowder": "Փոշու ընդհանուր քաշ",
+    "noData": "Տվյալներ չկան",
+    "loading": "Ամսական հաշվետվությունը բեռնվում է..."
+  },
+  "powderDeliveries": {
+    "title": "Փոշու առաքումներ",
+    "statuses": {
+      "draft": "Սևագիր",
+      "valuated": "Գնահատված",
+      "confirmed": "Հաստատված",
+      "cancelled": "Չեղարկված"
+    },
+    "fields": {
+      "deliveryNumber": "Առաքման համար",
+      "deliveryDate": "Առաքման ամսաթիվ",
+      "agent": "Գործակալ",
+      "contract": "Պայմանագիր",
+      "advance": "Ավանս",
+      "netWeight": "Զուտ քաշ (կգ)",
+      "totalValue": "Ընդհանուր արժեք (դրամ)",
+      "status": "Կարգավիճակ",
+      "createdAt": "Ստեղծման ամսաթիվ",
+      "actions": "Գործողություններ",
+      "contractId": "Պայմանագրի ID",
+      "advanceId": "Ավանսի ID",
+      "from": "Սկսած",
+      "to": "Մինչև",
+      "grossWeight": "Համախառն քաշ (կգ)",
+      "pt": "Pt (գրամ)",
+      "pd": "Pd (գրամ)",
+      "rh": "Rh (գրամ)",
+      "notes": "Նշումներ",
+      "weight": "Քաշ",
+      "value": "Արժեք",
+      "date": "Ամսաթիվ",
+      "type": "Տեսակ",
+      "reference": "Հղում",
+      "price": "Գին",
+      "totalValueUsd": "Ընդհանուր արժեք (ԱՄՆ դոլար)",
+      "totalValueAmd": "Ընդհանուր արժեք (դրամ)",
+      "priceDate": "Գնի ամսաթիվ",
+      "ptPrice": "Pt-ի գին",
+      "pdPrice": "Pd-ի գին",
+      "rhPrice": "Rh-ի գին",
+      "usdAmdRate": "ԱՄՆ դոլար/դրամ փոխարժեք",
+      "source": "Աղբյուր",
+      "capturedAt": "Գրանցման ամսաթիվ",
+      "createdBy": "Ստեղծել է"
+    },
+    "filters": {
+      "allAgents": "Բոլոր գործակալները",
+      "allStatuses": "Բոլոր կարգավիճակները"
+    },
+    "list": {
+      "count": "Առաքումներ՝ {{count}}",
+      "empty": "Փոշու առաքումներ չեն գտնվել",
+      "loading": "Փոշու առաքումները բեռնվում են..."
+    },
+    "actions": {
+      "confirm": "Հաստատել",
+      "view": "Դիտել",
+      "viewContract": "Դիտել պայմանագիրը",
+      "valuate": "Գնահատել",
+      "valuating": "Գնահատվում է...",
+      "confirmDelivery": "Հաստատել առաքումը",
+      "cancelDelivery": "Չեղարկել առաքումը",
+      "create": "Ստեղծել առաքում",
+      "creating": "Ստեղծվում է..."
+    },
+    "create": {
+      "title": "Ստեղծել փոշու առաքում",
+      "selectActiveAgent": "Ընտրել ակտիվ գործակալին",
+      "activeContract": "Գործող պայմանագիր",
+      "selectActiveContract": "Ընտրել գործող պայմանագիրը",
+      "activeAdvanceOptional": "Գործող ավանս (ոչ պարտադիր)",
+      "noAdvance": "Առանց ավանսի",
+      "metalsValidation": "Նշեք զրոյից ոչ պակաս մետաղների քանակներ, որոնցից առնվազն մեկը պետք է զրոյից մեծ լինի։"
+    },
+    "details": {
+      "title": "Փոշու առաքում",
+      "loading": "Փոշու առաքումը բեռնվում է...",
+      "cancelledReadOnly": "Առաքումը չեղարկված է և հասանելի է միայն դիտման համար։",
+      "delivery": "Առաքում",
+      "relations": "Կապակցված տվյալներ",
+      "weights": "Քաշեր",
+      "grossWeight": "Համախառն քաշ",
+      "netWeight": "Զուտ քաշ",
+      "metalContent": "Մետաղների պարունակություն",
+      "valuation": "Գնահատում",
+      "totalValue": "Ընդհանուր արժեք",
+      "frozenPriceSnapshot": "Պահպանված գների տվյալներ",
+      "notValuated": "Դեռ գնահատված չէ։",
+      "confirmTitle": "Հաստատել առաքումը",
+      "cancelTitle": "Չեղարկել առաքումը",
+      "confirmDescription": "Հաստատելուց հետո այս պատմական գնահատումը կփակվի փոփոխություններից։",
+      "cancelDescription": "Չեղարկված առաքումը հասանելի կլինի միայն դիտման համար։"
+    },
+    "history": {
+      "agentTitle": "Գործակալի առաքումների պատմություն",
+      "contractTitle": "Պայմանագրի առաքումների պատմություն"
+    },
+    "messages": {
+      "created": "Փոշու առաքումը ստեղծվեց։",
+      "confirmed": "Առաքումը հաջողությամբ հաստատվեց։",
+      "valuated": "Առաքումը գնահատվեց։",
+      "confirmedDetails": "Առաքումը հաստատվեց։",
+      "cancelled": "Առաքումը չեղարկվեց։"
+    },
+    "errors": {
+      "loadAgentsFailed": "Չհաջողվեց բեռնել գործակալներին։",
+      "loadContractsFailed": "Չհաջողվեց բեռնել գործող պայմանագրերը։",
+      "loadAdvancesFailed": "Չհաջողվեց բեռնել գործող ավանսները։",
+      "loadFailed": "Չհաջողվեց բեռնել փոշու առաքումները։",
+      "confirmFailed": "Չհաջողվեց հաստատել առաքումը։",
+      "createFailed": "Չհաջողվեց ստեղծել փոշու առաքումը։",
+      "detailsFailed": "Չհաջողվեց բեռնել փոշու առաքման տվյալները։",
+      "valuateFailed": "Չհաջողվեց գնահատել առաքումը։",
+      "actionFailed": "Չհաջողվեց {{action}} առաքումը։",
+      "historyFailed": "Չհաջողվեց բեռնել առաքումների պատմությունը։"
+    },
+    "validation": {
+      "agentRequired": "Գործակալը պարտադիր է։",
+      "contractRequired": "Գործող պայմանագիրը պարտադիր է։",
+      "dateRequired": "Առաքման ամսաթիվը պարտադիր է։",
+      "grossPositive": "Համախառն քաշը պետք է զրոյից մեծ լինի։",
+      "netPositive": "Զուտ քաշը պետք է զրոյից մեծ լինի։",
+      "netNotAboveGross": "Զուտ քաշը չի կարող գերազանցել համախառն քաշին։"
+    }
+  },
+  "agentFinancialSummary": {
+    "title": "Գործակալի ֆինանսական ամփոփում",
+    "empty": "Ֆինանսական ամփոփման տվյալներ չկան։",
+    "loading": "Ֆինանսական ամփոփումը բեռնվում է...",
+    "overview": "Գործակալի ֆինանսական պատկերը",
+    "totalAdvanced": "Ընդհանուր տրամադրված գումար",
+    "totalRepaid": "Ընդհանուր մարված գումար",
+    "outstanding": "Մնացորդային պարտք",
+    "debtReductionProgress": "Պարտքի մարման ընթացք",
+    "repaid": "մարված է",
+    "totalAdvancedCaption": "տրամադրված ընդհանուր գումար",
+    "contractTerms": "Պայմանագրի պայմաններ",
+    "contract": "Պայմանագիր",
+    "status": "Կարգավիճակ",
+    "debtRepaymentPercent": "Պարտքի մարման տոկոս",
+    "agentPayoutPercent": "Գործակալի վճարի տոկոս",
+    "defaultRepaymentPeriod": "Մարման հիմնական ժամկետ",
+    "days": "օր",
+    "maximumExtensions": "Երկարաձգումների առավելագույն քանակ",
+    "recentDeliveries": "Վերջին առաքումներ",
+    "noRecentDeliveries": "Վերջին առաքումներ չկան։",
+    "date": "Ամսաթիվ",
+    "value": "Արժեք",
+    "recentRepayments": "Վերջին մարումներ",
+    "noRecentRepayments": "Վերջին մարումներ չկան։",
+    "repaidAmount": "Մարված գումար",
+    "outstandingAfter": "Մնացորդը մարումից հետո",
+    "advances": "Ավանսներ",
+    "noAdvances": "Ավանսներ չեն գտնվել։",
+    "amount": "Գումար",
+    "viewAgent": "Դիտել գործակալին",
+    "deliveries": "Առաքումներ"
+  },
+  "referralPerson": {
+    "title": "Ուղղորդող անձինք",
+    "actions": {
+      "create": "Ավելացնել անձ",
+      "commissions": "Ուղղորդման միջնորդավճարներ",
+      "view": "Դիտել",
+      "edit": "Խմբագրել",
+      "activate": "Ակտիվացնել",
+      "deactivate": "Ապաակտիվացնել",
+      "addRule": "Ավելացնել կանոն"
+    },
+    "fields": {
+      "id": "ID",
+      "code": "Կոդ",
+      "name": "Անուն",
+      "phone": "Հեռախոս",
+      "email": "Էլ. փոստ",
+      "status": "Կարգավիճակ",
+      "created": "Ստեղծվել է",
+      "updated": "Թարմացվել է",
+      "notes": "Նշումներ",
+      "search": "Որոնում",
+      "pageSize": "Տողերը մեկ էջում"
+    },
+    "statuses": {
+      "all": "Բոլորը",
+      "active": "Ակտիվ",
+      "inactive": "Ապաակտիվ"
+    },
+    "list": {
+      "showing": "Ցուցադրված է {{shown}}՝ {{total}} ուղղորդող անձից",
+      "empty": "Ուղղորդող անձինք չեն գտնվել։",
+      "loading": "Ուղղորդող անձինք բեռնվում են..."
+    },
+    "details": {
+      "title": "Ուղղորդող անձ",
+      "noData": "Տվյալներ չկան։",
+      "created": "Ստեղծվել է",
+      "updated": "Թարմացվել է",
+      "commissionRules": "Միջնորդավճարի կանոններ"
+    },
+    "form": {
+      "addTitle": "Ավելացնել ուղղորդող անձ",
+      "editTitle": "Խմբագրել ուղղորդող անձին",
+      "loading": "Բեռնվում է...",
+      "saving": "Պահպանվում է...",
+      "create": "Ստեղծել",
+      "update": "Թարմացնել"
+    },
+    "rules": {
+      "title": "Ավելացնել միջնորդավճարի կանոն",
+      "service": "Ծառայություն",
+      "serviceId": "Ծառայության ID",
+      "commissionPercent": "Միջնորդավճար (%)",
+      "effectiveFrom": "Գործում է սկսած",
+      "effectiveTo": "Գործում է մինչև",
+      "servicePrice": "Ծառայության գին",
+      "selectService": "Ընտրել ծառայությունը",
+      "loadingServices": "Ծառայությունները բեռնվում են...",
+      "required": "Ծառայությունը, միջնորդավճարի տոկոսը և մեկնարկի ամսաթիվը պարտադիր են։",
+      "percentRange": "Միջնորդավճարի տոկոսը պետք է լինի 0-ից 100-ի միջակայքում։",
+      "saved": "Միջնորդավճարի կանոնը պահպանվեց։"
+    },
+    "messages": {
+      "created": "Ուղղորդող անձը հաջողությամբ ստեղծվեց։",
+      "updated": "Ուղղորդող անձը հաջողությամբ թարմացվեց։",
+      "statusUpdated": "Ուղղորդող անձի կարգավիճակը թարմացվեց։",
+      "ruleStatusUpdated": "Միջնորդավճարի կանոնի կարգավիճակը թարմացվեց։"
+    },
+    "errors": {
+      "loadFailed": "Չհաջողվեց բեռնել ուղղորդող անձի տվյալները։",
+      "ruleStatusFailed": "Չհաջողվեց թարմացնել կանոնի կարգավիճակը։",
+      "statusFailed": "Չհաջողվեց թարմացնել ուղղորդող անձի կարգավիճակը։",
+      "saveFailed": "Չհաջողվեց պահպանել միջնորդավճարի կանոնը։"
+    },
+    "validation": {
+      "required": "Կոդը և անունը պարտադիր են։",
+      "email": "Խնդրում ենք մուտքագրել վավեր էլ. փոստի հասցե։"
+    }
+  },
+  "referralCommissions": {
+    "title": "Ուղղորդման միջնորդավճարներ",
+    "description": "Միջնորդավճարները ձևավորվում են ծառայության պատվերի ընթացքում, երբ կիրառվում է համապատասխան ուղղորդող անձի գործող կանոնը։ Այստեղ կարող եք ստուգել սպասվող միջնորդավճարները, հաստատել դրանք և նշել որպես վճարված։",
+    "fields": {
+      "orderId": "Պատվերի ID",
+      "referralPerson": "Ուղղորդող անձ",
+      "service": "Ծառայություն",
+      "servicePrice": "Ծառայության գին",
+      "commissionAmount": "Միջնորդավճարի գումար",
+      "status": "Կարգավիճակ",
+      "actions": "Գործողություններ",
+      "commissionPercent": "Միջնորդավճար (%)",
+      "created": "Ստեղծվել է",
+      "approved": "Հաստատվել է",
+      "paid": "Վճարվել է",
+      "rejected": "Մերժվել է",
+      "approvalNotes": "Հաստատման նշումներ",
+      "reference": "Հղում",
+      "paymentNotes": "Վճարման նշումներ",
+      "rejectReason": "Մերժման պատճառ"
+    },
+    "statuses": {
+      "all": "Բոլորը",
+      "pending": "Սպասման մեջ",
+      "approved": "Հաստատված",
+      "paid": "Վճարված",
+      "rejected": "Մերժված",
+      "cancelled": "Չեղարկված"
+    },
+    "actions": {
+      "view": "Դիտել",
+      "approve": "Հաստատել",
+      "reject": "Մերժել",
+      "pay": "Վճարել",
+      "viewReceipt": "Դիտել անդորրագիրը"
+    },
+    "filters": {
+      "search": "Որոնում",
+      "status": "Կարգավիճակ",
+      "service": "Ծառայություն",
+      "allServices": "Բոլոր ծառայությունները",
+      "loadingServices": "Ծառայությունները բեռնվում են...",
+      "pageSize": "Տողերը մեկ էջում"
+    },
+    "list": {
+      "showing": "Ցուցադրված է {{shown}}՝ {{total}} միջնորդավճարից",
+      "empty": "Միջնորդավճարներ չեն գտնվել։",
+      "loading": "Միջնորդավճարները բեռնվում են..."
+    },
+    "details": {
+      "title": "Միջնորդավճարի տվյալներ",
+      "number": "Միջնորդավճար №{{id}}"
+    },
+    "messages": {
+      "approved": "Միջնորդավճարը հաստատվեց։",
+      "rejected": "Միջնորդավճարը մերժվեց։",
+      "paid": "Միջնորդավճարը հաջողությամբ վճարվեց։"
+    },
+    "errors": {
+      "loadFailed": "Չհաջողվեց բեռնել միջնորդավճարները։",
+      "approveFailed": "Չհաջողվեց հաստատել միջնորդավճարը։",
+      "rejectFailed": "Չհաջողվեց մերժել միջնորդավճարը։",
+      "payFailed": "Չհաջողվեց վճարել միջնորդավճարը։"
+    }
+  },
+  "agentContracts": {
+    "title": "Գործակալների պայմանագրեր",
+    "createTitle": "Ստեղծել գործակալի պայմանագիր",
+    "detailsTitle": "Պայմանագրի տվյալներ",
+    "statuses": {
+      "draft": "Սևագիր",
+      "active": "Ակտիվ",
+      "completed": "Ավարտված",
+      "cancelled": "Չեղարկված",
+      "defaulted": "Չկատարված"
+    },
+    "fields": {
+      "contractNumber": "Պայմանագրի համար",
+      "agent": "Գործակալ",
+      "contractDate": "Պայմանագրի ամսաթիվ",
+      "status": "Կարգավիճակ",
+      "advanced": "Տրամադրված",
+      "repaid": "Մարված",
+      "outstanding": "Մնացորդային պարտք",
+      "createdAt": "Ստեղծման ամսաթիվ",
+      "actions": "Գործողություններ",
+      "from": "Սկսած",
+      "to": "Մինչև",
+      "deliveryId": "Առաքման ID",
+      "date": "Ամսաթիվ",
+      "powderWeight": "Փոշի (կգ)",
+      "kitcoValue": "Kitco արժեք",
+      "phone": "Հեռախոս",
+      "agentType": "Գործակալի տեսակ",
+      "contractStatus": "Պայմանագրի կարգավիճակ",
+      "capitalSource": "Կապիտալի աղբյուր",
+      "contributionPercent": "Մասնակցության տոկոս",
+      "allocated": "Հատկացված",
+      "used": "Օգտագործված",
+      "remaining": "Մնացորդ",
+      "advance": "Ավանս",
+      "advancedAmount": "Տրամադրված գումար",
+      "allocatedAmount": "Հատկացված գումար",
+      "createdBy": "Ստեղծել է",
+      "initialDebt": "Սկզբնական պարտք",
+      "totalDeliveredValue": "Առաքումների ընդհանուր արժեք",
+      "totalRepaid": "Ընդհանուր մարված գումար",
+      "remainingDebt": "Մնացած պարտք",
+      "nextDeadline": "Հաջորդ վերջնաժամկետ",
+      "extensionsUsed": "Օգտագործված երկարաձգումներ",
+      "remainingExtensions": "Մնացած երկարաձգումներ",
+      "advanceAmount": "Ավանսի գումար",
+      "advanceDate": "Ավանսի ամսաթիվ"
+    },
+    "filters": {
+      "allAgents": "Բոլոր գործակալները",
+      "allStatuses": "Բոլոր կարգավիճակները"
+    },
+    "actions": {
+      "createContract": "Ստեղծել պայմանագիր",
+      "view": "Դիտել",
+      "deliveryHistory": "Առաքումների պատմություն",
+      "createAdvance": "Ստեղծել ավանս",
+      "cancelContract": "Չեղարկել պայմանագիրը",
+      "addAllocation": "Ավելացնել հատկացում"
+    },
+    "list": {
+      "count": "Պայմանագրեր՝ {{count}}",
+      "empty": "Պայմանագրեր չեն գտնվել",
+      "loading": "Պայմանագրերը բեռնվում են..."
+    },
+    "form": {
+      "selectAgent": "Ընտրել գործակալին",
+      "repaymentRuleVersion": "Մարման կանոնի տարբերակ",
+      "selectActiveRuleVersion": "Ընտրել գործող կանոնի տարբերակը",
+      "ruleVersion": "{{name}} / Տարբերակ {{version}}",
+      "agentRequired": "Գործակալը պարտադիր է։",
+      "ruleRequired": "Մարման կանոնի տարբերակը պարտադիր է։",
+      "dateRequired": "Պայմանագրի ամսաթիվը պարտադիր է։",
+      "creating": "Ստեղծվում է...",
+      "termsPreview": "Մարման պայմանների նախադիտում",
+      "termsTitle": "Մարման պայմաններ"
+    },
+    "terms": {
+      "debtRepayment": "Պարտքի մարում",
+      "agentPayout": "Գործակալի վճար",
+      "excessBusiness": "Բիզնեսի ավելցուկ",
+      "excessAgent": "Գործակալի ավելցուկ",
+      "repaymentPeriod": "Մարման ժամկետ",
+      "maximumExtensions": "Երկարաձգումների առավելագույն քանակ",
+      "ruleVersion": "Կանոնի տարբերակ"
+    },
+    "details": {
+      "loading": "Պայմանագիրը բեռնվում է...",
+      "automaticComplianceCheck": "Ավտոմատ համապատասխանության ստուգում․",
+      "automaticFlow": "Ավտոմատ ընթացք",
+      "customerPurchase": "Հաճախորդի գնում",
+      "completed": "Ավարտված է",
+      "agentDetected": "Գործակալը հայտնաբերվել է",
+      "powderDeliveryCreated": "Փոշու առաքումը ստեղծվել է",
+      "automatic": "Ավտոմատ",
+      "adminConfirms": "Հաստատում է ադմինիստրատորը",
+      "settlementStep": "Հաշվարկման փուլ",
+      "contractRuleApplied": "Պայմանագիրն ու կանոնը կիրառված են",
+      "capitalSourceUpdated": "Կապիտալի աղբյուրը թարմացված է",
+      "agentInformation": "Գործակալի տվյալներ",
+      "activeContractRule": "Գործող պայմանագրային կանոն",
+      "capitalFunding": "Կապիտալի ֆինանսավորում",
+      "noCapitalFunding": "Այս գործակալի համար կապիտալի աղբյուրի հատկացում չկա։",
+      "totalAllocatedCapital": "Հատկացված կապիտալի ընդհանուր գումար",
+      "totalUsedCapital": "Օգտագործված կապիտալի ընդհանուր գումար",
+      "totalRemainingCapital": "Կապիտալի մնացորդային ընդհանուր գումար",
+      "advanceFunding": "Ավանսների ֆինանսավորում",
+      "noAdvances": "Այս պայմանագրի համար ավանսներ չկան",
+      "noAdvancesHint": "Այս պայմանագրի համար դեռ ավանսներ չկան։ Ֆինանսավորումը սկսելու համար ստեղծեք առաջին ավանսը։",
+      "automaticPowderDeliveries": "Փոշու ավտոմատ առաքումներ",
+      "noConfirmedPowderDeliveries": "Հաստատված փոշու առաքումներ չկան",
+      "noPowderDeliveries": "Այս գործակալի համար փոշու առաքումներ դեռ չկան։",
+      "repaymentSummary": "Մարումների ամփոփում",
+      "noCapitalFundingRows": "Կապիտալի ֆինանսավորում չի գտնվել",
+      "advanceDescription": "Կապիտալի աղբյուրներից ֆինանսավորումից առաջ ստեղծեք նոր ավանս այս պայմանագրի համար։",
+      "cancelDescription": "Կարելի է չեղարկել միայն սևագիր պայմանագիրը, եթե այն ֆինանսավորված կամ գործող ավանսներ չունի։"
+    },
+    "compliance": {
+      "noActiveContract": "Գործող պայմանագիր չկա։",
+      "noActiveRule": "Գործող մարման կանոն չկա։",
+      "noFunding": "Կապիտալի աղբյուրից ֆինանսավորում հասանելի չէ։",
+      "applied": "Կիրառված է",
+      "missing": "Բացակայում է",
+      "available": "Հասանելի է"
+    },
+    "messages": {
+      "created": "Պայմանագիրը ստեղծվեց։",
+      "cancelled": "Պայմանագիրը չեղարկվեց։",
+      "advanceCreated": "Ավանսը հաջողությամբ ստեղծվեց։"
+    },
+    "errors": {
+      "loadFailed": "Չհաջողվեց բեռնել պայմանագրերը։",
+      "loadRulesFailed": "Չհաջողվեց բեռնել մարման կանոնները։",
+      "createFailed": "Չհաջողվեց ստեղծել պայմանագիրը։",
+      "loadDetailsFailed": "Չհաջողվեց բեռնել պայմանագրի տվյալները։",
+      "cancelFailed": "Չհաջողվեց չեղարկել պայմանագիրը։",
+      "advanceCreateFailed": "Չհաջողվեց ստեղծել ավանսը։"
+    },
+    "validation": {
+      "advanceAmount": "Խնդրում ենք մուտքագրել ավանսի վավեր գումար։"
+    }
+  },
+  "agentAdvances": {
+    "title": "Գործակալների ավանսներ",
+    "detailsTitle": "Ավանսի տվյալներ",
+    "statuses": {
+      "draft": "Սևագիր",
+      "active": "Ակտիվ",
+      "completed": "Ավարտված",
+      "cancelled": "Չեղարկված",
+      "defaulted": "Չկատարված"
+    },
+    "fields": {
+      "advanceNumber": "Ավանս №",
+      "agent": "Գործակալ",
+      "amount": "Գումար",
+      "status": "Կարգավիճակ",
+      "deadline": "Վերջնաժամկետ",
+      "extensions": "Երկարաձգումներ",
+      "actions": "Գործողություններ",
+      "contract": "Պայմանագիր",
+      "advanceDate": "Ավանսի ամսաթիվ",
+      "advancedAmount": "Տրամադրված գումար",
+      "allocatedAmount": "Հատկացված գումար",
+      "remainingAmount": "Մնացորդային գումար",
+      "capitalSourceCode": "Կապիտալի աղբյուրի կոդ",
+      "capitalSource": "Կապիտալի աղբյուր",
+      "createdAt": "Ստեղծման ամսաթիվ",
+      "createdBy": "Ստեղծել է",
+      "currentDeadline": "Ընթացիկ վերջնաժամկետ",
+      "extensionsGranted": "Տրված երկարաձգումներ",
+      "extendedUntil": "Երկարաձգված մինչև",
+      "notes": "Նշումներ",
+      "fundingStatus": "Ֆինանսավորման կարգավիճակ"
+    },
+    "fundingStatuses": {
+      "fullyAllocated": "Ամբողջությամբ հատկացված",
+      "partiallyFunded": "Մասամբ ֆինանսավորված",
+      "notFunded": "Ֆինանսավորված չէ"
+    },
+    "list": {
+      "contracts": "Պայմանագրեր",
+      "allAgents": "Բոլոր գործակալները",
+      "allStatuses": "Բոլոր կարգավիճակները",
+      "empty": "Ավանսներ չեն գտնվել",
+      "loading": "Ավանսները բեռնվում են..."
+    },
+    "deadline": {
+      "overdue": "ԺԱՄԿԵՏԱՆՑ Է ({{days}} օր)",
+      "remaining": "Մնացել է {{days}} օր"
+    },
+    "history": {
+      "title": "Երկարաձգումների պատմություն",
+      "extensionNumber": "Երկարաձգում №",
+      "previousDeadline": "Նախորդ վերջնաժամկետ",
+      "newDeadline": "Նոր վերջնաժամկետ",
+      "daysAdded": "Ավելացված օրեր",
+      "reason": "Պատճառ",
+      "granted": "Տրվել է",
+      "empty": "Երկարաձգումներ չեն տրվել",
+      "loading": "Երկարաձգումները բեռնվում են..."
+    },
+    "extension": {
+      "title": "Խնդրել վերջնաժամկետի երկարաձգում",
+      "description": "Երկարաձգել {{advanceNumber}}-ը։ Ընթացիկ վերջնաժամկետը՝ {{deadline}}։ Օգտագործվել է {{count}}/{{maximum}} երկարաձգում։",
+      "submit": "Ուղարկել հարցումը",
+      "dayOption": "+{{days}} օր ({{date}})",
+      "newDeadlineSelection": "Նոր վերջնաժամկետի ընտրություն",
+      "customDate": "Ընտրել այլ ամսաթիվ",
+      "customDeadline": "Նոր վերջնաժամկետ",
+      "reasonOptional": "Պատճառ (ոչ պարտադիր)",
+      "required": "Նոր վերջնաժամկետը պարտադիր է։",
+      "mustBeLater": "Նոր վերջնաժամկետը պետք է լինի ընթացիկից ուշ։",
+      "notPast": "Նոր վերջնաժամկետը չի կարող անցյալում լինել։",
+      "maxOneYear": "Նոր վերջնաժամկետը չի կարող մեկ տարուց ավելի հեռու լինել։",
+      "reasonTooLong": "Պատճառը չի կարող գերազանցել 500 նիշը։"
+    },
+    "sections": {
+      "repaymentInformation": "Մարման տվյալներ",
+      "fundingSummary": "Ֆինանսավորման ամփոփում",
+      "allocations": "Հատկացումներ"
+    },
+    "actions": {
+      "view": "Դիտել",
+      "viewContract": "Դիտել պայմանագիրը",
+      "allocateCapital": "Հատկացնել կապիտալ",
+      "activate": "Ակտիվացնել ավանսը",
+      "requestExtension": "Խնդրել երկարաձգում",
+      "addAllocation": "Ավելացնել հատկացում",
+      "remove": "Հեռացնել",
+      "add": "Ավելացնել հատկացում"
+    },
+    "allocation": {
+      "title": "Ավելացնել հատկացում",
+      "description": "Հատկացման ենթակա մնացորդը՝ {{amount}}",
+      "selectSource": "Ընտրել կապիտալի աղբյուրը",
+      "currentBalance": "ընթացիկ մնացորդ՝ {{amount}}",
+      "amount": "Գումար",
+      "descriptionField": "Նկարագրություն",
+      "empty": "Հատկացումներ դեռ չկան",
+      "removeTitle": "Հեռացնել հատկացումը",
+      "removeDescription": "Հեռացնե՞լ կապիտալի այս հատկացումը։",
+      "amountError": "Ընտրեք կապիտալի աղբյուր և մուտքագրեք մնացորդը չգերազանցող գումար։"
+    },
+    "activation": {
+      "title": "Ակտիվացնել ավանսը",
+      "description": "Ակտիվացնե՞լ այս ավանսը։ Մինչև ակտիվացնելը պետք է ամբողջությամբ կատարել ֆինանսավորման հատկացումները։",
+      "confirm": "Ակտիվացնել ավանսը"
+    },
+    "messages": {
+      "allocationAdded": "Հատկացումն ավելացվեց։",
+      "allocationRemoved": "Հատկացումը հեռացվեց։",
+      "activated": "Ավանսն ակտիվացվեց։",
+      "extensionGranted": "Երկարաձգումը հաջողությամբ տրվեց։"
+    },
+    "errors": {
+      "loadFailed": "Չհաջողվեց բեռնել ավանսները։",
+      "loadDetailsFailed": "Չհաջողվեց բեռնել ավանսի տվյալները։",
+      "addAllocationFailed": "Չհաջողվեց ավելացնել հատկացումը։",
+      "removeAllocationFailed": "Չհաջողվեց հեռացնել հատկացումը։",
+      "activateFailed": "Չհաջողվեց ակտիվացնել ավանսը։",
+      "extensionFailed": "Չհաջողվեց ստեղծել երկարաձգումը։"
     }
   },
   "agentTypes": {
@@ -3282,6 +3907,9 @@
       "codeRequired": "Կոդը պարտադիր է",
       "nameRequired": "Անունը պարտադիր է",
       "priorityRequired": "Առաջնայնությունը պարտադիր է"
+    },
+    "placeholder": {
+      "code": "Օրինակ՝ PARTNER"
     }
   },
   "classificationRules": {
@@ -3310,7 +3938,23 @@
       "empty": "Պայմաններ դեռ չկան",
       "group": "Խումբ {{number}}",
       "addCondition": "Պայման ավելացնել խմբին",
-      "addGroup": "OR խմբ ավելացնել"
+      "addGroup": "Ավելացնել ԿԱՄ խումբ",
+      "and": "ԵՎ",
+      "or": "ԿԱՄ"
+    },
+    "metrics": {
+      "completedAdvances": "Ավարտված ավանսներ",
+      "totalAdvances": "Ավանսների ընդհանուր քանակ",
+      "onTimeRepaymentPercent": "Ժամանակին մարված տոկոս",
+      "lateRepaymentCount": "Ուշացած մարումների քանակ",
+      "overdueAdvanceCount": "Ժամկետանց ավանսների քանակ",
+      "defaultCount": "Չկատարված պարտավորությունների քանակ",
+      "totalExtensions": "Երկարաձգումների ընդհանուր քանակ",
+      "averageRepaymentDays": "Մարման միջին տևողությունը (օր)",
+      "averageExtensionCount": "Երկարաձգումների միջին քանակ",
+      "currentOutstandingAmount": "Ընթացիկ պարտքի մնացորդ",
+      "totalRepaidAmount": "Մարված ընդհանուր գումար",
+      "totalPowderValue": "Փոշու ընդհանուր արժեք"
     },
     "messages": {
       "created": "Դասակարգման կանոն ստեղծված",
@@ -3444,17 +4088,52 @@
       "OwnerInvestment": "Սեփականատիրոջ ներդրում",
       "Other": "Այլ"
     },
+    "transactionTypes": {
+      "MoneyReceived": "Մուտքագրված գումար",
+      "AgentAllocation": "Գործակալին հատկացում",
+      "MoneyReturned": "Վերադարձված գումար",
+      "OtherIncome": "Այլ եկամուտ",
+      "OtherExpense": "Այլ ծախս"
+    },
     "statuses": {
       "Active": "Ակտիվ",
       "Inactive": "Անգործուն",
       "Closed": "Փակ"
     },
     "actions": {
+      "create": "Ստեղծել",
+      "view": "Դիտել",
+      "edit": "Խմբագրել",
+      "save": "Պահպանել",
+      "cancel": "Չեղարկել",
       "activate": "Ակտիվացնել",
       "deactivate": "Ապաակտիվացնել",
       "close": "Փակել",
       "receiveMoney": "Ստանալ գումար",
-      "returnMoney": "Վերադարձել գումար"
+      "returnMoney": "Վերադարձնել գումար",
+      "processing": "Կատարվում է...",
+      "receive": "Ստանալ",
+      "return": "Վերադարձնել"
+    },
+    "filters": {
+      "allTypes": "Բոլոր տեսակները",
+      "allStatuses": "Բոլոր կարգավիճակները"
+    },
+    "summary": {
+      "totalItems": "Ընդամենը՝ {{count}} գրառում"
+    },
+    "transactions": {
+      "title": "Գործարքներ",
+      "empty": "Գործարքներ չեն գտնվել",
+      "fields": {
+        "dateTime": "Ամսաթիվ/ժամ",
+        "amount": "Գումար",
+        "balanceBefore": "Մնացորդը մինչ այդ",
+        "balanceAfter": "Մնացորդը դրանից հետո",
+        "referenceType": "Հղման տեսակ",
+        "referenceId": "Հղման ID",
+        "createdBy": "Ստեղծել է"
+      }
     },
     "messages": {
       "created": "Կապիտալի աղբյուրը հաջողությամբ ստեղծվեց",
@@ -3471,6 +4150,12 @@
       "loadDetailsFailed": "Չհաջողվեց բեռնել կապիտալի աղբյուրի մանրամասները",
       "actionFailed": "Չհաջողվեց կատարել գործողությունը",
       "moneyActionFailed": "Չհաջողվեց մշակել դրամային գործարքը"
+    },
+    "validation": {
+      "required": "Կոդը, անունը և զրոյից մեծ սկզբնական գումարը պարտադիր են։",
+      "dateOrder": "Ավարտի ամսաթիվը չի կարող նախորդել մեկնարկի ամսաթվին։",
+      "interestRange": "Տոկոսադրույքը պետք է լինի 0-ից 100-ի միջակայքում։",
+      "amountPositive": "Գումարը պետք է զրոյից մեծ լինի։"
     }
   }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -21,6 +22,7 @@ const emptyForm = {
 };
 
 export const ReferralPersonForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -45,7 +47,7 @@ export const ReferralPersonForm = () => {
           });
         }
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to load referral person.");
+        toast.error(error instanceof Error ? error.message : t("referralPerson.errors.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -64,12 +66,12 @@ export const ReferralPersonForm = () => {
     };
 
     if (!payload.code || !payload.name) {
-      toast.error("Code and name are required.");
+      toast.error(t("referralPerson.validation.required"));
       return;
     }
 
     if (payload.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
-      toast.error("Please enter a valid email address.");
+      toast.error(t("referralPerson.validation.email"));
       return;
     }
 
@@ -84,16 +86,16 @@ export const ReferralPersonForm = () => {
           notes: payload.notes,
         };
         await updateReferralPerson(id!, updatePayload);
-        toast.success("Referral person updated successfully.");
+        toast.success(t("referralPerson.messages.updated"));
       } else {
         const createPayload: ReferralPersonCreateRequest = payload;
         await createReferralPerson(createPayload);
-        toast.success("Referral person created successfully.");
+        toast.success(t("referralPerson.messages.created"));
       }
 
       navigate("/referral-persons");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong.");
+      toast.error(error instanceof Error ? error.message : t("referralPerson.errors.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -102,54 +104,54 @@ export const ReferralPersonForm = () => {
   if (loading) {
     return (
       <div style={{ padding: 24 }}>
-        <SectionHeader title={isEdit ? "Edit Referral Person" : "Add Referral Person"} goBack />
-        <div>Loading...</div>
+        <SectionHeader title={isEdit ? t("referralPerson.form.editTitle") : t("referralPerson.form.addTitle")} goBack />
+        <div>{t("referralPerson.form.loading")}</div>
       </div>
     );
   }
 
   return (
     <div style={{ padding: 24, display: "grid", gap: 16 }}>
-      <SectionHeader title={isEdit ? "Edit Referral Person" : "Add Referral Person"} goBack />
+      <SectionHeader title={isEdit ? t("referralPerson.form.editTitle") : t("referralPerson.form.addTitle")} goBack />
 
       <div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
         <TextField
-          label="Code"
+          label={t("referralPerson.fields.code")}
           value={form.code}
           onChange={(e) => setForm((prev) => ({ ...prev, code: e.target.value }))}
           disabled={isEdit}
         />
 
         <TextField
-          label="Name"
+          label={t("referralPerson.fields.name")}
           value={form.name}
           onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
         />
 
         <TextField
-          label="Phone"
+          label={t("referralPerson.fields.phone")}
           value={form.phone}
           onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
         />
 
         <TextField
-          label="Email"
+          label={t("referralPerson.fields.email")}
           value={form.email}
           onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
         />
 
         <Textarea
-          label="Notes"
+          label={t("referralPerson.fields.notes")}
           value={form.notes}
           onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
         />
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
           <Button variant="secondary" onClick={() => navigate(-1)} disabled={saving}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={saving}>
-            {saving ? "Saving..." : isEdit ? "Update" : "Create"}
+            {saving ? t("referralPerson.form.saving") : isEdit ? t("referralPerson.form.update") : t("referralPerson.form.create")}
           </Button>
         </div>
       </div>

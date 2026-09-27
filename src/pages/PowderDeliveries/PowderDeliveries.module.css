@@ -1,4 +1,9 @@
 .page { display: grid; gap: 20px; }
+.monthlyReport { display: grid; gap: 16px; }
+.monthFilters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 260px)); gap: 12px; }
+.periodField { display: grid; gap: 6px; }
+.periodField span { color: #a3a8b3; font-size: 13px; }
+.reportTitle { margin: 0; font-size: 16px; }
 .filters, .grid, .detailGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
 .summary, .actions, .headerActions, .lifecycle { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .summary, .actions { justify-content: space-between; }

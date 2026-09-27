@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -28,6 +29,7 @@ const statusTextColors: Record<string, string> = {
 };
 
 export const ReferralCommissions = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { items: services, isLoading: servicesLoading } = useAppSelector(
@@ -69,7 +71,7 @@ export const ReferralCommissions = () => {
       setItems(list.results);
       setTotalItems(list.totalItems);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to load commissions.");
+      toast.error(error instanceof Error ? error.message : t("referralCommissions.errors.loadFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -81,22 +83,22 @@ export const ReferralCommissions = () => {
 
   const columns = useMemo(
     () => [
-      { accessorKey: "serviceOrderId", header: "Order ID" },
-      { accessorKey: "referralPersonName", header: "Referral Person" },
-      { accessorKey: "serviceName", header: "Service" },
+      { accessorKey: "serviceOrderId", header: t("referralCommissions.fields.orderId") },
+      { accessorKey: "referralPersonName", header: t("referralCommissions.fields.referralPerson") },
+      { accessorKey: "serviceName", header: t("referralCommissions.fields.service") },
       {
         accessorKey: "servicePrice",
-        header: "Service Price",
+        header: t("referralCommissions.fields.servicePrice"),
         cell: ({ row }: any) => `${Number(row.original.servicePrice || 0).toLocaleString()} AMD`,
       },
       {
         accessorKey: "commissionAmount",
-        header: "Commission Amount",
+        header: t("referralCommissions.fields.commissionAmount"),
         cell: ({ row }: any) => `${Number(row.original.commissionAmount || 0).toLocaleString()} AMD`,
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: t("referralCommissions.fields.status"),
         cell: ({ row }: any) => (
           <span
             style={{
@@ -108,31 +110,31 @@ export const ReferralCommissions = () => {
               fontWeight: 600,
             }}
           >
-            {row.original.status}
+            {t(`referralCommissions.statuses.${String(row.original.status).toLowerCase()}`, { defaultValue: row.original.status })}
           </span>
         ),
       },
       {
         id: "actions",
-        header: "Actions",
+        header: t("referralCommissions.fields.actions"),
         cell: ({ row }: any) => (
           <div style={{ display: "flex", gap: 8 }}>
             <Button variant="secondary" size="small" onClick={() => navigate(`/commissions/${row.original.id}`)}>
-              View
+              {t("referralCommissions.actions.view")}
             </Button>
           </div>
         ),
       },
     ],
-    [navigate],
+    [navigate, t],
   );
 
   return (
     <div style={{ display: "grid", gap: 20, padding: 24 }}>
-      <SectionHeader title="Referral Commissions" />
+      <SectionHeader title={t("referralCommissions.title")} />
 
       <div style={{ color: "#475569", fontSize: 14 }}>
-        Commissions are created by the service-order workflow when an eligible referral person and active rule are applied. Review pending commissions here, approve them, then mark approved commissions as paid.
+        {t("referralCommissions.description")}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
@@ -146,7 +148,7 @@ export const ReferralCommissions = () => {
               background: "#fff",
             }}
           >
-            <div style={{ fontSize: 12, color: "#64748b", textTransform: "uppercase" }}>{statusKey}</div>
+            <div style={{ fontSize: 12, color: "#64748b", textTransform: "uppercase" }}>{t(`referralCommissions.statuses.${statusKey.toLowerCase()}`, { defaultValue: statusKey })}</div>
             <div style={{ fontSize: 24, fontWeight: 700, marginTop: 8 }}>{value.count}</div>
             <div style={{ color: "#475569", marginTop: 4 }}>{value.total.toLocaleString()} AMD</div>
           </div>
@@ -155,7 +157,7 @@ export const ReferralCommissions = () => {
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
         <TextField
-          label="Search"
+          label={t("referralCommissions.filters.search")}
           value={search}
           onChange={(e) => {
             setPage(1);
@@ -164,23 +166,23 @@ export const ReferralCommissions = () => {
         />
 
         <Select
-          label="Status"
+          label={t("referralCommissions.filters.status")}
           value={status}
           onChange={(e) => {
             setPage(1);
             setStatus(e.target.value);
           }}
         >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Paid">Paid</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Cancelled">Cancelled</option>
+          <option value="All">{t("referralCommissions.statuses.all")}</option>
+          <option value="Pending">{t("referralCommissions.statuses.pending")}</option>
+          <option value="Approved">{t("referralCommissions.statuses.approved")}</option>
+          <option value="Paid">{t("referralCommissions.statuses.paid")}</option>
+          <option value="Rejected">{t("referralCommissions.statuses.rejected")}</option>
+          <option value="Cancelled">{t("referralCommissions.statuses.cancelled")}</option>
         </Select>
 
         <Select
-          label="Service"
+          label={t("referralCommissions.filters.service")}
           value={serviceId}
           disabled={servicesLoading}
           onChange={(e) => {
@@ -189,7 +191,7 @@ export const ReferralCommissions = () => {
           }}
           searchable
         >
-          <option value="">{servicesLoading ? "Loading services..." : "All services"}</option>
+          <option value="">{servicesLoading ? t("referralCommissions.filters.loadingServices") : t("referralCommissions.filters.allServices")}</option>
           {services.filter((service) => service.isActive !== false).map((service) => (
             <option key={service.id} value={service.id}>
               {service.name} ({service.code})
@@ -198,7 +200,7 @@ export const ReferralCommissions = () => {
         </Select>
 
         <Select
-          label="Page size"
+          label={t("referralCommissions.filters.pageSize")}
           value={String(pageSize)}
           onChange={(e) => {
             setPage(1);
@@ -217,10 +219,12 @@ export const ReferralCommissions = () => {
         isLoading={isLoading}
         pageSize={pageSize}
         manualPagination={false}
+        noResultsText={t("referralCommissions.list.empty")}
+        loadingText={t("referralCommissions.list.loading")}
       />
 
       <div style={{ fontSize: 14, color: "#475569" }}>
-        Showing {items.length} of {totalItems} commissions
+        {t("referralCommissions.list.showing", { shown: items.length, total: totalItems })}
       </div>
     </div>
   );
