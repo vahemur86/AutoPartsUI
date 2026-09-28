@@ -72,6 +72,92 @@
   gap: 8px;
 }
 
+.agentPaymentSummary {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px 2px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.agentSummaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.agentPayDivider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+.agentPaymentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+}
+
+.agentPaymentLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.agentPaymentIcon {
+  color: var(--color-primary-500);
+  flex-shrink: 0;
+}
+
+.agentPaymentValue {
+  color: rgba(255, 255, 255, 0.98);
+  text-align: right;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.remainingDebtRow {
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+.remainingDebtValue {
+  background: rgba(96, 165, 250, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.18);
+}
+
+.cashPayoutRow {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(255, 255, 255, 0.04));
+  border-color: rgba(34, 197, 94, 0.24);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.06);
+}
+
+.cashPayoutValue {
+  background: rgba(34, 197, 94, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.18);
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
 .calculationSummary {
   width: 100%;
   display: flex;

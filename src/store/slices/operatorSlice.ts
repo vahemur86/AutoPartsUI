@@ -158,7 +158,14 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchIntake.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.intake = action.payload;
+        state.intake = {
+          ...action.payload,
+          agentPayment:
+            action.payload.agentPayment ??
+            (state.intake?.id === action.payload.id
+              ? state.intake.agentPayment
+              : null),
+        };
       })
       .addCase(fetchIntake.rejected, (state, action) => {
         state.isLoading = false;

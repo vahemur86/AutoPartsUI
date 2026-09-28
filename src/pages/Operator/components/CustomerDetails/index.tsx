@@ -7,7 +7,15 @@ import {
 } from "libphonenumber-js";
 
 // icons
-import { User, Check, Plus } from "lucide-react";
+import {
+  User,
+  Check,
+  Plus,
+  Phone,
+  UserRound,
+  ShieldCheck,
+  BadgePercent,
+} from "lucide-react";
 
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
@@ -270,29 +278,73 @@ export const CustomerDetails = ({
               <User size={32} />
             </div>
             <div className={styles.profileInfo}>
-              <div className={styles.profileField}>
-                <span className={styles.profileLabel}>
-                  {t("customerDetails.clientType.label")}:{" "}
-                </span>
-                <span className={styles.profileValue}>
-                  {activeCustomer.customerType?.code ?? "-"}
-                </span>
-              </div>
-
-              {!isIronTab && (
-                <div className={styles.profileField}>
-                  <span className={styles.profileLabel}>
-                    {t("customerDetails.discount")}:{" "}
-                  </span>
-                  <span className={styles.profileValue}>
-                    {appliedPercent != null
-                      ? `${appliedPercent}%`
-                      : activeCustomer.customerType?.bonusPercent != null
-                        ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
-                        : "0%"}
-                  </span>
+              <div className={styles.profileMetricGrid}>
+                <div className={styles.profileMetric}>
+                  <div className={styles.metricIconWrap}>
+                    <Phone size={14} />
+                  </div>
+                  <div className={styles.metricContent}>
+                    <span className={styles.profileLabel}>
+                      {t("customerDetails.phone")}
+                    </span>
+                    <span className={styles.profileValue}>
+                      {activeCustomer.phone || "-"}
+                    </span>
+                  </div>
                 </div>
-              )}
+
+                <div className={styles.profileMetric}>
+                  <div className={styles.metricIconWrap}>
+                    <UserRound size={14} />
+                  </div>
+                  <div className={styles.metricContent}>
+                    <span className={styles.profileLabel}>
+                      {t("customerDetails.gender.label")}
+                    </span>
+                    <span className={styles.profileValue}>
+                      {customerData.gender === 1
+                        ? t("customerDetails.gender.male")
+                        : customerData.gender === 2
+                          ? t("customerDetails.gender.female")
+                          : t("common.notSpecified")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.profileMetric}>
+                  <div className={styles.metricIconWrap}>
+                    <ShieldCheck size={14} />
+                  </div>
+                  <div className={styles.metricContent}>
+                    <span className={styles.profileLabel}>
+                      {t("customerDetails.clientType.label")}
+                    </span>
+                    <span className={styles.profileValue}>
+                      {activeCustomer.customerType?.code ?? "-"}
+                    </span>
+                  </div>
+                </div>
+
+                {!isIronTab && (
+                  <div className={styles.profileMetric}>
+                    <div className={styles.metricIconWrap}>
+                      <BadgePercent size={14} />
+                    </div>
+                    <div className={styles.metricContent}>
+                      <span className={styles.profileLabel}>
+                        {t("customerDetails.discount")}
+                      </span>
+                      <span className={styles.profileValue}>
+                        {appliedPercent != null
+                          ? `${appliedPercent}%`
+                          : activeCustomer.customerType?.bonusPercent != null
+                            ? `${(activeCustomer.customerType.bonusPercent * 100).toFixed(0)}%`
+                            : "0%"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

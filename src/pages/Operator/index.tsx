@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -28,7 +28,7 @@ import { useOperator, type TabType } from "./hooks";
 
 // styles
 import styles from "./OperatorPage.module.css";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, LoaderCircle } from "lucide-react";
 
 type MainTabType = "buy" | "calculate" | "workshop";
 
@@ -88,6 +88,47 @@ export const OperatorPage = () => {
   } = useOperator();
 
   const isIron = activeTab === "iron";
+  const calculationLoaderStartedAtRef = useRef<number | null>(null);
+  const [calculationLoaderVisible, setCalculationLoaderVisible] = useState(false);
+
+  const customerTypeCode = String(
+    selectors.operator.intake?.customer?.customerType?.code ??
+      selectors.customers.items[0]?.customerType?.code ??
+      "standard",
+  ).trim().toLowerCase();
+
+  const calculationLoaderTitle =
+    customerTypeCode === "agent"
+      ? t("operatorPage.calculationLoader.agent")
+      : customerTypeCode === "vip"
+        ? t("operatorPage.calculationLoader.vip")
+        : t("operatorPage.calculationLoader.standard");
+
+  useEffect(() => {
+    if (uiState.isSubmitting) {
+      calculationLoaderStartedAtRef.current = Date.now();
+      setCalculationLoaderVisible(true);
+      return;
+    }
+
+    const startedAt = calculationLoaderStartedAtRef.current;
+    if (!startedAt) {
+      setCalculationLoaderVisible(false);
+      return;
+    }
+
+    const remaining = 7000 - (Date.now() - startedAt);
+    if (remaining <= 0) {
+      setCalculationLoaderVisible(false);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCalculationLoaderVisible(false);
+    }, remaining);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [uiState.isSubmitting]);
 
   const handleTabClick = (targetTab: TabType) => {
     if (activeTab === targetTab) return;
@@ -243,12 +284,16 @@ export const OperatorPage = () => {
                       }
                     />
                     <FinalOffer
-                      withRecalculate={!isNonStandardCustomer}
+                      withRecalculate={
+                        !isNonStandardCustomer &&
+                        !selectors.operator.intake?.agentPayment?.isAgent
+                      }
                       offerPrice={
                         initialOfferPrice ??
                         selectors.operator.intake?.offerPrice ??
                         0
                       }
+                      agentPayment={selectors.operator.intake?.agentPayment}
                       currencyCode="AMD"
                       userData={userData}
                       isRecalculationsLimitReached={
@@ -327,6 +372,19 @@ export const OperatorPage = () => {
                 />
               </div>
             </div>
+            {!isIron && calculationLoaderVisible && (
+              <div className={styles.calculationOverlay} role="status" aria-live="polite">
+                <div className={styles.calculationLoader}>
+                  <LoaderCircle className={styles.calculationSpinner} size={30} />
+                  <span className={styles.calculationLoaderTitle}>
+                    {calculationLoaderTitle}
+                  </span>
+                  <span className={styles.calculationLoaderHint}>
+                    {t("operatorPage.calculationLoader.hint")}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ) : mainTab === "workshop" ? (

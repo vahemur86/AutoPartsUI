@@ -30,7 +30,7 @@ export const GenderSelect: FC<GenderSelectProps> = ({
 
   return (
     <Select
-      label={label ?? t("customerDetails.gender")}
+      label={label ?? t("customerDetails.gender.label")}
       value={value?.toString?.()}
       onChange={(e) => onChange(Number(e.target.value))}
       disabled={disabled}

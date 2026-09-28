@@ -241,8 +241,30 @@ body:has([data-radix-dialog-overlay]) {
 }
 
 .Toastify__toast--success {
-  background-color: var(--color-black-3);
+  background: linear-gradient(135deg, rgba(42, 168, 72, 0.18), rgba(12, 16, 14, 0.96));
   border-left: 4px solid var(--color-success);
+  min-height: 92px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+}
+
+.success-toast {
+  min-width: 340px;
+  max-width: 470px;
+}
+
+.success-toast .Toastify__toast-body {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--color-white);
+}
+
+.success-toast .Toastify__toast-icon {
+  width: 40px;
+  margin-right: 10px;
+  align-self: center;
 }
 
 .Toastify__toast--error {

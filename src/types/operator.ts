@@ -64,6 +64,17 @@ export interface Intake {
   currencyCode: string;
 }
 
+export interface AgentPaymentPreview {
+  isAgent: boolean;
+  powderValueAmd: number;
+  outstandingDebtAmd: number;
+  debtRepaymentAmd: number;
+  cashPayoutAmd: number;
+  remainingDebtAmd: number;
+  agentContractId: string | null;
+  repaymentRuleVersionId: string | null;
+}
+
 export interface IntakeResponse {
   id: number;
   shopId: number;
@@ -92,6 +103,7 @@ export interface IntakeResponse {
   pdWeight: number;
   rhWeight: number;
   offerPrice: number;
+  agentPayment?: AgentPaymentPreview | null;
   currencyCode: string;
   status: number;
   notes: string | null;

@@ -71,6 +71,7 @@
     "apply": "Apply",
     "buy": "Buy",
     "all": "All",
+    "notSpecified": "Not specified",
     "correct": "Correction",
     "createdAt": "Created At",
     "details": "Details",
@@ -1940,7 +1941,11 @@
     "searchByCountryCode": "Search by code",
     "fullName": "Full Name",
     "fullNamePlaceholder": "Enter full name",
-    "gender": "Gender",
+    "gender": {
+      "label": "Gender",
+      "male": "Male",
+      "female": "Female"
+    },
     "clientType": {
       "label": "Client Type",
       "regular": "Regular"
@@ -1977,6 +1982,14 @@
   },
   "finalOffer": {
     "title": "Final Offer",
+    "agentAccounting": {
+      "title": "Agent Summary",
+      "powderValue": "Full Powder Value",
+      "currentDebt": "Current Agent Debt",
+      "debtRepayment": "Debt Repayment",
+      "cashPayout": "Cash Payout to Agent",
+      "remainingDebt": "Remaining Debt"
+    },
     "offerButton": "Accept Offer",
     "rejectButton": "Reject Offer",
     "recalculateButton": "Recalculate Offer",
@@ -2018,6 +2031,13 @@
   },
   "operatorPage": {
     "title": "Operator Terminal",
+    "calculationLoader": {
+      "standard": "Calculating your offer",
+      "vip": "Calculating VIP offer",
+      "agent": "Calculating Agent offer",
+      "hint": "Checking the active contract and preparing the payment breakdown.",
+      "networkError": "Weak internet connection. Please try again."
+    },
     "languageLoading": "Loading languages...",
     "openSession": "Open Session",
     "closeSession": "Close Session",

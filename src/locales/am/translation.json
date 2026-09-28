@@ -65,6 +65,7 @@
     "select": "Ընտրեք",
     "apply": "Կիրառել",
     "all": "Բոլորը",
+    "notSpecified": "Չնշված",
     "createdAt": "Ստեղծման ամսաթիվ",
     "details": "Մանրամասներ",
     "correct": "Ճշգրտում",
@@ -1985,7 +1986,11 @@
     "searchByCountryCode": "Փնտրել երկրի կոդով",
     "fullName": "Ամբողջական անուն",
     "fullNamePlaceholder": "Մուտքագրեք ամբողջական անունը",
-    "gender": "Սեռ",
+    "gender": {
+      "label": "Սեռ",
+      "male": "Արական",
+      "female": "Իգական"
+    },
     "clientType": {
       "label": "Հաճախորդի տեսակ",
       "regular": "Ստանդարտ"
@@ -2022,6 +2027,14 @@
   },
   "finalOffer": {
     "title": "Վերջնական առաջարկ",
+    "agentAccounting": {
+      "title": "Գործակալի ամփոփում",
+      "powderValue": "Փոշու ամբողջական արժեք",
+      "currentDebt": "Գործակալի ընթացիկ պարտք",
+      "debtRepayment": "Պարտքի մարում",
+      "cashPayout": "Գործակալին վճարվող կանխիկ գումար",
+      "remainingDebt": "Մնացած պարտք"
+    },
     "offerButton": "Հաստատել առաջարկը",
     "rejectButton": "Մերժել առաջարկը",
     "recalculateButton": "Վերահաշվել առաջարկը",
@@ -2063,6 +2076,13 @@
   },
   "operatorPage": {
     "title": "Օպերատորի տերմինալ",
+    "calculationLoader": {
+      "standard": "Հաշվարկվում է ձեր առաջարկը",
+      "vip": "Հաշվարկվում է VIP առաջարկը",
+      "agent": "Հաշվարկվում է գործակալի առաջարկը",
+      "hint": "Ստուգվում է գործող պայմանագիրը և կազմվում է վճարման ամփոփումը։",
+      "networkError": "Կապը թույլ է, կրկին փորձիր։"
+    },
     "languageLoading": "Լեզուները բեռնվում են...",
     "openSession": "Բացել սեսսիան",
     "closeSession": "Փակել սեսսիան",

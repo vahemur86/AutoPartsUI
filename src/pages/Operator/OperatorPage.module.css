@@ -50,6 +50,7 @@
 }
 
 .contentArea {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -58,6 +59,58 @@
   padding: 24px;
   min-height: 0;
   overflow-y: auto;
+}
+
+.calculationOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(10, 12, 16, 0.68);
+  backdrop-filter: blur(3px);
+  border-radius: 12px;
+  animation: calculationOverlayIn 180ms ease-out;
+}
+
+.calculationLoader {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(100%, 340px);
+  padding: 28px 24px;
+  color: var(--color-white);
+  text-align: center;
+  background: rgba(24, 28, 34, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.38);
+}
+
+.calculationSpinner {
+  color: var(--color-primary-500);
+  animation: calculationSpin 900ms linear infinite;
+}
+
+.calculationLoaderTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.calculationLoaderHint {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@keyframes calculationSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes calculationOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* --- Layout Columns --- */

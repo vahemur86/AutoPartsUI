@@ -44,11 +44,12 @@
 
 .customerProfile {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
   margin-top: 8px;
 }
 
@@ -56,12 +57,13 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--color-black-3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-white);
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .customerProfile .profileInfo {
@@ -71,20 +73,53 @@
   flex: 1;
 }
 
-.profileField {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.profileMetricGrid {
+  display: grid;
+  gap: 10px;
 }
 
-.profileField .profileLabel {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+.profileMetric {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
-.profileField .profileValue {
+
+.metricIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-primary-500);
+}
+
+.metricContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profileLabel {
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.62);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profileValue {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-white);
+  word-break: break-word;
 }
 
 .customerActions {

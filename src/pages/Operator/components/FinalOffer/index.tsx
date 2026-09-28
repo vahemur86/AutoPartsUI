@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useState,
   type FC,
   type Dispatch,
@@ -9,7 +10,15 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // icons
-import { Check, X, RotateCcw } from "lucide-react";
+import {
+  Check,
+  X,
+  RotateCcw,
+  Landmark,
+  ArrowDownCircle,
+  Wallet,
+  TrendingDown,
+} from "lucide-react";
 
 // ui-kit
 import { Button } from "@/ui-kit";
@@ -17,6 +26,7 @@ import { Button } from "@/ui-kit";
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { offerIntake, proposeNewOffer } from "@/store/slices/operatorSlice";
+import type { AgentPaymentPreview } from "@/types/operator";
 
 // styles
 import styles from "./FinalOffer.module.css";
@@ -24,6 +34,7 @@ import sharedStyles from "../../OperatorPage.module.css";
 
 export const FinalOffer: FC<{
   offerPrice: number;
+  agentPayment?: AgentPaymentPreview | null;
   currencyCode?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userData: any;
@@ -62,6 +73,7 @@ export const FinalOffer: FC<{
   isRecalculationsLimitReached = false,
   withRecalculate = false,
   offerPrice = 0,
+  agentPayment,
   currencyCode = "AMD",
   userData = {},
   ironItems,
@@ -79,9 +91,17 @@ export const FinalOffer: FC<{
 
   const [isOffering, setIsOffering] = useState(false);
   const [isInternalRecalculating, setIsInternalRecalculating] = useState(false);
+  const [offerConfirmed, setOfferConfirmed] = useState(false);
+
+  useEffect(() => {
+    setOfferConfirmed(false);
+  }, [intake?.id]);
 
   const handleOffer = useCallback(async () => {
+    if (offerConfirmed || isOffering) return;
+
     if (onAccept) {
+      setOfferConfirmed(true);
       await onAccept();
       return;
     }
@@ -93,15 +113,17 @@ export const FinalOffer: FC<{
       await dispatch(
         offerIntake({ intakeId, cashRegisterId: userData?.cashRegisterId }),
       ).unwrap();
+      setOfferConfirmed(true);
       toast.success(t("finalOffer.success.offered"));
     } catch (error) {
       console.error("Offer failed:", error);
     } finally {
       setIsOffering(false);
     }
-  }, [dispatch, intake, t, userData?.cashRegisterId, onAccept]);
+  }, [dispatch, intake, t, userData?.cashRegisterId, onAccept, offerConfirmed, isOffering]);
 
   const handleRecalculateAction = useCallback(async () => {
+    if (agentPayment?.isAgent) return;
     if (onRecalculate) {
       await onRecalculate();
       return;
@@ -128,6 +150,7 @@ export const FinalOffer: FC<{
     userData?.cashRegisterId,
     setRecalculationsAmount,
     onRecalculate,
+    agentPayment?.isAgent,
   ]);
 
   const isAnyActionLoading = isOffering || isInternalRecalculating || isLoading;
@@ -147,8 +170,11 @@ export const FinalOffer: FC<{
       })
     : undefined;
 
-  const hasNewCatalystOffer = !!newPropose;
-  const displayPrice = hasNewCatalystOffer
+  const isAgent = agentPayment?.isAgent === true;
+  const hasNewCatalystOffer = !isAgent && !!newPropose;
+  const displayPrice = isAgent
+    ? agentPayment.powderValueAmd
+    : hasNewCatalystOffer
     ? newPropose.offeredAmountAmd
     : offerPrice;
 
@@ -157,7 +183,9 @@ export const FinalOffer: FC<{
   return (
     <div className={styles.finalOfferCard}>
       <div className={styles.finalOfferContent}>
-        <div className={styles.finalOfferLabel}>{t("finalOffer.title")}</div>
+        <div className={styles.finalOfferLabel}>
+          {isAgent ? t("finalOffer.agentAccounting.powderValue") : t("finalOffer.title")}
+        </div>
         <div className={styles.priceContainer}>
           {hasNewCatalystOffer && (
             <div className={styles.oldPriceStruck}>
@@ -173,6 +201,50 @@ export const FinalOffer: FC<{
           </div>
         </div>
         <div className={sharedStyles.divider} />
+        {isAgent && (
+          <div className={styles.agentPaymentSummary}>
+            <div className={styles.agentSummaryHeader}>
+              <span>{t("finalOffer.agentAccounting.title")}</span>
+            </div>
+            <div className={styles.agentPayDivider} />
+            <div className={styles.agentPaymentRow}>
+              <div className={styles.agentPaymentLabel}>
+                <Landmark size={15} className={styles.agentPaymentIcon} />
+                <span>{t("finalOffer.agentAccounting.currentDebt")}</span>
+              </div>
+              <strong className={styles.agentPaymentValue}>
+                {agentPayment.outstandingDebtAmd.toLocaleString()} AMD
+              </strong>
+            </div>
+            <div className={styles.agentPaymentRow}>
+              <div className={styles.agentPaymentLabel}>
+                <ArrowDownCircle size={15} className={styles.agentPaymentIcon} />
+                <span>{t("finalOffer.agentAccounting.debtRepayment")}</span>
+              </div>
+              <strong className={styles.agentPaymentValue}>
+                {agentPayment.debtRepaymentAmd.toLocaleString()} AMD
+              </strong>
+            </div>
+            <div className={`${styles.agentPaymentRow} ${styles.cashPayoutRow}`}>
+              <div className={styles.agentPaymentLabel}>
+                <Wallet size={15} className={styles.agentPaymentIcon} />
+                <span>{t("finalOffer.agentAccounting.cashPayout")}</span>
+              </div>
+              <strong className={`${styles.agentPaymentValue} ${styles.cashPayoutValue}`}>
+                {agentPayment.cashPayoutAmd.toLocaleString()} AMD
+              </strong>
+            </div>
+            <div className={`${styles.agentPaymentRow} ${styles.remainingDebtRow}`}>
+              <div className={styles.agentPaymentLabel}>
+                <TrendingDown size={15} className={styles.agentPaymentIcon} />
+                <span>{t("finalOffer.agentAccounting.remainingDebt")}</span>
+              </div>
+              <strong className={`${styles.agentPaymentValue} ${styles.remainingDebtValue}`}>
+                {agentPayment.remainingDebtAmd.toLocaleString()} AMD
+              </strong>
+            </div>
+          </div>
+        )}
         {lineItems && lineItems.length > 0 && (
           <div className={styles.calculationSummary}>
             <div className={styles.calculationSummaryList}>
@@ -207,13 +279,13 @@ export const FinalOffer: FC<{
             size="small"
             fullWidth
             onClick={handleOffer}
-            disabled={isAnyActionLoading || !isTransactionReady}
+            disabled={offerConfirmed || isAnyActionLoading || !isTransactionReady}
           >
             <Check size={20} />
             {t("finalOffer.offerButton")}
           </Button>
 
-          {withRecalculate && (
+          {withRecalculate && !isAgent && (
             <Button
               variant="secondary"
               size="small"

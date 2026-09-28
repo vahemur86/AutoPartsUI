@@ -151,6 +151,13 @@ const toastOptions = {
   draggable: true,
   pauseOnHover: true,
   theme: "dark",
+  toastClassName: "success-toast",
+  icon: ({ type }: { type?: string }) =>
+    type === "success" ? (
+      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 999, background: "rgba(42, 168, 72, 0.18)", color: "#7ae39a", fontSize: 18, fontWeight: 700 }}>✓</span>
+    ) : (
+      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 999, background: "rgba(255,255,255,0.08)", color: "#fff", fontSize: 18 }}>•</span>
+    ),
 } as const;
 
 /**

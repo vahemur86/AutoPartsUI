@@ -17,7 +17,6 @@ import {
   clearPricesError,
 } from "@/store/slices/metalPricesSlice";
 import {
-  fetchIntake,
   clearIntakeState,
   addIntake,
   rejectIntake,
@@ -476,6 +475,12 @@ export const useOperator = () => {
         return t("operatorPage.notifications.noOpenCashboxSession");
       }
 
+      if (
+        /network error|timeout|timed out|ERR_NETWORK|ECONNABORTED|ERR_INTERNET_DISCONNECTED/i.test(msg)
+      ) {
+        return t("operatorPage.calculationLoader.networkError");
+      }
+
       return msg;
     };
 
@@ -555,6 +560,8 @@ export const useOperator = () => {
   };
 
   const handleSubmit = async () => {
+    if (uiState.isSubmitting) return;
+
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
     if (
       isNaN(Number(formData.powderWeight)) ||
@@ -565,7 +572,7 @@ export const useOperator = () => {
     setUiState((p) => ({ ...p, isSubmitting: true }));
     try {
       const crId = userData?.cashRegisterId as number;
-      const response = await dispatch(
+      await dispatch(
         addIntake({
           intake: {
             ...formData,
@@ -581,7 +588,6 @@ export const useOperator = () => {
       ).unwrap();
 
       toast.success(t("operatorPage.success.intakeCreated"));
-      dispatch(fetchIntake({ intakeId: response.id, cashRegisterId: crId }));
       dispatch(
         fetchOfferOptions({
           shopId: userData?.shopId as number,
@@ -597,8 +603,6 @@ export const useOperator = () => {
           ...p,
           isCashboxBlockedModalOpen: true,
         }));
-      } else {
-        dispatch(clearIntakeState());
       }
     } finally {
       setUiState((p) => ({ ...p, isSubmitting: false }));
