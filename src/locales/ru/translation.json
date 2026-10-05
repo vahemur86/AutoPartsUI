@@ -3729,6 +3729,8 @@
       "allowedLabel": "Разрешение на товарный аванс",
       "allowed": "Разрешен",
       "notAllowed": "Не разрешен",
+      "enabled": "Включено",
+      "disabled": "Выключено",
       "ruleVersionNumber": "Версия {{version}}",
       "configurationDescription": "Если включено, агент сможет получать товары в кредит по этому договору."
     },

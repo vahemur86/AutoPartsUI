@@ -3,10 +3,24 @@
 .summary, .headerActions, .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .summary, .actions { justify-content: space-between; }
 .form, .inlineForm, .modalFields { display: grid; gap: 16px; max-width: 820px; }
-.productCreditConfig { display: grid; gap: 6px; }
-.productCreditConfig label { display: flex; align-items: center; gap: 9px; }
-.productCreditConfig input { width: 16px; height: 16px; accent-color: #16865b; }
-.productCreditConfig p { margin: 0; color: #a3a8b3; font-size: 13px; }
+.productCreditForm { width: 100%; max-width: none; grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr); align-items: start; gap: 20px; }
+.contractFields { display: grid; gap: 16px; }
+.productContractFields { display: grid; gap: 16px; min-width: 0; }
+.productCreditAside { display: grid; gap: 16px; min-width: 0; }
+.productCreditConfig { display: grid; gap: 22px; padding: 22px; border: 1px solid rgba(196, 169, 106, 0.28); border-radius: 10px; background: radial-gradient(ellipse at top right, rgba(196, 169, 106, 0.11), transparent 58%), linear-gradient(145deg, #20291f, #151b17 78%); }
+.productCreditConfig h2 { margin: 5px 0 8px; color: #f1eddf; font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 500; }
+.productCreditConfig p { max-width: 38ch; margin: 0; color: #aeb8ac; font-size: 13px; line-height: 1.6; }
+.productCreditEnabled { border-color: rgba(122, 178, 134, 0.45); background: radial-gradient(ellipse at top right, rgba(94, 157, 112, 0.16), transparent 58%), linear-gradient(145deg, #1d2b21, #151b17 78%); }
+.productCreditEyebrow { color: #c4a96a; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.productCreditToggle { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #ebe8dd; font-size: 13px; font-weight: 700; }
+.productCreditToggle input { width: 19px; height: 19px; margin: 0; accent-color: #6da77d; }
+.productCreditTerms { padding: 4px 2px; }
+.productCreditTerms h3 { margin: 0 0 8px; color: #e8e6dc; font-size: 13px; font-weight: 700; }
+.productCreditTerms dl { display: grid; margin: 0; }
+.productCreditTerm { display: flex; justify-content: space-between; gap: 16px; padding: 10px 2px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 12px; }
+.productCreditTerm dt { color: #9fa99f; }
+.productCreditTerm dd { margin: 0; color: #ece8dc; font-weight: 650; text-align: right; }
+.productCreditActions { grid-column: 1 / -1; justify-content: flex-end; padding-top: 4px; }
 .inlineForm { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); max-width: none; align-items: end; margin-bottom: 16px; }
 .section { display: grid; gap: 14px; }
 .section h2 { font-size: 18px; margin: 0; }
@@ -27,4 +41,5 @@
 .deadlineoverdue { color: #fff; background: #7f1d1d; }
 .quickOptions { display: grid; gap: 10px; }
 .quickOptions label { display: flex; align-items: center; gap: 8px; }
-@media (max-width: 640px) { .actions { justify-content: flex-end; } }
+@media (max-width: 760px) { .productCreditForm { grid-template-columns: minmax(0, 1fr); } .productCreditAside { grid-row: auto; } .productCreditActions { grid-column: auto; } }
+@media (max-width: 640px) { .actions { justify-content: flex-end; } .productCreditConfig { padding: 18px; } }

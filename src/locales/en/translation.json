@@ -3729,6 +3729,8 @@
       "allowedLabel": "Product Advance permission",
       "allowed": "Allowed",
       "notAllowed": "Not Allowed",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
       "ruleVersionNumber": "Version {{version}}",
       "configurationDescription": "When enabled, the agent may receive products on credit under this contract."
     },

@@ -1,7 +1,7 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .banner {
@@ -16,14 +16,14 @@
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 10px;
 }
 
 .summaryCard {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  padding: 18px;
+  border-radius: 10px;
+  padding: 14px 16px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -44,12 +44,12 @@
 .dashboardPanel {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  background: linear-gradient(135deg, rgba(19, 21, 30, 0.98) 0%, rgba(12, 14, 22, 0.96) 45%, rgba(15, 17, 24, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 22px;
-  padding: 24px;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.38);
+  gap: 16px;
+  background: linear-gradient(135deg, #1b251d, #121815 72%);
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
 .dashboardHeader {
@@ -76,7 +76,7 @@
   display: inline-flex;
   align-items: center;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: rgba(34, 197, 94, 0.12);
   color: #86efac;
   border: 1px solid rgba(34, 197, 94, 0.3);
@@ -85,10 +85,10 @@
 }
 
 .progressCard {
-  background: linear-gradient(135deg, rgba(15, 118, 110, 0.12) 0%, rgba(132, 204, 22, 0.08) 100%);
-  border: 1px solid rgba(45, 212, 191, 0.18);
-  border-radius: 16px;
-  padding: 18px;
+  background: linear-gradient(135deg, rgba(93, 135, 101, 0.14), rgba(196, 169, 106, 0.05));
+  border: 1px solid rgba(122, 178, 134, 0.2);
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .progressHeader,
@@ -138,11 +138,10 @@
 }
 
 .dashboardCard {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(15, 23, 42, 0.25) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: #151b17;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .cardHeader {
@@ -162,11 +161,11 @@
 
 .contractRow {
   display: grid;
-  gap: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 16px;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  padding: 14px;
 }
 
 .contractMain {
@@ -280,31 +279,33 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--color-black-2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  min-width: 0;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 8px;
+  overflow-x: auto;
+  background: #151b17;
 }
 
 .tableHeader {
   display: grid;
-  grid-template-columns: 1fr 1fr 100px 120px 100px 150px;
+  grid-template-columns: minmax(120px, 1fr) minmax(150px, 1.3fr) 76px 90px 90px minmax(180px, 1.2fr);
+  min-width: 820px;
   gap: 0;
   padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.06);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  background: rgba(196, 169, 106, 0.08);
+  border-bottom: 1px solid rgba(196, 169, 106, 0.16);
   font-weight: 700;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0;
   line-height: 1.4;
 }
 
 .tableRow {
   display: grid;
-  grid-template-columns: 1fr 1fr 100px 120px 100px 150px;
+  grid-template-columns: minmax(120px, 1fr) minmax(150px, 1.3fr) 76px 90px 90px minmax(180px, 1.2fr);
+  min-width: 820px;
   gap: 0;
   padding: 16px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -327,7 +328,7 @@
   padding: 6px 12px;
   background: rgba(34, 197, 94, 0.12);
   color: #86efac;
-  border-radius: 6px;
+  border-radius: 5px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -340,7 +341,7 @@
   padding: 6px 12px;
   background: rgba(148, 163, 184, 0.12);
   color: #cbd5e1;
-  border-radius: 6px;
+  border-radius: 5px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -375,7 +376,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   flex-wrap: wrap;
 }
 
@@ -454,10 +455,10 @@
 }
 
 .filtersSection {
-  background: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 20px;
+  background: #151b17;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .filtersSection h3 {
@@ -474,27 +475,40 @@
 }
 
 @media (max-width: 1024px) {
+  .tableHeader,
+  .tableRow {
+    padding: 12px 14px;
+  }
+
   .filterGrid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
   }
 }
 
 @media (max-width: 768px) {
+  .summaryGrid,
   .filterGrid {
     grid-template-columns: 1fr;
+  }
+
+  .listHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
 .paginationSection {
-  background: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 16px 20px;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   flex-wrap: wrap;
+  padding: 12px 14px;
+  background: #151b17;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
 }
 
 .paginationInfo {
@@ -693,9 +707,9 @@
 
 .infoCard {
   background: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 20px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .infoCard h3 {

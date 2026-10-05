@@ -383,80 +383,89 @@ export const CreateAgentContract = ({ productCreditMode = false }: { productCred
       ) : contractId && !existingContract ? (
         <div className={styles.error}>{t("agentContracts.errors.loadDetailsFailed")}</div>
       ) : (
-      <div className={styles.form}>
-        <div>
-          <label>{t("agentContracts.fields.agent")}</label>
-          <Select
-            value={agentId}
-            onChange={(event) => setAgentId(event.target.value)}
-            disabled={Boolean(contractId)}
-          >
-            <option value="">{t("agentContracts.form.selectAgent")}</option>
-            {existingContract && !agents.some((agent) => agent.id === existingContract.agent.id) && (
-              <option value={existingContract.agent.id}>
-                {existingContract.agent.code} - {existingContract.agent.fullName}
-              </option>
-            )}
-            {agents.map((agent) => (
-              <option key={agent.id} value={agent.id}>
-                {agentName(agent)}
-              </option>
-            ))}
-          </Select>
-          {errors.agent && <span className={styles.error}>{errors.agent}</span>}
-        </div>
-        <div>
-          <label>{t("agentContracts.form.repaymentRuleVersion")}</label>
-          <Select
-            value={versionId}
-            onChange={(event) => setVersionId(event.target.value)}
-          >
-            <option value="">{t("agentContracts.form.selectActiveRuleVersion")}</option>
-            {currentVersionMissing && existingContract && (
-              <option value={existingContract.repaymentTerms.repaymentRuleVersionId}>
-                {t("agentContracts.form.ruleVersion", {
-                  name: existingContract.repaymentTerms.repaymentRuleId,
-                  version: existingContract.repaymentTerms.ruleVersion,
-                })}
-              </option>
-            )}
-            {versions.map((version) => (
-              <option key={version.id} value={version.id}>
-                {label(version)}
-              </option>
-            ))}
-          </Select>
-          {errors.rule && <span className={styles.error}>{errors.rule}</span>}
-        </div>
-        <TextField
-          label={t("agentContracts.fields.contractDate")}
-          type="date"
-          value={contractDate}
-          onChange={(event) => setContractDate(event.target.value)}
-          error={Boolean(errors.date)}
-          helperText={errors.date}
-        />
-        <Textarea
-          label={t("common.notes")}
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
-        />
-        {productCreditMode && (
-          <div className={styles.productCreditConfig}>
-            <h2>{t("agentWorkspace.productCredit")}</h2>
-            <label>
-              <input
-                type="checkbox"
-                checked={allowsProductAdvance}
-                onChange={(event) => setAllowsProductAdvance(event.target.checked)}
-              />
-              {t("agentContracts.productCredit.allowProductAdvance")}
-            </label>
-            <p>{t("agentContracts.productCredit.configurationDescription")}</p>
+      <div className={`${styles.form} ${productCreditMode ? styles.productCreditForm : ""}`}>
+        <div className={productCreditMode ? styles.productContractFields : styles.contractFields}>
+          <div>
+            <label>{t("agentContracts.fields.agent")}</label>
+            <Select
+              value={agentId}
+              onChange={(event) => setAgentId(event.target.value)}
+              disabled={Boolean(contractId)}
+            >
+              <option value="">{t("agentContracts.form.selectAgent")}</option>
+              {existingContract && !agents.some((agent) => agent.id === existingContract.agent.id) && (
+                <option value={existingContract.agent.id}>
+                  {existingContract.agent.code} - {existingContract.agent.fullName}
+                </option>
+              )}
+              {agents.map((agent) => (
+                <option key={agent.id} value={agent.id}>
+                  {agentName(agent)}
+                </option>
+              ))}
+            </Select>
+            {errors.agent && <span className={styles.error}>{errors.agent}</span>}
           </div>
+          <div>
+            <label>{t("agentContracts.form.repaymentRuleVersion")}</label>
+            <Select
+              value={versionId}
+              onChange={(event) => setVersionId(event.target.value)}
+            >
+              <option value="">{t("agentContracts.form.selectActiveRuleVersion")}</option>
+              {currentVersionMissing && existingContract && (
+                <option value={existingContract.repaymentTerms.repaymentRuleVersionId}>
+                  {t("agentContracts.form.ruleVersion", {
+                    name: existingContract.repaymentTerms.repaymentRuleId,
+                    version: existingContract.repaymentTerms.ruleVersion,
+                  })}
+                </option>
+              )}
+              {versions.map((version) => (
+                <option key={version.id} value={version.id}>
+                  {label(version)}
+                </option>
+              ))}
+            </Select>
+            {errors.rule && <span className={styles.error}>{errors.rule}</span>}
+          </div>
+          <TextField
+            label={t("agentContracts.fields.contractDate")}
+            type="date"
+            value={contractDate}
+            onChange={(event) => setContractDate(event.target.value)}
+            error={Boolean(errors.date)}
+            helperText={errors.date}
+          />
+          <Textarea
+            label={t("common.notes")}
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+          />
+        </div>
+        {productCreditMode ? (
+          <aside className={styles.productCreditAside}>
+            <section className={`${styles.productCreditConfig} ${allowsProductAdvance ? styles.productCreditEnabled : ""}`}>
+              <div>
+                <span className={styles.productCreditEyebrow}>{t("agentContracts.productCredit.title")}</span>
+                <h2>{t("agentContracts.productCredit.allowProductAdvance")}</h2>
+                <p>{t("agentContracts.productCredit.configurationDescription")}</p>
+              </div>
+              <label className={styles.productCreditToggle}>
+                <span>{t(allowsProductAdvance ? "agentContracts.productCredit.enabled" : "agentContracts.productCredit.disabled")}</span>
+                <input
+                  type="checkbox"
+                  checked={allowsProductAdvance}
+                  onChange={(event) => setAllowsProductAdvance(event.target.checked)}
+                />
+              </label>
+            </section>
+            {selected && <ProductTermsPreview terms={selected} />}
+          </aside>
+        ) : (
+          selected && <Terms terms={selected} title={t("agentContracts.form.termsPreview")} />
         )}
-        {selected && <Terms terms={selected} title={t("agentContracts.form.termsPreview")} />}
-        <div className={styles.actions}>
+        <div className={`${styles.actions} ${productCreditMode ? styles.productCreditActions : ""}`}>
           <Button variant="secondary" onClick={() => navigate(-1)}>
             {t("common.cancel")}
           </Button>
@@ -469,6 +478,45 @@ export const CreateAgentContract = ({ productCreditMode = false }: { productCred
       </div>
       )}
     </div>
+  );
+};
+
+const ProductTermsPreview = ({
+  terms,
+}: {
+  terms:
+    | Omit<
+        RepaymentRuleVersion,
+        "id" | "ruleId" | "status" | "effectiveFrom" | "createdAt"
+      >
+    | AgentContractDto["repaymentTerms"];
+}) => {
+  const { t } = useTranslation();
+  const rows: Array<[string, React.ReactNode]> = [
+    [t("agentContracts.terms.debtRepayment"), `${terms.debtRepaymentPercent}%`],
+    [t("agentContracts.terms.agentPayout"), `${terms.agentPayoutPercent}%`],
+    [
+      t("agentContracts.terms.repaymentPeriod"),
+      `${terms.defaultRepaymentPeriodDays} ${t("repaymentRules.fields.days")}`,
+    ],
+    [t("agentContracts.terms.maximumExtensions"), terms.maximumExtensions],
+    ...("ruleVersion" in terms
+      ? [[t("agentContracts.terms.ruleVersion"), terms.ruleVersion] as [string, React.ReactNode]]
+      : []),
+  ];
+
+  return (
+    <section className={styles.productCreditTerms}>
+      <h3>{t("agentContracts.form.termsPreview")}</h3>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label} className={styles.productCreditTerm}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 };
 
