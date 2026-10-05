@@ -41,7 +41,7 @@ export const CreateEditAgentType = () => {
           });
         } catch (error) {
           toast.error(getApiErrorMessage(error, t("agentTypes.errors.loadFailed")));
-          navigate("/agent-types");
+          navigate("/agents/types");
         } finally {
           setIsLoading(false);
         }
@@ -86,11 +86,11 @@ export const CreateEditAgentType = () => {
       } else {
         const newId = await agentsService.createAgentType(payload);
         toast.success(t("agentTypes.messages.created"));
-        navigate(`/agent-types/${newId}`);
+        navigate(`/agents/types/${newId}`);
         return;
       }
 
-      navigate("/agent-types");
+      navigate("/agents/types");
     } catch (error) {
       toast.error(getApiErrorMessage(error, id ? t("agentTypes.errors.updateFailed") : t("agentTypes.errors.createFailed")));
     } finally {
@@ -156,7 +156,7 @@ export const CreateEditAgentType = () => {
         </div>
 
         <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => navigate("/agent-types")}>
+          <Button variant="secondary" onClick={() => navigate("/agents/types")}>
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>

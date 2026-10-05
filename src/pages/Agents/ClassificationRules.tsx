@@ -69,7 +69,7 @@ export const ClassificationRules = () => {
       <div className={styles.banner}>{t("classificationRules.info.metricsUnavailable")}</div>
 
       <div className={styles.listHeader}>
-        <Button onClick={() => navigate("/agent-classification-rules/new")}>
+        <Button onClick={() => navigate("/agents/classification-rules/new")}>
           {t("classificationRules.actions.create")}
         </Button>
         <div className={styles.filters}>
@@ -111,7 +111,7 @@ export const ClassificationRules = () => {
                 <Button
                   variant="secondary"
                   size="small"
-                  onClick={() => navigate(`/agent-classification-rules/${rule.id}`)}
+                  onClick={() => navigate(`/agents/classification-rules/${rule.id}`)}
                 >
                   {t("actions.edit")}
                 </Button>

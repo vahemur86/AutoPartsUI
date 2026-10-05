@@ -67,6 +67,7 @@ export const AgentDetails = () => {
   const [productContract, setProductContract] = useState<AgentContractDto | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
+  const [detailTab, setDetailTab] = useState<"general" | "cashPowder" | "productCredit">("general");
   const [confirmAction, setConfirmAction] = useState<{ type: string; status: number } | null>(null);
 
   const load = async () => {
@@ -252,18 +253,30 @@ export const AgentDetails = () => {
             {t("agents.actions.block")}
           </Button>
         )}
-        <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/financial-summary`)}>
-          {t("agents.actions.financialSummary")}
-        </Button>
         <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/classify`)}>
           {t("agents.actions.classify")}
         </Button>
-        <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/powder-deliveries`)}>
-          {t("agents.actions.powderDeliveries")}
-        </Button>
       </div>
 
-      <div className={styles.detailsGrid}>
+      <nav className={styles.detailTabs} aria-label={t("agents.details.financialNavigation")}>
+        {([
+          ["general", "agents.details.general"],
+          ["cashPowder", "agentWorkspace.cashPowder"],
+          ["productCredit", "agentWorkspace.productCredit"],
+        ] as const).map(([tab, label]) => (
+          <button
+            key={tab}
+            type="button"
+            className={`${styles.detailTab} ${detailTab === tab ? styles.detailTabActive : ""}`}
+            aria-pressed={detailTab === tab}
+            onClick={() => setDetailTab(tab)}
+          >
+            {t(label)}
+          </button>
+        ))}
+      </nav>
+
+      {detailTab === "general" && <div className={styles.detailsGrid}>
         <div className={styles.infoCard}>
           <h3>{t("agents.details.title")}</h3>
           <div className={styles.detailRow}><strong>{t("agents.fields.code")}:</strong> {agent.code}</div>
@@ -288,7 +301,33 @@ export const AgentDetails = () => {
           <h3>{t("agents.history.title")}</h3>
           <DataTable columns={historyColumns as any} data={history} isLoading={isLoading} noResultsText={t("agents.history.empty")} loadingText={t("agents.loading")} />
         </div>
+      </div>}
 
+      {detailTab === "cashPowder" && (
+        <section className={styles.infoCard}>
+          <h3>{t("agentWorkspace.cashPowder")}</h3>
+          <p>{t("agents.details.cashPowderDescription")}</p>
+          <div className={styles.actionRow}>
+            <Button variant="secondary" onClick={() => navigate(`/agents/${agent.id}/financial-summary`)}>
+              {t("agents.actions.financialSummary")}
+            </Button>
+            <Button variant="secondary" onClick={() => navigate("/agents/cash-powder/contracts")}>
+              {t("agentContracts.title")}
+            </Button>
+            <Button variant="secondary" onClick={() => navigate("/agents/cash-powder/advances")}>
+              {t("agentAdvances.title")}
+            </Button>
+            <Button variant="secondary" onClick={() => navigate(`/agents/${agent.id}/powder-deliveries`)}>
+              {t("agents.actions.powderDeliveries")}
+            </Button>
+            <Button variant="secondary" onClick={() => navigate("/agents/cash-powder/repayments")}>
+              {t("header.repayments")}
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {detailTab === "productCredit" && (
         <div className={styles.infoCard}>
           <h3>{t("agents.productCredit.title")}</h3>
           {productContract ? (
@@ -315,10 +354,10 @@ export const AgentDetails = () => {
                 </div>
               )}
               <div className={styles.actionRow}>
-                <Button variant="secondary" size="small" onClick={() => navigate(`/agent-contracts/${productContract.id}`)}>
+                <Button variant="secondary" size="small" onClick={() => navigate(`/agents/product-credit/contracts/${productContract.id}`)}>
                   {t("agents.productCredit.viewContract")}
                 </Button>
-                <Button variant="secondary" size="small" onClick={() => navigate(`/agent-contracts/${productContract.id}/edit`)}>
+                <Button variant="secondary" size="small" onClick={() => navigate(`/agents/product-credit/contracts/${productContract.id}/edit`)}>
                   {t("agents.productCredit.editContract")}
                 </Button>
               </div>
@@ -334,7 +373,7 @@ export const AgentDetails = () => {
             loadingText={t("agents.loading")}
           />
         </div>
-      </div>
+      )}
 
       {confirmAction && (
         <ConfirmationModal

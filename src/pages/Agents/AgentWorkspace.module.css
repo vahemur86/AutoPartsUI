@@ -71,6 +71,26 @@
   scrollbar-color: rgba(196, 169, 106, 0.35) transparent;
 }
 
+.sectionRail {
+  border-color: rgba(196, 169, 106, 0.18);
+  background: linear-gradient(100deg, rgba(29, 38, 30, 0.96), rgba(17, 23, 19, 0.98));
+}
+
+.sectionRail .tab {
+  min-height: 42px;
+  padding-right: 16px;
+  padding-left: 16px;
+  color: #c0c8bd;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sectionRail .tabActive {
+  color: #f7f0dd;
+  border-color: rgba(196, 169, 106, 0.4);
+  background: linear-gradient(180deg, rgba(101, 89, 54, 0.45), rgba(48, 53, 36, 0.5));
+}
+
 .tab {
   position: relative;
   display: inline-flex;
@@ -109,9 +129,9 @@
 
 .tabActive::after {
   position: absolute;
-  right: 12px;
-  bottom: -6px;
-  left: 12px;
+  right: 16px;
+  bottom: 0;
+  left: 16px;
   height: 2px;
   content: "";
   background: var(--agent-gold);
@@ -147,6 +167,10 @@
     min-height: 38px;
     padding: 0 10px;
     font-size: 11px;
+  }
+
+  .sectionRail .tab {
+    padding: 0 10px;
   }
 }
 

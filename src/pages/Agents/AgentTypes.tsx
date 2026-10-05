@@ -65,7 +65,7 @@ export const AgentTypes = () => {
       <SectionHeader title={t("agentTypes.title")} />
 
       <div className={styles.listHeader}>
-        <Button onClick={() => navigate("/agent-types/new")}>{t("agentTypes.actions.create")}</Button>
+        <Button onClick={() => navigate("/agents/types/new")}>{t("agentTypes.actions.create")}</Button>
       </div>
 
       {types.length === 0 ? (
@@ -101,7 +101,7 @@ export const AgentTypes = () => {
                   <Button
                     variant="secondary"
                     size="small"
-                    onClick={() => navigate(`/agent-types/${type.id}`)}
+                    onClick={() => navigate(`/agents/types/${type.id}`)}
                   >
                     {t("actions.edit")}
                   </Button>

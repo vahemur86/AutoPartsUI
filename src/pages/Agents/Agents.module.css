@@ -652,6 +652,39 @@
   margin-bottom: 20px;
 }
 
+.detailTabs {
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px;
+  overflow-x: auto;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 8px;
+  background: #141a16;
+}
+
+.detailTab {
+  min-height: 38px;
+  padding: 0 14px;
+  color: #aeb9ae;
+  border-color: transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.detailTabActive {
+  color: #f3e8ca;
+  border-color: rgba(196, 169, 106, 0.34);
+  background: rgba(196, 169, 106, 0.12);
+}
+
+.detailTab:hover {
+  color: #fff;
+}
+
 .detailsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));

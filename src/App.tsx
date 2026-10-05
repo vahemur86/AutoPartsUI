@@ -133,7 +133,7 @@ import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
 import { CatalyticConverters } from "./pages/CatalyticConverters";
 import { CatalyticConverterDetails } from "./pages/CatalyticConverters/CatalyticConverterDetails";
 import { CatalyticSuppliers } from "./pages/CatalyticSuppliers";
-import { Agents, CreateAgent, EditAgent, AgentDetails, AgentFinancialSummary, ClassifyAgent, AgentTypes, CreateEditAgentType, ClassificationRules, CreateEditClassificationRule, AgentWorkspace } from "./pages/Agents";
+import { Agents, CreateAgent, EditAgent, AgentDetails, AgentFinancialSummary, ClassifyAgent, AgentTypes, CreateEditAgentType, ClassificationRules, CreateEditClassificationRule, AgentWorkspace, AgentProductCreditPage, AgentProductCreditContractDetails } from "./pages/Agents";
 import {
   CapitalSourceDetails,
   CapitalSourcesList,
@@ -360,20 +360,44 @@ export const App = () => {
                 <Route path="users" element={<UserManagement />} />
                 <Route path="agents" element={<AgentWorkspace />}>
                   <Route index element={<Agents />} />
+                  <Route path="new" element={<CreateAgent />} />
+                  <Route path=":id" element={<AgentDetails />} />
+                  <Route path=":id/financial-summary" element={<AgentFinancialSummary />} />
+                  <Route path=":id/edit" element={<EditAgent />} />
+                  <Route path=":id/classify" element={<ClassifyAgent />} />
+                  <Route path=":id/powder-deliveries" element={<PowderDeliveryHistory kind="agent" />} />
                   <Route path="types" element={<AgentTypes />} />
+                  <Route path="types/new" element={<CreateEditAgentType />} />
+                  <Route path="types/:id" element={<CreateEditAgentType />} />
                   <Route path="classification-rules" element={<ClassificationRules />} />
-                  <Route path="repayment-rules" element={<RepaymentRules />} />
-                  <Route path="contracts" element={<AgentContractsList />} />
-                  <Route path="advances" element={<AgentAdvancesList />} />
-                  <Route path="powder-deliveries" element={<PowderDeliveriesList />} />
-                  <Route path="repayments" element={<RepaymentManagement />} />
+                  <Route path="classification-rules/new" element={<CreateEditClassificationRule />} />
+                  <Route path="classification-rules/:id" element={<CreateEditClassificationRule />} />
+                  <Route path="cash-powder/contracts" element={<AgentContractsList />} />
+                  <Route path="cash-powder/contracts/create" element={<CreateAgentContract />} />
+                  <Route path="cash-powder/contracts/:id/edit" element={<CreateAgentContract />} />
+                  <Route path="cash-powder/contracts/:id/powder-deliveries" element={<PowderDeliveryHistory kind="contract" />} />
+                  <Route path="cash-powder/contracts/:id" element={<AgentContractDetails />} />
+                  <Route path="cash-powder/advances" element={<AgentAdvancesList />} />
+                  <Route path="cash-powder/advances/:id" element={<AgentAdvanceDetails />} />
+                  <Route path="cash-powder/deliveries" element={<PowderDeliveriesList />} />
+                  <Route path="cash-powder/deliveries/create" element={<CreatePowderDelivery />} />
+                  <Route path="cash-powder/deliveries/:id" element={<PowderDeliveryDetails />} />
+                  <Route path="cash-powder/repayments" element={<RepaymentManagement />} />
+                  <Route path="cash-powder/repayments/:id" element={<RepaymentDetails />} />
+                  <Route path="cash-powder/rules" element={<RepaymentRules />} />
+                  <Route path="cash-powder/rules/create" element={<CreateRepaymentRule />} />
+                  <Route path="cash-powder/rules/:id" element={<RepaymentRuleDetails />} />
+                  <Route path="cash-powder/rules/:id/versions/create" element={<CreateRepaymentRuleVersion />} />
+                  <Route path="cash-powder/rules/versions/:versionId" element={<RepaymentRuleVersionDetails />} />
+                  <Route path="product-credit/contracts" element={<AgentProductCreditPage view="contracts" />} />
+                  <Route path="product-credit/contracts/create" element={<CreateAgentContract productCreditMode />} />
+                  <Route path="product-credit/contracts/:id/edit" element={<CreateAgentContract productCreditMode />} />
+                  <Route path="product-credit/contracts/:id" element={<AgentProductCreditContractDetails />} />
+                  <Route path="product-credit/advances" element={<AgentProductCreditPage view="advances" />} />
+                  <Route path="product-credit/sales" element={<AgentProductCreditPage view="sales" />} />
+                  <Route path="product-credit/debt" element={<AgentProductCreditPage view="debt" />} />
+                  <Route path="product-credit/payments" element={<AgentProductCreditPage view="payments" />} />
                 </Route>
-                <Route path="agents/new" element={<CreateAgent />} />
-                <Route path="agents/:id" element={<AgentDetails />} />
-                <Route path="agents/:id/financial-summary" element={<AgentFinancialSummary />} />
-                <Route path="agents/:id/edit" element={<EditAgent />} />
-                <Route path="agents/:id/classify" element={<ClassifyAgent />} />
-                <Route path="agents/:id/powder-deliveries" element={<PowderDeliveryHistory kind="agent" />} />
                 <Route path="agent-types" element={<Navigate to="/agents/types" replace />} />
                 <Route path="agent-types/new" element={<CreateEditAgentType />} />
                 <Route path="agent-types/:id" element={<CreateEditAgentType />} />
@@ -382,20 +406,21 @@ export const App = () => {
                 <Route path="agent-classification-rules/:id" element={<CreateEditClassificationRule />} />
                 
                 {/* Repayment Rules under Agents business logic */}
+                <Route path="agents/repayment-rules" element={<Navigate to="/agents/cash-powder/rules" replace />} />
                 <Route path="agents/repayment-rules/create" element={<CreateRepaymentRule />} />
-                <Route path="agents/repayment-rules/:id" element={<RepaymentRuleDetails />} />
                 <Route path="agents/repayment-rules/:id/versions/create" element={<CreateRepaymentRuleVersion />} />
                 <Route path="agents/repayment-rules/versions/:versionId" element={<RepaymentRuleVersionDetails />} />
-                <Route path="agent-contracts" element={<Navigate to="/agents/contracts" replace />} />
+                <Route path="agents/repayment-rules/:id" element={<RepaymentRuleDetails />} />
+                <Route path="agent-contracts" element={<Navigate to="/agents/cash-powder/contracts" replace />} />
                 <Route path="agent-contracts/create" element={<CreateAgentContract />} />
                 <Route path="agent-contracts/:id/edit" element={<CreateAgentContract />} />
                 <Route path="agent-contracts/:id" element={<AgentContractDetails />} />
                 <Route path="agent-contracts/:id/powder-deliveries" element={<PowderDeliveryHistory kind="contract" />} />
-                <Route path="repayments" element={<Navigate to="/agents/repayments" replace />} />
+                <Route path="repayments" element={<Navigate to="/agents/cash-powder/repayments" replace />} />
                 <Route path="repayments/:id" element={<RepaymentDetails />} />
-                <Route path="agent-advances" element={<Navigate to="/agents/advances" replace />} />
+                <Route path="agent-advances" element={<Navigate to="/agents/cash-powder/advances" replace />} />
                 <Route path="agent-advances/:id" element={<AgentAdvanceDetails />} />
-                <Route path="powder-deliveries" element={<Navigate to="/agents/powder-deliveries" replace />} />
+                <Route path="powder-deliveries" element={<Navigate to="/agents/cash-powder/deliveries" replace />} />
                 <Route path="powder-deliveries/create" element={<CreatePowderDelivery />} />
                 <Route path="powder-deliveries/:id" element={<PowderDeliveryDetails />} />
                 <Route

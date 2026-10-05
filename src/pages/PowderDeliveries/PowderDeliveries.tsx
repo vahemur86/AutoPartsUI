@@ -170,7 +170,7 @@ const useDeliveryColumns = (
             <Button
               size="small"
               variant="secondary"
-              onClick={() => navigate(`/powder-deliveries/${row.original.id}`)}
+              onClick={() => navigate(`/agents/cash-powder/deliveries/${row.original.id}`)}
             >
               {t("powderDeliveries.actions.view")}
             </Button>
@@ -570,7 +570,7 @@ export const CreatePowderDelivery = () => {
         notes: notes.trim() || null,
       });
       toast.success(t("powderDeliveries.messages.created"));
-      navigate(`/powder-deliveries/${id}`);
+      navigate(`/agents/cash-powder/deliveries/${id}`);
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, t("powderDeliveries.errors.createFailed")),
@@ -776,7 +776,7 @@ export const PowderDeliveryDetails = () => {
             <Button
               variant="secondary"
               onClick={() =>
-                navigate(`/agent-contracts/${delivery.contract.id}`)
+                navigate(`/agents/cash-powder/contracts/${delivery.contract.id}`)
               }
             >
               {t("powderDeliveries.actions.viewContract")}

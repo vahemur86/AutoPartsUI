@@ -79,10 +79,10 @@ export const CreateRepaymentRuleVersion = () => {
       }
       toast.success(t("repaymentRules.messages.versionCreated"));
       if (created?.id) {
-        navigate(`/agents/repayment-rules/versions/${created.id}`);
+        navigate(`/agents/cash-powder/rules/versions/${created.id}`);
         return;
       }
-      navigate(`/agents/repayment-rules/${id}`);
+      navigate(`/agents/cash-powder/rules/${id}`);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("repaymentRules.errors.versionSaveFailed")));
     } finally {

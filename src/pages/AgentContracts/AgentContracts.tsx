@@ -18,7 +18,7 @@ import { capitalSourcesService } from "@/services/capitalSources";
 import { powderDeliveriesService } from "@/services/powderDeliveries";
 import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
-import type { AgentDto, AgentProductDebtDto } from "@/types/agents";
+import type { AgentDto } from "@/types/agents";
 import type { CapitalSourceDto } from "@/types/capitalSources";
 import type {
   RepaymentRule,
@@ -151,26 +151,6 @@ export const AgentContractsList = () => {
         cell: ({ row }: any) => <StatusBadge status={row.original.status} />,
       },
       {
-        id: "productAdvance",
-        header: t("agentContracts.productCredit.productAdvance"),
-        cell: ({ row }: { row: { original: AgentContractListItemDto } }) =>
-          t(
-            row.original.allowsProductAdvance
-              ? "agentContracts.productCredit.allowed"
-              : "agentContracts.productCredit.notAllowed",
-          ),
-      },
-      {
-        id: "repaymentRule",
-        header: t("agentContracts.productCredit.repaymentRule"),
-        cell: ({ row }: { row: { original: AgentContractListItemDto } }) =>
-          row.original.repaymentTerms?.ruleVersion != null
-            ? t("agentContracts.productCredit.ruleVersionNumber", {
-                version: row.original.repaymentTerms.ruleVersion,
-              })
-            : "-",
-      },
-      {
         id: "advanced",
         header: t("agentContracts.fields.advanced"),
         cell: ({ row }: any) => money(row.original.totalAdvancedAmount),
@@ -197,7 +177,7 @@ export const AgentContractsList = () => {
           <Button
             size="small"
             variant="secondary"
-            onClick={() => navigate(`/agent-contracts/${row.original.id}`)}
+             onClick={() => navigate(`/agents/cash-powder/contracts/${row.original.id}`)}
           >
             {t("agentContracts.actions.view")}
           </Button>
@@ -212,7 +192,7 @@ export const AgentContractsList = () => {
       <SectionHeader
         title={t("agentContracts.title")}
         actions={
-          <Button onClick={() => navigate("/agent-contracts/create")}>
+          <Button onClick={() => navigate("/agents/cash-powder/contracts/create")}>
             <Plus size={14} /> {t("agentContracts.actions.createContract")}
           </Button>
         }
@@ -285,7 +265,7 @@ export const AgentContractsList = () => {
   );
 };
 
-export const CreateAgentContract = () => {
+export const CreateAgentContract = ({ productCreditMode = false }: { productCreditMode?: boolean }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id: contractId } = useParams();
@@ -296,7 +276,7 @@ export const CreateAgentContract = () => {
   const [contractLoading, setContractLoading] = useState(Boolean(contractId));
   const [agentId, setAgentId] = useState("");
   const [versionId, setVersionId] = useState("");
-  const [allowsProductAdvance, setAllowsProductAdvance] = useState(false);
+  const [allowsProductAdvance, setAllowsProductAdvance] = useState(productCreditMode);
   const [contractDate, setContractDate] = useState(
     new Date().toISOString().slice(0, 10),
   );
@@ -376,11 +356,15 @@ export const CreateAgentContract = () => {
       if (contractId) {
         await agentContractsService.updateContract(contractId, request);
         toast.success(t("agentContracts.messages.updated"));
-        navigate(`/agent-contracts/${contractId}`);
+        navigate(productCreditMode
+          ? `/agents/product-credit/contracts/${contractId}`
+          : `/agents/cash-powder/contracts/${contractId}`);
       } else {
         const createdId = await agentContractsService.createContract(request);
         toast.success(t("agentContracts.messages.created"));
-        navigate(`/agent-contracts/${createdId}`);
+        navigate(productCreditMode
+          ? `/agents/product-credit/contracts/${createdId}`
+          : `/agents/cash-powder/contracts/${createdId}`);
       }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agentContracts.errors.createFailed")));
@@ -457,17 +441,20 @@ export const CreateAgentContract = () => {
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
         />
-        <div className={styles.productCreditConfig}>
-          <label>
-            <input
-              type="checkbox"
-              checked={allowsProductAdvance}
-              onChange={(event) => setAllowsProductAdvance(event.target.checked)}
-            />
-            {t("agentContracts.productCredit.allowProductAdvance")}
-          </label>
-          <p>{t("agentContracts.productCredit.configurationDescription")}</p>
-        </div>
+        {productCreditMode && (
+          <div className={styles.productCreditConfig}>
+            <h2>{t("agentWorkspace.productCredit")}</h2>
+            <label>
+              <input
+                type="checkbox"
+                checked={allowsProductAdvance}
+                onChange={(event) => setAllowsProductAdvance(event.target.checked)}
+              />
+              {t("agentContracts.productCredit.allowProductAdvance")}
+            </label>
+            <p>{t("agentContracts.productCredit.configurationDescription")}</p>
+          </div>
+        )}
         {selected && <Terms terms={selected} title={t("agentContracts.form.termsPreview")} />}
         <div className={styles.actions}>
           <Button variant="secondary" onClick={() => navigate(-1)}>
@@ -531,7 +518,6 @@ export const AgentContractDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [contract, setContract] = useState<AgentContractDto | null>(null);
-  const [productDebt, setProductDebt] = useState<AgentProductDebtDto | null>(null);
   const [capitalSources, setCapitalSources] = useState<CapitalSourceDto[]>([]);
   const [deliveries, setDeliveries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -555,15 +541,6 @@ export const AgentContractDetails = () => {
 
       setContract(contractResult);
       setCapitalSources(sourceResult.results ?? []);
-
-      if (contractResult?.agent?.id) {
-        const debtResult = await agentsService
-          .getProductDebt(contractResult.agent.id, contractResult.id)
-          .catch(() => null);
-        setProductDebt(debtResult);
-      } else {
-        setProductDebt(null);
-      }
 
       if (contractResult?.agent?.id) {
         const deliveryResult = await powderDeliveriesService.listForAgent(
@@ -650,7 +627,12 @@ export const AgentContractDetails = () => {
       }
     >();
 
-    for (const advance of contract.advances ?? []) {
+    const cashAdvances = (contract.advances ?? []).filter((advance) => {
+      const type = String(advance.advanceType ?? "Cash").toLowerCase();
+      return !type || type.includes("cash");
+    });
+
+    for (const advance of cashAdvances) {
       for (const allocation of advance.allocations ?? []) {
         const existing = map.get(allocation.capitalSourceId) ?? {
           id: allocation.capitalSourceId,
@@ -755,6 +737,10 @@ export const AgentContractDetails = () => {
         activeRule.excessAgentPercent > 0),
   );
   const hasFunding = fundingRows.length > 0 && totalAllocatedCapital > 0;
+  const cashAdvances = (contract.advances ?? []).filter((advance) => {
+    const type = String(advance.advanceType ?? "Cash").toLowerCase();
+    return !type || type.includes("cash");
+  });
 
   return (
     <div className={styles.page}>
@@ -765,14 +751,14 @@ export const AgentContractDetails = () => {
           <div className={styles.headerActions}>
             <Button
               variant="secondary"
-              onClick={() => navigate(`/agent-contracts/${contract.id}/edit`)}
+              onClick={() => navigate(`/agents/cash-powder/contracts/${contract.id}/edit`)}
             >
               {t("agentContracts.actions.editContract")}
             </Button>
             <Button
               variant="secondary"
               onClick={() =>
-                navigate(`/agent-contracts/${contract.id}/powder-deliveries`)
+                navigate(`/agents/cash-powder/contracts/${contract.id}/powder-deliveries`)
               }
             >
               {t("agentContracts.actions.deliveryHistory")}
@@ -843,26 +829,6 @@ export const AgentContractDetails = () => {
             label={t("agentContracts.fields.contractStatus")}
             value={<StatusBadge status={contract.status} />}
           />
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t("agentContracts.productCredit.title")}</h2>
-        <div className={styles.detailGrid}>
-          <Detail
-            label={t("agentContracts.productCredit.allowedLabel")}
-            value={t(
-              contract.allowsProductAdvance
-                ? "agentContracts.productCredit.allowed"
-                : "agentContracts.productCredit.notAllowed",
-            )}
-          />
-          {productDebt && (
-            <Detail
-              label={t("agents.productCredit.outstandingDebt")}
-              value={`${money(productDebt.outstandingAmount)} AMD`}
-            />
-          )}
         </div>
       </section>
 
@@ -957,7 +923,7 @@ export const AgentContractDetails = () => {
             </Button>
           </div>
         )}
-        {(contract.advances ?? []).length ? (
+        {cashAdvances.length ? (
           <DataTable
             columns={[
               { accessorKey: "advanceNumber", header: t("agentContracts.fields.advance") },
@@ -987,7 +953,7 @@ export const AgentContractDetails = () => {
                       size="small"
                       variant="secondary"
                       onClick={() =>
-                        navigate(`/agent-advances/${row.original.id}`)
+                        navigate(`/agents/cash-powder/advances/${row.original.id}`)
                       }
                     >
                       {t("agentContracts.actions.view")}
@@ -996,7 +962,7 @@ export const AgentContractDetails = () => {
                       <Button
                         size="small"
                         onClick={() =>
-                          navigate(`/agent-advances/${row.original.id}`)
+                          navigate(`/agents/cash-powder/advances/${row.original.id}`)
                         }
                       >
                         {t("agentContracts.actions.addAllocation")}
@@ -1006,7 +972,7 @@ export const AgentContractDetails = () => {
                 ),
               },
             ]}
-            data={contract.advances ?? []}
+            data={cashAdvances}
             noResultsText={t("agentContracts.details.noAdvances")}
           />
         ) : (
@@ -1194,7 +1160,7 @@ export const AgentAdvancesList = () => {
           <Button
             size="small"
             variant="secondary"
-            onClick={() => navigate(`/agent-advances/${row.original.id}`)}
+            onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)}
           >
             View
           </Button>
@@ -1210,7 +1176,7 @@ export const AgentAdvancesList = () => {
         actions={
           <Button
             variant="secondary"
-            onClick={() => navigate("/agent-contracts")}
+            onClick={() => navigate("/agents/cash-powder/contracts")}
           >
             Contracts
           </Button>
@@ -1408,7 +1374,7 @@ export const AgentAdvanceDetails = () => {
             <Button
               variant="secondary"
               onClick={() =>
-                navigate(`/agent-contracts/${advance.agentContractId}`)
+                navigate(`/agents/cash-powder/contracts/${advance.agentContractId}`)
               }
             >
               View Contract

@@ -3238,7 +3238,26 @@
   },
   "agentWorkspace": {
     "title": "Agent Operations",
-    "eyebrow": "Operations · Agent desk"
+    "eyebrow": "Operations · Agent desk",
+    "general": "Agent Management",
+    "cashPowder": "Cash / Powder Advance",
+    "productCredit": "Product Credit",
+    "sectionNavigation": "Agent business flows",
+    "contracts": "Product Credit Contracts",
+    "advances": "Product Advances",
+    "sales": "Credit Sales",
+    "debt": "Product Debt",
+    "payments": "Debt Payments",
+    "productContracts": "Product Credit Contracts",
+    "noProductContracts": "No Product Credit contracts found.",
+    "productAdvances": "Product Advances",
+    "noProductAdvances": "No Product Advances found.",
+    "productSales": "Product Credit Sales",
+    "salesHistoryUnavailableTitle": "Sales history is unavailable",
+    "salesHistoryUnavailableDescription": "Product Credit sales history is not exposed by the current API. Related sale IDs are shown with Product Advances.",
+    "selectAgent": "Select agent",
+    "allProductContracts": "All Product Credit contracts",
+    "selectAgentPrompt": "Select an agent to view Product Debt."
   },
   "agents": {
     "title": "Agents",
@@ -3290,10 +3309,14 @@
     },
     "details": {
       "title": "Details",
-      "customerInformation": "Customer Information"
+      "customerInformation": "Customer Information",
+      "general": "General",
+      "financialNavigation": "Agent financial flows",
+      "cashPowderDescription": "Cash advances, powder deliveries, valuation, and repayment are managed separately from Product Credit."
     },
     "productCredit": {
       "title": "Product Credit",
+      "agent": "Agent",
       "activeContract": "Active Product Credit Contract",
       "noActiveContract": "No active Product Credit contract",
       "allowed": "Product Advance Allowed",
@@ -3308,7 +3331,8 @@
       "cashSession": "Cash Session",
       "cashLedgerEntry": "Cash Ledger Entry ID",
       "createdBy": "Created By",
-      "noPayments": "No product debt payments found."
+      "noPayments": "No product debt payments found.",
+      "loadFailed": "Failed to load Product Credit data."
     },
     "sections": {
       "customer": "Customer",

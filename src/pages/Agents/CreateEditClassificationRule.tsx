@@ -78,7 +78,7 @@ export const CreateEditClassificationRule = () => {
       }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("classificationRules.errors.loadFailed")));
-      navigate("/agent-classification-rules");
+      navigate("/agents/classification-rules");
     } finally {
       setIsLoading(false);
     }
@@ -165,11 +165,11 @@ export const CreateEditClassificationRule = () => {
       } else {
         const newId = await agentsService.createClassificationRule(payload);
         toast.success(t("classificationRules.messages.created"));
-        navigate(`/agent-classification-rules/${newId}`);
+        navigate(`/agents/classification-rules/${newId}`);
         return;
       }
 
-      navigate("/agent-classification-rules");
+      navigate("/agents/classification-rules");
     } catch (error) {
       toast.error(getApiErrorMessage(error, id ? t("classificationRules.errors.updateFailed") : t("classificationRules.errors.createFailed")));
     } finally {
@@ -339,7 +339,7 @@ export const CreateEditClassificationRule = () => {
         </div>
 
         <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => navigate("/agent-classification-rules")}>
+          <Button variant="secondary" onClick={() => navigate("/agents/classification-rules")}>
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>

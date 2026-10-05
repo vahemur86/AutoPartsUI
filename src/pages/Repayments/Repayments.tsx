@@ -144,7 +144,7 @@ export const RepaymentManagement = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }: any) => (
-          <Button variant="secondary" size="small" onClick={() => navigate(`/repayments/${row.original.id}`)}>
+          <Button variant="secondary" size="small" onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.id}`)}>
             View
           </Button>
         ),
@@ -165,7 +165,7 @@ export const RepaymentManagement = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }: any) => (
-          <Button variant="secondary" size="small" onClick={() => navigate(`/repayments/${row.original.id}`)}>
+          <Button variant="secondary" size="small" onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.id}`)}>
             View
           </Button>
         ),
@@ -202,7 +202,7 @@ export const RepaymentManagement = () => {
             >
               {retryingId === row.original.powderDeliveryId ? "Retrying..." : "Retry"}
             </Button>
-            <Button size="small" variant="secondary" onClick={() => navigate(`/repayments/${row.original.powderDeliveryId}`)}>
+            <Button size="small" variant="secondary" onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.powderDeliveryId}`)}>
               Details
             </Button>
           </div>

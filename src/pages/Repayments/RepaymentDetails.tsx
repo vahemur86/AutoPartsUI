@@ -47,7 +47,7 @@ const RepaymentDetails = () => {
         title={repayment?.repaymentNumber ?? "Repayment Details"}
         goBack
         actions={
-          <Button variant="secondary" size="small" onClick={() => navigate("/repayments")}>
+          <Button variant="secondary" size="small" onClick={() => navigate("/agents/cash-powder/repayments")}>
             Back to repayments
           </Button>
         }

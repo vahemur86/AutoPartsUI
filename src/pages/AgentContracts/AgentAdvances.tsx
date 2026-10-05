@@ -319,9 +319,6 @@ export const AgentAdvancesList = () => {
   const status = searchParams.get("status") || "";
   const agentId = searchParams.get("agentId") || "";
   const advanceNumber = searchParams.get("advanceNumber") || "";
-  const contractId = searchParams.get("agentContractId") || "";
-  const advanceType = searchParams.get("advanceType") || "";
-  const productSaleId = searchParams.get("productSaleId") || "";
   const from = searchParams.get("advanceDateFrom") || "";
   const to = searchParams.get("advanceDateTo") || "";
   const setFilter = (key: string, value: string) => {
@@ -345,14 +342,15 @@ export const AgentAdvancesList = () => {
           pageSize,
           status: status || undefined,
           agentId: agentId || undefined,
-          agentContractId: contractId || undefined,
-          advanceType: advanceType || undefined,
-          productSaleId: productSaleId || undefined,
+          advanceType: "Cash",
           advanceNumber: advanceNumber || undefined,
           advanceDateFrom: from || undefined,
           advanceDateTo: to || undefined,
         });
-        setItems(result.results ?? []);
+        setItems((result.results ?? []).filter((advance) => {
+          const type = String(advance.advanceType ?? "Cash").toLowerCase();
+          return !type || type.includes("cash");
+        }));
         setTotal(result.totalItems);
       } catch (error) {
         toast.error(getApiErrorMessage(error, t("agentAdvances.errors.loadFailed")));
@@ -360,7 +358,7 @@ export const AgentAdvancesList = () => {
         setLoading(false);
       }
     })();
-  }, [page, pageSize, status, agentId, advanceNumber, contractId, advanceType, productSaleId, from, to]);
+  }, [page, pageSize, status, agentId, advanceNumber, from, to]);
   const columns = useMemo(
     () => [
       { accessorKey: "advanceNumber", header: t("agentAdvances.fields.advanceNumber") },
@@ -369,21 +367,6 @@ export const AgentAdvancesList = () => {
         header: t("agentAdvances.fields.agent"),
         cell: ({ row }: any) =>
           `${row.original.agent.code} - ${row.original.agent.fullName}`,
-      },
-      {
-        id: "advanceType",
-        header: t("agentAdvances.fields.advanceType"),
-        cell: ({ row }: { row: { original: AgentAdvanceDto } }) =>
-          t(
-            String(row.original.advanceType ?? "Cash").toLowerCase().includes("product")
-              ? "agentAdvances.fields.productAdvance"
-              : "agentAdvances.fields.cashAdvance",
-          ),
-      },
-      {
-        accessorKey: "productSaleId",
-        header: t("agentAdvances.fields.productSaleId"),
-        cell: ({ row }: { row: { original: AgentAdvanceDto } }) => row.original.productSaleId ?? "-",
       },
       {
         id: "amount",
@@ -415,7 +398,7 @@ export const AgentAdvancesList = () => {
           <Button
             size="small"
             variant="secondary"
-            onClick={() => navigate(`/agent-advances/${row.original.id}`)}
+            onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)}
           >
             {t("agentAdvances.actions.view")}
           </Button>
@@ -431,7 +414,7 @@ export const AgentAdvancesList = () => {
         actions={
           <Button
             variant="secondary"
-            onClick={() => navigate("/agent-contracts")}
+            onClick={() => navigate("/agents/cash-powder/contracts")}
           >
             <Plus size={14} /> {t("agentAdvances.list.contracts")}
           </Button>
@@ -458,24 +441,6 @@ export const AgentAdvancesList = () => {
             <option key={item} value={item}>{t(`agentAdvances.statuses.${item.toLowerCase()}`)}</option>
           ))}
         </Select>
-        <Select
-          value={advanceType}
-          onChange={(event) => setFilter("advanceType", event.target.value)}
-        >
-          <option value="">{t("agentAdvances.list.allAdvanceTypes")}</option>
-          <option value="Cash">{t("agentAdvances.fields.cashAdvance")}</option>
-          <option value="Product">{t("agentAdvances.fields.productAdvance")}</option>
-        </Select>
-        <TextField
-          label={t("agentAdvances.fields.contract")}
-          value={contractId}
-          onChange={(event) => setFilter("agentContractId", event.target.value)}
-        />
-        <TextField
-          label={t("agentAdvances.fields.productSaleId")}
-          value={productSaleId}
-          onChange={(event) => setFilter("productSaleId", event.target.value)}
-        />
         <TextField
           label={t("agentAdvances.fields.advanceNumber")}
           value={advanceNumber}
@@ -541,18 +506,23 @@ export const AgentAdvanceDetails = () => {
     if (!id) return;
     setLoading(true);
     try {
-      const [result, sourceResult, extensionResult] = await Promise.all([
-        agentContractsService.getAdvance(id),
-        capitalSourcesService.listCapitalSources({
-          page: 1,
-          pageSize: 200,
-          status: "Active",
-        }),
-        agentContractsService.getAdvanceExtensions(id),
-      ]);
+      const result = await agentContractsService.getAdvance(id);
       setAdvance(result);
-      setSources(sourceResult.results ?? []);
-      setExtensions(extensionResult);
+      if (String(result.advanceType ?? "Cash").toLowerCase().includes("product")) {
+        setSources([]);
+        setExtensions([]);
+      } else {
+        const [sourceResult, extensionResult] = await Promise.all([
+          capitalSourcesService.listCapitalSources({
+            page: 1,
+            pageSize: 200,
+            status: "Active",
+          }),
+          agentContractsService.getAdvanceExtensions(id),
+        ]);
+        setSources(sourceResult.results ?? []);
+        setExtensions(extensionResult);
+      }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agentAdvances.errors.loadDetailsFailed")));
     } finally {
@@ -569,6 +539,37 @@ export const AgentAdvanceDetails = () => {
         {t("common.loading")}
       </div>
     );
+  if (String(advance.advanceType ?? "Cash").toLowerCase().includes("product")) {
+    return (
+      <div className={styles.page}>
+        <SectionHeader
+          title={advance.advanceNumber}
+          goBack
+          actions={(
+            <Button
+              variant="secondary"
+              onClick={() => navigate(`/agents/product-credit/contracts/${advance.agentContractId}`)}
+            >
+              {t("agentAdvances.actions.viewContract")}
+            </Button>
+          )}
+        />
+        <section className={styles.section}>
+          <h2>{t("agentWorkspace.productCredit")}</h2>
+          <div className={styles.detailGrid}>
+            <Detail label={t("agentAdvances.fields.advanceType")} value={t("agentAdvances.fields.productAdvance")} />
+            <Detail label={t("agentAdvances.fields.productSaleId")} value={advance.productSaleId ?? "-"} />
+            <Detail label={t("agentAdvances.fields.agent")} value={`${advance.agent.code} - ${advance.agent.fullName}`} />
+            <Detail label={t("agentAdvances.fields.contract")} value={advance.agentContractId} />
+            <Detail label={t("agentAdvances.fields.advancedAmount")} value={`${money(advance.advancedAmount)} AMD`} />
+            <Detail label={t("agentAdvances.fields.advanceDate")} value={datetime(advance.advanceDate)} />
+            <Detail label={t("agentAdvances.fields.status")} value={<StatusBadge status={advance.status} />} />
+            <Detail label={t("agentAdvances.fields.notes")} value={advance.notes} />
+          </div>
+        </section>
+      </div>
+    );
+  }
   const deadline = deadlineFor(advance, advance.repaymentTerms);
   const extensionCount = advance.extensionCount ?? extensions.length;
   const maximumExtensions =
@@ -687,7 +688,7 @@ export const AgentAdvanceDetails = () => {
             <Button
               variant="secondary"
               onClick={() =>
-                navigate(`/agent-contracts/${advance.agentContractId}`)
+                navigate(`/agents/cash-powder/contracts/${advance.agentContractId}`)
               }
             >
               {t("agentAdvances.actions.viewContract")}
@@ -714,20 +715,6 @@ export const AgentAdvanceDetails = () => {
         }
       />
       <div className={styles.detailGrid}>
-        <Detail
-          label={t("agentAdvances.fields.advanceType")}
-          value={t(
-            String(advance.advanceType ?? "Cash").toLowerCase().includes("product")
-              ? "agentAdvances.fields.productAdvance"
-              : "agentAdvances.fields.cashAdvance",
-          )}
-        />
-        {advance.productSaleId != null && (
-          <Detail
-            label={t("agentAdvances.fields.productSaleId")}
-            value={advance.productSaleId}
-          />
-        )}
         <Detail
           label={t("agentAdvances.fields.status")}
           value={<StatusBadge status={advance.status} />}
