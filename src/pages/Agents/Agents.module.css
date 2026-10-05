@@ -20,10 +20,11 @@
 }
 
 .summaryCard {
-  background: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
   padding: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .summaryLabel {
@@ -44,10 +45,11 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  background: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  padding: 20px;
+  background: linear-gradient(135deg, rgba(19, 21, 30, 0.98) 0%, rgba(12, 14, 22, 0.96) 45%, rgba(15, 17, 24, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.38);
 }
 
 .dashboardHeader {
@@ -83,9 +85,9 @@
 }
 
 .progressCard {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.12) 0%, rgba(132, 204, 22, 0.08) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.18);
+  border-radius: 16px;
   padding: 18px;
 }
 
@@ -136,10 +138,11 @@
 }
 
 .dashboardCard {
-  background: var(--color-black-2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(15, 23, 42, 0.25) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .cardHeader {

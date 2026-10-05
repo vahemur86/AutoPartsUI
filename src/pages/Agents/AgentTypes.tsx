@@ -54,7 +54,7 @@ export const AgentTypes = () => {
   if (isLoading) {
     return (
       <div className={styles.page}>
-        <SectionHeader title={t("agentTypes.title")} goBack />
+        <SectionHeader title={t("agentTypes.title")} />
         <div>{t("common.loading")}</div>
       </div>
     );
@@ -62,7 +62,7 @@ export const AgentTypes = () => {
 
   return (
     <div className={styles.page}>
-      <SectionHeader title={t("agentTypes.title")} goBack />
+      <SectionHeader title={t("agentTypes.title")} />
 
       <div className={styles.listHeader}>
         <Button onClick={() => navigate("/agent-types/new")}>{t("agentTypes.actions.create")}</Button>

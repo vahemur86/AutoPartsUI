@@ -13,7 +13,7 @@ import styles from "./Agents.module.css";
 const formatMoney = (value: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "AMD",
     maximumFractionDigits: 2,
   }).format(value);
 
@@ -47,6 +47,12 @@ const AgentFinancialSummary = () => {
     return (summary.agent.totalRepaidAmount / summary.agent.totalAdvancedAmount) * 100;
   }, [summary]);
 
+  const summaryTitle = summary
+    ? `${summary.agent.code || "Agent"}${summary.agent.name ? ` — ${summary.agent.name}` : ""}`
+    : t("agentFinancialSummary.title");
+
+  const firstContract = summary?.contract ?? null;
+
   if (!summary && !loading) {
     return (
       <div className={styles.page}>
@@ -59,7 +65,7 @@ const AgentFinancialSummary = () => {
   return (
     <div className={styles.page}>
       <SectionHeader
-        title={summary ? `${summary.agent.code} — ${summary.agent.name}` : t("agentFinancialSummary.title")}
+        title={summaryTitle}
         goBack
         actions={
           <div style={{ display: "flex", gap: 8 }}>
@@ -81,9 +87,9 @@ const AgentFinancialSummary = () => {
             <div className={styles.dashboardHeader}>
               <div>
                 <div className={styles.kicker}>{t("agentFinancialSummary.overview")}</div>
-                <h3>{summary.agent.name}</h3>
+                <h3>{summary.agent.name || summary.agent.code || "Agent"}</h3>
               </div>
-              <div className={styles.statusPill}>{t(`agents.statuses.${summary.agent.status.toLowerCase()}`, { defaultValue: summary.agent.status })}</div>
+              <div className={styles.statusPill}>{t(`agents.statuses.${summary.agent.status.toLowerCase()}`, { defaultValue: summary.agent.status || "Active" })}</div>
             </div>
 
             <div className={styles.summaryGrid}>
@@ -127,27 +133,27 @@ const AgentFinancialSummary = () => {
               <div className={styles.activityList}>
                 <div className={styles.activityItem}>
                   <span className={styles.activityLabel}>{t("agentFinancialSummary.contract")}</span>
-                  <strong>{summary.contract.number}</strong>
+                  <strong>{firstContract?.number || "—"}</strong>
                 </div>
                 <div className={styles.activityItem}>
                   <span className={styles.activityLabel}>{t("agentFinancialSummary.status")}</span>
-                  <strong>{summary.contract.status}</strong>
+                  <strong>{firstContract?.status || summary.agent.status || "Active"}</strong>
                 </div>
                 <div className={styles.activityItem}>
                   <span className={styles.activityLabel}>{t("agentFinancialSummary.debtRepaymentPercent")}</span>
-                  <strong>{summary.contract.debtRepaymentPercent ?? 0}%</strong>
+                  <strong>{firstContract?.debtRepaymentPercent ?? 0}%</strong>
                 </div>
                 <div className={styles.activityItem}>
                   <span className={styles.activityLabel}>{t("agentFinancialSummary.agentPayoutPercent")}</span>
-                  <strong>{summary.contract.agentPayoutPercent ?? 0}%</strong>
+                  <strong>{firstContract?.agentPayoutPercent ?? 0}%</strong>
                 </div>
                 <div className={styles.activityItem}>
                   <span className={styles.activityLabel}>{t("agentFinancialSummary.defaultRepaymentPeriod")}</span>
-                  <strong>{summary.contract.defaultRepaymentPeriodDays ?? 0} {t("agentFinancialSummary.days")}</strong>
+                  <strong>{firstContract?.defaultRepaymentPeriodDays ?? 0} {t("agentFinancialSummary.days")}</strong>
                 </div>
                 <div className={styles.activityItem}>
                   <span className={styles.activityLabel}>{t("agentFinancialSummary.maximumExtensions")}</span>
-                  <strong>{summary.contract.maximumExtensions ?? 0}</strong>
+                  <strong>{firstContract?.maximumExtensions ?? 0}</strong>
                 </div>
               </div>
             </div>

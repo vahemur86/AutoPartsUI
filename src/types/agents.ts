@@ -81,6 +81,32 @@ export interface AgentDto {
   updatedBy?: string | null;
 }
 
+export interface AgentProductDebtDto {
+  agentId: string;
+  contractId: string | null;
+  outstandingAmount: number;
+}
+
+export interface AgentProductDebtPaymentDto {
+  id: string;
+  paidAt?: string | null;
+  paymentDate?: string | null;
+  amountAmd: number;
+  agentId?: string | null;
+  agentName?: string | null;
+  contractId?: string | null;
+  contractNumber?: string | null;
+  cashRegisterId?: number | null;
+  cashSessionId?: string | null;
+  cashLedgerEntryId?: string | null;
+  createdBy?: string | null;
+}
+
+export interface CreateAgentProductDebtPaymentRequest {
+  amountAmd: number;
+  contractId?: string;
+}
+
 export interface AgentClassificationRuleConditionDto {
   id: string;
   metric: AgentClassificationMetric;

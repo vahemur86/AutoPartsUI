@@ -44,6 +44,8 @@ export interface AgentAdvanceDto {
   agentContractId: string;
   agent: AgentSummaryDto;
   advancedAmount: number;
+  advanceType?: string | null;
+  productSaleId?: string | number | null;
   allocatedAmount: number;
   advanceDate: string;
   repaymentDeadline?: string | null;
@@ -65,6 +67,8 @@ export interface AgentContractListItemDto {
   agent: AgentSummaryDto;
   contractDate: string;
   status: AgentContractStatus;
+  allowsProductAdvance?: boolean;
+  repaymentTerms?: RepaymentTermsSnapshotDto | null;
   totalAdvancedAmount: number;
   totalRepaidAmount: number;
   outstandingAmount: number;
@@ -77,6 +81,7 @@ export interface AgentContractDto {
   agent: AgentSummaryDto;
   contractDate: string;
   status: AgentContractStatus;
+  allowsProductAdvance?: boolean;
   notes: string | null;
   repaymentTerms: RepaymentTermsSnapshotDto;
   financials: {
@@ -95,6 +100,7 @@ export interface SaveAgentContractRequest {
   agentId: string;
   repaymentRuleVersionId: string;
   contractDate: string;
+  allowsProductAdvance: boolean;
   notes?: string;
 }
 

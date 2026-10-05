@@ -319,6 +319,9 @@ export const AgentAdvancesList = () => {
   const status = searchParams.get("status") || "";
   const agentId = searchParams.get("agentId") || "";
   const advanceNumber = searchParams.get("advanceNumber") || "";
+  const contractId = searchParams.get("agentContractId") || "";
+  const advanceType = searchParams.get("advanceType") || "";
+  const productSaleId = searchParams.get("productSaleId") || "";
   const from = searchParams.get("advanceDateFrom") || "";
   const to = searchParams.get("advanceDateTo") || "";
   const setFilter = (key: string, value: string) => {
@@ -342,6 +345,9 @@ export const AgentAdvancesList = () => {
           pageSize,
           status: status || undefined,
           agentId: agentId || undefined,
+          agentContractId: contractId || undefined,
+          advanceType: advanceType || undefined,
+          productSaleId: productSaleId || undefined,
           advanceNumber: advanceNumber || undefined,
           advanceDateFrom: from || undefined,
           advanceDateTo: to || undefined,
@@ -354,7 +360,7 @@ export const AgentAdvancesList = () => {
         setLoading(false);
       }
     })();
-  }, [page, pageSize, status, agentId, advanceNumber, from, to]);
+  }, [page, pageSize, status, agentId, advanceNumber, contractId, advanceType, productSaleId, from, to]);
   const columns = useMemo(
     () => [
       { accessorKey: "advanceNumber", header: t("agentAdvances.fields.advanceNumber") },
@@ -363,6 +369,21 @@ export const AgentAdvancesList = () => {
         header: t("agentAdvances.fields.agent"),
         cell: ({ row }: any) =>
           `${row.original.agent.code} - ${row.original.agent.fullName}`,
+      },
+      {
+        id: "advanceType",
+        header: t("agentAdvances.fields.advanceType"),
+        cell: ({ row }: { row: { original: AgentAdvanceDto } }) =>
+          t(
+            String(row.original.advanceType ?? "Cash").toLowerCase().includes("product")
+              ? "agentAdvances.fields.productAdvance"
+              : "agentAdvances.fields.cashAdvance",
+          ),
+      },
+      {
+        accessorKey: "productSaleId",
+        header: t("agentAdvances.fields.productSaleId"),
+        cell: ({ row }: { row: { original: AgentAdvanceDto } }) => row.original.productSaleId ?? "-",
       },
       {
         id: "amount",
@@ -437,6 +458,24 @@ export const AgentAdvancesList = () => {
             <option key={item} value={item}>{t(`agentAdvances.statuses.${item.toLowerCase()}`)}</option>
           ))}
         </Select>
+        <Select
+          value={advanceType}
+          onChange={(event) => setFilter("advanceType", event.target.value)}
+        >
+          <option value="">{t("agentAdvances.list.allAdvanceTypes")}</option>
+          <option value="Cash">{t("agentAdvances.fields.cashAdvance")}</option>
+          <option value="Product">{t("agentAdvances.fields.productAdvance")}</option>
+        </Select>
+        <TextField
+          label={t("agentAdvances.fields.contract")}
+          value={contractId}
+          onChange={(event) => setFilter("agentContractId", event.target.value)}
+        />
+        <TextField
+          label={t("agentAdvances.fields.productSaleId")}
+          value={productSaleId}
+          onChange={(event) => setFilter("productSaleId", event.target.value)}
+        />
         <TextField
           label={t("agentAdvances.fields.advanceNumber")}
           value={advanceNumber}
@@ -675,6 +714,20 @@ export const AgentAdvanceDetails = () => {
         }
       />
       <div className={styles.detailGrid}>
+        <Detail
+          label={t("agentAdvances.fields.advanceType")}
+          value={t(
+            String(advance.advanceType ?? "Cash").toLowerCase().includes("product")
+              ? "agentAdvances.fields.productAdvance"
+              : "agentAdvances.fields.cashAdvance",
+          )}
+        />
+        {advance.productSaleId != null && (
+          <Detail
+            label={t("agentAdvances.fields.productSaleId")}
+            value={advance.productSaleId}
+          />
+        )}
         <Detail
           label={t("agentAdvances.fields.status")}
           value={<StatusBadge status={advance.status} />}

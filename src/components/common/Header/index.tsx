@@ -36,7 +36,6 @@ import {
   FlaskConical,
   PackageSearch,
   Truck,
-  Tag,
   PiggyBank,
   FileSignature,
 } from "lucide-react";
@@ -456,104 +455,16 @@ export const Header: FC = () => {
               </button>
               <button
                 type="button"
-                className={`${styles.menuItem} ${isActive("/agents") || isActive("/agent-types") || isActive("/agent-classification-rules") || isActive("/agents/repayment-rules") ? styles.menuItemActive : ""}`}
-                onClick={() =>
-                  setOpenNestedDropdown((current) =>
-                    current === "agents" ? null : "agents",
-                  )
-                }
+                className={`${styles.menuItem} ${isActive("/agents") || isActive("/agent-types") || isActive("/agent-classification-rules") || isActive("/agent-contracts") || isActive("/agent-advances") || isActive("/powder-deliveries") || isActive("/repayments") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/agents");
+                  setOpenDropdown(null);
+                  setOpenNestedDropdown(null);
+                }}
               >
                 <Users className={styles.menuItemIcon} size={16} />
                 {t("header.agents")}
               </button>
-              {openNestedDropdown === "agents" && (
-                <div className={styles.nestedMenuContainer}>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agents") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/agents");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <Users className={styles.menuItemIcon} size={16} />
-                    {t("agents.list")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agent-types") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/agent-types");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <Tag className={styles.menuItemIcon} size={16} />
-                    {t("settings.navigation.agentTypes")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agent-classification-rules") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/agent-classification-rules");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <Layers className={styles.menuItemIcon} size={16} />
-                    {t("settings.navigation.classificationRules")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agents/repayment-rules") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/agents/repayment-rules");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <FileText className={styles.menuItemIcon} size={16} />
-                    {t("header.repaymentRules")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/agent-contracts") || isActive("/agent-advances") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/agent-contracts");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <FileSignature className={styles.menuItemIcon} size={16} />
-                    {t("header.agentContracts")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/powder-deliveries") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/powder-deliveries");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <Archive className={styles.menuItemIcon} size={16} />
-                    {t("header.powderDeliveries")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/repayments") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/repayments");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <FileText className={styles.menuItemIcon} size={16} />
-                    {t("header.repayments")}
-                  </button>
-                </div>
-              )}
               <button
                 type="button"
                 className={`${styles.menuItem} ${isActive("/service-tasks") ? styles.menuItemActive : ""}`}

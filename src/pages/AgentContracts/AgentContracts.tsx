@@ -18,7 +18,7 @@ import { capitalSourcesService } from "@/services/capitalSources";
 import { powderDeliveriesService } from "@/services/powderDeliveries";
 import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
-import type { AgentDto } from "@/types/agents";
+import type { AgentDto, AgentProductDebtDto } from "@/types/agents";
 import type { CapitalSourceDto } from "@/types/capitalSources";
 import type {
   RepaymentRule,
@@ -151,6 +151,26 @@ export const AgentContractsList = () => {
         cell: ({ row }: any) => <StatusBadge status={row.original.status} />,
       },
       {
+        id: "productAdvance",
+        header: t("agentContracts.productCredit.productAdvance"),
+        cell: ({ row }: { row: { original: AgentContractListItemDto } }) =>
+          t(
+            row.original.allowsProductAdvance
+              ? "agentContracts.productCredit.allowed"
+              : "agentContracts.productCredit.notAllowed",
+          ),
+      },
+      {
+        id: "repaymentRule",
+        header: t("agentContracts.productCredit.repaymentRule"),
+        cell: ({ row }: { row: { original: AgentContractListItemDto } }) =>
+          row.original.repaymentTerms?.ruleVersion != null
+            ? t("agentContracts.productCredit.ruleVersionNumber", {
+                version: row.original.repaymentTerms.ruleVersion,
+              })
+            : "-",
+      },
+      {
         id: "advanced",
         header: t("agentContracts.fields.advanced"),
         cell: ({ row }: any) => money(row.original.totalAdvancedAmount),
@@ -268,17 +288,45 @@ export const AgentContractsList = () => {
 export const CreateAgentContract = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id: contractId } = useParams();
   const agents = useAgents();
   const [rules, setRules] = useState<RepaymentRule[]>([]);
   const [versions, setVersions] = useState<RepaymentRuleVersion[]>([]);
+  const [existingContract, setExistingContract] = useState<AgentContractDto | null>(null);
+  const [contractLoading, setContractLoading] = useState(Boolean(contractId));
   const [agentId, setAgentId] = useState("");
   const [versionId, setVersionId] = useState("");
+  const [allowsProductAdvance, setAllowsProductAdvance] = useState(false);
   const [contractDate, setContractDate] = useState(
     new Date().toISOString().slice(0, 10),
   );
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!contractId) return;
+    let isCancelled = false;
+    void agentContractsService
+      .getContract(contractId)
+      .then((contract) => {
+        if (isCancelled) return;
+        setExistingContract(contract);
+        setAgentId(contract.agent.id);
+        setVersionId(contract.repaymentTerms.repaymentRuleVersionId);
+        setContractDate(new Date(contract.contractDate).toISOString().slice(0, 10));
+        setNotes(contract.notes ?? "");
+        setAllowsProductAdvance(contract.allowsProductAdvance === true);
+      })
+      .catch((error) => {
+        toast.error(getApiErrorMessage(error, t("agentContracts.errors.loadDetailsFailed")));
+      })
+      .finally(() => {
+        if (!isCancelled) setContractLoading(false);
+      });
+    return () => {
+      isCancelled = true;
+    };
+  }, [contractId, t]);
   useEffect(() => {
     void repaymentRulesService
       .getRepaymentRules()
@@ -303,6 +351,10 @@ export const CreateAgentContract = () => {
       .catch(() => setVersions([]));
   }, [rules]);
   const selected = versions.find((version) => version.id === versionId);
+  const currentVersionMissing = Boolean(
+    existingContract &&
+      !versions.some((version) => version.id === existingContract.repaymentTerms.repaymentRuleVersionId),
+  );
   const label = (version: RepaymentRuleVersion) =>
     t("agentContracts.form.ruleVersion", { name: rules.find((rule) => rule.id === version.ruleId)?.name ?? t("common.unknown"), version: version.version });
   const submit = async () => {
@@ -314,14 +366,22 @@ export const CreateAgentContract = () => {
     if (Object.keys(next).length) return;
     setSubmitting(true);
     try {
-      const id = await agentContractsService.createContract({
+      const request = {
         agentId,
         repaymentRuleVersionId: versionId,
         contractDate: new Date(contractDate).toISOString(),
+        allowsProductAdvance,
         notes: notes.trim() || undefined,
-      });
-      toast.success(t("agentContracts.messages.created"));
-      navigate(`/agent-contracts/${id}`);
+      };
+      if (contractId) {
+        await agentContractsService.updateContract(contractId, request);
+        toast.success(t("agentContracts.messages.updated"));
+        navigate(`/agent-contracts/${contractId}`);
+      } else {
+        const createdId = await agentContractsService.createContract(request);
+        toast.success(t("agentContracts.messages.created"));
+        navigate(`/agent-contracts/${createdId}`);
+      }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agentContracts.errors.createFailed")));
     } finally {
@@ -330,15 +390,29 @@ export const CreateAgentContract = () => {
   };
   return (
     <div className={styles.page}>
-      <SectionHeader title={t("agentContracts.createTitle")} goBack />
+      <SectionHeader
+        title={t(contractId ? "agentContracts.actions.editContract" : "agentContracts.createTitle")}
+        goBack
+      />
+      {contractLoading ? (
+        <div>{t("agentContracts.details.loading")}</div>
+      ) : contractId && !existingContract ? (
+        <div className={styles.error}>{t("agentContracts.errors.loadDetailsFailed")}</div>
+      ) : (
       <div className={styles.form}>
         <div>
           <label>{t("agentContracts.fields.agent")}</label>
           <Select
             value={agentId}
             onChange={(event) => setAgentId(event.target.value)}
+            disabled={Boolean(contractId)}
           >
             <option value="">{t("agentContracts.form.selectAgent")}</option>
+            {existingContract && !agents.some((agent) => agent.id === existingContract.agent.id) && (
+              <option value={existingContract.agent.id}>
+                {existingContract.agent.code} - {existingContract.agent.fullName}
+              </option>
+            )}
             {agents.map((agent) => (
               <option key={agent.id} value={agent.id}>
                 {agentName(agent)}
@@ -354,6 +428,14 @@ export const CreateAgentContract = () => {
             onChange={(event) => setVersionId(event.target.value)}
           >
             <option value="">{t("agentContracts.form.selectActiveRuleVersion")}</option>
+            {currentVersionMissing && existingContract && (
+              <option value={existingContract.repaymentTerms.repaymentRuleVersionId}>
+                {t("agentContracts.form.ruleVersion", {
+                  name: existingContract.repaymentTerms.repaymentRuleId,
+                  version: existingContract.repaymentTerms.ruleVersion,
+                })}
+              </option>
+            )}
             {versions.map((version) => (
               <option key={version.id} value={version.id}>
                 {label(version)}
@@ -375,16 +457,30 @@ export const CreateAgentContract = () => {
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
         />
+        <div className={styles.productCreditConfig}>
+          <label>
+            <input
+              type="checkbox"
+              checked={allowsProductAdvance}
+              onChange={(event) => setAllowsProductAdvance(event.target.checked)}
+            />
+            {t("agentContracts.productCredit.allowProductAdvance")}
+          </label>
+          <p>{t("agentContracts.productCredit.configurationDescription")}</p>
+        </div>
         {selected && <Terms terms={selected} title={t("agentContracts.form.termsPreview")} />}
         <div className={styles.actions}>
           <Button variant="secondary" onClick={() => navigate(-1)}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={submit} disabled={submitting}>
-            {submitting ? t("agentContracts.form.creating") : t("agentContracts.actions.createContract")}
+          <Button onClick={submit} disabled={submitting || Boolean(contractId && !existingContract)}>
+            {submitting
+              ? t(contractId ? "agentContracts.form.saving" : "agentContracts.form.creating")
+              : t(contractId ? "agentContracts.actions.saveChanges" : "agentContracts.actions.createContract")}
           </Button>
         </div>
       </div>
+      )}
     </div>
   );
 };
@@ -435,6 +531,7 @@ export const AgentContractDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [contract, setContract] = useState<AgentContractDto | null>(null);
+  const [productDebt, setProductDebt] = useState<AgentProductDebtDto | null>(null);
   const [capitalSources, setCapitalSources] = useState<CapitalSourceDto[]>([]);
   const [deliveries, setDeliveries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -458,6 +555,15 @@ export const AgentContractDetails = () => {
 
       setContract(contractResult);
       setCapitalSources(sourceResult.results ?? []);
+
+      if (contractResult?.agent?.id) {
+        const debtResult = await agentsService
+          .getProductDebt(contractResult.agent.id, contractResult.id)
+          .catch(() => null);
+        setProductDebt(debtResult);
+      } else {
+        setProductDebt(null);
+      }
 
       if (contractResult?.agent?.id) {
         const deliveryResult = await powderDeliveriesService.listForAgent(
@@ -659,6 +765,12 @@ export const AgentContractDetails = () => {
           <div className={styles.headerActions}>
             <Button
               variant="secondary"
+              onClick={() => navigate(`/agent-contracts/${contract.id}/edit`)}
+            >
+              {t("agentContracts.actions.editContract")}
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() =>
                 navigate(`/agent-contracts/${contract.id}/powder-deliveries`)
               }
@@ -731,6 +843,26 @@ export const AgentContractDetails = () => {
             label={t("agentContracts.fields.contractStatus")}
             value={<StatusBadge status={contract.status} />}
           />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t("agentContracts.productCredit.title")}</h2>
+        <div className={styles.detailGrid}>
+          <Detail
+            label={t("agentContracts.productCredit.allowedLabel")}
+            value={t(
+              contract.allowsProductAdvance
+                ? "agentContracts.productCredit.allowed"
+                : "agentContracts.productCredit.notAllowed",
+            )}
+          />
+          {productDebt && (
+            <Detail
+              label={t("agents.productCredit.outstandingDebt")}
+              value={`${money(productDebt.outstandingAmount)} AMD`}
+            />
+          )}
         </div>
       </section>
 

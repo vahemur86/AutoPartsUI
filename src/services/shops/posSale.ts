@@ -11,6 +11,9 @@ export interface POSSaleItem {
 export interface POSSaleRequest {
   shopId: number;
   customerId?: number | null;
+  isAgentCredit?: boolean;
+  agentId?: string | number | null;
+  agentContractId?: string | number | null;
   discountAmount?: number;
   cashPaid: number;
   nonCashPaid: number;
@@ -20,11 +23,15 @@ export interface POSSaleRequest {
 
 export interface POSSaleResponse {
   id: number;
+  saleNumber?: string | null;
   shopId: number;
   totalAmount: number;
   cashPaid: number;
   nonCashPaid: number;
   createdAt: string;
+  isAgentCredit?: boolean;
+  agentId?: string | number | null;
+  agentContractId?: string | number | null;
 }
 
 export const createPOSSale = async (

@@ -1,5 +1,8 @@
 import { api } from "@/services/index";
 import type {
+  AgentProductDebtDto,
+  AgentProductDebtPaymentDto,
+  CreateAgentProductDebtPaymentRequest,
   AgentDto,
   AgentTypeDto,
   AgentTypeHistoryDto,
@@ -11,6 +14,91 @@ import type {
   SaveAgentClassificationRuleRequest,
   AgentFinancialSummaryDto,
 } from "@/types/agents";
+import { getHeaders } from "@/utils";
+
+interface AgentFinancialSummaryFlatDto {
+  agentId?: string | null;
+  agentCode?: string | null;
+  agentFullName?: string | null;
+  activeContractsCount?: number | null;
+  totalAdvancedAmount?: number | null;
+  totalRepaidAmount?: number | null;
+  totalOutstandingAmount?: number | null;
+  contracts?: Array<{
+    contractId?: string | null;
+    contractNumber?: string | null;
+    status?: string | null;
+    totalAdvancedAmount?: number | null;
+    totalRepaidAmount?: number | null;
+    outstandingAmount?: number | null;
+    activeAdvancesCount?: number | null;
+  }> | null;
+  lastRepaymentsDate?: string | null;
+  recentRepaymentCount?: number | null;
+}
+
+export const normalizeAgentFinancialSummary = (
+  data: AgentFinancialSummaryDto | AgentFinancialSummaryFlatDto | null | undefined,
+): AgentFinancialSummaryDto => {
+  if (!data) {
+    return {
+      agent: {
+        id: "",
+        name: "",
+        code: "",
+        status: "Unknown",
+        totalAdvancedAmount: 0,
+        totalRepaidAmount: 0,
+        outstandingAmount: 0,
+      },
+      contract: {
+        id: "",
+        number: "",
+        status: "Unknown",
+      },
+      advances: [],
+      recentDeliveries: [],
+      recentRepayments: [],
+    };
+  }
+
+  if ("agent" in data && data.agent) {
+    return data as AgentFinancialSummaryDto;
+  }
+
+  const flatData = data as AgentFinancialSummaryFlatDto;
+  const firstContract = Array.isArray(flatData.contracts) ? flatData.contracts[0] : undefined;
+  const totalAdvancedAmount = Number(flatData.totalAdvancedAmount ?? firstContract?.totalAdvancedAmount ?? 0) || 0;
+  const totalRepaidAmount = Number(flatData.totalRepaidAmount ?? firstContract?.totalRepaidAmount ?? 0) || 0;
+  const totalOutstandingAmount = Number(flatData.totalOutstandingAmount ?? firstContract?.outstandingAmount ?? 0) || 0;
+
+  return {
+    agent: {
+      id: flatData.agentId ?? "",
+      name: flatData.agentFullName ?? "",
+      code: flatData.agentCode ?? "",
+      status: firstContract?.status ?? "Active",
+      totalAdvancedAmount,
+      totalRepaidAmount,
+      outstandingAmount: totalOutstandingAmount,
+    },
+    contract: {
+      id: firstContract?.contractId ?? "",
+      number: firstContract?.contractNumber ?? "",
+      status: firstContract?.status ?? "Active",
+      defaultRepaymentPeriodDays: undefined,
+      maximumExtensions: undefined,
+      debtRepaymentPercent: undefined,
+      agentPayoutPercent: undefined,
+      excessBusinessPercent: undefined,
+      excessAgentPercent: undefined,
+      effectiveDate: undefined,
+    },
+    advances: [],
+    recentDeliveries: [],
+    recentRepayments: [],
+  };
+};
 
 export const agentsService = {
   getAgents: async (params?: Record<string, unknown>) => {
@@ -33,7 +121,39 @@ export const agentsService = {
   },
 
   getAgentFinancialSummary: async (id: string) => {
-    const res = await api.get<AgentFinancialSummaryDto>(`/agents/${id}/financial-summary`);
+    const res = await api.get<AgentFinancialSummaryDto | AgentFinancialSummaryFlatDto>(`/agents/${id}/financial-summary`);
+    return normalizeAgentFinancialSummary(res.data);
+  },
+
+  getProductDebt: async (id: string, contractId?: string, cashRegisterId?: number) => {
+    const res = await api.get<AgentProductDebtDto>(`/agents/${id}/product-debt`, {
+      params: contractId ? { contractId } : undefined,
+      headers: getHeaders(cashRegisterId),
+    });
+    return res.data;
+  },
+
+  getProductDebtPayments: async (id: string, contractId?: string, cashRegisterId?: number) => {
+    const res = await api.get<AgentProductDebtPaymentDto[]>(
+      `/agents/${id}/product-debt/payments`,
+      {
+        params: contractId ? { contractId } : undefined,
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return res.data;
+  },
+
+  createProductDebtPayment: async (
+    id: string,
+    data: CreateAgentProductDebtPaymentRequest,
+    cashRegisterId: number,
+  ) => {
+    const res = await api.post<AgentProductDebtPaymentDto>(
+      `/agents/${id}/product-debt/payments`,
+      data,
+      { headers: getHeaders(cashRegisterId) },
+    );
     return res.data;
   },
 

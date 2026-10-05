@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Button, TextField } from "@/ui-kit";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { Button, ConfirmationModal, Select, TextField } from "@/ui-kit";
 import { Trash2 } from "lucide-react";
 
 // store
@@ -15,6 +16,10 @@ import {
   convertServiceEstimateToOrder,
   getServiceEstimateByNumber,
 } from "@/services/operator";
+import { getCustomers } from "@/services/customers";
+import { agentsService } from "@/services/agents";
+import { agentContractsService } from "@/services/agentContracts";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 
 // utils
 import { getCashRegisterId } from "@/utils";
@@ -23,8 +28,15 @@ import { getCashRegisterId } from "@/utils";
 import { createPOSSale } from "@/services/shops/posSale";
 
 // types
-import type { ServiceEstimateLookupResponse } from "@/types/operator";
+import type { Customer, ServiceEstimateLookupResponse } from "@/types/operator";
+import type { AgentContractListItemDto } from "@/types/agentContracts";
+import type { AgentDto } from "@/types/agents";
+import type { AgentProductDebtDto } from "@/types/agents";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
+
+type AgentContractCashierItem = AgentContractListItemDto & {
+  allowsProductAdvance?: boolean | null;
+};
 
 // styles
 import styles from "./CashierMode.module.css";
@@ -39,6 +51,7 @@ type CashierProductRow = ShopProductItem & {
 };
 
 type PaymentMode = "cash" | "non-cash" | "mixed";
+type SaleType = "normal" | "agent-credit";
 
 type CartItem = {
   productId: number;
@@ -55,6 +68,24 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const { shops } = useAppSelector((state) => state.shops);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [saleType, setSaleType] = useState<SaleType>("normal");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerLookupLoading, setCustomerLookupLoading] = useState(false);
+  const [identifiedCustomer, setIdentifiedCustomer] = useState<Customer | null>(null);
+  const [identifiedAgent, setIdentifiedAgent] = useState<AgentDto | null>(null);
+  const [identifiedContract, setIdentifiedContract] = useState<AgentContractCashierItem | null>(null);
+  const [identifiedProductDebt, setIdentifiedProductDebt] = useState<AgentProductDebtDto | null>(null);
+  const [creditConfirmationOpen, setCreditConfirmationOpen] = useState(false);
+  const [productDebtPaymentOpen, setProductDebtPaymentOpen] = useState(false);
+  const [debtAgents, setDebtAgents] = useState<AgentDto[]>([]);
+  const [debtAgentId, setDebtAgentId] = useState("");
+  const [debtContracts, setDebtContracts] = useState<AgentContractListItemDto[]>([]);
+  const [debtContractId, setDebtContractId] = useState("");
+  const [debtSummary, setDebtSummary] = useState<AgentProductDebtDto | null>(null);
+  const [debtPaymentAmount, setDebtPaymentAmount] = useState("");
+  const [debtLoading, setDebtLoading] = useState(false);
+  const [debtPaymentSaving, setDebtPaymentSaving] = useState(false);
+  const [agentLookupError, setAgentLookupError] = useState<string | null>(null);
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("cash");
   const [cashPaid, setCashPaid] = useState("0");
   const [nonCashPaid, setNonCashPaid] = useState("0");
@@ -156,6 +187,36 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   }, [selectedEstimate, estimateServicesTotal, estimateProductsTotal]);
 
   const activeTotalAmount = isEstimateMode ? estimateTotalAmount : totalAmount;
+
+  const resolveProductAdvanceAllowed = useCallback(
+    (contract?: Partial<AgentContractCashierItem> | null) => {
+      return contract?.allowsProductAdvance === true;
+    },
+    [],
+  );
+
+  const resolveActiveContract = useCallback(
+    (contracts?: Array<Partial<AgentContractCashierItem>> | null) => {
+      if (!Array.isArray(contracts) || contracts.length === 0) return null;
+
+      const activeContract = contracts.find((contract) => {
+        const statusText = String(contract.status ?? "").toLowerCase();
+        const numericStatus = Number(contract.status ?? -1);
+        return statusText === "active" || numericStatus === 0;
+      });
+
+      return activeContract ?? null;
+    },
+    [],
+  );
+
+  const isAgentCreditSale = saleType === "agent-credit";
+  const isAgentCreditReady =
+    isAgentCreditSale &&
+    !!identifiedCustomer &&
+    !!identifiedAgent &&
+    !!identifiedContract &&
+    resolveProductAdvanceAllowed(identifiedContract) !== false;
 
   const cashPaidNum = useMemo(() => parseFloat(cashPaid) || 0, [cashPaid]);
   const nonCashPaidNum = useMemo(() => parseFloat(nonCashPaid) || 0, [nonCashPaid]);
@@ -300,6 +361,14 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     setNonCashPaid("0");
     setNonCashReference("");
     setPaymentMode("cash");
+    setSaleType("normal");
+    setCustomerPhone("");
+    setIdentifiedCustomer(null);
+    setIdentifiedAgent(null);
+    setIdentifiedContract(null);
+    setIdentifiedProductDebt(null);
+    setCreditConfirmationOpen(false);
+    setAgentLookupError(null);
     setSearchSku("");
     setSearchMessage(null);
     setSearchMessageType(null);
@@ -307,7 +376,232 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     setSelectedEstimate(null);
   }, []);
 
-  const handleCompleteSale = useCallback(async () => {
+  useEffect(() => {
+    if (!productDebtPaymentOpen) return;
+    void agentsService
+      .getAgents({ page: 1, pageSize: 200, status: 0 })
+      .then((result) => setDebtAgents(result.results ?? []))
+      .catch((error) => toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.loadFailed"))));
+  }, [productDebtPaymentOpen, t]);
+
+  useEffect(() => {
+    if (!debtAgentId) {
+      setDebtContracts([]);
+      setDebtContractId("");
+      setDebtSummary(null);
+      return;
+    }
+
+    let isCancelled = false;
+    setDebtLoading(true);
+    void Promise.all([
+      agentContractsService.listContracts({ agentId: debtAgentId, page: 1, pageSize: 50 }),
+      agentsService.getProductDebt(debtAgentId, undefined, resolvedCashRegisterId),
+    ])
+      .then(([contractsResponse, summary]) => {
+        if (isCancelled) return;
+        const activeContracts = (contractsResponse.results ?? []).filter(
+          (contract) => String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0,
+        );
+        setDebtContracts(activeContracts);
+        setDebtContractId((current) =>
+          activeContracts.some((contract) => contract.id === current)
+            ? current
+            : activeContracts.length === 1
+              ? activeContracts[0].id
+              : "",
+        );
+        setDebtSummary(summary);
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          setDebtContracts([]);
+          setDebtSummary(null);
+          toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.loadFailed")));
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setDebtLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [debtAgentId, resolvedCashRegisterId, t]);
+
+  useEffect(() => {
+    if (!debtAgentId || !debtContractId) return;
+    let isCancelled = false;
+    void agentsService
+      .getProductDebt(debtAgentId, debtContractId, resolvedCashRegisterId)
+      .then((summary) => {
+        if (!isCancelled) setDebtSummary(summary);
+      })
+      .catch((error) => {
+        if (!isCancelled) toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.loadFailed")));
+      });
+    return () => {
+      isCancelled = true;
+    };
+  }, [debtAgentId, debtContractId, resolvedCashRegisterId, t]);
+
+  const handleSubmitProductDebtPayment = useCallback(async () => {
+    const amountAmd = Number(debtPaymentAmount);
+    if (!debtAgentId || !Number.isFinite(amountAmd) || amountAmd <= 0) {
+      toast.error(t("operatorPage.cashier.productDebt.invalidAmount"));
+      return;
+    }
+    if (debtSummary && amountAmd > debtSummary.outstandingAmount) {
+      toast.error(t("operatorPage.cashier.productDebt.amountExceedsDebt"));
+      return;
+    }
+    if (!resolvedCashRegisterId) {
+      toast.error(t("operatorPage.cashier.missingCashRegisterHeader"));
+      return;
+    }
+
+    setDebtPaymentSaving(true);
+    try {
+      await agentsService.createProductDebtPayment(
+        debtAgentId,
+        { amountAmd, ...(debtContractId ? { contractId: debtContractId } : {}) },
+        resolvedCashRegisterId,
+      );
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.paymentFailed")));
+      setDebtPaymentSaving(false);
+      return;
+    }
+
+    toast.success(t("operatorPage.cashier.productDebt.paymentRecorded"));
+    setDebtPaymentAmount("");
+    try {
+      const summary = await agentsService.getProductDebt(
+        debtAgentId,
+        debtContractId || undefined,
+        resolvedCashRegisterId,
+      );
+      setDebtSummary(summary);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.loadFailed")));
+    } finally {
+      setDebtPaymentSaving(false);
+    }
+  }, [debtAgentId, debtContractId, debtPaymentAmount, debtSummary, resolvedCashRegisterId, t]);
+
+  const handleLookupCustomerAndAgent = useCallback(async () => {
+    const cleanedPhone = customerPhone.trim();
+    if (!cleanedPhone) {
+      toast.error(t("operatorPage.cashier.customerLookup.phoneRequired"));
+      return;
+    }
+
+    const parsed = parsePhoneNumberFromString(cleanedPhone, "AM");
+    if (!parsed || !parsed.isValid()) {
+      toast.error(t("operatorPage.cashier.customerLookup.invalidPhone"));
+      return;
+    }
+
+    setCustomerLookupLoading(true);
+    setAgentLookupError(null);
+
+    try {
+      const customersResponse = await getCustomers({
+        phone: cleanedPhone,
+        cashRegisterId: resolvedCashRegisterId,
+      });
+      const foundCustomer = customersResponse.results[0];
+
+      if (!foundCustomer) {
+        setIdentifiedCustomer(null);
+        setIdentifiedAgent(null);
+        setIdentifiedContract(null);
+        setIdentifiedProductDebt(null);
+        setAgentLookupError(t("operatorPage.cashier.customerLookup.customerNotFound"));
+        toast.error(t("operatorPage.cashier.customerLookup.customerNotFound"));
+        return;
+      }
+
+      setIdentifiedCustomer(foundCustomer);
+
+      const agentsResponse = await agentsService.getAgents({ page: 1, pageSize: 200, status: 0 });
+      const matchedAgent = agentsResponse.results.find(
+        (agent) =>
+          String(agent.customerId) === String(foundCustomer.id) ||
+          String(agent.customer?.id) === String(foundCustomer.id),
+      );
+
+      if (!matchedAgent) {
+        setIdentifiedAgent(null);
+        setIdentifiedContract(null);
+        setIdentifiedProductDebt(null);
+        setAgentLookupError(t("operatorPage.cashier.customerLookup.notAnAgent"));
+        toast.error(t("operatorPage.cashier.customerLookup.notAnAgent"));
+        return;
+      }
+
+      setIdentifiedAgent(matchedAgent);
+
+      const contractsResponse = await agentContractsService.listContracts({
+        agentId: matchedAgent.id,
+        page: 1,
+        pageSize: 50,
+      });
+      const activeContract = resolveActiveContract(contractsResponse.results);
+
+      if (!activeContract) {
+        setIdentifiedContract(null);
+        setAgentLookupError(t("operatorPage.cashier.customerLookup.noActiveContract"));
+        toast.error(t("operatorPage.cashier.customerLookup.noActiveContract"));
+        return;
+      }
+
+      const allowsProductAdvance = resolveProductAdvanceAllowed(activeContract);
+      const normalizedContract: AgentContractCashierItem = {
+        id: String(activeContract.id ?? ""),
+        contractNumber: activeContract.contractNumber ?? "",
+        agent: activeContract.agent ?? {
+          id: "",
+          code: "",
+          fullName: "",
+        },
+        contractDate: activeContract.contractDate ?? new Date().toISOString(),
+        status: (String(activeContract.status ?? "Active") as AgentContractListItemDto["status"]),
+        totalAdvancedAmount: Number(activeContract.totalAdvancedAmount ?? 0),
+        totalRepaidAmount: Number(activeContract.totalRepaidAmount ?? 0),
+        outstandingAmount: Number(activeContract.outstandingAmount ?? 0),
+        createdAt: activeContract.createdAt ?? new Date().toISOString(),
+        allowsProductAdvance,
+      };
+
+      setIdentifiedContract(normalizedContract);
+
+      if (!allowsProductAdvance) {
+        setIdentifiedProductDebt(null);
+        setAgentLookupError(t("operatorPage.cashier.customerLookup.productAdvanceNotAllowed"));
+        toast.error(t("operatorPage.cashier.customerLookup.productAdvanceNotAllowed"));
+        return;
+      }
+
+      const productDebt = await agentsService
+        .getProductDebt(matchedAgent.id, normalizedContract.id, resolvedCashRegisterId)
+        .catch(() => null);
+      setIdentifiedProductDebt(productDebt);
+
+      toast.success(t("operatorPage.cashier.customerLookup.agentIdentified"));
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : t("operatorPage.cashier.customerLookup.failedToLoad");
+      setAgentLookupError(message);
+      toast.error(message);
+    } finally {
+      setCustomerLookupLoading(false);
+    }
+  }, [customerPhone, resolvedCashRegisterId, resolveActiveContract, resolveProductAdvanceAllowed, t]);
+
+  const handleSubmitSale = useCallback(async () => {
     if (cartItems.length === 0 || !currentShopId) return;
 
     const crId = resolvedCashRegisterId;
@@ -316,23 +610,37 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       return;
     }
 
-    if (paymentMode === "mixed" && !nonCashReference.trim()) {
+    if (isAgentCreditSale) {
+      if (!identifiedCustomer || !identifiedAgent || !identifiedContract) {
+        toast.error(t("operatorPage.cashier.customerLookup.noActiveContract"));
+        return;
+      }
+    } else if (paymentMode === "mixed" && !nonCashReference.trim()) {
       toast.error(t("operatorPage.cashier.nonCashReferenceRequired"));
       return;
-    }
-    if (paymentMode === "non-cash" && !nonCashReference.trim()) {
+    } else if (paymentMode === "non-cash" && !nonCashReference.trim()) {
       toast.error(t("operatorPage.cashier.nonCashReferenceRequired"));
       return;
     }
 
     setIsSaleLoading(true);
     try {
-      await createPOSSale(
+      const saleResponse = await createPOSSale(
         {
           shopId: currentShopId,
-          cashPaid: resolvedCashPaid,
-          nonCashPaid: resolvedNonCashPaid,
-          nonCashPaymentReference: nonCashReference.trim() || undefined,
+          ...(isAgentCreditSale
+            ? {
+                customerId: identifiedCustomer?.id ?? null,
+                isAgentCredit: true,
+                agentId: identifiedAgent?.id ?? null,
+                agentContractId: identifiedContract?.id ?? null,
+              }
+            : {}),
+          cashPaid: isAgentCreditSale ? 0 : resolvedCashPaid,
+          nonCashPaid: isAgentCreditSale ? 0 : resolvedNonCashPaid,
+          ...(!isAgentCreditSale && nonCashReference.trim()
+            ? { nonCashPaymentReference: nonCashReference.trim() }
+            : {}),
           items: cartItems.map((item) => ({
             productId: item.productId,
             shopStockId: item.shopStockId,
@@ -342,7 +650,21 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         },
         crId,
       );
-      toast.success(t("operatorPage.cashier.saleCompleted"));
+      toast.success(
+        isAgentCreditSale
+          ? t("operatorPage.cashier.customerLookup.creditSaleSuccess", {
+              saleNumber: saleResponse.saleNumber || saleResponse.id,
+              agentName: identifiedAgent?.customer?.fullName || identifiedAgent?.phone || identifiedAgent?.code,
+              amount: Number(saleResponse.totalAmount).toLocaleString(),
+            })
+          : t("operatorPage.cashier.saleCompleted"),
+      );
+      dispatch(
+        fetchShopProducts({
+          shopId: currentShopId,
+          cashRegisterId: crId,
+        }),
+      );
       resetCheckoutState();
     } catch (error) {
       const msg = error instanceof Error ? error.message : t("operatorPage.cashier.saleError");
@@ -358,9 +680,22 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     nonCashReference,
     resolvedCashPaid,
     resolvedNonCashPaid,
+    isAgentCreditSale,
+    identifiedCustomer,
+    identifiedAgent,
+    identifiedContract,
     resetCheckoutState,
     t,
+    dispatch,
   ]);
+
+  const handleCompleteSale = useCallback(() => {
+    if (isAgentCreditSale) {
+      setCreditConfirmationOpen(true);
+      return;
+    }
+    void handleSubmitSale();
+  }, [handleSubmitSale, isAgentCreditSale]);
 
   const handleFindEstimate = useCallback(async () => {
     const estimateNumber = estimateNumberInput.trim();
@@ -457,6 +792,152 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           </div>
         </div>
       </div>
+
+      <div className={styles.estimateSearchRow}>
+        <div className={styles.saleTypeRow}>
+          {(["normal", "agent-credit"] as SaleType[]).map((type) => (
+            <label key={type} className={`${styles.paymentOption} ${saleType === type ? styles.activePaymentOption : ""}`}>
+              <input
+                type="radio"
+                name="saleType"
+                value={type}
+                checked={saleType === type}
+                onChange={() => {
+                  setSaleType(type);
+                  if (type === "normal") {
+                    setCustomerPhone("");
+                    setIdentifiedCustomer(null);
+                    setIdentifiedAgent(null);
+                    setIdentifiedContract(null);
+                    setAgentLookupError(null);
+                  }
+                }}
+              />
+              {t(type === "normal" ? "operatorPage.cashier.saleTypes.normal" : "operatorPage.cashier.saleTypes.agentCredit")}
+            </label>
+          ))}
+        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => setProductDebtPaymentOpen((open) => !open)}
+        >
+          {t("operatorPage.cashier.productDebt.action")}
+        </Button>
+      </div>
+
+      {productDebtPaymentOpen && (
+        <section className={styles.agentCreditPanel}>
+          <h3>{t("operatorPage.cashier.productDebt.title")}</h3>
+          <Select
+            value={debtAgentId}
+            onChange={(event) => setDebtAgentId(event.target.value)}
+          >
+            <option value="">{t("operatorPage.cashier.productDebt.selectAgent")}</option>
+            {debtAgents.map((agent) => (
+              <option key={agent.id} value={agent.id}>
+                {agent.code} - {agent.customer?.fullName || agent.phone || agent.code}
+              </option>
+            ))}
+          </Select>
+          {debtContracts.length > 1 && (
+            <Select
+              value={debtContractId}
+              onChange={(event) => setDebtContractId(event.target.value)}
+            >
+              <option value="">{t("operatorPage.cashier.productDebt.selectContract")}</option>
+              {debtContracts.map((contract) => (
+                <option key={contract.id} value={contract.id}>
+                  {contract.contractNumber}
+                </option>
+              ))}
+            </Select>
+          )}
+          {debtLoading ? (
+            <div>{t("operatorPage.cashier.processing")}</div>
+          ) : debtAgentId ? (
+            <div className={styles.agentInfoCard}>
+              {debtContracts.length === 0 ? (
+                <div>{t("operatorPage.cashier.productDebt.noActiveContract")}</div>
+              ) : (
+                <div>
+                  <strong>{t("operatorPage.cashier.productDebt.activeContract")}:</strong>{" "}
+                  {debtContracts.find((contract) => contract.id === debtContractId)?.contractNumber ||
+                    debtContracts[0]?.contractNumber}
+                </div>
+              )}
+              <div>
+                <strong>{t("operatorPage.cashier.productDebt.outstanding")}:</strong>{" "}
+                {Number(debtSummary?.outstandingAmount ?? 0).toLocaleString()} AMD
+              </div>
+            </div>
+          ) : null}
+          <div className={styles.estimateSearchRow}>
+            <TextField
+              label={t("operatorPage.cashier.productDebt.amount")}
+              type="number"
+              min="0.01"
+              max={debtSummary?.outstandingAmount}
+              value={debtPaymentAmount}
+              onChange={(event) => setDebtPaymentAmount(event.target.value)}
+              inputMode="decimal"
+            />
+            <Button
+              type="button"
+              onClick={() => void handleSubmitProductDebtPayment()}
+              disabled={
+                debtPaymentSaving ||
+                debtLoading ||
+                !debtAgentId ||
+                debtContracts.length === 0 ||
+                (debtContracts.length > 1 && !debtContractId) ||
+                !debtSummary ||
+                Number(debtPaymentAmount) <= 0 ||
+                Number(debtPaymentAmount) > Number(debtSummary?.outstandingAmount ?? 0)
+              }
+            >
+              {debtPaymentSaving
+                ? t("operatorPage.cashier.processing")
+                : t("operatorPage.cashier.productDebt.submitPayment")}
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {isAgentCreditSale && (
+        <div className={styles.agentCreditPanel}>
+          <div className={styles.estimateSearchRow}>
+            <TextField
+              className={styles.searchTextField}
+              label={t("operatorPage.cashier.customerLookup.phoneLabel")}
+              value={customerPhone}
+              onChange={(event) => setCustomerPhone(event.target.value)}
+              placeholder={t("operatorPage.cashier.customerLookup.phonePlaceholder")}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleLookupCustomerAndAgent();
+                }
+              }}
+              inputMode="tel"
+            />
+            <Button type="button" onClick={handleLookupCustomerAndAgent} disabled={customerLookupLoading}>
+              {customerLookupLoading ? t("operatorPage.cashier.processing") : t("operatorPage.cashier.customerLookup.lookupButton")}
+            </Button>
+          </div>
+
+          {agentLookupError && <div className={styles.errorMessage}>{agentLookupError}</div>}
+
+          {identifiedCustomer && identifiedAgent && identifiedContract && (
+            <div className={styles.agentInfoCard}>
+              <div><strong>{t("operatorPage.cashier.customerLookup.customer")}:</strong> {identifiedCustomer.fullName || identifiedCustomer.phone}</div>
+              <div><strong>{t("operatorPage.cashier.customerLookup.agent")}:</strong> {identifiedAgent.code} — {identifiedAgent.customer?.fullName || identifiedAgent.phone || "Agent"}</div>
+              <div><strong>{t("operatorPage.cashier.customerLookup.contract")}:</strong> {identifiedContract.contractNumber}</div>
+              <div><strong>{t("operatorPage.cashier.customerLookup.status")}:</strong> {identifiedContract.status}</div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className={styles.estimateSearchRow}>
         <TextField
@@ -694,27 +1175,46 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 <strong>{activeTotalAmount.toFixed(2)}</strong>
               </div>
 
-              <div className={styles.paymentMethods}>
-                {(["cash", "non-cash", "mixed"] as PaymentMode[]).map((mode) => (
-                  <label
-                    key={mode}
-                    className={`${styles.paymentOption} ${
-                      paymentMode === mode ? styles.activePaymentOption : ""
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="paymentMode"
-                      value={mode}
-                      checked={paymentMode === mode}
-                      onChange={() => setPaymentMode(mode)}
-                    />
-                    {t(`operatorPage.cashier.paymentMethods.${mode === "non-cash" ? "nonCash" : mode}`)}
-                  </label>
-                ))}
-              </div>
+              {!isAgentCreditSale && (
+                <div className={styles.paymentMethods}>
+                  {(["cash", "non-cash", "mixed"] as PaymentMode[]).map((mode) => (
+                    <label
+                      key={mode}
+                      className={`${styles.paymentOption} ${
+                        paymentMode === mode ? styles.activePaymentOption : ""
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMode"
+                        value={mode}
+                        checked={paymentMode === mode}
+                        onChange={() => setPaymentMode(mode)}
+                      />
+                      {t(`operatorPage.cashier.paymentMethods.${mode === "non-cash" ? "nonCash" : mode}`)}
+                    </label>
+                  ))}
+                </div>
+              )}
 
-              {(paymentMode === "cash" || paymentMode === "mixed") && (
+              {isAgentCreditSale && (
+                <div className={styles.agentCreditSummary}>
+                  <div className={styles.paymentInfoRow}>
+                    <span>{t("operatorPage.cashier.customerLookup.creditType")}:</span>
+                    <strong>{t("operatorPage.cashier.customerLookup.creditSale")}</strong>
+                  </div>
+                  <div className={styles.paymentInfoRow}>
+                    <span>{t("operatorPage.cashier.customerLookup.cashReceived")}:</span>
+                    <strong>0.00</strong>
+                  </div>
+                  <div className={styles.paymentInfoRow}>
+                    <span>{t("operatorPage.cashier.customerLookup.nonCashReceived")}:</span>
+                    <strong>0.00</strong>
+                  </div>
+                </div>
+              )}
+
+              {!isAgentCreditSale && (paymentMode === "cash" || paymentMode === "mixed") && (
                 <TextField
                   label={t("operatorPage.cashier.cashPaid")}
                   value={cashPaid}
@@ -723,7 +1223,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 />
               )}
 
-              {!isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
+              {!isAgentCreditSale && !isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
                 <TextField
                   label={t("operatorPage.cashier.nonCashPaid")}
                   value={paymentMode === "non-cash" ? activeTotalAmount.toFixed(2) : nonCashPaid}
@@ -733,7 +1233,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 />
               )}
 
-              {!isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
+              {!isAgentCreditSale && !isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
                 <TextField
                   label={t("operatorPage.cashier.nonCashReference")}
                   placeholder={t("operatorPage.cashier.nonCashReferencePlaceholder")}
@@ -750,7 +1250,8 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                     isSaleLoading ||
                     isEstimateConverting ||
                     (!isEstimateMode && cartItems.length === 0) ||
-                    (isEstimateMode && !selectedEstimate?.id)
+                    (isEstimateMode && !selectedEstimate?.id) ||
+                    (isAgentCreditSale && !isAgentCreditReady)
                   }
                   onClick={isEstimateMode ? handleConvertEstimate : handleCompleteSale}
                 >
@@ -758,24 +1259,26 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                     ? t("operatorPage.cashier.processing")
                     : isEstimateMode
                       ? t("operatorPage.cashier.estimate.confirmButton")
-                      : t("operatorPage.cashier.completeSale")}
+                      : isAgentCreditSale
+                        ? t("operatorPage.cashier.customerLookup.submitCreditSale")
+                        : t("operatorPage.cashier.completeSale")}
                 </Button>
               </div>
 
               <div className={styles.paymentInfo}>
-                {(paymentMode === "cash" || paymentMode === "mixed") && (
+                {(!isAgentCreditSale && (paymentMode === "cash" || paymentMode === "mixed")) && (
                   <div className={styles.paymentInfoRow}>
                     <span>{t("operatorPage.cashier.cashPaid")}:</span>
                     <strong>{resolvedCashPaid.toFixed(2)}</strong>
                   </div>
                 )}
-                {(paymentMode === "non-cash" || paymentMode === "mixed") && (
+                {(!isAgentCreditSale && (paymentMode === "non-cash" || paymentMode === "mixed")) && (
                   <div className={styles.paymentInfoRow}>
                     <span>{t("operatorPage.cashier.nonCashPaid")}:</span>
                     <strong>{resolvedNonCashPaid.toFixed(2)}</strong>
                   </div>
                 )}
-                {change > 0 && (
+                {change > 0 && !isAgentCreditSale && (
                   <div className={`${styles.paymentInfoRow} ${styles.changeRow}`}>
                     <span>{t("operatorPage.cashier.change")}:</span>
                     <strong>{change.toFixed(2)}</strong>
@@ -786,6 +1289,37 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           </div>
         </aside>
       </div>
+      <ConfirmationModal
+        open={creditConfirmationOpen}
+        onOpenChange={setCreditConfirmationOpen}
+        title={t("operatorPage.cashier.customerLookup.confirmTitle")}
+        description={t("operatorPage.cashier.customerLookup.confirmDescription")}
+        confirmText={t("operatorPage.cashier.customerLookup.submitCreditSale")}
+        confirmLoading={isSaleLoading}
+        confirmDisabled={!isAgentCreditReady}
+        onConfirm={() => {
+          setCreditConfirmationOpen(false);
+          void handleSubmitSale();
+        }}
+      >
+        <div className={styles.creditConfirmation}>
+          <div><strong>{t("operatorPage.cashier.customerLookup.agent")}:</strong> {identifiedAgent?.customer?.fullName || identifiedAgent?.phone || identifiedAgent?.code || "-"}</div>
+          <div><strong>{t("operatorPage.cashier.customerLookup.contract")}:</strong> {identifiedContract?.contractNumber || "-"}</div>
+          <div><strong>{t("operatorPage.cashier.customerLookup.productCount")}:</strong> {cartItems.reduce((count, item) => count + item.quantity, 0)}</div>
+          <div><strong>{t("operatorPage.cashier.customerLookup.creditAmount")}:</strong> {activeTotalAmount.toLocaleString()} AMD</div>
+          <div><strong>{t("operatorPage.cashier.customerLookup.cashReceived")}:</strong> 0 AMD</div>
+          {identifiedProductDebt && (
+            <div><strong>{t("operatorPage.cashier.productDebt.outstanding")}:</strong> {Number(identifiedProductDebt.outstandingAmount).toLocaleString()} AMD</div>
+          )}
+          <ul>
+            {cartItems.map((item) => (
+              <li key={item.productId}>
+                {item.productCode} x {item.quantity} - {(item.unitPrice * item.quantity).toLocaleString()} AMD
+              </li>
+            ))}
+          </ul>
+        </div>
+      </ConfirmationModal>
     </div>
   );
 };

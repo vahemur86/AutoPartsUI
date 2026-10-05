@@ -2093,6 +2093,53 @@
         "nonCash": "Non-cash",
         "mixed": "Mixed"
       },
+      "saleTypes": {
+        "normal": "Normal Sale",
+        "agentCredit": "Agent Credit Sale"
+      },
+      "customerLookup": {
+        "phoneLabel": "Customer Phone",
+        "phonePlaceholder": "Enter customer phone number",
+        "lookupButton": "Find Customer",
+        "agentIdentified": "Agent identified successfully.",
+        "customerNotFound": "Customer was not found for this phone number.",
+        "notAnAgent": "This customer is not linked to an agent.",
+        "noActiveContract": "This agent does not have an active contract for product credit.",
+        "productAdvanceNotAllowed": "This agent contract does not allow product advance.",
+        "phoneRequired": "Please enter a customer phone number.",
+        "invalidPhone": "Please enter a valid phone number.",
+        "failedToLoad": "Failed to load customer and agent information.",
+        "customer": "Customer",
+        "agent": "Agent",
+        "contract": "Contract",
+        "status": "Status",
+        "creditType": "Sale Type",
+        "creditSale": "Agent Credit Sale",
+        "cashReceived": "Cash received",
+        "nonCashReceived": "Non-cash received",
+        "submitCreditSale": "Submit Agent Credit Sale",
+        "confirmTitle": "Confirm Agent Credit Sale",
+        "confirmDescription": "This is a credit sale. No cash or non-cash payment will be received from the agent.",
+        "productCount": "Product count",
+        "creditAmount": "Final credit amount",
+        "creditSaleSuccess": "Credit sale {{saleNumber}} completed for {{agentName}}. Credited amount: {{amount}} AMD. No cash received."
+      },
+      "productDebt": {
+        "action": "Agent Product Debt Payment",
+        "title": "Agent Product Debt Payment",
+        "selectAgent": "Select agent",
+        "selectContract": "Select active contract",
+        "activeContract": "Active contract",
+        "noActiveContract": "This agent has no active contract.",
+        "outstanding": "Outstanding product debt",
+        "amount": "Payment amount (AMD)",
+        "submitPayment": "Record payment",
+        "loadFailed": "Failed to load product debt.",
+        "invalidAmount": "Enter a payment amount greater than zero.",
+        "amountExceedsDebt": "Payment cannot exceed the outstanding debt.",
+        "paymentRecorded": "Product debt payment recorded.",
+        "paymentFailed": "Failed to record product debt payment."
+      },
       "shopLabel": "Store",
       "loadingShop": "Loading shop...",
       "cashReceived": "Cash received",
@@ -3189,6 +3236,10 @@
       "description": "Are you sure you want to log out from the programmer panel?"
     }
   },
+  "agentWorkspace": {
+    "title": "Agent Operations",
+    "eyebrow": "Operations · Agent desk"
+  },
   "agents": {
     "title": "Agents",
     "list": "Agents List",
@@ -3240,6 +3291,24 @@
     "details": {
       "title": "Details",
       "customerInformation": "Customer Information"
+    },
+    "productCredit": {
+      "title": "Product Credit",
+      "activeContract": "Active Product Credit Contract",
+      "noActiveContract": "No active Product Credit contract",
+      "allowed": "Product Advance Allowed",
+      "outstandingDebt": "Outstanding Product Debt",
+      "repaymentRule": "Repayment Rule",
+      "viewContract": "View Contract",
+      "editContract": "Edit Contract",
+      "paymentDate": "Payment Date",
+      "paymentAmount": "Amount",
+      "contract": "Contract",
+      "cashRegister": "Cash Register",
+      "cashSession": "Cash Session",
+      "cashLedgerEntry": "Cash Ledger Entry ID",
+      "createdBy": "Created By",
+      "noPayments": "No product debt payments found."
     },
     "sections": {
       "customer": "Customer",
@@ -3629,6 +3698,16 @@
     "title": "Agent Contracts",
     "createTitle": "Create Agent Contract",
     "detailsTitle": "Contract Details",
+    "productCredit": {
+      "title": "Product Credit",
+      "productAdvance": "Product Advance",
+      "allowProductAdvance": "Allow Product Advance",
+      "allowedLabel": "Product Advance permission",
+      "allowed": "Allowed",
+      "notAllowed": "Not Allowed",
+      "ruleVersionNumber": "Version {{version}}",
+      "configurationDescription": "When enabled, the agent may receive products on credit under this contract."
+    },
     "statuses": {
       "draft": "Draft",
       "active": "Active",
@@ -3684,7 +3763,9 @@
       "deliveryHistory": "Delivery History",
       "createAdvance": "Create Advance",
       "cancelContract": "Cancel Contract",
-      "addAllocation": "Add Allocation"
+      "addAllocation": "Add Allocation",
+      "editContract": "Edit Contract",
+      "saveChanges": "Save Changes"
     },
     "list": {
       "count": "{{count}} contracts",
@@ -3700,6 +3781,7 @@
       "ruleRequired": "Repayment rule version is required.",
       "dateRequired": "Contract date is required.",
       "creating": "Creating...",
+      "saving": "Saving...",
       "termsPreview": "Repayment Terms Preview",
       "termsTitle": "Repayment Terms"
     },
@@ -3753,6 +3835,7 @@
     },
     "messages": {
       "created": "Contract created.",
+      "updated": "Contract updated.",
       "cancelled": "Contract cancelled.",
       "advanceCreated": "Advance created successfully."
     },
@@ -3780,6 +3863,10 @@
     },
     "fields": {
       "advanceNumber": "Advance #",
+      "advanceType": "Advance Type",
+      "cashAdvance": "Cash Advance",
+      "productAdvance": "Product Advance",
+      "productSaleId": "Product Sale ID",
       "agent": "Agent",
       "amount": "Amount",
       "status": "Status",
@@ -3810,6 +3897,7 @@
       "contracts": "Contracts",
       "allAgents": "All agents",
       "allStatuses": "All statuses",
+      "allAdvanceTypes": "All advance types",
       "empty": "No advances found",
       "loading": "Loading advances..."
     },

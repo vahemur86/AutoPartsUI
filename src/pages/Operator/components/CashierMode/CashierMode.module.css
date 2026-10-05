@@ -327,6 +327,32 @@
   color: #ffffff;
 }
 
+.saleTypeRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.agentCreditPanel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.agentInfoCard {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .paymentMethods {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -384,6 +410,15 @@
   color: rgba(255, 255, 255, 0.78);
   font-size: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.agentCreditSummary {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(250, 204, 21, 0.06);
+  border: 1px solid rgba(250, 204, 21, 0.22);
 }
 
 .paymentInfo strong {

@@ -6,9 +6,12 @@ import { toast } from "react-toastify";
 import { SectionHeader } from "@/components/common";
 import { Button, DataTable, ConfirmationModal } from "@/ui-kit";
 import { agentsService } from "@/services/agents";
+import { agentContractsService } from "@/services/agentContracts";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import { AgentStatus } from "@/types/agents";
 import type { AgentDto } from "@/types/agents";
+import type { AgentProductDebtDto, AgentProductDebtPaymentDto } from "@/types/agents";
+import type { AgentContractDto } from "@/types/agentContracts";
 import styles from "./Agents.module.css";
 
 const getStatusLabelKey = (status?: number | string | null) => {
@@ -59,6 +62,9 @@ export const AgentDetails = () => {
   const { id } = useParams();
   const [agent, setAgent] = useState<AgentDto | null>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [productDebt, setProductDebt] = useState<AgentProductDebtDto | null>(null);
+  const [productDebtPayments, setProductDebtPayments] = useState<AgentProductDebtPaymentDto[]>([]);
+  const [productContract, setProductContract] = useState<AgentContractDto | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   const [confirmAction, setConfirmAction] = useState<{ type: string; status: number } | null>(null);
@@ -73,6 +79,38 @@ export const AgentDetails = () => {
       ]);
       setAgent(agentData);
       setHistory(historyData || []);
+
+      const [contractsResult, debtResult, paymentsResult] = await Promise.allSettled([
+        agentContractsService.listContracts({ agentId: id, page: 1, pageSize: 100 }),
+        agentsService.getProductDebt(id),
+        agentsService.getProductDebtPayments(id),
+      ]);
+      const eligibleContract =
+        contractsResult.status === "fulfilled"
+          ? (contractsResult.value.results ?? []).find(
+              (contract) =>
+                (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0) &&
+                contract.allowsProductAdvance === true,
+            )
+          : undefined;
+      if (eligibleContract) {
+        const fullContract = await agentContractsService.getContract(eligibleContract.id);
+        setProductContract(fullContract);
+        if (debtResult.status === "fulfilled") {
+          const contractDebt = await agentsService
+            .getProductDebt(id, eligibleContract.id)
+            .catch(() => debtResult.value);
+          setProductDebt(contractDebt);
+        } else {
+          setProductDebt(null);
+        }
+      } else {
+        setProductContract(null);
+        setProductDebt(debtResult.status === "fulfilled" ? debtResult.value : null);
+      }
+      setProductDebtPayments(
+        paymentsResult.status === "fulfilled" ? paymentsResult.value ?? [] : [],
+      );
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agents.errors.loadFailed")));
     } finally {
@@ -135,6 +173,33 @@ export const AgentDetails = () => {
     },
     { accessorKey: "reason", header: t("agents.history.reason") },
     { accessorKey: "changedBy", header: t("agents.history.changedBy") },
+  ];
+
+  const productDebtPaymentColumns = [
+    {
+      id: "date",
+      header: t("agents.productCredit.paymentDate"),
+      cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) => {
+        const value = row.original.paidAt || row.original.paymentDate;
+        return value ? new Date(value).toLocaleString() : "—";
+      },
+    },
+    {
+      accessorKey: "amountAmd",
+      header: t("agents.productCredit.paymentAmount"),
+      cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) => `${Number(row.original.amountAmd).toLocaleString()} AMD`,
+    },
+    {
+      id: "agent",
+      header: t("agents.fields.fullName"),
+      cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) =>
+        row.original.agentName || row.original.agentId || "—",
+    },
+    { accessorKey: "contractNumber", header: t("agents.productCredit.contract") },
+    { accessorKey: "cashRegisterId", header: t("agents.productCredit.cashRegister") },
+    { accessorKey: "cashSessionId", header: t("agents.productCredit.cashSession") },
+    { accessorKey: "cashLedgerEntryId", header: t("agents.productCredit.cashLedgerEntry") },
+    { accessorKey: "createdBy", header: t("agents.productCredit.createdBy") },
   ];
 
   if (!agent) {
@@ -222,6 +287,52 @@ export const AgentDetails = () => {
         <div className={styles.infoCard}>
           <h3>{t("agents.history.title")}</h3>
           <DataTable columns={historyColumns as any} data={history} isLoading={isLoading} noResultsText={t("agents.history.empty")} loadingText={t("agents.loading")} />
+        </div>
+
+        <div className={styles.infoCard}>
+          <h3>{t("agents.productCredit.title")}</h3>
+          {productContract ? (
+            <>
+              <div className={styles.detailRow}>
+                <strong>{t("agents.productCredit.activeContract")}:</strong>
+                <span>{productContract.contractNumber}</span>
+              </div>
+              <div className={styles.detailRow}>
+                <strong>{t("agents.productCredit.allowed")}:</strong>
+                <span>{t("agentContracts.productCredit.allowed")}</span>
+              </div>
+              <div className={styles.detailRow}>
+                <strong>{t("agents.productCredit.repaymentRule")}:</strong>
+                <span>{t("agentContracts.form.ruleVersion", {
+                  name: productContract.repaymentTerms.repaymentRuleId,
+                  version: productContract.repaymentTerms.ruleVersion,
+                })}</span>
+              </div>
+              {productDebt && (
+                <div className={styles.detailRow}>
+                  <strong>{t("agents.productCredit.outstandingDebt")}:</strong>
+                  <span>{Number(productDebt.outstandingAmount).toLocaleString()} AMD</span>
+                </div>
+              )}
+              <div className={styles.actionRow}>
+                <Button variant="secondary" size="small" onClick={() => navigate(`/agent-contracts/${productContract.id}`)}>
+                  {t("agents.productCredit.viewContract")}
+                </Button>
+                <Button variant="secondary" size="small" onClick={() => navigate(`/agent-contracts/${productContract.id}/edit`)}>
+                  {t("agents.productCredit.editContract")}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className={styles.detailRow}>{t("agents.productCredit.noActiveContract")}</div>
+          )}
+          <DataTable
+            columns={productDebtPaymentColumns as any}
+            data={productDebtPayments}
+            isLoading={isLoading}
+            noResultsText={t("agents.productCredit.noPayments")}
+            loadingText={t("agents.loading")}
+          />
         </div>
       </div>
 

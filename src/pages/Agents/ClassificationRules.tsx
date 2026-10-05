@@ -56,7 +56,7 @@ export const ClassificationRules = () => {
   if (isLoading) {
     return (
       <div className={styles.page}>
-        <SectionHeader title={t("classificationRules.title")} goBack />
+        <SectionHeader title={t("classificationRules.title")} />
         <div>{t("common.loading")}</div>
       </div>
     );
@@ -64,7 +64,7 @@ export const ClassificationRules = () => {
 
   return (
     <div className={styles.page}>
-      <SectionHeader title={t("classificationRules.title")} goBack />
+      <SectionHeader title={t("classificationRules.title")} />
 
       <div className={styles.banner}>{t("classificationRules.info.metricsUnavailable")}</div>
 
