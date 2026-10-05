@@ -9,7 +9,12 @@ import { agentContractsService } from "@/services/agentContracts";
 import { agentsService } from "@/services/agents";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentAdvanceDto, AgentContractDto, AgentContractListItemDto } from "@/types/agentContracts";
-import type { AgentDto, AgentProductDebtDto, AgentProductDebtPaymentDto } from "@/types/agents";
+import type {
+  AgentDto,
+  AgentProductCreditSaleDto,
+  AgentProductDebtDto,
+  AgentProductDebtPaymentDto,
+} from "@/types/agents";
 import styles from "@/pages/AgentContracts/AgentContracts.module.css";
 
 export type AgentProductCreditView = "contracts" | "advances" | "sales" | "debt" | "payments";
@@ -34,7 +39,7 @@ const PaymentHistory = ({ items, loading }: { items: AgentProductDebtPaymentDto[
         id: "date",
         header: t("agents.productCredit.paymentDate"),
         cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) => {
-          const value = row.original.paidAt || row.original.paymentDate;
+          const value = row.original.paymentDate;
           return value ? new Date(value).toLocaleString() : "-";
         },
       },
@@ -46,9 +51,9 @@ const PaymentHistory = ({ items, loading }: { items: AgentProductDebtPaymentDto[
       {
         id: "agent",
         header: t("agents.fields.fullName"),
-        cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) => row.original.agentName || row.original.agentId || "-",
+        cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) => row.original.agentId || "-",
       },
-      { accessorKey: "contractNumber", header: t("agents.productCredit.contract") },
+      { accessorKey: "agentContractId", header: t("agents.productCredit.contract") },
       { accessorKey: "cashRegisterId", header: t("agents.productCredit.cashRegister") },
       { accessorKey: "cashSessionId", header: t("agents.productCredit.cashSession") },
       { accessorKey: "cashLedgerEntryId", header: t("agents.productCredit.cashLedgerEntry") },
@@ -236,7 +241,7 @@ const ProductCreditContractDetails = () => {
       .then(async (data) => {
         if (isCancelled) return;
         setContract(data);
-        const summary = await agentsService.getProductDebt(data.agent.id, data.id).catch(() => null);
+        const summary = await agentsService.getAgentProductDebt(data.agent.id, data.id).catch(() => null);
         if (!isCancelled) setDebt(summary);
       })
       .catch((error) => toast.error(getApiErrorMessage(error, t("agentContracts.errors.loadDetailsFailed"))))
@@ -270,7 +275,13 @@ const ProductCreditContractDetails = () => {
           <div className={styles.detail}><span>{t("agentContracts.fields.contractDate")}</span><strong>{date(contract.contractDate)}</strong></div>
           <div className={styles.detail}><span>{t("agentContracts.productCredit.repaymentRule")}</span><strong>{t("agentContracts.productCredit.ruleVersionNumber", { version: contract.repaymentTerms.ruleVersion })}</strong></div>
           <div className={styles.detail}><span>{t("common.notes")}</span><strong>{contract.notes || "-"}</strong></div>
-          {debt && <div className={styles.detail}><span>{t("agents.productCredit.outstandingDebt")}</span><strong>{money(debt.outstandingAmount)} AMD</strong></div>}
+          {debt && (
+            <>
+              <div className={styles.detail}><span>{t("agents.productCredit.totalAdvanced")}</span><strong>{money(debt.totalAdvancedAmountAmd)} AMD</strong></div>
+              <div className={styles.detail}><span>{t("agents.productCredit.totalPaid")}</span><strong>{money(debt.totalPaidAmountAmd)} AMD</strong></div>
+              <div className={styles.detail}><span>{t("agents.productCredit.outstandingDebt")}</span><strong>{money(debt.outstandingAmountAmd)} AMD</strong></div>
+            </>
+          )}
         </div>
       </section>
       <section className={styles.section}>
@@ -322,8 +333,8 @@ const ProductDebtView = ({ paymentsOnly = false }: { paymentsOnly?: boolean }) =
     setPayments([]);
     void Promise.all([
       agentContractsService.listContracts({ agentId, page: 1, pageSize: 500 }),
-      paymentsOnly ? Promise.resolve(null) : agentsService.getProductDebt(agentId, contractId || undefined),
-      paymentsOnly ? agentsService.getProductDebtPayments(agentId, contractId || undefined) : Promise.resolve([]),
+      paymentsOnly ? Promise.resolve(null) : agentsService.getAgentProductDebt(agentId, contractId || undefined),
+      paymentsOnly ? agentsService.getAgentProductDebtPayments(agentId, contractId || undefined) : Promise.resolve([]),
     ])
       .then(([contractResult, debtResult, paymentResult]) => {
         if (isCancelled) return;
@@ -383,7 +394,9 @@ const ProductDebtView = ({ paymentsOnly = false }: { paymentsOnly?: boolean }) =
           <div className={styles.detailGrid}>
             <div className={styles.detail}><span>{t("agents.productCredit.agent")}</span><strong>{agents.find((agent) => agent.id === agentId)?.code ?? agentId}</strong></div>
             {contractId && <div className={styles.detail}><span>{t("agents.productCredit.contract")}</span><strong>{contracts.find((item) => item.id === contractId)?.contractNumber ?? contractId}</strong></div>}
-            <div className={styles.detail}><span>{t("agents.productCredit.outstandingDebt")}</span><strong>{loading ? t("common.loading") : `${money(debt?.outstandingAmount)} AMD`}</strong></div>
+            <div className={styles.detail}><span>{t("agents.productCredit.totalAdvanced")}</span><strong>{loading ? t("common.loading") : `${money(debt?.totalAdvancedAmountAmd)} AMD`}</strong></div>
+            <div className={styles.detail}><span>{t("agents.productCredit.totalPaid")}</span><strong>{loading ? t("common.loading") : `${money(debt?.totalPaidAmountAmd)} AMD`}</strong></div>
+            <div className={styles.detail}><span>{t("agents.productCredit.outstandingDebt")}</span><strong>{loading ? t("common.loading") : `${money(debt?.outstandingAmountAmd)} AMD`}</strong></div>
           </div>
         </section>
       )}
@@ -393,13 +406,178 @@ const ProductDebtView = ({ paymentsOnly = false }: { paymentsOnly?: boolean }) =
 
 const ProductSalesView = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [agents, setAgents] = useState<AgentDto[]>([]);
+  const [contracts, setContracts] = useState<AgentContractListItemDto[]>([]);
+  const [items, setItems] = useState<AgentProductCreditSaleDto[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [salesError, setSalesError] = useState<string | null>(null);
+  const agentId = searchParams.get("agentId") || "";
+  const contractId = searchParams.get("contractId") || "";
+  const page = Math.max(1, Number(searchParams.get("page") || 1));
+  const pageSize = 50;
+
+  useEffect(() => {
+    void agentsService
+      .getAgents({ page: 1, pageSize: 500, status: 0 })
+      .then((result) => setAgents(result.results ?? []))
+      .catch((error) => toast.error(getApiErrorMessage(error, t("agents.errors.loadFailed"))));
+  }, [t]);
+
+  useEffect(() => {
+    if (!agentId) {
+      setContracts([]);
+      setItems([]);
+      setTotal(0);
+      return;
+    }
+
+    let isCancelled = false;
+    setLoading(true);
+    setSalesError(null);
+    setItems([]);
+    void Promise.all([
+      agentContractsService.listContracts({ agentId, page: 1, pageSize: 500 }),
+      agentsService.getAgentProductCreditSales(agentId, {
+        contractId: contractId || undefined,
+        page,
+        pageSize,
+      }),
+    ])
+      .then(([contractResult, salesResult]) => {
+        if (isCancelled) return;
+        setContracts((contractResult.results ?? []).filter((item) => item.allowsProductAdvance === true));
+        setItems(salesResult.results ?? []);
+        setTotal(salesResult.totalItems ?? 0);
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          const message = getApiErrorMessage(error, t("agents.productCredit.salesLoadFailed"));
+          setSalesError(message);
+          toast.error(message);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [agentId, contractId, page, pageSize, t]);
+
+  const setAgentFilter = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) next.set("agentId", value);
+    else next.delete("agentId");
+    next.delete("contractId");
+    next.delete("page");
+    setSearchParams(next);
+  };
+  const setContractFilter = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) next.set("contractId", value);
+    else next.delete("contractId");
+    next.delete("page");
+    setSearchParams(next);
+  };
+  const columns = useMemo(
+    () => [
+      { accessorKey: "saleId", header: t("agents.productCredit.saleId") },
+      {
+        id: "saleDate",
+        header: t("agents.productCredit.saleDate"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => date(row.original.saleDate),
+      },
+      {
+        id: "agent",
+        header: t("agents.productCredit.agent"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) =>
+          agents.find((agent) => agent.id === row.original.agentId)?.customer?.fullName || row.original.agentId,
+      },
+      { accessorKey: "contractId", header: t("agents.productCredit.contract") },
+      {
+        id: "products",
+        header: t("agents.productCredit.products"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => (
+          <details className={styles.saleProducts}>
+            <summary>{t("agents.productCredit.productCount", { count: row.original.items?.length ?? 0 })}</summary>
+            <ul>
+              {(row.original.items ?? []).map((item, index) => (
+                <li key={`${item.productId}-${index}`}>
+                  <span>{t("agents.productCredit.productId", { id: item.productId })}</span>
+                  <span>{item.quantity} × {money(item.unitPrice)} AMD</span>
+                  <strong>{t("agents.productCredit.lineTotal")}: {money(item.lineTotal)} AMD</strong>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ),
+      },
+      {
+        id: "total",
+        header: t("agents.productCredit.totalAmount"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => `${money(row.original.totalAmount)} AMD`,
+      },
+      {
+        id: "paid",
+        header: t("agents.productCredit.paymentAmount"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => `${money(row.original.paidAmount)} AMD`,
+      },
+      {
+        id: "outstanding",
+        header: t("agents.productCredit.outstandingDebt"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => `${money(row.original.outstandingAmount)} AMD`,
+      },
+      { accessorKey: "status", header: t("agents.productCredit.saleStatus") },
+    ],
+    [agents, t],
+  );
+
   return (
     <div className={styles.page}>
       <SectionHeader title={t("agentWorkspace.productSales")} />
-      <div className={styles.notice}>
-        <strong>{t("agentWorkspace.salesHistoryUnavailableTitle")}</strong>
-        <p>{t("agentWorkspace.salesHistoryUnavailableDescription")}</p>
+      <div className={styles.filters}>
+        <Select value={agentId} onChange={(event) => setAgentFilter(event.target.value)}>
+          <option value="">{t("agentWorkspace.selectAgent")}</option>
+          {agents.map((agent) => (
+            <option key={agent.id} value={agent.id}>
+              {agent.code} - {agent.customer?.fullName || agent.phone || agent.code}
+            </option>
+          ))}
+        </Select>
+        {contracts.length > 1 && (
+          <Select value={contractId} onChange={(event) => setContractFilter(event.target.value)}>
+            <option value="">{t("agentWorkspace.allProductContracts")}</option>
+            {contracts.map((contract) => (
+              <option key={contract.id} value={contract.id}>{contract.contractNumber}</option>
+            ))}
+          </Select>
+        )}
       </div>
+      {!agentId ? (
+        <div className={styles.notice}>{t("agentWorkspace.selectAgentPrompt")}</div>
+      ) : (
+        <>
+          {salesError && <div className={styles.notice} role="alert">{salesError}</div>}
+          <DataTable
+            columns={columns as any}
+            data={items}
+            isLoading={loading}
+            manualPagination
+            pageCount={Math.max(1, Math.ceil(total / pageSize))}
+            pageIndex={page - 1}
+            onPaginationChange={(index) => {
+              const next = new URLSearchParams(searchParams);
+              next.set("page", String(index + 1));
+              setSearchParams(next);
+            }}
+            noResultsText={t("agents.productCredit.noSales")}
+            loadingText={t("common.loading")}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -104,3 +104,50 @@
   display: grid;
   gap: 12px;
 }
+
+.analyticsSection {
+  display: grid;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(196, 169, 106, 0.2);
+}
+
+.analyticsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.analyticsHeader h3 {
+  margin: 0;
+}
+
+.analyticsHeader p {
+  margin: 5px 0 0;
+  color: #8a8d93;
+  font-size: 13px;
+}
+
+.analyticsFilters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr)) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.analyticsChart {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 720px) {
+  .analyticsFilters {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+}

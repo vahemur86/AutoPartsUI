@@ -249,7 +249,43 @@
       "ironPurchases": "Iron Purchases",
       "workshopOrders": "Workshop Orders",
       "serviceTasks": "Service Payments",
-      "specialLots": "Special Customer Lots"
+      "specialLots": "Special Customer Lots",
+      "agentProfitability": "Agent Profitability"
+    },
+    "agentProfitability": {
+      "title": "Agent Profitability",
+      "empty": "No agent profitability data found.",
+      "loadFailed": "Failed to load profitability report.",
+      "filters": {
+        "allAgents": "All agents",
+        "allCapitalSources": "All capital sources"
+      },
+      "summary": {
+        "totalCapital": "Total capital",
+        "totalOutstandingCapital": "Total outstanding capital",
+        "totalFundingCost": "Total funding cost",
+        "totalAgentFunding": "Total agent funding",
+        "totalAgentOutstanding": "Total agent outstanding",
+        "totalKitcoValue": "Total Kitco value",
+        "totalAgentPayout": "Total agent payout",
+        "totalGrossCatalystMargin": "Total gross catalyst margin",
+        "totalNetProfitLoss": "Total net profit/loss",
+        "roi": "ROI"
+      },
+      "columns": {
+        "advanceId": "Advance ID",
+        "advanceDate": "Advance date",
+        "originalAmount": "Original amount",
+        "outstandingAmount": "Outstanding amount",
+        "status": "Status",
+        "acceptedPowderValue": "Accepted powder value",
+        "kitcoValue": "Kitco value",
+        "agentPayout": "Agent payout",
+        "grossMargin": "Gross margin",
+        "fundingCost": "Funding cost",
+        "netProfitLoss": "Net profit/loss",
+        "roi": "ROI"
+      }
     },
     "specialLots": {
       "title": "Special Customer Lots Report",
@@ -2138,7 +2174,9 @@
         "invalidAmount": "Enter a payment amount greater than zero.",
         "amountExceedsDebt": "Payment cannot exceed the outstanding debt.",
         "paymentRecorded": "Product debt payment recorded.",
-        "paymentFailed": "Failed to record product debt payment."
+        "paymentFailed": "Failed to record product debt payment.",
+        "recentPayments": "Recent product debt payments",
+        "recentSales": "Recent Product Credit sales"
       },
       "shopLabel": "Store",
       "loadingShop": "Loading shop...",
@@ -3248,6 +3286,7 @@
     "sales": "Credit Sales",
     "debt": "Product Debt",
     "payments": "Debt Payments",
+    "productPayments": "Product Debt Payments",
     "productContracts": "Product Credit Contracts",
     "noProductContracts": "No Product Credit contracts found.",
     "productAdvances": "Product Advances",
@@ -3320,12 +3359,24 @@
       "activeContract": "Active Product Credit Contract",
       "noActiveContract": "No active Product Credit contract",
       "allowed": "Product Advance Allowed",
+      "totalAdvanced": "Total Product Advanced",
+      "totalPaid": "Total Product Debt Paid",
       "outstandingDebt": "Outstanding Product Debt",
       "repaymentRule": "Repayment Rule",
       "viewContract": "View Contract",
       "editContract": "Edit Contract",
       "paymentDate": "Payment Date",
       "paymentAmount": "Amount",
+      "saleId": "Sale ID",
+      "saleDate": "Sale Date",
+      "products": "Products",
+      "productCount": "{{count}} products · details",
+      "productId": "Product {{id}}",
+      "lineTotal": "Line total",
+      "totalAmount": "Total Amount",
+      "saleStatus": "Status",
+      "noSales": "No Product Credit sales found.",
+      "salesLoadFailed": "Failed to load Product Credit sales history.",
       "contract": "Contract",
       "cashRegister": "Cash Register",
       "cashSession": "Cash Session",
@@ -4191,6 +4242,64 @@
       "activateFailed": "Failed to activate",
       "deactivateFailed": "Failed to deactivate",
       "expireFailed": "Failed to expire version"
+    }
+  },
+  "fundingAnalytics": {
+    "validation": {
+      "dateRange": "From date must be before or equal to to date."
+    },
+    "errors": {
+      "capitalSourceLoadFailed": "Failed to load capital source funding analytics.",
+      "advanceLoadFailed": "Failed to load advance funding analytics.",
+      "agentLoadFailed": "Failed to load agent profitability analytics."
+    },
+    "filters": {
+      "fromDate": "From date",
+      "toDate": "To date"
+    },
+    "fields": {
+      "date": "Date",
+      "capitalSource": "Capital source",
+      "originalPrincipal": "Original principal",
+      "currentAvailableBalance": "Current available balance",
+      "currentOutstandingPrincipal": "Current outstanding principal",
+      "annualInterestRate": "Annual interest rate",
+      "dailyFundingCost": "Daily funding cost",
+      "accruedFundingCost": "Accrued funding cost",
+      "outstandingPrincipal": "Outstanding principal",
+      "cumulativeFundingCost": "Cumulative funding cost",
+      "allocatedPrincipal": "Allocated principal",
+      "fundingCost": "Funding cost",
+      "daysOutstanding": "Days outstanding",
+      "originalAdvanceAmount": "Original advance amount",
+      "currentOutstandingAdvance": "Current outstanding advance",
+      "advanceStatus": "Advance status",
+      "advanceDate": "Advance date",
+      "closedDate": "Closed date",
+      "totalDaysOutstanding": "Total days outstanding",
+      "totalAcceptedPowderValue": "Total accepted powder value",
+      "totalKitcoValue": "Total Kitco value",
+      "totalAgentPayout": "Total agent payout",
+      "grossCatalystMargin": "Gross catalyst margin",
+      "netProfitLoss": "Net profit/loss",
+      "roi": "ROI",
+      "totalAgentFunding": "Total agent funding",
+      "totalAgentOutstanding": "Total agent outstanding",
+      "totalGrossCatalystMargin": "Total gross catalyst margin",
+      "totalFundingCost": "Total funding cost"
+    },
+    "capitalSource": {
+      "title": "Capital Source Funding Analytics",
+      "description": "Funding cost and principal analytics for this capital source.",
+      "historyTitle": "Funding cost history",
+      "historyEmpty": "No funding history found for the selected range."
+    },
+    "advance": {
+      "title": "Advance Funding Details",
+      "allocations": "Capital source allocations",
+      "dailyFundingHistory": "Daily funding history",
+      "noAllocations": "No allocations found.",
+      "noHistory": "No daily funding history found."
     }
   },
   "capitalSources": {

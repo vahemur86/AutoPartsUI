@@ -41,5 +41,10 @@
 .deadlineoverdue { color: #fff; background: #7f1d1d; }
 .quickOptions { display: grid; gap: 10px; }
 .quickOptions label { display: flex; align-items: center; gap: 8px; }
+.profitPositive { color: #7ae39a; }
+.profitNegative { color: #fca5a5; }
+.fundingMetrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.fundingChart { background: linear-gradient(135deg, rgba(28, 35, 31, 0.96), rgba(12, 14, 18, 0.98)); border: 1px solid rgba(196, 169, 106, 0.18); border-radius: 16px; padding: 16px; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.2); }
+.sectionTitle { margin: 0; font-size: 1.05rem; }
 @media (max-width: 760px) { .productCreditForm { grid-template-columns: minmax(0, 1fr); } .productCreditAside { grid-row: auto; } .productCreditActions { grid-column: auto; } }
 @media (max-width: 640px) { .actions { justify-content: flex-end; } .productCreditConfig { padding: 18px; } }

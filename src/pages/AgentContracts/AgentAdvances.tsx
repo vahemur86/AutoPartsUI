@@ -4,6 +4,15 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Plus } from "lucide-react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { SectionHeader } from "@/components/common";
 import {
@@ -17,10 +26,12 @@ import {
 import { agentContractsService } from "@/services/agentContracts";
 import { agentsService } from "@/services/agents";
 import { capitalSourcesService } from "@/services/capitalSources";
+import { fundingAnalyticsService } from "@/services/fundingAnalytics";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { RootState } from "@/store/store";
 import type { AgentDto } from "@/types/agents";
 import type { CapitalSourceDto } from "@/types/capitalSources";
+import type { AgentAdvanceFundingAnalyticsDto, FundingDailyCostDto } from "@/types/fundingAnalytics";
 import type {
   AgentAdvanceDto,
   AgentAdvanceExtensionDto,
@@ -57,6 +68,13 @@ const addDays = (value: Date, days: number) =>
 const isoDate = (value: Date) => value.toISOString().slice(0, 10);
 const agentName = (agent: AgentDto) =>
   `${agent.code} - ${agent.customer?.fullName || "—"}`;
+const toDateTimeRange = (value: string, endOfDay: boolean) => {
+  if (!value) return undefined;
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+  if (endOfDay) parsed.setHours(23, 59, 59, 999);
+  return parsed.toISOString();
+};
 
 const deadlineFor = (
   advance: AgentAdvanceDto,
@@ -502,8 +520,16 @@ export const AgentAdvanceDetails = () => {
   const [loading, setLoading] = useState(true);
   const [extensionLoading, setExtensionLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [fundingAnalytics, setFundingAnalytics] = useState<AgentAdvanceFundingAnalyticsDto | null>(null);
+  const [fundingFromDate, setFundingFromDate] = useState("");
+  const [fundingToDate, setFundingToDate] = useState("");
+  const [fundingHistory, setFundingHistory] = useState<FundingDailyCostDto[]>([]);
   const load = async () => {
     if (!id) return;
+    if (fundingFromDate && fundingToDate && new Date(`${fundingFromDate}T00:00:00`) > new Date(`${fundingToDate}T00:00:00`)) {
+      toast.error(t("fundingAnalytics.validation.dateRange"));
+      return;
+    }
     setLoading(true);
     try {
       const result = await agentContractsService.getAdvance(id);
@@ -522,6 +548,18 @@ export const AgentAdvanceDetails = () => {
         ]);
         setSources(sourceResult.results ?? []);
         setExtensions(extensionResult);
+        try {
+          const analytics = await fundingAnalyticsService.getAgentAdvanceFundingAnalytics(id, {
+            fromDate: toDateTimeRange(fundingFromDate, false),
+            toDate: toDateTimeRange(fundingToDate, true),
+          });
+          setFundingAnalytics(analytics);
+          setFundingHistory(analytics.dailyHistory ?? []);
+        } catch (error) {
+          setFundingAnalytics(null);
+          setFundingHistory([]);
+          toast.error(getApiErrorMessage(error, t("fundingAnalytics.errors.advanceLoadFailed")));
+        }
       }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agentAdvances.errors.loadDetailsFailed")));
@@ -678,6 +716,29 @@ export const AgentAdvanceDetails = () => {
         ),
     },
   ];
+  const fundingAllocationColumns = [
+    {
+      id: "source",
+      header: t("fundingAnalytics.fields.capitalSource"),
+      cell: ({ row }: any) => {
+        const source = sources.find((item) => item.id === row.original.capitalSourceId);
+        return source ? `${source.code} - ${source.name}` : row.original.capitalSourceId;
+      },
+    },
+    { accessorKey: "allocatedPrincipal", header: t("fundingAnalytics.fields.allocatedPrincipal"), cell: ({ row }: any) => `${money(row.original.allocatedPrincipal)} AMD` },
+    { accessorKey: "outstandingPrincipal", header: t("fundingAnalytics.fields.outstandingPrincipal"), cell: ({ row }: any) => `${money(row.original.outstandingPrincipal)} AMD` },
+    { accessorKey: "annualInterestRate", header: t("fundingAnalytics.fields.annualInterestRate"), cell: ({ row }: any) => `${row.original.annualInterestRate}%` },
+    { accessorKey: "fundingCost", header: t("fundingAnalytics.fields.fundingCost"), cell: ({ row }: any) => `${money(row.original.fundingCost)} AMD` },
+    { accessorKey: "daysOutstanding", header: t("fundingAnalytics.fields.daysOutstanding") },
+  ];
+  const fundingHistoryColumns = [
+    { accessorKey: "date", header: t("fundingAnalytics.fields.date"), cell: ({ row }: any) => date(row.original.date) },
+    { id: "source", header: t("fundingAnalytics.fields.capitalSource"), cell: ({ row }: any) => sources.find((item) => item.id === row.original.capitalSourceId)?.name ?? row.original.capitalSourceId },
+    { accessorKey: "outstandingPrincipal", header: t("fundingAnalytics.fields.outstandingPrincipal"), cell: ({ row }: any) => `${money(row.original.outstandingPrincipal)} AMD` },
+    { accessorKey: "annualInterestRate", header: t("fundingAnalytics.fields.annualInterestRate"), cell: ({ row }: any) => `${row.original.annualInterestRate}%` },
+    { accessorKey: "dailyFundingCost", header: t("fundingAnalytics.fields.dailyFundingCost"), cell: ({ row }: any) => `${money(row.original.dailyFundingCost)} AMD` },
+    { accessorKey: "cumulativeFundingCost", header: t("fundingAnalytics.fields.cumulativeFundingCost"), cell: ({ row }: any) => `${money(row.original.cumulativeFundingCost)} AMD` },
+  ];
   return (
     <div className={styles.page}>
       <SectionHeader
@@ -729,6 +790,48 @@ export const AgentAdvanceDetails = () => {
           value={`${money(advance.advancedAmount)} AMD`}
         />
       </div>
+      {fundingAnalytics && (
+        <section className={styles.section}>
+          <h2>{t("fundingAnalytics.advance.title")}</h2>
+          <div className={styles.inlineForm}>
+            <TextField label={t("fundingAnalytics.filters.fromDate")} type="date" value={fundingFromDate} onChange={(event) => setFundingFromDate(event.target.value)} />
+            <TextField label={t("fundingAnalytics.filters.toDate")} type="date" value={fundingToDate} onChange={(event) => setFundingToDate(event.target.value)} />
+            <Button variant="secondary" onClick={() => void load()} disabled={loading}>{t("common.apply")}</Button>
+          </div>
+          <div className={styles.fundingMetrics}>
+            <Detail label={t("fundingAnalytics.fields.originalAdvanceAmount")} value={`${money(fundingAnalytics.originalAdvanceAmount)} AMD`} />
+            <Detail label={t("fundingAnalytics.fields.currentOutstandingAdvance")} value={`${money(fundingAnalytics.currentOutstandingAdvance)} AMD`} />
+            <Detail label={t("fundingAnalytics.fields.advanceStatus")} value={fundingAnalytics.status ?? "-"} />
+            <Detail label={t("fundingAnalytics.fields.advanceDate")} value={datetime(fundingAnalytics.advanceDate)} />
+            <Detail label={t("fundingAnalytics.fields.closedDate")} value={datetime(fundingAnalytics.closedDate)} />
+            <Detail label={t("fundingAnalytics.fields.totalDaysOutstanding")} value={fundingAnalytics.totalDaysOutstanding} />
+            <Detail label={t("fundingAnalytics.fields.totalAcceptedPowderValue")} value={`${money(fundingAnalytics.totalAcceptedPowderValue)} AMD`} />
+            <Detail label={t("fundingAnalytics.fields.totalKitcoValue")} value={`${money(fundingAnalytics.totalKitcoValue)} AMD`} />
+            <Detail label={t("fundingAnalytics.fields.totalAgentPayout")} value={`${money(fundingAnalytics.totalAgentPayout)} AMD`} />
+            <Detail label={t("fundingAnalytics.fields.grossCatalystMargin")} value={<span className={fundingAnalytics.grossCatalystMargin < 0 ? styles.profitNegative : ""}>{money(fundingAnalytics.grossCatalystMargin)} AMD</span>} />
+            <Detail label={t("fundingAnalytics.fields.fundingCost")} value={`${money(fundingAnalytics.fundingCost)} AMD`} />
+            <Detail label={t("fundingAnalytics.fields.netProfitLoss")} value={<span className={fundingAnalytics.netProfitLoss < 0 ? styles.profitNegative : styles.profitPositive}>{money(fundingAnalytics.netProfitLoss)} AMD</span>} />
+            <Detail label={t("fundingAnalytics.fields.roi")} value={<span className={fundingAnalytics.roiPercent < 0 ? styles.profitNegative : ""}>{fundingAnalytics.roiPercent}%</span>} />
+          </div>
+          <h3>{t("fundingAnalytics.advance.allocations")}</h3>
+          <DataTable columns={fundingAllocationColumns as any} data={fundingAnalytics.allocations ?? []} noResultsText={t("fundingAnalytics.advance.noAllocations")} />
+          <h3>{t("fundingAnalytics.advance.dailyFundingHistory")}</h3>
+          <div className={styles.fundingChart}>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={fundingHistory}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.18)" />
+                <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString()} stroke="#94a3b8" />
+                <YAxis yAxisId="daily" stroke="#c4a96a" />
+                <YAxis yAxisId="cumulative" orientation="right" stroke="#6ee7b7" />
+                <Tooltip formatter={(value) => `${money(Number(value))} AMD`} labelFormatter={(value) => new Date(String(value)).toLocaleDateString()} />
+                <Line yAxisId="daily" type="monotone" dataKey="dailyFundingCost" stroke="#c4a96a" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.dailyFundingCost")} />
+                <Line yAxisId="cumulative" type="monotone" dataKey="cumulativeFundingCost" stroke="#6ee7b7" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.cumulativeFundingCost")} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} noResultsText={t("fundingAnalytics.advance.noHistory")} />
+        </section>
+      )}
       <section className={styles.section}>
         <h2>{t("agentAdvances.sections.repaymentInformation")}</h2>
         <div className={styles.detailGrid}>

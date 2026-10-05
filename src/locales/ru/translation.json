@@ -2134,7 +2134,9 @@
         "invalidAmount": "Введите сумму больше нуля.",
         "amountExceedsDebt": "Платеж не может превышать остаток долга.",
         "paymentRecorded": "Платеж по товарному долгу зарегистрирован.",
-        "paymentFailed": "Не удалось зарегистрировать платеж по товарному долгу."
+        "paymentFailed": "Не удалось зарегистрировать платеж по товарному долгу.",
+        "recentPayments": "Последние платежи по товарному долгу",
+        "recentSales": "Последние продажи товаров в кредит"
       },
       "shopLabel": "Магазин",
       "loadingShop": "Загрузка магазина...",
@@ -3248,6 +3250,7 @@
     "sales": "Продажи в кредит",
     "debt": "Товарный долг",
     "payments": "Платежи по долгу",
+    "productPayments": "Платежи по товарному долгу",
     "productContracts": "Договоры товарного кредита",
     "noProductContracts": "Договоры товарного кредита не найдены.",
     "productAdvances": "Товарные авансы",
@@ -3320,12 +3323,24 @@
       "activeContract": "Действующий договор товарного кредита",
       "noActiveContract": "Нет действующего договора товарного кредита",
       "allowed": "Товарный аванс разрешен",
+      "totalAdvanced": "Всего товаров выдано в кредит",
+      "totalPaid": "Всего погашено по товарному долгу",
       "outstandingDebt": "Остаток товарного долга",
       "repaymentRule": "Правило погашения",
       "viewContract": "Открыть договор",
       "editContract": "Изменить договор",
       "paymentDate": "Дата платежа",
       "paymentAmount": "Сумма",
+      "saleId": "ID продажи",
+      "saleDate": "Дата продажи",
+      "products": "Товары",
+      "productCount": "Товаров: {{count}} · детали",
+      "productId": "Товар {{id}}",
+      "lineTotal": "Сумма позиции",
+      "totalAmount": "Итоговая сумма",
+      "saleStatus": "Статус",
+      "noSales": "Продажи товаров в кредит не найдены.",
+      "salesLoadFailed": "Не удалось загрузить историю продаж товаров в кредит.",
       "contract": "Договор",
       "cashRegister": "Касса",
       "cashSession": "Кассовая смена",
@@ -4191,6 +4206,64 @@
       "activateFailed": "Не удалось активировать",
       "deactivateFailed": "Не удалось деактивировать",
       "expireFailed": "Не удалось завершить версию"
+    }
+  },
+  "fundingAnalytics": {
+    "validation": {
+      "dateRange": "Дата начала не может быть позже даты окончания."
+    },
+    "errors": {
+      "capitalSourceLoadFailed": "Не удалось загрузить аналитику финансирования источника капитала.",
+      "advanceLoadFailed": "Не удалось загрузить аналитику финансирования аванса.",
+      "agentLoadFailed": "Не удалось загрузить аналитику прибыльности агента."
+    },
+    "filters": {
+      "fromDate": "С",
+      "toDate": "По"
+    },
+    "fields": {
+      "date": "Дата",
+      "capitalSource": "Источник капитала",
+      "originalPrincipal": "Первоначальный основной долг",
+      "currentAvailableBalance": "Текущий доступный остаток",
+      "currentOutstandingPrincipal": "Текущий непогашенный основной долг",
+      "annualInterestRate": "Годовая процентная ставка",
+      "dailyFundingCost": "Стоимость финансирования за день",
+      "accruedFundingCost": "Накопленная стоимость финансирования",
+      "outstandingPrincipal": "Непогашенный основной долг",
+      "cumulativeFundingCost": "Накопленная стоимость финансирования",
+      "allocatedPrincipal": "Выделенная сумма",
+      "fundingCost": "Стоимость финансирования",
+      "daysOutstanding": "Дней просрочки",
+      "originalAdvanceAmount": "Первоначальная сумма аванса",
+      "currentOutstandingAdvance": "Текущий непогашенный аванс",
+      "advanceStatus": "Статус аванса",
+      "advanceDate": "Дата аванса",
+      "closedDate": "Дата закрытия",
+      "totalDaysOutstanding": "Всего дней непогашения",
+      "totalAcceptedPowderValue": "Общая стоимость принятого порошка",
+      "totalKitcoValue": "Общая стоимость Kitco",
+      "totalAgentPayout": "Общая выплата агенту",
+      "grossCatalystMargin": "Gross catalyst margin",
+      "netProfitLoss": "Чистая прибыль/убыток",
+      "roi": "ROI",
+      "totalAgentFunding": "Итого финансирование агентов",
+      "totalAgentOutstanding": "Итого остаток агентов",
+      "totalGrossCatalystMargin": "Итого gross catalyst margin",
+      "totalFundingCost": "Итого стоимость финансирования"
+    },
+    "capitalSource": {
+      "title": "Аналитика финансирования источника капитала",
+      "description": "Аналитика стоимости финансирования и основного долга для этого источника капитала.",
+      "historyTitle": "История стоимости финансирования",
+      "historyEmpty": "Для выбранного диапазона история финансирования не найдена."
+    },
+    "advance": {
+      "title": "Детали финансирования аванса",
+      "allocations": "Распределения по источникам капитала",
+      "dailyFundingHistory": "Ежедневная история финансирования",
+      "noAllocations": "Распределения не найдены.",
+      "noHistory": "Ежедневная история финансирования не найдена."
     }
   },
   "capitalSources": {

@@ -1,0 +1,90 @@
+.root {
+  display: grid;
+  gap: 22px;
+}
+
+.filterBar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  background: linear-gradient(145deg, rgba(18, 24, 21, 0.94), rgba(12, 15, 18, 0.98));
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.18);
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.kpiCard {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(196, 169, 106, 0.06));
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.kpiCard::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #c4a96a, transparent 60%);
+}
+
+.kpiLabel {
+  color: #a9b0ba;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.kpiValue {
+  margin-top: 12px;
+  font-size: clamp(1.15rem, 2vw, 1.8rem);
+  font-weight: 800;
+  color: #f7f7f7;
+}
+
+.tableWrap {
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(10, 13, 17, 0.75);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.16);
+}
+
+.reportHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.headerBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(196, 169, 106, 0.12);
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  color: #d7c38b;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 640px) {
+  .filterBar,
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+}

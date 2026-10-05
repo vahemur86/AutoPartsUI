@@ -86,6 +86,12 @@ export const Reports = () => {
       icon: Boxes,
       showCheckmark: true,
     },
+    {
+      path: "/agent-profitability",
+      label: t("reports.navigation.agentProfitability"),
+      icon: Wallet,
+      showCheckmark: true,
+    },
   ];
 
   return (

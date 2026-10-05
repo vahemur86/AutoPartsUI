@@ -1,6 +1,7 @@
 import { api } from "@/services/index";
 import type {
   AgentProductDebtDto,
+  AgentProductCreditSaleDto,
   AgentProductDebtPaymentDto,
   CreateAgentProductDebtPaymentRequest,
   AgentDto,
@@ -125,7 +126,7 @@ export const agentsService = {
     return normalizeAgentFinancialSummary(res.data);
   },
 
-  getProductDebt: async (id: string, contractId?: string, cashRegisterId?: number) => {
+  getAgentProductDebt: async (id: string, contractId?: string, cashRegisterId?: number) => {
     const res = await api.get<AgentProductDebtDto>(`/agents/${id}/product-debt`, {
       params: contractId ? { contractId } : undefined,
       headers: getHeaders(cashRegisterId),
@@ -133,7 +134,18 @@ export const agentsService = {
     return res.data;
   },
 
-  getProductDebtPayments: async (id: string, contractId?: string, cashRegisterId?: number) => {
+  getAgentProductCreditSales: async (
+    id: string,
+    params?: { contractId?: string; page?: number; pageSize?: number },
+  ) => {
+    const res = await api.get<PagedResult<AgentProductCreditSaleDto>>(
+      `/agents/${id}/product-credit-sales`,
+      { params },
+    );
+    return res.data;
+  },
+
+  getAgentProductDebtPayments: async (id: string, contractId?: string, cashRegisterId?: number) => {
     const res = await api.get<AgentProductDebtPaymentDto[]>(
       `/agents/${id}/product-debt/payments`,
       {
@@ -144,7 +156,7 @@ export const agentsService = {
     return res.data;
   },
 
-  createProductDebtPayment: async (
+  payAgentProductDebt: async (
     id: string,
     data: CreateAgentProductDebtPaymentRequest,
     cashRegisterId: number,

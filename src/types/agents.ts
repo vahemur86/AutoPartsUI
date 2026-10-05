@@ -84,22 +84,40 @@ export interface AgentDto {
 export interface AgentProductDebtDto {
   agentId: string;
   contractId: string | null;
+  outstandingAmountAmd: number;
+  totalAdvancedAmountAmd: number;
+  totalPaidAmountAmd: number;
+}
+
+export interface AgentProductCreditSaleItemDto {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface AgentProductCreditSaleDto {
+  saleId: number;
+  saleDate: string;
+  agentId: string;
+  contractId: string;
+  totalAmount: number;
+  paidAmount: number;
   outstandingAmount: number;
+  status: string;
+  items: AgentProductCreditSaleItemDto[];
 }
 
 export interface AgentProductDebtPaymentDto {
   id: string;
-  paidAt?: string | null;
-  paymentDate?: string | null;
+  agentId: string;
+  agentContractId: string;
   amountAmd: number;
-  agentId?: string | null;
-  agentName?: string | null;
-  contractId?: string | null;
-  contractNumber?: string | null;
-  cashRegisterId?: number | null;
-  cashSessionId?: string | null;
-  cashLedgerEntryId?: string | null;
-  createdBy?: string | null;
+  cashRegisterId: number;
+  cashSessionId: number;
+  cashLedgerEntryId: number;
+  paymentDate: string;
+  createdBy: string;
 }
 
 export interface CreateAgentProductDebtPaymentRequest {

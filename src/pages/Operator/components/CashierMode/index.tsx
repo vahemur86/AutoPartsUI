@@ -31,7 +31,11 @@ import { createPOSSale } from "@/services/shops/posSale";
 import type { Customer, ServiceEstimateLookupResponse } from "@/types/operator";
 import type { AgentContractListItemDto } from "@/types/agentContracts";
 import type { AgentDto } from "@/types/agents";
-import type { AgentProductDebtDto } from "@/types/agents";
+import type {
+  AgentProductCreditSaleDto,
+  AgentProductDebtDto,
+  AgentProductDebtPaymentDto,
+} from "@/types/agents";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 
 type AgentContractCashierItem = AgentContractListItemDto & {
@@ -82,6 +86,8 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [debtContracts, setDebtContracts] = useState<AgentContractListItemDto[]>([]);
   const [debtContractId, setDebtContractId] = useState("");
   const [debtSummary, setDebtSummary] = useState<AgentProductDebtDto | null>(null);
+  const [debtPaymentHistory, setDebtPaymentHistory] = useState<AgentProductDebtPaymentDto[]>([]);
+  const [debtSalesHistory, setDebtSalesHistory] = useState<AgentProductCreditSaleDto[]>([]);
   const [debtPaymentAmount, setDebtPaymentAmount] = useState("");
   const [debtLoading, setDebtLoading] = useState(false);
   const [debtPaymentSaving, setDebtPaymentSaving] = useState(false);
@@ -389,6 +395,8 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       setDebtContracts([]);
       setDebtContractId("");
       setDebtSummary(null);
+      setDebtPaymentHistory([]);
+      setDebtSalesHistory([]);
       return;
     }
 
@@ -396,12 +404,14 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     setDebtLoading(true);
     void Promise.all([
       agentContractsService.listContracts({ agentId: debtAgentId, page: 1, pageSize: 50 }),
-      agentsService.getProductDebt(debtAgentId, undefined, resolvedCashRegisterId),
+      agentsService.getAgentProductDebt(debtAgentId, undefined, resolvedCashRegisterId),
     ])
       .then(([contractsResponse, summary]) => {
         if (isCancelled) return;
         const activeContracts = (contractsResponse.results ?? []).filter(
-          (contract) => String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0,
+          (contract) =>
+            (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0) &&
+            contract.allowsProductAdvance === true,
         );
         setDebtContracts(activeContracts);
         setDebtContractId((current) =>
@@ -433,7 +443,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     if (!debtAgentId || !debtContractId) return;
     let isCancelled = false;
     void agentsService
-      .getProductDebt(debtAgentId, debtContractId, resolvedCashRegisterId)
+      .getAgentProductDebt(debtAgentId, debtContractId, resolvedCashRegisterId)
       .then((summary) => {
         if (!isCancelled) setDebtSummary(summary);
       })
@@ -451,7 +461,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       toast.error(t("operatorPage.cashier.productDebt.invalidAmount"));
       return;
     }
-    if (debtSummary && amountAmd > debtSummary.outstandingAmount) {
+    if (debtSummary && amountAmd > debtSummary.outstandingAmountAmd) {
       toast.error(t("operatorPage.cashier.productDebt.amountExceedsDebt"));
       return;
     }
@@ -462,7 +472,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
 
     setDebtPaymentSaving(true);
     try {
-      await agentsService.createProductDebtPayment(
+      await agentsService.payAgentProductDebt(
         debtAgentId,
         { amountAmd, ...(debtContractId ? { contractId: debtContractId } : {}) },
         resolvedCashRegisterId,
@@ -476,12 +486,29 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     toast.success(t("operatorPage.cashier.productDebt.paymentRecorded"));
     setDebtPaymentAmount("");
     try {
-      const summary = await agentsService.getProductDebt(
-        debtAgentId,
-        debtContractId || undefined,
-        resolvedCashRegisterId,
-      );
-      setDebtSummary(summary);
+      const [summaryResult, paymentResult, salesResult] = await Promise.allSettled([
+        agentsService.getAgentProductDebt(
+          debtAgentId,
+          debtContractId || undefined,
+          resolvedCashRegisterId,
+        ),
+        agentsService.getAgentProductDebtPayments(
+          debtAgentId,
+          debtContractId || undefined,
+          resolvedCashRegisterId,
+        ),
+        agentsService.getAgentProductCreditSales(debtAgentId, {
+          contractId: debtContractId || undefined,
+          page: 1,
+          pageSize: 5,
+        }),
+      ]);
+      if (summaryResult.status === "fulfilled") setDebtSummary(summaryResult.value);
+      if (paymentResult.status === "fulfilled") setDebtPaymentHistory(paymentResult.value);
+      if (salesResult.status === "fulfilled") setDebtSalesHistory(salesResult.value.results ?? []);
+      if ([summaryResult, paymentResult, salesResult].some((result) => result.status === "rejected")) {
+        toast.error(t("operatorPage.cashier.productDebt.loadFailed"));
+      }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.loadFailed")));
     } finally {
@@ -584,7 +611,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       }
 
       const productDebt = await agentsService
-        .getProductDebt(matchedAgent.id, normalizedContract.id, resolvedCashRegisterId)
+        .getAgentProductDebt(matchedAgent.id, normalizedContract.id, resolvedCashRegisterId)
         .catch(() => null);
       setIdentifiedProductDebt(productDebt);
 
@@ -831,7 +858,11 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           <h3>{t("operatorPage.cashier.productDebt.title")}</h3>
           <Select
             value={debtAgentId}
-            onChange={(event) => setDebtAgentId(event.target.value)}
+            onChange={(event) => {
+              setDebtAgentId(event.target.value);
+              setDebtPaymentHistory([]);
+              setDebtSalesHistory([]);
+            }}
           >
             <option value="">{t("operatorPage.cashier.productDebt.selectAgent")}</option>
             {debtAgents.map((agent) => (
@@ -843,7 +874,11 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           {debtContracts.length > 1 && (
             <Select
               value={debtContractId}
-              onChange={(event) => setDebtContractId(event.target.value)}
+              onChange={(event) => {
+                setDebtContractId(event.target.value);
+                setDebtPaymentHistory([]);
+                setDebtSalesHistory([]);
+              }}
             >
               <option value="">{t("operatorPage.cashier.productDebt.selectContract")}</option>
               {debtContracts.map((contract) => (
@@ -868,7 +903,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               )}
               <div>
                 <strong>{t("operatorPage.cashier.productDebt.outstanding")}:</strong>{" "}
-                {Number(debtSummary?.outstandingAmount ?? 0).toLocaleString()} AMD
+                {Number(debtSummary?.outstandingAmountAmd ?? 0).toLocaleString()} AMD
               </div>
             </div>
           ) : null}
@@ -877,7 +912,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               label={t("operatorPage.cashier.productDebt.amount")}
               type="number"
               min="0.01"
-              max={debtSummary?.outstandingAmount}
+              max={debtSummary?.outstandingAmountAmd}
               value={debtPaymentAmount}
               onChange={(event) => setDebtPaymentAmount(event.target.value)}
               inputMode="decimal"
@@ -893,7 +928,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 (debtContracts.length > 1 && !debtContractId) ||
                 !debtSummary ||
                 Number(debtPaymentAmount) <= 0 ||
-                Number(debtPaymentAmount) > Number(debtSummary?.outstandingAmount ?? 0)
+                Number(debtPaymentAmount) > Number(debtSummary?.outstandingAmountAmd ?? 0)
               }
             >
               {debtPaymentSaving
@@ -901,6 +936,28 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 : t("operatorPage.cashier.productDebt.submitPayment")}
             </Button>
           </div>
+            {debtPaymentHistory.length > 0 && (
+              <div className={styles.debtHistorySection} aria-live="polite">
+                <h4>{t("operatorPage.cashier.productDebt.recentPayments")}</h4>
+                {debtPaymentHistory.slice(0, 3).map((payment) => (
+                  <div className={styles.debtHistoryRow} key={payment.id}>
+                    <span>{new Date(payment.paymentDate).toLocaleDateString()}</span>
+                    <strong>{Number(payment.amountAmd).toLocaleString()} AMD</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+            {debtSalesHistory.length > 0 && (
+              <div className={styles.debtHistorySection} aria-live="polite">
+                <h4>{t("operatorPage.cashier.productDebt.recentSales")}</h4>
+                {debtSalesHistory.slice(0, 3).map((sale) => (
+                  <div className={styles.debtHistoryRow} key={sale.saleId}>
+                    <span>#{sale.saleId} · {sale.status}</span>
+                    <strong>{Number(sale.outstandingAmount).toLocaleString()} AMD</strong>
+                  </div>
+                ))}
+              </div>
+            )}
         </section>
       )}
 
@@ -1309,7 +1366,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           <div><strong>{t("operatorPage.cashier.customerLookup.creditAmount")}:</strong> {activeTotalAmount.toLocaleString()} AMD</div>
           <div><strong>{t("operatorPage.cashier.customerLookup.cashReceived")}:</strong> 0 AMD</div>
           {identifiedProductDebt && (
-            <div><strong>{t("operatorPage.cashier.productDebt.outstanding")}:</strong> {Number(identifiedProductDebt.outstandingAmount).toLocaleString()} AMD</div>
+            <div><strong>{t("operatorPage.cashier.productDebt.outstanding")}:</strong> {Number(identifiedProductDebt.outstandingAmountAmd).toLocaleString()} AMD</div>
           )}
           <ul>
             {cartItems.map((item) => (

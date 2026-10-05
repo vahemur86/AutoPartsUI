@@ -83,8 +83,8 @@ export const AgentDetails = () => {
 
       const [contractsResult, debtResult, paymentsResult] = await Promise.allSettled([
         agentContractsService.listContracts({ agentId: id, page: 1, pageSize: 100 }),
-        agentsService.getProductDebt(id),
-        agentsService.getProductDebtPayments(id),
+        agentsService.getAgentProductDebt(id),
+        agentsService.getAgentProductDebtPayments(id),
       ]);
       const eligibleContract =
         contractsResult.status === "fulfilled"
@@ -99,7 +99,7 @@ export const AgentDetails = () => {
         setProductContract(fullContract);
         if (debtResult.status === "fulfilled") {
           const contractDebt = await agentsService
-            .getProductDebt(id, eligibleContract.id)
+            .getAgentProductDebt(id, eligibleContract.id)
             .catch(() => debtResult.value);
           setProductDebt(contractDebt);
         } else {
@@ -181,7 +181,7 @@ export const AgentDetails = () => {
       id: "date",
       header: t("agents.productCredit.paymentDate"),
       cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) => {
-        const value = row.original.paidAt || row.original.paymentDate;
+        const value = row.original.paymentDate;
         return value ? new Date(value).toLocaleString() : "—";
       },
     },
@@ -194,9 +194,9 @@ export const AgentDetails = () => {
       id: "agent",
       header: t("agents.fields.fullName"),
       cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) =>
-        row.original.agentName || row.original.agentId || "—",
+        row.original.agentId || "—",
     },
-    { accessorKey: "contractNumber", header: t("agents.productCredit.contract") },
+    { accessorKey: "agentContractId", header: t("agents.productCredit.contract") },
     { accessorKey: "cashRegisterId", header: t("agents.productCredit.cashRegister") },
     { accessorKey: "cashSessionId", header: t("agents.productCredit.cashSession") },
     { accessorKey: "cashLedgerEntryId", header: t("agents.productCredit.cashLedgerEntry") },
@@ -309,7 +309,7 @@ export const AgentDetails = () => {
           <p>{t("agents.details.cashPowderDescription")}</p>
           <div className={styles.actionRow}>
             <Button variant="secondary" onClick={() => navigate(`/agents/${agent.id}/financial-summary`)}>
-              {t("agents.actions.financialSummary")}
+              {t("agentFinancialSummary.title")}
             </Button>
             <Button variant="secondary" onClick={() => navigate("/agents/cash-powder/contracts")}>
               {t("agentContracts.title")}
@@ -348,10 +348,20 @@ export const AgentDetails = () => {
                 })}</span>
               </div>
               {productDebt && (
-                <div className={styles.detailRow}>
-                  <strong>{t("agents.productCredit.outstandingDebt")}:</strong>
-                  <span>{Number(productDebt.outstandingAmount).toLocaleString()} AMD</span>
-                </div>
+                <>
+                  <div className={styles.detailRow}>
+                    <strong>{t("agents.productCredit.totalAdvanced")}:</strong>
+                    <span>{Number(productDebt.totalAdvancedAmountAmd).toLocaleString()} AMD</span>
+                  </div>
+                  <div className={styles.detailRow}>
+                    <strong>{t("agents.productCredit.totalPaid")}:</strong>
+                    <span>{Number(productDebt.totalPaidAmountAmd).toLocaleString()} AMD</span>
+                  </div>
+                  <div className={styles.detailRow}>
+                    <strong>{t("agents.productCredit.outstandingDebt")}:</strong>
+                    <span>{Number(productDebt.outstandingAmountAmd).toLocaleString()} AMD</span>
+                  </div>
+                </>
               )}
               <div className={styles.actionRow}>
                 <Button variant="secondary" size="small" onClick={() => navigate(`/agents/product-credit/contracts/${productContract.id}`)}>

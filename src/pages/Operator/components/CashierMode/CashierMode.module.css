@@ -343,6 +343,33 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.debtHistorySection {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.debtHistorySection h4 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.debtHistoryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.debtHistoryRow strong {
+  color: #fff;
+  font-weight: 650;
+}
+
 .agentInfoCard {
   display: grid;
   gap: 8px;

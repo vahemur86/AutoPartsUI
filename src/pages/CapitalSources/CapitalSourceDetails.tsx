@@ -6,8 +6,19 @@ import { toast } from "react-toastify";
 import { Button, DataTable, Modal, TextField, Textarea } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
 import { capitalSourcesService } from "@/services/capitalSources";
+import { fundingAnalyticsService } from "@/services/fundingAnalytics";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { CapitalSourceDto, CapitalSourceTransactionDto } from "@/types/capitalSources";
+import type { CapitalSourceFundingAnalyticsDto, FundingDailyCostDto } from "@/types/fundingAnalytics";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import styles from "./CapitalSources.module.css";
 
 const formatMoney = (value?: number | null) => {
@@ -31,6 +42,10 @@ export const CapitalSourceDetails = () => {
 
   const [source, setSource] = useState<CapitalSourceDto | null>(null);
   const [transactions, setTransactions] = useState<CapitalSourceTransactionDto[]>([]);
+  const [fundingAnalytics, setFundingAnalytics] = useState<CapitalSourceFundingAnalyticsDto | null>(null);
+  const [fundingHistory, setFundingHistory] = useState<FundingDailyCostDto[]>([]);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState(false);
@@ -39,6 +54,14 @@ export const CapitalSourceDetails = () => {
   const [receiveDescription, setReceiveDescription] = useState("");
   const [returnAmount, setReturnAmount] = useState("");
   const [returnDescription, setReturnDescription] = useState("");
+
+  const toDateTimeRange = (value: string, endOfDay: boolean) => {
+    if (!value) return undefined;
+    const parsed = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return undefined;
+    if (endOfDay) parsed.setHours(23, 59, 59, 999);
+    return parsed.toISOString();
+  };
 
   const load = async () => {
     if (!id) return;
@@ -50,6 +73,22 @@ export const CapitalSourceDetails = () => {
       ]);
       setSource(sourceData);
       setTransactions(history ?? []);
+      const params = {
+        fromDate: toDateTimeRange(fromDate, false),
+        toDate: toDateTimeRange(toDate, true),
+      };
+      try {
+        const [analytics, costs] = await Promise.all([
+          fundingAnalyticsService.getCapitalSourceFundingAnalytics(id, params),
+          fundingAnalyticsService.getCapitalSourceFundingCostHistory(id, params),
+        ]);
+        setFundingAnalytics(analytics);
+        setFundingHistory(costs ?? []);
+      } catch (error) {
+        setFundingAnalytics(null);
+        setFundingHistory([]);
+        toast.error(getApiErrorMessage(error, t("fundingAnalytics.errors.capitalSourceLoadFailed")));
+      }
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("capitalSources.errors.loadDetailsFailed")));
     } finally {
@@ -59,7 +98,30 @@ export const CapitalSourceDetails = () => {
 
   useEffect(() => {
     void load();
-  }, [id]);
+  }, [id, fromDate, toDate, t]);
+
+  const applyFundingFilters = () => {
+    if (fromDate && toDate && new Date(`${fromDate}T00:00:00`) > new Date(`${toDate}T00:00:00`)) {
+      toast.error(t("fundingAnalytics.validation.dateRange"));
+      return;
+    }
+    void load();
+  };
+
+  const fundingHistoryColumns = useMemo(
+    () => [
+      {
+        id: "date",
+        header: t("fundingAnalytics.fields.date"),
+        cell: ({ row }: any) => new Date(row.original.date).toLocaleDateString(),
+      },
+      { accessorKey: "outstandingPrincipal", header: t("fundingAnalytics.fields.outstandingPrincipal"), cell: ({ row }: any) => `${formatMoney(row.original.outstandingPrincipal)} AMD` },
+      { accessorKey: "annualInterestRate", header: t("fundingAnalytics.fields.annualInterestRate"), cell: ({ row }: any) => `${row.original.annualInterestRate}%` },
+      { accessorKey: "dailyFundingCost", header: t("fundingAnalytics.fields.dailyFundingCost"), cell: ({ row }: any) => `${formatMoney(row.original.dailyFundingCost)} AMD` },
+      { accessorKey: "cumulativeFundingCost", header: t("fundingAnalytics.fields.cumulativeFundingCost"), cell: ({ row }: any) => `${formatMoney(row.original.cumulativeFundingCost)} AMD` },
+    ],
+    [t],
+  );
 
   const handleMoneyAction = async (mode: "receive" | "return") => {
     if (!id || !source) return;
@@ -180,6 +242,51 @@ export const CapitalSourceDetails = () => {
         <div><strong>{t("capitalSources.fields.endDate")}:</strong> {source.endDate ? new Date(source.endDate).toLocaleDateString() : "—"}</div>
         <div><strong>{t("capitalSources.fields.description")}:</strong> {source.description || "—"}</div>
       </div>
+
+      <section className={styles.analyticsSection}>
+        <div className={styles.analyticsHeader}>
+          <div>
+            <h3>{t("fundingAnalytics.capitalSource.title")}</h3>
+            <p>{t("fundingAnalytics.capitalSource.description")}</p>
+          </div>
+          <div className={styles.analyticsFilters}>
+            <TextField label={t("fundingAnalytics.filters.fromDate")} type="date" value={fromDate} onChange={(event) => setFromDate(event.target.value)} />
+            <TextField label={t("fundingAnalytics.filters.toDate")} type="date" value={toDate} onChange={(event) => setToDate(event.target.value)} />
+            <Button variant="secondary" onClick={applyFundingFilters} disabled={isLoading}>{t("common.apply")}</Button>
+          </div>
+        </div>
+        {fundingAnalytics && (
+          <div className={styles.statsGrid}>
+            <div className={styles.contentCard}><div className={styles.statLabel}>{t("fundingAnalytics.fields.originalPrincipal")}</div><h3 className={styles.statValue}>{formatMoney(fundingAnalytics.originalPrincipal)} AMD</h3></div>
+            <div className={styles.contentCard}><div className={styles.statLabel}>{t("fundingAnalytics.fields.currentAvailableBalance")}</div><h3 className={styles.statValue}>{formatMoney(fundingAnalytics.currentAvailableBalance)} AMD</h3></div>
+            <div className={styles.contentCard}><div className={styles.statLabel}>{t("fundingAnalytics.fields.currentOutstandingPrincipal")}</div><h3 className={styles.statValue}>{formatMoney(fundingAnalytics.currentOutstandingPrincipal)} AMD</h3></div>
+            <div className={styles.contentCard}><div className={styles.statLabel}>{t("fundingAnalytics.fields.annualInterestRate")}</div><h3 className={styles.statValue}>{fundingAnalytics.annualInterestRate}%</h3></div>
+            <div className={styles.contentCard}><div className={styles.statLabel}>{t("fundingAnalytics.fields.dailyFundingCost")}</div><h3 className={styles.statValue}>{formatMoney(fundingAnalytics.dailyFundingCost)} AMD</h3></div>
+            <div className={styles.contentCard}><div className={styles.statLabel}>{t("fundingAnalytics.fields.accruedFundingCost")}</div><h3 className={styles.statValue}>{formatMoney(fundingAnalytics.accruedFundingCost)} AMD</h3></div>
+          </div>
+        )}
+        {fundingHistory.length > 0 && (
+          <>
+            <div className={styles.analyticsChart}>
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={fundingHistory}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.18)" />
+                  <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString()} stroke="#94a3b8" />
+                  <YAxis yAxisId="principal" stroke="#c4a96a" />
+                  <YAxis yAxisId="cost" orientation="right" stroke="#6ee7b7" />
+                  <Tooltip formatter={(value) => `${formatMoney(Number(value))} AMD`} labelFormatter={(value) => new Date(String(value)).toLocaleDateString()} />
+                  <Line yAxisId="principal" type="monotone" dataKey="outstandingPrincipal" stroke="#c4a96a" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.outstandingPrincipal")} />
+                  <Line yAxisId="cost" type="monotone" dataKey="dailyFundingCost" stroke="#6ee7b7" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.dailyFundingCost")} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className={styles.section}>
+              <h3>{t("fundingAnalytics.capitalSource.historyTitle")}</h3>
+              <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} isLoading={isLoading} noResultsText={t("fundingAnalytics.capitalSource.historyEmpty")} loadingText={t("common.loading")} />
+            </div>
+          </>
+        )}
+      </section>
 
       <div className={styles.section}>
         <h3>{t("capitalSources.transactions.title")}</h3>

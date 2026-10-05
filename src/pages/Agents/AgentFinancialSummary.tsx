@@ -4,25 +4,33 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { SectionHeader } from "@/components/common";
-import { Button } from "@/ui-kit";
+import { Button, TextField } from "@/ui-kit";
 import { agentsService } from "@/services/agents";
+import { fundingAnalyticsService } from "@/services/fundingAnalytics";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentFinancialSummaryDto } from "@/types/agents";
+import type { AgentProfitabilityAnalyticsDto } from "@/types/fundingAnalytics";
 import styles from "./Agents.module.css";
 
-const formatMoney = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "AMD",
+const formatMoney = (value: number) => {
+  const formatted = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
+
+  return `֏ ${formatted}`;
+};
 
 const AgentFinancialSummary = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const [summary, setSummary] = useState<AgentFinancialSummaryDto | null>(null);
+  const [profitability, setProfitability] = useState<AgentProfitabilityAnalyticsDto | null>(null);
   const [loading, setLoading] = useState(false);
+  const [profitLoading, setProfitLoading] = useState(false);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -41,6 +49,32 @@ const AgentFinancialSummary = () => {
 
     void load();
   }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadProfitability = async () => {
+      if (fromDate && toDate && new Date(`${fromDate}T00:00:00`) > new Date(`${toDate}T00:00:00`)) {
+        toast.error(t("fundingAnalytics.validation.dateRange"));
+        return;
+      }
+
+      setProfitLoading(true);
+      try {
+        const data = await fundingAnalyticsService.getAgentProfitabilityAnalytics(id, {
+          fromDate: fromDate ? new Date(`${fromDate}T00:00:00`).toISOString() : undefined,
+          toDate: toDate ? new Date(`${toDate}T23:59:59`).toISOString() : undefined,
+        });
+        setProfitability(data);
+      } catch (error) {
+        toast.error(getApiErrorMessage(error, t("fundingAnalytics.errors.agentLoadFailed")));
+      } finally {
+        setProfitLoading(false);
+      }
+    };
+
+    void loadProfitability();
+  }, [id, fromDate, toDate, t]);
 
   const progress = useMemo(() => {
     if (!summary || summary.agent.totalAdvancedAmount <= 0) return 0;
@@ -78,6 +112,28 @@ const AgentFinancialSummary = () => {
           </div>
         }
       />
+
+      <div className={styles.premiumPanel}>
+        <div className={styles.premiumFilterBar}>
+          <TextField label={t("fundingAnalytics.filters.fromDate")} type="date" value={fromDate} onChange={(event) => setFromDate(event.target.value)} />
+          <TextField label={t("fundingAnalytics.filters.toDate")} type="date" value={toDate} onChange={(event) => setToDate(event.target.value)} />
+        </div>
+
+        {profitability && (
+          <div className={styles.premiumStatsGrid}>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.totalAgentFunding")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalAgentFunding)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.totalAgentOutstanding")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalAgentOutstanding)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.totalKitcoValue")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalKitcoValue)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.totalAgentPayout")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalAgentPayout)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.totalGrossCatalystMargin")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalGrossCatalystMargin)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.totalFundingCost")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalFundingCost)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.netProfitLoss")}</div><div className={styles.summaryValue}>{formatMoney(profitability.totalNetProfitLoss)}</div></div>
+            <div className={styles.summaryCard}><div className={styles.summaryLabel}>{t("fundingAnalytics.fields.roi")}</div><div className={styles.summaryValue}>{Number(profitability.roiPercent ?? 0).toFixed(2)}%</div></div>
+          </div>
+        )}
+
+        {profitLoading && <div className={styles.banner}>{t("common.loading")}</div>}
+      </div>
 
       {loading && <div className={styles.banner}>{t("agentFinancialSummary.loading")}</div>}
 

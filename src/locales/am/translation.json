@@ -2180,7 +2180,9 @@
         "invalidAmount": "Մուտքագրեք զրոյից մեծ գումար։",
         "amountExceedsDebt": "Վճարումը չի կարող գերազանցել պարտքի մնացորդը։",
         "paymentRecorded": "Ապրանքային պարտքի վճարումը գրանցվեց։",
-        "paymentFailed": "Չհաջողվեց գրանցել ապրանքային պարտքի վճարումը։"
+        "paymentFailed": "Չհաջողվեց գրանցել ապրանքային պարտքի վճարումը։",
+        "recentPayments": "Ապրանքային պարտքի վերջին վճարումները",
+        "recentSales": "Ապառիկով ապրանքների վերջին վաճառքները"
       },
       "shopLabel": "Խանութ",
       "loadingShop": "Խանութի տվյալները բեռնվում են...",
@@ -3268,6 +3270,7 @@
     "sales": "Ապառիկով վաճառքներ",
     "debt": "Ապրանքային պարտք",
     "payments": "Պարտքի վճարումներ",
+    "productPayments": "Ապրանքային պարտքի վճարումներ",
     "productContracts": "Ապրանքային ապառիկի պայմանագրեր",
     "noProductContracts": "Ապրանքային ապառիկի պայմանագրեր չեն գտնվել։",
     "productAdvances": "Ապրանքային ավանսներ",
@@ -3340,12 +3343,24 @@
       "activeContract": "Ապրանքային ապառիկի գործող պայմանագիր",
       "noActiveContract": "Ապրանքային ապառիկի գործող պայմանագիր չկա",
       "allowed": "Ապրանքային կանխավճարը թույլատրված է",
+      "totalAdvanced": "Ապրանքների ընդհանուր տրամադրված արժեք",
+      "totalPaid": "Ապրանքային պարտքի ընդհանուր մարում",
       "outstandingDebt": "Ապրանքային պարտքի մնացորդ",
       "repaymentRule": "Մարման կանոն",
       "viewContract": "Դիտել պայմանագիրը",
       "editContract": "Խմբագրել պայմանագիրը",
       "paymentDate": "Վճարման ամսաթիվ",
       "paymentAmount": "Գումար",
+      "saleId": "Վաճառքի ID",
+      "saleDate": "Վաճառքի ամսաթիվ",
+      "products": "Ապրանքներ",
+      "productCount": "{{count}} ապրանք · մանրամասներ",
+      "productId": "Ապրանք {{id}}",
+      "lineTotal": "Տողի գումար",
+      "totalAmount": "Ընդհանուր գումար",
+      "saleStatus": "Կարգավիճակ",
+      "noSales": "Ապրանքային ապառիկով վաճառքներ չկան։",
+      "salesLoadFailed": "Չհաջողվեց բեռնել ապրանքային ապառիկով վաճառքների պատմությունը։",
       "contract": "Պայմանագիր",
       "cashRegister": "Դրամարկղ",
       "cashSession": "Դրամարկղի հերթափոխ",
@@ -4211,6 +4226,64 @@
       "activateFailed": "Չհաջողվեց ակտիվացնել",
       "deactivateFailed": "Չհաջողվեց ապաակտիվացնել",
       "expireFailed": "Չհաջողվեց ավարտել տարբերակը"
+    }
+  },
+  "fundingAnalytics": {
+    "validation": {
+      "dateRange": "Սկզբի ամսաթիվը չի կարող ավելի ուշ լինել, քան վերջнийը։"
+    },
+    "errors": {
+      "capitalSourceLoadFailed": "Չհաջողվեց բեռնել կապիտալի աղբյուրի ֆինանսավորման վերլուծությունը։",
+      "advanceLoadFailed": "Չհաջողվեց բեռնել ավանսի ֆինանսավորման վերլուծությունը։",
+      "agentLoadFailed": "Չհաջողվեց բեռնել գործակալի շահութաբերության վերլուծությունը։"
+    },
+    "filters": {
+      "fromDate": "Սկզբից",
+      "toDate": "Մինչև"
+    },
+    "fields": {
+      "date": "Ամսաթիվ",
+      "capitalSource": "Կապիտալի աղբյուր",
+      "originalPrincipal": "Սկզբնական մայր գումար",
+      "currentAvailableBalance": "Ընթացիկ հասանելի մնացորդ",
+      "currentOutstandingPrincipal": "Ընթացիկ չմարված մայր գումար",
+      "annualInterestRate": "Տարեկան տոկոսադրույք",
+      "dailyFundingCost": "Օրվա ֆինանսավորման արժեք",
+      "accruedFundingCost": "Կուտակված ֆինանսավորման արժեք",
+      "outstandingPrincipal": "Չմարված մայր գումար",
+      "cumulativeFundingCost": "Կուտակված ֆինանսավորման արժեք",
+      "allocatedPrincipal": "Հատկացված մայր գումար",
+      "fundingCost": "Ֆինանսավորման արժեք",
+      "daysOutstanding": "Օրերի քանակ",
+      "originalAdvanceAmount": "Սկզբնական ավանսային գումար",
+      "currentOutstandingAdvance": "Ընթացիկ չմարված ավանս",
+      "advanceStatus": "Ավանսի կարգավիճակ",
+      "advanceDate": "Ավանսի ամսաթիվ",
+      "closedDate": "Փակման ամսաթիվ",
+      "totalDaysOutstanding": "Ընդհանուր չմարված օրեր",
+      "totalAcceptedPowderValue": "Ընդունված փոշու ընդհանուր արժեք",
+      "totalKitcoValue": "Ընդհանուր Kitco արժեք",
+      "totalAgentPayout": "Ընդհանուր գործակալի վճարում",
+      "grossCatalystMargin": "Gross catalyst margin",
+      "netProfitLoss": "Զուտ շահույթ/կորուստ",
+      "roi": "ROI",
+      "totalAgentFunding": "Ընդհանուր գործակալի ֆինանսավորում",
+      "totalAgentOutstanding": "Ընդհանուր գործակալի մնացորդ",
+      "totalGrossCatalystMargin": "Ընդհանուր gross catalyst margin",
+      "totalFundingCost": "Ընդհանուր ֆինանսավորման արժեք"
+    },
+    "capitalSource": {
+      "title": "Կապիտալի աղբյուրի ֆինանսավորման վերլուծություն",
+      "description": "Ֆինանսավորման արժեքն ու մայր գումարի վերլուծությունը այս կապիտալի աղբյուրի համար։",
+      "historyTitle": "Ֆինանսավորման արժեքի պատմություն",
+      "historyEmpty": "Ընտրված միջակայքի համար ֆինանսավորման պատմություն չի գտնվել։"
+    },
+    "advance": {
+      "title": "Ավանսի ֆինանսավորման տվյալներ",
+      "allocations": "Կապիտալի աղբյուրների հատկացումներ",
+      "dailyFundingHistory": "Օրական ֆինանսավորման պատմություն",
+      "noAllocations": "Հատկացումներ չեն գտնվել։",
+      "noHistory": "Օրական ֆինանսավորման պատմություն չի գտնվել։"
     }
   },
   "capitalSources": {
