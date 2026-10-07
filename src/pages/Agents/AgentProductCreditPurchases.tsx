@@ -26,6 +26,15 @@ const formatSaleDate = (value?: string | null) =>
 const getErrorStatus = (error: unknown) =>
   (error as { response?: { status?: number } } | null)?.response?.status;
 
+const getProductDisplayName = (item: AgentProductCreditSaleItemDto) => {
+  const productCode = item.productCode?.trim();
+  const productSku = item.productSku?.trim();
+
+  if (productCode) return productSku ? `${productCode} · ${productSku}` : productCode;
+  if (productSku) return productSku;
+  return `#${item.productId}`;
+};
+
 export const AgentProductCreditSaleItems = ({ items }: { items: AgentProductCreditSaleItemDto[] }) => {
   const { t } = useTranslation();
 
@@ -39,7 +48,7 @@ export const AgentProductCreditSaleItems = ({ items }: { items: AgentProductCred
       </div>
       {items.map((item, index) => (
         <div className={styles.productPurchaseItem} key={`${item.productId}-${index}`}>
-          <span>{t("agents.productCredit.productId", { id: item.productId })}</span>
+          <span>{getProductDisplayName(item)}</span>
           <span>{item.quantity}</span>
           <span>֏ {formatAmd(item.unitPrice)}</span>
           <strong>֏ {formatAmd(item.lineTotal)}</strong>

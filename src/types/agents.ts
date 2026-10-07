@@ -91,6 +91,8 @@ export interface AgentProductDebtDto {
 
 export interface AgentProductCreditSaleItemDto {
   productId: number;
+  productCode?: string | null;
+  productSku?: string | null;
   quantity: number;
   unitPrice: number;
   lineTotal: number;

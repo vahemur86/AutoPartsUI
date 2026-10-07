@@ -28,6 +28,14 @@ const money = (amount?: number | null) =>
   new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(amount ?? 0);
 const date = (value?: string | null) =>
   value ? new Date(value).toLocaleDateString() : "-";
+const formatProductLabel = (item: { productId: number; productCode?: string | null; productSku?: string | null }) => {
+  const productCode = item.productCode?.trim();
+  const productSku = item.productSku?.trim();
+
+  if (productCode) return productSku ? `${productCode} · ${productSku}` : productCode;
+  if (productSku) return productSku;
+  return `#${item.productId}`;
+};
 const isProductAdvance = (advance: AgentAdvanceDto) =>
   String(advance.advanceType ?? "").toLowerCase().includes("product");
 
@@ -797,7 +805,7 @@ const ProductSalesView = () => {
             <ul>
               {(row.original.items ?? []).map((item, index) => (
                 <li key={`${item.productId}-${index}`}>
-                  <span>{t("agents.productCredit.productId", { id: item.productId })}</span>
+                  <span>{formatProductLabel(item)}</span>
                   <span>{item.quantity} × {money(item.unitPrice)} AMD</span>
                   <strong>{t("agents.productCredit.lineTotal")}: {money(item.lineTotal)} AMD</strong>
                 </li>
