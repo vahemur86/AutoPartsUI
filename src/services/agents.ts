@@ -2,6 +2,7 @@ import { api } from "@/services/index";
 import type {
   AgentProductDebtDto,
   AgentProductCreditSaleDto,
+  AgentProductCreditSalesParams,
   AgentProductDebtPaymentDto,
   CreateAgentProductDebtPaymentRequest,
   AgentDto,
@@ -15,7 +16,7 @@ import type {
   SaveAgentClassificationRuleRequest,
   AgentFinancialSummaryDto,
 } from "@/types/agents";
-import { getHeaders } from "@/utils";
+import { getCashRegisterId, getHeaders } from "@/utils";
 
 interface AgentFinancialSummaryFlatDto {
   agentId?: string | null;
@@ -103,7 +104,10 @@ export const normalizeAgentFinancialSummary = (
 
 export const agentsService = {
   getAgents: async (params?: Record<string, unknown>) => {
-    const res = await api.get<PagedResult<AgentDto>>("/agents", { params });
+    const res = await api.get<PagedResult<AgentDto>>("/agents", {
+      params,
+      headers: getHeaders(getCashRegisterId()),
+    });
     return res.data;
   },
 
@@ -136,11 +140,15 @@ export const agentsService = {
 
   getAgentProductCreditSales: async (
     id: string,
-    params?: { contractId?: string; page?: number; pageSize?: number },
+    params?: AgentProductCreditSalesParams,
+    cashRegisterId?: number,
   ) => {
-    const res = await api.get<PagedResult<AgentProductCreditSaleDto>>(
+    const res = await api.get<AgentProductCreditSaleDto[]>(
       `/agents/${id}/product-credit-sales`,
-      { params },
+      {
+        params,
+        headers: getHeaders(cashRegisterId ?? getCashRegisterId()),
+      },
     );
     return res.data;
   },

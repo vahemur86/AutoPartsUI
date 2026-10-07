@@ -11,6 +11,11 @@ import type {
   PagedResult,
   SaveAgentContractRequest,
 } from "@/types/agentContracts";
+import { getCashRegisterId, getHeaders } from "@/utils";
+
+type AgentContractSearchParams = Record<string, unknown> & {
+  allowsProductAdvance?: boolean;
+};
 
 export const agentContractsService = {
   createContract: async (data: SaveAgentContractRequest) => {
@@ -19,7 +24,26 @@ export const agentContractsService = {
   },
 
   listContracts: async (params?: Record<string, unknown>) => {
-    const response = await api.get<PagedResult<AgentContractListItemDto>>("/agent-contracts", { params });
+    const response = await api.get<PagedResult<AgentContractListItemDto>>("/agent-contracts", {
+      params,
+      headers: getHeaders(getCashRegisterId()),
+    });
+    return response.data;
+  },
+
+  listPowderContracts: async (params?: AgentContractSearchParams) => {
+    const response = await api.get<PagedResult<AgentContractListItemDto>>("/agent-contracts", {
+      params: { ...params, allowsProductAdvance: false },
+      headers: getHeaders(getCashRegisterId()),
+    });
+    return response.data;
+  },
+
+  listProductCreditContracts: async (params?: AgentContractSearchParams) => {
+    const response = await api.get<PagedResult<AgentContractListItemDto>>("/agent-contracts", {
+      params: { ...params, allowsProductAdvance: true },
+      headers: getHeaders(getCashRegisterId()),
+    });
     return response.data;
   },
 
@@ -34,6 +58,14 @@ export const agentContractsService = {
 
   cancelContract: async (id: string) => {
     await api.post(`/agent-contracts/${id}/cancel`);
+  },
+
+  activateProductAdvanceContract: async (id: string) => {
+    await api.post(`/agent-contracts/${id}/activate-product`);
+  },
+
+  deactivateProductAdvanceContract: async (id: string) => {
+    await api.post(`/agent-contracts/${id}/deactivate-product`);
   },
 
   listContractAdvances: async (id: string) => {

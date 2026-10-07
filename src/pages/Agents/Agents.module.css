@@ -309,6 +309,67 @@
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+.productPurchases {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.productPurchasesHeader,
+.productPurchaseItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.productPurchasesHeader h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.productPurchasesFilter {
+  max-width: 360px;
+}
+
+.productPurchaseItems {
+  display: grid;
+  gap: 8px;
+}
+
+.productPurchaseItem {
+  display: grid;
+  grid-template-columns: minmax(160px, 2fr) repeat(3, minmax(100px, 1fr));
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 13px;
+}
+
+.productPurchaseItemHeader {
+  color: #9da7b3;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.productPurchasePaid {
+  color: #86efac;
+}
+
+.productPurchaseOutstanding {
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .productPurchaseItem {
+    grid-template-columns: minmax(110px, 1.5fr) repeat(3, minmax(78px, 1fr));
+    gap: 8px;
+    font-size: 12px;
+  }
+}
+
 .tableWrap {
   background: var(--color-black-2);
   border: 1px solid rgba(255, 255, 255, 0.08);

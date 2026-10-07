@@ -33,6 +33,7 @@ export interface SelectProps extends Omit<
   containerClassName?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
+  dropdownMaxHeight?: number;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
@@ -52,6 +53,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       onChange,
       searchable = false,
       searchPlaceholder = "Search...",
+      dropdownMaxHeight = 280,
       ...props
     },
     ref,
@@ -147,7 +149,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       if (!open || !rootRef.current) return;
 
       const rect = rootRef.current.getBoundingClientRect();
-      const estimatedDropdownHeight = searchable ? 320 : 280;
+      const estimatedDropdownHeight = searchable ? Math.max(dropdownMaxHeight, 320) : dropdownMaxHeight;
       const spaceBelow = window.innerHeight - rect.bottom;
       const spaceAbove = rect.top;
 
@@ -155,7 +157,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         spaceBelow < estimatedDropdownHeight &&
           spaceAbove > spaceBelow,
       );
-    }, [open, searchable]);
+    }, [dropdownMaxHeight, open, searchable]);
 
     const handleSelect = (optionValue: string) => {
       if (!internalSelectRef.current) return;
@@ -240,6 +242,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             <div
               className={`${styles.dropdown} ${openUpward ? styles.dropdownTop : ""}`}
               role="listbox"
+              style={{ maxHeight: `${dropdownMaxHeight}px` }}
             >
               {searchable && (
                 <div className={styles.searchContainer}>

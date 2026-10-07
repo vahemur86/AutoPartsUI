@@ -2112,12 +2112,6 @@
         "quantity": "Quantity",
         "actions": "Actions"
       },
-      "scanPlaceholder": "Scan or type SKU and press Enter",
-      "searchButton": "Add by SKU",
-      "enterSku": "Enter product SKU.",
-      "productNotFound": "Product with this SKU was not found.",
-      "productNotInShop": "Product is not available in the selected shop.",
-      "addedToCart": "Added product {{sku}} to cart.",
       "cartTitle": "Cart",
       "emptyCart": "Cart is empty.",
       "unitPrice": "Unit price",
@@ -2129,9 +2123,15 @@
         "nonCash": "Non-cash",
         "mixed": "Mixed"
       },
+      "paymentModeLabel": "Payment method",
       "saleTypes": {
-        "normal": "Normal Sale",
-        "agentCredit": "Agent Credit Sale"
+        "label": "Sale type",
+        "normal": "Standard Sale",
+        "normalDescription": "Paid at checkout",
+        "agentCredit": "Agent Credit Sale",
+        "agentCreditDescription": "Charged to the agent's product-credit contract",
+        "productDebt": "Product Debt Payment",
+        "productDebtDescription": "Record an agent's product debt payment"
       },
       "customerLookup": {
         "phoneLabel": "Customer Phone",
@@ -2161,15 +2161,16 @@
         "creditSaleSuccess": "Credit sale {{saleNumber}} completed for {{agentName}}. Credited amount: {{amount}} AMD. No cash received."
       },
       "productDebt": {
-        "action": "Agent Product Debt Payment",
-        "title": "Agent Product Debt Payment",
+        "action": "Pay Product Debt",
+        "title": "Product Debt Payment",
         "selectAgent": "Select agent",
+        "searchAgent": "Search by agent name or code",
         "selectContract": "Select active contract",
         "activeContract": "Active contract",
         "noActiveContract": "This agent has no active contract.",
         "outstanding": "Outstanding product debt",
         "amount": "Payment amount (AMD)",
-        "submitPayment": "Record payment",
+        "submitPayment": "Record debt payment",
         "loadFailed": "Failed to load product debt.",
         "invalidAmount": "Enter a payment amount greater than zero.",
         "amountExceedsDebt": "Payment cannot exceed the outstanding debt.",
@@ -3367,11 +3368,28 @@
       "editContract": "Edit Contract",
       "paymentDate": "Payment Date",
       "paymentAmount": "Amount",
+      "purchasesTitle": "Product Credit Purchases",
+      "paidAmount": "Paid Amount",
+      "outstandingAmount": "Outstanding Amount",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitPrice": "Unit Price",
+      "saleDetails": "Details",
+      "showDetails": "View items",
+      "hideDetails": "Hide items",
+      "allProductContracts": "All Product Credit Contracts",
+      "loadingSales": "Loading product-credit purchases...",
+      "noProductItems": "No product items are linked to this advance.",
+      "productItemsUnavailable": "Product items could not be loaded.",
+      "salesNotFound": "Agent or product-credit purchases were not found.",
+      "salesUnauthorized": "You are not authorized to view product-credit purchases.",
+      "salesForbidden": "You do not have permission to view product-credit purchases.",
+      "retrySales": "Retry",
       "saleId": "Sale ID",
       "saleDate": "Sale Date",
       "products": "Products",
       "productCount": "{{count}} products · details",
-      "productId": "Product {{id}}",
+      "productId": "Product ID {{id}}",
       "lineTotal": "Line total",
       "totalAmount": "Total Amount",
       "saleStatus": "Status",
@@ -3842,7 +3860,11 @@
       "cancelContract": "Cancel Contract",
       "addAllocation": "Add Allocation",
       "editContract": "Edit Contract",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "activateProductContract": "Activate Product Contract",
+      "deactivateProductContract": "Deactivate Product Contract",
+      "activatingProductContract": "Activating Product Contract...",
+      "deactivatingProductContract": "Deactivating Product Contract..."
     },
     "list": {
       "count": "{{count}} contracts",
@@ -3900,7 +3922,9 @@
       "repaymentSummary": "Repayment Summary",
       "noCapitalFundingRows": "No capital funding found",
       "advanceDescription": "Create a new advance for this contract before funding it from capital sources.",
-      "cancelDescription": "This can only be done for a draft contract without funded or active advances."
+      "cancelDescription": "This can only be done for a draft contract without funded or active advances.",
+      "activateProductDescription": "Product-credit sales will be allowed after activation.",
+      "deactivateProductDescription": "Deactivation is allowed only when there are no outstanding debts."
     },
     "compliance": {
       "noActiveContract": "No active contract.",
@@ -3914,7 +3938,9 @@
       "created": "Contract created.",
       "updated": "Contract updated.",
       "cancelled": "Contract cancelled.",
-      "advanceCreated": "Advance created successfully."
+      "advanceCreated": "Advance created successfully.",
+      "productContractActivated": "Product contract activated successfully.",
+      "productContractDeactivated": "Product contract deactivated successfully."
     },
     "errors": {
       "loadFailed": "Failed to load contracts.",
@@ -3922,7 +3948,9 @@
       "createFailed": "Failed to create contract.",
       "loadDetailsFailed": "Failed to load contract details.",
       "cancelFailed": "Failed to cancel contract.",
-      "advanceCreateFailed": "Failed to create advance."
+      "advanceCreateFailed": "Failed to create advance.",
+      "activateProductContractFailed": "Failed to activate product contract.",
+      "deactivateProductContractFailed": "Failed to deactivate product contract."
     },
     "validation": {
       "advanceAmount": "Please enter a valid advance amount."

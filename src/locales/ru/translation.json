@@ -2089,9 +2089,15 @@
         "nonCash": "Безналичные",
         "mixed": "Смешанный"
       },
+      "paymentModeLabel": "Способ оплаты",
       "saleTypes": {
+        "label": "Тип продажи",
         "normal": "Обычная продажа",
-        "agentCredit": "Продажа агентского кредита"
+        "normalDescription": "Оплата при оформлении",
+        "agentCredit": "Продажа агенту в кредит",
+        "agentCreditDescription": "Сумма относится на договор товарного кредита агента",
+        "productDebt": "Оплата товарного долга",
+        "productDebtDescription": "Зарегистрировать оплату товарного долга агента"
       },
       "customerLookup": {
         "phoneLabel": "Телефон клиента",
@@ -2121,15 +2127,16 @@
         "creditSaleSuccess": "Кредитная продажа {{saleNumber}} для агента {{agentName}} завершена. Сумма: {{amount}} AMD. Наличные не получены."
       },
       "productDebt": {
-        "action": "Погашение товарного долга агента",
-        "title": "Погашение товарного долга агента",
+        "action": "Погасить товарный долг",
+        "title": "Платёж по товарному долгу",
         "selectAgent": "Выберите агента",
+        "searchAgent": "Поиск по имени или коду агента",
         "selectContract": "Выберите действующий договор",
         "activeContract": "Действующий договор",
         "noActiveContract": "У агента нет действующего договора.",
         "outstanding": "Остаток товарного долга",
         "amount": "Сумма платежа (AMD)",
-        "submitPayment": "Зарегистрировать платеж",
+        "submitPayment": "Зарегистрировать погашение долга",
         "loadFailed": "Не удалось загрузить товарный долг.",
         "invalidAmount": "Введите сумму больше нуля.",
         "amountExceedsDebt": "Платеж не может превышать остаток долга.",
@@ -2156,7 +2163,7 @@
       "estimate": {
         "label": "Номер оценки",
         "placeholder": "Введите номер оценки (напр. EST-2024-06-0001)",
-        "findButton": "Найти оценку",
+        "findButton": "Найти смету",
         "enterNumber": "Введите номер оценки.",
         "found": "Оценка найдена.",
         "notFound": "Оценка не найдена.",
@@ -3331,11 +3338,28 @@
       "editContract": "Изменить договор",
       "paymentDate": "Дата платежа",
       "paymentAmount": "Сумма",
+      "purchasesTitle": "Покупки в товарный кредит",
+      "paidAmount": "Оплачено",
+      "outstandingAmount": "Остаток долга",
+      "product": "Товар",
+      "quantity": "Количество",
+      "unitPrice": "Цена за единицу",
+      "saleDetails": "Детали",
+      "showDetails": "Показать товары",
+      "hideDetails": "Скрыть товары",
+      "allProductContracts": "Все договоры товарного кредита",
+      "loadingSales": "Загружаем покупки в товарный кредит...",
+      "noProductItems": "К этому авансу не привязаны товары.",
+      "productItemsUnavailable": "Не удалось загрузить товары.",
+      "salesNotFound": "Агент или покупки в товарный кредит не найдены.",
+      "salesUnauthorized": "Недостаточно прав для просмотра покупок в товарный кредит.",
+      "salesForbidden": "У вас нет разрешения на просмотр покупок в товарный кредит.",
+      "retrySales": "Повторить",
       "saleId": "ID продажи",
       "saleDate": "Дата продажи",
       "products": "Товары",
       "productCount": "Товаров: {{count}} · детали",
-      "productId": "Товар {{id}}",
+      "productId": "ID товара {{id}}",
       "lineTotal": "Сумма позиции",
       "totalAmount": "Итоговая сумма",
       "saleStatus": "Статус",
@@ -3806,7 +3830,11 @@
       "cancelContract": "Отменить договор",
       "addAllocation": "Добавить распределение",
       "editContract": "Изменить договор",
-      "saveChanges": "Сохранить изменения"
+      "saveChanges": "Сохранить изменения",
+      "activateProductContract": "Активировать товарный договор",
+      "deactivateProductContract": "Деактивировать товарный договор",
+      "activatingProductContract": "Активирование товарного договора...",
+      "deactivatingProductContract": "Деактивирование товарного договора..."
     },
     "list": {
       "count": "Договоров: {{count}}",
@@ -3864,7 +3892,9 @@
       "repaymentSummary": "Сводка погашений",
       "noCapitalFundingRows": "Финансирование из капитала не найдено",
       "advanceDescription": "Создайте аванс по этому договору до его финансирования из источников капитала.",
-      "cancelDescription": "Можно отменить только черновой договор без профинансированных или активных авансов."
+      "cancelDescription": "Можно отменить только черновой договор без профинансированных или активных авансов.",
+      "activateProductDescription": "После активации будет разрешена продажа товаров в кредит.",
+      "deactivateProductDescription": "Деактивация разрешена только при отсутствии просроченной задолженности."
     },
     "compliance": {
       "noActiveContract": "Нет действующего договора.",
@@ -3878,7 +3908,9 @@
       "created": "Договор создан.",
       "updated": "Договор обновлен.",
       "cancelled": "Договор отменен.",
-      "advanceCreated": "Аванс успешно создан."
+      "advanceCreated": "Аванс успешно создан.",
+      "productContractActivated": "Товарный договор успешно активирован.",
+      "productContractDeactivated": "Товарный договор успешно деактивирован."
     },
     "errors": {
       "loadFailed": "Не удалось загрузить договоры.",
@@ -3886,7 +3918,9 @@
       "createFailed": "Не удалось создать договор.",
       "loadDetailsFailed": "Не удалось загрузить данные договора.",
       "cancelFailed": "Не удалось отменить договор.",
-      "advanceCreateFailed": "Не удалось создать аванс."
+      "advanceCreateFailed": "Не удалось создать аванс.",
+      "activateProductContractFailed": "Не удалось активировать товарный договор.",
+      "deactivateProductContractFailed": "Не удалось деактивировать товарный договор."
     },
     "validation": {
       "advanceAmount": "Введите корректную сумму аванса."

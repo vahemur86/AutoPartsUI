@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import type { CountryCode } from "libphonenumber-js";
 import { Button, ConfirmationModal, Select, TextField } from "@/ui-kit";
-import { Trash2 } from "lucide-react";
+import { ArrowLeftRight, BadgeCheck, BadgeDollarSign, Banknote, Check, CircleDollarSign, CreditCard, FileText, ScanLine, Search, ShoppingBag, Trash2, Wallet } from "lucide-react";
+import { CountryPhoneInput } from "@/components/common";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -16,7 +18,6 @@ import {
   convertServiceEstimateToOrder,
   getServiceEstimateByNumber,
 } from "@/services/operator";
-import { getCustomers } from "@/services/customers";
 import { agentsService } from "@/services/agents";
 import { agentContractsService } from "@/services/agentContracts";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
@@ -28,19 +29,14 @@ import { getCashRegisterId } from "@/utils";
 import { createPOSSale } from "@/services/shops/posSale";
 
 // types
-import type { Customer, ServiceEstimateLookupResponse } from "@/types/operator";
+import type { ServiceEstimateLookupResponse } from "@/types/operator";
 import type { AgentContractListItemDto } from "@/types/agentContracts";
 import type { AgentDto } from "@/types/agents";
 import type {
-  AgentProductCreditSaleDto,
   AgentProductDebtDto,
   AgentProductDebtPaymentDto,
 } from "@/types/agents";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
-
-type AgentContractCashierItem = AgentContractListItemDto & {
-  allowsProductAdvance?: boolean | null;
-};
 
 // styles
 import styles from "./CashierMode.module.css";
@@ -55,7 +51,7 @@ type CashierProductRow = ShopProductItem & {
 };
 
 type PaymentMode = "cash" | "non-cash" | "mixed";
-type SaleType = "normal" | "agent-credit";
+type SaleType = "normal" | "agent-credit" | "product-debt";
 
 type CartItem = {
   productId: number;
@@ -66,7 +62,7 @@ type CartItem = {
 };
 
 export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { shops } = useAppSelector((state) => state.shops);
@@ -74,20 +70,18 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [saleType, setSaleType] = useState<SaleType>("normal");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerPhoneCountry, setCustomerPhoneCountry] = useState<CountryCode>("AM");
   const [customerLookupLoading, setCustomerLookupLoading] = useState(false);
-  const [identifiedCustomer, setIdentifiedCustomer] = useState<Customer | null>(null);
   const [identifiedAgent, setIdentifiedAgent] = useState<AgentDto | null>(null);
-  const [identifiedContract, setIdentifiedContract] = useState<AgentContractCashierItem | null>(null);
+  const [identifiedContract, setIdentifiedContract] = useState<AgentContractListItemDto | null>(null);
   const [identifiedProductDebt, setIdentifiedProductDebt] = useState<AgentProductDebtDto | null>(null);
   const [creditConfirmationOpen, setCreditConfirmationOpen] = useState(false);
-  const [productDebtPaymentOpen, setProductDebtPaymentOpen] = useState(false);
   const [debtAgents, setDebtAgents] = useState<AgentDto[]>([]);
   const [debtAgentId, setDebtAgentId] = useState("");
   const [debtContracts, setDebtContracts] = useState<AgentContractListItemDto[]>([]);
   const [debtContractId, setDebtContractId] = useState("");
   const [debtSummary, setDebtSummary] = useState<AgentProductDebtDto | null>(null);
   const [debtPaymentHistory, setDebtPaymentHistory] = useState<AgentProductDebtPaymentDto[]>([]);
-  const [debtSalesHistory, setDebtSalesHistory] = useState<AgentProductCreditSaleDto[]>([]);
   const [debtPaymentAmount, setDebtPaymentAmount] = useState("");
   const [debtLoading, setDebtLoading] = useState(false);
   const [debtPaymentSaving, setDebtPaymentSaving] = useState(false);
@@ -106,6 +100,34 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [selectedEstimate, setSelectedEstimate] =
     useState<ServiceEstimateLookupResponse | null>(null);
   const skuInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const previousLanguage = i18n.language || "en";
+    const previousStoredLanguage = window.localStorage.getItem("i18nextLng");
+    let languageChangedManually = false;
+    const trackLanguageChange = (language: string) => {
+      if (language !== "am") languageChangedManually = true;
+    };
+
+    i18n.on("languageChanged", trackLanguageChange);
+    if (previousLanguage !== "am") {
+      void i18n.changeLanguage("am").then(() => {
+        if (languageChangedManually) return;
+        if (previousStoredLanguage === null) window.localStorage.removeItem("i18nextLng");
+        else window.localStorage.setItem("i18nextLng", previousStoredLanguage);
+      });
+    }
+
+    return () => {
+      i18n.off("languageChanged", trackLanguageChange);
+      if (!languageChangedManually && previousLanguage !== "am" && i18n.language === "am") {
+        void i18n.changeLanguage(previousLanguage).then(() => {
+          if (previousStoredLanguage === null) window.localStorage.removeItem("i18nextLng");
+          else window.localStorage.setItem("i18nextLng", previousStoredLanguage);
+        });
+      }
+    };
+  }, [i18n]);
 
   const cashRegister = useMemo(() => getCashRegisterId(0), []);
   const resolvedCashRegisterId = useMemo(() => {
@@ -194,15 +216,8 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
 
   const activeTotalAmount = isEstimateMode ? estimateTotalAmount : totalAmount;
 
-  const resolveProductAdvanceAllowed = useCallback(
-    (contract?: Partial<AgentContractCashierItem> | null) => {
-      return contract?.allowsProductAdvance === true;
-    },
-    [],
-  );
-
   const resolveActiveContract = useCallback(
-    (contracts?: Array<Partial<AgentContractCashierItem>> | null) => {
+    (contracts?: Array<Partial<AgentContractListItemDto>> | null) => {
       if (!Array.isArray(contracts) || contracts.length === 0) return null;
 
       const activeContract = contracts.find((contract) => {
@@ -217,12 +232,12 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   );
 
   const isAgentCreditSale = saleType === "agent-credit";
+  const isProductDebtSale = saleType === "product-debt";
   const isAgentCreditReady =
     isAgentCreditSale &&
-    !!identifiedCustomer &&
     !!identifiedAgent &&
     !!identifiedContract &&
-    resolveProductAdvanceAllowed(identifiedContract) !== false;
+    (String(identifiedContract.status).toLowerCase() === "active" || Number(identifiedContract.status) === 0);
 
   const cashPaidNum = useMemo(() => parseFloat(cashPaid) || 0, [cashPaid]);
   const nonCashPaidNum = useMemo(() => parseFloat(nonCashPaid) || 0, [nonCashPaid]);
@@ -369,7 +384,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     setPaymentMode("cash");
     setSaleType("normal");
     setCustomerPhone("");
-    setIdentifiedCustomer(null);
+    setCustomerPhoneCountry("AM");
     setIdentifiedAgent(null);
     setIdentifiedContract(null);
     setIdentifiedProductDebt(null);
@@ -383,12 +398,12 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   }, []);
 
   useEffect(() => {
-    if (!productDebtPaymentOpen) return;
+    if (saleType !== "product-debt") return;
     void agentsService
       .getAgents({ page: 1, pageSize: 200, status: 0 })
       .then((result) => setDebtAgents(result.results ?? []))
       .catch((error) => toast.error(getApiErrorMessage(error, t("operatorPage.cashier.productDebt.loadFailed"))));
-  }, [productDebtPaymentOpen, t]);
+  }, [saleType, t]);
 
   useEffect(() => {
     if (!debtAgentId) {
@@ -396,22 +411,20 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       setDebtContractId("");
       setDebtSummary(null);
       setDebtPaymentHistory([]);
-      setDebtSalesHistory([]);
       return;
     }
 
     let isCancelled = false;
     setDebtLoading(true);
     void Promise.all([
-      agentContractsService.listContracts({ agentId: debtAgentId, page: 1, pageSize: 50 }),
+      agentContractsService.listProductCreditContracts({ agentId: debtAgentId, page: 1, pageSize: 50 }),
       agentsService.getAgentProductDebt(debtAgentId, undefined, resolvedCashRegisterId),
     ])
       .then(([contractsResponse, summary]) => {
         if (isCancelled) return;
         const activeContracts = (contractsResponse.results ?? []).filter(
           (contract) =>
-            (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0) &&
-            contract.allowsProductAdvance === true,
+            (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0),
         );
         setDebtContracts(activeContracts);
         setDebtContractId((current) =>
@@ -484,9 +497,13 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     }
 
     toast.success(t("operatorPage.cashier.productDebt.paymentRecorded"));
+    setSaleType("normal");
+    window.dispatchEvent(new CustomEvent("agent-product-credit-activity-changed", {
+      detail: { agentId: debtAgentId },
+    }));
     setDebtPaymentAmount("");
     try {
-      const [summaryResult, paymentResult, salesResult] = await Promise.allSettled([
+      const [summaryResult, paymentResult] = await Promise.allSettled([
         agentsService.getAgentProductDebt(
           debtAgentId,
           debtContractId || undefined,
@@ -497,16 +514,10 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           debtContractId || undefined,
           resolvedCashRegisterId,
         ),
-        agentsService.getAgentProductCreditSales(debtAgentId, {
-          contractId: debtContractId || undefined,
-          page: 1,
-          pageSize: 5,
-        }),
       ]);
       if (summaryResult.status === "fulfilled") setDebtSummary(summaryResult.value);
       if (paymentResult.status === "fulfilled") setDebtPaymentHistory(paymentResult.value);
-      if (salesResult.status === "fulfilled") setDebtSalesHistory(salesResult.value.results ?? []);
-      if ([summaryResult, paymentResult, salesResult].some((result) => result.status === "rejected")) {
+      if ([summaryResult, paymentResult].some((result) => result.status === "rejected")) {
         toast.error(t("operatorPage.cashier.productDebt.loadFailed"));
       }
     } catch (error) {
@@ -523,7 +534,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       return;
     }
 
-    const parsed = parsePhoneNumberFromString(cleanedPhone, "AM");
+    const parsed = parsePhoneNumberFromString(cleanedPhone);
     if (!parsed || !parsed.isValid()) {
       toast.error(t("operatorPage.cashier.customerLookup.invalidPhone"));
       return;
@@ -531,37 +542,20 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
 
     setCustomerLookupLoading(true);
     setAgentLookupError(null);
+    setIdentifiedAgent(null);
+    setIdentifiedContract(null);
+    setIdentifiedProductDebt(null);
 
     try {
-      const customersResponse = await getCustomers({
+      const agentsResponse = await agentsService.getAgents({
         phone: cleanedPhone,
-        cashRegisterId: resolvedCashRegisterId,
+        page: 1,
+        pageSize: 1,
+        status: 0,
       });
-      const foundCustomer = customersResponse.results[0];
-
-      if (!foundCustomer) {
-        setIdentifiedCustomer(null);
-        setIdentifiedAgent(null);
-        setIdentifiedContract(null);
-        setIdentifiedProductDebt(null);
-        setAgentLookupError(t("operatorPage.cashier.customerLookup.customerNotFound"));
-        toast.error(t("operatorPage.cashier.customerLookup.customerNotFound"));
-        return;
-      }
-
-      setIdentifiedCustomer(foundCustomer);
-
-      const agentsResponse = await agentsService.getAgents({ page: 1, pageSize: 200, status: 0 });
-      const matchedAgent = agentsResponse.results.find(
-        (agent) =>
-          String(agent.customerId) === String(foundCustomer.id) ||
-          String(agent.customer?.id) === String(foundCustomer.id),
-      );
+      const matchedAgent = agentsResponse.results[0];
 
       if (!matchedAgent) {
-        setIdentifiedAgent(null);
-        setIdentifiedContract(null);
-        setIdentifiedProductDebt(null);
         setAgentLookupError(t("operatorPage.cashier.customerLookup.notAnAgent"));
         toast.error(t("operatorPage.cashier.customerLookup.notAnAgent"));
         return;
@@ -569,7 +563,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
 
       setIdentifiedAgent(matchedAgent);
 
-      const contractsResponse = await agentContractsService.listContracts({
+      const contractsResponse = await agentContractsService.listProductCreditContracts({
         agentId: matchedAgent.id,
         page: 1,
         pageSize: 50,
@@ -583,35 +577,10 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         return;
       }
 
-      const allowsProductAdvance = resolveProductAdvanceAllowed(activeContract);
-      const normalizedContract: AgentContractCashierItem = {
-        id: String(activeContract.id ?? ""),
-        contractNumber: activeContract.contractNumber ?? "",
-        agent: activeContract.agent ?? {
-          id: "",
-          code: "",
-          fullName: "",
-        },
-        contractDate: activeContract.contractDate ?? new Date().toISOString(),
-        status: (String(activeContract.status ?? "Active") as AgentContractListItemDto["status"]),
-        totalAdvancedAmount: Number(activeContract.totalAdvancedAmount ?? 0),
-        totalRepaidAmount: Number(activeContract.totalRepaidAmount ?? 0),
-        outstandingAmount: Number(activeContract.outstandingAmount ?? 0),
-        createdAt: activeContract.createdAt ?? new Date().toISOString(),
-        allowsProductAdvance,
-      };
-
-      setIdentifiedContract(normalizedContract);
-
-      if (!allowsProductAdvance) {
-        setIdentifiedProductDebt(null);
-        setAgentLookupError(t("operatorPage.cashier.customerLookup.productAdvanceNotAllowed"));
-        toast.error(t("operatorPage.cashier.customerLookup.productAdvanceNotAllowed"));
-        return;
-      }
+      setIdentifiedContract(activeContract as AgentContractListItemDto);
 
       const productDebt = await agentsService
-        .getAgentProductDebt(matchedAgent.id, normalizedContract.id, resolvedCashRegisterId)
+        .getAgentProductDebt(matchedAgent.id, activeContract.id, resolvedCashRegisterId)
         .catch(() => null);
       setIdentifiedProductDebt(productDebt);
 
@@ -626,7 +595,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     } finally {
       setCustomerLookupLoading(false);
     }
-  }, [customerPhone, resolvedCashRegisterId, resolveActiveContract, resolveProductAdvanceAllowed, t]);
+  }, [customerPhone, resolvedCashRegisterId, resolveActiveContract, t]);
 
   const handleSubmitSale = useCallback(async () => {
     if (cartItems.length === 0 || !currentShopId) return;
@@ -638,7 +607,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     }
 
     if (isAgentCreditSale) {
-      if (!identifiedCustomer || !identifiedAgent || !identifiedContract) {
+      if (!identifiedAgent || !identifiedContract || !isAgentCreditReady) {
         toast.error(t("operatorPage.cashier.customerLookup.noActiveContract"));
         return;
       }
@@ -657,7 +626,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           shopId: currentShopId,
           ...(isAgentCreditSale
             ? {
-                customerId: identifiedCustomer?.id ?? null,
+                customerId: identifiedAgent?.customerId ?? null,
                 isAgentCredit: true,
                 agentId: identifiedAgent?.id ?? null,
                 agentContractId: identifiedContract?.id ?? null,
@@ -686,6 +655,11 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
             })
           : t("operatorPage.cashier.saleCompleted"),
       );
+      if (isAgentCreditSale && identifiedAgent?.id) {
+        window.dispatchEvent(new CustomEvent("agent-product-credit-activity-changed", {
+          detail: { agentId: identifiedAgent.id },
+        }));
+      }
       dispatch(
         fetchShopProducts({
           shopId: currentShopId,
@@ -708,7 +682,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     resolvedCashPaid,
     resolvedNonCashPaid,
     isAgentCreditSale,
-    identifiedCustomer,
+    isAgentCreditReady,
     identifiedAgent,
     identifiedContract,
     resetCheckoutState,
@@ -821,9 +795,16 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       </div>
 
       <div className={styles.estimateSearchRow}>
-        <div className={styles.saleTypeRow}>
-          {(["normal", "agent-credit"] as SaleType[]).map((type) => (
-            <label key={type} className={`${styles.paymentOption} ${saleType === type ? styles.activePaymentOption : ""}`}>
+        <div
+          className={styles.saleTypeRow}
+          role="radiogroup"
+          aria-label={t("operatorPage.cashier.saleTypes.label")}
+        >
+          {(["normal", "agent-credit", "product-debt"] as SaleType[]).map((type) => (
+            <label
+              key={type}
+              className={`${styles.saleTypeOption} ${saleType === type ? styles.saleTypeOptionActive : ""}`}
+            >
               <input
                 type="radio"
                 name="saleType"
@@ -833,35 +814,38 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                   setSaleType(type);
                   if (type === "normal") {
                     setCustomerPhone("");
-                    setIdentifiedCustomer(null);
+                    setCustomerPhoneCountry("AM");
                     setIdentifiedAgent(null);
                     setIdentifiedContract(null);
                     setAgentLookupError(null);
                   }
                 }}
               />
-              {t(type === "normal" ? "operatorPage.cashier.saleTypes.normal" : "operatorPage.cashier.saleTypes.agentCredit")}
+              <span className={styles.saleTypeIcon} aria-hidden="true">
+                {type === "normal" ? <ShoppingBag size={17} /> : type === "agent-credit" ? <BadgeDollarSign size={18} /> : <Wallet size={17} />}
+              </span>
+              <span className={styles.saleTypeCopy}>
+                <strong>{t(type === "normal" ? "operatorPage.cashier.saleTypes.normal" : type === "agent-credit" ? "operatorPage.cashier.saleTypes.agentCredit" : "operatorPage.cashier.saleTypes.productDebt")}</strong>
+                <small>{t(type === "normal" ? "operatorPage.cashier.saleTypes.normalDescription" : type === "agent-credit" ? "operatorPage.cashier.saleTypes.agentCreditDescription" : "operatorPage.cashier.saleTypes.productDebtDescription")}</small>
+              </span>
+              {saleType === type && <Check className={styles.saleTypeCheck} size={16} aria-hidden="true" />}
             </label>
           ))}
         </div>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => setProductDebtPaymentOpen((open) => !open)}
-        >
-          {t("operatorPage.cashier.productDebt.action")}
-        </Button>
       </div>
 
-      {productDebtPaymentOpen && (
+      {isProductDebtSale && (
         <section className={styles.agentCreditPanel}>
           <h3>{t("operatorPage.cashier.productDebt.title")}</h3>
           <Select
+            label={t("operatorPage.cashier.productDebt.selectAgent")}
+            searchable
+            searchPlaceholder={t("operatorPage.cashier.productDebt.searchAgent")}
+            dropdownMaxHeight={420}
             value={debtAgentId}
             onChange={(event) => {
               setDebtAgentId(event.target.value);
               setDebtPaymentHistory([]);
-              setDebtSalesHistory([]);
             }}
           >
             <option value="">{t("operatorPage.cashier.productDebt.selectAgent")}</option>
@@ -877,7 +861,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               onChange={(event) => {
                 setDebtContractId(event.target.value);
                 setDebtPaymentHistory([]);
-                setDebtSalesHistory([]);
               }}
             >
               <option value="">{t("operatorPage.cashier.productDebt.selectContract")}</option>
@@ -919,6 +902,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
             />
             <Button
               type="button"
+              className={`${styles.cashierActionButton} ${styles.cashierActionRecord}`}
               onClick={() => void handleSubmitProductDebtPayment()}
               disabled={
                 debtPaymentSaving ||
@@ -931,6 +915,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 Number(debtPaymentAmount) > Number(debtSummary?.outstandingAmountAmd ?? 0)
               }
             >
+              <Wallet size={16} aria-hidden="true" />
               {debtPaymentSaving
                 ? t("operatorPage.cashier.processing")
                 : t("operatorPage.cashier.productDebt.submitPayment")}
@@ -947,47 +932,46 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 ))}
               </div>
             )}
-            {debtSalesHistory.length > 0 && (
-              <div className={styles.debtHistorySection} aria-live="polite">
-                <h4>{t("operatorPage.cashier.productDebt.recentSales")}</h4>
-                {debtSalesHistory.slice(0, 3).map((sale) => (
-                  <div className={styles.debtHistoryRow} key={sale.saleId}>
-                    <span>#{sale.saleId} · {sale.status}</span>
-                    <strong>{Number(sale.outstandingAmount).toLocaleString()} AMD</strong>
-                  </div>
-                ))}
-              </div>
-            )}
         </section>
       )}
 
-      {isAgentCreditSale && (
+      {!isProductDebtSale && isAgentCreditSale && (
         <div className={styles.agentCreditPanel}>
-          <div className={styles.estimateSearchRow}>
-            <TextField
-              className={styles.searchTextField}
-              label={t("operatorPage.cashier.customerLookup.phoneLabel")}
-              value={customerPhone}
-              onChange={(event) => setCustomerPhone(event.target.value)}
-              placeholder={t("operatorPage.cashier.customerLookup.phonePlaceholder")}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleLookupCustomerAndAgent();
-                }
-              }}
-              inputMode="tel"
-            />
-            <Button type="button" onClick={handleLookupCustomerAndAgent} disabled={customerLookupLoading}>
+          <form
+            className={styles.estimateSearchRow}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void handleLookupCustomerAndAgent();
+            }}
+          >
+            <div className={styles.customerPhoneField}>
+              <label>{t("operatorPage.cashier.customerLookup.phoneLabel")}</label>
+              <CountryPhoneInput
+                phone={customerPhone}
+                selectedCountry={customerPhoneCountry}
+                onCountryChange={(country) => {
+                  setCustomerPhoneCountry(country);
+                  setCustomerPhone("");
+                }}
+                onPhoneChange={setCustomerPhone}
+                disabled={customerLookupLoading}
+              />
+            </div>
+            <Button
+              type="submit"
+              className={`${styles.cashierActionButton} ${styles.cashierActionLookup}`}
+              disabled={customerLookupLoading}
+            >
+              <Search size={16} aria-hidden="true" />
               {customerLookupLoading ? t("operatorPage.cashier.processing") : t("operatorPage.cashier.customerLookup.lookupButton")}
             </Button>
-          </div>
+          </form>
 
           {agentLookupError && <div className={styles.errorMessage}>{agentLookupError}</div>}
 
-          {identifiedCustomer && identifiedAgent && identifiedContract && (
+          {identifiedAgent && identifiedContract && (
             <div className={styles.agentInfoCard}>
-              <div><strong>{t("operatorPage.cashier.customerLookup.customer")}:</strong> {identifiedCustomer.fullName || identifiedCustomer.phone}</div>
+              <div><strong>{t("operatorPage.cashier.customerLookup.customer")}:</strong> {identifiedAgent.customer?.fullName || identifiedAgent.customer?.phone || identifiedAgent.phone || "-"}</div>
               <div><strong>{t("operatorPage.cashier.customerLookup.agent")}:</strong> {identifiedAgent.code} — {identifiedAgent.customer?.fullName || identifiedAgent.phone || "Agent"}</div>
               <div><strong>{t("operatorPage.cashier.customerLookup.contract")}:</strong> {identifiedContract.contractNumber}</div>
               <div><strong>{t("operatorPage.cashier.customerLookup.status")}:</strong> {identifiedContract.status}</div>
@@ -996,29 +980,37 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         </div>
       )}
 
-      <div className={styles.estimateSearchRow}>
-        <TextField
-          className={styles.searchTextField}
-          label={t("operatorPage.cashier.estimate.label")}
-          value={estimateNumberInput}
-          onChange={(event) => setEstimateNumberInput(event.target.value)}
-          placeholder={t("operatorPage.cashier.estimate.placeholder")}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              handleFindEstimate();
-            }
-          }}
-          inputMode="text"
-        />
-        <Button type="button" onClick={handleFindEstimate} disabled={isEstimateLoading}>
-          {isEstimateLoading
-            ? t("operatorPage.cashier.processing")
-            : t("operatorPage.cashier.estimate.findButton")}
-        </Button>
-      </div>
+      {!isProductDebtSale && (
+        <div className={styles.estimateSearchRow}>
+          <TextField
+            className={styles.searchTextField}
+            label={t("operatorPage.cashier.estimate.label")}
+            value={estimateNumberInput}
+            onChange={(event) => setEstimateNumberInput(event.target.value)}
+            placeholder={t("operatorPage.cashier.estimate.placeholder")}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleFindEstimate();
+              }
+            }}
+            inputMode="text"
+          />
+          <Button
+            type="button"
+            className={`${styles.cashierActionButton} ${styles.cashierActionEstimate}`}
+            onClick={handleFindEstimate}
+            disabled={isEstimateLoading}
+          >
+            <FileText size={16} aria-hidden="true" />
+            {isEstimateLoading
+              ? t("operatorPage.cashier.processing")
+              : t("operatorPage.cashier.estimate.findButton")}
+          </Button>
+        </div>
+      )}
 
-      {selectedEstimate && (
+      {!isProductDebtSale && selectedEstimate && (
         <div className={styles.estimateCard}>
           <div className={styles.estimateHeader}>
             <strong>
@@ -1114,7 +1106,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         </div>
       )}
 
-      {!isEstimateMode && (
+      {!isEstimateMode && !isProductDebtSale && (
         <div className={styles.searchRow}>
         <TextField
           ref={skuInputRef}
@@ -1136,14 +1128,16 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         />
         <Button
           type="button"
+          className={`${styles.cashierActionButton} ${styles.cashierActionScan}`}
           onClick={handleSkuSearch}
           disabled={!searchSku.trim()}
         >
+          <ScanLine size={16} aria-hidden="true" />
           {t("operatorPage.cashier.searchButton")}
         </Button>
         </div>
       )}
-      {!isEstimateMode && searchMessage ? (
+      {!isEstimateMode && !isProductDebtSale && searchMessage ? (
         <div
           className={`${styles.searchMessage} ${
             searchMessageType === "success"
@@ -1155,17 +1149,18 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         </div>
       ) : null}
 
-      <div className={styles.grid}>
-        <aside className={styles.cartSection}>
-          <div className={styles.sectionHeader}>
-            <h3>
-              {isEstimateMode
-                ? t("operatorPage.cashier.estimate.summaryTitle")
-                : t("operatorPage.cashier.cartTitle")}
-            </h3>
-          </div>
+      {!isProductDebtSale && (
+        <div className={styles.grid}>
+          <aside className={styles.cartSection}>
+            <div className={styles.sectionHeader}>
+              <h3>
+                {isEstimateMode
+                  ? t("operatorPage.cashier.estimate.summaryTitle")
+                  : t("operatorPage.cashier.cartTitle")}
+              </h3>
+            </div>
 
-          <div className={styles.cartContent}>
+            <div className={styles.cartContent}>
             {!isEstimateMode && cartItems.length === 0 ? (
               <div className={styles.emptyState}>
                 {t("operatorPage.cashier.emptyCart")}
@@ -1226,17 +1221,29 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               </div>
             )}
 
+            {!isProductDebtSale && (
             <div className={styles.paymentPanel}>
               <div className={styles.totalRow}>
-                <span>{t("operatorPage.cashier.total")}</span>
-                <strong>{activeTotalAmount.toFixed(2)}</strong>
+                <div className={styles.totalLabel}>
+                  <span className={styles.totalIcon} aria-hidden="true"><CircleDollarSign size={18} /></span>
+                  <span>{t("operatorPage.cashier.total")}</span>
+                </div>
+                <div className={styles.totalValue}>
+                  <span>֏</span>
+                  <strong>{activeTotalAmount.toFixed(2)}</strong>
+                </div>
               </div>
 
               {!isAgentCreditSale && (
-                <div className={styles.paymentMethods}>
+                <div
+                  className={styles.paymentMethods}
+                  role="radiogroup"
+                  aria-label={t("operatorPage.cashier.paymentModeLabel")}
+                >
                   {(["cash", "non-cash", "mixed"] as PaymentMode[]).map((mode) => (
                     <label
                       key={mode}
+                      data-payment-mode={mode}
                       className={`${styles.paymentOption} ${
                         paymentMode === mode ? styles.activePaymentOption : ""
                       }`}
@@ -1248,7 +1255,13 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                         checked={paymentMode === mode}
                         onChange={() => setPaymentMode(mode)}
                       />
-                      {t(`operatorPage.cashier.paymentMethods.${mode === "non-cash" ? "nonCash" : mode}`)}
+                      <span className={styles.paymentOptionIcon} aria-hidden="true">
+                        {mode === "cash" ? <Banknote size={17} /> : mode === "non-cash" ? <CreditCard size={17} /> : <ArrowLeftRight size={17} />}
+                      </span>
+                      <span className={styles.paymentOptionLabel}>
+                        {t(`operatorPage.cashier.paymentMethods.${mode === "non-cash" ? "nonCash" : mode}`)}
+                      </span>
+                      {paymentMode === mode && <Check className={styles.paymentOptionCheck} size={15} aria-hidden="true" />}
                     </label>
                   ))}
                 </div>
@@ -1257,15 +1270,15 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               {isAgentCreditSale && (
                 <div className={styles.agentCreditSummary}>
                   <div className={styles.paymentInfoRow}>
-                    <span>{t("operatorPage.cashier.customerLookup.creditType")}:</span>
+                    <span className={styles.creditSummaryLabel}><BadgeCheck size={16} aria-hidden="true" />{t("operatorPage.cashier.customerLookup.creditType")}:</span>
                     <strong>{t("operatorPage.cashier.customerLookup.creditSale")}</strong>
                   </div>
                   <div className={styles.paymentInfoRow}>
-                    <span>{t("operatorPage.cashier.customerLookup.cashReceived")}:</span>
+                    <span className={styles.creditSummaryLabel}><Banknote size={16} aria-hidden="true" />{t("operatorPage.cashier.customerLookup.cashReceived")}:</span>
                     <strong>0.00</strong>
                   </div>
                   <div className={styles.paymentInfoRow}>
-                    <span>{t("operatorPage.cashier.customerLookup.nonCashReceived")}:</span>
+                    <span className={styles.creditSummaryLabel}><CreditCard size={16} aria-hidden="true" />{t("operatorPage.cashier.customerLookup.nonCashReceived")}:</span>
                     <strong>0.00</strong>
                   </div>
                 </div>
@@ -1302,6 +1315,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               <div className={styles.actions}>
                 <Button
                   fullWidth
+                  className={isAgentCreditSale ? styles.agentCreditSubmit : undefined}
                   disabled={
                     activeTotalAmount === 0 ||
                     isSaleLoading ||
@@ -1312,6 +1326,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                   }
                   onClick={isEstimateMode ? handleConvertEstimate : handleCompleteSale}
                 >
+                  {isAgentCreditSale && !isSaleLoading && <BadgeCheck size={18} aria-hidden="true" />}
                   {isSaleLoading || isEstimateConverting
                     ? t("operatorPage.cashier.processing")
                     : isEstimateMode
@@ -1343,9 +1358,12 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 )}
               </div>
             </div>
+            )}
           </div>
         </aside>
       </div>
+      )}
+
       <ConfirmationModal
         open={creditConfirmationOpen}
         onOpenChange={setCreditConfirmationOpen}

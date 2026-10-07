@@ -2,11 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 import { SectionHeader } from "@/components/common";
-import { Button, DataTable, Select } from "@/ui-kit";
+import { Button, ConfirmationModal, DataTable, Select, TextField } from "@/ui-kit";
 import { agentContractsService } from "@/services/agentContracts";
 import { agentsService } from "@/services/agents";
+import { getCustomers } from "@/services/customers";
+import { useAppSelector } from "@/store/hooks";
+import { getCashRegisterId } from "@/utils/getCashRegisterId.util";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentAdvanceDto, AgentContractDto, AgentContractListItemDto } from "@/types/agentContracts";
 import type {
@@ -15,6 +19,7 @@ import type {
   AgentProductDebtDto,
   AgentProductDebtPaymentDto,
 } from "@/types/agents";
+import { AgentProductCreditSaleItems } from "./AgentProductCreditPurchases";
 import styles from "@/pages/AgentContracts/AgentContracts.module.css";
 
 export type AgentProductCreditView = "contracts" | "advances" | "sales" | "debt" | "payments";
@@ -73,20 +78,105 @@ const PaymentHistory = ({ items, loading }: { items: AgentProductDebtPaymentDto[
   );
 };
 
+const AgentPhoneLookup = ({
+  agents,
+  onAgentFound,
+}: {
+  agents: AgentDto[];
+  onAgentFound: (agentId: string) => void;
+}) => {
+  const { t } = useTranslation();
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const findAgent = async () => {
+    const cleanedPhone = phone.trim();
+    if (!cleanedPhone) {
+      toast.error(t("operatorPage.cashier.customerLookup.phoneRequired"));
+      return;
+    }
+
+    const parsedPhone = parsePhoneNumberFromString(cleanedPhone, "AM");
+    if (!parsedPhone?.isValid()) {
+      toast.error(t("operatorPage.cashier.customerLookup.invalidPhone"));
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const customersResponse = await getCustomers({
+        phone: cleanedPhone,
+        cashRegisterId: getCashRegisterId(),
+      });
+      const customer = customersResponse.results[0];
+      if (!customer) {
+        toast.error(t("operatorPage.cashier.customerLookup.customerNotFound"));
+        return;
+      }
+
+      const agent = agents.find(
+        (item) =>
+          String(item.customerId) === String(customer.id) ||
+          String(item.customer?.id) === String(customer.id),
+      );
+      if (!agent) {
+        toast.error(t("operatorPage.cashier.customerLookup.notAnAgent"));
+        return;
+      }
+
+      onAgentFound(agent.id);
+      toast.success(t("operatorPage.cashier.customerLookup.agentIdentified"));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t("operatorPage.cashier.customerLookup.failedToLoad")));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.agentPhoneLookup}>
+      <TextField
+        label={t("operatorPage.cashier.customerLookup.phoneLabel")}
+        placeholder={t("operatorPage.cashier.customerLookup.phonePlaceholder")}
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            void findAgent();
+          }
+        }}
+        inputMode="tel"
+      />
+      <Button type="button" onClick={() => void findAgent()} disabled={loading}>
+        {loading ? t("operatorPage.cashier.processing") : t("operatorPage.cashier.customerLookup.lookupButton")}
+      </Button>
+    </div>
+  );
+};
+
 const ProductContractList = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAppSelector((state) => state.auth);
+  const canManageContracts = user?.role === "Admin" || user?.role === "SuperAdmin";
   const [items, setItems] = useState<AgentContractListItemDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
+  const [pendingActionId, setPendingActionId] = useState<string | null>(null);
+  const [confirmActivationId, setConfirmActivationId] = useState<string | null>(null);
+  const [confirmDeactivationId, setConfirmDeactivationId] = useState<string | null>(null);
+
+  const refreshContracts = () => setRefreshToken((value) => value + 1);
 
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
     void agentContractsService
-      .listContracts({ page: 1, pageSize: 500 })
+      .listProductCreditContracts({ page: 1, pageSize: 500 })
       .then((result) => {
         if (!isCancelled) {
-          setItems((result.results ?? []).filter((contract) => contract.allowsProductAdvance === true));
+          setItems(result.results ?? []);
         }
       })
       .catch((error) => toast.error(getApiErrorMessage(error, t("agentContracts.errors.loadFailed"))))
@@ -96,7 +186,31 @@ const ProductContractList = () => {
     return () => {
       isCancelled = true;
     };
-  }, [t]);
+  }, [refreshToken, t]);
+
+  const handleProductAction = async (contract: AgentContractListItemDto, action: "activate" | "deactivate") => {
+    if (!canManageContracts || pendingActionId) return;
+    const isActivate = action === "activate";
+    const actionMethod = isActivate
+      ? agentContractsService.activateProductAdvanceContract
+      : agentContractsService.deactivateProductAdvanceContract;
+    setPendingActionId(contract.id);
+    try {
+      await actionMethod(contract.id);
+      toast.success(isActivate
+        ? t("agentContracts.messages.productContractActivated")
+        : t("agentContracts.messages.productContractDeactivated"));
+      refreshContracts();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, isActivate
+        ? t("agentContracts.errors.activateProductContractFailed")
+        : t("agentContracts.errors.deactivateProductContractFailed")));
+    } finally {
+      setPendingActionId(null);
+      setConfirmActivationId(null);
+      setConfirmDeactivationId(null);
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -131,14 +245,32 @@ const ProductContractList = () => {
       {
         id: "actions",
         header: t("agentContracts.fields.actions"),
-        cell: ({ row }: { row: { original: AgentContractListItemDto } }) => (
-          <Button size="small" variant="secondary" onClick={() => navigate(`/agents/product-credit/contracts/${row.original.id}`)}>
-            {t("agentContracts.actions.view")}
-          </Button>
-        ),
+        cell: ({ row }: { row: { original: AgentContractListItemDto } }) => {
+          const contract = row.original;
+          const canActivate = contract.status === "Draft" && contract.allowsProductAdvance === true;
+          const canDeactivate = contract.status === "Active" && contract.allowsProductAdvance === true && contract.outstandingAmount === 0;
+          const isPending = pendingActionId === contract.id;
+          return (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {canManageContracts && canActivate && (
+                <Button className={styles.productContractAction} size="small" variant="primary" disabled={isPending} onClick={() => setConfirmActivationId(contract.id)}>
+                  {t("agentContracts.actions.activateProductContract")}
+                </Button>
+              )}
+              {canManageContracts && canDeactivate && (
+                <Button className={styles.productContractAction} size="small" variant="secondary" disabled={isPending} onClick={() => setConfirmDeactivationId(contract.id)}>
+                  {t("agentContracts.actions.deactivateProductContract")}
+                </Button>
+              )}
+              <Button size="small" variant="secondary" onClick={() => navigate(`/agents/product-credit/contracts/${contract.id}`)}>
+                {t("agentContracts.actions.view")}
+              </Button>
+            </div>
+          );
+        },
       },
     ],
-    [navigate, t],
+    [canManageContracts, navigate, pendingActionId, t],
   );
 
   return (
@@ -154,6 +286,34 @@ const ProductContractList = () => {
         noResultsText={t("agentWorkspace.noProductContracts")}
         loadingText={t("agentContracts.list.loading")}
       />
+      {confirmActivationId && (
+        <ConfirmationModal
+          open={true}
+          onOpenChange={(open) => !open && setConfirmActivationId(null)}
+          title={t("agentContracts.actions.activateProductContract")}
+          description={t("agentContracts.details.activateProductDescription")}
+          confirmText={t("agentContracts.actions.activateProductContract")}
+          confirmLoading={pendingActionId === confirmActivationId}
+          onConfirm={() => {
+            const contract = items.find((item) => item.id === confirmActivationId);
+            if (contract) void handleProductAction(contract, "activate");
+          }}
+        />
+      )}
+      {confirmDeactivationId && (
+        <ConfirmationModal
+          open={true}
+          onOpenChange={(open) => !open && setConfirmDeactivationId(null)}
+          title={t("agentContracts.actions.deactivateProductContract")}
+          description={t("agentContracts.details.deactivateProductDescription")}
+          confirmText={t("agentContracts.actions.deactivateProductContract")}
+          confirmLoading={pendingActionId === confirmDeactivationId}
+          onConfirm={() => {
+            const contract = items.find((item) => item.id === confirmDeactivationId);
+            if (contract) void handleProductAction(contract, "deactivate");
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -161,29 +321,83 @@ const ProductContractList = () => {
 const ProductAdvanceList = () => {
   const { t } = useTranslation();
   const [items, setItems] = useState<AgentAdvanceDto[]>([]);
+  const [salesById, setSalesById] = useState<Record<string, AgentProductCreditSaleDto>>({});
   const [loading, setLoading] = useState(false);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [salesLoadFailed, setSalesLoadFailed] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
+
+  useEffect(() => {
+    const handleProductCreditActivityChanged = () => setRefreshToken((value) => value + 1);
+    window.addEventListener("agent-product-credit-activity-changed", handleProductCreditActivityChanged);
+    return () => window.removeEventListener("agent-product-credit-activity-changed", handleProductCreditActivityChanged);
+  }, []);
 
   useEffect(() => {
     let isCancelled = false;
     setLoading(true);
+    setSalesLoading(true);
+    setSalesLoadFailed(false);
+    setSalesById({});
     void agentContractsService
-      .listAdvances({ page: 1, pageSize: 500, advanceType: "Product" })
-      .then((result) => {
-        if (!isCancelled) setItems((result.results ?? []).filter(isProductAdvance));
+      .listAdvances({ page: 1, pageSize: 500, allowsProductAdvance: true })
+      .then(async (result) => {
+        if (isCancelled) return;
+        const productAdvances = result.results ?? [];
+        setItems(productAdvances);
+
+        const agentContracts = new Map<string, { agentId: string; contractId: string }>();
+        productAdvances.forEach((advance) => {
+          if (advance.productSaleId == null) return;
+          const key = `${advance.agent.id}:${advance.agentContractId}`;
+          agentContracts.set(key, { agentId: advance.agent.id, contractId: advance.agentContractId });
+        });
+        const salesResults = await Promise.allSettled(
+          Array.from(agentContracts.values()).map(({ agentId, contractId }) =>
+            agentsService.getAgentProductCreditSales(agentId, { contractId, page: 1, pageSize: 500 }),
+          ),
+        );
+        if (isCancelled) return;
+
+        const salesById: Record<string, AgentProductCreditSaleDto> = {};
+        salesResults.forEach((salesResult) => {
+          if (salesResult.status === "fulfilled") {
+            salesResult.value.forEach((sale) => {
+              salesById[String(sale.saleId)] = sale;
+            });
+          }
+        });
+        setSalesById(salesById);
+        const hasFailedRequests = salesResults.some((salesResult) => salesResult.status === "rejected");
+        setSalesLoadFailed(hasFailedRequests);
+        if (hasFailedRequests) toast.error(t("agents.productCredit.salesLoadFailed"));
       })
       .catch((error) => toast.error(getApiErrorMessage(error, t("agentAdvances.errors.loadFailed"))))
       .finally(() => {
-        if (!isCancelled) setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+          setSalesLoading(false);
+        }
       });
     return () => {
       isCancelled = true;
     };
-  }, [t]);
+  }, [refreshToken, t]);
 
   const columns = useMemo(
     () => [
       { accessorKey: "advanceNumber", header: t("agentAdvances.fields.advanceNumber") },
       { accessorKey: "productSaleId", header: t("agentAdvances.fields.productSaleId") },
+      {
+        id: "products",
+        header: t("agents.productCredit.products"),
+        cell: ({ row }: { row: { original: AgentAdvanceDto; getIsExpanded: () => boolean; getToggleExpandedHandler: () => () => void } }) =>
+          row.original.productSaleId == null ? "—" : (
+            <Button size="small" variant="secondary" onClick={row.getToggleExpandedHandler()}>
+              {t(row.getIsExpanded() ? "agents.productCredit.hideDetails" : "agents.productCredit.showDetails")}
+            </Button>
+          ),
+      },
       {
         id: "agent",
         header: t("agentAdvances.fields.agent"),
@@ -213,12 +427,22 @@ const ProductAdvanceList = () => {
   return (
     <div className={styles.page}>
       <SectionHeader title={t("agentWorkspace.productAdvances")} />
+      {salesLoadFailed && <div className={styles.notice} role="alert">{t("agents.productCredit.salesLoadFailed")}</div>}
       <DataTable
         columns={columns as any}
         data={items}
         isLoading={loading}
         noResultsText={t("agentWorkspace.noProductAdvances")}
         loadingText={t("agentAdvances.list.loading")}
+        getRowId={(advance) => advance.id}
+        renderSubComponent={({ row }) => {
+          const sale = row.original.productSaleId == null ? undefined : salesById[String(row.original.productSaleId)];
+          if (salesLoading) return <div>{t("agents.productCredit.loadingSales")}</div>;
+          if (!sale) {
+            return <div>{t(salesLoadFailed ? "agents.productCredit.productItemsUnavailable" : "agents.productCredit.noProductItems")}</div>;
+          }
+          return <AgentProductCreditSaleItems items={sale.items ?? []} />;
+        }}
       />
     </div>
   );
@@ -228,36 +452,69 @@ const ProductCreditContractDetails = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAppSelector((state) => state.auth);
+  const canManageContracts = user?.role === "Admin" || user?.role === "SuperAdmin";
   const [contract, setContract] = useState<AgentContractDto | null>(null);
   const [debt, setDebt] = useState<AgentProductDebtDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshToken, setRefreshToken] = useState(0);
+  const [pendingAction, setPendingAction] = useState<"activate" | "deactivate" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"activate" | "deactivate" | null>(null);
+
+  const loadContract = async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const data = await agentContractsService.getContract(id);
+      setContract(data);
+      const summary = await agentsService.getAgentProductDebt(data.agent.id, data.id).catch(() => null);
+      setDebt(summary);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t("agentContracts.errors.loadDetailsFailed")));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!id) return;
-    let isCancelled = false;
-    setLoading(true);
-    void agentContractsService
-      .getContract(id)
-      .then(async (data) => {
-        if (isCancelled) return;
-        setContract(data);
-        const summary = await agentsService.getAgentProductDebt(data.agent.id, data.id).catch(() => null);
-        if (!isCancelled) setDebt(summary);
-      })
-      .catch((error) => toast.error(getApiErrorMessage(error, t("agentContracts.errors.loadDetailsFailed"))))
-      .finally(() => {
-        if (!isCancelled) setLoading(false);
-      });
-    return () => {
-      isCancelled = true;
-    };
-  }, [id, t]);
+    void loadContract();
+  }, [id, refreshToken, t]);
+
+  useEffect(() => {
+    const handleContractChanged = () => setRefreshToken((value) => value + 1);
+    window.addEventListener("agent-product-contract-changed", handleContractChanged);
+    return () => window.removeEventListener("agent-product-contract-changed", handleContractChanged);
+  }, []);
+
+  const handleProductAction = async (action: "activate" | "deactivate") => {
+    if (!id || !canManageContracts || pendingAction) return;
+    setPendingAction(action);
+    try {
+      if (action === "activate") {
+        await agentContractsService.activateProductAdvanceContract(id);
+        toast.success(t("agentContracts.messages.productContractActivated"));
+      } else {
+        await agentContractsService.deactivateProductAdvanceContract(id);
+        toast.success(t("agentContracts.messages.productContractDeactivated"));
+      }
+      window.dispatchEvent(new CustomEvent("agent-product-contract-changed"));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, action === "activate"
+        ? t("agentContracts.errors.activateProductContractFailed")
+        : t("agentContracts.errors.deactivateProductContractFailed")));
+    } finally {
+      setPendingAction(null);
+      setConfirmAction(null);
+    }
+  };
 
   if (loading || !contract) {
     return <div className={styles.page}>{t(loading ? "agentContracts.details.loading" : "agentContracts.errors.loadDetailsFailed")}</div>;
   }
 
   const productAdvances = (contract.advances ?? []).filter(isProductAdvance);
+  const canActivateContract = contract.allowsProductAdvance === true && contract.status === "Draft";
+  const canDeactivateContract = contract.allowsProductAdvance === true && contract.status === "Active" && (contract.financials.outstandingAmount ?? 0) === 0;
 
   return (
     <div className={styles.page}>
@@ -275,6 +532,26 @@ const ProductCreditContractDetails = () => {
           <div className={styles.detail}><span>{t("agentContracts.fields.contractDate")}</span><strong>{date(contract.contractDate)}</strong></div>
           <div className={styles.detail}><span>{t("agentContracts.productCredit.repaymentRule")}</span><strong>{t("agentContracts.productCredit.ruleVersionNumber", { version: contract.repaymentTerms.ruleVersion })}</strong></div>
           <div className={styles.detail}><span>{t("common.notes")}</span><strong>{contract.notes || "-"}</strong></div>
+          {canManageContracts && canActivateContract && (
+            <div className={styles.detail}>
+              <span>{t("agentContracts.fields.actions")}</span>
+              <strong>
+                <Button className={`${styles.productContractAction} ${styles.productContractDetailAction}`} size="small" variant="primary" disabled={pendingAction !== null} onClick={() => setConfirmAction("activate")}>
+                  {t("agentContracts.actions.activateProductContract")}
+                </Button>
+              </strong>
+            </div>
+          )}
+          {canManageContracts && contract.allowsProductAdvance === true && contract.status === "Active" && (
+            <div className={styles.detail}>
+              <span>{t("agentContracts.fields.actions")}</span>
+              <strong>
+                <Button className={`${styles.productContractAction} ${styles.productContractDetailAction}`} size="small" variant="secondary" disabled={pendingAction !== null || !canDeactivateContract} onClick={() => setConfirmAction("deactivate")}>
+                  {t("agentContracts.actions.deactivateProductContract")}
+                </Button>
+              </strong>
+            </div>
+          )}
           {debt && (
             <>
               <div className={styles.detail}><span>{t("agents.productCredit.totalAdvanced")}</span><strong>{money(debt.totalAdvancedAmountAmd)} AMD</strong></div>
@@ -298,6 +575,23 @@ const ProductCreditContractDetails = () => {
           noResultsText={t("agentWorkspace.noProductAdvances")}
         />
       </section>
+      {confirmAction && (
+        <ConfirmationModal
+          open={true}
+          onOpenChange={(open) => !open && setConfirmAction(null)}
+          title={confirmAction === "activate"
+            ? t("agentContracts.actions.activateProductContract")
+            : t("agentContracts.actions.deactivateProductContract")}
+          description={confirmAction === "activate"
+            ? t("agentContracts.details.activateProductDescription")
+            : t("agentContracts.details.deactivateProductDescription")}
+          confirmText={confirmAction === "activate"
+            ? t("agentContracts.actions.activateProductContract")
+            : t("agentContracts.actions.deactivateProductContract")}
+          confirmLoading={pendingAction === confirmAction}
+          onConfirm={() => void handleProductAction(confirmAction)}
+        />
+      )}
     </div>
   );
 };
@@ -332,14 +626,13 @@ const ProductDebtView = ({ paymentsOnly = false }: { paymentsOnly?: boolean }) =
     setDebt(null);
     setPayments([]);
     void Promise.all([
-      agentContractsService.listContracts({ agentId, page: 1, pageSize: 500 }),
+      agentContractsService.listProductCreditContracts({ agentId, page: 1, pageSize: 500 }),
       paymentsOnly ? Promise.resolve(null) : agentsService.getAgentProductDebt(agentId, contractId || undefined),
       paymentsOnly ? agentsService.getAgentProductDebtPayments(agentId, contractId || undefined) : Promise.resolve([]),
     ])
       .then(([contractResult, debtResult, paymentResult]) => {
         if (isCancelled) return;
-        const productContracts = (contractResult.results ?? []).filter((item) => item.allowsProductAdvance === true);
-        setContracts(productContracts);
+        setContracts(contractResult.results ?? []);
         setDebt(debtResult);
         setPayments(paymentResult);
       })
@@ -377,6 +670,7 @@ const ProductDebtView = ({ paymentsOnly = false }: { paymentsOnly?: boolean }) =
           <option value="">{t("agentWorkspace.selectAgent")}</option>
           {agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.code} - {agent.customer?.fullName || agent.phone || agent.code}</option>)}
         </Select>
+        <AgentPhoneLookup agents={agents} onAgentFound={setAgentFilter} />
         {contracts.length > 1 && (
           <Select value={contractId} onChange={(event) => setFilter("contractId", event.target.value)}>
             <option value="">{t("agentWorkspace.allProductContracts")}</option>
@@ -410,7 +704,6 @@ const ProductSalesView = () => {
   const [agents, setAgents] = useState<AgentDto[]>([]);
   const [contracts, setContracts] = useState<AgentContractListItemDto[]>([]);
   const [items, setItems] = useState<AgentProductCreditSaleDto[]>([]);
-  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [salesError, setSalesError] = useState<string | null>(null);
   const agentId = searchParams.get("agentId") || "";
@@ -429,7 +722,6 @@ const ProductSalesView = () => {
     if (!agentId) {
       setContracts([]);
       setItems([]);
-      setTotal(0);
       return;
     }
 
@@ -438,7 +730,7 @@ const ProductSalesView = () => {
     setSalesError(null);
     setItems([]);
     void Promise.all([
-      agentContractsService.listContracts({ agentId, page: 1, pageSize: 500 }),
+      agentContractsService.listProductCreditContracts({ agentId, page: 1, pageSize: 500 }),
       agentsService.getAgentProductCreditSales(agentId, {
         contractId: contractId || undefined,
         page,
@@ -447,9 +739,8 @@ const ProductSalesView = () => {
     ])
       .then(([contractResult, salesResult]) => {
         if (isCancelled) return;
-        setContracts((contractResult.results ?? []).filter((item) => item.allowsProductAdvance === true));
-        setItems(salesResult.results ?? []);
-        setTotal(salesResult.totalItems ?? 0);
+        setContracts(contractResult.results ?? []);
+        setItems(salesResult);
       })
       .catch((error) => {
         if (!isCancelled) {
@@ -547,6 +838,7 @@ const ProductSalesView = () => {
             </option>
           ))}
         </Select>
+        <AgentPhoneLookup agents={agents} onAgentFound={setAgentFilter} />
         {contracts.length > 1 && (
           <Select value={contractId} onChange={(event) => setContractFilter(event.target.value)}>
             <option value="">{t("agentWorkspace.allProductContracts")}</option>
@@ -566,8 +858,11 @@ const ProductSalesView = () => {
             data={items}
             isLoading={loading}
             manualPagination
-            pageCount={Math.max(1, Math.ceil(total / pageSize))}
+            pageCount={items.length === pageSize ? page + 1 : page}
             pageIndex={page - 1}
+            canNextPage={items.length === pageSize}
+            paginationLabel={<>{t("common.page")} {page}</>}
+            getRowId={(sale) => String(sale.saleId)}
             onPaginationChange={(index) => {
               const next = new URLSearchParams(searchParams);
               next.set("page", String(index + 1));

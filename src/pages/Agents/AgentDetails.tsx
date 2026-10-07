@@ -12,6 +12,7 @@ import { AgentStatus } from "@/types/agents";
 import type { AgentDto } from "@/types/agents";
 import type { AgentProductDebtDto, AgentProductDebtPaymentDto } from "@/types/agents";
 import type { AgentContractDto } from "@/types/agentContracts";
+import { AgentProductCreditPurchases } from "./AgentProductCreditPurchases";
 import styles from "./Agents.module.css";
 
 const getStatusLabelKey = (status?: number | string | null) => {
@@ -82,7 +83,7 @@ export const AgentDetails = () => {
       setHistory(historyData || []);
 
       const [contractsResult, debtResult, paymentsResult] = await Promise.allSettled([
-        agentContractsService.listContracts({ agentId: id, page: 1, pageSize: 100 }),
+        agentContractsService.listProductCreditContracts({ agentId: id, page: 1, pageSize: 100 }),
         agentsService.getAgentProductDebt(id),
         agentsService.getAgentProductDebtPayments(id),
       ]);
@@ -90,8 +91,7 @@ export const AgentDetails = () => {
         contractsResult.status === "fulfilled"
           ? (contractsResult.value.results ?? []).find(
               (contract) =>
-                (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0) &&
-                contract.allowsProductAdvance === true,
+                (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0),
             )
           : undefined;
       if (eligibleContract) {
@@ -121,6 +121,23 @@ export const AgentDetails = () => {
 
   useEffect(() => {
     void load();
+  }, [id]);
+
+  useEffect(() => {
+    const handleContractChanged = () => {
+      void load();
+    };
+    const handleProductCreditActivityChanged = (event: Event) => {
+      const changedAgentId = (event as CustomEvent<{ agentId?: string }>).detail?.agentId;
+      if (!changedAgentId || changedAgentId === id) void load();
+    };
+
+    window.addEventListener("agent-product-contract-changed", handleContractChanged);
+    window.addEventListener("agent-product-credit-activity-changed", handleProductCreditActivityChanged);
+    return () => {
+      window.removeEventListener("agent-product-contract-changed", handleContractChanged);
+      window.removeEventListener("agent-product-credit-activity-changed", handleProductCreditActivityChanged);
+    };
   }, [id]);
 
   const handleStatusChange = async (nextStatus: number) => {
@@ -382,6 +399,7 @@ export const AgentDetails = () => {
             noResultsText={t("agents.productCredit.noPayments")}
             loadingText={t("agents.loading")}
           />
+          <AgentProductCreditPurchases agentId={agent.id} />
         </div>
       )}
 

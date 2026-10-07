@@ -34,6 +34,9 @@ interface DataTableProps<TData, TValue> {
   pageCount?: number;
   pageIndex?: number;
   onPaginationChange?: (pageIndex: number) => void;
+  canNextPage?: boolean;
+  paginationLabel?: ReactNode;
+  getRowId?: (row: TData) => string;
   renderBottomLeft?: () => ReactNode;
   groupBy?: string[];
   meta?: TableMeta<TData>;
@@ -56,6 +59,9 @@ export const DataTable = <TData, TValue>({
   pageCount,
   pageIndex: controlledPageIndex,
   onPaginationChange,
+  canNextPage,
+  paginationLabel,
+  getRowId,
   renderBottomLeft,
   groupBy = [],
   getRowClassName,
@@ -118,7 +124,7 @@ export const DataTable = <TData, TValue>({
     columns: tableColumns,
     meta,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getRowId: (row: any) => row.id,
+    getRowId: (row: any, index) => getRowId?.(row) ?? String(row.id ?? index),
     state: {
       sorting,
       rowSelection: enableSelection ? rowSelection : {},
@@ -330,12 +336,14 @@ export const DataTable = <TData, TValue>({
             {t("common.previous")}
           </button>
           <span>
-            {t("common.page")} {table.getState().pagination.pageIndex + 1}{" "}
-            {t("common.of")} {table.getPageCount()}
+            {paginationLabel ?? <>
+              {t("common.page")} {table.getState().pagination.pageIndex + 1}{" "}
+              {t("common.of")} {table.getPageCount()}
+            </>}
           </span>
           <button
             onClick={() => table.nextPage()}
-            disabled={isLoading || !table.getCanNextPage()}
+            disabled={isLoading || !(canNextPage ?? table.getCanNextPage())}
           >
             {t("common.next")}
           </button>

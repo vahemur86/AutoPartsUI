@@ -9,6 +9,63 @@ vi.mock("@/services/index", () => ({
 import { api } from "@/services/index";
 import { agentsService } from "./agents";
 
+describe("agentsService.getAgentProductCreditSales", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns the sales array and serializes contract and pagination filters", async () => {
+    const sales = [
+      {
+        saleId: 123,
+        saleDate: "2026-01-15T10:30:00Z",
+        agentId: "agent-1",
+        contractId: "contract-1",
+        totalAmount: 150000,
+        paidAmount: 50000,
+        outstandingAmount: 100000,
+        status: "Completed",
+        items: [{ productId: 10, quantity: 2, unitPrice: 75000, lineTotal: 150000 }],
+      },
+    ];
+    vi.mocked(api.get).mockResolvedValue({ data: sales });
+
+    const result = await agentsService.getAgentProductCreditSales(
+      "agent-1",
+      {
+        contractId: "contract-1",
+        page: 1,
+        pageSize: 50,
+      },
+      7,
+    );
+
+    expect(api.get).toHaveBeenCalledWith("/agents/agent-1/product-credit-sales", {
+      params: { contractId: "contract-1", page: 1, pageSize: 50 },
+      headers: { "X-CashRegister-Id": "7" },
+    });
+    expect(result).toEqual(sales);
+  });
+});
+
+describe("agentsService.getAgents", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("includes the selected cash register header", async () => {
+    const params = { page: 1, pageSize: 200, status: 0 };
+    vi.mocked(api.get).mockResolvedValue({ data: { results: [], totalItems: 0 } });
+
+    await agentsService.getAgents(params);
+
+    expect(api.get).toHaveBeenCalledWith("/agents", {
+      params,
+      headers: expect.objectContaining({ "X-CashRegister-Id": expect.any(String) }),
+    });
+  });
+});
+
 describe("agentsService.getAgentFinancialSummary", () => {
   beforeEach(() => {
     vi.clearAllMocks();

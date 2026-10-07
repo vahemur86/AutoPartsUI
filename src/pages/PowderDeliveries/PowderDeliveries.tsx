@@ -509,7 +509,7 @@ export const CreatePowderDelivery = () => {
       return;
     }
     void agentContractsService
-      .listContracts({ agentId, status: "Active", page: 1, pageSize: 200 })
+      .listPowderContracts({ agentId, status: "Active", page: 1, pageSize: 200 })
       .then((response) => setContracts(response.results ?? []))
       .catch((error) =>
         toast.error(

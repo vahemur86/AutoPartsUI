@@ -108,6 +108,12 @@ export interface AgentProductCreditSaleDto {
   items: AgentProductCreditSaleItemDto[];
 }
 
+export interface AgentProductCreditSalesParams {
+  contractId?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface AgentProductDebtPaymentDto {
   id: string;
   agentId: string;
