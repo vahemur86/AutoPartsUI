@@ -2743,6 +2743,14 @@
 
   "auth": {
     "login": {
+      "title": "Добро пожаловать в PRP",
+      "welcome": "С возвращением",
+      "username": "Имя пользователя",
+      "usernameRequired": "Требуется имя пользователя",
+      "password": "Пароль",
+      "passwordRequired": "Требуется пароль",
+      "loggingIn": "Вход в систему...",
+      "submit": "Войти",
       "welcomeBack": "С возвращением!"
     }
   },

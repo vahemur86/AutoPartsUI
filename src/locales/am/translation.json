@@ -2508,6 +2508,14 @@
   },
   "auth": {
     "login": {
+      "title": "PRP մուտք",
+      "welcome": "Բարի գալուստ",
+      "username": "Օգտանուն",
+      "usernameRequired": "Օգտանունը պարտադիր է",
+      "password": "Գաղտնաբառ",
+      "passwordRequired": "Գաղտնաբառը պարտադիր է",
+      "loggingIn": "Մուտք է գործվում...",
+      "submit": "Մուտք գործել",
       "welcomeBack": "Բարի վերադարձ!"
     }
   },

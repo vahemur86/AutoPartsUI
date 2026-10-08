@@ -106,23 +106,32 @@ export const Login = () => {
       <div className={styles.overlay} />
 
       <div className={styles.content}>
-        <div className={styles.logoContainer}>
-          <div className={styles.logo}>
-            <img src={logoImage} alt="Logo" className={styles.logoImage} />
+        <div className={styles.brandPanel}>
+          <div className={styles.logoContainer}>
+            <div className={styles.logo}>
+              <img src={logoImage} alt="PRP" className={styles.logoImage} />
+            </div>
+          </div>
+          <div className={styles.brandCopy}>
+            <span className={styles.brandEyebrow}>Precision Resource Platform</span>
+            <h1 className={styles.heading}>{t("auth.login.title")}</h1>
           </div>
         </div>
 
-        <h1 className={styles.heading}>Login to PRP</h1>
-
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          <div className={styles.formHeader}>
+            <span className={styles.formBadge}>Secure access</span>
+            <h2>{t("auth.login.welcome")}</h2>
+          </div>
+
           <div className={styles.fieldWrapper}>
             <div className={styles.fieldWithLeftIcon}>
               <div className={styles.leftIcon}>
-                <User size={20} />
+                <User size={18} />
               </div>
               <TextField
-                label="Username"
-                placeholder="Username"
+                label={t("auth.login.username")}
+                placeholder={t("auth.login.username")}
                 value={credentials.username}
                 onChange={(e) =>
                   setCredentials({ ...credentials, username: e.target.value })
@@ -130,11 +139,10 @@ export const Login = () => {
                 error={hasTriedSubmit && !isUsernameValid}
                 helperText={
                   hasTriedSubmit && !isUsernameValid
-                    ? "Username is required"
+                    ? t("auth.login.usernameRequired")
                     : ""
                 }
                 className={styles.textField}
-                style={{ padding: "40px" }}
                 disabled={isLoading}
               />
             </div>
@@ -143,12 +151,12 @@ export const Login = () => {
           <div className={styles.fieldWrapper}>
             <div className={styles.fieldWithLeftIcon}>
               <div className={styles.leftIcon}>
-                <Lock size={20} />
+                <Lock size={18} />
               </div>
               <TextField
-                label="Password"
+                label={t("auth.login.password")}
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder={t("auth.login.password")}
                 value={credentials.password}
                 onChange={(e) =>
                   setCredentials({ ...credentials, password: e.target.value })
@@ -156,18 +164,18 @@ export const Login = () => {
                 error={hasTriedSubmit && !isPasswordValid}
                 helperText={
                   hasTriedSubmit && !isPasswordValid
-                    ? "Password is required"
+                    ? t("auth.login.passwordRequired")
                     : ""
                 }
-                style={{ padding: "40px" }}
                 disabled={isLoading}
                 icon={
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className={styles.passwordToggle}
+                    aria-label={showPassword ? t("common.hide") : t("common.show")}
                   >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 }
                 className={styles.textField}
@@ -183,7 +191,7 @@ export const Login = () => {
             className={styles.loginButton}
             disabled={isLoading}
           >
-            {isLoading ? "Logging in..." : "Log In"}
+            {isLoading ? t("auth.login.loggingIn") : t("auth.login.submit")}
           </Button>
         </form>
       </div>

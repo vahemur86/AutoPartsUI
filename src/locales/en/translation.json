@@ -2741,6 +2741,14 @@
 
   "auth": {
     "login": {
+      "title": "Welcome to PRP",
+      "welcome": "Welcome back",
+      "username": "Username",
+      "usernameRequired": "Username is required",
+      "password": "Password",
+      "passwordRequired": "Password is required",
+      "loggingIn": "Signing in...",
+      "submit": "Sign in",
       "welcomeBack": "Welcome back!"
     }
   },
