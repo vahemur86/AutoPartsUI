@@ -1,6 +1,6 @@
 .page {
   display: grid;
-  gap: 16px;
+  gap: 20px;
 }
 
 .headerActions {
@@ -9,23 +9,377 @@
   flex-wrap: wrap;
 }
 
+.portfolioShell {
+  display: grid;
+  gap: 20px;
+}
+
+.heroCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  padding: 28px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(196, 169, 106, 0.15), transparent 32%),
+    linear-gradient(135deg, rgba(21, 25, 34, 0.96), rgba(31, 39, 56, 0.92));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.heroGlow {
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(196, 169, 106, 0.08);
+  filter: blur(6px);
+}
+
+.heroCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #c4a96a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.heroCard h2 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 38px);
+  letter-spacing: -0.04em;
+}
+
+.heroDescription {
+  max-width: 640px;
+  margin: 8px 0 0;
+  color: #a7adba;
+  line-height: 1.6;
+}
+
+.heroValue {
+  min-width: 200px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: right;
+}
+
+.heroValue span {
+  display: block;
+  color: #8a8d93;
+  font-size: 12px;
+}
+
+.heroValue strong {
+  display: block;
+  margin-top: 6px;
+  font-size: clamp(22px, 3vw, 32px);
+  letter-spacing: -0.03em;
+}
+
+.filterPanel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  background: rgba(16, 19, 27, 0.84);
+}
+
 .filterGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
 
-.summaryRow {
+.filterFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  color: #8a8d93;
+  font-size: 13px;
 }
 
-.summaryText {
-  font-size: 14px;
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.statTile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.statIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #c4a96a;
+  background: rgba(196, 169, 106, 0.12);
+}
+
+.statTile div {
+  display: grid;
+  gap: 2px;
+}
+
+.statTile span {
   color: #8a8d93;
+  font-size: 12px;
+}
+
+.statTile strong {
+  font-size: 20px;
+  letter-spacing: -0.04em;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.sourceCard {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(19, 24, 35, 0.98), rgba(15, 18, 26, 0.96));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.sourceCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(196, 169, 106, 0.35);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cardBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cardIcon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  color: #0c1118;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.cardCode {
+  display: block;
+  color: #8a8d93;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cardBrand h3 {
+  max-width: 200px;
+  margin: 4px 0 0;
+  overflow: hidden;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardContent {
+  display: grid;
+  gap: 18px;
+  padding: 20px 18px 0;
+}
+
+.balanceBlock {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.balanceBlock span,
+.cardMetrics span,
+.cardMeta span,
+.cardDescription {
+  color: #8a8d93;
+}
+
+.balanceBlock strong {
+  font-size: clamp(22px, 3vw, 28px);
+  letter-spacing: -0.05em;
+}
+
+.cardMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cardMetrics div {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cardMetrics strong,
+.cardMeta strong {
+  color: #f3f5f8;
+}
+
+.cardMeta {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.cardMeta span {
+  display: flex;
+  gap: 5px;
+  line-height: 1.5;
+}
+
+.cardDescription {
+  margin: 0;
+  padding: 0 0 2px;
+  line-height: 1.6;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 18px;
+}
+
+.cardActions button {
+  flex: 1;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: rgba(34, 197, 94, 0.12);
+  color: #6ee7b7;
+}
+
+.statusInactive {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+}
+
+.statusClosed {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.bankAccent {
+  background: linear-gradient(135deg, rgba(196, 169, 106, 0.18), rgba(112, 122, 139, 0.08));
+}
+
+.ownerAccent {
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.16), rgba(59, 130, 246, 0.08));
+}
+
+.otherAccent {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(245, 158, 11, 0.08));
+}
+
+.loadingState,
+.emptyState {
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  background: rgba(16, 19, 27, 0.7);
+  text-align: center;
+}
+
+.emptyState {
+  gap: 8px;
+}
+
+.emptyState h3 {
+  margin: 0;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #8a8d93;
+}
+
+@media (max-width: 720px) {
+  .heroCard {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 22px;
+  }
+
+  .heroValue {
+    width: 100%;
+    text-align: left;
+  }
+
+  .formGrid,
+  .dateGrid,
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .typeOptions {
+    grid-template-columns: 1fr;
+  }
 }
 
 .contentCard {
@@ -58,11 +412,139 @@
   margin-top: 20px;
 }
 
-.form {
+.formShell {
   display: grid;
+  gap: 20px;
+}
+
+.formIntro {
+  display: flex;
+  align-items: center;
   gap: 16px;
-  max-width: 760px;
-  margin-top: 16px;
+  padding: 24px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(196, 169, 106, 0.09), rgba(255, 255, 255, 0.02));
+}
+
+.formMark {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  color: #0b0d12;
+  background: #c4a96a;
+  box-shadow: 0 12px 30px rgba(196, 169, 106, 0.2);
+}
+
+.formIntro p,
+.formIntro span {
+  color: #8a8d93;
+}
+
+.formIntro p {
+  margin: 0 0 4px;
+  color: #c4a96a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.formIntro h2 {
+  margin: 0 0 4px;
+  font-size: clamp(24px, 3vw, 32px);
+  letter-spacing: -0.04em;
+}
+
+.formIntro span {
+  line-height: 1.6;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.formCard {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(17, 21, 30, 0.9);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
+}
+
+.cardHeader {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.cardHeader span {
+  color: #8a8d93;
+  font-size: 12px;
+}
+
+.typeSelector {
+  display: grid;
+  gap: 10px;
+}
+
+.typeSelector label {
+  color: #dfe4ec;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.typeOptions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.typeOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #dfe4ec;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.typeOption:hover {
+  border-color: rgba(196, 169, 106, 0.38);
+  background: rgba(196, 169, 106, 0.06);
+  transform: translateY(-1px);
+}
+
+.typeOptionSelected {
+  border-color: rgba(196, 169, 106, 0.8);
+  color: #0f1117;
+  background: #c4a96a;
+}
+
+.dateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .actionRow {
@@ -74,6 +556,13 @@
 
 .section {
   margin-top: 24px;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+  max-width: 760px;
+  margin-top: 16px;
 }
 
 .statusBadge {

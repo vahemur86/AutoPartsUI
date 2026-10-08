@@ -4388,6 +4388,29 @@
     "summary": {
       "totalItems": "{{count}} total items"
     },
+    "create": {
+      "eyebrow": "New funding source",
+      "title": "Create a premium capital source",
+      "description": "Add the source, initial funding, and operating details in one secure flow.",
+      "sourceDetails": "Source details",
+      "sourceDetailsHint": "Identity and funding type",
+      "fundingDetails": "Funding details",
+      "fundingDetailsHint": "Amount, rate, and dates"
+    },
+    "edit": {
+      "eyebrow": "Capital source",
+      "title": "Update funding details",
+      "description": "Review and refine the source information without changing its financial history."
+    },
+    "portfolio": {
+      "eyebrow": "Funding portfolio",
+      "title": "Your capital sources",
+      "description": "A complete overview of every source financing your operations.",
+      "totalSources": "Total sources",
+      "activeSources": "Active sources",
+      "available": "Available capital",
+      "emptyHint": "Create your first capital source to begin tracking funding."
+    },
     "transactions": {
       "title": "Transactions",
       "empty": "No transactions found",

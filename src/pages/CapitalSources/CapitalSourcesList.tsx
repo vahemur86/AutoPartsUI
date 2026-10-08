@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Plus } from "lucide-react";
+import { ArrowRight, Banknote, Building2, Landmark, Plus, Sparkles, Wallet } from "lucide-react";
 
-import { Button, DataTable, Select, TextField } from "@/ui-kit";
+import { Button, Select, TextField } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
 import { capitalSourcesService } from "@/services/capitalSources";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
@@ -31,6 +31,17 @@ const formatMoney = (value?: number | null) => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(value);
+};
+
+const getSourceMeta = (type: CapitalSourceType) => {
+  switch (type) {
+    case "BankLoan":
+      return { icon: Landmark, accent: styles.bankAccent };
+    case "OwnerInvestment":
+      return { icon: Wallet, accent: styles.ownerAccent };
+    default:
+      return { icon: Sparkles, accent: styles.otherAccent };
+  }
 };
 
 const getStatusClass = (status?: CapitalSourceStatus | string | null) => {
@@ -98,68 +109,7 @@ export const CapitalSourcesList = () => {
     setSearchParams({ page: "1", pageSize: String(pageSize) });
   };
 
-  const columns = useMemo(
-    () => [
-      { accessorKey: "code", header: t("capitalSources.fields.code") },
-      { accessorKey: "name", header: t("capitalSources.fields.name") },
-      {
-        accessorKey: "type",
-        header: t("capitalSources.fields.type"),
-        cell: ({ row }: any) => t(`capitalSources.types.${row.original.type}`, { defaultValue: row.original.type }),
-      },
-      {
-        accessorKey: "initialAmount",
-        header: t("capitalSources.fields.initialAmount"),
-        cell: ({ row }: any) => formatMoney(row.original.initialAmount),
-      },
-      {
-        accessorKey: "currentBalance",
-        header: t("capitalSources.fields.currentBalance"),
-        cell: ({ row }: any) => formatMoney(row.original.currentBalance),
-      },
-      {
-        accessorKey: "interestRate",
-        header: t("capitalSources.fields.interestRate"),
-        cell: ({ row }: any) => (row.original.interestRate != null ? `${row.original.interestRate}%` : "—"),
-      },
-      {
-        accessorKey: "startDate",
-        header: t("capitalSources.fields.startDate"),
-        cell: ({ row }: any) => row.original.startDate ? new Date(row.original.startDate).toLocaleDateString() : "—",
-      },
-      {
-        accessorKey: "endDate",
-        header: t("capitalSources.fields.endDate"),
-        cell: ({ row }: any) => row.original.endDate ? new Date(row.original.endDate).toLocaleDateString() : "—",
-      },
-      {
-        accessorKey: "status",
-        header: t("capitalSources.fields.status"),
-        cell: ({ row }: any) => (
-          <span className={`${styles.statusBadge} ${getStatusClass(row.original.status)}`}>
-            {t(`capitalSources.statuses.${row.original.status}`, { defaultValue: row.original.status })}
-          </span>
-        ),
-      },
-      {
-        id: "actions",
-        header: t("capitalSources.fields.actions"),
-        cell: ({ row }: any) => (
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${row.original.id}`)}>
-              {t("capitalSources.actions.view")}
-            </Button>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${row.original.id}/edit`)}>
-              {t("capitalSources.actions.edit")}
-            </Button>
-          </div>
-        ),
-      },
-    ],
-    [navigate, t],
-  );
-
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const totalBalance = items.reduce((sum, item) => sum + (item.currentBalance ?? 0), 0);
 
   return (
     <div className={styles.page}>
@@ -174,60 +124,155 @@ export const CapitalSourcesList = () => {
         }
       />
 
-      <div className={styles.page}>
-        <div className={styles.filterGrid}>
-          <Select value={type} onChange={(e) => applyFilter("type", e.target.value)}>
-            {typeOptions.map((option) => (
-              <option key={option.value || "all"} value={option.value}>
-                {t(option.label)}
-              </option>
-            ))}
-          </Select>
+      <div className={styles.portfolioShell}>
+        <section className={styles.heroCard} aria-label={t("capitalSources.portfolio.title")}>
+          <div className={styles.heroGlow} aria-hidden="true" />
+          <div>
+            <p className={styles.eyebrow}>{t("capitalSources.portfolio.eyebrow")}</p>
+            <h2>{t("capitalSources.portfolio.title")}</h2>
+            <p className={styles.heroDescription}>{t("capitalSources.portfolio.description")}</p>
+          </div>
+          <div className={styles.heroValue}>
+            <span>{t("capitalSources.fields.currentBalance")}</span>
+            <strong>{formatMoney(totalBalance)} AMD</strong>
+          </div>
+        </section>
 
-          <Select value={status} onChange={(e) => applyFilter("status", e.target.value)}>
-            {statusOptions.map((option) => (
-              <option key={option.value || "all"} value={option.value}>
-                {t(option.label)}
-              </option>
-            ))}
-          </Select>
+        <div className={styles.filterPanel}>
+          <div className={styles.filterGrid}>
+            <Select value={type} onChange={(e) => applyFilter("type", e.target.value)}>
+              {typeOptions.map((option) => (
+                <option key={option.value || "all"} value={option.value}>
+                  {t(option.label)}
+                </option>
+              ))}
+            </Select>
 
-          <TextField
-            label={t("capitalSources.fields.code")}
-            value={code}
-            onChange={(e) => applyFilter("code", e.target.value)}
-          />
+            <Select value={status} onChange={(e) => applyFilter("status", e.target.value)}>
+              {statusOptions.map((option) => (
+                <option key={option.value || "all"} value={option.value}>
+                  {t(option.label)}
+                </option>
+              ))}
+            </Select>
 
-          <TextField
-            label={t("capitalSources.fields.name")}
-            value={name}
-            onChange={(e) => applyFilter("name", e.target.value)}
-          />
+            <TextField
+              label={t("capitalSources.fields.code")}
+              value={code}
+              onChange={(e) => applyFilter("code", e.target.value)}
+            />
+
+            <TextField
+              label={t("capitalSources.fields.name")}
+              value={name}
+              onChange={(e) => applyFilter("name", e.target.value)}
+            />
+          </div>
+
+          <div className={styles.filterFooter}>
+            <span>{t("capitalSources.summary.totalItems", { count: totalItems })}</span>
+            <Button variant="secondary" size="small" onClick={resetFilters}>
+              {t("common.reset")}
+            </Button>
+          </div>
         </div>
 
-        <div className={styles.summaryRow}>
-          <div className={styles.summaryText}>{t("capitalSources.summary.totalItems", { count: totalItems })}</div>
-          <Button variant="secondary" size="small" onClick={resetFilters}>
-            {t("common.reset")}
-          </Button>
+        <div className={styles.statsGrid}>
+          <div className={styles.statTile}>
+            <span className={styles.statIcon}><Banknote size={18} /></span>
+            <div>
+              <span>{t("capitalSources.portfolio.totalSources")}</span>
+              <strong>{totalItems}</strong>
+            </div>
+          </div>
+          <div className={styles.statTile}>
+            <span className={styles.statIcon}><Building2 size={18} /></span>
+            <div>
+              <span>{t("capitalSources.portfolio.activeSources")}</span>
+              <strong>{items.filter((item) => item.status === "Active").length}</strong>
+            </div>
+          </div>
+          <div className={styles.statTile}>
+            <span className={styles.statIcon}><Wallet size={18} /></span>
+            <div>
+              <span>{t("capitalSources.portfolio.available")}</span>
+              <strong>{formatMoney(totalBalance)} AMD</strong>
+            </div>
+          </div>
         </div>
 
-        <DataTable
-          columns={columns as any}
-          data={items}
-          isLoading={isLoading}
-          pageSize={pageSize}
-          manualPagination
-          pageCount={totalPages}
-          pageIndex={page - 1}
-          onPaginationChange={(newPageIndex) => {
-            const next = new URLSearchParams(searchParams);
-            next.set("page", String(newPageIndex + 1));
-            setSearchParams(next);
-          }}
-          noResultsText={t("capitalSources.emptyState")}
-          loadingText={t("common.loading")}
-        />
+        {isLoading ? (
+          <div className={styles.loadingState}>{t("common.loading")}</div>
+        ) : items.length === 0 ? (
+          <div className={styles.emptyState}>
+            <Sparkles size={24} />
+            <h3>{t("capitalSources.emptyState")}</h3>
+            <p>{t("capitalSources.portfolio.emptyHint")}</p>
+            <Button onClick={() => navigate("/capital-sources/create")}>
+              <Plus size={16} /> {t("capitalSources.actions.create")}
+            </Button>
+          </div>
+        ) : (
+          <div className={styles.cardsGrid}>
+            {items.map((item) => {
+              const sourceMeta = getSourceMeta(item.type);
+              const SourceIcon = sourceMeta.icon;
+
+              return (
+                <article key={item.id} className={styles.sourceCard}>
+                  <div className={`${styles.cardTop} ${sourceMeta.accent}`}>
+                    <div className={styles.cardBrand}>
+                      <span className={styles.cardIcon}><SourceIcon size={18} /></span>
+                      <div>
+                        <span className={styles.cardCode}>{item.code}</span>
+                        <h3>{item.name}</h3>
+                      </div>
+                    </div>
+                    <span className={`${styles.statusBadge} ${getStatusClass(item.status)}`}>
+                      {t(`capitalSources.statuses.${item.status}`, { defaultValue: item.status })}
+                    </span>
+                  </div>
+
+                  <div className={styles.cardContent}>
+                    <div className={styles.balanceBlock}>
+                      <span>{t("capitalSources.fields.currentBalance")}</span>
+                      <strong>{formatMoney(item.currentBalance)} AMD</strong>
+                    </div>
+
+                    <div className={styles.cardMetrics}>
+                      <div>
+                        <span>{t("capitalSources.fields.initialAmount")}</span>
+                        <strong>{formatMoney(item.initialAmount)} AMD</strong>
+                      </div>
+                      <div>
+                        <span>{t("capitalSources.fields.interestRate")}</span>
+                        <strong>{item.interestRate != null ? `${item.interestRate}%` : "—"}</strong>
+                      </div>
+                    </div>
+
+                    <div className={styles.cardMeta}>
+                      <span><strong>{t("capitalSources.fields.type")}:</strong> {t(`capitalSources.types.${item.type}`, { defaultValue: item.type })}</span>
+                      <span><strong>{t("capitalSources.fields.startDate")}:</strong> {item.startDate ? new Date(item.startDate).toLocaleDateString() : "—"}</span>
+                      <span><strong>{t("capitalSources.fields.endDate")}:</strong> {item.endDate ? new Date(item.endDate).toLocaleDateString() : "—"}</span>
+                    </div>
+
+                    {item.description && <p className={styles.cardDescription}>{item.description}</p>}
+                  </div>
+
+                  <div className={styles.cardActions}>
+                    <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${item.id}`)}>
+                      {t("capitalSources.actions.view")}
+                      <ArrowRight size={14} />
+                    </Button>
+                    <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${item.id}/edit`)}>
+                      {t("capitalSources.actions.edit")}
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
