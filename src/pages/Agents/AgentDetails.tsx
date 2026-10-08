@@ -12,6 +12,7 @@ import { AgentStatus } from "@/types/agents";
 import type { AgentDto } from "@/types/agents";
 import type { AgentProductDebtDto, AgentProductDebtPaymentDto } from "@/types/agents";
 import type { AgentContractDto } from "@/types/agentContracts";
+import { AgentProfitabilityReport } from "@/components/reports/AgentProfitabilityReport";
 import { AgentProductCreditPurchases } from "./AgentProductCreditPurchases";
 import styles from "./Agents.module.css";
 
@@ -68,7 +69,7 @@ export const AgentDetails = () => {
   const [productContract, setProductContract] = useState<AgentContractDto | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-  const [detailTab, setDetailTab] = useState<"general" | "cashPowder" | "productCredit">("general");
+  const [detailTab, setDetailTab] = useState<"general" | "profitability" | "cashPowder" | "productCredit">("general");
   const [confirmAction, setConfirmAction] = useState<{ type: string; status: number } | null>(null);
 
   const load = async () => {
@@ -278,6 +279,7 @@ export const AgentDetails = () => {
       <nav className={styles.detailTabs} aria-label={t("agents.details.financialNavigation")}>
         {([
           ["general", "agents.details.general"],
+          ["profitability", "reports.navigation.agentProfitability"],
           ["cashPowder", "agentWorkspace.cashPowder"],
           ["productCredit", "agentWorkspace.productCredit"],
         ] as const).map(([tab, label]) => (
@@ -319,6 +321,13 @@ export const AgentDetails = () => {
           <DataTable columns={historyColumns as any} data={history} isLoading={isLoading} noResultsText={t("agents.history.empty")} loadingText={t("agents.loading")} />
         </div>
       </div>}
+
+      {detailTab === "profitability" && (
+        <section className={styles.infoCard}>
+          <h3>{t("reports.navigation.agentProfitability")}</h3>
+          <AgentProfitabilityReport agentId={agent.id} />
+        </section>
+      )}
 
       {detailTab === "cashPowder" && (
         <section className={styles.infoCard}>

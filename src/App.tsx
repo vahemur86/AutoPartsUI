@@ -308,7 +308,6 @@ export const App = () => {
                   <Route path="workshop-orders" element={<WorkshopOrdersReport />} />
                   <Route path="service-task-reports" element={<ServiceTasksReport />} />
                   <Route path="special-lots" element={<SpecialLotsReport />} />
-                  <Route path="agent-profitability" element={<AgentProfitabilityReport />} />
                 </Route>
 
                 <Route path="finance-reports">
@@ -363,8 +362,10 @@ export const App = () => {
                 <Route path="agents" element={<AgentWorkspace />}>
                   <Route index element={<Agents />} />
                   <Route path="new" element={<CreateAgent />} />
+                  <Route path="profitability" element={<AgentProfitabilityReport />} />
                   <Route path=":id" element={<AgentDetails />} />
                   <Route path=":id/financial-summary" element={<AgentFinancialSummary />} />
+                  <Route path=":id/profitability" element={<AgentProfitabilityReport />} />
                   <Route path=":id/edit" element={<EditAgent />} />
                   <Route path=":id/classify" element={<ClassifyAgent />} />
                   <Route path=":id/powder-deliveries" element={<PowderDeliveryHistory kind="agent" />} />

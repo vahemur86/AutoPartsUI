@@ -203,6 +203,9 @@ export const Agents = () => {
             <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${row.original.id}`)}>
               {t("agents.actions.view")}
             </Button>
+            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${row.original.id}/profitability`)}>
+              {t("reports.navigation.agentProfitability")}
+            </Button>
           </div>
         ),
       },

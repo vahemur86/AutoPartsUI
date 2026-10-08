@@ -18,6 +18,11 @@ import styles from "./AgentWorkspace.module.css";
 const sections = [
   { to: "/agents", label: "agentWorkspace.general", icon: Users, end: true },
   {
+    to: "/agents/profitability",
+    label: "reports.navigation.agentProfitability",
+    icon: Wallet,
+  },
+  {
     to: "/agents/cash-powder/contracts",
     label: "agentWorkspace.cashPowder",
     icon: Wallet,
@@ -31,6 +36,7 @@ const sections = [
 
 const generalTabs = [
   { to: "/agents", label: "agents.list", icon: Users, end: true },
+  { to: "/agents/profitability", label: "reports.navigation.agentProfitability", icon: Wallet },
   { to: "/agents/types", label: "agentTypes.title", icon: Tag },
   {
     to: "/agents/classification-rules",
