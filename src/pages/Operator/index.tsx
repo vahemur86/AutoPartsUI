@@ -28,7 +28,15 @@ import { useOperator, type TabType } from "./hooks";
 
 // styles
 import styles from "./OperatorPage.module.css";
-import { AlertTriangle, LoaderCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  Calculator,
+  Factory,
+  FlaskConical,
+  LoaderCircle,
+  Pickaxe,
+  ShoppingBag,
+} from "lucide-react";
 
 type MainTabType = "buy" | "calculate" | "workshop";
 
@@ -186,25 +194,33 @@ export const OperatorPage = () => {
         hasError={!!selectors.cashRegisters.balanceError}
       />
 
-      <div className={styles.tabWrapper}>
-        <Tab
-          variant="underline"
-          active={mainTab === "buy"}
-          text={t("operatorPage.tabs.buy")}
-          onClick={() => setMainTabWithCheck("buy")}
-        />
-        <Tab
-          variant="underline"
-          active={mainTab === "calculate"}
-          text={t("operatorPage.tabs.calculate")}
-          onClick={() => setMainTabWithCheck("calculate")}
-        />
-        <Tab
-          variant="underline"
-          active={mainTab === "workshop"}
-          text={t("operatorPage.tabs.workshop")}
-          onClick={() => setMainTabWithCheck("workshop")}
-        />
+      <div className={styles.luxuryTabShell}>
+        <div className={styles.tabWrapper}>
+          <Tab
+            variant="underline"
+            active={mainTab === "buy"}
+            text={t("operatorPage.tabs.buy")}
+            icon={<ShoppingBag size={16} color="#d7c38b" />}
+            className={styles.luxuryTab}
+            onClick={() => setMainTabWithCheck("buy")}
+          />
+          <Tab
+            variant="underline"
+            active={mainTab === "calculate"}
+            text={t("operatorPage.tabs.calculate")}
+            icon={<Calculator size={16} color="#d7c38b" />}
+            className={styles.luxuryTab}
+            onClick={() => setMainTabWithCheck("calculate")}
+          />
+          <Tab
+            variant="underline"
+            active={mainTab === "workshop"}
+            text={t("operatorPage.tabs.workshop")}
+            icon={<Factory size={16} color="#d7c38b" />}
+            className={styles.luxuryTab}
+            onClick={() => setMainTabWithCheck("workshop")}
+          />
+        </div>
       </div>
 
       {mainTab === "buy" ? (
@@ -214,12 +230,16 @@ export const OperatorPage = () => {
               variant="underline"
               active={activeTab === "catalyst"}
               text={t("operatorPage.tabs.catalyst")}
+              icon={<FlaskConical size={15} color="#d7c38b" />}
+              className={styles.luxurySubTab}
               onClick={() => handleTabClick("catalyst")}
             />
             <Tab
               variant="underline"
               active={activeTab === "iron"}
               text={t("operatorPage.tabs.iron")}
+              icon={<Pickaxe size={15} color="#d7c38b" />}
+              className={styles.luxurySubTab}
               onClick={() => handleTabClick("iron")}
             />
           </div>

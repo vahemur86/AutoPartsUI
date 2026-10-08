@@ -10,6 +10,10 @@ import {
   User,
   Store,
   Monitor,
+  Play,
+  Square,
+  Globe,
+  WalletCards,
 } from "lucide-react";
 
 // ui-kit
@@ -54,44 +58,53 @@ export const OperatorHeader = ({
 
   return (
     <div className={styles.headerSection}>
-      <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
+      <div className={styles.headerBrand}>
+        <div className={styles.brandMark}>
+          <WalletCards size={22} />
+        </div>
+        <div>
+          <span className={styles.brandEyebrow}>Operator terminal</span>
+          <h1 className={styles.pageTitle}>{t("operatorPage.title")}</h1>
+        </div>
+      </div>
 
       <div className={styles.headerActions}>
-        {/* Compact User/Shop Info Component */}
         <div className={styles.userInfoContainer}>
-          <div
-            className={styles.userInfoItem}
-            title={t("powderExtraction.shopId")}
-          >
-            <Store size={14} />
-            <span>{String(userData?.shopId ?? "") || "—"}</span>
+          <div className={styles.userInfoItem} title={t("powderExtraction.shopId")}>
+            <div className={styles.userInfoIcon}>
+              <Store size={13} />
+            </div>
+            <div className={styles.userInfoContent}>
+              <span className={styles.userInfoLabel}>{t("powderExtraction.shopId")}</span>
+              <span className={styles.userInfoValue}>{String(userData?.shopId ?? "") || "—"}</span>
+            </div>
           </div>
-          <div
-            className={styles.userInfoItem}
-            title={t("powderExtraction.username")}
-          >
-            <User size={14} />
-            <span>{String(userData?.username ?? "") || "—"}</span>
+          <div className={styles.userInfoItem} title={t("powderExtraction.username")}>
+            <div className={styles.userInfoIcon}>
+              <User size={13} />
+            </div>
+            <div className={styles.userInfoContent}>
+              <span className={styles.userInfoLabel}>{t("powderExtraction.username")}</span>
+              <span className={styles.userInfoValue}>{String(userData?.username ?? "") || "—"}</span>
+            </div>
           </div>
-          <div
-            className={styles.userInfoItem}
-            title={t("powderExtraction.cashRegisterName")}
-          >
-            <Monitor size={14} />
-            <span>{String(userData?.cashRegisterName ?? "") || "—"}</span>
+          <div className={styles.userInfoItem} title={t("powderExtraction.cashRegisterName")}>
+            <div className={styles.userInfoIcon}>
+              <Monitor size={13} />
+            </div>
+            <div className={styles.userInfoContent}>
+              <span className={styles.userInfoLabel}>{t("powderExtraction.cashRegisterName")}</span>
+              <span className={styles.userInfoValue}>{String(userData?.cashRegisterName ?? "") || "—"}</span>
+            </div>
           </div>
         </div>
 
-        <div
-          className={`${styles.headerBalanceContainer} ${hasError ? styles.balanceError : ""}`}
-        >
+        <div className={`${styles.headerBalanceContainer} ${hasError ? styles.balanceError : ""}`}>
           <div className={styles.balanceIcon}>
             <Banknote size={18} />
           </div>
           <div className={styles.balanceInfo}>
-            <span className={styles.balanceLabel}>
-              {t("operatorPage.cashAmount")}
-            </span>
+            <span className={styles.balanceLabel}>{t("operatorPage.cashAmount")}</span>
             <span className={styles.balanceValue}>{displayBalance}</span>
           </div>
           <button
@@ -107,29 +120,26 @@ export const OperatorHeader = ({
         <div className={styles.sessionGroup}>
           <Button
             onClick={() => onToggleSession("open")}
-            className={
-              hasOpenSession
-                ? styles.sessionBtnActive
-                : styles.sessionBtnInactive
-            }
+            className={hasOpenSession ? styles.sessionBtnActive : styles.sessionBtnInactive}
             disabled={hasOpenSession}
           >
-            {t("operatorPage.openSession")}
+            <Play size={15} />
+            <span>{t("operatorPage.openSession")}</span>
           </Button>
           <Button
             onClick={onOpenCloseModal}
-            className={
-              !hasOpenSession
-                ? styles.sessionBtnActiveClose
-                : styles.sessionBtnInactiveClose
-            }
+            className={!hasOpenSession ? styles.sessionBtnActiveClose : styles.sessionBtnInactiveClose}
             disabled={!hasOpenSession}
           >
-            {t("operatorPage.closeSession")}
+            <Square size={15} />
+            <span>{t("operatorPage.closeSession")}</span>
           </Button>
         </div>
 
         <div className={styles.languageSelectWrapper}>
+          <div className={styles.languageSelectIcon}>
+            <Globe size={14} />
+          </div>
           <Select
             placeholder={t("common.select")}
             onChange={onLanguageChange}
@@ -145,14 +155,9 @@ export const OperatorHeader = ({
           </Select>
         </div>
 
-        <Button
-          variant="secondary"
-          size="medium"
-          onClick={onOpenLogoutModal}
-          className={styles.logoutBtn}
-        >
+        <Button variant="secondary" size="medium" onClick={onOpenLogoutModal} className={styles.logoutBtn}>
           <LogOut size={16} />
-          {t("header.logout")}
+          <span>{t("header.logout")}</span>
         </Button>
       </div>
     </div>

@@ -471,7 +471,7 @@ export const useOperator = () => {
         return t("finalOffer.error.invalidStatusTransitionDraft");
       }
 
-      if (msg === "No open cashbox session for operator.") {
+      if (/^No open cashbox session for operator\.?$/i.test(msg.trim())) {
         return t("operatorPage.notifications.noOpenCashboxSession");
       }
 

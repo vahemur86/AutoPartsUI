@@ -2155,8 +2155,8 @@
       "networkError": "Կապը թույլ է, կրկին փորձիր։"
     },
     "languageLoading": "Լեզուները բեռնվում են...",
-    "openSession": "Բացել սեսսիան",
-    "closeSession": "Փակել սեսսիան",
+    "openSession": "Սկսել աշխատանքը",
+    "closeSession": "Ավարտել աշխատանքը",
     "cashAmount": "Դրամարկղի կանխիկ գումարը",
     "cashAmountPlaceholder": "Ներմուծեք ընթացիկ կանխիկ գումարը",
     "tabs": {

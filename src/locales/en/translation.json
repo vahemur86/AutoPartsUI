@@ -2110,8 +2110,8 @@
       "networkError": "Weak internet connection. Please try again."
     },
     "languageLoading": "Loading languages...",
-    "openSession": "Open Session",
-    "closeSession": "Close Session",
+    "openSession": "Start operator session",
+    "closeSession": "End operator session",
     "cashAmount": "Cash in Cash Register",
     "cashAmountPlaceholder": "Enter current cash amount",
     "buyIron": "Buy Iron",
