@@ -18,6 +18,7 @@ import { Lock, Eye, EyeOff, User } from "lucide-react";
 
 // images
 import logoImage from "@/assets/icons/Subtract.svg";
+import platformScene from "@/assets/images/catalyst-platform-scene.svg";
 
 // styles
 import styles from "./Login.module.css";
@@ -102,6 +103,12 @@ export const Login = () => {
 
   return (
     <div className={styles.container}>
+      <img
+        src={platformScene}
+        alt=""
+        aria-hidden="true"
+        className={styles.platformScene}
+      />
       <div className={styles.gridBackground} />
       <div className={styles.overlay} />
 
