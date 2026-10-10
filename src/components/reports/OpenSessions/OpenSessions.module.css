@@ -4,12 +4,460 @@
   gap: 24px;
   padding: 20px;
 }
+.openSessionsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.headerCopy {
+  min-width: 0;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.titleIcon {
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.07);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: #b3ad99;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
 .header h1 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-white);
   margin: 0;
+  color: #eee9db;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.activeCount {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  color: #c9d3c6;
+  border: 1px solid rgba(121, 174, 116, 0.24);
+  border-radius: 7px;
+  background: rgba(61, 112, 60, 0.12);
+  font-size: 12px;
+}
+
+.activeCountIcon {
+  display: inline-flex;
+  color: #9fca98;
+}
+
+.activeCount strong {
+  color: #f3f2ea;
+  font-size: 15px;
+}
+
+.sessionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sessionCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(155deg, rgba(24, 30, 25, 0.98), rgba(14, 18, 15, 0.98));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.cardHeader {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(140px, 0.8fr) minmax(240px, 1.35fr);
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.14);
+}
+
+.sessionIdentity {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.registerIcon {
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.24);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.07);
+}
+
+.identityCopy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sessionTitleLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sessionId {
+  color: #f0e8d2;
+  font-size: 15px;
+}
+
+.openBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  color: #b9d9b4;
+  border: 1px solid rgba(121, 174, 116, 0.28);
+  border-radius: 5px;
+  background: rgba(61, 112, 60, 0.17);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.openDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8fca83;
+  box-shadow: 0 0 8px rgba(143, 202, 131, 0.5);
+}
+
+.registerCode {
+  overflow: hidden;
+  color: #aeb6ad;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operatorInfo,
+.sessionTimes > div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.metaLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #a69f89;
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.operatorInfo strong {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  color: #e3e5de;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operatorInfo strong svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.sessionTimes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sessionTimes time {
+  color: #e3e5de;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px;
+}
+
+.metric {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(196, 169, 106, 0.11);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.metric > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 15px;
+  color: #a69f89;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.metric > span svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.metric strong {
+  overflow-wrap: anywhere;
+  color: #eee9db;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.metric .cashIn,
+.metric .positive {
+  color: #a8d29e;
+}
+
+.metric .cashOut,
+.metric .negative {
+  color: #e6aaa0;
+}
+
+.listFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+}
+
+.resultCount {
+  color: #aab1a9;
+  font-size: 12px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #d2d7cf;
+  font-size: 12px;
+}
+
+.pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 5px 10px;
+  color: #e5d29a;
+  border: 1px solid rgba(196, 169, 106, 0.24);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.04);
+  cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+  border-color: rgba(196, 169, 106, 0.55);
+  background: rgba(196, 169, 106, 0.1);
+}
+
+.pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 130px;
+  color: #aab1a9;
+  border: 1px dashed rgba(196, 169, 106, 0.2);
+  border-radius: 8px;
+  background: rgba(14, 18, 15, 0.65);
+  font-size: 13px;
+}
+
+.emptyState svg {
+  color: #c4a96a;
+}
+
+.loadingList {
+  display: grid;
+  gap: 12px;
+}
+
+.sessionSkeleton {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 8px;
+  background: rgba(17, 23, 19, 0.86);
+}
+
+.skeletonIdentity {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.skeletonMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.skeletonMetric {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+
+.skeletonLine {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.13), rgba(255,255,255,0.06));
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.2s infinite linear;
+}
+
+.skeletonLineWide {
+  width: 180px;
+}
+
+.skeletonLineMedium {
+  width: 100%;
+}
+
+.skeletonLineShort {
+  width: 70px;
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 950px) {
+  .cardHeader {
+    grid-template-columns: minmax(160px, 1fr) minmax(140px, 0.8fr);
+  }
+
+  .sessionTimes {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 650px) {
+  .openSessionsWrapper {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .header {
+    align-items: flex-start;
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .activeCount {
+    gap: 6px;
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .cardHeader {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 13px;
+  }
+
+  .sessionTimes {
+    grid-column: auto;
+  }
+
+  .metricsGrid,
+  .skeletonMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 10px;
+  }
+
+  .metric {
+    padding: 10px;
+  }
+
+  .listFooter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pagination {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonLine {
+    animation: none;
+  }
 }
 
 .tableContainer {

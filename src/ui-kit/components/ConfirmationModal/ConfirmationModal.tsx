@@ -17,11 +17,13 @@ export interface ConfirmationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 
-  title?: string;
+  title?: ReactNode;
   description?: ReactNode;
 
   confirmText?: string;
   cancelText?: string;
+  confirmIcon?: ReactNode;
+  cancelIcon?: ReactNode;
 
   onConfirm: () => void;
   onCancel?: () => void;
@@ -29,6 +31,7 @@ export interface ConfirmationModalProps {
   confirmDisabled?: boolean;
   confirmLoading?: boolean;
   preventClose?: boolean;
+  className?: string;
 
   children?: ReactNode;
 }
@@ -40,11 +43,14 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   description,
   confirmText,
   cancelText,
+  confirmIcon,
+  cancelIcon,
   onConfirm,
   onCancel,
   confirmDisabled = false,
   confirmLoading = false,
   preventClose = false,
+  className = "",
   children,
 }) => {
   const { t } = useTranslation();
@@ -112,7 +118,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
       aria-labelledby={headingId}
       aria-describedby={description ? descId : undefined}
     >
-      <div className={styles.card} role="document">
+      <div className={`${styles.card} ${className}`} role="document">
         <header className={styles.header}>
           <h3 className={styles.title} id={headingId}>
             {title}
@@ -145,6 +151,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
             onClick={handleCancelClick}
             disabled={confirmLoading}
           >
+            {cancelIcon}
             {resolvedCancelText}
           </Button>
 
@@ -153,6 +160,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
             onClick={handleConfirm}
             disabled={confirmDisabled || confirmLoading}
           >
+            {!confirmLoading && confirmIcon}
             {confirmLoading ? "Working..." : resolvedConfirmText}
           </Button>
         </footer>

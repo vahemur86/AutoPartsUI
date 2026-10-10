@@ -1,58 +1,114 @@
-.header {
-  padding: 19px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-.title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-white);
-}
-
-.dropdownContentOverride {
-  overflow: visible !important;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 16px 24px 24px;
-}
-
-.grid {
+.filters {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(160px, 240px)) 1fr;
+  align-items: end;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  background: linear-gradient(115deg, rgba(23, 29, 24, 0.84), rgba(15, 19, 16, 0.78));
 }
 
 .datePickerWrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
+  min-width: 0;
 }
 
 .label {
+  color: #b3ad99;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.datePickerWrapper :global(.date-picker-input) {
+  width: 100%;
+  min-height: 40px;
+  box-sizing: border-box;
+  color: #e3e5de;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  background: rgba(255, 255, 255, 0.045);
   font-size: 13px;
-  font-weight: 500;
-  color: var(--color-white);
 }
 
-.primaryActions {
+.datePickerWrapper :global(.date-picker-input::placeholder) {
+  color: #8f988e;
+}
+
+.datePickerWrapper :global(.date-picker-input:focus) {
+  border-color: rgba(196, 169, 106, 0.62);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.12);
+}
+
+.actions {
   display: flex;
-  gap: 12px;
-  margin-top: 16px;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-.primaryActions button {
-  flex: 1;
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  border-radius: 6px;
+  font-weight: 650;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
-@media (max-width: 767px) {
-  .grid {
-    grid-template-columns: 1fr;
+.actions .primaryButton {
+  color: #17170f;
+  border-color: rgba(232, 210, 151, 0.72);
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.13);
+}
+
+.actions .primaryButton:hover:not(:disabled) {
+  color: #17170f;
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+  box-shadow: 0 6px 18px rgba(170, 137, 65, 0.2);
+}
+
+.actions .neutralButton {
+  color: #d2d7cf;
+  border-color: rgba(196, 169, 106, 0.22);
+  background: rgba(196, 169, 106, 0.055);
+}
+
+.actions .neutralButton:hover:not(:disabled) {
+  color: #f1e6c5;
+  border-color: rgba(196, 169, 106, 0.46);
+  background: rgba(196, 169, 106, 0.11);
+}
+
+.actions button:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+
+@media (max-width: 680px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .content {
-    padding: 12px;
+
+  .actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 420px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actions {
+    grid-column: auto;
+  }
+
+  .actions button {
+    flex: 1;
   }
 }

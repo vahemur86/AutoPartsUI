@@ -113,6 +113,61 @@ button {
   transition: border-color 0.25s;
 }
 
+div[class*="tableSkeleton"]:not([class*="tableSkeletonHeader"]):not([class*="tableSkeletonRows"]):not([class*="tableSkeletonRow"]) {
+  position: relative;
+  isolation: isolate;
+}
+
+div[class*="tableSkeleton"]:not([class*="tableSkeletonHeader"]):not([class*="tableSkeletonRows"]):not([class*="tableSkeletonRow"])::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  width: 58px;
+  height: 58px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ff2d2d;
+  border-right-color: #ffffff;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  animation: prpLoaderSpin 1.6s linear infinite;
+}
+
+div[class*="tableSkeleton"]:not([class*="tableSkeletonHeader"]):not([class*="tableSkeletonRows"]):not([class*="tableSkeletonRow"])::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 6;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(14, 15, 17, 0.94);
+  color: #ffffff;
+  content: "PRP";
+  font-size: 12px;
+  font-weight: 800;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(255, 45, 45, 0.7);
+}
+
+@keyframes prpLoaderSpin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  div[class*="tableSkeleton"]:not([class*="tableSkeletonHeader"]):not([class*="tableSkeletonRows"]):not([class*="tableSkeletonRow"])::before {
+    animation: none;
+  }
+}
+
 /* Dark mode by default - remove light mode override */
 html {
   background-color: #0e0f11;

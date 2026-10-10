@@ -3,17 +3,20 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { Button, DataTable, TextField } from "@/ui-kit";
+import { TextField } from "@/ui-kit";
 
 // services
 import { getProfitBySaleId } from "@/services/financeReports";
 
 // utils
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
+import { FinanceReportResult } from "./FinanceReportResult";
 
 // local
 import { getDynamicColumns, toDynamicRows } from "./tableUtils";
 import styles from "./FinanceReports.module.css";
+import { FinanceFilterHeading } from "./FinanceFilterHeading";
+import { FinanceReportLoadButton } from "./FinanceReportLoadButton";
 
 export const SaleProfitLookup = () => {
   const { t } = useTranslation();
@@ -66,6 +69,7 @@ export const SaleProfitLookup = () => {
   return (
     <div className={styles.panel}>
       <div className={styles.filters}>
+        <FinanceFilterHeading />
         <TextField
           label={t("financeReports.filters.saleId")}
           placeholder={t("financeReports.filters.saleId")}
@@ -75,17 +79,19 @@ export const SaleProfitLookup = () => {
       </div>
 
       <div className={styles.actions}>
-        <Button variant="primary" size="medium" onClick={handleLoad} disabled={isLoading}>
-          {isLoading ? t("common.loading") : t("financeReports.actions.load")}
-        </Button>
+        <FinanceReportLoadButton loading={isLoading} label={t("financeReports.actions.load")} onClick={handleLoad} />
       </div>
 
       <div className={styles.result}>
-        {!data ? (
-          <div className={styles.info}>{t("financeReports.empty")}</div>
-        ) : (
-          <DataTable data={rows} columns={columns} pageSize={10} />
-        )}
+        <FinanceReportResult
+          rows={rows}
+          columns={columns}
+          loading={isLoading}
+          loadingLabel={t("common.loading")}
+          hasData={data !== null}
+          emptyLabel={t("financeReports.empty")}
+          noRowsLabel={t("common.noData")}
+        />
       </div>
     </div>
   );

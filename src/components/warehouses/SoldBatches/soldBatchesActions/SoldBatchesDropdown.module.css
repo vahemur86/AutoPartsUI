@@ -54,13 +54,123 @@
   flex: 1;
 }
 
+.content {
+  gap: 12px;
+  padding: 14px;
+  max-height: min(72vh, 520px);
+}
+
+.adjustmentIntro {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 7px;
+  background: linear-gradient(110deg, rgba(196, 169, 106, 0.08), rgba(20, 26, 22, 0.62));
+}
+
+.adjustmentIntroIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #e5d29a;
+  border: 1px solid rgba(196, 169, 106, 0.24);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.09);
+}
+
+.adjustmentIntroText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.adjustmentIntroText strong {
+  color: #eee9db;
+  font-size: 12px;
+}
+
+.adjustmentIntroText > span {
+  color: #aeb6ad;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.adjustmentFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.adjustmentFieldHeading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #d2bf8a;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.actionswithoutDelete {
+  margin-top: 0;
+}
+
+.primaryActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  border-radius: 6px;
+  font-weight: 650;
+}
+
+.primaryActions .confirmButton {
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  box-shadow: 0 4px 12px rgba(170, 137, 65, 0.12);
+}
+
+.primaryActions .confirmButton:hover:not(:disabled) {
+  color: #17170f;
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+}
+
+.primaryActions .cancelButton {
+  color: #d2d7cf;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  background: rgba(196, 169, 106, 0.055);
+}
+
+.primaryActions .cancelButton:hover:not(:disabled) {
+  color: #f1e6c5;
+  border-color: rgba(196, 169, 106, 0.42);
+  background: rgba(196, 169, 106, 0.11);
+}
+
+.primaryActions button:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+
 @media (min-width: 768px) {
   .header {
     display: block;
   }
 
   .content {
-    padding: 16px 24px 24px;
+    padding: 14px;
   }
 
   .actionswithoutDelete {

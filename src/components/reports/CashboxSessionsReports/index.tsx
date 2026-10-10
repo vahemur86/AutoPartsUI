@@ -1,9 +1,19 @@
-import { type FC, useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { type FC, useEffect, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import {
+  ArrowDownLeft,
+  ArrowRight,
+  ArrowUpRight,
+  BarChart3,
+  CalendarDays,
+  RotateCcw,
+  Store,
+  Wallet,
+} from "lucide-react";
 
 // ui-kit
-import { DataTable, Select, Button, DatePicker } from "@/ui-kit";
+import { Select, Button, DatePicker } from "@/ui-kit";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -14,12 +24,8 @@ import {
 import { fetchShops } from "@/store/slices/shopsSlice";
 import { fetchCashRegisters } from "@/store/slices/cash/registersSlice";
 
-// columns
-import { getCashboxReportColumns } from "./columns";
-
 // utils
 import { getApiErrorMessage } from "@/utils";
-import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./CashboxReport.module.css";
@@ -76,12 +82,27 @@ export const CashboxSessionsReports: FC = () => {
     setSelectedRegisterId("");
     setShopError(false);
     setRegisterError(false);
+    dispatch(clearSelection());
   };
 
   const handleRegisterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value ? Number(event.target.value) : "";
     setSelectedRegisterId(value);
     setRegisterError(false);
+    dispatch(clearSelection());
+  };
+
+  const handleDateFromChange = (date: Date | null) => {
+    setSelectedDateFrom(date);
+    if (date && selectedDateTo && selectedDateTo < date) {
+      setSelectedDateTo(null);
+    }
+    dispatch(clearSelection());
+  };
+
+  const handleDateToChange = (date: Date | null) => {
+    setSelectedDateTo(date);
+    dispatch(clearSelection());
   };
 
   const handleResetFilters = () => {
@@ -143,19 +164,38 @@ export const CashboxSessionsReports: FC = () => {
       });
   };
 
-  const columns = useMemo(() => getCashboxReportColumns(), []);
-
-  const tableData = useMemo(() => {
-    return cashboxReport ? [cashboxReport] : [];
-  }, [cashboxReport]);
+  const selectedShop = shops.find((shop) => shop.id === selectedShopId);
+  const selectedRegister = cashRegisters.find(
+    (register) => register.id === selectedRegisterId,
+  );
+  const formatDateLabel = (date: Date) =>
+    date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  const reportPeriod = selectedDateFrom || selectedDateTo
+    ? `${selectedDateFrom ? formatDateLabel(selectedDateFrom) : t("common.notSpecified")} - ${selectedDateTo ? formatDateLabel(selectedDateTo) : t("common.notSpecified")}`
+    : cashboxReport?.date && cashboxReport.date !== "0001-01-01"
+      ? formatDateLabel(new Date(`${cashboxReport.date}T00:00:00`))
+      : t("cashbox.cashboxReport.allDates");
+  const formatAmd = (value: number) => `${value.toLocaleString()} AMD`;
 
   return (
     <div className={styles.cashboxReportWrapper}>
       <header className={styles.header}>
-        <h1>{t("cashbox.cashboxReport.title")}</h1>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true">
+            <Wallet size={19} />
+          </span>
+          <div>
+          <span className={styles.eyebrow}>{t("reports.navigationGroups.cashbox")}</span>
+          <h1>{t("cashbox.cashboxReport.title")}</h1>
+          </div>
+        </div>
       </header>
 
-      <div className={styles.filters}>
+      <section className={styles.filters} aria-label={t("common.filters")}>
         <div className={styles.filtersContent}>
           <Select
             label={t("cashbox.cashboxReport.shopLabel", {
@@ -218,18 +258,14 @@ export const CashboxSessionsReports: FC = () => {
           <div className={styles.dateFilters}>
             <div className={styles.dateFilter}>
               <label className={styles.dateLabel}>
-                {t("cashbox.cashboxReport.dateFromLabel", { defaultValue: "Date From" })}
+                {t("cashbox.cashboxReport.dateFromLabel")}
               </label>
               <DatePicker
                 selected={selectedDateFrom}
-                onChange={(date: Date | null) => setSelectedDateFrom(date)}
+                onChange={handleDateFromChange}
                 dateFormat="MM/dd/yyyy"
-                placeholderText={t(
-                  "cashbox.cashboxReport.selectDateFromPlaceholder",
-                  { defaultValue: "Select date from (optional)" },
-                )}
+                placeholder={t("cashbox.cashboxReport.selectDateFromPlaceholder")}
                 isClearable
-                showTimeSelect={false}
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
@@ -237,18 +273,14 @@ export const CashboxSessionsReports: FC = () => {
             </div>
             <div className={styles.dateFilter}>
               <label className={styles.dateLabel}>
-                {t("cashbox.cashboxReport.dateToLabel", { defaultValue: "Date To" })}
+                {t("cashbox.cashboxReport.dateToLabel")}
               </label>
               <DatePicker
                 selected={selectedDateTo}
-                onChange={(date: Date | null) => setSelectedDateTo(date)}
+                onChange={handleDateToChange}
                 dateFormat="MM/dd/yyyy"
-                placeholderText={t(
-                  "cashbox.cashboxReport.selectDateToPlaceholder",
-                  { defaultValue: "Select date to (optional)" },
-                )}
+                placeholder={t("cashbox.cashboxReport.selectDateToPlaceholder")}
                 isClearable
-                showTimeSelect={false}
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
@@ -258,45 +290,118 @@ export const CashboxSessionsReports: FC = () => {
           </div>
 
           <div className={styles.actionsButtons}>
-            <Button variant="secondary" onClick={handleResetFilters}>
+            <Button
+              variant="secondary"
+              className={styles.neutralButton}
+              onClick={handleResetFilters}
+            >
+              <RotateCcw size={15} />
               {t("common.reset")}
             </Button>
-            <Button variant="primary" onClick={handleLoadReport}>
+            <Button
+              variant="primary"
+              className={styles.primaryButton}
+              onClick={handleLoadReport}
+            >
+              <BarChart3 size={16} />
               {t("cashbox.cashboxReport.load", {
                 defaultValue: "Load report",
               })}
             </Button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className={styles.tableContainer}>
-        {isLoading && !cashboxReport ? (
-          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
-            <div className={styles.tableSkeletonHeader}>
+      <div className={styles.reportResult}>
+        {cashboxReport ? (
+          <section className={styles.reportSummary} aria-label={t("cashbox.cashboxReport.title")}>
+            <header className={styles.summaryHeader}>
+              <div className={styles.selectedCashbox}>
+                <span>
+                  <Store size={15} aria-hidden="true" />
+                  {selectedShop?.code ?? `#${selectedShopId}`}
+                </span>
+                <ArrowRight size={14} aria-hidden="true" />
+                <span>
+                  <Wallet size={15} aria-hidden="true" />
+                  {selectedRegister?.code ?? `#${selectedRegisterId}`}
+                </span>
+              </div>
+              <div className={styles.period}>
+                <CalendarDays size={15} aria-hidden="true" />
+                <span className={styles.periodLabel}>
+                  {t("cashbox.cashboxReport.periodLabel")}
+                </span>
+                <strong>{reportPeriod}</strong>
+              </div>
+            </header>
+
+            <div className={styles.balanceFlow}>
+              <article className={styles.balanceMetric}>
+                <span className={styles.metricIcon}>
+                  <Wallet size={17} aria-hidden="true" />
+                </span>
+                <span className={styles.metricLabel}>
+                  {t("cashbox.cashboxReport.columns.openingBalance")}
+                </span>
+                <strong>{formatAmd(cashboxReport.openingBalanceAmd)}</strong>
+              </article>
+              <article className={`${styles.balanceMetric} ${styles.cashInMetric}`}>
+                <span className={styles.metricIcon}>
+                  <ArrowDownLeft size={17} aria-hidden="true" />
+                </span>
+                <span className={styles.metricLabel}>
+                  {t("cashbox.cashboxReport.columns.cashIn")}
+                </span>
+                <strong>{formatAmd(cashboxReport.cashInAmd)}</strong>
+              </article>
+              <article className={`${styles.balanceMetric} ${styles.cashOutMetric}`}>
+                <span className={styles.metricIcon}>
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </span>
+                <span className={styles.metricLabel}>
+                  {t("cashbox.cashboxReport.columns.cashOut")}
+                </span>
+                <strong>{formatAmd(cashboxReport.cashOutAmd)}</strong>
+              </article>
+              <article className={`${styles.balanceMetric} ${styles.closingMetric}`}>
+                <span className={styles.metricIcon}>
+                  <Wallet size={17} aria-hidden="true" />
+                </span>
+                <span className={styles.metricLabel}>
+                  {t("cashbox.cashboxReport.columns.expectedClosingBalance")}
+                </span>
+                <strong>{formatAmd(cashboxReport.expectedClosingBalanceAmd)}</strong>
+              </article>
+            </div>
+
+            <p className={styles.balanceEquation}>
+              {t("cashbox.cashboxReport.balanceEquation")}
+            </p>
+          </section>
+        ) : selectedShopId === "" || selectedRegisterId === "" || !isLoading ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon} aria-hidden="true">
+              <Wallet size={24} />
+            </span>
+            <strong>{t("cashbox.cashboxReport.emptyTitle")}</strong>
+            <span>{t("cashbox.cashboxReport.emptyPrompt")}</span>
+          </div>
+        ) : (
+          <div className={styles.reportSkeleton} aria-busy="true" aria-live="polite">
+            <div className={styles.skeletonContext}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
               <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
             </div>
-            <div className={styles.tableSkeletonRows}>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div key={index} className={styles.tableSkeletonRow}>
+            <div className={styles.skeletonMetrics}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div className={styles.skeletonMetric} key={index}>
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
                 </div>
               ))}
             </div>
           </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={tableData}
-            pageSize={1}
-            manualPagination={false}
-            getRowClassName={(row) =>
-              checkIsToday(row.date) ? styles.todayRow : ""
-            }
-          />
         )}
       </div>
     </div>

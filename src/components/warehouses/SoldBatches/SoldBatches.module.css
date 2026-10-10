@@ -21,6 +21,8 @@
 .headerActions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  width: 100%;
   gap: 12px;
 }
 
@@ -28,13 +30,42 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
+  padding: 5px 10px 5px 6px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 7px;
+  background: linear-gradient(110deg, rgba(196, 169, 106, 0.075), rgba(20, 26, 22, 0.84));
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.filterButtonWrapper:hover {
+  border-color: rgba(196, 169, 106, 0.48);
+  background: linear-gradient(110deg, rgba(196, 169, 106, 0.13), rgba(20, 26, 22, 0.92));
+}
+
+.filterIcon.filterIcon {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.58);
+  border-radius: 5px;
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+}
+
+.filterIcon.filterIcon:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+}
+
+.filterIcon.filterIcon:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
 }
 
 .filterButtonText {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--color-secondary-500);
+  color: #e5d29a;
+  font-size: 11px;
+  font-weight: 650;
 }
 
 .tableContainer {
@@ -144,20 +175,69 @@
 }
 
 .negative {
-  color: #ef4444 !important;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  color: #e6aaa0 !important;
+  border: 1px solid rgba(196, 119, 108, 0.2);
+  border-radius: 5px;
+  background: rgba(130, 58, 51, 0.13);
+  font-weight: 650;
 }
 
 .positive {
-  color: #22c55e !important;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  color: #b9d9b4 !important;
+  border: 1px solid rgba(137, 184, 128, 0.2);
+  border-radius: 5px;
+  background: rgba(83, 126, 75, 0.13);
+  font-weight: 650;
 }
 
-.expandTrigger {
-  background: transparent;
-  border: none;
+.detailsButton {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
   padding: 0;
-  color: var(--color-white);
-  cursor: pointer;
+}
+
+.detailsButton:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+
+.actionCell {
   display: flex;
   align-items: center;
-  transition: transform 0.2s ease;
 }
+
+.adjustButton.adjustButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 10px;
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  box-shadow: 0 3px 10px rgba(170, 137, 65, 0.13);
+  font-size: 11px;
+  font-weight: 650;
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.adjustButton.adjustButton:hover:not(:disabled) {
+  color: #17170f;
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+  box-shadow: 0 5px 14px rgba(170, 137, 65, 0.2);
+}
+
+.adjustButton.adjustButton:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+

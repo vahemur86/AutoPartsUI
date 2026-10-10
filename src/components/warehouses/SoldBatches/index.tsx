@@ -1,6 +1,7 @@
-import { type FC, useEffect, useMemo, useState, useRef } from "react";
+import { type FC, useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable, IconButton } from "@/ui-kit";
@@ -41,6 +42,7 @@ export const SoldBatches: FC = () => {
   const { data, isLoading, error } = useAppSelector(
     (state) => state.powderSales,
   );
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading && !data);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -93,11 +95,11 @@ export const SoldBatches: FC = () => {
     setIsFilterOpen(false);
   };
 
-  const handleEdit = (row: PowderSale, e: React.MouseEvent<HTMLElement>) => {
+  const handleEdit = useCallback((row: PowderSale, e: React.MouseEvent<HTMLElement>) => {
     setEditingRow(row);
     setEditAnchorEl(e.currentTarget);
     setIsEditOpen(true);
-  };
+  }, []);
 
   const handleSaveEdit = async (formData: SoldBatchesForm) => {
     if (!editingRow) return;
@@ -139,7 +141,7 @@ export const SoldBatches: FC = () => {
       getSoldBatchesColumns({
         onEdit: handleEdit,
       }),
-    [],
+    [handleEdit],
   );
 
   const totalPages = Math.ceil((data?.totalItems || 0) / PAGE_SIZE);
@@ -147,18 +149,18 @@ export const SoldBatches: FC = () => {
   return (
     <div className={styles.soldBatchesWrapper}>
       <header className={styles.header}>
-        <h1>{t("warehouses.soldBatches.title")}</h1>
         <div className={styles.headerActions}>
           <div
             ref={filterAnchorRef}
             className={styles.filterButtonWrapper}
-            onClick={() => setIsFilterOpen(true)}
           >
             <IconButton
               size="small"
               variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
+              className={styles.filterIcon}
+              icon={<Filter size={14} aria-hidden="true" />}
               ariaLabel={t("common.filters")}
+              onClick={() => setIsFilterOpen(true)}
             />
             <span className={styles.filterButtonText}>
               {t("common.filters")}
@@ -175,7 +177,7 @@ export const SoldBatches: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        {isLoading && !data ? (
+        {showTableSkeleton ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

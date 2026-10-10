@@ -1,21 +1,17 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { ChevronDown, ChevronRight, CircleDollarSign } from "lucide-react";
 import i18next from "i18next";
 
 // ui-kit
-import { Button } from "@/ui-kit";
+import { Button, IconButton } from "@/ui-kit";
 
 // types
 import type { BaseLot } from "@/types/warehouses/salesLots";
-
-// utils
-import { createStatusMapForSale, getStatusConfig } from "@/utils/statusMapping";
 
 // styles
 import styles from "./BatchesToSale.module.css";
 
 const columnHelper = createColumnHelper<BaseLot>();
-
-const STATUS_MAP = createStatusMapForSale(styles);
 
 const getNumberClass = (value: number) => {
   if (value < 0) return styles.negative;
@@ -31,6 +27,23 @@ export const getSalesLotColumns = ({
   onSell,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: SalesLotColumnHandlers): ColumnDef<BaseLot, any>[] => [
+  columnHelper.display({
+    id: "details",
+    header: () => null,
+    size: 42,
+    cell: ({ row }) => (
+      <IconButton
+        type="button"
+        variant="secondary"
+        size="small"
+        icon={row.getIsExpanded() ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        ariaLabel={i18next.t("common.details")}
+        title={i18next.t("common.details")}
+        className={styles.detailsButton}
+        onClick={row.getToggleExpandedHandler()}
+      />
+    ),
+  }),
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
@@ -47,16 +60,6 @@ export const getSalesLotColumns = ({
           {i18next.t("warehouses.totalBatches.lotType.special")}
         </span>
       ) : null,
-  }),
-  columnHelper.accessor("status", {
-    header: i18next.t("warehouses.batchesToSale.columns.status"),
-    cell: (info) => {
-      const statusValue = info.getValue();
-      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
-      return (
-        <span className={statusConfig.className}>{statusConfig.label}</span>
-      );
-    },
   }),
   columnHelper.accessor("totalPowderKg", {
     header: i18next.t("warehouses.batchesToSale.columns.totalPowderKg"),
@@ -93,24 +96,6 @@ export const getSalesLotColumns = ({
     header: i18next.t("warehouses.batchesToSale.columns.rhTotal_g"),
     cell: (info) => `${info.getValue()} g`,
   }),
-  columnHelper.accessor("createdAt", {
-    header: i18next.t("warehouses.batchesToSale.columns.createdAt"),
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-  }),
-  columnHelper.accessor("soldAt", {
-    header: i18next.t("warehouses.batchesToSale.columns.soldAt"),
-    cell: (info) => {
-      const value = info.getValue();
-      return value ? new Date(value).toLocaleString() : "-";
-    },
-  }),
   columnHelper.display({
     id: "actions",
     header: i18next.t("common.actions"),
@@ -123,9 +108,11 @@ export const getSalesLotColumns = ({
           <Button
             variant="primary"
             size="small"
+            className={styles.sellButton}
             onClick={() => onSell(lot)}
             disabled={!isOpen}
           >
+            <CircleDollarSign size={15} aria-hidden="true" />
             {i18next.t("warehouses.batchesToSale.sale")}
           </Button>
         </div>

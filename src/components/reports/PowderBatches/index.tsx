@@ -1,12 +1,13 @@
 import { type FC, useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
-import { DataTable, IconButton } from "@/ui-kit";
+import { DataTable } from "@/ui-kit";
 
 // icons
-import { Filter, BarChart3 } from "lucide-react";
+import { Filter, BarChart3, FlaskRound } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -45,13 +46,29 @@ export const PowderBatches: FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [isSummaryDropdownOpen, setIsSummaryDropdownOpen] = useState(false);
+  const [isSummaryDelayLoading, setIsSummaryDelayLoading] = useState(false);
   const [activeFilters, setActiveFilters] = useState<
     Partial<GetPowderBatchesParams>
   >({});
-  const filterAnchorRef = useRef<HTMLDivElement>(null);
-  const summaryAnchorRef = useRef<HTMLDivElement>(null);
+  const filterAnchorRef = useRef<HTMLButtonElement>(null);
+  const summaryAnchorRef = useRef<HTMLButtonElement>(null);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
+
+  useEffect(() => {
+    if (!isSummaryDropdownOpen) {
+      setIsSummaryDelayLoading(false);
+      return;
+    }
+
+    setIsSummaryDelayLoading(true);
+    const timeoutId = window.setTimeout(
+      () => setIsSummaryDelayLoading(false),
+      5000,
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isSummaryDropdownOpen]);
 
   useEffect(() => {
     dispatch(
@@ -140,51 +157,62 @@ export const PowderBatches: FC = () => {
   const columns = useMemo(() => getPowderBatchColumns(), []);
 
   const tableData = powderBatches?.results || [];
+  const showTableSkeleton = useMinimumLoadingDuration(
+    isLoading && tableData.length === 0,
+  );
 
   const totalPages = useMemo(
     () => Math.ceil((powderBatches?.totalItems || 0) / PAGE_SIZE),
     [powderBatches?.totalItems],
   );
+  const activeFilterCount = Object.values(activeFilters).filter(
+    (value) => value != null && value !== "",
+  ).length;
 
   return (
     <div className={styles.powderBatchesWrapper}>
       <header className={styles.header}>
-        <h1>{t("cashbox.powderBatches.title")}</h1>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true">
+            <FlaskRound size={19} />
+          </span>
+          <div>
+            <span className={styles.eyebrow}>{t("reports.navigationGroups.inventory")}</span>
+            <h1>{t("cashbox.powderBatches.title")}</h1>
+          </div>
+        </div>
         <div className={styles.headerActions}>
-          <div
+          <button
+            type="button"
             ref={summaryAnchorRef}
-            className={styles.summaryButtonWrapper}
+            className={`${styles.actionButton} ${styles.summaryAction} ${isSummaryDropdownOpen ? styles.actionButtonActive : ""}`}
             onClick={handleToggleSummary}
-            style={{ cursor: "pointer" }}
             title={t("cashbox.powderBatches.summary.tooltip")}
+            aria-expanded={isSummaryDropdownOpen}
           >
-            <IconButton
-              size="small"
-              variant="secondary"
-              icon={<BarChart3 size={12} color="#e5e7eb" />}
-              ariaLabel={t("cashbox.powderBatches.summary.button")}
-            />
+            <BarChart3 size={16} aria-hidden="true" />
             <span className={styles.summaryButtonText}>
               {t("cashbox.powderBatches.summary.button")}
             </span>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             ref={filterAnchorRef}
-            className={styles.filterButtonWrapper}
+            className={`${styles.actionButton} ${activeFilterCount ? styles.actionButtonActive : ""}`}
             onClick={() => setIsFilterDropdownOpen(true)}
-            style={{ cursor: "pointer" }}
+            aria-expanded={isFilterDropdownOpen}
           >
-            <IconButton
-              size="small"
-              variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
-              ariaLabel={t("common.filters")}
-            />
+            <Filter size={16} aria-hidden="true" />
             <span className={styles.filterButtonText}>
               {t("common.filters")}
             </span>
-          </div>
+            {activeFilterCount > 0 && (
+              <span className={styles.filterCount} aria-hidden="true">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
         </div>
       </header>
 
@@ -193,7 +221,7 @@ export const PowderBatches: FC = () => {
         anchorRef={summaryAnchorRef}
         onOpenChange={setIsSummaryDropdownOpen}
         summary={powderBatchesSummary}
-        isLoading={isLoading}
+        isLoading={isLoading || isSummaryDelayLoading}
         onFetchSummaryByDate={handleFetchSummaryByDate}
         onFetchDefaultSummary={handleFetchDefaultSummary}
       />
@@ -206,7 +234,7 @@ export const PowderBatches: FC = () => {
       />
 
       <div className={styles.tableContainer}>
-        {isLoading && tableData.length === 0 ? (
+        {showTableSkeleton && tableData.length === 0 ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

@@ -1,32 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Eye } from "lucide-react";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { SectionHeader } from "@/components/common";
-import { Button, DataTable, Select, TextField } from "@/ui-kit";
+import { DataTable, Select, TextField } from "@/ui-kit";
 import {
   getReferralCommissions,
   type ReferralCommissionDto,
 } from "@/services/referralCommissions";
 import { fetchServicesCatalog } from "@/store/slices/servicesCatalogSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-
-const statusColors: Record<string, string> = {
-  Pending: "#dbeafe",
-  Approved: "#fef3c7",
-  Paid: "#dcfce7",
-  Rejected: "#fee2e2",
-  Cancelled: "#e5e7eb",
-};
-
-const statusTextColors: Record<string, string> = {
-  Pending: "#1d4ed8",
-  Approved: "#b45309",
-  Paid: "#166534",
-  Rejected: "#b91c1c",
-  Cancelled: "#374151",
-};
+import styles from "./ReferralPersons.module.css";
 
 export const ReferralCommissions = () => {
   const { t } = useTranslation();
@@ -49,7 +36,7 @@ export const ReferralCommissions = () => {
     void dispatch(fetchServicesCatalog());
   }, [dispatch]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setIsLoading(true);
     try {
       const list = await getReferralCommissions({
@@ -75,13 +62,13 @@ export const ReferralCommissions = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, pageSize, search, serviceId, status, t]);
 
   useEffect(() => {
     void refresh();
-  }, [page, pageSize, status, search, serviceId]);
+  }, [refresh]);
 
-  const columns = useMemo(
+  const columns = useMemo<ColumnDef<ReferralCommissionDto, unknown>[]>(
     () => [
       { accessorKey: "serviceOrderId", header: t("referralCommissions.fields.orderId") },
       { accessorKey: "referralPersonName", header: t("referralCommissions.fields.referralPerson") },
@@ -89,27 +76,18 @@ export const ReferralCommissions = () => {
       {
         accessorKey: "servicePrice",
         header: t("referralCommissions.fields.servicePrice"),
-        cell: ({ row }: any) => `${Number(row.original.servicePrice || 0).toLocaleString()} AMD`,
+        cell: ({ row }: CellContext<ReferralCommissionDto, unknown>) => `${Number(row.original.servicePrice || 0).toLocaleString()} AMD`,
       },
       {
         accessorKey: "commissionAmount",
         header: t("referralCommissions.fields.commissionAmount"),
-        cell: ({ row }: any) => `${Number(row.original.commissionAmount || 0).toLocaleString()} AMD`,
+        cell: ({ row }: CellContext<ReferralCommissionDto, unknown>) => `${Number(row.original.commissionAmount || 0).toLocaleString()} AMD`,
       },
       {
         accessorKey: "status",
         header: t("referralCommissions.fields.status"),
-        cell: ({ row }: any) => (
-          <span
-            style={{
-              display: "inline-flex",
-              padding: "4px 10px",
-              borderRadius: 999,
-              background: statusColors[row.original.status] ?? "#e5e7eb",
-              color: statusTextColors[row.original.status] ?? "#374151",
-              fontWeight: 600,
-            }}
-          >
+        cell: ({ row }: CellContext<ReferralCommissionDto, unknown>) => (
+          <span className={`${styles.commissionStatus} ${styles[`commissionStatus${row.original.status}`] ?? ""}`}>
             {t(`referralCommissions.statuses.${String(row.original.status).toLowerCase()}`, { defaultValue: row.original.status })}
           </span>
         ),
@@ -117,11 +95,20 @@ export const ReferralCommissions = () => {
       {
         id: "actions",
         header: t("referralCommissions.fields.actions"),
-        cell: ({ row }: any) => (
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/commissions/${row.original.id}`)}>
-              {t("referralCommissions.actions.view")}
-            </Button>
+        cell: ({ row }: CellContext<ReferralCommissionDto, unknown>) => (
+          <div className={styles.rowActions}>
+            <button
+              type="button"
+              className={styles.iconAction}
+              onClick={(event) => {
+                event.stopPropagation();
+                navigate(`/commissions/${row.original.id}`);
+              }}
+              aria-label={t("referralCommissions.actions.view")}
+              title={t("referralCommissions.actions.view")}
+            >
+              <Eye size={16} />
+            </button>
           </div>
         ),
       },
@@ -130,32 +117,27 @@ export const ReferralCommissions = () => {
   );
 
   return (
-    <div style={{ display: "grid", gap: 20, padding: 24 }}>
+    <div className={styles.page}>
       <SectionHeader title={t("referralCommissions.title")} />
 
-      <div style={{ color: "#475569", fontSize: 14 }}>
+      <div className={styles.description}>
         {t("referralCommissions.description")}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
+      <div className={styles.metricsGrid}>
         {Object.entries(dashboard).map(([statusKey, value]) => (
           <div
             key={statusKey}
-            style={{
-              border: "1px solid #e2e8f0",
-              borderRadius: 12,
-              padding: 16,
-              background: "#fff",
-            }}
+            className={styles.metricCard}
           >
-            <div style={{ fontSize: 12, color: "#64748b", textTransform: "uppercase" }}>{t(`referralCommissions.statuses.${statusKey.toLowerCase()}`, { defaultValue: statusKey })}</div>
-            <div style={{ fontSize: 24, fontWeight: 700, marginTop: 8 }}>{value.count}</div>
-            <div style={{ color: "#475569", marginTop: 4 }}>{value.total.toLocaleString()} AMD</div>
+            <div className={styles.metricLabel}>{t(`referralCommissions.statuses.${statusKey.toLowerCase()}`, { defaultValue: statusKey })}</div>
+            <div className={styles.metricValue}>{value.count}</div>
+            <div className={styles.metricAmount}>{value.total.toLocaleString()} AMD</div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+      <div className={`${styles.filters} ${styles.commissionFilters}`}>
         <TextField
           label={t("referralCommissions.filters.search")}
           value={search}
@@ -213,17 +195,19 @@ export const ReferralCommissions = () => {
         </Select>
       </div>
 
-      <DataTable
-        columns={columns as any}
-        data={items}
-        isLoading={isLoading}
-        pageSize={pageSize}
-        manualPagination={false}
-        noResultsText={t("referralCommissions.list.empty")}
-        loadingText={t("referralCommissions.list.loading")}
-      />
+      <div className={styles.tableShell}>
+        <DataTable
+          columns={columns}
+          data={items}
+          isLoading={isLoading}
+          pageSize={pageSize}
+          manualPagination={false}
+          noResultsText={t("referralCommissions.list.empty")}
+          loadingText={t("referralCommissions.list.loading")}
+        />
+      </div>
 
-      <div style={{ fontSize: 14, color: "#475569" }}>
+      <div className={styles.resultCount}>
         {t("referralCommissions.list.showing", { shown: items.length, total: totalItems })}
       </div>
     </div>

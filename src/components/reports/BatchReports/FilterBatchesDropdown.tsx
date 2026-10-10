@@ -1,5 +1,16 @@
 import { useState, useEffect, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  CalendarDays,
+  Check,
+  Info,
+  Phone,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
 
 // ui-kit
 import { Button, Dropdown, DatePicker, TextField, Select } from "@/ui-kit";
@@ -10,7 +21,6 @@ import type { CustomerType } from "@/types/settings";
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCustomerNames } from "@/store/slices/customersSlice";
-import { Search, Info } from "lucide-react";
 
 // styles
 import styles from "./FilterBatchesDropdown.module.css";
@@ -177,159 +187,214 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
       contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
-        <span className={styles.title}>{t("common.filters")}</span>
+        <span className={styles.headerIcon} aria-hidden="true">
+          <SlidersHorizontal size={17} />
+        </span>
+        <div className={styles.headerCopy}>
+          <span className={styles.title}>{t("common.filters")}</span>
+          <span className={styles.headerHint}>{t("cashbox.batches.filters.filterHint")}</span>
+        </div>
       </div>
 
       <div className={styles.content}>
-        <div className={styles.grid}>
-          <div className={styles.colLeft}>
+        <section className={styles.filterSection}>
+          <div className={styles.sectionHeading}>
+            <CalendarDays size={15} aria-hidden="true" />
+            <span>{t("cashbox.batches.filters.dateRange")}</span>
+          </div>
+          <div className={styles.grid}>
             <div className={styles.datePickerWrapper}>
-              <label className={styles.label}>
-                {t("cashbox.batches.filters.fromDate")}
-              </label>
+              <label className={styles.label}>{t("cashbox.batches.filters.fromDate")}</label>
               <DatePicker
                 selected={tempValues.fromDate}
                 onChange={(date: Date | null) =>
-                  setTempValues((p) => ({ ...p, fromDate: date }))
+                  setTempValues((previous) => ({ ...previous, fromDate: date }))
                 }
                 dateFormat="MM/dd/yyyy"
+                placeholder={t("cashbox.batches.filters.selectFromDate")}
                 isClearable
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
               />
             </div>
-          </div>
 
-          <div className={styles.colRight}>
             <div className={styles.datePickerWrapper}>
-              <label className={styles.label}>
-                {t("cashbox.batches.filters.toDate")}
-              </label>
+              <label className={styles.label}>{t("cashbox.batches.filters.toDate")}</label>
               <DatePicker
                 selected={tempValues.toDate}
                 onChange={(date: Date | null) =>
-                  setTempValues((p) => ({ ...p, toDate: date }))
+                  setTempValues((previous) => ({ ...previous, toDate: date }))
                 }
                 dateFormat="MM/dd/yyyy"
+                placeholder={t("cashbox.batches.filters.selectToDate")}
                 isClearable
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                minDate={tempValues.fromDate || undefined}
               />
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className={styles.inputWrapper}>
-          <label className={styles.label}>
-            {t("cashbox.batches.filters.specialCustomer")}
-            <span
-              className={styles.tooltipIcon}
-              title={t("cashbox.batches.filters.specialCustomerTooltip")}
-            >
-              <Info size={13} />
-            </span>
-          </label>
-
-          <div className={styles.searchInputWrapper}>
-            <TextField
-              value={selectedClient.displayName}
-              onChange={(e) => {
-                setSelectedClient({
-                  id: null,
-                  displayName: e.target.value,
-                });
-
-                setTempValues((p) => ({
-                  ...p,
-                  supplierClientId: null,
-                }));
-              }}
-              placeholder="Search client..."
-            />
-
-            <button
-              type="button"
-              className={styles.searchIconBtn}
-              onClick={() => {
-                dispatch(
-                  fetchCustomerNames({
-                    search: selectedClient.displayName,
-                  }),
-                );
-                setShowDropdown(true);
-              }}
-            >
-              <Search size={16} />
-            </button>
+        <section className={styles.filterSection}>
+          <div className={styles.sectionHeading}>
+            <UsersRound size={15} aria-hidden="true" />
+            <span>{t("cashbox.batches.filters.customerCriteria")}</span>
           </div>
 
-          {showDropdown && customerNames.length > 0 && (
-            <div className={styles.suggestions}>
-              {customerNames.map((c) => (
-                <div
-                  key={c.id}
-                  className={styles.suggestionItem}
-                  onClick={() => {
-                    setSelectedClient({
-                      id: c.id,
-                      displayName: c.displayName,
-                    });
+          <div className={styles.inputWrapper}>
+            <label className={styles.labelWithIcon}>
+              <UserRound size={14} aria-hidden="true" />
+              <span>{t("cashbox.batches.filters.specialCustomer")}</span>
+              <span
+                className={styles.tooltipIcon}
+                title={t("cashbox.batches.filters.specialCustomerTooltip")}
+              >
+                <Info size={13} />
+              </span>
+            </label>
 
-                    setTempValues((p) => ({
-                      ...p,
-                      supplierClientId: c.id,
-                      superClientId: "",
-                    }));
+            <div className={styles.searchInputWrapper}>
+              <TextField
+                value={selectedClient.displayName}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    dispatch(
+                      fetchCustomerNames({
+                        search: selectedClient.displayName,
+                      }),
+                    );
+                    setShowDropdown(true);
+                  }
+                }}
+                onChange={(e) => {
+                  setSelectedClient({
+                    id: null,
+                    displayName: e.target.value,
+                  });
 
-                    setShowDropdown(false);
-                  }}
-                >
-                  <div>{c.displayName}</div>
-                  <small>{c.phone}</small>
-                </div>
-              ))}
+                  setTempValues((previous) => ({
+                    ...previous,
+                    supplierClientId: null,
+                  }));
+                }}
+                placeholder={t("cashbox.batches.filters.searchClient")}
+              />
+
+              <button
+                type="button"
+                className={styles.searchIconBtn}
+                aria-label={t("common.search")}
+                title={t("common.search")}
+                onClick={() => {
+                  dispatch(
+                    fetchCustomerNames({
+                      search: selectedClient.displayName,
+                    }),
+                  );
+                  setShowDropdown(true);
+                }}
+              >
+                <Search size={15} />
+              </button>
             </div>
-          )}
-        </div>
 
-        <div className={styles.filtersRow}>
-          <div className={styles.inputWrapper}>
-            <TextField
-              label={t("cashbox.batches.filters.clientPhone")}
-              value={tempValues.clientPhone}
-              onChange={(e) =>
-                setTempValues((p) => ({
-                  ...p,
-                  clientPhone: e.target.value,
-                }))
-              }
-            />
+            {showDropdown && customerNames.length > 0 && (
+              <div className={styles.suggestions}>
+                {customerNames.map((client) => (
+                  <button
+                    key={client.id}
+                    type="button"
+                    className={styles.suggestionItem}
+                    onClick={() => {
+                      setSelectedClient({
+                        id: client.id,
+                        displayName: client.displayName,
+                      });
+
+                      setTempValues((previous) => ({
+                        ...previous,
+                        supplierClientId: client.id,
+                        superClientId: "",
+                      }));
+
+                      setShowDropdown(false);
+                    }}
+                  >
+                    <span className={styles.suggestionName}>
+                      {client.displayName}
+                      {tempValues.supplierClientId === client.id && (
+                        <Check size={14} aria-hidden="true" />
+                      )}
+                    </span>
+                    <small>{client.phone}</small>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className={styles.inputWrapper}>
-            <Select
-              label={t("cashbox.batches.filters.customerType")}
-              value={tempValues.clientTypeId}
-              onChange={(e) =>
-                setTempValues((p) => ({
-                  ...p,
-                  clientTypeId: e.target.value,
-                }))
-              }
-            >
-              <option value="">
-                {t("cashbox.batches.filters.selectCustomerType")}
-              </option>
-              {customerTypes.map((ct) => (
-                <option key={ct.id} value={ct.id}>
-                  {ct.code}
-                </option>
-              ))}
-            </Select>
+          <div className={styles.filtersRow}>
+            <div className={styles.inputWrapper}>
+              <label className={styles.labelWithIcon}>
+                <Phone size={14} aria-hidden="true" />
+                <span>{t("cashbox.batches.filters.clientPhone")}</span>
+              </label>
+              <TextField
+                value={tempValues.clientPhone}
+                onChange={(e) =>
+                  setTempValues((previous) => ({
+                    ...previous,
+                    clientPhone: e.target.value,
+                  }))
+                }
+                placeholder={t("cashbox.batches.filters.placeholderClientPhone")}
+              />
+            </div>
+
+            <div className={styles.inputWrapper}>
+              <label className={styles.labelWithIcon}>
+                <UsersRound size={14} aria-hidden="true" />
+                <span>{t("cashbox.batches.filters.customerType")}</span>
+              </label>
+              <Select
+                value={tempValues.clientTypeId}
+                onChange={(e) =>
+                  setTempValues((previous) => ({
+                    ...previous,
+                    clientTypeId: e.target.value,
+                  }))
+                }
+                placeholder={t("cashbox.batches.filters.selectCustomerType")}
+              >
+                {customerTypes.map((customerType) => (
+                  <option key={customerType.id} value={customerType.id}>
+                    {customerType.code}
+                  </option>
+                ))}
+              </Select>
+            </div>
           </div>
-        </div>
+        </section>
 
         <div className={styles.primaryActions}>
-          <Button variant="secondary" onClick={handleReset}>
+          <Button
+            variant="secondary"
+            className={styles.neutralButton}
+            onClick={handleReset}
+          >
+            <RotateCcw size={15} aria-hidden="true" />
             {t("common.reset")}
           </Button>
-          <Button variant="primary" onClick={handleApply}>
+          <Button
+            variant="primary"
+            className={styles.primaryButton}
+            onClick={handleApply}
+          >
+            <Check size={15} aria-hidden="true" />
             {t("common.save")}
           </Button>
         </div>

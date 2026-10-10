@@ -1,16 +1,18 @@
-import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // icons
-import { Plus, Filter, RotateCcw } from "lucide-react";
+import { Pencil, Plus, RotateCcw, Search, X } from "lucide-react";
 
 // ui-kit
 import {
   DataTable,
   Button,
   Select,
-  IconButton,
+  TextField,
   ConfirmationModal,
 } from "@/ui-kit";
 
@@ -51,11 +53,12 @@ export const Customers = () => {
     isSubmitting,
     totalItems = 0,
   } = useAppSelector((state) => state.customers);
+  const showTableSkeleton = useMinimumLoadingDuration(
+    isLoading && customers.length === 0,
+  );
 
   // UI State
   const [isAddDropdownOpen, setIsAddDropdownOpen] = useState<boolean>(false);
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] =
-    useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [selectedCustomerTypeId, setSelectedCustomerTypeId] =
@@ -70,9 +73,6 @@ export const Customers = () => {
   const [filterCustomerTypeId, setFilterCustomerTypeId] = useState<string>("");
   const [filterGender, setFilterGender] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
-
-  const addBtnRef = useRef<HTMLDivElement>(null);
-  const filterBtnRef = useRef<HTMLDivElement>(null);
 
   const loadCustomers = useCallback(() => {
     dispatch(
@@ -95,6 +95,22 @@ export const Customers = () => {
   useEffect(() => {
     loadCustomers();
   }, [loadCustomers]);
+
+  useEffect(() => {
+    if (!isEditModalOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsEditModalOpen(false);
+    };
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isEditModalOpen]);
 
   const handleCreateSubmit = async (data: CreateCustomerRequest) => {
     try {
@@ -121,17 +137,6 @@ export const Customers = () => {
     },
     [dispatch],
   );
-
-  const handleApplyFilters = (filters: {
-    phone: string;
-    customerTypeId: string;
-    gender: number | null;
-  }) => {
-    setFilterPhone(filters.phone);
-    setFilterCustomerTypeId(filters.customerTypeId);
-    setFilterGender(filters.gender);
-    setCurrentPage(0);
-  };
 
   const handleResetFilters = useCallback(() => {
     setFilterPhone("");
@@ -179,68 +184,82 @@ export const Customers = () => {
 
   return (
     <>
-      <SectionHeader title={t("header.customers")} />
-
-      <div className={styles.customersContainer}>
-        <div className={styles.tableSection}>
-          <div className={styles.tableHeader}>
-            <h3 className={styles.tableTitle}>
-              {t("customers.customersList")}
-            </h3>
-            <div className={styles.headerActions}>
-              {hasActiveFilters && (
-                <div
-                  className={styles.addButtonContainer}
-                  onClick={handleResetFilters}
-                >
-                  <IconButton
-                    ariaLabel={t("customers.actions.resetFilters")}
-                    variant="secondary"
-                    size="small"
-                    icon={<RotateCcw size={12} color="#fff" />}
-                  />
-                  <span className={styles.addButtonLabel}>
-                    {t("common.reset")}
-                  </span>
-                </div>
-              )}
-
-              <div
-                ref={filterBtnRef}
-                className={styles.addButtonContainer}
-                onClick={() => setIsFilterDropdownOpen(true)}
+      <SectionHeader
+        title={t("header.customers")}
+        actions={
+          <div className={styles.headerActions}>
+            {hasActiveFilters && (
+              <Button
+                className={`${styles.customerButton} ${styles.neutralButton}`}
+                onClick={handleResetFilters}
+                aria-label={t("customers.actions.resetFilters")}
+                title={t("customers.actions.resetFilters")}
               >
-                <IconButton
-                  ariaLabel={t("customers.actions.openFilters")}
-                  variant="secondary"
-                  size="small"
-                  icon={<Filter size={12} color="#fff" />}
-                />
-                <span className={styles.addButtonLabel}>
-                  {t("common.filters")}
-                </span>
-              </div>
-
-              <div
-                ref={addBtnRef}
-                className={styles.addButtonContainer}
-                onClick={() => setIsAddDropdownOpen(true)}
-              >
-                <IconButton
-                  ariaLabel={t("customers.actions.addCustomer")}
-                  variant="primary"
-                  size="small"
-                  icon={<Plus size={12} color="#0e0f11" />}
-                />
-                <span className={styles.addButtonLabel}>
-                  {t("offers.addOption")}
-                </span>
-              </div>
-            </div>
+                <RotateCcw size={15} />
+                {t("common.reset")}
+              </Button>
+            )}
+            <Button
+              className={`${styles.customerButton} ${styles.primaryButton}`}
+              onClick={() => setIsAddDropdownOpen(true)}
+            >
+              <Plus size={16} />
+              {t("customers.actions.addCustomer")}
+            </Button>
           </div>
+        }
+      />
 
-          <div className={styles.tableWrapper}>
-            {isLoading ? (
+      <main className={styles.customersPage}>
+        <div className={styles.listHeading}>
+          <h2>{t("customers.customersList")}</h2>
+        </div>
+
+        <div className={styles.filters}>
+          <TextField
+            label={t("customers.form.phone")}
+            value={filterPhone}
+            onChange={(event) => {
+              setCurrentPage(0);
+              setFilterPhone(event.target.value);
+            }}
+            icon={<Search size={15} />}
+          />
+          <Select
+            label={t("customers.form.customerType")}
+            value={filterCustomerTypeId}
+            onChange={(event) => {
+              setCurrentPage(0);
+              setFilterCustomerTypeId(event.target.value);
+            }}
+          >
+            <option value="">{t("customers.form.allTypes")}</option>
+            {customerTypes.map((type) => (
+              <option key={type.id} value={type.id?.toString()}>
+                {type.code}
+              </option>
+            ))}
+          </Select>
+          <Select
+            label={t("customers.form.gender")}
+            value={filterGender === null ? "" : String(filterGender)}
+            onChange={(event) => {
+              setCurrentPage(0);
+              setFilterGender(
+                event.target.value === "" ? null : Number(event.target.value),
+              );
+            }}
+          >
+            <option value="">{t("common.all")}</option>
+            <option value="0">{t("common.gender.unknown")}</option>
+            <option value="1">{t("common.gender.male")}</option>
+            <option value="2">{t("common.gender.female")}</option>
+          </Select>
+        </div>
+
+        <div className={styles.tableWrapper}>
+          <div className={styles.tableShell}>
+            {showTableSkeleton ? (
               <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
                 <div className={styles.tableSkeletonHeader}>
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -260,6 +279,7 @@ export const Customers = () => {
               <DataTable
                 data={customers ?? []}
                 columns={columns}
+                isLoading={isLoading}
                 pageSize={PAGE_SIZE}
                 manualPagination
                 pageCount={Math.ceil((totalItems ?? 0) / PAGE_SIZE)}
@@ -268,51 +288,46 @@ export const Customers = () => {
                   right: ["actions"],
                 }}
                 onPaginationChange={setCurrentPage}
+                noResultsText={t("customers.emptyState")}
+                loadingText={t("customers.loading")}
               />
             )}
           </div>
         </div>
-      </div>
+        <div className={styles.resultCount}>
+          {t("customers.results", { shown: customers.length, total: totalItems })}
+        </div>
+      </main>
 
       <CustomersDropdown
-        type="add"
         open={isAddDropdownOpen}
-        anchorRef={addBtnRef}
         onOpenChange={setIsAddDropdownOpen}
         onSave={handleCreateSubmit}
         isSubmitting={isSubmitting}
       />
 
-      <CustomersDropdown
-        type="filter"
-        open={isFilterDropdownOpen}
-        anchorRef={filterBtnRef}
-        onOpenChange={setIsFilterDropdownOpen}
-        customerTypes={customerTypes}
-        filters={{
-          phone: filterPhone,
-          customerTypeId: filterCustomerTypeId,
-          gender: filterGender,
-        }}
-        onApply={handleApplyFilters}
-        onReset={handleResetFilters}
-      />
-
-      {isEditModalOpen && editingCustomer && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>
-                {t("customers.editCustomer")}
-              </h3>
+      {isEditModalOpen && editingCustomer && createPortal(
+        <div className={styles.backdrop} onMouseDown={(event) => event.currentTarget === event.target && setIsEditModalOpen(false)}>
+          <aside className={styles.drawer} role="dialog" aria-modal="true" aria-labelledby="customer-edit-title" onMouseDown={(event) => event.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <div className={styles.headerIcon} aria-hidden="true">
+                <Pencil size={19} />
+              </div>
+              <div className={styles.headerCopy}>
+                <span className={styles.eyebrow}>{t("header.customers")}</span>
+                <h2 id="customer-edit-title">{t("customers.editCustomer")}</h2>
+              </div>
               <button
-                className={styles.modalClose}
+                type="button"
+                className={styles.closeButton}
                 onClick={() => setIsEditModalOpen(false)}
+                aria-label={t("common.close")}
+                title={t("common.close")}
               >
-                ×
+                <X size={18} />
               </button>
             </div>
-            <div className={styles.modalBody}>
+            <div className={styles.drawerBody}>
               <div className={styles.modalInfo}>
                 <p>
                   <strong>{t("customers.form.phone")}:</strong>{" "}
@@ -335,24 +350,25 @@ export const Customers = () => {
                 ))}
               </Select>
             </div>
-            <div className={styles.modalActions}>
+            <div className={styles.drawerFooter}>
               <Button
-                variant="secondary"
+                className={`${styles.customerButton} ${styles.neutralButton}`}
                 onClick={() => setIsEditModalOpen(false)}
                 disabled={isSubmitting}
               >
                 {t("common.cancel")}
               </Button>
               <Button
-                variant="primary"
+                className={`${styles.customerButton} ${styles.primaryButton}`}
                 onClick={handleSaveEdit}
                 disabled={isSubmitting || !selectedCustomerTypeId}
               >
                 {t("common.save")}
               </Button>
             </div>
-          </div>
-        </div>
+          </aside>
+        </div>,
+        document.body,
       )}
 
       {!!deletingCustomer && (

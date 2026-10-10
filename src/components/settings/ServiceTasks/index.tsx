@@ -4,6 +4,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 import { Button, ConfirmationModal, DataTable, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -34,6 +35,7 @@ export const ServiceTasks = () => {
 
   const [rows, setRows] = useState<OtherExpenseItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingRow, setEditingRow] = useState<OtherExpenseItem | null>(null);
   const [deletingRow, setDeletingRow] = useState<OtherExpenseItem | null>(null);
@@ -286,7 +288,7 @@ export const ServiceTasks = () => {
         )}
       </div>
 
-      {isLoading ? (
+      {showTableSkeleton ? (
         <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
           <div className={styles.tableSkeletonHeader}>
             <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

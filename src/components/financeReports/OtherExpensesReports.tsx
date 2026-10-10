@@ -4,13 +4,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-import { DataTable } from "@/ui-kit";
+import { FinanceDataTable as DataTable } from "./FinanceDataTable";
 import { getOtherExpensesReport } from "@/services/otherExpenses";
 import {
   OtherExpenseLocationType,
   type OtherExpenseItem,
   type OtherExpenseReportItem,
 } from "@/types/otherExpenses";
+import { FinanceReportState } from "./FinanceReportState";
 
 import styles from "./FinanceReports.module.css";
 
@@ -119,9 +120,9 @@ export const OtherExpensesReports = () => {
 
       <div className={styles.result}>
         {isLoading ? (
-          <div className={styles.info}>{t("common.loading")}</div>
+          <FinanceReportState loading label={t("common.loading")} />
         ) : monthlyRows.length === 0 ? (
-          <div className={styles.info}>{t("financeReports.otherExpenses.empty")}</div>
+          <FinanceReportState loading={false} label={t("financeReports.otherExpenses.empty")} />
         ) : (
           <DataTable data={monthlyRows} columns={columns} pageSize={10} />
         )}

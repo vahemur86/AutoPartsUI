@@ -1,167 +1,57 @@
-import { type FC, useEffect, useMemo, useState, useRef } from "react";
+import { type FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-
-// ui-kit
-import { DataTable, IconButton } from "@/ui-kit";
-
-// icons
-import { Filter } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  FileCheck2,
+  UserRound,
+} from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  fetchZReports,
-  fetchZReport,
-  clearSelection,
-} from "@/store/slices/cash/cashboxSessionsSlice";
+import { fetchZReports } from "@/store/slices/cash/cashboxSessionsSlice";
 
 // components
 import { FilterZReportsDropdown } from "./FilterZReportsDropdown";
 
-// columns & utils
-import { getZReportColumns } from "./columns";
+// types & utils
+import type { ZReport } from "@/types/cash";
 import { getApiErrorMessage } from "@/utils";
-import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./ZReports.module.css";
 
 const PAGE_SIZE = 10;
 
-const ZReportDetailView: FC<{ sessionId: number }> = ({ sessionId }) => {
-  const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const { selectedZReport, isLoading } = useAppSelector(
-    (state) => state.cashboxSessions,
-  );
+const formatDateTime = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
 
-  useEffect(() => {
-    if (!isLoading && selectedZReport?.sessionId !== sessionId) {
-      dispatch(fetchZReport({ sessionId }))
-        .unwrap()
-        .catch((error) => {
-          toast.error(
-            getApiErrorMessage(error, t("cashbox.errors.failedToFetchZReport")),
-          );
-        });
-    }
-  }, [sessionId, dispatch, t, selectedZReport?.sessionId, isLoading]);
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
-  const getDuration = (start: string, end: string) => {
-    const durationMs = new Date(end).getTime() - new Date(start).getTime();
-    const hours = Math.floor(durationMs / (1000 * 60 * 60));
-    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
-  };
+const formatAmd = (value: number) => `${value.toLocaleString()} AMD`;
 
-  if (isLoading && selectedZReport?.sessionId !== sessionId) {
-    return (
-      <div className={styles.detailSkeleton} aria-busy="true" aria-live="polite">
-        <div className={styles.detailSkeletonHeader}>
-          <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
-        </div>
-        <div className={styles.detailSkeletonGrid}>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className={styles.detailSkeletonCard}>
-              <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+const formatDuration = (report: ZReport, t: ReturnType<typeof useTranslation>["t"]) => {
+  const durationMs = new Date(report.closedAt).getTime() - new Date(report.openedAt).getTime();
+  if (!Number.isFinite(durationMs) || durationMs < 0) return "-";
 
-  if (!selectedZReport || selectedZReport.sessionId !== sessionId) {
-    return <div className={styles.detailError}>{t("common.noData")}</div>;
-  }
-
-  return (
-    <div className={styles.detailContainer}>
-      <div className={styles.detailSection}>
-        <h4 className={styles.sectionTitle}>
-          {t("cashbox.zReports.details.timeline")}
-        </h4>
-        <div className={styles.detailGrid}>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.columns.openedAt")}</span>
-            <strong>
-              {new Date(selectedZReport.openedAt).toLocaleString()}
-            </strong>
-          </div>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.columns.closedAt")}</span>
-            <strong>
-              {new Date(selectedZReport.closedAt).toLocaleString()}
-            </strong>
-          </div>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.details.duration")}</span>
-            <strong>
-              {getDuration(selectedZReport.openedAt, selectedZReport.closedAt)}
-            </strong>
-          </div>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.details.operator")}</span>
-            <strong>#{selectedZReport.operatorUserId}</strong>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.detailSection}>
-        <h4 className={styles.sectionTitle}>
-          {t("cashbox.zReports.details.financials")}
-        </h4>
-        <div className={styles.detailGrid}>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.columns.totalPurchases")}</span>
-            <strong>
-              {selectedZReport.totalPurchasesAmd.toLocaleString()} AMD
-            </strong>
-          </div>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.columns.cashIn")}</span>
-            <strong className={styles.positiveText}>
-              +{selectedZReport.totalCashInAmd.toLocaleString()} AMD
-            </strong>
-          </div>
-
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.details.catalystCashOut")}</span>
-            <strong className={styles.negativeText}>
-              -{selectedZReport.catalystCashOutAmd.toLocaleString()} AMD
-            </strong>
-          </div>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.details.ironCashOut")}</span>
-            <strong className={styles.negativeText}>
-              -{selectedZReport.ironCashOutAmd.toLocaleString()} AMD
-            </strong>
-          </div>
-
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.columns.cashOut")}</span>
-            <strong className={styles.negativeText}>
-              -{selectedZReport.totalCashOutAmd.toLocaleString()} AMD
-            </strong>
-          </div>
-          <div className={styles.detailItem}>
-            <span>{t("cashbox.zReports.details.finalDiff")}</span>
-            <strong
-              className={
-                selectedZReport.diffPurchasesVsCashOutAmd < 0
-                  ? styles.negativeText
-                  : styles.positiveText
-              }
-            >
-              {selectedZReport.diffPurchasesVsCashOutAmd.toLocaleString()} AMD
-            </strong>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const totalMinutes = Math.floor(durationMs / 60_000);
+  return t("cashbox.zReports.details.durationFormat", {
+    hours: Math.floor(totalMinutes / 60),
+    minutes: totalMinutes % 60,
+  });
 };
 
 export const ZReports: FC = () => {
@@ -172,7 +62,6 @@ export const ZReports: FC = () => {
   );
 
   const [currentPage, setCurrentPage] = useState(0);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{
     fromDate: string | null;
     toDate: string | null;
@@ -180,8 +69,6 @@ export const ZReports: FC = () => {
     fromDate: null,
     toDate: null,
   });
-  const filterAnchorRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     dispatch(
       fetchZReports({
@@ -198,9 +85,6 @@ export const ZReports: FC = () => {
         );
       });
 
-    return () => {
-      dispatch(clearSelection());
-    };
   }, [dispatch, t, activeFilters, currentPage]);
 
   const handleApplyFilters = (filters: {
@@ -209,80 +93,209 @@ export const ZReports: FC = () => {
   }) => {
     setActiveFilters(filters);
     setCurrentPage(0);
-    setIsFilterOpen(false);
   };
 
-  const columns = useMemo(() => getZReportColumns(), []);
+  const reports = zReports?.results ?? [];
   const totalPages = useMemo(
     () => Math.ceil((zReports?.totalItems || 0) / PAGE_SIZE),
     [zReports?.totalItems],
   );
+  const totalItems = zReports?.totalItems || 0;
+  const shownFrom = totalItems === 0 ? 0 : currentPage * PAGE_SIZE + 1;
+  const shownTo = Math.min((currentPage + 1) * PAGE_SIZE, totalItems);
 
   return (
     <div className={styles.zReportsWrapper}>
       <header className={styles.header}>
-        <h1>{t("cashbox.zReports.title")}</h1>
-        <div className={styles.headerActions}>
-          <div
-            ref={filterAnchorRef}
-            className={styles.filterButtonWrapper}
-            onClick={() => setIsFilterOpen(true)}
-          >
-            <IconButton
-              size="small"
-              variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
-              ariaLabel={t("common.filters")}
-            />
-            <span className={styles.filterButtonText}>
-              {t("common.filters")}
-            </span>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true">
+            <FileCheck2 size={19} />
+          </span>
+          <div>
+            <span className={styles.eyebrow}>{t("reports.navigationGroups.cashbox")}</span>
+            <h1>{t("cashbox.zReports.title")}</h1>
           </div>
         </div>
       </header>
 
       <FilterZReportsDropdown
-        open={isFilterOpen}
-        anchorRef={filterAnchorRef}
-        onOpenChange={setIsFilterOpen}
         onSave={handleApplyFilters}
       />
 
-      <div className={styles.tableContainer}>
-        {isLoading && !zReports?.results?.length ? (
-          <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
-            <div className={styles.tableSkeletonHeader}>
-              <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
-              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-            </div>
-            <div className={styles.tableSkeletonRows}>
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className={styles.tableSkeletonRow}>
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+      <div className={styles.reportList}>
+        {isLoading && reports.length === 0 ? (
+          <div className={styles.loadingList} aria-busy="true" aria-live="polite">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div className={styles.reportSkeleton} key={index}>
+                <div className={styles.skeletonHeader}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
                 </div>
-              ))}
-            </div>
+                <div className={styles.skeletonMetrics}>
+                  {Array.from({ length: 4 }).map((__, metricIndex) => (
+                    <div className={styles.skeletonMetric} key={metricIndex}>
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
+                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : reports.length === 0 ? (
+          <div className={styles.emptyState}>
+            <FileCheck2 size={22} aria-hidden="true" />
+            <span>{t("common.noData")}</span>
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={zReports?.results || []}
-            pageSize={PAGE_SIZE}
-            manualPagination
-            pageCount={totalPages}
-            pageIndex={currentPage}
-            getRowClassName={(row) =>
-              checkIsToday(row.openedAt) ? styles.todayRow : ""
-            }
-            onPaginationChange={setCurrentPage}
-            renderSubComponent={({ row }) => (
-              <ZReportDetailView sessionId={row.original.sessionId} />
-            )}
-          />
+          reports.map((report) => (
+            <ZReportCard key={report.id} report={report} />
+          ))
         )}
       </div>
+
+      <footer className={styles.listFooter}>
+        <span className={styles.resultCount}>
+          {t("common.results", {
+            from: shownFrom,
+            to: shownTo,
+            total: totalItems,
+          })}
+        </span>
+        {totalPages > 1 && (
+          <nav className={styles.pagination} aria-label={t("common.page")}>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
+              disabled={isLoading || currentPage === 0}
+              aria-label={t("common.previous")}
+            >
+              <ChevronLeft size={16} />
+              {t("common.previous")}
+            </button>
+            <span>
+              {t("common.page")} {currentPage + 1} {t("common.of")} {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages - 1, page + 1))}
+              disabled={isLoading || currentPage >= totalPages - 1}
+              aria-label={t("common.next")}
+            >
+              {t("common.next")}
+              <ChevronRight size={16} />
+            </button>
+          </nav>
+        )}
+      </footer>
     </div>
+  );
+};
+
+const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
+  const { t } = useTranslation();
+  const differenceClass = report.diffPurchasesVsCashOutAmd < 0
+    ? styles.negative
+    : report.diffPurchasesVsCashOutAmd > 0
+      ? styles.positive
+      : "";
+
+  return (
+    <article className={styles.reportCard}>
+      <header className={styles.cardHeader}>
+        <div className={styles.reportIdentity}>
+          <span className={styles.reportIcon} aria-hidden="true">
+            <FileCheck2 size={19} />
+          </span>
+          <div className={styles.identityCopy}>
+            <div className={styles.reportTitleLine}>
+              <h2>{t("cashbox.zReports.details.reportNumber", { id: report.id })}</h2>
+              <span className={styles.generatedBadge}>
+                <CheckCircle2 size={13} aria-hidden="true" />
+                {t("cashbox.zReports.details.generated")}
+              </span>
+            </div>
+            <div className={styles.reportMeta}>
+              <span>{t("cashbox.cashboxReport.registerLabel")} #{report.cashBoxId}</span>
+              <span>{t("cashbox.zReports.details.sessionLabel")} #{report.sessionId}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.operatorInfo}>
+          <span>{t("cashbox.zReports.details.operator")}</span>
+          <strong>
+            <UserRound size={14} aria-hidden="true" />
+            #{report.operatorUserId}
+          </strong>
+        </div>
+      </header>
+
+      <div className={styles.timeline}>
+        <div className={styles.timePoint}>
+          <span className={styles.timeLabel}>
+            <Clock3 size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.openedAt")}
+          </span>
+          <time>{formatDateTime(report.openedAt)}</time>
+        </div>
+        <span className={styles.timelineLine} aria-hidden="true" />
+        <div className={styles.timePoint}>
+          <span className={styles.timeLabel}>
+            <CheckCircle2 size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.closedAt")}
+          </span>
+          <time>{formatDateTime(report.closedAt)}</time>
+        </div>
+        <div className={styles.duration}>
+          <span>{t("cashbox.zReports.details.duration")}</span>
+          <strong>{formatDuration(report, t)}</strong>
+        </div>
+      </div>
+
+      <div className={styles.metricsGrid}>
+        <div className={styles.metric}>
+          <span>{t("cashbox.zReports.columns.intakeCount")}</span>
+          <strong>{report.intakeCount.toLocaleString()}</strong>
+        </div>
+        <div className={styles.metric}>
+          <span>{t("cashbox.zReports.columns.totalPurchases")}</span>
+          <strong>{formatAmd(report.totalPurchasesAmd)}</strong>
+        </div>
+        <div className={`${styles.metric} ${styles.cashInMetric}`}>
+          <span>
+            <ArrowDownLeft size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.cashIn")}
+          </span>
+          <strong>
+            {report.totalCashInAmd > 0 ? "+" : ""}
+            {formatAmd(report.totalCashInAmd)}
+          </strong>
+        </div>
+        <div className={`${styles.metric} ${styles.cashOutMetric}`}>
+          <span>
+            <ArrowUpRight size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.cashOut")}
+          </span>
+          <strong>
+            {report.totalCashOutAmd > 0 ? "-" : ""}
+            {formatAmd(report.totalCashOutAmd)}
+          </strong>
+        </div>
+        <div className={`${styles.metric} ${styles.differenceMetric}`}>
+          <span>{t("cashbox.zReports.columns.difference")}</span>
+          <strong className={differenceClass}>
+            {formatAmd(report.diffPurchasesVsCashOutAmd)}
+          </strong>
+        </div>
+      </div>
+
+      <div className={styles.cashOutBreakdown}>
+        <span>{t("cashbox.zReports.details.catalystCashOut")}</span>
+        <strong>{formatAmd(report.catalystCashOutAmd)}</strong>
+        <span>{t("cashbox.zReports.details.ironCashOut")}</span>
+        <strong>{formatAmd(report.ironCashOutAmd)}</strong>
+      </div>
+    </article>
   );
 };

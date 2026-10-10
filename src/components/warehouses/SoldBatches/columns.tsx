@@ -1,10 +1,10 @@
 import type { MouseEvent } from "react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import i18next from "i18next";
-import { Button } from "@/ui-kit";
+import { Banknote, ChevronDown, ChevronRight } from "lucide-react";
+import { Button, IconButton } from "@/ui-kit";
 import type { PowderSale } from "@/types/warehouses/salesLots";
 import styles from "./SoldBatches.module.css";
-import { ChevronDown, ChevronRight } from "lucide-react";
 
 const columnHelper = createColumnHelper<PowderSale>();
 
@@ -24,36 +24,21 @@ export const getSoldBatchesColumns = ({
     id: "expander",
     header: () => null,
     cell: ({ row }) => (
-      <button
+      <IconButton
         type="button"
+        variant="secondary"
+        size="small"
+        icon={row.getIsExpanded() ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        ariaLabel={i18next.t("common.details")}
+        title={i18next.t("common.details")}
+        className={styles.detailsButton}
         onClick={row.getToggleExpandedHandler()}
-        className={styles.expandTrigger}
-      >
-        {row.getIsExpanded() ? (
-          <ChevronDown size={18} />
-        ) : (
-          <ChevronRight size={18} />
-        )}
-      </button>
+      />
     ),
   }),
   columnHelper.accessor("salesLotId", {
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
-  }),
-
-  columnHelper.display({
-    id: "special",
-    header: () => null,
-    cell: ({ row }) =>
-      row.original.hasSpecialCustomerLots ? (
-        <span
-          className={styles.specialBadge}
-          title={i18next.t("warehouses.totalBatches.lotType.special")}
-        >
-          {i18next.t("warehouses.totalBatches.lotType.special")}
-        </span>
-      ) : null,
   }),
 
   columnHelper.accessor("currencyCode", {
@@ -89,29 +74,19 @@ export const getSoldBatchesColumns = ({
     cell: (info) => `${info.getValue()} kg`,
   }),
 
-  columnHelper.accessor("createdAt", {
-    header: i18next.t("warehouses.soldBatches.columns.createdAt"),
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-  }),
-
   columnHelper.display({
     id: "actions",
     header: i18next.t("common.actions"),
     cell: ({ row }) => (
-      <div style={{ display: "flex", gap: "12px" }}>
+      <div className={styles.actionCell}>
         <Button
           variant="primary"
           size="small"
+          className={styles.adjustButton}
           onClick={(e) => onEdit(row.original, e)}
         >
-          {i18next.t("common.correct")}
+          <Banknote size={15} aria-hidden="true" />
+          {i18next.t("warehouses.soldBatches.editSoldBatch")}
         </Button>
       </div>
     ),

@@ -1,29 +1,53 @@
 .header {
-  padding: 19px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.15);
+  background: rgba(196, 169, 106, 0.035);
+}
+
+.headerIcon {
+  display: grid;
+  width: 32px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.08);
 }
 
 .title {
-  font-size: 16px;
+  color: #eee9db;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--color-white);
 }
 
 .dropdownContentOverride {
+  width: min(460px, calc(100vw - 28px)) !important;
+  padding: 0 !important;
   overflow: visible !important;
+  color: #eee9db;
+  border: 1px solid rgba(196, 169, 106, 0.24) !important;
+  border-radius: 8px !important;
+  background: linear-gradient(150deg, #1c231e, #101512) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45) !important;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
   overflow: visible;
+  padding: 16px 18px 18px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 16px;
+  gap: 14px;
   overflow: visible;
 }
 
@@ -42,40 +66,111 @@
 .datePickerWrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
-.label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-white);
+.labelWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b3ad99;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.labelWithIcon svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.datePickerWrapper :global(.date-picker-input) {
+  width: 100%;
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  color: #e3e5de;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 12px;
+}
+
+.datePickerWrapper :global(.date-picker-input::placeholder) {
+  color: #899389;
+}
+
+.datePickerWrapper :global(.date-picker-input:focus) {
+  border-color: rgba(196, 169, 106, 0.62);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.11);
+}
+
+.fullRow :global([class*="textFieldLabel"]) {
+  color: #b3ad99;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fullRow :global([class*="textFieldContainer"]) {
+  min-height: 38px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.fullRow :global([class*="textFieldContainer"]:hover),
+.fullRow :global([class*="textFieldContainer"]:focus-within) {
+  border-color: rgba(196, 169, 106, 0.62);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fullRow :global([class*="textFieldInput"]) {
+  color: #e3e5de;
+  font-size: 12px;
+}
+
+.fullRow :global([class*="textFieldIcon"]) {
+  color: #c4a96a;
 }
 
 .actionswithoutDelete {
   display: flex;
   flex-direction: column-reverse;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(196, 169, 106, 0.13);
 }
 
 .primaryActions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 }
 
 .primaryActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   flex: 1;
+  min-height: 36px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.primaryActions button:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
 }
 
 /* Desktop */
 @media (min-width: 768px) {
   .header {
-    display: block;
+    display: flex;
   }
 
   .content {
-    padding: 16px 24px 24px;
+    padding: 16px 18px 18px;
   }
 
   .actionswithoutDelete {
@@ -100,8 +195,8 @@
   }
 
   .content {
-    padding: 0;
-    gap: 24px;
+    padding: 14px;
+    gap: 18px;
   }
 
   .grid {
@@ -116,8 +211,8 @@
 
   .actionswithoutDelete {
     flex-direction: column-reverse;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 8px;
+    padding-top: 12px;
   }
 
   .primaryActions {

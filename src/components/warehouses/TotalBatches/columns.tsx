@@ -1,11 +1,10 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { Boxes, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 import i18next from "i18next";
-
-// utils
-import { createStatusMap, getStatusConfig } from "@/utils/statusMapping";
 
 // components
 import { SelectedKgCell } from "./SelectedKg";
+import { IconButton } from "@/ui-kit";
 
 // styles
 import styles from "./TotalBatches.module.css";
@@ -17,9 +16,24 @@ const columnHelper = createColumnHelper<InventoryLot>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => {
-  const STATUS_MAP = createStatusMap(styles);
-
   return [
+  columnHelper.display({
+    id: "details",
+    header: () => null,
+    size: 42,
+    cell: ({ row }) => (
+      <IconButton
+        type="button"
+        variant="secondary"
+        size="small"
+        icon={row.getIsExpanded() ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        ariaLabel={i18next.t("common.details")}
+        title={i18next.t("common.details")}
+        className={styles.detailsButton}
+        onClick={row.getToggleExpandedHandler()}
+      />
+    ),
+  }),
   columnHelper.accessor("id", {
     header: i18next.t("warehouses.totalBatches.columns.id"),
     cell: (info) => `#${info.getValue()}`,
@@ -30,12 +44,20 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => {
     header: i18next.t("warehouses.totalBatches.columns.lotType"),
     cell: ({ row }) =>
       row.original.isSpecialCustomerLot ? (
-        <span className={`${styles.badge} ${styles.badgeWarning}`}>
-          {i18next.t("warehouses.totalBatches.lotType.special")}
+        <span
+          className={`${styles.badge} ${styles.badgeWarning}`}
+          title={i18next.t("warehouses.totalBatches.lotType.special")}
+        >
+          <Sparkles size={13} aria-hidden="true" />
+          {i18next.t("warehouses.totalBatches.lotType.specialShort")}
         </span>
       ) : (
-        <span className={`${styles.badge} ${styles.badgeInfo}`}>
-          {i18next.t("warehouses.totalBatches.lotType.general")}
+        <span
+          className={`${styles.badge} ${styles.badgeInfo}`}
+          title={i18next.t("warehouses.totalBatches.lotType.general")}
+        >
+          <Boxes size={13} aria-hidden="true" />
+          {i18next.t("warehouses.totalBatches.lotType.generalShort")}
         </span>
       ),
   }),
@@ -111,38 +133,5 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => {
     cell: (info) => `${info.getValue()} g`,
   }),
 
-  columnHelper.accessor("status", {
-    header: i18next.t("warehouses.totalBatches.columns.status"),
-    cell: (info) => {
-      const statusValue = info.getValue();
-      const statusConfig = getStatusConfig(statusValue, STATUS_MAP);
-      return (
-        <span className={statusConfig.className}>{statusConfig.label}</span>
-      );
-    },
-  }),
-
-  columnHelper.accessor("createdAt", {
-    header: i18next.t("warehouses.totalBatches.columns.createdAt"),
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-  }),
-  columnHelper.accessor("updatedAt", {
-    header: i18next.t("warehouses.totalBatches.columns.updatedAt"),
-    cell: (info) =>
-      new Date(info.getValue()).toLocaleString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-  }),
 ];
 };

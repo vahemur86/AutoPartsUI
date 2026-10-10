@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Eye, Pencil, Plus } from "lucide-react";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { SectionHeader } from "@/components/common";
 import { Button, DataTable, Select, TextField } from "@/ui-kit";
@@ -9,6 +10,8 @@ import {
   getReferralPersons,
   type ReferralPersonDto,
 } from "@/services/referralPersons";
+import styles from "./ReferralPersons.module.css";
+import actionStyles from "./ReferralActions.module.css";
 
 export const ReferralPersons = () => {
   const { t } = useTranslation();
@@ -21,7 +24,7 @@ export const ReferralPersons = () => {
   const [search, setSearch] = useState("");
   const [totalItems, setTotalItems] = useState(0);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await getReferralPersons({
@@ -35,13 +38,13 @@ export const ReferralPersons = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filterStatus, page, pageSize, search]);
 
   useEffect(() => {
     void load();
-  }, [page, pageSize, filterStatus, search]);
+  }, [load]);
 
-  const columns = useMemo(
+  const columns = useMemo<ColumnDef<ReferralPersonDto, unknown>[]>(
     () => [
       { accessorKey: "id", header: t("referralPerson.fields.id") },
       { accessorKey: "code", header: t("referralPerson.fields.code") },
@@ -51,17 +54,8 @@ export const ReferralPersons = () => {
       {
         accessorKey: "status",
         header: t("referralPerson.fields.status"),
-        cell: ({ row }: any) => (
-          <span
-            style={{
-              display: "inline-flex",
-              padding: "4px 10px",
-              borderRadius: 999,
-              background: row.original.status === "Active" ? "#d1fae5" : "#e5e7eb",
-              color: row.original.status === "Active" ? "#065f46" : "#374151",
-              fontWeight: 600,
-            }}
-          >
+        cell: ({ row }: CellContext<ReferralPersonDto, unknown>) => (
+          <span className={`${styles.status} ${row.original.status === "Active" ? styles.statusActive : styles.statusInactive}`}>
             {t(`referralPerson.statuses.${String(row.original.status).toLowerCase()}`, { defaultValue: row.original.status })}
           </span>
         ),
@@ -69,14 +63,32 @@ export const ReferralPersons = () => {
       {
         id: "actions",
         header: t("common.actions"),
-        cell: ({ row }: any) => (
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/referral-persons/${row.original.id}`)}>
-              {t("referralPerson.actions.view")}
-            </Button>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/referral-persons/${row.original.id}/edit`)}>
-              {t("referralPerson.actions.edit")}
-            </Button>
+        cell: ({ row }: CellContext<ReferralPersonDto, unknown>) => (
+          <div className={styles.rowActions}>
+            <button
+              type="button"
+              className={styles.iconAction}
+              onClick={(event) => {
+                event.stopPropagation();
+                navigate(`/referral-persons/${row.original.id}`);
+              }}
+              aria-label={t("referralPerson.actions.view")}
+              title={t("referralPerson.actions.view")}
+            >
+              <Eye size={16} />
+            </button>
+            <button
+              type="button"
+              className={styles.iconAction}
+              onClick={(event) => {
+                event.stopPropagation();
+                navigate(`/referral-persons/${row.original.id}/edit`);
+              }}
+              aria-label={t("referralPerson.actions.edit")}
+              title={t("referralPerson.actions.edit")}
+            >
+              <Pencil size={15} />
+            </button>
           </div>
         ),
       },
@@ -85,23 +97,20 @@ export const ReferralPersons = () => {
   );
 
   return (
-    <div style={{ display: "grid", gap: 16, padding: 24 }}>
+    <div className={styles.page}>
       <SectionHeader
         title={t("referralPerson.title")}
         actions={
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <Button variant="secondary" onClick={() => navigate("/commissions")}>
-              {t("referralPerson.actions.commissions")}
-            </Button>
-            <Button onClick={() => navigate("/referral-persons/create")}>
-              <Plus size={14} />
+          <div className={styles.headerActions}>
+            <Button className={`${styles.createButton} ${actionStyles.referralButton} ${actionStyles.referralPrimary}`} onClick={() => navigate("/referral-persons/create")}>
+              <Plus size={16} strokeWidth={2.2} />
               {t("referralPerson.actions.create")}
             </Button>
           </div>
         }
       />
 
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+      <div className={styles.filters}>
         <TextField
           label={t("referralPerson.fields.search")}
           value={search}
@@ -138,17 +147,19 @@ export const ReferralPersons = () => {
         </Select>
       </div>
 
-      <DataTable
-        columns={columns as any}
-        data={items}
-        isLoading={isLoading}
-        pageSize={pageSize}
-        manualPagination={false}
-        noResultsText={t("referralPerson.list.empty")}
-        loadingText={t("referralPerson.list.loading")}
-      />
+      <div className={styles.tableShell}>
+        <DataTable
+          columns={columns}
+          data={items}
+          isLoading={isLoading}
+          pageSize={pageSize}
+          manualPagination={false}
+          noResultsText={t("referralPerson.list.empty")}
+          loadingText={t("referralPerson.list.loading")}
+        />
+      </div>
 
-      <div style={{ fontSize: 14, color: "#475569" }}>
+      <div className={styles.resultCount}>
         {t("referralPerson.list.showing", { shown: items.length, total: totalItems })}
       </div>
     </div>

@@ -1,0 +1,62 @@
+.referralButton {
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-weight: 650;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.referralButton.referralPrimary {
+  color: #17170f;
+  border-color: rgba(232, 210, 151, 0.72);
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.13);
+}
+
+.referralButton.referralPrimary:hover:not(:disabled) {
+  color: #17170f;
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+  box-shadow: 0 6px 18px rgba(170, 137, 65, 0.2);
+}
+
+.referralButton.referralNeutral {
+  color: #d2d7cf;
+  border-color: rgba(196, 169, 106, 0.22);
+  background: rgba(196, 169, 106, 0.055);
+}
+
+.referralButton.referralNeutral:hover:not(:disabled) {
+  color: #f1e6c5;
+  border-color: rgba(196, 169, 106, 0.46);
+  background: rgba(196, 169, 106, 0.11);
+}
+
+.referralButton.referralDanger {
+  color: #e5b1aa;
+  border-color: rgba(184, 104, 94, 0.32);
+  background: rgba(126, 57, 51, 0.2);
+}
+
+.referralButton.referralDanger:hover:not(:disabled) {
+  color: #f0c3bd;
+  border-color: rgba(204, 122, 111, 0.56);
+  background: rgba(143, 62, 54, 0.32);
+}
+
+.referralButton.referralSuccess {
+  color: #b2d4ad;
+  border-color: rgba(121, 174, 116, 0.3);
+  background: rgba(61, 112, 60, 0.2);
+}
+
+.referralButton.referralSuccess:hover:not(:disabled) {
+  color: #c9e4c4;
+  border-color: rgba(137, 193, 131, 0.52);
+  background: rgba(68, 126, 66, 0.3);
+}
+
+.referralButton:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}

@@ -1,0 +1,155 @@
+.page {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 22px 24px 30px;
+}
+
+.headerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.headerActions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.detailPanel,
+.actionPanel,
+.loadingState {
+  width: min(100%, 1080px);
+  justify-self: center;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(22, 28, 23, 0.94), rgba(13, 17, 14, 0.96));
+}
+
+.detailPanel {
+  display: grid;
+  gap: 16px;
+  padding: 17px;
+}
+
+.panelHeading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.14);
+}
+
+.panelIcon {
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #d4bc7c;
+  border: 1px solid rgba(196, 169, 106, 0.28);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.07);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.detailItem {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 68px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.detailItem span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #abb2a9;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.detailItem span svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.detailItem strong {
+  overflow-wrap: anywhere;
+  color: #e6e7df;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.actionPanel {
+  display: grid;
+  gap: 15px;
+  padding: 17px;
+}
+
+.actionPanel h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #e7dfc9;
+  font-size: 14px;
+}
+
+.actionPanel h3 svg {
+  color: #c4a96a;
+}
+
+.actionFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.actionFields > :last-child {
+  grid-column: 1 / -1;
+}
+
+.loadingState {
+  padding: 24px;
+  color: #c4c9c2;
+}
+
+@media (max-width: 900px) {
+  .detailGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 16px 12px 24px;
+  }
+
+  .detailPanel,
+  .actionPanel {
+    padding: 12px;
+  }
+
+  .detailGrid,
+  .actionFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actionFields > :last-child {
+    grid-column: auto;
+  }
+}

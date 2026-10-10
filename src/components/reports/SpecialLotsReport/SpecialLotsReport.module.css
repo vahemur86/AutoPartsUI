@@ -1,79 +1,417 @@
 .reportWrapper {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 20px;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
 }
 
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.titleIcon {
+  display: grid;
+  width: 38px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.07);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: #a69f89;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .header h1 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-white);
+  color: #eee9db;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.3;
   margin: 0;
+}
+
+.filterPanel {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(28, 35, 30, 0.72), rgba(16, 21, 18, 0.58));
+}
+
+.filterPanelTitle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #d2bf8a;
+  font-size: 11px;
+  font-weight: 650;
 }
 
 .filters {
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 10px;
 }
 
 .filterItem {
-  min-width: 200px;
+  flex: 1 1 180px;
+  min-width: min(180px, 100%);
+}
+
+.filterItem :global([class*="textFieldLabel"]),
+.filterItem :global([class*="selectLabel"]) {
+  color: #b3ad99;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.filterItem :global([class*="textFieldContainer"]),
+.filterItem :global([class*="selectContainer"]) {
+  min-height: 38px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.filterItem :global([class*="textFieldContainer"]:hover),
+.filterItem :global([class*="textFieldContainer"]:focus-within),
+.filterItem :global([class*="selectContainer"]:hover),
+.filterItem :global([class*="selectContainer"]:focus-within) {
+  border-color: rgba(196, 169, 106, 0.52);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.filterItem :global([class*="textFieldInput"]),
+.filterItem :global([class*="trigger"]) {
+  color: #e3e5de;
+  font-size: 12px;
+}
+
+.filterItem :global([class*="textFieldIcon"]) {
+  color: #c4a96a;
+}
+
+.filters > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  margin-bottom: 1px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.filters > button:focus-visible,
+.tableActions button:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
 }
 
 .summaryCards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 10px;
 }
 
 .card {
-  background-color: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 7px;
+  background: linear-gradient(150deg, rgba(28, 35, 30, 0.82), rgba(16, 21, 18, 0.7));
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.card:hover {
+  border-color: rgba(196, 169, 106, 0.3);
+  background: linear-gradient(150deg, rgba(31, 39, 33, 0.92), rgba(18, 24, 20, 0.82));
+}
+
+.cardIcon {
+  display: grid;
+  width: 34px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #c4a96a;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.07);
+}
+
+.cardContent {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
 }
 
 .cardLabel {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #a69f89;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .cardValue {
-  font-size: 20px;
+  overflow-wrap: anywhere;
+  color: #eee9db;
+  font-size: 17px;
   font-weight: 700;
-  color: var(--color-white);
+  line-height: 1.25;
+}
+
+.tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.tableTitle,
+.tableActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tableTitle {
+  color: #d2d7cf;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.tableTitle > svg {
+  color: #c4a96a;
+}
+
+.rowCount {
+  display: grid;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 10px;
+  background: rgba(196, 169, 106, 0.07);
+  font-size: 10px;
+}
+
+.tableActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .tableContainer {
-  background-color: var(--color-black-2);
-  border-radius: 8px;
+  min-width: 0;
   overflow: hidden;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  background: #121814;
+}
+
+.tableContainer :global([class*="tableWrapper"]) {
+  background: #121814;
+  border-radius: 8px;
+}
+
+.tableContainer :global([class*="tableHeader"] [class*="tableCell"]) {
+  color: #d2bf8a;
+  border-bottom-color: rgba(196, 169, 106, 0.2);
+  background: #1b231e;
+}
+
+.tableContainer :global([class*="tableCell"]) {
+  color: #dfe3dc;
+}
+
+.tableContainer :global([class*="tableRow"] [class*="tableCell"]) {
+  border-bottom-color: rgba(196, 169, 106, 0.09);
+}
+
+.tableContainer :global([class*="tableRow"]:hover) {
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.tableContainer :global([class*="tableFooter"]) {
+  color: #aeb6ad;
+  border-top-color: rgba(196, 169, 106, 0.13);
+  background: #151b17;
 }
 
 .emptyState {
-  padding: 40px;
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 40px 20px;
+  color: #aeb6ad;
+  font-size: 12px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
+}
+
+.emptyState svg {
+  color: #a69f89;
+}
+
+.emptyState p {
+  margin: 0;
 }
 
 .specialRow {
-  background-color: rgba(255, 193, 7, 0.08) !important;
+  background-color: rgba(196, 169, 106, 0.045) !important;
 }
 
-.specialRow td:first-child {
-  border-left: 3px solid #ffc107;
+.specialRow :global(td:first-child) {
+  border-left: 3px solid rgba(196, 169, 106, 0.62);
+}
+
+.columnHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.columnHeader svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.soldPercentCell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 90px;
+}
+
+.soldPercentTrack {
+  display: block;
+  width: 44px;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.soldPercentTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #a8d29e;
+}
+
+.soldPercentCell strong {
+  color: #dfe3dc;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.profitValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 650;
+}
+
+.profitPositive {
+  color: #a8d29e;
+}
+
+.profitNegative {
+  color: #e6aaa0;
+}
+
+.buttonSpinner {
+  animation: buttonSpin 900ms linear infinite;
+}
+
+@keyframes buttonSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 760px) {
+  .reportWrapper {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .filterItem {
+    flex-basis: 150px;
+  }
+
+  .tableToolbar {
+    align-items: flex-start;
+  }
+
+  .tableActions {
+    width: 100%;
+  }
+
+  .tableActions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .titleIcon {
+    width: 34px;
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .filterPanel {
+    padding: 10px;
+  }
+
+  .filterItem {
+    flex-basis: 100%;
+  }
+
+  .summaryCards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .filterPanel,
+  .tableActions {
+    display: none;
+  }
 }

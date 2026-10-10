@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable } from "@/ui-kit";
@@ -23,6 +24,7 @@ export const WorkshopOrdersReport = () => {
   const { t } = useTranslation();
   const [orders, setOrders] = useState<WorkshopOrder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
@@ -129,7 +131,7 @@ export const WorkshopOrdersReport = () => {
       </header>
 
       <div className={styles.tableContainer}>
-        {isLoading ? (
+        {showTableSkeleton ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

@@ -22,13 +22,14 @@
     "useGlobalDefault": "Use global default",
     "addCategory": "Add Category",
     "reports": "Reports",
-    "financeReports": "Finance & Reports",
+    "financeReports": "Financial Reports",
     "calculator": "Calculator",
     "workshop": "Workshop",
     "carCatalyst": "Buckets",
     "repaymentRules": "Repayment Rules",
     "capitalSources": "Capital Sources",
     "referrals": "Referrals",
+    "referralWorkspaceLabel": "Referral management",
     "referralPersons": "Referral Persons",
     "commissions": "Commissions",
     "agentContracts": "Agent Contracts",
@@ -57,6 +58,7 @@
     "noName": "No name",
     "front": "Front",
     "back": "Back",
+    "backToTop": "Back to top",
     "unknown": "Unknown",
     "noOptionsAvailable": "No options available",
     "previous": "Previous",
@@ -238,6 +240,12 @@
     }
   },
   "reports": {
+    "navigationGroups": {
+      "cashbox": "Cash and sessions",
+      "inventory": "Inventory and batches",
+      "iron": "Iron products",
+      "service": "Workshop and service"
+    },
     "navigation": {
       "zReports": "Z Reports",
       "batchReports": "Batch Reports",
@@ -329,6 +337,10 @@
       "print": "Print Report",
       "emptyState": "No special customer lots found.",
       "filters": {
+        "filterHint": "Choose a date range or customer criteria",
+        "dateRange": "Date range",
+        "customerCriteria": "Customer criteria",
+        "searchClient": "Search special customer",
         "fromDate": "From Date",
         "toDate": "To Date",
         "allWarehouses": "All Warehouses"
@@ -459,6 +471,13 @@
       "warehouseInventory": "Warehouse Inventory",
       "shopInventory": "Shop Inventory",
       "otherExpenses": "Other Expenses"
+    },
+    "navigationGroups": {
+      "overview": "Overview",
+      "operations": "Operations",
+      "profitability": "Profitability",
+      "inventory": "Inventory",
+      "expenses": "Expenses"
     },
     "otherExpenses": {
       "monthlyTotal": "Monthly other expenses",
@@ -962,6 +981,11 @@
       "products": "Products",
       "transferToShop": "Transfer to Shop"
     },
+    "navigationGroups": {
+      "powderLots": "Powder Lots",
+      "productsAndStock": "Products & Stock",
+      "financial": "Financial"
+    },
     "tabs": {
       "addNew": "Add New Warehouse",
       "warehousesHistory": "Warehouses History"
@@ -992,7 +1016,16 @@
       "emptyState": "No batches found.",
       "createSale": "Create Sale",
       "creating": "Creating...",
-      "previewAndCreateSale": "Preview & Create Sale",
+      "previewAndCreateSale": "Calculate Sale",
+      "selectedWeight": "Selected weight",
+      "unitKg": "kg",
+      "statuses": {
+        "available": "Available",
+        "depleted": "Depleted",
+        "cancelled": "Cancelled",
+        "empty": "Empty",
+        "unknown": "Unknown"
+      },
       "previewTitle": "Sale Preview",
       "totalPowder": "Total Powder",
       "totalCost": "Total Cost",
@@ -1019,7 +1052,9 @@
       },
       "lotType": {
         "special": "Special Customer Lot",
+        "specialShort": "Special",
         "general": "General Lot",
+        "generalShort": "General",
         "mergedFromMultiple": "(Merged from multiple)"
       },
       "filters": {
@@ -1046,10 +1081,20 @@
     "batchesToSale": {
       "loading": "Loading batches to sale...",
       "emptyState": "No batches available for sale.",
-      "sale": "Sale",
+      "warehouseSelectorTitle": "Select warehouse",
+      "sale": "Sell",
+      "statuses": {
+        "open": "Open",
+        "sold": "Sold",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown"
+      },
       "saleModal": {
         "title": "Complete Sale",
         "description": "Set metal prices for sales lot #{{id}}.",
+        "quantitiesTitle": "Lot quantities",
+        "metalPricesTitle": "Metal prices",
+        "saleSettingsTitle": "Sale settings",
         "confirm": "Confirm sale",
         "cancel": "Cancel"
       },
@@ -1100,6 +1145,7 @@
       "loading": "Loading sold batches...",
       "emptyState": "No sold batches found.",
       "editSoldBatch": "Price adjustment",
+      "adjustmentHelp": "Set the final sale price and provide a reason for the adjustment.",
       "filters": {
         "fromDate": "From Date",
         "toDate": "To Date",
@@ -1125,7 +1171,12 @@
         "comparison": "Differences",
         "original": "Original",
         "current": "Current",
-        "noDifferences": "No differences found"
+        "field": "Field",
+        "changeCount": "{{count}} fields changed",
+        "snapshotDetails": "View full snapshot values",
+        "noDifferences": "No changes were recorded",
+        "noSnapshots": "This sale had no data changes to report.",
+        "failedToFetchChanges": "Could not load the change history"
       },
 
       "columns": {
@@ -1607,7 +1658,11 @@
         "financials": "Financial Overview",
         "operations": "Operations",
         "duration": "Duration",
+        "durationFormat": "{{hours}}h {{minutes}}m",
+        "generated": "Z report generated",
         "operator": "Operator ID",
+        "reportNumber": "Z Report #{{id}}",
+        "sessionLabel": "Session",
         "finalDiff": "Final Difference",
         "catalystCashOut": "Catalyst Cash Out",
         "ironCashOut": "Iron Cash Out"
@@ -1621,6 +1676,20 @@
     },
     "batches": {
       "title": "Batch Reports",
+      "card": {
+        "batchNumber": "Batch #{{id}}",
+        "cashbox": "Cash register",
+        "session": "Session",
+        "showIntakes": "{{count}} intakes",
+        "hideDetails": "Hide details"
+      },
+      "statuses": {
+        "open": "Open",
+        "partiallySold": "Partially sold",
+        "sold": "Sold",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown"
+      },
       "special": {
         "badge": "Special",
         "totalsLabel": "Totals — special customer only (supplier id: {{id}})",
@@ -1675,14 +1744,28 @@
         "profitDiffAmd": "Profit difference",
         "profitDiffPercent": "Profit difference (%)",
         "customerRealPercent": "Customer real percent"
+      },
+      "card": {
+        "batchNumber": "Batch #{{id}}",
+        "showIntakes": "{{count}} intakes",
+        "hideDetails": "Hide details"
+      },
+      "statuses": {
+        "open": "Open",
+        "partiallySold": "Partially sold",
+        "sold": "Sold",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown"
       }
     },
     "openSessions": {
       "title": "Open Sessions",
+      "activeCount": "Open sessions",
+      "statusOpen": "Open",
       "columns": {
         "sessionId": "Session ID",
-        "cashBoxCode": "Code",
-        "operator": "Operator",
+        "cashBoxCode": "Cash register",
+        "operator": "Operator / Cashier",
         "openedAt": "Opened At",
         "intakesOffered": "Intakes Offered",
         "intakesAccepted": "Intakes Accepted",
@@ -1718,6 +1801,7 @@
         "button": "Summary",
         "tooltip": "Show total powder and metals for all batches",
         "empty": "No summary data available.",
+        "calculating": "Calculating…",
         "thisMonth": "This month",
         "totalPowderKg": "Total powder (kg)",
         "ptTotal": "Total platinum (g)",
@@ -1763,8 +1847,17 @@
       "dateLabel": "Date",
       "selectShop": "Select shop",
       "selectRegister": "Select cash register",
+      "dateFromLabel": "Date from",
+      "dateToLabel": "Date to",
+      "selectDateFromPlaceholder": "Select start date (optional)",
+      "selectDateToPlaceholder": "Select end date (optional)",
       "selectDatePlaceholder": "Select date (optional)",
       "load": "Load report",
+      "periodLabel": "Period",
+      "allDates": "All dates",
+      "emptyTitle": "Report not calculated yet",
+      "emptyPrompt": "Select a shop and cash register, then load the report to calculate the balance.",
+      "balanceEquation": "Opening balance + cash in - cash out = expected closing balance",
       "validation": {
         "shopRequired": "Shop is required",
         "registerRequired": "Cash register is required"
@@ -2682,6 +2775,7 @@
     "customersList": "Customers List",
     "loading": "Loading customers...",
     "emptyState": "No customers found.",
+    "results": "Showing {{shown}} of {{total}} customers",
     "createCustomer": "Create Customer",
     "actions": {
       "resetFilters": "Reset filters",
@@ -2701,6 +2795,7 @@
     },
     "validation": {
       "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number.",
       "customerTypeRequired": "Customer type is required"
     },
     "columns": {
@@ -2805,16 +2900,29 @@
   },
   "powderSales": {
     "adjustments": {
+      "groups": {
+        "transactionCurrency": "Transaction currency calculation",
+        "amdEquivalent": "AMD calculation"
+      },
+      "helper": {
+        "open": "About {{title}}",
+        "transactionCurrency": "Shows the original and adjusted sale amounts in the transaction currency, plus their difference.",
+        "amdEquivalent": "Shows the original amount, adjusted amount, and difference converted to AMD."
+      },
       "columns": {
         "id": "Id",
         "powderSaleId": "ID",
-        "oldAmount": "Initial",
-        "newAmount": "New",
-        "difference": "Diff.",
+        "oldAmount": "Original amount",
+        "newAmount": "Adjusted amount",
+        "originalAmount": "Original amount",
+        "adjustedAmount": "Adjusted amount",
+        "difference": "Difference",
         "currencyCode": "Currency",
-        "oldAmountAmd": "Old (AMD)",
-        "newAmountAmd": "New (AMD)",
-        "differenceAmd": "Diff. (AMD)",
+        "originalAmountAmd": "Original amount (AMD)",
+        "adjustedAmountAmd": "Adjusted amount (AMD)",
+        "oldAmountAmd": "Original amount (AMD)",
+        "newAmountAmd": "Adjusted amount (AMD)",
+        "differenceAmd": "Difference (AMD)",
         "exchangeRate": "Rate",
         "reason": "Reason",
         "createdAt": "Date"
@@ -3732,7 +3840,8 @@
       "loading": "Loading...",
       "saving": "Saving...",
       "create": "Create",
-      "update": "Update"
+      "update": "Update",
+      "cancel": "Cancel"
     },
     "rules": {
       "title": "Add Commission Rule",
@@ -3762,7 +3871,8 @@
     },
     "validation": {
       "required": "Code and name are required.",
-      "email": "Please enter a valid email address."
+      "email": "Please enter a valid email address.",
+      "phone": "Please enter a valid phone number."
     }
   },
   "referralCommissions": {

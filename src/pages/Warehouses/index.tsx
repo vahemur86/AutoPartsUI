@@ -12,69 +12,79 @@ import {
   Receipt,
 } from "lucide-react";
 
-// components
-import { ModuleLayout, type NavItem } from "@/components/common";
+import { ReportsWorkspace, type ReportNavSection } from "@/pages/Reports/ReportsWorkspace";
 
 export const Warehouses = () => {
   const { t } = useTranslation();
 
-  const navigationItems: NavItem[] = [
+  const navigationSections: ReportNavSection[] = [
     {
-      path: "/total-batches",
-      label: t("warehouses.navigation.totalBatches"),
-      icon: Boxes,
-      showCheckmark: true,
+      key: "powderLots",
+      title: t("warehouses.navigationGroups.powderLots"),
+      items: [
+        {
+          path: "/total-batches",
+          label: t("warehouses.navigation.totalBatches"),
+          icon: Boxes,
+        },
+        {
+          path: "/batches-to-sale",
+          label: t("warehouses.navigation.batchesToSale"),
+          icon: Tag,
+        },
+        {
+          path: "/sold-batches",
+          label: t("warehouses.navigation.soldBatches"),
+          icon: ClipboardCheck,
+        },
+        {
+          path: "/adjusted-sales",
+          label: t("warehouses.navigation.adjustedSales"),
+          icon: Receipt,
+        },
+      ],
     },
     {
-      path: "/batches-to-sale",
-      label: t("warehouses.navigation.batchesToSale"),
-      icon: Tag,
-      showCheckmark: true,
+      key: "productsAndStock",
+      title: t("warehouses.navigationGroups.productsAndStock"),
+      items: [
+        {
+          path: "/add-product",
+          label: t("warehouses.navigation.addProduct"),
+          icon: Package,
+        },
+        {
+          path: "/products",
+          label: t("warehouses.navigation.products"),
+          icon: Box,
+        },
+        {
+          path: "/transfer-to-shop",
+          label: t("warehouses.navigation.transferToShop"),
+          icon: Store,
+        },
+      ],
     },
     {
-      path: "/sold-batches",
-      label: t("warehouses.navigation.soldBatches"),
-      icon: ClipboardCheck,
-      showCheckmark: true,
-    },
-    {
-      path: "/adjusted-sales",
-      label: t("warehouses.navigation.adjustedSales"),
-      icon: Receipt,
-      showCheckmark: true,
-    },
-    {
-      path: "/profit",
-      label: t("warehouses.navigation.profit"),
-      icon: Coins,
-      showCheckmark: true,
-    },
-    {
-      path: "/add-product",
-      label: t("warehouses.navigation.addProduct"),
-      icon: Package,
-      showCheckmark: true,
-    },
-    {
-      path: "/products",
-      label: t("warehouses.navigation.products"),
-      icon: Box,
-      showCheckmark: true,
-    },
-    {
-      path: "/transfer-to-shop",
-      label: t("warehouses.navigation.transferToShop"),
-      icon: Store,
-      showCheckmark: true,
+      key: "financial",
+      title: t("warehouses.navigationGroups.financial"),
+      items: [
+        {
+          path: "/profit",
+          label: t("warehouses.navigation.profit"),
+          icon: Coins,
+        },
+      ],
     },
   ];
 
   return (
-    <ModuleLayout
+    <ReportsWorkspace
+      sections={navigationSections}
       basePath="/warehouses"
-      navigationItems={navigationItems}
-      defaultTitle={t("header.warehouses")}
-      defaultIcon={Warehouse}
+      title={t("header.warehouses")}
+      eyebrow={t("header.locations")}
+      icon={Warehouse}
     />
   );
 };

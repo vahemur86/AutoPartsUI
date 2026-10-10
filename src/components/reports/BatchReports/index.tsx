@@ -1,12 +1,39 @@
-import { type FC, useEffect, useMemo, useState, useRef } from "react";
+import { type FC, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-
-// ui-kit
-import { DataTable, IconButton } from "@/ui-kit";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // icons
-import { Filter, User, Phone, TrendingUp, Star, Info } from "lucide-react";
+import {
+  ArrowUpRight,
+  ArrowLeftRight,
+  BadgeDollarSign,
+  BarChart3,
+  ChartColumnIncreasing,
+  ChartColumnBig,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Clock3,
+  CircleDollarSign,
+  Eye,
+  EyeOff,
+  ExternalLink,
+  Filter,
+  Gauge,
+  Hash,
+  Info,
+  ListOrdered,
+  Phone,
+  Percent,
+  Star,
+  Target,
+  TrendingUp,
+  User,
+  Wallet,
+  Weight,
+} from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -24,12 +51,10 @@ import {
 } from "./FilterBatchesDropdown";
 
 // types
-import type { BatchDetails } from "@/types/cash";
+import type { Batch, BatchDetails } from "@/types/cash";
 
-// columns & utils
-import { getBatchReportColumns } from "./columns";
+// utils
 import { getApiErrorMessage } from "@/utils";
-import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
 import styles from "./BatchReports.module.css";
@@ -38,6 +63,101 @@ import { FilteredBatchCard } from "./FilteredBatchCard";
 import { FilteredBatchSummaryCard } from "./FilteredBatchSummaryCard";
 
 const PAGE_SIZE = 10;
+const batchStatusKeys: Record<number, string> = {
+  1: "open",
+  2: "partiallySold",
+  3: "sold",
+  4: "cancelled",
+};
+
+interface BatchSummaryCardProps {
+  batch: Batch;
+  expanded: boolean;
+  onToggle: () => void;
+}
+
+const BatchSummaryCard: FC<BatchSummaryCardProps> = ({
+  batch,
+  expanded,
+  onToggle,
+}) => {
+  const { t } = useTranslation();
+  const statusKey = batchStatusKeys[batch.status] ?? "unknown";
+  const statusClass = batch.status === 1
+    ? styles.statusOpen
+    : batch.status === 2
+      ? styles.statusPartiallySold
+      : batch.status === 3
+        ? styles.statusSold
+        : batch.status === 4
+          ? styles.statusCancelled
+          : styles.statusUnknown;
+
+  return (
+    <article className={`${styles.batchCard} ${batch.hasPreventMergeItems ? styles.specialBatchCard : ""}`}>
+      <header className={styles.batchCardHeader}>
+        <div className={styles.batchIdentity}>
+          <span className={styles.batchIcon} aria-hidden="true">
+            <TrendingUp size={18} />
+          </span>
+          <div className={styles.batchIdentityCopy}>
+            <div className={styles.batchTitleLine}>
+              <h2>{t("cashbox.batches.card.batchNumber", { id: batch.id })}</h2>
+              {batch.status !== 1 && (
+                <span className={`${styles.batchStatus} ${statusClass}`}>
+                  {t(`cashbox.batches.statuses.${statusKey}`)}
+                </span>
+              )}
+              {batch.hasPreventMergeItems && (
+                <span className={styles.specialBadge}>
+                  <Star size={11} aria-hidden="true" />
+                  {t("cashbox.batches.special.badge")}
+                </span>
+              )}
+            </div>
+            <div className={styles.batchMeta}>
+              <span>{t("cashbox.batches.card.cashbox")} #{batch.cashBoxId}</span>
+              <span>{t("cashbox.batches.card.session")} #{batch.sessionId}</span>
+              <span>
+                <Clock3 size={12} aria-hidden="true" />
+                {new Date(batch.createdAt).toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          className={styles.detailsButton}
+          onClick={onToggle}
+          aria-expanded={expanded}
+        >
+          {expanded ? <EyeOff size={15} /> : <Eye size={15} />}
+          {expanded
+            ? t("cashbox.batches.card.hideDetails")
+            : t("cashbox.batches.card.showIntakes", { count: batch.intakeCount })}
+          {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+        </button>
+      </header>
+
+      <div className={styles.batchMetricGrid}>
+        <div className={styles.batchMetric}>
+          <span>{t("cashbox.batches.columns.intakes")}</span>
+          <strong>{batch.intakeCount.toLocaleString()}</strong>
+        </div>
+        <div className={styles.batchMetric}>
+          <span>{t("cashbox.batches.columns.weight")}</span>
+          <strong>{batch.totalPowderKg.toLocaleString()} kg</strong>
+        </div>
+      </div>
+
+      <div className={styles.metalSummary}>
+        <div><span>Pt</span><strong>{(batch.ptTotal_g ?? 0).toLocaleString()} g</strong><small>{batch.ptPerKg_g ?? 0} g/kg</small></div>
+        <div><span>Pd</span><strong>{(batch.pdTotal_g ?? 0).toLocaleString()} g</strong><small>{batch.pdPerKg_g ?? 0} g/kg</small></div>
+        <div><span>Rh</span><strong>{(batch.rhTotal_g ?? 0).toLocaleString()} g</strong><small>{batch.rhPerKg_g ?? 0} g/kg</small></div>
+      </div>
+    </article>
+  );
+};
 
 interface BatchDetailViewProps {
   sessionId: number;
@@ -100,10 +220,7 @@ const BatchDetailView: FC<BatchDetailViewProps> = ({
     return <div className={styles.detailError}>{t("common.noData")}</div>;
   }
 
-  // Show only the batch that belongs to the expanded row. Prevent-merge
-  // (special-customer) items are isolated into their own batches, so the
-  // session may contain several batches — each list row represents one.
-  const visibleBatches = batchDetails.filter((b) => b.id === batchId);
+  const visibleBatches = batchDetails.filter((batch) => batch.id === batchId);
   const batchesToRender = visibleBatches.length ? visibleBatches : batchDetails;
 
   return (
@@ -153,16 +270,17 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
         isSpecialBatch ? styles.specialDetailContainer : ""
       }`}
     >
-      <div className={styles.detailHeaderSection}>
-        <div className={styles.infoGroup}>
-          <h4 className={styles.sectionTitle}>
-            {t("cashbox.batches.details.analysis")}
-            {batchCount > 1 && (
-              <span className={styles.batchIndexLabel}>
-                {" "}
-                #{batchDetails.id} ({batchIndex + 1}/{batchCount})
-              </span>
-            )}
+      <div className={styles.analysisSummary}>
+        <div className={styles.analysisHeader}>
+          <div className={styles.analysisTitleLine}>
+            <h4 className={styles.sectionTitle}>
+              {t("cashbox.batches.details.analysis")}
+              {batchCount > 1 && (
+                <span className={styles.batchIndexLabel}>
+                  #{batchDetails.id} ({batchIndex + 1}/{batchCount})
+                </span>
+              )}
+            </h4>
             {isSpecialBatch && (
               <span
                 className={styles.specialBadge}
@@ -172,101 +290,47 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
                 {t("cashbox.batches.special.badge")}
               </span>
             )}
-          </h4>
-          <div className={styles.metaInfo}>
+          </div>
+          <div className={styles.analysisMeta}>
             <span>
-              {t("cashbox.batches.columns.createdAt")}:
-              <strong>
-                {new Date(batchDetails.createdAt).toLocaleString()}
-              </strong>
+              {t("cashbox.batches.columns.createdAt")}: {new Date(batchDetails.createdAt).toLocaleString()}
             </span>
             <span>
-              Session ID: <strong>#{batchDetails.sessionId}</strong>
+              {t("cashbox.batches.card.session")} #{batchDetails.sessionId}
             </span>
-
-            <div className={styles.metaRow}>
-              <TrendingUp size={13} className={styles.iconAccent} />
-              <span className={styles.statLine}>
-                {t("cashbox.batches.details.cost")}:{" "}
-                <strong>
-                  {batchDetails.totalCostAmd.toLocaleString()} AMD
-                </strong>
-              </span>
-            </div>
-            <div className={styles.metaRow}>
-              <TrendingUp size={13} className={styles.iconAccent} />
-              <span className={styles.statLine2}>
-                {t("cashbox.batches.details.sales")}:{" "}
-                <strong>
-                  {batchDetails.totalEstimatedSalesAmd.toLocaleString()} AMD
-                </strong>
-              </span>
-            </div>
-            <div className={styles.metaRow}>
-              <TrendingUp size={13} className={styles.iconAccent} />
-              <span className={styles.statLine}>
-                {t("cashbox.batches.details.purchaseProfitAmd")}:{" "}
-                <strong>
-                  {batchDetails.totalPurchaseProfitAmd.toLocaleString()} AMD
-                </strong>
-              </span>
-            </div>
-            <div className={styles.metaRow}>
-              <TrendingUp size={13} className={styles.iconAccent} />
-              <span className={styles.statLine}>
-                {t("cashbox.batches.details.profitDiffAmd")}:{" "}
-                <strong
-                  className={getNumberClass(batchDetails.totalProfitDiffAmd)}
-                >
-                  {batchDetails.totalProfitDiffAmd > 0 ? "+" : ""}
-                  {batchDetails.totalProfitDiffAmd.toLocaleString()}AMD
-                </strong>
-              </span>
-            </div>
-            <div className={styles.metaRow}>
-              <TrendingUp size={13} className={styles.iconAccent} />
-              <span className={styles.statLine2}>
-                {t("cashbox.batches.details.expectedProfitAmd")}:{" "}
-                <strong>
-                  {batchDetails.totalLiveProfitAmd.toLocaleString()} AMD
-                </strong>
-              </span>
-            </div>
-            <div className={styles.metaRow}>
-              <TrendingUp size={13} className={styles.iconAccent} />
-              <span className={styles.statLine}>
-                {t("cashbox.batches.details.liveProfitPercent")}:{" "}
-                <strong
-                  className={getNumberClass(
-                    batchDetails.totalLiveProfitPercent,
-                  )}
-                >
-                  {batchDetails.totalLiveProfitPercent > 0 ? "+" : ""}
-                  {batchDetails.totalLiveProfitPercent.toFixed(2)}%
-                </strong>
-              </span>
-            </div>
           </div>
         </div>
-        <div className={styles.totalsGrid}>
-          <div className={styles.totalCard}>
-            <span>{t("cashbox.batches.columns.weight")}</span>
-            <strong>{batchDetails.totalPowderKg} kg</strong>
+
+        <div className={styles.analysisMetrics}>
+          <div className={styles.analysisMetric}>
+            <span><CircleDollarSign size={14} aria-hidden="true" />{t("cashbox.batches.details.cost")}</span>
+            <strong>{batchDetails.totalCostAmd.toLocaleString()} AMD</strong>
           </div>
-          <div className={styles.totalCard}>
-            <span>{t("cashbox.batches.details.pt")}</span>
-            <strong>{batchDetails.ptTotal_g} g</strong>
-            <small>{batchDetails.ptPerKg_g} g/kg</small>
+          <div className={styles.analysisMetric}>
+            <span><ChartColumnBig size={14} aria-hidden="true" />{t("cashbox.batches.details.sales")}</span>
+            <strong>{batchDetails.totalEstimatedSalesAmd.toLocaleString()} AMD</strong>
           </div>
-          <div className={styles.totalCard}>
-            <span>{t("cashbox.batches.details.pd")}</span>
-            <strong>{batchDetails.pdTotal_g} g</strong>
-            <small>{batchDetails.pdPerKg_g} g/kg</small>
+          <div className={styles.analysisMetric}>
+            <span><BadgeDollarSign size={14} aria-hidden="true" />{t("cashbox.batches.details.purchaseProfitAmd")}</span>
+            <strong>{batchDetails.totalPurchaseProfitAmd.toLocaleString()} AMD</strong>
           </div>
-          <div className={styles.totalCard}>
-            <span>{t("cashbox.batches.details.rh")}</span>
-            <strong>{batchDetails.rhTotal_g} g</strong>
-            <small>{batchDetails.rhPerKg_g} g/kg</small>
+          <div className={`${styles.analysisMetric} ${getNumberClass(batchDetails.totalProfitDiffAmd)}`}>
+            <span><ArrowUpRight size={14} aria-hidden="true" />{t("cashbox.batches.details.profitDiffAmd")}</span>
+            <strong>
+              {batchDetails.totalProfitDiffAmd > 0 ? "+" : ""}
+              {batchDetails.totalProfitDiffAmd.toLocaleString()} AMD
+            </strong>
+          </div>
+          <div className={styles.analysisMetric}>
+            <span><TrendingUp size={14} aria-hidden="true" />{t("cashbox.batches.details.expectedProfitAmd")}</span>
+            <strong>{batchDetails.totalLiveProfitAmd.toLocaleString()} AMD</strong>
+          </div>
+          <div className={`${styles.analysisMetric} ${getNumberClass(batchDetails.totalLiveProfitPercent)}`}>
+            <span><Percent size={14} aria-hidden="true" />{t("cashbox.batches.details.liveProfitPercent")}</span>
+            <strong>
+              {batchDetails.totalLiveProfitPercent > 0 ? "+" : ""}
+              {batchDetails.totalLiveProfitPercent.toFixed(2)}%
+            </strong>
           </div>
         </div>
       </div>
@@ -288,8 +352,8 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
             >
               <div className={styles.itemCardHeader}>
                 <div className={styles.intakeMain}>
-                  <span>#{item.intakeId}</span>
-                  <strong>{item.powderKg} kg</strong>
+                  <span className={styles.intakeId}><Hash size={13} aria-hidden="true" />{item.intakeId}</span>
+                  <strong><Weight size={14} aria-hidden="true" />{item.powderKg} kg</strong>
                   {item.customerTypeHasPreventMergeFlag && (
                     <span
                       className={styles.specialBadge}
@@ -304,8 +368,9 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
                 </div>
                 <div className={styles.supplierTag}>
                   <User size={10} />
-                  <span>
-                    {item.supplierClientName} ({item.supplierClientType})
+                  <span className={styles.clientIdentity}>
+                    <span className={styles.clientName}>{item.supplierClientName}</span>
+                    <span className={styles.clientType}>{item.supplierClientType}</span>
                   </span>
                 </div>
               </div>
@@ -314,29 +379,27 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
                 <div className={styles.contactInfo}>
                   <div className={styles.infoRow}>
                     <Phone size={10} />
-                    <span>{item.supplierClientPhone}</span>
+                    <span className={styles.infoLabel}>{item.supplierClientPhone}</span>
                   </div>
                   <div className={styles.infoRow}>
-                    <span>{t("cashbox.batches.details.percent")}:</span>
-                                      <strong>{((item.supplierClientTypePercent ?? 0) * 100).toFixed(2)}%</strong>
+                    <Percent size={13} aria-hidden="true" />
+                    <span className={styles.infoLabel}>{t("cashbox.batches.details.percent")}</span>
+                    <strong>{((item.supplierClientTypePercent ?? 0) * 100).toFixed(2)}%</strong>
                   </div>
 
                   <div className={styles.infoRow}>
-                    <span>
-                      {t("cashbox.batches.details.offerIncreaseStepOrder")}:
-                    </span>
+                    <ListOrdered size={13} aria-hidden="true" />
+                    <span className={styles.infoLabel}>{t("cashbox.batches.details.offerIncreaseStepOrder")}</span>
                     <strong>{item?.offerIncreaseStepOrder ?? 0}</strong>
                   </div>
                   <div className={styles.infoRow}>
-                    <span>
-                      {t("cashbox.batches.details.offerIncreasePercent")}:
-                    </span>
+                    <TrendingUp size={13} aria-hidden="true" />
+                    <span className={styles.infoLabel}>{t("cashbox.batches.details.offerIncreasePercent")}</span>
                     <strong>{item?.offerIncreasePercent ?? 0}%</strong>
                   </div>
                   <div className={styles.infoRow}>
-                    <span>
-                      {t("cashbox.batches.details.customerRealPercent")}:
-                    </span>
+                    <Target size={13} aria-hidden="true" />
+                    <span className={styles.infoLabel}>{t("cashbox.batches.details.customerRealPercent")}</span>
                     <strong>{item?.customerRealPercent ?? 0}%</strong>
                   </div>
                 </div>
@@ -364,43 +427,37 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
 
                 <div className={styles.financialStats}>
                   <div className={styles.statLine}>
-                    <span>{t("cashbox.batches.details.cost")}</span>
+                    <span className={styles.statLabel}><Wallet size={14} aria-hidden="true" />{t("cashbox.batches.details.cost")}</span>
                     <strong>{item.costAmd.toLocaleString()} AMD</strong>
                   </div>
                   <div className={styles.statLine2}>
-                    <span>{t("cashbox.batches.details.sales")}</span>
+                    <span className={styles.statLabel}><ChartColumnIncreasing size={14} aria-hidden="true" />{t("cashbox.batches.details.sales")}</span>
                     <strong>
                       {item.estimatedSalesAmd.toLocaleString()} AMD
                     </strong>
                   </div>
                   <div className={styles.statLine}>
-                    <span>
-                      {t("cashbox.batches.details.purchaseProfitAmd")}
-                    </span>
+                    <span className={styles.statLabel}><BadgeDollarSign size={14} aria-hidden="true" />{t("cashbox.batches.details.purchaseProfitAmd")}</span>
                     <strong>
                       {item.purchaseProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
                   <div className={styles.statLine}>
-                    <span>{t("cashbox.batches.details.profitDiffAmd")}</span>
+                    <span className={styles.statLabel}><ArrowLeftRight size={14} aria-hidden="true" />{t("cashbox.batches.details.profitDiffAmd")}</span>
                     <strong className={getNumberClass(item.profitDiffAmd)}>
                       {item.profitDiffAmd > 0 ? "+" : ""}
                       {item.profitDiffAmd.toLocaleString()} AMD
                     </strong>
                   </div>
                   <div className={styles.statLine2}>
-                    <span>
-                      {t("cashbox.batches.details.expectedProfitAmd")}
-                    </span>
+                    <span className={styles.statLabel}><CircleDollarSign size={14} aria-hidden="true" />{t("cashbox.batches.details.expectedProfitAmd")}</span>
                     <strong>
                       {item.expectedProfitAmd.toLocaleString()} AMD
                     </strong>
                   </div>
 
                   <div className={styles.statLine}>
-                    <span>
-                      {t("cashbox.batches.details.liveProfitPercent")}
-                    </span>
+                    <span className={styles.statLabel}><Gauge size={14} aria-hidden="true" />{t("cashbox.batches.details.liveProfitPercent")}</span>
                     <strong className={getNumberClass(item.liveProfitPercent)}>
                       {item.liveProfitPercent > 0 ? "+" : ""}
                       {item.liveProfitPercent.toFixed(2)}%
@@ -411,14 +468,42 @@ const SingleBatchDetail: FC<SingleBatchDetailProps> = ({
                   ></div>
 
                   <div className={styles.fxRate}>
-                    Rate: {item.fxRateToAmd} AMD
+                    <span className={styles.fxRateLabel}>
+                      <ArrowLeftRight size={13} aria-hidden="true" />
+                      USD / AMD
+                    </span>
+                    <strong className={styles.fxRateValue}>
+                      <span>1 USD</span>
+                      <span className={styles.fxRateEquals}>=</span>
+                      <b>{item.fxRateToAmd.toLocaleString()} AMD</b>
+                    </strong>
+                    <a
+                      className={styles.fxRateSource}
+                      href="https://rate.am"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      rate.am <ExternalLink size={11} aria-hidden="true" />
+                    </a>
                   </div>
 
                   {/* Metal Prices displayed under the Rate */}
                   <div className={styles.metalPricesFooter}>
-                    <span>Pt: {item.ptPricePerKg.toLocaleString()} $</span>
-                    <span>Pd: {item.pdPricePerKg.toLocaleString()} $</span>
-                    <span>Rh: {item.rhPricePerKg.toLocaleString()} $</span>
+                    <div className={styles.metalPricesHeading}>USD / kg</div>
+                    <div className={styles.metalPricesGrid}>
+                      <div className={styles.metalPriceItem}>
+                        <span className={styles.metalPriceSymbol}>Pt</span>
+                        <strong>${item.ptPricePerKg.toLocaleString()}</strong>
+                      </div>
+                      <div className={styles.metalPriceItem}>
+                        <span className={styles.metalPriceSymbol}>Pd</span>
+                        <strong>${item.pdPricePerKg.toLocaleString()}</strong>
+                      </div>
+                      <div className={styles.metalPriceItem}>
+                        <span className={styles.metalPriceSymbol}>Rh</span>
+                        <strong>${item.rhPricePerKg.toLocaleString()}</strong>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -436,12 +521,16 @@ export const BatchReports: FC = () => {
   const { batches, isLoading } = useAppSelector(
     (state) => state.cashboxSessions,
   );
+  const showTableSkeleton = useMinimumLoadingDuration(
+    isLoading && !batches?.results?.length,
+  );
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
   const { batchDetailsForFilter } = useAppSelector(
     (state) => state.cashDashboard,
   );
 
   const [currentPage, setCurrentPage] = useState(0);
+  const [expandedBatchId, setExpandedBatchId] = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<BatchReportFilters>({
     fromDate: null,
@@ -451,7 +540,7 @@ export const BatchReports: FC = () => {
     clientTypeId: null,
     supplierClientId: null,
   });
-  const filterAnchorRef = useRef<HTMLDivElement>(null);
+  const filterAnchorRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     dispatch(fetchCustomerTypes());
@@ -463,6 +552,14 @@ export const BatchReports: FC = () => {
     activeFilters.clientTypeId != null;
 
   const isSpecialMode = activeFilters.supplierClientId != null;
+  const activeFilterCount = [
+    activeFilters.fromDate,
+    activeFilters.toDate,
+    activeFilters.superClientId,
+    activeFilters.clientPhone,
+    activeFilters.clientTypeId,
+    activeFilters.supplierClientId,
+  ].filter((value) => value != null && value !== "").length;
 
   useEffect(() => {
     if (!hasClientFilter || isSpecialMode) {
@@ -524,29 +621,38 @@ export const BatchReports: FC = () => {
     setIsFilterOpen(false);
   };
 
-  const columns = useMemo(() => getBatchReportColumns(), []);
   const totalPages = Math.ceil((batches?.totalItems || 0) / PAGE_SIZE);
 
   return (
     <div className={styles.batchReportsWrapper}>
       <header className={styles.header}>
-        <h1>{t("cashbox.batches.title")}</h1>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true">
+            <BarChart3 size={19} />
+          </span>
+          <div>
+            <span className={styles.eyebrow}>{t("reports.navigationGroups.inventory")}</span>
+            <h1>{t("cashbox.batches.title")}</h1>
+          </div>
+        </div>
         <div className={styles.headerActions}>
-          <div
+          <button
+            type="button"
             ref={filterAnchorRef}
-            className={styles.filterButtonWrapper}
+            className={`${styles.filterButton} ${isFilterOpen ? styles.filterButtonOpen : ""} ${activeFilterCount ? styles.filterButtonActive : ""}`}
             onClick={() => setIsFilterOpen(true)}
+            aria-expanded={isFilterOpen}
           >
-            <IconButton
-              size="small"
-              variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
-              ariaLabel={t("common.filters")}
-            />
+            <Filter size={15} aria-hidden="true" />
             <span className={styles.filterButtonText}>
               {t("common.filters")}
             </span>
-          </div>
+            {activeFilterCount > 0 && (
+              <span className={styles.filterCount} aria-hidden="true">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
         </div>
       </header>
 
@@ -590,12 +696,7 @@ export const BatchReports: FC = () => {
             />
           )}
 
-          {isSpecialMode && !isLoading && !batches?.results?.length ? (
-            <div className={styles.emptyState}>
-              <p>{t("cashbox.batches.special.emptyState")}</p>
-              <small>{t("cashbox.batches.special.emptyStateHint")}</small>
-            </div>
-          ) : isLoading && !batches?.results?.length ? (
+          {showTableSkeleton ? (
             <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
               <div className={styles.tableSkeletonHeader}>
                 <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -611,31 +712,44 @@ export const BatchReports: FC = () => {
                 ))}
               </div>
             </div>
+          ) : !batches?.results?.length ? (
+            <div className={styles.emptyState}>
+              <p>{isSpecialMode ? t("cashbox.batches.special.emptyState") : t("common.noData")}</p>
+              {isSpecialMode && <small>{t("cashbox.batches.special.emptyStateHint")}</small>}
+            </div>
           ) : (
-            <DataTable
-              columns={columns}
-              data={batches?.results || []}
-              pageSize={PAGE_SIZE}
-              manualPagination
-              pageCount={totalPages}
-              pageIndex={currentPage}
-              getRowClassName={(row) =>
-                [
-                  checkIsToday(row.createdAt) ? styles.todayRow : "",
-                  row.hasPreventMergeItems ? styles.specialRow : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-              }
-              onPaginationChange={setCurrentPage}
-              renderSubComponent={({ row }) => (
-                <BatchDetailView
-                  sessionId={row.original.sessionId}
-                  batchId={row.original.id}
-                  supplierClientId={activeFilters.supplierClientId}
-                />
-              )}
-            />
+            <div className={styles.batchList}>
+              {batches.results.map((batch) => {
+                const isExpanded = expandedBatchId === batch.id;
+                return (
+                  <div className={styles.batchEntry} key={batch.id}>
+                    <BatchSummaryCard
+                      batch={batch}
+                      expanded={isExpanded}
+                      onToggle={() => setExpandedBatchId(isExpanded ? null : batch.id)}
+                    />
+                    {isExpanded && (
+                      <BatchDetailView
+                        sessionId={batch.sessionId}
+                        batchId={batch.id}
+                        supplierClientId={activeFilters.supplierClientId}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {totalPages > 1 && (
+            <nav className={styles.batchPagination} aria-label={t("common.page")}>
+              <button type="button" onClick={() => setCurrentPage((page) => Math.max(0, page - 1))} disabled={isLoading || currentPage === 0}>
+                <ChevronLeft size={16} />{t("common.previous")}
+              </button>
+              <span>{t("common.page")} {currentPage + 1} {t("common.of")} {totalPages}</span>
+              <button type="button" onClick={() => setCurrentPage((page) => Math.min(totalPages - 1, page + 1))} disabled={isLoading || currentPage >= totalPages - 1}>
+                {t("common.next")}<ChevronRight size={16} />
+              </button>
+            </nav>
           )}
         </div>
       )}

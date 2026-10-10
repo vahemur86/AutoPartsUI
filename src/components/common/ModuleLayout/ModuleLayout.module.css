@@ -33,8 +33,109 @@
   flex-shrink: 0;
 }
 
+.warehouseContainer {
+  overflow: visible;
+  background: transparent;
+}
+
+.warehouseLayout {
+  align-items: flex-start;
+  overflow: visible;
+}
+
+.warehouseSidebar {
+  position: sticky;
+  top: 14px;
+  align-self: flex-start;
+  max-height: calc(100vh - 28px);
+  box-sizing: border-box;
+  border: 1px solid rgba(196, 169, 106, 0.11);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 24, 0.96), rgba(14, 18, 15, 0.96));
+  scrollbar-color: rgba(196, 169, 106, 0.35) transparent;
+  scrollbar-width: thin;
+  z-index: 20;
+}
+
+.warehouseContent {
+  overflow: visible;
+}
+
+.warehouseContentWrapper {
+  overflow: visible;
+}
+
+.warehouseBackToTop {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  align-self: flex-end;
+  margin: 10px 4px 2px;
+  padding: 0;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.25);
+  border-radius: 6px;
+  background: #1b231e;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+  animation: backToTopReveal 150ms ease-out both;
+}
+
+.warehouseBackToTop:hover {
+  color: #eee9db;
+  border-color: rgba(196, 169, 106, 0.55);
+  background: #263128;
+}
+
+.warehouseBackToTop:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 2px;
+}
+
 .sidebarNavItem {
   position: relative;
+}
+
+.sidebarGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebarGroupTitled {
+  gap: 3px;
+  padding: 10px 7px 12px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.12);
+}
+
+.sidebarGroupTitled + .sidebarGroupTitled {
+  padding-top: 13px;
+}
+
+.sidebarGroupTitled:last-child {
+  border-bottom: 0;
+}
+
+.sidebarGroupTitle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 8px 5px;
+  color: #b9c6b5;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.sidebarGroupTitle svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
 }
 
 @keyframes tooltipFadeSlide {
@@ -95,11 +196,323 @@
   display: none;
 }
 
+.mobileGroupedNav {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 2px 7px;
+  scrollbar-color: rgba(196, 169, 106, 0.35) transparent;
+  scrollbar-width: thin;
+}
+
+.mobileNavGroup {
+  display: flex;
+  flex: 0 0 190px;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 8px;
+  border-right: 1px solid rgba(196, 169, 106, 0.12);
+}
+
+.mobileNavGroupTitle {
+  display: flex;
+  align-items: center;
+  min-height: 20px;
+  margin-bottom: 2px;
+  color: #a69f89;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.mobileNavItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px 7px;
+  color: #aeb6ad;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  font: inherit;
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mobileNavItem svg {
+  flex: 0 0 auto;
+  color: #a69f89;
+}
+
+.mobileNavItem span {
+  min-width: 0;
+}
+
+.mobileNavItemActive {
+  color: #eee9db;
+  border-color: rgba(196, 169, 106, 0.2);
+  background: linear-gradient(90deg, rgba(196, 169, 106, 0.1), rgba(168, 210, 158, 0.04));
+}
+
+.mobileNavItemActive svg {
+  color: #d2bf8a;
+}
+
+.mobileNavItem:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 2px;
+}
+
 .contentWrapper {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   min-width: 0;
+}
+
+.warehouseContentWrapper :global([class*="tableWrapper"]) {
+  overflow-x: auto;
+  background: #121814;
+}
+
+.warehouseContentWrapper h1,
+.warehouseContentWrapper h2 {
+  color: #eee9db;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.warehouseContentWrapper :global([class*="totalBatchesWrapper"]),
+.warehouseContentWrapper :global([class*="batchesToSaleWrapper"]),
+.warehouseContentWrapper :global([class*="soldBatchesWrapper"]) {
+  min-width: 0;
+  gap: 14px;
+  padding: 16px;
+}
+
+.warehouseContentWrapper :global([class*="tableSection"]),
+.warehouseContentWrapper :global([class*="tableContainer"]) {
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  background: #121814;
+}
+
+.warehouseContentWrapper :global([class*="tableSkeleton"]) {
+  border-color: rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(28, 35, 30, 0.76), rgba(16, 21, 18, 0.68));
+}
+
+.warehouseContentWrapper :global([class*="emptyState"]) {
+  display: grid;
+  min-height: 100px;
+  place-items: center;
+  padding: 20px;
+  color: #aeb6ad;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.025);
+  font-size: 12px;
+  text-align: center;
+}
+
+.warehouseContentWrapper :global([class*="lotFilters"]) {
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.035);
+}
+
+.warehouseContentWrapper :global([class*="lotFilterItem"]) {
+  color: #c0c8bd;
+  font-size: 11px;
+}
+
+.warehouseContentWrapper :global([class*="lotFilterItem"] input) {
+  accent-color: #a8c3a2;
+}
+
+.warehouseContentWrapper :global([class*="badgeWarning"]),
+.warehouseContentWrapper :global([class*="specialBadge"]) {
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.3);
+  background: rgba(196, 169, 106, 0.1);
+}
+
+.warehouseContentWrapper :global([class*="productIdButton"]) {
+  color: #d2bf8a;
+  text-decoration-color: rgba(210, 191, 138, 0.55);
+}
+
+.warehouseContentWrapper :global([class*="productIdButton"]:hover) {
+  color: #eee9db;
+}
+
+.warehouseContentWrapper :global([class*="filterButtonWrapper"]) {
+  color: #aeb6ad;
+}
+
+.warehouseContentWrapper :global([class*="filterButtonWrapper"] svg) {
+  color: #d2bf8a !important;
+}
+
+.warehouseContentWrapper :global([class*="filterButtonText"]) {
+  color: #b9c2b7;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.warehouseContentWrapper :global([class*="totalCounter"]) {
+  color: #b9c2b7;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.warehouseContentWrapper :global([class*="totalCounter"] span) {
+  color: #d2bf8a;
+}
+
+.warehouseContentWrapper :global([class*="todayRow"]) {
+  background: rgba(168, 210, 158, 0.045) !important;
+}
+
+.warehouseContentWrapper :global([class*="todayRow"]:hover) {
+  background: rgba(168, 210, 158, 0.085) !important;
+}
+
+.warehouseContentWrapper :global([class*="specialRow"]) {
+  background: rgba(196, 169, 106, 0.055) !important;
+}
+
+.warehouseContentWrapper :global([class*="badgeInfo"]) {
+  color: #b9d9b4;
+  border: 1px solid rgba(168, 210, 158, 0.24);
+  background: rgba(61, 112, 60, 0.14);
+}
+
+.warehouseContentWrapper :global([class*="statusAvailable"]) { color: #a8d29e; }
+.warehouseContentWrapper :global([class*="statusDepleted"]) { color: #d2bf8a; }
+.warehouseContentWrapper :global([class*="statusCancelled"]) { color: #e6aaa0; }
+.warehouseContentWrapper :global([class*="statusEmpty"]) { color: #aeb6ad; }
+
+.warehouseContentWrapper :global([class*="selectLabel"]),
+.warehouseContentWrapper :global([class*="textFieldLabel"]) {
+  color: #b3ad99;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.warehouseContentWrapper :global([class*="selectContainer"]),
+.warehouseContentWrapper :global([class*="textFieldContainer"]) {
+  min-height: 38px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.warehouseContentWrapper :global([class*="selectContainer"]:hover),
+.warehouseContentWrapper :global([class*="selectContainer"]:focus-within),
+.warehouseContentWrapper :global([class*="textFieldContainer"]:hover),
+.warehouseContentWrapper :global([class*="textFieldContainer"]:focus-within) {
+  border-color: rgba(196, 169, 106, 0.52);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.warehouseContentWrapper :global([class*="trigger"]),
+.warehouseContentWrapper :global([class*="textFieldInput"]) {
+  color: #e3e5de;
+  font-size: 12px;
+}
+
+.warehouseContentWrapper :global(.date-picker-input) {
+  width: 100%;
+  min-height: 38px;
+  box-sizing: border-box;
+  color: #e3e5de;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+}
+
+.warehouseContentWrapper :global(.date-picker-input:focus) {
+  border-color: rgba(196, 169, 106, 0.58);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.1);
+}
+
+.warehouseContentWrapper :global(table) {
+  width: 100% !important;
+  min-width: 900px !important;
+  table-layout: auto;
+  color: #dfe3dc;
+}
+
+.warehouseContentWrapper :global([class*="tableCell"]) {
+  min-width: 0;
+}
+
+.warehouseContentWrapper :global(th) {
+  padding: 9px 7px !important;
+  color: #d2bf8a !important;
+  border-bottom-color: rgba(196, 169, 106, 0.2) !important;
+  background: #1b231e !important;
+  font-size: 11px !important;
+  line-height: 1.3;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.warehouseContentWrapper :global(td) {
+  padding: 8px 7px !important;
+  color: #dfe3dc !important;
+  border-bottom-color: rgba(196, 169, 106, 0.09) !important;
+  font-size: 11px !important;
+  line-height: 1.35;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.warehouseContentWrapper :global(tbody tr) {
+  background: #151b17;
+}
+
+.warehouseContentWrapper :global(tbody tr:nth-child(even)) {
+  background: #18201a;
+}
+
+.warehouseContentWrapper :global(tbody tr:hover) {
+  background: #202a22 !important;
+}
+
+.warehouseContentWrapper :global(tbody tr:hover td) {
+  background: transparent !important;
+}
+
+.warehouseContentWrapper :global([class*="actionButtonsCell"]) {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.warehouseContentWrapper :global([class*="actionButtonsCell"] button) {
+  max-width: 100%;
+  white-space: normal;
+}
+
+.warehouseContentWrapper :global([class*="tableFooter"]) {
+  color: #aeb6ad;
+  border-top-color: rgba(196, 169, 106, 0.13);
+  background: #151b17;
 }
 
 @media (max-width: 768px) {
@@ -113,6 +526,21 @@
     margin: 16px;
   }
 
+  .warehouseLayout {
+    margin: 16px;
+  }
+
+  .warehouseSidebar {
+    display: none;
+  }
+
+  .warehouseBackToTop {
+    position: sticky;
+    right: 0;
+    bottom: auto;
+    margin: auto 2px 0 0;
+  }
+
   .mobileStepper {
     display: block;
     padding: 16px;
@@ -124,6 +552,10 @@
     display: none;
   }
 
+  .sidebarGroupTitled {
+    padding: 10px 7px 12px;
+  }
+
   .content {
     padding: 0;
     width: 100%;
@@ -131,6 +563,15 @@
 
   .contentWrapper {
     padding: 16px;
+  }
+
+  .warehouseContentWrapper :global([class*="tableWrapper"]) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .warehouseContentWrapper :global(table) {
+    min-width: 900px !important;
   }
 }
 

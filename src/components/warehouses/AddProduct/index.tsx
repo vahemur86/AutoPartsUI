@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable, Select } from "@/ui-kit";
@@ -35,6 +36,7 @@ export const AddProduct = () => {
   const { products, isLoading: isLoadingProducts } = useAppSelector(
     (state) => state.products,
   );
+  const showTableSkeleton = useMinimumLoadingDuration(isLoadingProducts);
   const { warehouses, isLoading: isLoadingWarehouses } = useAppSelector(
     (state) => state.warehouses,
   );
@@ -187,7 +189,7 @@ export const AddProduct = () => {
       );
     }
 
-    if (isLoadingProducts) {
+    if (showTableSkeleton) {
       return (
         <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
           <div className={styles.tableSkeletonHeader}>
@@ -230,9 +232,6 @@ export const AddProduct = () => {
   return (
     <div className={styles.addProductWrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>
-          {t("warehouses.navigation.addProduct")}
-        </h2>
         <div className={styles.warehouseSelector}>
           <Select
             label={t("warehouses.form.warehouse")}

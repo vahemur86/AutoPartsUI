@@ -1,5 +1,12 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
+import {
+  CalendarClock,
+  CircleDollarSign,
+  Hash,
+  Package,
+  Weight,
+} from "lucide-react";
 
 // types
 import type { IronPurchase } from "@/types/adminProducts";
@@ -8,27 +15,33 @@ import type { IronPurchase } from "@/types/adminProducts";
 import styles from "./IronProductsReport.module.css";
 
 const columnHelper = createColumnHelper<IronPurchase>();
+const columnHeader = (Icon: typeof Hash, label: string) => (
+  <span className={styles.columnHeader}>
+    <Icon size={13} aria-hidden="true" />
+    {label}
+  </span>
+);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getIronPurchaseColumns = (): ColumnDef<IronPurchase, any>[] => [
   columnHelper.accessor("productId", {
-    header: "ID",
+    header: () => columnHeader(Hash, "ID"),
     cell: (info) => `#${info.getValue()}`,
   }),
   columnHelper.accessor("name", {
-    header: i18next.t("products.form.productKey"),
+    header: () => columnHeader(Package, i18next.t("products.form.productKey")),
     cell: (info) => info.getValue() || i18next.t("common.noData"),
   }),
   columnHelper.accessor("weight", {
-    header: i18next.t("operatorPage.weightKg"),
+    header: () => columnHeader(Weight, i18next.t("operatorPage.weightKg")),
     cell: (info) => `${info.getValue().toLocaleString()} kg`,
   }),
   columnHelper.accessor("unitPricePerKg", {
-    header: i18next.t("warehouses.addProduct.columns.salePrice"),
+    header: () => columnHeader(CircleDollarSign, i18next.t("warehouses.addProduct.columns.salePrice")),
     cell: (info) => `${info.getValue().toLocaleString()} AMD`,
   }),
   columnHelper.accessor("totalAmount", {
-    header: i18next.t("catalystBuckets.totalPrice"),
+    header: () => columnHeader(CircleDollarSign, i18next.t("catalystBuckets.totalPrice")),
     cell: (info) => (
       <span className={styles.totalPriceCell}>
         {info.getValue().toLocaleString()} AMD
@@ -36,8 +49,8 @@ export const getIronPurchaseColumns = (): ColumnDef<IronPurchase, any>[] => [
     ),
   }),
   columnHelper.accessor("purchasedAt", {
-    header: i18next.t("common.createdAt"),
-   cell: (info) =>
+    header: () => columnHeader(CalendarClock, i18next.t("common.createdAt")),
+    cell: (info) =>
       new Date(info.getValue()).toLocaleString(undefined, {
         year: "numeric",
         month: "2-digit",

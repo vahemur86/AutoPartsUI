@@ -1,51 +1,107 @@
 .header {
-  padding: 19px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.15);
+  background: rgba(196, 169, 106, 0.035);
+}
+
+.headerIcon {
+  display: grid;
+  width: 30px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.08);
 }
 
 .title {
-  font-size: 16px;
+  color: #eee9db;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--color-white);
 }
 
 .dropdownContentOverride {
+  width: min(460px, calc(100vw - 28px)) !important;
+  padding: 0 !important;
   overflow: visible !important;
+  color: #eee9db;
+  border: 1px solid rgba(196, 169, 106, 0.24) !important;
+  border-radius: 8px !important;
+  background: linear-gradient(150deg, #1c231e, #101512) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45) !important;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 16px 24px 24px;
+  gap: 16px;
+  padding: 16px 18px 18px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .datePickerWrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b3ad99;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.label svg {
+  color: #c4a96a;
+}
+
+.datePickerWrapper :global(.date-picker-input) {
+  width: 100%;
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  color: #e3e5de;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 12px;
+}
+
+.datePickerWrapper :global(.date-picker-input:focus) {
+  border-color: rgba(196, 169, 106, 0.62);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.11);
 }
 
 .primaryActions {
   display: flex;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(196, 169, 106, 0.13);
 }
 
 .primaryActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   flex: 1;
+  min-height: 36px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 650;
 }
 
 @media (max-width: 767px) {
@@ -53,7 +109,7 @@
     grid-template-columns: 1fr;
   }
   .content {
-    padding: 12px;
+    padding: 14px;
   }
 }
 

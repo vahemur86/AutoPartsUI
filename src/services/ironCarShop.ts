@@ -1,5 +1,6 @@
 // api
 import api from ".";
+import { getIronPurchases } from "./adminProducts";
 
 // utils
 import { getApiErrorMessage, getHeaders, mapI18nCodeToApiCode } from "@/utils";
@@ -23,6 +24,7 @@ import type {
   RecalculateResponse,
   UpdateIronTypePricesPayload,
 } from "@/types/ironCarShop";
+import type { IronPurchaseResponse } from "@/types/adminProducts";
 
 const BASE_URL = "/admin/iron-shop";
 
@@ -168,20 +170,7 @@ export const purchaseIron = async (
 export const getIronSales = async (
   params: GetIronSalesParams,
   cashRegisterId: number,
-): Promise<PurchaseIronResponse[]> => {
-  try {
-    const response = await api.get(`${BASE_URL}/GetPurchases`, {
-      params: {
-        customerId: params.customerId,
-        lang: params.lang ? formatLang(params.lang) : undefined,
-      },
-      headers: getHeaders(cashRegisterId),
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error, "Failed to fetch iron sales."));
-  }
-};
+): Promise<IronPurchaseResponse> => getIronPurchases(params, cashRegisterId);
 
 export const getIronPurchasesReport = async (
   params: GetIronPurchasesReportParams,

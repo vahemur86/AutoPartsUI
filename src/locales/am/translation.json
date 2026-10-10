@@ -21,13 +21,14 @@
     "languageLoading": "Լեզուները բեռնվում են...",
     "useGlobalDefault": "Օգտագործել ընդհանուր լռելյայնը",
     "reports": "Հաշվետվություններ",
-    "financeReports": "Ֆինանսներ և հաշվետվություններ",
+    "financeReports": "Ֆինանսական հաշվետվություններ",
     "calculator": "Հաշվիչ",
     "carCatalyst": "Բաքեր",
     "workshop": "Աշխատանոց",
     "repaymentRules": "Մարման կանոններ",
     "capitalSources": "Կապիտալի աղբյուրներ",
     "referrals": "Ուղղորդումներ",
+    "referralWorkspaceLabel": "Ուղղորդումների կառավարում",
     "referralPersons": "Ուղղորդող անձինք",
     "commissions": "Միջնորդավճարներ",
     "agentContracts": "Գործակալների պայմանագրեր",
@@ -52,6 +53,7 @@
     "noName": "Անուն չկա",
     "front": "Դիմացի",
     "back": "Հետևի",
+    "backToTop": "Վերև",
     "unknown": "Անհայտ",
     "noOptionsAvailable": "Տարբերակներ չկան",
     "previous": "Նախորդ",
@@ -64,6 +66,7 @@
     "noData": "Տվյալներ չկան",
     "select": "Ընտրեք",
     "apply": "Կիրառել",
+    "cancel": "Չեղարկել",
     "all": "Բոլորը",
     "notSpecified": "Չնշված",
     "createdAt": "Ստեղծման ամսաթիվ",
@@ -237,6 +240,12 @@
     }
   },
   "reports": {
+    "navigationGroups": {
+      "cashbox": "Դրամարկղ և հերթափոխեր",
+      "inventory": "Պաշարներ և խմբաքանակներ",
+      "iron": "Երկաթի բաժին",
+      "service": "Արտադրամաս և սպասարկում"
+    },
     "navigation": {
       "workshopOrders": "Աշխատարանի պատվերներ",
       "zReports": "Z-հաշիվներ",
@@ -432,6 +441,13 @@
       "warehouseInventory": "Պահեստի մնացորդ",
       "shopInventory": "Խանութի մնացորդ",
       "otherExpenses": "Այլ ծախսեր"
+    },
+    "navigationGroups": {
+      "overview": "Ակնարկ",
+      "operations": "Գործառնական հաշվետվություններ",
+      "profitability": "Շահույթ և վաճառքներ",
+      "inventory": "Մնացորդներ",
+      "expenses": "Ծախսեր"
     },
     "otherExpenses": {
       "monthlyTotal": "Ամսվա այլ ծախսեր",
@@ -884,6 +900,11 @@
       "products": "Ապրանքներ",
       "transferToShop": "Տեղափոխել խանութ"
     },
+    "navigationGroups": {
+      "powderLots": "Փոշու խմբաքանակներ",
+      "productsAndStock": "Ապրանքներ և պաշարներ",
+      "financial": "Ֆինանսական հաշվետվություն"
+    },
     "form": {
       "selectWarehouse": "Ընտրեք պահեստը"
     },
@@ -892,7 +913,16 @@
       "emptyState": "Խմբեր չեն գտնվել։",
       "createSale": "Ստեղծել վաճառք",
       "creating": "Ստեղծվում է...",
-      "previewAndCreateSale": "Նախադիտել և ստեղծել վաճառք",
+      "previewAndCreateSale": "Հաշվարկել վաճառքը",
+      "selectedWeight": "Ընտրված քաշ",
+      "unitKg": "կգ",
+      "statuses": {
+        "available": "Հասանելի",
+        "depleted": "Սպառված",
+        "cancelled": "Չեղարկված",
+        "empty": "Դատարկ",
+        "unknown": "Անհայտ"
+      },
       "previewTitle": "Վաճառքի նախադիտում",
       "details": {
         "individualIntakes": "Առանձին մուտքեր"
@@ -917,7 +947,9 @@
       },
       "lotType": {
         "special": "Հատուկ հաճախորդի խմբ",
+        "specialShort": "Հատուկ",
         "general": "Ընդհանուր խմբ",
+        "generalShort": "Ընդհանուր",
         "mergedFromMultiple": "(Միավորված մի քանիսից)"
       },
       "filters": {
@@ -944,10 +976,20 @@
     "batchesToSale": {
       "loading": "Վաճառքի համար պատրաստի խմբերը բեռնվում են...",
       "emptyState": "Վաճառքի համար հասանելի խմբեր չեն գտնվել։",
+      "warehouseSelectorTitle": "Պահեստի ընտրություն",
       "sale": "Վաճառել",
+      "statuses": {
+        "open": "Հասանելի",
+        "sold": "Վաճառված",
+        "cancelled": "Չեղարկված",
+        "unknown": "Անհայտ"
+      },
       "saleModal": {
         "title": "Ավարտել վաճառքը",
         "description": "Սահմանեք մետաղների գները #{{id}} վաճառքի խմբի համար։",
+        "quantitiesTitle": "Խմբի քանակները",
+        "metalPricesTitle": "Մետաղների գները",
+        "saleSettingsTitle": "Վաճառքի կարգավորումներ",
         "confirm": "Հաստատել վաճառքը",
         "cancel": "Չեղարկել"
       },
@@ -998,6 +1040,7 @@
       "loading": "Վաճառված խմբերը բեռնվում են...",
       "emptyState": "Վաճառված խմբեր չեն գտնվել։",
       "editSoldBatch": "Գնի ճշգրտում",
+      "adjustmentHelp": "Փոխեք վերջնական վաճառքի գինը և նշեք ճշգրտման պատճառը։",
       "filters": {
         "fromDate": "Սկսած",
         "toDate": "Մինչև",
@@ -1023,7 +1066,12 @@
         "comparison": "Տարբերություններ",
         "original": "Սկզբնական",
         "current": "Ներկայիս",
-        "noDifferences": "Տարբերություններ չեն գտնվել"
+        "field": "Դաշտ",
+        "changeCount": "Փոփոխված դաշտեր՝ {{count}}",
+        "snapshotDetails": "Դիտել ամբողջական տվյալները",
+        "noDifferences": "Փոփոխություններ չեն եղել",
+        "noSnapshots": "Այս խմբի վաճառքի ժամանակ տվյալները չեն փոփոխվել։",
+        "failedToFetchChanges": "Չհաջողվեց բեռնել փոփոխությունների պատմությունը"
       },
       "columns": {
         "id": "ID",
@@ -1457,6 +1505,10 @@
         "ironCashOut": "Երկաթի կանխիկ ելք"
       },
       "filters": {
+        "filterHint": "Ընտրեք ժամանակահատված կամ հաճախորդի չափանիշներ",
+        "dateRange": "Ամսաթվերի միջակայք",
+        "customerCriteria": "Հաճախորդի չափանիշներ",
+        "searchClient": "Որոնել հատուկ հաճախորդ",
         "fromDate": "Սկսած ամսաթիվ",
         "toDate": "Մինչև ամսաթիվ",
         "selectFromDate": "Ընտրեք սկզբի ամսաթիվը",
@@ -1465,6 +1517,20 @@
     },
     "batches": {
       "title": "Խմբային հաշվետվություններ",
+      "card": {
+        "batchNumber": "Խմբաքանակ #{{id}}",
+        "cashbox": "Դրամարկղ",
+        "session": "Հերթափոխ",
+        "showIntakes": "Հայտեր՝ {{count}}",
+        "hideDetails": "Փակել մանրամասները"
+      },
+      "statuses": {
+        "open": "Բաց",
+        "partiallySold": "Մասամբ վաճառված",
+        "sold": "Վաճառված",
+        "cancelled": "Չեղարկված",
+        "unknown": "Անհայտ"
+      },
       "special": {
         "badge": "Հատուկ",
         "totalsLabel": "Ընդամենը — միայն հատուկ հաճախորդ (մատակարարի ID․ {{id}})",
@@ -1651,6 +1717,10 @@
         "operations": "Գործողություններ",
         "duration": "Տևողություն",
         "operator": "Օպերատորի ID",
+        "reportNumber": "Z հաշվետվություն #{{id}}",
+        "sessionLabel": "Հերթափոխ",
+        "durationFormat": "{{hours}} ժ {{minutes}} ր",
+        "generated": "Z հաշվետվությունը ձևավորված է",
         "finalDiff": "Վերջնական տարբերություն",
         "catalystCashOut": "Կատալիզատորի կանխիկ ելք",
         "ironCashOut": "Երկաթի կանխիկ ելք"
@@ -1683,6 +1753,10 @@
         "placeholderClientName": "Ըստ հաճախորդի անվան",
         "placeholderClientPhone": "Ըստ հաճախորդի հեռախոսի",
         "placeholderClientTypeId": "Ըստ հաճախորդի տեսակի ID-ի",
+        "filterHint": "Ընտրեք ժամանակահատված կամ հաճախորդի չափանիշներ",
+        "dateRange": "Ամսաթվերի միջակայք",
+        "customerCriteria": "Հաճախորդի չափանիշներ",
+        "searchClient": "Որոնել հատուկ հաճախորդ",
         "specialCustomer": "Հատուկ հաճախորդ",
         "specialCustomerTooltip": "Ընտրելիս հաշվետվությունը կներառի միայն այս հատուկ հաճախորդի գնումները (պահվում են առանձին, չեն միախառնվում այլ գնումների հետ)։ Ընդհանուր գումարները հաշվարկվում են միայն այդ գնումներից։",
         "specialOnly": "Միայն հատուկ հաճախորդ"
@@ -1718,14 +1792,30 @@
         "profitDiffAmd": "Շահույթի տարբերություն",
         "profitDiffPercent": "Շահույթի տարբերություն (%)",
         "customerRealPercent": "Հաճախորդի փաստացի տոկոս"
+      },
+      "card": {
+        "batchNumber": "Խմբաքանակ #{{id}}",
+        "cashbox": "Դրամարկղ",
+        "session": "Հերթափոխ",
+        "showIntakes": "Հայտեր՝ {{count}}",
+        "hideDetails": "Փակել մանրամասները"
+      },
+      "statuses": {
+        "open": "Բաց",
+        "partiallySold": "Մասամբ վաճառված",
+        "sold": "Վաճառված",
+        "cancelled": "Չեղարկված",
+        "unknown": "Անհայտ"
       }
     },
     "openSessions": {
       "title": "Բաց սեսսիաներ",
+      "activeCount": "Բաց սեսսիաներ",
+      "statusOpen": "Բաց է",
       "columns": {
         "sessionId": "Սեսիայի ID",
-        "cashBoxCode": "Կոդ",
-        "operator": "Օպերատոր",
+        "cashBoxCode": "Դրամարկղ",
+        "operator": "Գանձապահ / օպերատոր",
         "openedAt": "Բացված է",
         "intakesOffered": "Առաջարկված մուտքեր",
         "intakesAccepted": "Հաստատված մուտքեր",
@@ -1761,6 +1851,7 @@
         "button": "Ամփոփում",
         "tooltip": "Ցույց տալ ընդհանուր փոշին և մետաղները բոլոր խմբերով",
         "empty": "Ամփոփման տվյալներ չկան։",
+        "calculating": "Հաշվարկվում է…",
         "thisMonth": "Այս ամիս",
         "totalPowderKg": "Ընդհանուր փոշի (կգ)",
         "ptTotal": "Ընդհանուր պլատին (գ)",
@@ -1819,7 +1910,16 @@
         "cashIn": "Կանխիկ մուտք",
         "cashOut": "Կանխիկ ելք",
         "expectedClosingBalance": "Սպասվող վերջնական մնացորդ"
-      }
+      },
+      "dateFromLabel": "Սկսած ամսաթիվ",
+      "dateToLabel": "Մինչև ամսաթիվ",
+      "selectDateFromPlaceholder": "Ընտրեք սկզբի ամսաթիվը (ըստ ցանկության)",
+      "selectDateToPlaceholder": "Ընտրեք վերջի ամսաթիվը (ըստ ցանկության)",
+      "periodLabel": "Ժամանակահատված",
+      "allDates": "Բոլոր ամսաթվերը",
+      "emptyTitle": "Հաշվետվությունը դեռ հաշվարկված չէ",
+      "emptyPrompt": "Ընտրեք խանութն ու դրամարկղը, ապա սեղմեք «Ցույց տալ հաշվետվությունը»։",
+      "balanceEquation": "Սկզբնական մնացորդ + կանխիկ մուտք - կանխիկ ելք = սպասվող վերջնական մնացորդ"
     },
     "errors": {
       "failedToFetchZReports": "Չհաջողվեց բեռնել Z հաշվետվությունները",
@@ -2451,6 +2551,7 @@
     "customersList": "Հաճախորդների ցուցակ",
     "loading": "Հաճախորդները բեռնվում են...",
     "emptyState": "Հաճախորդներ չեն գտնվել։",
+    "results": "Ցուցադրված է {{shown}}՝ {{total}} հաճախորդից",
     "createCustomer": "Ստեղծել հաճախորդ",
     "actions": {
       "resetFilters": "Մաքրել ֆիլտրերը",
@@ -2470,6 +2571,7 @@
     },
     "validation": {
       "phoneRequired": "Հեռախոսահամարը պարտադիր է",
+      "phoneInvalid": "Խնդրում ենք մուտքագրել վավեր հեռախոսահամար։",
       "customerTypeRequired": "Հաճախորդի տեսակը պարտադիր է"
     },
     "columns": {
@@ -2572,15 +2674,28 @@
   },
   "powderSales": {
     "adjustments": {
+      "groups": {
+        "transactionCurrency": "Արտարժույթով հաշվարկ",
+        "amdEquivalent": "Դրամային հաշվարկ"
+      },
+      "helper": {
+        "open": "Տեղեկություն՝ {{title}}",
+        "transactionCurrency": "Ցույց է տալիս վաճառքի սկզբնական և ճշգրտված գումարները գործարքի արժույթով, ինչպես նաև դրանց տարբերությունը։",
+        "amdEquivalent": "Ցույց է տալիս նույն գումարների դրամային համարժեքը՝ սկզբնական արժեքը, ճշգրտված արժեքը և տարբերությունը։"
+      },
       "columns": {
         "id": "ID",
         "powderSaleId": "ID",
-        "oldAmount": "Սկզբնական",
-        "newAmount": "Նոր",
-        "difference": "Տարբեր.",
+        "oldAmount": "Սկզբնական գումար",
+        "newAmount": "Ճշգրտված գումար",
+        "difference": "Տարբերություն",
         "currencyCode": "Արժույթ",
-        "oldAmountAmd": "Հին (AMD)",
-        "newAmountAmd": "Նոր (AMD)",
+        "originalAmount": "Սկզբնական գումար",
+        "adjustedAmount": "Ճշգրտված գումար",
+        "originalAmountAmd": "Սկզբնական գումար (AMD)",
+        "adjustedAmountAmd": "Ճշգրտված գումար (AMD)",
+        "oldAmountAmd": "Սկզբնական գումար (AMD)",
+        "newAmountAmd": "Ճշգրտված գումար (AMD)",
         "differenceAmd": "Տարբեր. (AMD)",
         "exchangeRate": "Փոխարժեք",
         "reason": "Պատճառ",
@@ -3752,7 +3867,8 @@
       "loading": "Բեռնվում է...",
       "saving": "Պահպանվում է...",
       "create": "Ստեղծել",
-      "update": "Թարմացնել"
+      "update": "Թարմացնել",
+      "cancel": "Չեղարկել"
     },
     "rules": {
       "title": "Ավելացնել միջնորդավճարի կանոն",
@@ -3782,7 +3898,8 @@
     },
     "validation": {
       "required": "Կոդը և անունը պարտադիր են։",
-      "email": "Խնդրում ենք մուտքագրել վավեր էլ. փոստի հասցե։"
+      "email": "Խնդրում ենք մուտքագրել վավեր էլ. փոստի հասցե։",
+      "phone": "Խնդրում ենք մուտքագրել վավեր հեռախոսահամար։"
     }
   },
   "referralCommissions": {

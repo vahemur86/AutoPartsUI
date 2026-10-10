@@ -6,6 +6,17 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  CalendarDays,
+  CarFront,
+  Check,
+  Hash,
+  Phone,
+  RotateCcw,
+  SlidersHorizontal,
+  UserRound,
+  Weight,
+} from "lucide-react";
 
 import { Button, DatePicker, Dropdown, TextField } from "@/ui-kit";
 
@@ -67,8 +78,6 @@ export const FilterIronPurchasesReportDropdown: FC<
   };
 
   const handleApply = () => {
-    if (isFiltersEmpty) return;
-
     onSave({
       from: toSafeISO(tempValues.from),
       to: toSafeISO(tempValues.to),
@@ -109,13 +118,19 @@ export const FilterIronPurchasesReportDropdown: FC<
       contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
+        <span className={styles.headerIcon} aria-hidden="true">
+          <SlidersHorizontal size={16} />
+        </span>
         <span className={styles.title}>{t("common.filters")}</span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.dateRow}>
           <div className={styles.fieldWrapper}>
-            <label className={styles.label}>{t("reports.filters.fromUtc")}</label>
+            <label className={styles.labelWithIcon}>
+              <CalendarDays size={13} aria-hidden="true" />
+              {t("reports.filters.fromUtc")}
+            </label>
             <DatePicker
               selected={tempValues.from}
               onChange={(date) => setTempValues((prev) => ({ ...prev, from: date }))}
@@ -124,7 +139,10 @@ export const FilterIronPurchasesReportDropdown: FC<
             />
           </div>
           <div className={styles.fieldWrapper}>
-            <label className={styles.label}>{t("reports.filters.toUtc")}</label>
+            <label className={styles.labelWithIcon}>
+              <CalendarDays size={13} aria-hidden="true" />
+              {t("reports.filters.toUtc")}
+            </label>
             <DatePicker
               selected={tempValues.to}
               onChange={(date) => setTempValues((prev) => ({ ...prev, to: date }))}
@@ -138,6 +156,7 @@ export const FilterIronPurchasesReportDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.ironPurchases.filters.dictBrandId")}
+            icon={<CarFront size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.dictBrandId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -154,6 +173,7 @@ export const FilterIronPurchasesReportDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.ironPurchases.filters.ironTypeId")}
+            icon={<Weight size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.ironTypeId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -170,6 +190,7 @@ export const FilterIronPurchasesReportDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.ironPurchases.filters.operatorUserId")}
+            icon={<UserRound size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.operatorUserId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -186,6 +207,7 @@ export const FilterIronPurchasesReportDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.ironPurchases.filters.sessionId")}
+            icon={<Hash size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.sessionId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -202,6 +224,7 @@ export const FilterIronPurchasesReportDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.ironPurchases.filters.customerPhone")}
+            icon={<Phone size={14} aria-hidden="true" />}
             type="text"
             value={tempValues.customerPhone ?? ""}
             onChange={(e) =>
@@ -219,6 +242,7 @@ export const FilterIronPurchasesReportDropdown: FC<
             onClick={handleReset}
             disabled={isFiltersEmpty}
           >
+            <RotateCcw size={14} aria-hidden="true" />
             {t("common.reset")}
           </Button>
 
@@ -227,6 +251,7 @@ export const FilterIronPurchasesReportDropdown: FC<
             onClick={handleApply}
             disabled={isFiltersEmpty}
           >
+            <Check size={14} aria-hidden="true" />
             {t("common.save")}
           </Button>
         </div>

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Banknote, CalendarDays, Check, CircleDollarSign, FileText, Hash, UserRound, Wrench, X } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
 import { Button, TextField, Textarea } from "@/ui-kit";
@@ -12,6 +13,9 @@ import {
   rejectReferralCommission,
   type ReferralCommissionDto,
 } from "@/services/referralCommissions";
+import styles from "./ReferralCommissionDetails.module.css";
+import sharedStyles from "./ReferralPersons.module.css";
+import actionStyles from "./ReferralActions.module.css";
 
 export const ReferralCommissionDetails = () => {
   const { t } = useTranslation();
@@ -22,15 +26,15 @@ export const ReferralCommissionDetails = () => {
   const [reason, setReason] = useState("");
   const [paymentReference, setPaymentReference] = useState("");
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!id) return;
     const result = await getReferralCommission(id);
     setCommission(result);
-  };
+  }, [id]);
 
   useEffect(() => {
     void load();
-  }, [id]);
+  }, [load]);
 
   const statusActions = useMemo(() => {
     if (!commission) return [];
@@ -90,45 +94,54 @@ export const ReferralCommissionDetails = () => {
   };
 
   if (!commission) {
-    return <div style={{ padding: 24 }}><SectionHeader title={t("referralCommissions.details.title")} goBack />{t("common.loading")}</div>;
+    return <div className={styles.page}><SectionHeader title={t("referralCommissions.details.title")} goBack /><div className={styles.loadingState}>{t("common.loading")}</div></div>;
   }
 
   return (
-    <div style={{ padding: 24, display: "grid", gap: 20 }}>
+    <div className={styles.page}>
       <SectionHeader
         title={t("referralCommissions.details.number", { id: commission.id })}
         goBack
         actions={
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className={styles.headerActions}>
             {statusActions.includes("Approve") && (
-              <Button onClick={handleApprove} disabled={actionBusy}>{t("referralCommissions.actions.approve")}</Button>
+              <Button className={`${actionStyles.referralButton} ${actionStyles.referralSuccess}`} onClick={handleApprove} disabled={actionBusy}><Check size={15} />{t("referralCommissions.actions.approve")}</Button>
             )}
             {statusActions.includes("Reject") && (
-              <Button variant="secondary" onClick={handleReject} disabled={actionBusy}>{t("referralCommissions.actions.reject")}</Button>
+              <Button className={`${actionStyles.referralButton} ${actionStyles.referralDanger}`} onClick={handleReject} disabled={actionBusy}><X size={15} />{t("referralCommissions.actions.reject")}</Button>
             )}
             {statusActions.includes("Pay") && (
-              <Button onClick={handlePay} disabled={actionBusy}>{t("referralCommissions.actions.pay")}</Button>
+              <Button className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`} onClick={handlePay} disabled={actionBusy}><Banknote size={15} />{t("referralCommissions.actions.pay")}</Button>
             )}
           </div>
         }
       />
 
-      <div style={{ display: "grid", gap: 12, maxWidth: 800 }}>
-        <div><strong>{t("referralCommissions.fields.status")}:</strong> {t(`referralCommissions.statuses.${commission.status.toLowerCase()}`, { defaultValue: commission.status })}</div>
-        <div><strong>{t("referralCommissions.fields.orderId")}:</strong> {commission.serviceOrderId}</div>
-        <div><strong>{t("referralCommissions.fields.referralPerson")}:</strong> {commission.referralPersonName}</div>
-        <div><strong>{t("referralCommissions.fields.service")}:</strong> {commission.serviceName}</div>
-        <div><strong>{t("referralCommissions.fields.servicePrice")}:</strong> ${commission.servicePrice.toFixed(2)}</div>
-        <div><strong>{t("referralCommissions.fields.commissionPercent")}:</strong> {commission.commissionPercent}%</div>
-        <div><strong>{t("referralCommissions.fields.commissionAmount")}:</strong> ${commission.commissionAmount.toFixed(2)}</div>
-        <div><strong>{t("referralCommissions.fields.created")}:</strong> {new Date(commission.createdAt).toLocaleString()}</div>
-        {commission.approvedAt && <div><strong>{t("referralCommissions.fields.approved")}:</strong> {new Date(commission.approvedAt).toLocaleString()}</div>}
-        {commission.paidAt && <div><strong>{t("referralCommissions.fields.paid")}:</strong> {new Date(commission.paidAt).toLocaleString()}</div>}
-        {commission.rejectedAt && <div><strong>{t("referralCommissions.fields.rejected")}:</strong> {new Date(commission.rejectedAt).toLocaleString()}</div>}
-      </div>
+      <section className={styles.detailPanel}>
+        <div className={styles.panelHeading}>
+          <span className={styles.panelIcon}><CircleDollarSign size={18} /></span>
+          <span className={`${sharedStyles.commissionStatus} ${sharedStyles[`commissionStatus${commission.status}`] ?? ""}`}>
+            {t(`referralCommissions.statuses.${commission.status.toLowerCase()}`, { defaultValue: commission.status })}
+          </span>
+        </div>
+        <div className={styles.detailGrid}>
+          <div className={styles.detailItem}><span><Hash size={14} />{t("referralCommissions.fields.orderId")}</span><strong>{commission.serviceOrderId}</strong></div>
+          <div className={styles.detailItem}><span><UserRound size={14} />{t("referralCommissions.fields.referralPerson")}</span><strong>{commission.referralPersonName}</strong></div>
+          <div className={styles.detailItem}><span><Wrench size={14} />{t("referralCommissions.fields.service")}</span><strong>{commission.serviceName}</strong></div>
+          <div className={styles.detailItem}><span><Banknote size={14} />{t("referralCommissions.fields.servicePrice")}</span><strong>${commission.servicePrice.toFixed(2)}</strong></div>
+          <div className={styles.detailItem}><span><CircleDollarSign size={14} />{t("referralCommissions.fields.commissionPercent")}</span><strong>{commission.commissionPercent}%</strong></div>
+          <div className={styles.detailItem}><span><CircleDollarSign size={14} />{t("referralCommissions.fields.commissionAmount")}</span><strong>${commission.commissionAmount.toFixed(2)}</strong></div>
+          <div className={styles.detailItem}><span><CalendarDays size={14} />{t("referralCommissions.fields.created")}</span><strong>{new Date(commission.createdAt).toLocaleString()}</strong></div>
+          {commission.approvedAt && <div className={styles.detailItem}><span><CalendarDays size={14} />{t("referralCommissions.fields.approved")}</span><strong>{new Date(commission.approvedAt).toLocaleString()}</strong></div>}
+          {commission.paidAt && <div className={styles.detailItem}><span><CalendarDays size={14} />{t("referralCommissions.fields.paid")}</span><strong>{new Date(commission.paidAt).toLocaleString()}</strong></div>}
+          {commission.rejectedAt && <div className={styles.detailItem}><span><CalendarDays size={14} />{t("referralCommissions.fields.rejected")}</span><strong>{new Date(commission.rejectedAt).toLocaleString()}</strong></div>}
+        </div>
+      </section>
 
       {(commission.status === "Pending" || commission.status === "Approved") && (
-        <div style={{ display: "grid", gap: 12, maxWidth: 640 }}>
+        <section className={styles.actionPanel}>
+          <h3><FileText size={16} />{commission.status === "Pending" ? t("referralCommissions.actions.approve") : t("referralCommissions.actions.pay")}</h3>
+          <div className={styles.actionFields}>
           {commission.status === "Pending" && (
             <Textarea
               label={t("referralCommissions.fields.approvalNotes")}
@@ -143,6 +156,7 @@ export const ReferralCommissionDetails = () => {
                 label={t("referralCommissions.fields.reference")}
                 value={paymentReference}
                 onChange={(e) => setPaymentReference(e.target.value)}
+                icon={<Hash size={15} />}
               />
               <Textarea
                 label={t("referralCommissions.fields.paymentNotes")}
@@ -159,8 +173,8 @@ export const ReferralCommissionDetails = () => {
               onChange={(e) => setReason(e.target.value)}
             />
           )}
-
-        </div>
+          </div>
+        </section>
       )}
     </div>
   );

@@ -112,7 +112,13 @@ export interface CarModelPayload {
 }
 
 export interface GetIronSalesParams {
-  customerId?: number;
+  FromUtc?: string;
+  ToUtc?: string;
+  ProductId?: number;
+  OperatorUserId?: number;
+  CashRegisterId?: number;
+  Page?: number;
+  PageSize?: number;
   lang?: string;
 }
 

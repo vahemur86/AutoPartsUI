@@ -1,4 +1,18 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import {
+  Banknote,
+  CalendarClock,
+  ChartNoAxesCombined,
+  Hash,
+  Package,
+  Percent,
+  Store,
+  UserRound,
+  Warehouse,
+  Weight,
+  type LucideIcon,
+} from "lucide-react";
+import styles from "./FinanceReports.module.css";
 
 export type DynamicRow = {
   id: string | number;
@@ -12,10 +26,29 @@ interface DynamicColumnsOptions {
   hiddenKeys?: string[];
 }
 
-const moneyKeyRegex = /(amount|total|cost|price|profit|revenue|balance)/i;
+const moneyKeyRegex = /(amount|cost|price|profit|revenue|balance|value|expense|sales)/i;
 const percentKeyRegex = /(percent|percentage|margin|markup)/i;
 const dateKeyRegex = /(date|at)$/i;
 const idKeyRegex = /id$/i;
+const quantityKeyRegex = /(count|quantity|units|products|items|number)/i;
+
+export const isFinanceMoneyKey = (key: string) =>
+  moneyKeyRegex.test(key) &&
+  !percentKeyRegex.test(key) &&
+  !quantityKeyRegex.test(key);
+
+export const getFinanceColumnIcon = (key: string): LucideIcon => {
+  if (/(date|created|updated|occurred|purchased|last)/i.test(key)) return CalendarClock;
+  if (/(percent|percentage|margin|markup|rate)/i.test(key)) return Percent;
+  if (/(amount|cost|price|profit|revenue|sales|balance|value)/i.test(key)) return Banknote;
+  if (/(weight|quantity|count|units|stock)/i.test(key)) return Weight;
+  if (/warehouse/i.test(key)) return Warehouse;
+  if (/shop|store/i.test(key)) return Store;
+  if (/product|service|category/i.test(key)) return Package;
+  if (/employee|operator|customer|user/i.test(key)) return UserRound;
+  if (/id$/i.test(key)) return Hash;
+  return ChartNoAxesCombined;
+};
 
 const toText = (value: unknown): string => {
   if (value === null || value === undefined) {
@@ -43,7 +76,7 @@ const formatValue = (key: string, value: unknown): string => {
       return `${value.toFixed(2)}%`;
     }
 
-    if (moneyKeyRegex.test(key)) {
+    if (isFinanceMoneyKey(key)) {
       return value.toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -77,7 +110,19 @@ const formatValue = (key: string, value: unknown): string => {
   return toText(value);
 };
 
-const toHeader = (key: string): string => {
+export const formatFinanceValue = (key: string, value: unknown): string => {
+  const formatted = formatValue(key, value);
+  if (
+    typeof value === "number" && isFinanceMoneyKey(key)
+  ) {
+    return `${formatted} AMD`;
+  }
+  return formatted;
+};
+
+export const isFinanceProfitKey = (key: string) => /profit/i.test(key);
+
+export const toFinanceHeader = (key: string): string => {
   return key
     .replace(/([A-Z])/g, " $1")
     .replace(/_/g, " ")
@@ -144,19 +189,49 @@ export const getDynamicColumns = (
   const remaining = allKeys.filter((key) => !preferred.includes(key));
   const keys = [...preferred, ...remaining];
 
-  return keys.map((key) => {
+  const columns = keys.map((key) => {
     if (key === "id") {
       return columnHelper.display({
         id: "id",
-        header: "ID",
+        header: () => (
+          <span className={styles.dynamicColumnHeader}>
+            <Hash size={13} aria-hidden="true" />
+            ID
+          </span>
+        ),
         cell: ({ row }) => `#${toText(row.original.id)}`,
       });
     }
 
     return columnHelper.display({
       id: key,
-      header: toHeader(key),
-      cell: ({ row }) => formatValue(key, row.original[key]),
+      header: () => {
+        const Icon = getFinanceColumnIcon(key);
+        return (
+          <span className={styles.dynamicColumnHeader}>
+            <Icon size={13} aria-hidden="true" />
+            {toFinanceHeader(key)}
+          </span>
+        );
+      },
+      cell: ({ row }) => {
+        const value = row.original[key];
+        if (typeof value === "number" && isFinanceMoneyKey(key)) {
+          const profitClass = /profit/i.test(key)
+            ? value >= 0
+              ? styles.positiveValue
+              : styles.negativeValue
+            : "";
+          return (
+            <span className={`${styles.moneyValue} ${profitClass}`}>
+              {formatFinanceValue(key, value)}
+            </span>
+          );
+        }
+        return formatValue(key, value);
+      },
     });
   });
+
+  return columns;
 };

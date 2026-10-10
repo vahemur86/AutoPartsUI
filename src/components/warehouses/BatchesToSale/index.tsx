@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import {
@@ -35,7 +36,18 @@ import type { BaseLot } from "@/types/warehouses/salesLots";
 
 // styles
 import styles from "./BatchesToSale.module.css";
-import { DollarSign } from "lucide-react";
+import {
+  Calculator,
+  Check,
+  CircleDollarSign,
+  Coins,
+  Info,
+  Scale,
+  WalletCards,
+  Warehouse,
+  X,
+} from "lucide-react";
+import { SalesLotDetails } from "./SalesLotDetails";
 
 const PAGE_SIZE = 10;
 
@@ -51,6 +63,7 @@ export const BatchesToSale = () => {
     selectedFormDetails,
     lastRecalculationResult,
   } = useAppSelector((state) => state.salesLots);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
 
   const { warehouses } = useAppSelector((state) => state.warehouses);
 
@@ -150,7 +163,7 @@ export const BatchesToSale = () => {
     }
   };
 
-  const handleOpenSellModal = (lot: BaseLot) => {
+  const handleOpenSellModal = useCallback((lot: BaseLot) => {
     setLotToSell(lot);
     setIsSellModalOpen(true);
 
@@ -162,7 +175,7 @@ export const BatchesToSale = () => {
         cashRegisterId,
       }),
     );
-  };
+  }, [dispatch, cashRegisterId]);
 
   const handleCloseSellModal = () => {
     if (isProcessingSale) return;
@@ -246,7 +259,7 @@ export const BatchesToSale = () => {
       getSalesLotColumns({
         onSell: handleOpenSellModal,
       }),
-    [],
+    [handleOpenSellModal],
   );
 
   const handleWarehouseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -264,19 +277,20 @@ export const BatchesToSale = () => {
   return (
     <div className={styles.batchesToSaleWrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>
-          {t("warehouses.navigation.batchesToSale")}
-        </h2>
-
         <div className={styles.warehouseSelector}>
+          <label className={styles.warehouseSelectorLabel}>
+            <Warehouse size={16} aria-hidden="true" />
+            <span>{t("warehouses.batchesToSale.warehouseSelectorTitle")}</span>
+          </label>
           <Select
-            label={t("warehouses.form.warehouse")}
+            aria-label={t("warehouses.batchesToSale.warehouseSelectorTitle")}
+            className={styles.warehouseSelect}
+            containerClassName={styles.warehouseSelectContainer}
             placeholder={t("warehouses.form.selectWarehouse")}
             value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
             onChange={handleWarehouseChange}
             disabled={isLoading}
           >
-            <option value="">{t("warehouses.form.selectWarehouse")}</option>
             {warehouses.map((warehouse) => (
               <option key={warehouse.id} value={warehouse.id}>
                 {warehouse.code}
@@ -291,7 +305,7 @@ export const BatchesToSale = () => {
           <div className={styles.emptyState}>
             {t("warehouses.form.selectWarehouse")}
           </div>
-        ) : isLoading ? (
+        ) : showTableSkeleton ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -331,6 +345,9 @@ export const BatchesToSale = () => {
                 .join(" ")
             }
             onPaginationChange={handlePaginationChange}
+            renderSubComponent={({ row }) => (
+              <SalesLotDetails lot={row.original} />
+            )}
           />
         )}
       </div>
@@ -341,86 +358,99 @@ export const BatchesToSale = () => {
           onOpenChange={(open) => {
             if (!open) handleCloseSellModal();
           }}
-          title={t("warehouses.batchesToSale.saleModal.title")}
-          description={t("warehouses.batchesToSale.saleModal.description", {
-            id: lotToSell?.id,
-          })}
+          title={
+            <span className={styles.saleModalTitle}>
+              <span className={styles.saleModalTitleIcon} aria-hidden="true">
+                <CircleDollarSign size={18} />
+              </span>
+              <span>
+                {t("warehouses.batchesToSale.saleModal.title")}
+                <small>#{lotToSell?.id}</small>
+              </span>
+            </span>
+          }
+          className={styles.saleModal}
+          description={
+            <span className={styles.saleModalDescription}>
+              <Info size={16} aria-hidden="true" />
+              <span>
+                {t("warehouses.batchesToSale.saleModal.description", {
+                  id: lotToSell?.id,
+                })}
+              </span>
+            </span>
+          }
           confirmText={t("warehouses.batchesToSale.saleModal.confirm")}
           cancelText={t("common.cancel")}
+          confirmIcon={<Check size={16} aria-hidden="true" />}
+          cancelIcon={<X size={16} aria-hidden="true" />}
           onConfirm={handleConfirmSale}
           onCancel={handleCloseSellModal}
           confirmDisabled={isProcessingSale}
           confirmLoading={isProcessingSale}
         >
           <div className={styles.saleForm}>
-            <div className={styles.saleFormRow}>
-              <TextField
-                label={t("warehouses.batchesToSale.fields.powderKg")}
-                type="number"
-                value={String(sellForm.powderKg)}
-                onChange={(e) =>
-                  handleSellFieldChange("powderKg", e.target.value)
-                }
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.pt_g")}
-                type="number"
-                value={String(sellForm.pt_g)}
-                onChange={(e) => handleSellFieldChange("pt_g", e.target.value)}
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.pd_g")}
-                type="number"
-                value={String(sellForm.pd_g)}
-                onChange={(e) => handleSellFieldChange("pd_g", e.target.value)}
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.rh_g")}
-                type="number"
-                value={String(sellForm.rh_g)}
-                onChange={(e) => handleSellFieldChange("rh_g", e.target.value)}
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.ptPrice")}
-                icon={<DollarSign size={16} />}
-                type="number"
-                value={String(sellForm.ptPrice)}
-                onChange={(e) =>
-                  handleSellFieldChange("ptPrice", e.target.value)
-                }
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.pdPrice")}
-                icon={<DollarSign size={16} />}
-                type="number"
-                value={String(sellForm.pdPrice)}
-                onChange={(e) =>
-                  handleSellFieldChange("pdPrice", e.target.value)
-                }
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.rhPrice")}
-                icon={<DollarSign size={16} />}
-                type="number"
-                value={String(sellForm.rhPrice)}
-                onChange={(e) =>
-                  handleSellFieldChange("rhPrice", e.target.value)
-                }
-              />
-            </div>
+            <section className={styles.saleFormGroup}>
+              <h4 className={styles.saleFormHeading}>
+                <Scale size={16} aria-hidden="true" />
+                {t("warehouses.batchesToSale.saleModal.quantitiesTitle")}
+              </h4>
+              <div className={styles.saleFormRow}>
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.powderKg")}
+                  type="number"
+                  value={String(sellForm.powderKg)}
+                  onChange={(e) =>
+                    handleSellFieldChange("powderKg", e.target.value)
+                  }
+                />
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.pt_g")}
+                  type="number"
+                  value={String(sellForm.pt_g)}
+                  onChange={(e) => handleSellFieldChange("pt_g", e.target.value)}
+                />
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.pd_g")}
+                  type="number"
+                  value={String(sellForm.pd_g)}
+                  onChange={(e) => handleSellFieldChange("pd_g", e.target.value)}
+                />
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.rh_g")}
+                  type="number"
+                  value={String(sellForm.rh_g)}
+                  onChange={(e) => handleSellFieldChange("rh_g", e.target.value)}
+                />
+              </div>
+            </section>
 
-            <div className={styles.saleFormRow}>
-              <TextField
-                label={t("warehouses.batchesToSale.fields.usdRate")}
-                value={String(selectedFormDetails?.usdRate ?? "")}
-                disabled
-              />
-              <TextField
-                label={t("warehouses.batchesToSale.fields.revenueAmd")}
-                value={String(selectedFormDetails?.revenueAmd ?? "")}
-                disabled
-              />
-            </div>
+            <section className={styles.saleFormGroup}>
+              <h4 className={styles.saleFormHeading}>
+                <Coins size={16} aria-hidden="true" />
+                {t("warehouses.batchesToSale.saleModal.metalPricesTitle")}
+              </h4>
+              <div className={styles.saleFormRow}>
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.ptPrice")}
+                  type="number"
+                  value={String(sellForm.ptPrice)}
+                  onChange={(e) => handleSellFieldChange("ptPrice", e.target.value)}
+                />
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.pdPrice")}
+                  type="number"
+                  value={String(sellForm.pdPrice)}
+                  onChange={(e) => handleSellFieldChange("pdPrice", e.target.value)}
+                />
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.rhPrice")}
+                  type="number"
+                  value={String(sellForm.rhPrice)}
+                  onChange={(e) => handleSellFieldChange("rhPrice", e.target.value)}
+                />
+              </div>
+            </section>
 
             <div className={styles.recalculateSection}>
               <Button
@@ -429,6 +459,7 @@ export const BatchesToSale = () => {
                 disabled={isRecalculating}
                 className={styles.recalculateButton}
               >
+                <Calculator size={16} aria-hidden="true" />
                 {isRecalculating
                   ? t("warehouses.batchesToSale.recalculate.loading")
                   : t("warehouses.batchesToSale.recalculate.button")}
@@ -454,22 +485,40 @@ export const BatchesToSale = () => {
               )}
             </div>
 
-            <Select
-              label={t("warehouses.batchesToSale.saleForm.currencyCode")}
-              value={sellForm.currencyCode}
-              onChange={(e) =>
-                handleSellFieldChange("currencyCode", e.target.value)
-              }
-            >
-              {CURRENCIES.filter(
-                (currency) =>
-                  currency.value === "AMD" || currency.value === "USD",
-              ).map((currency) => (
-                <option key={currency.value} value={currency.value}>
-                  {currency.label}
-                </option>
-              ))}
-            </Select>
+            <section className={styles.saleFormGroup}>
+              <h4 className={styles.saleFormHeading}>
+                <WalletCards size={16} aria-hidden="true" />
+                {t("warehouses.batchesToSale.saleModal.saleSettingsTitle")}
+              </h4>
+              <div className={styles.saleFormRow}>
+                <Select
+                  label={t("warehouses.batchesToSale.saleForm.currencyCode")}
+                  value={sellForm.currencyCode}
+                  onChange={(e) =>
+                    handleSellFieldChange("currencyCode", e.target.value)
+                  }
+                >
+                  {CURRENCIES.filter(
+                    (currency) =>
+                      currency.value === "AMD" || currency.value === "USD",
+                  ).map((currency) => (
+                    <option key={currency.value} value={currency.value}>
+                      {currency.label}
+                    </option>
+                  ))}
+                </Select>
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.usdRate")}
+                  value={String(selectedFormDetails?.usdRate ?? "")}
+                  disabled
+                />
+                <TextField
+                  label={t("warehouses.batchesToSale.fields.revenueAmd")}
+                  value={String(selectedFormDetails?.revenueAmd ?? "")}
+                  disabled
+                />
+              </div>
+            </section>
           </div>
         </ConfirmationModal>
       )}

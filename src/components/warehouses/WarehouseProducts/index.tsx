@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ColumnDef, Row } from "@tanstack/react-table";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable, Select } from "@/ui-kit";
@@ -35,6 +36,7 @@ export const WarehouseProducts = () => {
     items: warehouseProducts,
     isLoading: isLoadingProducts,
   } = useAppSelector((state) => state.warehouseProducts);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoadingProducts);
   const { products } = useAppSelector((state) => state.products);
 
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
@@ -183,7 +185,7 @@ export const WarehouseProducts = () => {
       );
     }
 
-    if (isLoadingProducts) {
+    if (showTableSkeleton) {
       return (
         <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
           <div className={styles.tableSkeletonHeader}>
@@ -225,9 +227,6 @@ export const WarehouseProducts = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>
-          {t("warehouses.navigation.products")}
-        </h2>
         <div className={styles.warehouseSelector}>
           <Select
             label={t("warehouses.form.warehouse")}

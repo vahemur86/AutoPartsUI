@@ -1,12 +1,10 @@
 import type { MouseEvent } from "react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-
-// ui-kit
-import { Button } from "@/ui-kit";
+import { Pencil, Trash2 } from "lucide-react";
 
 // types
 import type { Customer } from "@/types/operator";
-import i18next from "i18next";
+import styles from "./Customers.module.css";
 
 const columnHelper = createColumnHelper<Customer>();
 
@@ -18,7 +16,8 @@ export const getCustomerColumns = ({
   onEdit: (customer: Customer, e: MouseEvent<HTMLElement>) => void;
   onDelete: (customer: Customer) => void;
   t: (key: string) => string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// TanStack column accessors have distinct value types; DataTable infers this generic.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): ColumnDef<Customer, any>[] => [
   columnHelper.accessor("id", {
     header: t("customers.columns.id"),
@@ -56,7 +55,11 @@ export const getCustomerColumns = ({
     cell: (info) => {
       const isActive = info.getValue();
       if (isActive === undefined) return "-";
-      return isActive ? t("common.active") : t("common.inactive");
+      return (
+        <span className={`${styles.statusBadge} ${isActive ? "" : styles.statusInactive}`}>
+          {isActive ? t("common.active") : t("common.inactive")}
+        </span>
+      );
     },
   }),
 
@@ -64,21 +67,31 @@ export const getCustomerColumns = ({
     id: "actions",
     header: t("common.actions"),
     cell: ({ row }) => (
-      <div style={{ display: "flex", gap: "12px" }}>
-        <Button
-          variant="primary"
-          size="small"
-          onClick={(e) => onEdit(row.original, e)}
+      <div className={styles.rowActions}>
+        <button
+          type="button"
+          className={styles.iconAction}
+          onClick={(event) => {
+            event.stopPropagation();
+            onEdit(row.original, event);
+          }}
+          aria-label={t("common.edit")}
+          title={t("common.edit")}
         >
-          {t("common.edit")}
-        </Button>
-        <Button
-          variant="danger"
-          size="small"
-          onClick={() => onDelete(row.original)}
+          <Pencil size={15} />
+        </button>
+        <button
+          type="button"
+          className={`${styles.iconAction} ${styles.iconActionDanger}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(row.original);
+          }}
+          aria-label={t("common.delete")}
+          title={t("common.delete")}
         >
-          {i18next.t("common.delete")}
-        </Button>
+          <Trash2 size={15} />
+        </button>
       </div>
     ),
   }),

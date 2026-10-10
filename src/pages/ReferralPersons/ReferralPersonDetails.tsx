@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { BadgeCheck, CalendarDays, Hash, Mail, Pencil, Phone, Power, Plus, UserRound } from "lucide-react";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { SectionHeader } from "@/components/common";
 import { Button, DataTable } from "@/ui-kit";
@@ -14,6 +16,9 @@ import {
   type ReferralPersonDto,
   type ReferralPersonRuleDto,
 } from "@/services/referralPersons";
+import styles from "./ReferralPersonDetails.module.css";
+import sharedStyles from "./ReferralPersons.module.css";
+import actionStyles from "./ReferralActions.module.css";
 
 export const ReferralPersonDetails = () => {
   const { t } = useTranslation();
@@ -23,7 +28,7 @@ export const ReferralPersonDetails = () => {
   const [rules, setRules] = useState<ReferralPersonRuleDto[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
@@ -38,13 +43,13 @@ export const ReferralPersonDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, t]);
 
   useEffect(() => {
     void load();
-  }, [id]);
+  }, [load]);
 
-  const handleRuleToggle = async (ruleId: number) => {
+  const handleRuleToggle = useCallback(async (ruleId: number) => {
     if (!id) return;
     try {
       const rule = rules.find((item) => item.id === ruleId);
@@ -56,9 +61,9 @@ export const ReferralPersonDetails = () => {
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("referralPerson.errors.ruleStatusFailed"));
     }
-  };
+  }, [id, load, rules, t]);
 
-  const handlePersonToggle = async () => {
+  const handlePersonToggle = useCallback(async () => {
     if (!id || !person) return;
     try {
       if (person.status === "Active") await deactivateReferralPerson(id);
@@ -68,24 +73,33 @@ export const ReferralPersonDetails = () => {
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("referralPerson.errors.statusFailed"));
     }
-  };
+  }, [id, load, person, t]);
 
-  const ruleColumns = useMemo(
+  const ruleColumns = useMemo<ColumnDef<ReferralPersonRuleDto, unknown>[]>(
     () => [
       { accessorKey: "serviceName", header: t("referralPerson.rules.service") },
       { accessorKey: "serviceId", header: t("referralPerson.rules.serviceId") },
       { accessorKey: "commissionPercent", header: t("referralPerson.rules.commissionPercent") },
       { accessorKey: "effectiveFrom", header: t("referralPerson.rules.effectiveFrom") },
       { accessorKey: "effectiveTo", header: t("referralPerson.rules.effectiveTo") },
-      { accessorKey: "status", header: t("referralPerson.fields.status"), cell: ({ row }: any) => t(`referralPerson.statuses.${String(row.original.status).toLowerCase()}`, { defaultValue: row.original.status }) },
+      { accessorKey: "status", header: t("referralPerson.fields.status"), cell: ({ row }: CellContext<ReferralPersonRuleDto, unknown>) => t(`referralPerson.statuses.${String(row.original.status).toLowerCase()}`, { defaultValue: row.original.status }) },
       {
         id: "actions",
         header: t("common.actions"),
-        cell: ({ row }: any) => (
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" size="small" onClick={() => handleRuleToggle(row.original.id)}>
-              {row.original.status === "Active" ? t("referralPerson.actions.deactivate") : t("referralPerson.actions.activate")}
-            </Button>
+        cell: ({ row }: CellContext<ReferralPersonRuleDto, unknown>) => (
+          <div className={sharedStyles.rowActions}>
+            <button
+              type="button"
+              className={`${sharedStyles.iconAction} ${row.original.status === "Active" ? sharedStyles.iconActionDanger : sharedStyles.iconActionSuccess}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                void handleRuleToggle(row.original.id);
+              }}
+              aria-label={row.original.status === "Active" ? t("referralPerson.actions.deactivate") : t("referralPerson.actions.activate")}
+              title={row.original.status === "Active" ? t("referralPerson.actions.deactivate") : t("referralPerson.actions.activate")}
+            >
+              <Power size={15} />
+            </button>
           </div>
         ),
       },
@@ -94,57 +108,78 @@ export const ReferralPersonDetails = () => {
   );
 
   if (loading) {
-    return <div style={{ padding: 24 }}><SectionHeader title={t("referralPerson.details.title")} goBack />{t("referralPerson.form.loading")}</div>;
+    return <div className={styles.page}><SectionHeader title={t("referralPerson.details.title")} goBack /><div className={styles.loadingState}>{t("referralPerson.form.loading")}</div></div>;
   }
 
   if (!person) {
-    return <div style={{ padding: 24 }}><SectionHeader title={t("referralPerson.details.title")} goBack />{t("referralPerson.details.noData")}</div>;
+    return <div className={styles.page}><SectionHeader title={t("referralPerson.details.title")} goBack /><div className={styles.loadingState}>{t("referralPerson.details.noData")}</div></div>;
   }
 
   return (
-    <div style={{ padding: 24, display: "grid", gap: 16 }}>
+    <div className={styles.page}>
       <SectionHeader
         title={`${person.name} (${person.code})`}
         goBack
         actions={
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" onClick={() => navigate(`/referral-persons/${person.id}/edit`)}>
+          <div className={styles.headerActions}>
+            <Button
+              className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+              onClick={() => navigate(`/referral-persons/${person.id}/edit`)}
+            >
+              <Pencil size={15} />
               {t("referralPerson.actions.edit")}
             </Button>
-            <Button variant="secondary" onClick={handlePersonToggle}>
+            <Button
+              className={`${actionStyles.referralButton} ${person.status === "Active" ? actionStyles.referralDanger : actionStyles.referralSuccess}`}
+              onClick={handlePersonToggle}
+            >
+              <Power size={15} />
               {person.status === "Active" ? t("referralPerson.actions.deactivate") : t("referralPerson.actions.activate")}
             </Button>
           </div>
         }
       />
 
-      <div style={{ display: "grid", gap: 12, maxWidth: 720 }}>
-        <div><strong>{t("referralPerson.fields.status")}:</strong> {t(`referralPerson.statuses.${String(person.status).toLowerCase()}`, { defaultValue: person.status })}</div>
-        <div><strong>{t("referralPerson.fields.code")}:</strong> {person.code}</div>
-        <div><strong>{t("referralPerson.fields.name")}:</strong> {person.name}</div>
-        <div><strong>{t("referralPerson.fields.phone")}:</strong> {person.phone || "—"}</div>
-        <div><strong>{t("referralPerson.fields.email")}:</strong> {person.email || "—"}</div>
-        <div><strong>{t("referralPerson.details.created")}:</strong> {new Date(person.createdAt).toLocaleString()}</div>
-        <div><strong>{t("referralPerson.details.updated")}:</strong> {person.updatedAt ? new Date(person.updatedAt).toLocaleString() : "—"}</div>
-        <div><strong>{t("referralPerson.fields.notes")}:</strong> {person.notes || "—"}</div>
+      <div className={styles.profilePanel}>
+        <div className={styles.profileHeading}>
+          <span className={styles.profileIcon}><UserRound size={19} /></span>
+          <div>
+            <span className={styles.eyebrow}>{t("header.referralWorkspaceLabel")}</span>
+            <h2>{person.name}</h2>
+          </div>
+          <span className={`${sharedStyles.status} ${person.status === "Active" ? sharedStyles.statusActive : sharedStyles.statusInactive}`}>
+            {t(`referralPerson.statuses.${String(person.status).toLowerCase()}`, { defaultValue: person.status })}
+          </span>
+        </div>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoItem}><span className={styles.infoLabel}><Hash size={14} />{t("referralPerson.fields.code")}</span><strong>{person.code || "—"}</strong></div>
+          <div className={styles.infoItem}><span className={styles.infoLabel}><Phone size={14} />{t("referralPerson.fields.phone")}</span><strong>{person.phone || "—"}</strong></div>
+          <div className={styles.infoItem}><span className={styles.infoLabel}><Mail size={14} />{t("referralPerson.fields.email")}</span><strong>{person.email || "—"}</strong></div>
+          <div className={styles.infoItem}><span className={styles.infoLabel}><CalendarDays size={14} />{t("referralPerson.details.created")}</span><strong>{new Date(person.createdAt).toLocaleString()}</strong></div>
+          <div className={styles.infoItem}><span className={styles.infoLabel}><CalendarDays size={14} />{t("referralPerson.details.updated")}</span><strong>{person.updatedAt ? new Date(person.updatedAt).toLocaleString() : "—"}</strong></div>
+          <div className={`${styles.infoItem} ${styles.infoWide}`}><span className={styles.infoLabel}><BadgeCheck size={14} />{t("referralPerson.fields.notes")}</span><strong>{person.notes || "—"}</strong></div>
+        </div>
       </div>
 
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <h3 style={{ margin: 0 }}>{t("referralPerson.details.commissionRules")}</h3>
-          <Button onClick={() => navigate(`/referral-persons/${person.id}/commission-rules/new`)}>
+      <div className={styles.rulesPanel}>
+        <div className={styles.sectionHeader}>
+          <h3>{t("referralPerson.details.commissionRules")}</h3>
+            <Button className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`} onClick={() => navigate(`/referral-persons/${person.id}/commission-rules/new`)}>
+            <Plus size={15} />
             {t("referralPerson.actions.addRule")}
           </Button>
         </div>
 
-        <DataTable
-          columns={ruleColumns as any}
-          data={rules}
-          isLoading={false}
-          pageSize={10}
-          manualPagination={false}
-          noResultsText={t("referralPerson.list.empty")}
-        />
+        <div className={sharedStyles.tableShell}>
+          <DataTable
+            columns={ruleColumns}
+            data={rules}
+            isLoading={false}
+            pageSize={10}
+            manualPagination={false}
+            noResultsText={t("referralPerson.list.empty")}
+          />
+        </div>
       </div>
     </div>
   );

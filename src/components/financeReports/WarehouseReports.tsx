@@ -5,7 +5,8 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { ChevronDown, Gauge } from "lucide-react";
 
 // ui-kit
-import { Button, DataTable, DatePicker, Select, TextField } from "@/ui-kit";
+import { DatePicker, Select, TextField } from "@/ui-kit";
+import { FinanceDataTable as DataTable } from "./FinanceDataTable";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -30,6 +31,9 @@ import type {
 
 // local
 import styles from "./FinanceReports.module.css";
+import { FinanceFilterHeading } from "./FinanceFilterHeading";
+import { FinanceReportState } from "./FinanceReportState";
+import { FinanceReportLoadButton } from "./FinanceReportLoadButton";
 
 const stockColumnHelper = createColumnHelper<WarehouseStockItem>();
 const movementColumnHelper = createColumnHelper<WarehouseMovementItem>();
@@ -365,6 +369,7 @@ export const WarehouseReports = () => {
   return (
     <div className={`${styles.panel} ${styles.shopReportsPanel}`}>
       <div className={styles.filters}>
+        <FinanceFilterHeading />
         <Select
           label={t("financeReports.filters.warehouse")}
           value={warehouseId > 0 ? String(warehouseId) : ""}
@@ -412,13 +417,13 @@ export const WarehouseReports = () => {
       </div>
 
       <div className={styles.actions}>
-        <Button variant="primary" size="medium" onClick={handleLoad} disabled={isLoading}>
-          {isLoading ? t("common.loading") : t("financeReports.actions.load")}
-        </Button>
+        <FinanceReportLoadButton loading={isLoading} label={t("financeReports.actions.load")} onClick={handleLoad} />
       </div>
 
-      {!hasData ? (
-        <div className={styles.info}>{t("financeReports.warehouseReports.empty")}</div>
+      {isLoading ? (
+        <FinanceReportState loading label={t("common.loading")} />
+      ) : !hasData ? (
+        <FinanceReportState loading={false} label={t("financeReports.warehouseReports.empty")} />
       ) : (
         <div className={styles.shopSections}>
           <section className={styles.reportSection}>

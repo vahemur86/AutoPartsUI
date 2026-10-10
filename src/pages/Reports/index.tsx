@@ -11,89 +11,51 @@ import {
   Database,
   ShoppingCart,
   Boxes,
+  Wrench,
 } from "lucide-react";
 
-// components
-import { ModuleLayout, type NavItem } from "@/components/common";
+import { ReportsWorkspace, type ReportNavSection } from "./ReportsWorkspace";
 
 export const Reports = () => {
   const { t } = useTranslation();
 
-  const navigationItems: NavItem[] = [
+  const navigationSections: ReportNavSection[] = [
     {
-      path: "/z-reports",
-      label: t("reports.navigation.zReports"),
-      icon: FileCheck,
-      showCheckmark: true,
+      key: "cashbox",
+      title: t("reports.navigationGroups.cashbox"),
+      items: [
+        { path: "/z-reports", label: t("reports.navigation.zReports"), icon: FileCheck },
+        { path: "/open-sessions", label: t("reports.navigation.openSessions"), icon: Clock },
+        { path: "/cashbox-sessions-reports", label: t("reports.navigation.cashboxSessionsReports"), icon: Wallet },
+      ],
     },
     {
-      path: "/batch-reports",
-      label: t("reports.navigation.batchReports"),
-      icon: BarChart3,
-      showCheckmark: true,
+      key: "inventory",
+      title: t("reports.navigationGroups.inventory"),
+      items: [
+        { path: "/batch-reports", label: t("reports.navigation.batchReports"), icon: BarChart3 },
+        { path: "/powder-batches", label: t("reports.navigation.powderBatches"), icon: FlaskRound },
+        { path: "/special-lots", label: t("reports.navigation.specialLots"), icon: Boxes },
+      ],
     },
     {
-      path: "/open-sessions",
-      label: t("reports.navigation.openSessions"),
-      icon: Clock,
-      showCheckmark: true,
+      key: "iron",
+      title: t("reports.navigationGroups.iron"),
+      items: [
+        { path: "/iron-products-reports", label: t("reports.navigation.ironProducts"), icon: Database },
+        { path: "/iron-sale", label: t("reports.navigation.ironSale"), icon: ShoppingCart },
+        { path: "/iron-purchases", label: t("reports.navigation.ironPurchases"), icon: ShoppingCart },
+      ],
     },
     {
-      path: "/powder-batches",
-      label: t("reports.navigation.powderBatches"),
-      icon: FlaskRound,
-      showCheckmark: true,
-    },
-    {
-      path: "/cashbox-sessions-reports",
-      label: t("reports.navigation.cashboxSessionsReports"),
-      icon: Wallet,
-      showCheckmark: true,
-    },
-    {
-      path: "/iron-products-reports",
-      label: t("reports.navigation.ironProducts"),
-      icon: Database,
-      showCheckmark: true,
-    },
-    {
-      path: "/iron-sale",
-      label: t("reports.navigation.ironSale"),
-      icon: ShoppingCart,
-      showCheckmark: true,
-    },
-    {
-      path: "/iron-purchases",
-      label: t("reports.navigation.ironPurchases"),
-      icon: ShoppingCart,
-      showCheckmark: true,
-    },
-    {
-      path: "/workshop-orders",
-      label: t("reports.navigation.workshopOrders"),
-      icon: ShoppingCart,
-      showCheckmark: true,
-    },
-    {
-      path: "/service-task-reports",
-      label: t("reports.navigation.serviceTasks"),
-      icon: ClipboardList,
-      showCheckmark: true,
-    },
-    {
-      path: "/special-lots",
-      label: t("reports.navigation.specialLots"),
-      icon: Boxes,
-      showCheckmark: true,
+      key: "service",
+      title: t("reports.navigationGroups.service"),
+      items: [
+        { path: "/workshop-orders", label: t("reports.navigation.workshopOrders"), icon: ClipboardList },
+        { path: "/service-task-reports", label: t("reports.navigation.serviceTasks"), icon: Wrench },
+      ],
     },
   ];
 
-  return (
-    <ModuleLayout
-      basePath="/reports"
-      navigationItems={navigationItems}
-      defaultTitle={t("header.reports")}
-      defaultIcon={ClipboardList}
-    />
-  );
+  return <ReportsWorkspace sections={navigationSections} />;
 };

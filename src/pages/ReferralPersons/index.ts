@@ -4,3 +4,4 @@ export { ReferralPersonDetails } from "./ReferralPersonDetails";
 export { ReferralPersonCommissionRuleForm } from "./ReferralPersonCommissionRuleForm";
 export { ReferralCommissions } from "./ReferralCommissions";
 export { ReferralCommissionDetails } from "./ReferralCommissionDetails";
+export { ReferralWorkspace } from "./ReferralWorkspace";

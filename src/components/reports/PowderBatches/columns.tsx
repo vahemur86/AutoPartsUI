@@ -12,13 +12,6 @@ import styles from "./PowderBatches.module.css";
 
 const columnHelper = createColumnHelper<PowderBatch>();
 
-const STATUS_MAP: Record<number, { label: string; className: string }> = {
-  1: { label: "Open", className: styles.statusOpen },
-  2: { label: "Partially Sold", className: styles.statusPartiallySold },
-  3: { label: "Sold", className: styles.statusSold },
-  4: { label: "Cancelled", className: styles.statusCancelled },
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
   columnHelper.accessor("id", {
@@ -71,7 +64,7 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
     cell: (info) => `${info.getValue().toLocaleString()} g`,
   }),
   columnHelper.accessor("avgFxRateToAmd", {
-    header: "Avg FX",
+    header: i18next.t("cashbox.powderBatches.columns.avgFxRateToAmd"),
     cell: (info) =>
       info.getValue().toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -96,19 +89,5 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
   columnHelper.accessor("avgCustomerPercent", {
     header: i18next.t("cashbox.powderBatches.columns.avgCustomerPercent"),
     cell: (info) => `${info.getValue()}%`,
-  }),
-  columnHelper.accessor("status", {
-    header: i18next.t("cashbox.powderBatches.columns.status"),
-    cell: (info) => {
-      const statusValue = info.getValue();
-      const statusConfig = STATUS_MAP[statusValue] || {
-        label: "Unknown",
-        className: "",
-      };
-
-      return (
-        <span className={statusConfig.className}>{statusConfig.label}</span>
-      );
-    },
   }),
 ];

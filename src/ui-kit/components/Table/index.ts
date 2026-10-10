@@ -11,3 +11,4 @@ export {
   type TableCellProps,
 } from "./Table";
 export { DataTable } from "./DataTable";
+export type { DataTableProps } from "./DataTable";

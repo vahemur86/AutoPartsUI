@@ -1,10 +1,28 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
+import {
+  BadgeDollarSign,
+  CalendarClock,
+  CarFront,
+  CircleDollarSign,
+  Hash,
+  Phone,
+  Tag,
+  UserRound,
+  Weight,
+  type LucideIcon,
+} from "lucide-react";
 
 import type { IronPurchasesReportItem } from "@/types/ironCarShop";
 import styles from "./IronPurchasesReport.module.css";
 
 const columnHelper = createColumnHelper<IronPurchasesReportItem>();
+const columnHeader = (Icon: LucideIcon, key: string) => (
+  <span className={styles.columnHeader}>
+    <Icon size={13} aria-hidden="true" />
+    {i18next.t(key)}
+  </span>
+);
 
 export const getIronPurchasesReportColumns = (): ColumnDef<
   IronPurchasesReportItem,
@@ -13,7 +31,7 @@ export const getIronPurchasesReportColumns = (): ColumnDef<
 >[] => [
   columnHelper.display({
     id: "purchaseId",
-    header: i18next.t("reports.ironPurchases.columns.purchaseId"),
+    header: () => columnHeader(Hash, "reports.ironPurchases.columns.purchaseId"),
     cell: (info) => {
       const row = info.row.original;
       const value = row.purchaseId ?? row.id;
@@ -21,45 +39,45 @@ export const getIronPurchasesReportColumns = (): ColumnDef<
     },
   }),
   columnHelper.accessor("dictBrandId", {
-    header: i18next.t("reports.ironPurchases.columns.dictBrandId"),
+    header: () => columnHeader(CarFront, "reports.ironPurchases.columns.dictBrandId"),
     cell: (info) => info.getValue() ?? "-",
   }),
   columnHelper.accessor("brandName", {
-    header: i18next.t("reports.ironPurchases.columns.brandName"),
+    header: () => columnHeader(Tag, "reports.ironPurchases.columns.brandName"),
     cell: (info) => info.getValue() || "-",
   }),
   columnHelper.accessor("ironTypeName", {
-    header: i18next.t("reports.ironPurchases.columns.ironTypeName"),
+    header: () => columnHeader(Weight, "reports.ironPurchases.columns.ironTypeName"),
     cell: (info) => info.getValue() || "-",
   }),
   columnHelper.accessor("operatorUserId", {
-    header: i18next.t("reports.ironPurchases.columns.operatorUserId"),
+    header: () => columnHeader(UserRound, "reports.ironPurchases.columns.operatorUserId"),
     cell: (info) => info.getValue() ?? "-",
   }),
   columnHelper.accessor("sessionId", {
-    header: i18next.t("reports.ironPurchases.columns.sessionId"),
+    header: () => columnHeader(Hash, "reports.ironPurchases.columns.sessionId"),
     cell: (info) => info.getValue() ?? "-",
   }),
   columnHelper.accessor("customerPhone", {
-    header: i18next.t("reports.ironPurchases.columns.customerPhone"),
+    header: () => columnHeader(Phone, "reports.ironPurchases.columns.customerPhone"),
     cell: (info) => info.getValue() || "-",
   }),
   columnHelper.accessor("weightKg", {
-    header: i18next.t("reports.ironPurchases.columns.weightKg"),
+    header: () => columnHeader(Weight, "reports.ironPurchases.columns.weightKg"),
     cell: (info) => {
       const value = info.getValue() as number | undefined;
       return value != null ? `${value.toLocaleString()} kg` : "-";
     },
   }),
   columnHelper.accessor("pricePerKg", {
-    header: i18next.t("reports.ironPurchases.columns.pricePerKg"),
+    header: () => columnHeader(CircleDollarSign, "reports.ironPurchases.columns.pricePerKg"),
     cell: (info) => {
       const value = info.getValue() as number | undefined;
       return value != null ? `${value.toLocaleString()} AMD` : "-";
     },
   }),
   columnHelper.accessor("totalAmount", {
-    header: i18next.t("reports.ironPurchases.columns.totalAmount"),
+    header: () => columnHeader(BadgeDollarSign, "reports.ironPurchases.columns.totalAmount"),
     cell: (info) => {
       const value = info.getValue() as number | undefined;
       return value != null ? (
@@ -70,7 +88,7 @@ export const getIronPurchasesReportColumns = (): ColumnDef<
     },
   }),
   columnHelper.accessor("purchasedAt", {
-    header: i18next.t("reports.ironPurchases.columns.purchasedAt"),
+    header: () => columnHeader(CalendarClock, "reports.ironPurchases.columns.purchasedAt"),
     cell: (info) => {
       const value = info.getValue() as string | undefined;
       return value

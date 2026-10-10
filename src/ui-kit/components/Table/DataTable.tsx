@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "./Table";
 // styles
 import styles from "./Table.module.css";
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageSize?: number;
@@ -207,6 +207,7 @@ export const DataTable = <TData, TValue>({
               <TableRow key={headerGroup.id} className={styles.tableRow}>
                 {headerGroup.headers.map((header) => {
                   const isSelect = header.id === "select";
+                  const isGroupHeader = header.subHeaders.length > 0;
                   const stickyStyles = getStickyStyles(header.column);
                   const isFrozen = !!stickyStyles.position;
 
@@ -214,9 +215,10 @@ export const DataTable = <TData, TValue>({
                     <TableCell
                       key={header.id}
                       asHeader
-                      className={`${isSelect ? styles.selectionCell : styles.tableCell} ${isFrozen ? styles.frozenCell : ""}`}
+                      colSpan={header.colSpan}
+                      className={`${isSelect ? styles.selectionCell : styles.tableCell} ${isFrozen ? styles.frozenCell : ""} ${isGroupHeader ? styles.groupHeaderCell : ""}`}
                       onClick={
-                        !isSelect
+                        !isSelect && !header.isPlaceholder
                           ? header.column.getToggleSortingHandler()
                           : undefined
                       }
@@ -228,23 +230,25 @@ export const DataTable = <TData, TValue>({
                         width: isSelect ? "48px" : header.getSize(),
                       }}
                     >
-                      <div
-                        className={
-                          isSelect
-                            ? styles.selectionCellContent
-                            : styles.headerCellContent
-                        }
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                        {!isSelect &&
-                          ({ asc: " 🔼", desc: " 🔽" }[
-                            header.column.getIsSorted() as string
-                          ] ??
-                            null)}
-                      </div>
+                      {!header.isPlaceholder && (
+                        <div
+                          className={
+                            isSelect
+                              ? styles.selectionCellContent
+                              : styles.headerCellContent
+                          }
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {!isSelect &&
+                            ({ asc: " 🔼", desc: " 🔽" }[
+                              header.column.getIsSorted() as string
+                            ] ??
+                              null)}
+                        </div>
+                      )}
                     </TableCell>
                   );
                 })}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 import { Button, DataTable, Select, TextField } from "@/ui-kit";
 import { getServiceTasksReport } from "@/services/operator";
@@ -20,6 +21,7 @@ export const ServiceTasksReport = () => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [paymentType, setPaymentType] = useState(0);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
 
   const fetchReport = async () => {
     try {
@@ -145,7 +147,7 @@ export const ServiceTasksReport = () => {
       </div>
 
       <div className={styles.tableContainer}>
-        {isLoading ? (
+        {showTableSkeleton ? (
           <div className={styles.skeletonState} aria-busy="true" aria-live="polite">
             <div className={styles.filterSkeleton}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

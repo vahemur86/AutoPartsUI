@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
+import { Boxes, Calculator, Filter, Scale, Sparkles } from "lucide-react";
 
 // ui-kit
 import { DataTable, Select, Button } from "@/ui-kit";
 
 // components
 import { getInventoryLotColumns } from "./columns";
+import { InventoryLotDetails } from "./InventoryLotDetails";
 import { SalesLotPreviewModal } from "./actions/SalesLotPreviewModal";
 
 // stores
@@ -31,6 +34,7 @@ export const TotalBatches = () => {
   const { inventoryLots, isLoading, error } = useAppSelector(
     (state) => state.warehousesReports,
   );
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
   const { warehouses } = useAppSelector((state) => state.warehouses);
   const { isLoading: isCreatingSalesLot } = useAppSelector(
     (state) => state.salesLots,
@@ -154,6 +158,11 @@ export const TotalBatches = () => {
           }
           return [...prev, { inventoryLotId, powderKg }];
         });
+        setSelectedKg((prev) => {
+          const next = { ...prev };
+          delete next[inventoryLotId];
+          return next;
+        });
         toast.success(
           t("warehouses.totalBatches.success.itemAdded", {
             id: inventoryLotId,
@@ -214,55 +223,76 @@ export const TotalBatches = () => {
 
   return (
     <div className={styles.totalBatchesWrapper}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>
-          {t("warehouses.navigation.totalBatches")}
-        </h2>
+      <div className={styles.actionBar}>
+        <div className={styles.totalCounter}>
+          <span className={styles.counterIcon} aria-hidden="true">
+            <Scale size={19} />
+          </span>
+          <span className={styles.counterCopy}>
+            <span className={styles.counterLabel}>
+              {t("warehouses.totalBatches.selectedWeight")}
+            </span>
+            <strong>
+              {totalKgCount.toLocaleString()} <span>{t("warehouses.totalBatches.unitKg")}</span>
+            </strong>
+          </span>
+        </div>
 
-        <div className={styles.headerActions}>
-          <div className={styles.totalCounter}>
-            {t("common.total")}: <span>{totalKgCount} kg</span>
-          </div>
-
-          <Button
-            variant="primary"
-            size="medium"
-            onClick={() => setIsPreviewModalOpen(true)}
-            disabled={
-              isCreatingSalesLot ||
-              selectedItems.length === 0 ||
-              !selectedWarehouseId
-            }
-          >
+        <Button
+          variant="primary"
+          size="medium"
+          className={styles.previewButton}
+          onClick={() => setIsPreviewModalOpen(true)}
+          disabled={
+            isCreatingSalesLot ||
+            selectedItems.length === 0 ||
+            !selectedWarehouseId
+          }
+        >
+          {!isCreatingSalesLot && <Calculator size={17} aria-hidden="true" />}
+          <span>
             {isCreatingSalesLot
               ? t("warehouses.totalBatches.creating")
               : t("warehouses.totalBatches.previewAndCreateSale")}
-          </Button>
-        </div>
-
+          </span>
+        </Button>
       </div>
 
       <div className={styles.lotFilters}>
-        <label className={styles.lotFilterItem}>
+        <div className={styles.filterHeading}>
+          <Filter size={15} aria-hidden="true" />
+          <span>{t("common.filters")}</span>
+        </div>
+
+        <label
+          className={`${styles.lotFilterItem} ${showGeneralLots ? `${styles.lotFilterItemActive} ${styles.lotFilterGeneralActive}` : ""}`}
+          title={t("warehouses.totalBatches.filters.showGeneralLots")}
+        >
           <input
             type="checkbox"
             checked={showGeneralLots}
             onChange={(e) => setShowGeneralLots(e.target.checked)}
           />
-          {t("warehouses.totalBatches.filters.showGeneralLots")}
+          <Boxes size={16} aria-hidden="true" />
+          <span>{t("warehouses.totalBatches.lotType.generalShort")}</span>
         </label>
 
-        <label className={styles.lotFilterItem}>
+        <label
+          className={`${styles.lotFilterItem} ${showSpecialLots ? `${styles.lotFilterItemActive} ${styles.lotFilterSpecialActive}` : ""}`}
+          title={t("warehouses.totalBatches.filters.showSpecialLots")}
+        >
           <input
             type="checkbox"
             checked={showSpecialLots}
             onChange={(e) => setShowSpecialLots(e.target.checked)}
           />
-          {t("warehouses.totalBatches.filters.showSpecialLots")}
+          <Sparkles size={16} aria-hidden="true" />
+          <span>{t("warehouses.totalBatches.lotType.specialShort")}</span>
         </label>
 
         <div className={styles.lotFilterSelect}>
           <Select
+            aria-label={t("warehouses.totalBatches.filters.allSpecialCustomers")}
             value={
               selectedSpecialCustomerId === null
                 ? ""
@@ -287,7 +317,7 @@ export const TotalBatches = () => {
       </div>
 
       <div className={styles.tableSection}>
-        {isLoading ? (
+        {showTableSkeleton ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -325,6 +355,9 @@ export const TotalBatches = () => {
                   ? styles.todayRow
                   : ""
             }
+            renderSubComponent={({ row }) => (
+              <InventoryLotDetails lot={row.original} />
+            )}
             frozenConfig={{
               right: ["actions"],
             }}

@@ -1,5 +1,6 @@
 import { type FC, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 import { DataTable, Select, TextField } from "@/ui-kit";
 import styles from "./ShopsSettings.module.css";
 import type { Warehouse, Shop } from "@/types/settings";
@@ -33,6 +34,7 @@ export const ShopContent: FC<ShopContentProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation();
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
 
   const columns = useMemo(
     () => getShopColumns({ warehouses, onEdit, onDelete }),
@@ -77,7 +79,7 @@ export const ShopContent: FC<ShopContentProps> = ({
 
       {activeTab === "shops-history" && (
         <div className={styles.historyContainer}>
-          {isLoading ? (
+          {showTableSkeleton ? (
             <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
               <div className={styles.tableSkeletonHeader}>
                 <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

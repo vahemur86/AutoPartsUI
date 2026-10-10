@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-import { DataTable, IconButton, Select } from "@/ui-kit";
+import { DataTable, Select } from "@/ui-kit";
 import { FilterIronPurchasesReportDropdown } from "./FilterIronPurchasesReportDropdown";
 import { getIronPurchasesReportColumns } from "./columns";
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
@@ -13,14 +13,14 @@ import type {
   IronPurchasesReportResponse,
 } from "@/types/ironCarShop";
 
-import { Filter } from "lucide-react";
+import { Filter, PackageSearch, Rows3, ShoppingCart } from "lucide-react";
 import styles from "./IronPurchasesReport.module.css";
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export const IronPurchasesReport = () => {
   const { t } = useTranslation();
-  const filterAnchorRef = useRef<HTMLDivElement>(null);
+  const filterAnchorRef = useRef<HTMLButtonElement>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   const [items, setItems] = useState<IronPurchasesReportItem[]>([]);
@@ -104,14 +104,24 @@ export const IronPurchasesReport = () => {
     () => Math.max(Math.ceil(totalItems / pageSize), 1),
     [pageSize, totalItems],
   );
+  const activeFilterCount = Object.values(activeFilters).filter(
+    (value) => value != null && value !== "",
+  ).length;
 
   return (
     <div className={styles.reportWrapper}>
       <header className={styles.header}>
-        <h1>{t("reports.navigation.ironPurchases")}</h1>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true"><ShoppingCart size={19} /></span>
+          <div>
+            <span className={styles.eyebrow}>{t("reports.navigationGroups.iron")}</span>
+            <h1>{t("reports.navigation.ironPurchases")}</h1>
+          </div>
+        </div>
         <div className={styles.headerActions}>
           <div className={styles.pageSizeWrapper}>
             <span className={styles.pageSizeLabel}>
+              <Rows3 size={13} aria-hidden="true" />
               {t("reports.ironPurchases.filters.pageSize")}
             </span>
             <Select
@@ -127,21 +137,19 @@ export const IronPurchasesReport = () => {
             </Select>
           </div>
 
-          <div
+          <button
+            type="button"
             ref={filterAnchorRef}
-            className={styles.filterButtonWrapper}
+            className={`${styles.filterButton} ${activeFilterCount ? styles.filterButtonActive : ""}`}
             onClick={() => setIsFilterOpen(true)}
+            aria-expanded={isFilterOpen}
           >
-            <IconButton
-              size="small"
-              variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
-              ariaLabel={t("common.filters")}
-            />
+            <Filter size={15} aria-hidden="true" />
             <span className={styles.filterButtonText}>
               {t("common.filters")}
             </span>
-          </div>
+            {activeFilterCount > 0 && <span className={styles.filterCount}>{activeFilterCount}</span>}
+          </button>
         </div>
       </header>
 
@@ -151,6 +159,14 @@ export const IronPurchasesReport = () => {
         onOpenChange={setIsFilterOpen}
         onSave={handleApplyFilters}
       />
+
+      <div className={styles.tableToolbar}>
+        <div className={styles.tableTitle}>
+          <PackageSearch size={15} aria-hidden="true" />
+          <span>{t("reports.navigation.ironPurchases")}</span>
+          <span className={styles.rowCount}>{totalItems}</span>
+        </div>
+      </div>
 
       <div className={styles.tableContainer}>
         <DataTable

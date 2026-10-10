@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable, IconButton } from "@/ui-kit";
@@ -19,6 +20,7 @@ import { fetchPowderSalesAdjustments } from "@/store/slices/warehouses/powderSal
 import { getAdjustmentsColumns } from "./column";
 import { FilterAdjustedSalesDropdown } from "./FilterAdjustedSales";
 import { Filter } from "lucide-react";
+import { AdjustmentDetails } from "./AdjustmentDetails";
 
 const PAGE_SIZE = 30;
 
@@ -29,6 +31,7 @@ export const AdjustedSales = () => {
   const { adjustmentData, isLoading, error } = useAppSelector(
     (state) => state.powderSales,
   );
+  const showTableSkeleton = useMinimumLoadingDuration(isLoading);
 
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
@@ -70,19 +73,18 @@ export const AdjustedSales = () => {
   return (
     <div className={styles.batchesToSaleWrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>{t("powderSales.adjustments.title")}</h2>
-
         <div className={styles.headerActions}>
           <div
             ref={filterRef}
             className={styles.filterButtonWrapper}
-            onClick={() => setIsFilterOpen(true)}
           >
             <IconButton
               size="small"
               variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
+              className={styles.filterIcon}
+              icon={<Filter size={14} aria-hidden="true" />}
               ariaLabel={t("common.filters")}
+              onClick={() => setIsFilterOpen(true)}
             />
             <span className={styles.filterButtonText}>
               {t("common.filters")}
@@ -102,7 +104,7 @@ export const AdjustedSales = () => {
       />
 
       <div className={styles.tableSection}>
-        {isLoading ? (
+        {showTableSkeleton ? (
           <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.tableSkeletonHeader}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -132,6 +134,9 @@ export const AdjustedSales = () => {
               row.hasSpecialCustomerLots ? styles.specialRow : ""
             }
             onPaginationChange={setCurrentPageIndex}
+            renderSubComponent={({ row }) => (
+              <AdjustmentDetails adjustment={row.original} />
+            )}
           />
         )}
       </div>

@@ -1,6 +1,22 @@
 import type { FC } from "react";
 import type { BatchDetailsForFilterItem } from "@/types/cash/dashboard";
-import { Phone, User } from "lucide-react";
+import {
+  ArrowLeftRight,
+  BadgeDollarSign,
+  ChartColumnIncreasing,
+  CircleDollarSign,
+  ExternalLink,
+  Gauge,
+  Hash,
+  ListOrdered,
+  Percent,
+  Phone,
+  Target,
+  TrendingUp,
+  User,
+  Wallet,
+  Weight,
+} from "lucide-react";
 
 interface FilteredBatchCardProps {
   batch: BatchDetailsForFilterItem;
@@ -23,8 +39,8 @@ export const FilteredBatchCard: FC<FilteredBatchCardProps> = ({
     <div className={styles.itemCard}>
       <div className={styles.itemCardHeader}>
         <div className={styles.intakeMain}>
-          <span>#{batch.id}</span>
-          <strong>{batch.powderKg ?? 0} kg</strong>
+          <span className={styles.intakeId}><Hash size={13} aria-hidden="true" />{batch.id}</span>
+          <strong><Weight size={14} aria-hidden="true" />{batch.powderKg ?? 0} kg</strong>
         </div>
       </div>
 
@@ -32,8 +48,9 @@ export const FilteredBatchCard: FC<FilteredBatchCardProps> = ({
         <div className={styles.contactInfo}>
           <div className={styles.infoRow}>
             <User size={10} />
-            <span>
-              {batch.supplierClientName} ({batch.supplierClientType})
+            <span className={styles.clientIdentity}>
+              <span className={styles.clientName}>{batch.supplierClientName}</span>
+              <span className={styles.clientType}>{batch.supplierClientType}</span>
             </span>
           </div>
 
@@ -43,24 +60,28 @@ export const FilteredBatchCard: FC<FilteredBatchCardProps> = ({
           </div>
 
           <div className={styles.infoRow}>
-            <span>{t("cashbox.batches.details.percent")}:</span>
+            <Percent size={13} aria-hidden="true" />
+            <span className={styles.infoLabel}>{t("cashbox.batches.details.percent")}</span>
             <strong>
               {((batch.supplierClientTypePercent ?? 0) * 100).toFixed(2)}%
             </strong>
           </div>
 
           <div className={styles.infoRow}>
-            <span>{t("cashbox.batches.details.offerIncreaseStepOrder")}:</span>
+            <ListOrdered size={13} aria-hidden="true" />
+            <span className={styles.infoLabel}>{t("cashbox.batches.details.offerIncreaseStepOrder")}</span>
             <strong>{batch.offerIncreaseStepOrder ?? 0}</strong>
           </div>
 
           <div className={styles.infoRow}>
-            <span>{t("cashbox.batches.details.offerIncreasePercent")}:</span>
+            <TrendingUp size={13} aria-hidden="true" />
+            <span className={styles.infoLabel}>{t("cashbox.batches.details.offerIncreasePercent")}</span>
             <strong>{batch.offerIncreasePercent ?? 0}%</strong>
           </div>
 
           <div className={styles.infoRow}>
-            <span>{t("cashbox.batches.details.customerRealPercent")}:</span>
+            <Target size={13} aria-hidden="true" />
+            <span className={styles.infoLabel}>{t("cashbox.batches.details.customerRealPercent")}</span>
             <strong>{batch.customerRealPercent ?? 0}%</strong>
           </div>
         </div>
@@ -90,26 +111,26 @@ export const FilteredBatchCard: FC<FilteredBatchCardProps> = ({
 
         <div className={styles.financialStats}>
           <div className={styles.statLine}>
-            <span>{t("cashbox.batches.details.cost")}</span>
+            <span className={styles.statLabel}><Wallet size={14} aria-hidden="true" />{t("cashbox.batches.details.cost")}</span>
             <strong>{(batch.costAmd ?? 0).toLocaleString()} AMD</strong>
           </div>
 
           <div className={styles.statLine2}>
-            <span>{t("cashbox.batches.details.sales")}</span>
+            <span className={styles.statLabel}><ChartColumnIncreasing size={14} aria-hidden="true" />{t("cashbox.batches.details.sales")}</span>
             <strong>
               {(batch.estimatedSalesAmd ?? 0).toLocaleString()} AMD
             </strong>
           </div>
 
           <div className={styles.statLine}>
-            <span>{t("cashbox.batches.details.purchaseProfitAmd")}</span>
+            <span className={styles.statLabel}><BadgeDollarSign size={14} aria-hidden="true" />{t("cashbox.batches.details.purchaseProfitAmd")}</span>
             <strong>
               {(batch.purchaseProfitAmd ?? 0).toLocaleString()} AMD
             </strong>
           </div>
 
           <div className={styles.statLine}>
-            <span>{t("cashbox.batches.details.profitDiffAmd")}</span>
+            <span className={styles.statLabel}><ArrowLeftRight size={14} aria-hidden="true" />{t("cashbox.batches.details.profitDiffAmd")}</span>
             <strong className={getNumberClass(batch.profitDiffAmd ?? 0)}>
               {(batch.profitDiffAmd ?? 0) > 0 ? "+" : ""}
               {(batch.profitDiffAmd ?? 0).toLocaleString()} AMD
@@ -117,14 +138,14 @@ export const FilteredBatchCard: FC<FilteredBatchCardProps> = ({
           </div>
 
           <div className={styles.statLine2}>
-            <span>{t("cashbox.batches.details.expectedProfitAmd")}</span>
+            <span className={styles.statLabel}><CircleDollarSign size={14} aria-hidden="true" />{t("cashbox.batches.details.expectedProfitAmd")}</span>
             <strong>
               {(batch.expectedProfitAmd ?? 0).toLocaleString()} AMD
             </strong>
           </div>
 
           <div className={styles.statLine}>
-            <span>{t("cashbox.batches.details.liveProfitPercent")}</span>
+            <span className={styles.statLabel}><Gauge size={14} aria-hidden="true" />{t("cashbox.batches.details.liveProfitPercent")}</span>
             <strong className={getNumberClass(batch.liveProfitPercent ?? 0)}>
               {(batch.liveProfitPercent ?? 0) > 0 ? "+" : ""}
               {(batch.liveProfitPercent ?? 0).toFixed(2)}%
@@ -132,13 +153,41 @@ export const FilteredBatchCard: FC<FilteredBatchCardProps> = ({
           </div>
 
           <div className={styles.fxRate}>
-            Rate: {batch.fxRateToAmd ?? 0} AMD
+            <span className={styles.fxRateLabel}>
+              <ArrowLeftRight size={13} aria-hidden="true" />
+              USD / AMD
+            </span>
+            <strong className={styles.fxRateValue}>
+              <span>1 USD</span>
+              <span className={styles.fxRateEquals}>=</span>
+              <b>{(batch.fxRateToAmd ?? 0).toLocaleString()} AMD</b>
+            </strong>
+            <a
+              className={styles.fxRateSource}
+              href="https://rate.am"
+              target="_blank"
+              rel="noreferrer"
+            >
+              rate.am <ExternalLink size={11} aria-hidden="true" />
+            </a>
           </div>
 
           <div className={styles.metalPricesFooter}>
-            <span>Pt: {(batch.ptPricePerKg ?? 0).toLocaleString()} $</span>
-            <span>Pd: {(batch.pdPricePerKg ?? 0).toLocaleString()} $</span>
-            <span>Rh: {(batch.rhPricePerKg ?? 0).toLocaleString()} $</span>
+            <div className={styles.metalPricesHeading}>USD / kg</div>
+            <div className={styles.metalPricesGrid}>
+              <div className={styles.metalPriceItem}>
+                <span className={styles.metalPriceSymbol}>Pt</span>
+                <strong>${(batch.ptPricePerKg ?? 0).toLocaleString()}</strong>
+              </div>
+              <div className={styles.metalPriceItem}>
+                <span className={styles.metalPriceSymbol}>Pd</span>
+                <strong>${(batch.pdPricePerKg ?? 0).toLocaleString()}</strong>
+              </div>
+              <div className={styles.metalPriceItem}>
+                <span className={styles.metalPriceSymbol}>Rh</span>
+                <strong>${(batch.rhPricePerKg ?? 0).toLocaleString()}</strong>
+              </div>
+            </div>
           </div>
         </div>
       </div>

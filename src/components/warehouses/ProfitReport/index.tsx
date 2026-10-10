@@ -106,8 +106,6 @@ export const ProfitReport = () => {
   return (
     <div className={styles.profitWrapper}>
       <header className={styles.header}>
-        <h1 className={styles.title}>{t("warehouses.profit.title")}</h1>
-
         <div className={styles.filters}>
           <div className={styles.filterItem}>
             <Select

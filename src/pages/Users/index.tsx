@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // components
 import { SectionHeader } from "@/components/common";
@@ -44,6 +45,7 @@ export const UserManagement = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoadingUsers);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editRole, setEditRole] = useState("");
@@ -306,7 +308,7 @@ export const UserManagement = () => {
           </div>
 
           <div className={styles.tableWrapper}>
-            {isLoadingUsers ? (
+            {showTableSkeleton ? (
               <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
                 <div className={styles.tableSkeletonHeader}>
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

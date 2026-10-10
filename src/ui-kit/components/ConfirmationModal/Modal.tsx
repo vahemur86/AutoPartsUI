@@ -22,11 +22,12 @@ import styles from "./ConfirmationModal.module.css";
 export interface ModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title?: string;
+  title?: ReactNode;
   preventClose?: boolean;
   children: ReactNode;
   footer?: ReactNode;
   width?: string;
+  className?: string;
 }
 
 export const Modal: FC<ModalProps> = ({
@@ -37,6 +38,7 @@ export const Modal: FC<ModalProps> = ({
   children,
   footer,
   width = "520px",
+  className = "",
 }) => {
   const { isMobile, mounted } = useIsMobile();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -76,7 +78,7 @@ export const Modal: FC<ModalProps> = ({
       aria-labelledby={title ? headingId : undefined}
     >
       <div
-        className={styles.card}
+        className={`${styles.card} ${className}`}
         style={{ width: isMobile ? "100vw" : width }}
         role="document"
       >

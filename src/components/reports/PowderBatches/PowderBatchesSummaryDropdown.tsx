@@ -1,5 +1,16 @@
 import { type FC, type RefObject, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  ArrowLeftRight,
+  BarChart3,
+  CalendarDays,
+  CalendarRange,
+  Gem,
+  Layers3,
+  LoaderCircle,
+  Percent,
+  Weight,
+} from "lucide-react";
 
 // ui-kit
 import { Dropdown, DatePicker } from "@/ui-kit";
@@ -82,24 +93,24 @@ export const PowderBatchesSummaryDropdown: FC<
     ? [
         {
           symbol: "Pt",
-          label: "Platinum",
+          label: t("cashbox.powderBatches.summary.metals.pt"),
           price: summary.avgPtPricePerKg,
           total: summary.ptTotal_g,
-          color: "#e5e4e2",
+          color: "#cbd5d1",
         },
         {
           symbol: "Pd",
-          label: "Palladium",
+          label: t("cashbox.powderBatches.summary.metals.pd"),
           price: summary.avgPdPricePerKg,
           total: summary.pdTotal_g,
-          color: "#cba135",
+          color: "#a8d29e",
         },
         {
           symbol: "Rh",
-          label: "Rhodium",
+          label: t("cashbox.powderBatches.summary.metals.rh"),
           price: summary.avgRhPricePerKg,
           total: summary.rhTotal_g,
-          color: "#b9d4e8",
+          color: "#d2bf8a",
         },
       ]
     : [];
@@ -115,11 +126,18 @@ export const PowderBatchesSummaryDropdown: FC<
       contentClassName={styles.summaryDropdownContent}
     >
       <div className={styles.summaryDropdownInner}>
+        <div className={styles.summaryHeader}>
+          <span className={styles.summaryHeaderIcon} aria-hidden="true">
+            <BarChart3 size={17} />
+          </span>
+          <h3>{t("cashbox.powderBatches.summary.title")}</h3>
+        </div>
         {/* Date Filters */}
         <div className={styles.summaryFiltersSection}>
           <div className={styles.dateFiltersRow}>
             <div className={styles.datePickerWrapper}>
               <label className={styles.dateLabel}>
+                <CalendarDays size={12} aria-hidden="true" />
                 {t("cashbox.powderBatches.filters.fromDate")}
               </label>
               <DatePicker
@@ -139,6 +157,7 @@ export const PowderBatchesSummaryDropdown: FC<
             </div>
             <div className={styles.datePickerWrapper}>
               <label className={styles.dateLabel}>
+                <CalendarDays size={12} aria-hidden="true" />
                 {t("cashbox.powderBatches.filters.toDate")}
               </label>
               <DatePicker
@@ -162,6 +181,7 @@ export const PowderBatchesSummaryDropdown: FC<
             onClick={handleThisMonth}
             type="button"
           >
+            <CalendarRange size={14} aria-hidden="true" />
             {t("cashbox.powderBatches.summary.thisMonth")}
           </button>
         </div>
@@ -169,16 +189,15 @@ export const PowderBatchesSummaryDropdown: FC<
         <div className={styles.summaryDivider} />
 
         {isLoading && (
-          <div className={styles.summaryLoading}>
-            <span className={styles.loadingDot} />
-            <span className={styles.loadingDot} />
-            <span className={styles.loadingDot} />
+          <div className={styles.summaryLoading} role="status" aria-live="polite">
+            <LoaderCircle className={styles.loadingSpinner} size={20} aria-hidden="true" />
+            <span>{t("cashbox.powderBatches.summary.calculating")}</span>
           </div>
         )}
 
         {!isLoading && !summary && (
           <div className={styles.summaryEmpty}>
-            <span className={styles.summaryEmptyIcon}>◎</span>
+            <BarChart3 className={styles.summaryEmptyIcon} size={28} aria-hidden="true" />
             <p>{t("cashbox.powderBatches.summary.empty")}</p>
           </div>
         )}
@@ -189,6 +208,7 @@ export const PowderBatchesSummaryDropdown: FC<
             <div className={styles.summaryCardsGrid}>
               <div className={styles.summaryCard}>
                 <span className={styles.summaryCardLabel}>
+                  <Weight size={13} aria-hidden="true" />
                   {t("cashbox.powderBatches.summary.totalPowderKg")}
                 </span>
                 <div className={styles.summaryCardValueRow}>
@@ -203,6 +223,7 @@ export const PowderBatchesSummaryDropdown: FC<
 
               <div className={styles.summaryCard}>
                 <span className={styles.summaryCardLabel}>
+                  <Layers3 size={13} aria-hidden="true" />
                   {t("cashbox.powderBatches.summary.batchCount")}
                 </span>
                 <div className={styles.summaryCardValueRow}>
@@ -221,10 +242,11 @@ export const PowderBatchesSummaryDropdown: FC<
             {/* Precious Metals */}
             <div className={styles.summaryMetalsSection}>
               <h4 className={styles.summaryMetalsTitle}>
+                <Gem size={13} aria-hidden="true" />
                 {t("cashbox.powderBatches.summary.metalsTitle")}
               </h4>
               <div className={styles.summaryMetalsList}>
-                {metals.map(({ symbol, price, total, color }) => (
+                {metals.map(({ symbol, label, price, total, color }) => (
                   <div key={symbol} className={styles.summaryMetalRow}>
                     <div className={styles.summaryMetalInfo}>
                       <span
@@ -236,6 +258,7 @@ export const PowderBatchesSummaryDropdown: FC<
                         {symbol}
                       </span>
                       <div className={styles.summaryMetalMeta}>
+                        <span className={styles.summaryMetalName}>{label}</span>
                         <span className={styles.summaryMetalPrice}>
                           {formatPrice(price)} AMD / kg
                         </span>
@@ -256,6 +279,7 @@ export const PowderBatchesSummaryDropdown: FC<
                 <div className={styles.summaryAveragesRow}>
                   <div className={styles.summaryAvgItem}>
                     <span className={styles.summaryAvgLabel}>
+                      <Percent size={12} aria-hidden="true" />
                       {t("cashbox.powderBatches.columns.avgCustomerPercent")}
                     </span>
                     <strong className={styles.summaryAvgValue}>
@@ -265,6 +289,7 @@ export const PowderBatchesSummaryDropdown: FC<
                   <div className={styles.summaryAvgDivider} />
                   <div className={styles.summaryAvgItem}>
                     <span className={styles.summaryAvgLabel}>
+                      <ArrowLeftRight size={12} aria-hidden="true" />
                       {t("cashbox.powderBatches.columns.avgFxRateToAmd")}
                     </span>
                     <strong className={styles.summaryAvgValue}>

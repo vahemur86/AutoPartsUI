@@ -31,6 +31,7 @@ import {
   ReferralPersonDetails,
   ReferralPersonForm,
   ReferralPersons,
+  ReferralWorkspace,
 } from "@/pages/ReferralPersons";
 
 // Repayment Rules pages
@@ -315,8 +316,8 @@ export const App = () => {
                     index
                     element={<Navigate to="shop-reports" replace />}
                   />
-                  <Route path="dashboard" element={<DashboardReports />} />
                   <Route element={<FinanceReports />}>
+                    <Route path="dashboard" element={<DashboardReports />} />
                     <Route path="shop-reports" element={<ShopReports />} />
                     <Route path="service-reports" element={<ServiceReports />} />
                     <Route path="warehouse-reports" element={<WarehouseReports />} />
@@ -435,13 +436,15 @@ export const App = () => {
                 <Route path="capital-sources/create" element={<CreateCapitalSource />} />
                 <Route path="capital-sources/:id" element={<CapitalSourceDetails />} />
                 <Route path="capital-sources/:id/edit" element={<EditCapitalSource />} />
-                <Route path="referral-persons" element={<ReferralPersons />} />
-                <Route path="referral-persons/create" element={<ReferralPersonForm />} />
-                <Route path="referral-persons/:id" element={<ReferralPersonDetails />} />
-                <Route path="referral-persons/:id/edit" element={<ReferralPersonForm />} />
-                <Route path="referral-persons/:personId/commission-rules/new" element={<ReferralPersonCommissionRuleForm />} />
-                <Route path="commissions" element={<ReferralCommissions />} />
-                <Route path="commissions/:id" element={<ReferralCommissionDetails />} />
+                <Route element={<ReferralWorkspace />}>
+                  <Route path="referral-persons" element={<ReferralPersons />} />
+                  <Route path="referral-persons/create" element={<ReferralPersonForm />} />
+                  <Route path="referral-persons/:id" element={<ReferralPersonDetails />} />
+                  <Route path="referral-persons/:id/edit" element={<ReferralPersonForm />} />
+                  <Route path="referral-persons/:personId/commission-rules/new" element={<ReferralPersonCommissionRuleForm />} />
+                  <Route path="commissions" element={<ReferralCommissions />} />
+                  <Route path="commissions/:id" element={<ReferralCommissionDetails />} />
+                </Route>
                 <Route path="catalytic-suppliers" element={<CatalyticSuppliers />} />
                 <Route path="calculator" element={<NewCalculator />} />
                 <Route path="service-templates" element={<ServiceTemplatePage />} />

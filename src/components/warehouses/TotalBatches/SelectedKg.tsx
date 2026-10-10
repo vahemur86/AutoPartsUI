@@ -2,11 +2,11 @@ import { useEffect, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { TextField, Button } from "@/ui-kit";
+import { TextField, IconButton } from "@/ui-kit";
 
 // styles
 import styles from "./TotalBatches.module.css";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, CirclePlus } from "lucide-react";
 
 export const SelectedKgCell: FC<{
   inventoryLotId: number;
@@ -77,7 +77,7 @@ export const SelectedKgCell: FC<{
         <TextField
           type="number"
           value={localValue}
-          disabled={disabled}
+          disabled={disabled || isAdded}
           onChange={handleChange}
           placeholder="0"
           min="0"
@@ -86,21 +86,16 @@ export const SelectedKgCell: FC<{
           className={styles.kgInput}
         />
       </div>
-      <Button
+      <IconButton
         variant={isAdded ? "secondary" : "primary"}
         size="small"
         onClick={handleAddClick}
         disabled={disabled || numericValue <= 0 || isAdded}
-      >
-        {isAdded ? (
-          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            {t("common.add")}
-            <CheckCircle size={16} color="#22c55e" />
-          </span>
-        ) : (
-          t("common.add")
-        )}
-      </Button>
+        icon={isAdded ? <CheckCircle size={17} color="#22c55e" /> : <CirclePlus size={17} />}
+        ariaLabel={t("common.add")}
+        title={t("common.add")}
+        className={styles.addKgButton}
+      />
     </div>
   );
 };

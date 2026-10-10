@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Row } from "@tanstack/react-table";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable, Select } from "@/ui-kit";
@@ -28,6 +29,9 @@ export const ShopProducts = () => {
   );
   const { items: shopProducts, isLoading: isLoadingProducts } = useAppSelector(
     (state) => state.shopProducts,
+  );
+  const showTableSkeleton = useMinimumLoadingDuration(
+    isLoadingProducts && shopProducts.length === 0,
   );
 
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
@@ -150,7 +154,7 @@ export const ShopProducts = () => {
         </div>
       </div>
 
-      {isLoadingProducts && shopProducts.length === 0 ? (
+      {showTableSkeleton ? (
         <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
           <div className={styles.tableSkeletonHeader}>
             <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

@@ -1,6 +1,20 @@
 import { type FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import {
+  Boxes,
+  CalendarDays,
+  Download,
+  Layers3,
+  LoaderCircle,
+  PackageSearch,
+  Play,
+  Printer,
+  SlidersHorizontal,
+  UsersRound,
+  Wallet,
+  Weight,
+} from "lucide-react";
 
 // ui-kit
 import { Button, DataTable, Select, TextField } from "@/ui-kit";
@@ -114,10 +128,12 @@ export const SpecialLotsReport: FC = () => {
     {
       label: t("reports.specialLots.summary.totalSpecialLotsCreated"),
       value: specialLotsReport?.totalSpecialLotsCreated ?? 0,
+      icon: Layers3,
     },
     {
       label: t("reports.specialLots.summary.uniqueSpecialCustomersCount"),
       value: specialLotsReport?.uniqueSpecialCustomersCount ?? 0,
+      icon: UsersRound,
     },
     {
       label: t("reports.specialLots.summary.totalSpecialPowderKg"),
@@ -125,23 +141,40 @@ export const SpecialLotsReport: FC = () => {
         undefined,
         { minimumFractionDigits: 3, maximumFractionDigits: 3 },
       )} kg`,
+      icon: Weight,
     },
     {
       label: t("reports.specialLots.summary.totalSpecialCostAmd"),
       value: `${(specialLotsReport?.totalSpecialCostAmd ?? 0).toLocaleString()} AMD`,
+      icon: Wallet,
     },
   ];
 
   return (
     <div className={styles.reportWrapper}>
       <header className={styles.header}>
-        <h1>{t("reports.specialLots.title")}</h1>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true">
+            <Boxes size={20} />
+          </span>
+          <div>
+            <span className={styles.eyebrow}>{t("reports.navigationGroups.inventory")}</span>
+            <h1>{t("reports.specialLots.title")}</h1>
+          </div>
+        </div>
+      </header>
 
+      <section className={styles.filterPanel} aria-label={t("common.filters")}>
+        <div className={styles.filterPanelTitle}>
+          <SlidersHorizontal size={15} aria-hidden="true" />
+          <span>{t("common.filters")}</span>
+        </div>
         <div className={styles.filters}>
           <div className={styles.filterItem}>
             <TextField
               type="date"
               label={t("reports.specialLots.filters.fromDate")}
+              icon={<CalendarDays size={14} aria-hidden="true" />}
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
             />
@@ -151,6 +184,7 @@ export const SpecialLotsReport: FC = () => {
             <TextField
               type="date"
               label={t("reports.specialLots.filters.toDate")}
+              icon={<CalendarDays size={14} aria-hidden="true" />}
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
             />
@@ -158,6 +192,7 @@ export const SpecialLotsReport: FC = () => {
 
           <div className={styles.filterItem}>
             <Select
+              label={t("settings.navigation.warehouse")}
               value={warehouseId === null ? "" : String(warehouseId)}
               onChange={(e) =>
                 setWarehouseId(e.target.value ? Number(e.target.value) : null)
@@ -175,46 +210,68 @@ export const SpecialLotsReport: FC = () => {
           </div>
 
           <Button variant="primary" onClick={generateReport} disabled={isLoading}>
+            {isLoading ? (
+              <LoaderCircle className={styles.buttonSpinner} size={15} aria-hidden="true" />
+            ) : (
+              <Play size={14} aria-hidden="true" />
+            )}
             {t("reports.specialLots.generate")}
           </Button>
         </div>
-      </header>
+      </section>
 
       <div className={styles.summaryCards}>
         {summaryCards.map((card) => (
           <div key={card.label} className={styles.card}>
-            <span className={styles.cardLabel}>{card.label}</span>
-            <strong className={styles.cardValue}>{card.value}</strong>
+            <span className={styles.cardIcon} aria-hidden="true">
+              <card.icon size={17} />
+            </span>
+            <div className={styles.cardContent}>
+              <span className={styles.cardLabel}>{card.label}</span>
+              <strong className={styles.cardValue}>{card.value}</strong>
+            </div>
           </div>
         ))}
+      </div>
+
+      <div className={styles.tableToolbar}>
+        <div className={styles.tableTitle}>
+          <PackageSearch size={16} aria-hidden="true" />
+          <span>{t("reports.specialLots.title")}</span>
+          <span className={styles.rowCount}>{rows.length}</span>
+        </div>
+        <div className={styles.tableActions}>
+          <Button
+            variant="secondary"
+            onClick={handleExportToExcel}
+            disabled={rows.length === 0}
+          >
+            <Download size={14} aria-hidden="true" />
+            {t("reports.specialLots.exportToExcel")}
+          </Button>
+          <Button variant="secondary" onClick={() => window.print()}>
+            <Printer size={14} aria-hidden="true" />
+            {t("reports.specialLots.print")}
+          </Button>
+        </div>
       </div>
 
       <div className={styles.tableContainer}>
         {rows.length === 0 && !isLoading ? (
           <div className={styles.emptyState}>
-            {t("reports.specialLots.emptyState")}
+            <PackageSearch size={24} aria-hidden="true" />
+            <p>{t("reports.specialLots.emptyState")}</p>
           </div>
         ) : (
           <DataTable
             data={rows}
             columns={columns}
             pageSize={10}
+            isLoading={isLoading}
+            loadingText={t("common.loading")}
             getRowClassName={() => styles.specialRow}
           />
         )}
-      </div>
-
-      <div className={styles.filters}>
-        <Button
-          variant="secondary"
-          onClick={handleExportToExcel}
-          disabled={rows.length === 0}
-        >
-          {t("reports.specialLots.exportToExcel")}
-        </Button>
-        <Button variant="secondary" onClick={() => window.print()}>
-          {t("reports.specialLots.print")}
-        </Button>
       </div>
     </div>
   );

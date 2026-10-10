@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 import type { Row } from "@tanstack/react-table";
 
 // ui-kit
@@ -39,6 +40,7 @@ export const TransferToShop = () => {
   );
   const { items: warehouseProducts, isLoading: isLoadingProducts } =
     useAppSelector((state) => state.warehouseProducts);
+  const showTableSkeleton = useMinimumLoadingDuration(isLoadingProducts);
   const { products } = useAppSelector((state) => state.products);
 
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
@@ -358,7 +360,7 @@ export const TransferToShop = () => {
       );
     }
 
-    if (isLoadingProducts) {
+    if (showTableSkeleton) {
       return (
         <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
           <div className={styles.tableSkeletonHeader}>
@@ -406,9 +408,6 @@ export const TransferToShop = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h2 className={styles.title}>
-          {t("warehouses.navigation.transferToShop")}
-        </h2>
         <div className={styles.selectors}>
           <div className={styles.selector}>
             <Select

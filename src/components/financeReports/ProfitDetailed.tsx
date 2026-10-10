@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { Button, DataTable, DatePicker, Select } from "@/ui-kit";
+import { DatePicker, Select } from "@/ui-kit";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -14,10 +14,13 @@ import { getProfitDetailed } from "@/services/financeReports";
 
 // utils
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
+import { FinanceReportResult } from "./FinanceReportResult";
 
 // local
 import { getDynamicColumns, toDynamicRows } from "./tableUtils";
 import styles from "./FinanceReports.module.css";
+import { FinanceFilterHeading } from "./FinanceFilterHeading";
+import { FinanceReportLoadButton } from "./FinanceReportLoadButton";
 
 const formatDateForApi = (date: Date): string => {
   const year = date.getFullYear();
@@ -107,6 +110,7 @@ export const ProfitDetailed = () => {
   return (
     <div className={styles.panel}>
       <div className={styles.filters}>
+        <FinanceFilterHeading />
         <Select
           label={t("financeReports.filters.shop")}
           value={shopId > 0 ? String(shopId) : ""}
@@ -136,17 +140,19 @@ export const ProfitDetailed = () => {
       </div>
 
       <div className={styles.actions}>
-        <Button variant="primary" size="medium" onClick={handleLoad} disabled={isLoading}>
-          {isLoading ? t("common.loading") : t("financeReports.actions.load")}
-        </Button>
+        <FinanceReportLoadButton loading={isLoading} label={t("financeReports.actions.load")} onClick={handleLoad} />
       </div>
 
       <div className={styles.result}>
-        {!data ? (
-          <div className={styles.info}>{t("financeReports.empty")}</div>
-        ) : (
-          <DataTable data={rows} columns={columns} pageSize={10} />
-        )}
+        <FinanceReportResult
+          rows={rows}
+          columns={columns}
+          loading={isLoading}
+          loadingLabel={t("common.loading")}
+          hasData={data !== null}
+          emptyLabel={t("financeReports.empty")}
+          noRowsLabel={t("common.noData")}
+        />
       </div>
     </div>
   );

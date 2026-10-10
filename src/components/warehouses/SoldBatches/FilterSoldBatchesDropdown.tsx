@@ -1,5 +1,6 @@
 import { useState, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { CalendarDays, Check, RotateCcw, SlidersHorizontal } from "lucide-react";
 
 // ui-kit
 import { Button, Dropdown, DatePicker } from "@/ui-kit";
@@ -57,11 +58,12 @@ export const FilterSoldBatchesDropdown: FC<FilterSoldBatchesDropdownProps> = ({
       onOpenChange={onOpenChange}
       anchorRef={anchorRef}
       align="start"
-      side="left"
+      side="right"
       title={t("common.filters")}
       contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
+        <span className={styles.headerIcon} aria-hidden="true"><SlidersHorizontal size={15} /></span>
         <span className={styles.title}>{t("common.filters")}</span>
       </div>
 
@@ -70,6 +72,7 @@ export const FilterSoldBatchesDropdown: FC<FilterSoldBatchesDropdownProps> = ({
           <div className={styles.colLeft}>
             <div className={styles.datePickerWrapper}>
               <label className={styles.label}>
+                <CalendarDays size={13} aria-hidden="true" />
                 {t("warehouses.soldBatches.filters.fromDate")}
               </label>
               <DatePicker
@@ -86,12 +89,14 @@ export const FilterSoldBatchesDropdown: FC<FilterSoldBatchesDropdownProps> = ({
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                calendarClassName={styles.dateCalendar}
               />
             </div>
           </div>
           <div className={styles.colRight}>
             <div className={styles.datePickerWrapper}>
               <label className={styles.label}>
+                <CalendarDays size={13} aria-hidden="true" />
                 {t("warehouses.soldBatches.filters.toDate")}
               </label>
               <DatePicker
@@ -107,6 +112,7 @@ export const FilterSoldBatchesDropdown: FC<FilterSoldBatchesDropdownProps> = ({
                 showYearDropdown
                 dropdownMode="select"
                 minDate={tempValues.fromDate || undefined}
+                calendarClassName={styles.dateCalendar}
               />
             </div>
           </div>
@@ -114,9 +120,11 @@ export const FilterSoldBatchesDropdown: FC<FilterSoldBatchesDropdownProps> = ({
 
         <div className={styles.primaryActions}>
           <Button variant="secondary" size="medium" onClick={handleReset}>
+            <RotateCcw size={14} aria-hidden="true" />
             {t("common.reset")}
           </Button>
           <Button variant="primary" size="medium" onClick={handleApply}>
+            <Check size={14} aria-hidden="true" />
             {t("common.save")}
           </Button>
         </div>

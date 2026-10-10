@@ -1,5 +1,6 @@
 import { useState, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { CalendarDays, Check, RotateCcw, SlidersHorizontal } from "lucide-react";
 
 // ui-kit
 import { Button, Dropdown, DatePicker } from "@/ui-kit";
@@ -54,11 +55,12 @@ export const FilterAdjustedSalesDropdown: FC<
       onOpenChange={onOpenChange}
       anchorRef={anchorRef}
       align="start"
-      side="left"
+      side="right"
       title={t("common.filters")}
       contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
+        <span className={styles.headerIcon} aria-hidden="true"><SlidersHorizontal size={15} /></span>
         <span className={styles.title}>{t("common.filters")}</span>
       </div>
 
@@ -69,7 +71,8 @@ export const FilterAdjustedSalesDropdown: FC<
           <div>
             <div className={styles.datePickerWrapper}>
               <label className={styles.label}>
-                {t("warehouse.dailyProfit.filters.fromDate")}
+                <CalendarDays size={13} aria-hidden="true" />
+                {t("warehouses.soldBatches.filters.fromDate")}
               </label>
               <DatePicker
                 selected={tempValues.fromDate}
@@ -78,7 +81,7 @@ export const FilterAdjustedSalesDropdown: FC<
                 }
                 dateFormat="MM/dd/yyyy"
                 placeholderText={t(
-                  "warehouse.dailyProfit.filters.selectFromDate",
+                  "warehouses.soldBatches.filters.selectFromDate",
                 )}
                 isClearable
                 showTimeSelect={false}
@@ -92,7 +95,8 @@ export const FilterAdjustedSalesDropdown: FC<
           <div>
             <div className={styles.datePickerWrapper}>
               <label className={styles.label}>
-                {t("warehouse.dailyProfit.filters.toDate")}
+                <CalendarDays size={13} aria-hidden="true" />
+                {t("warehouses.soldBatches.filters.toDate")}
               </label>
               <DatePicker
                 selected={tempValues.toDate}
@@ -101,7 +105,7 @@ export const FilterAdjustedSalesDropdown: FC<
                 }
                 dateFormat="MM/dd/yyyy"
                 placeholderText={t(
-                  "warehouse.dailyProfit.filters.selectToDate",
+                  "warehouses.soldBatches.filters.selectToDate",
                 )}
                 isClearable
                 showTimeSelect={false}
@@ -116,9 +120,11 @@ export const FilterAdjustedSalesDropdown: FC<
 
         <div className={styles.primaryActions}>
           <Button variant="secondary" size="medium" onClick={handleReset}>
+            <RotateCcw size={14} aria-hidden="true" />
             {t("common.reset")}
           </Button>
           <Button variant="primary" size="medium" onClick={handleApply}>
+            <Check size={14} aria-hidden="true" />
             {t("common.save")}
           </Button>
         </div>

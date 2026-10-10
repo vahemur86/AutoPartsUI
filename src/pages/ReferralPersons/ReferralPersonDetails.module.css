@@ -1,0 +1,182 @@
+.page {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 22px 24px 30px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.headerActions button,
+.sectionHeader button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profilePanel,
+.rulesPanel,
+.loadingState {
+  min-width: 0;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(22, 28, 23, 0.94), rgba(13, 17, 14, 0.96));
+}
+
+.profilePanel {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.profileHeading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.14);
+}
+
+.profileIcon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 40px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #d4bc7c;
+  border: 1px solid rgba(196, 169, 106, 0.3);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.08);
+}
+
+.profileHeading h2 {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  color: #f3f0e5;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.eyebrow {
+  color: #c4a96a;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.profileHeading > :global([class*="status"]) {
+  margin-left: auto;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.infoItem {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 70px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.infoWide {
+  grid-column: 1 / -1;
+}
+
+.infoLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #aaaF9f;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.infoLabel svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.infoItem strong {
+  overflow-wrap: anywhere;
+  color: #e5e7df;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.rulesPanel {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.loadingState {
+  padding: 24px;
+  color: #c4c9c2;
+}
+
+@media (max-width: 900px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 16px 12px 24px;
+  }
+
+  .profilePanel {
+    padding: 13px;
+  }
+
+  .infoGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .infoWide {
+    grid-column: auto;
+  }
+
+  .rulesPanel {
+    padding: 10px;
+  }
+
+  .sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

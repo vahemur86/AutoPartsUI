@@ -1,5 +1,6 @@
 import { useState, useEffect, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { Banknote, Check, CircleDollarSign, FileText, X } from "lucide-react";
 
 // ui-kit
 import { Button, Dropdown, TextField } from "@/ui-kit";
@@ -84,49 +85,71 @@ export const SoldBatchesDropdown = ({
       side="left"
       title={titleText}
     >
-      <div className={styles.header}>
-        <span className={styles.title}>{titleText}</span>
-      </div>
-
       <div className={styles.content}>
-        <div className={styles.grid}>
+        <div className={styles.adjustmentIntro}>
+          <span className={styles.adjustmentIntroIcon} aria-hidden="true">
+            <Banknote size={19} />
+          </span>
+          <span className={styles.adjustmentIntroText}>
+            <strong>{titleText}</strong>
+            <span>{t("warehouses.soldBatches.adjustmentHelp")}</span>
+          </span>
+        </div>
+
+        <section className={styles.adjustmentFieldGroup}>
+          <h4 className={styles.adjustmentFieldHeading}>
+            <CircleDollarSign size={16} aria-hidden="true" />
+            {t("warehouses.soldBatches.form.finalAmount")}
+          </h4>
           <TextField
             label={t("warehouses.soldBatches.form.finalAmount")}
             placeholder="0"
+            icon={<CircleDollarSign size={15} />}
             type="number"
             value={revenueTotal}
             onChange={(e) => setRevenueTotal(e.target.value)}
             error={hasTriedSave && !isRevenueTotalValid}
             disabled={isLoading}
           />
+        </section>
 
+        <section className={styles.adjustmentFieldGroup}>
+          <h4 className={styles.adjustmentFieldHeading}>
+            <FileText size={16} aria-hidden="true" />
+            {t("warehouses.soldBatches.form.comment")}
+          </h4>
           <TextField
             label={t("warehouses.soldBatches.form.comment")}
             placeholder={t("warehouses.soldBatches.form.enterComment")}
+            icon={<FileText size={15} />}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             error={hasTriedSave && !isCommentValid}
             disabled={isLoading}
           />
-        </div>
+        </section>
 
         <div className={styles.actionswithoutDelete}>
           <div className={styles.primaryActions}>
             <Button
               variant="secondary"
               size="medium"
+              className={styles.cancelButton}
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
+              <X size={16} aria-hidden="true" />
               {t("common.cancel")}
             </Button>
 
             <Button
               variant="primary"
               size="medium"
+              className={styles.confirmButton}
               onClick={handleSaveClick}
               disabled={isLoading}
             >
+              <Check size={16} aria-hidden="true" />
               {isEditMode ? t("common.update") : t("common.save")}
             </Button>
           </div>

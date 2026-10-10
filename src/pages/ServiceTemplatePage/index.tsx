@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchVehicleDefinitions } from "@/store/slices/vehiclesSlice";
@@ -181,6 +182,13 @@ export const ServiceTemplatePage = () => {
     useAppSelector((state) => state.servicesCatalog);
   const { items: pricingItems, isLoading: isPricingLoading } = useAppSelector(
     (state) => state.vehicleServicePricing,
+  );
+  const showPricingTableSkeleton = useMinimumLoadingDuration(isPricingLoading);
+  const showCategoryTableSkeleton = useMinimumLoadingDuration(
+    isServiceCategoriesLoading && serviceCategories.length === 0,
+  );
+  const showServiceTableSkeleton = useMinimumLoadingDuration(
+    isServiceCatalogLoading,
   );
 
   const [form, setForm] = useState<FormState>(getInitialForm());
@@ -1134,7 +1142,7 @@ export const ServiceTemplatePage = () => {
               </div>
             </div>
 
-            {isPricingLoading ? (
+            {showPricingTableSkeleton ? (
               <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
                 <div className={styles.tableSkeletonHeader}>
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -1745,7 +1753,7 @@ export const ServiceTemplatePage = () => {
           </div>
 
           <div className={`${styles.section} ${styles.tableSection}`}>
-            {isServiceCategoriesLoading && serviceCategories.length === 0 ? (
+            {showCategoryTableSkeleton ? (
               <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
                 <div className={styles.tableSkeletonHeader}>
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -2114,7 +2122,7 @@ export const ServiceTemplatePage = () => {
           </div>
 
           <div className={`${styles.section} ${styles.tableSection}`}>
-            {isServiceCatalogLoading ? (
+            {showServiceTableSkeleton ? (
               <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
                 <div className={styles.tableSkeletonHeader}>
                   <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />

@@ -1,5 +1,6 @@
 import { useState, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { CalendarDays, Check, Hash, RotateCcw, SlidersHorizontal } from "lucide-react";
 
 // ui-kit
 import { Button, TextField, Dropdown, DatePicker } from "@/ui-kit";
@@ -70,6 +71,9 @@ export const FilterPowderBatchesDropdown: FC<
       contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
+        <span className={styles.headerIcon} aria-hidden="true">
+          <SlidersHorizontal size={16} />
+        </span>
         <span className={styles.title}>{t("common.filters")}</span>
       </div>
 
@@ -78,7 +82,8 @@ export const FilterPowderBatchesDropdown: FC<
           {/* From Date & To Date */}
           <div className={styles.colLeft}>
             <div className={styles.datePickerWrapper}>
-              <label className={styles.label}>
+              <label className={styles.labelWithIcon}>
+                <CalendarDays size={13} aria-hidden="true" />
                 {t("cashbox.powderBatches.filters.fromDate")}
               </label>
               <DatePicker
@@ -100,7 +105,8 @@ export const FilterPowderBatchesDropdown: FC<
           </div>
           <div className={styles.colRight}>
             <div className={styles.datePickerWrapper}>
-              <label className={styles.label}>
+              <label className={styles.labelWithIcon}>
+                <CalendarDays size={13} aria-hidden="true" />
                 {t("cashbox.powderBatches.filters.toDate")}
               </label>
               <DatePicker
@@ -126,6 +132,7 @@ export const FilterPowderBatchesDropdown: FC<
           <div className={styles.fullRow}>
             <TextField
               label={t("cashbox.powderBatches.filters.cashRegisterId")}
+              icon={<Hash size={14} aria-hidden="true" />}
               value={tempValues.cashRegisterId}
               onChange={(e) =>
                 setTempValues((p) => ({
@@ -144,9 +151,11 @@ export const FilterPowderBatchesDropdown: FC<
         <div className={styles.actionswithoutDelete}>
           <div className={styles.primaryActions}>
             <Button variant="secondary" size="medium" onClick={handleReset}>
+              <RotateCcw size={14} aria-hidden="true" />
               {t("common.reset")}
             </Button>
             <Button variant="primary" size="medium" onClick={handleApply}>
+              <Check size={14} aria-hidden="true" />
               {t("common.save")}
             </Button>
           </div>

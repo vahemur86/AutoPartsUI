@@ -21,13 +21,14 @@
     "languageLoading": "Загрузка языков...",
     "useGlobalDefault": "Использовать общий язык",
     "reports": "Отчеты",
-    "financeReports": "Финансы и отчеты",
+    "financeReports": "Финансовые отчеты",
     "calculator": "Калькулятор",
     "workshop": "Мастерская",
     "carCatalyst": "Баки",
     "repaymentRules": "Правила возмещения",
     "capitalSources": "Источники капитала",
     "referrals": "Реферальная программа",
+    "referralWorkspaceLabel": "Управление рефералами",
     "referralPersons": "Партнеры по рекомендациям",
     "commissions": "Комиссии",
     "agentContracts": "Договоры агентов",
@@ -56,6 +57,7 @@
     "noName": "Без названия",
     "front": "Передний",
     "back": "Задний",
+    "backToTop": "Наверх",
     "unknown": "Неизвестно",
     "noOptionsAvailable": "Нет доступных вариантов",
     "previous": "Предыдущая",
@@ -237,6 +239,12 @@
     }
   },
   "reports": {
+    "navigationGroups": {
+      "cashbox": "Касса и смены",
+      "inventory": "Запасы и партии",
+      "iron": "Железные изделия",
+      "service": "Мастерская и сервис"
+    },
     "navigation": {
       "zReports": "Z-отчеты",
       "batchReports": "Отчеты по партиям",
@@ -458,6 +466,13 @@
       "warehouseInventory": "Остатки склада",
       "shopInventory": "Остатки магазина",
       "otherExpenses": "Прочие расходы"
+    },
+    "navigationGroups": {
+      "overview": "Обзор",
+      "operations": "Операционные отчеты",
+      "profitability": "Прибыль и продажи",
+      "inventory": "Остатки",
+      "expenses": "Расходы"
     },
     "otherExpenses": {
       "monthlyTotal": "Прочие расходы за месяц",
@@ -965,6 +980,11 @@
       "products": "Товары",
       "transferToShop": "Передать в магазин"
     },
+    "navigationGroups": {
+      "powderLots": "Партии порошка",
+      "productsAndStock": "Товары и запасы",
+      "financial": "Финансы"
+    },
     "tabs": {
       "addNew": "Добавить новый склад",
       "warehousesHistory": "История складов"
@@ -995,7 +1015,16 @@
       "emptyState": "Партии не найдены.",
       "createSale": "Создать продажу",
       "creating": "Создание...",
-      "previewAndCreateSale": "Предпросмотр и создание продажи",
+      "previewAndCreateSale": "Рассчитать продажу",
+      "selectedWeight": "Выбранный вес",
+      "unitKg": "кг",
+      "statuses": {
+        "available": "Доступна",
+        "depleted": "Израсходована",
+        "cancelled": "Отменена",
+        "empty": "Пустая",
+        "unknown": "Неизвестно"
+      },
       "previewTitle": "Предпросмотр продажи",
       "totalPowder": "Всего порошка",
       "totalCost": "Общая стоимость",
@@ -1022,7 +1051,9 @@
       },
       "lotType": {
         "special": "Партия особого клиента",
+        "specialShort": "Особая",
         "general": "Общая партия",
+        "generalShort": "Общая",
         "mergedFromMultiple": "(Объединено из нескольких)"
       },
       "filters": {
@@ -1049,10 +1080,20 @@
     "batchesToSale": {
       "loading": "Загрузка партий к продаже...",
       "emptyState": "Партии для продажи не найдены.",
+      "warehouseSelectorTitle": "Выбор склада",
       "sale": "Продать",
+      "statuses": {
+        "open": "Открыта",
+        "sold": "Продана",
+        "cancelled": "Отменена",
+        "unknown": "Неизвестно"
+      },
       "saleModal": {
         "title": "Завершить продажу",
         "description": "Укажите цены металлов для партии продажи #{{id}}.",
+        "quantitiesTitle": "Количество в партии",
+        "metalPricesTitle": "Цены металлов",
+        "saleSettingsTitle": "Настройки продажи",
         "confirm": "Подтвердить продажу",
         "cancel": "Отмена"
       },
@@ -1103,6 +1144,7 @@
       "loading": "Загрузка проданных партий...",
       "emptyState": "Проданные партии не найдены.",
       "editSoldBatch": "Корректировка цены",
+      "adjustmentHelp": "Укажите итоговую цену продажи и причину корректировки.",
       "filters": {
         "fromDate": "С даты",
         "toDate": "По дату",
@@ -1123,7 +1165,12 @@
         "comparison": "Различия",
         "original": "Исходные",
         "current": "Текущие",
-        "noDifferences": "Нет различий"
+        "field": "Поле",
+        "changeCount": "Изменено полей: {{count}}",
+        "snapshotDetails": "Показать полный снимок данных",
+        "noDifferences": "Изменения не зафиксированы",
+        "noSnapshots": "При продаже этой партии данные не изменялись.",
+        "failedToFetchChanges": "Не удалось загрузить историю изменений"
       },
       "form": {
         "finalAmount": "Изменённая цена",
@@ -1610,7 +1657,11 @@
         "financials": "Финансовый обзор",
         "operations": "Операции",
         "duration": "Длительность",
+        "durationFormat": "{{hours}} ч {{minutes}} мин",
+        "generated": "Z-отчет сформирован",
         "operator": "ID оператора",
+        "reportNumber": "Z-отчет №{{id}}",
+        "sessionLabel": "Смена",
         "finalDiff": "Итоговая разница",
         "catalystCashOut": "Выплата за катализатор",
         "ironCashOut": "Выплата за железо"
@@ -1624,6 +1675,20 @@
     },
     "batches": {
       "title": "Отчеты по партиям",
+      "card": {
+        "batchNumber": "Партия №{{id}}",
+        "cashbox": "Касса",
+        "session": "Смена",
+        "showIntakes": "Заявок: {{count}}",
+        "hideDetails": "Скрыть детали"
+      },
+      "statuses": {
+        "open": "Открыта",
+        "partiallySold": "Продана частично",
+        "sold": "Продана",
+        "cancelled": "Отменена",
+        "unknown": "Неизвестно"
+      },
       "special": {
         "badge": "Особый",
         "totalsLabel": "Итоги — только особый клиент (ID поставщика: {{id}})",
@@ -1631,6 +1696,10 @@
         "emptyStateHint": "У выбранного поставщика нет закупок особого клиента в указанном диапазоне дат."
       },
       "filters": {
+        "filterHint": "Выберите период или параметры клиента",
+        "dateRange": "Период дат",
+        "customerCriteria": "Параметры клиента",
+        "searchClient": "Поиск особого клиента",
         "fromDate": "Дата от",
         "toDate": "Дата до",
         "selectFromDate": "Выберите дату от",
@@ -1678,14 +1747,28 @@
         "profitDiffAmd": "Разница в прибыли",
         "profitDiffPercent": "Разница в прибыли (%)",
         "customerRealPercent": "Реальная процентная ставка клиентаս"
+      },
+      "card": {
+        "batchNumber": "Партия №{{id}}",
+        "showIntakes": "Заявок: {{count}}",
+        "hideDetails": "Скрыть детали"
+      },
+      "statuses": {
+        "open": "Открыта",
+        "partiallySold": "Продана частично",
+        "sold": "Продана",
+        "cancelled": "Отменена",
+        "unknown": "Неизвестно"
       }
     },
     "openSessions": {
       "title": "Открытые сессии",
+      "activeCount": "Открытых сессий",
+      "statusOpen": "Открыта",
       "columns": {
         "sessionId": "ID сессии",
-        "cashBoxCode": "Код",
-        "operator": "Оператор",
+        "cashBoxCode": "Касса",
+        "operator": "Оператор / кассир",
         "openedAt": "Открыта в",
         "intakesOffered": "Предложено заявок",
         "intakesAccepted": "Принято заявок",
@@ -1721,6 +1804,7 @@
         "button": "Сводка",
         "tooltip": "Показать общий порошок и металлы по всем партиям",
         "empty": "Нет доступных сводных данных.",
+        "calculating": "Выполняется расчёт…",
         "thisMonth": "Этот месяц",
         "totalPowderKg": "Всего",
         "ptTotal": "Всего платины (г)",
@@ -1766,8 +1850,17 @@
       "dateLabel": "Дата",
       "selectShop": "Выберите магазин",
       "selectRegister": "Выберите кассовый аппарат",
+      "dateFromLabel": "Дата с",
+      "dateToLabel": "Дата по",
+      "selectDateFromPlaceholder": "Выберите начальную дату (необязательно)",
+      "selectDateToPlaceholder": "Выберите конечную дату (необязательно)",
       "selectDatePlaceholder": "Выберите дату (необязательно)",
       "load": "Загрузить отчет",
+      "periodLabel": "Период",
+      "allDates": "Все даты",
+      "emptyTitle": "Отчет еще не рассчитан",
+      "emptyPrompt": "Выберите магазин и кассу, затем загрузите отчет для расчета баланса.",
+      "balanceEquation": "Начальный остаток + приход - расход = ожидаемый остаток при закрытии",
       "validation": {
         "shopRequired": "Необходимо выбрать магазин",
         "registerRequired": "Необходимо выбрать кассовый аппарат"
@@ -2684,6 +2777,7 @@
     "customersList": "Список клиентов",
     "loading": "Загрузка клиентов...",
     "emptyState": "Клиенты не найдены.",
+    "results": "Показано {{shown}} из {{total}} клиентов",
     "createCustomer": "Создать клиента",
     "actions": {
       "resetFilters": "Сбросить фильтры",
@@ -2703,6 +2797,7 @@
     },
     "validation": {
       "phoneRequired": "Номер телефона обязателен",
+      "phoneInvalid": "Введите корректный номер телефона.",
       "customerTypeRequired": "Тип клиента обязателен"
     },
     "columns": {
@@ -2807,16 +2902,29 @@
   },
   "powderSales": {
     "adjustments": {
+      "groups": {
+        "transactionCurrency": "Расчёт в валюте продажи",
+        "amdEquivalent": "Расчёт в AMD"
+      },
+      "helper": {
+        "open": "О разделе «{{title}}»",
+        "transactionCurrency": "Показывает исходную и скорректированную суммы продажи в валюте сделки и разницу между ними.",
+        "amdEquivalent": "Показывает исходную сумму, скорректированную сумму и разницу в эквиваленте AMD."
+      },
       "columns": {
         "id": "Id",
         "powderSaleId": "ID",
-        "oldAmount": "Исходн.",
-        "newAmount": "Новая",
-        "difference": "Разн.",
+        "oldAmount": "Исходная сумма",
+        "newAmount": "Скорректированная сумма",
+        "originalAmount": "Исходная сумма",
+        "adjustedAmount": "Скорректированная сумма",
+        "difference": "Разница",
         "currencyCode": "Валюта",
-        "oldAmountAmd": "Старая (AMD)",
-        "newAmountAmd": "Новая (AMD)",
-        "differenceAmd": "Разн. (AMD)",
+        "originalAmountAmd": "Исходная сумма (AMD)",
+        "adjustedAmountAmd": "Скорректированная сумма (AMD)",
+        "oldAmountAmd": "Исходная сумма (AMD)",
+        "newAmountAmd": "Скорректированная сумма (AMD)",
+        "differenceAmd": "Разница (AMD)",
         "exchangeRate": "Курс",
         "reason": "Причина",
         "createdAt": "Дата"
@@ -3738,7 +3846,8 @@
       "loading": "Загрузка...",
       "saving": "Сохранение...",
       "create": "Создать",
-      "update": "Сохранить"
+      "update": "Сохранить",
+      "cancel": "Отмена"
     },
     "rules": {
       "title": "Добавить правило комиссии",
@@ -3768,7 +3877,8 @@
     },
     "validation": {
       "required": "Код и имя обязательны.",
-      "email": "Введите корректный адрес электронной почты."
+      "email": "Введите корректный адрес электронной почты.",
+      "phone": "Введите корректный номер телефона."
     }
   },
   "referralCommissions": {

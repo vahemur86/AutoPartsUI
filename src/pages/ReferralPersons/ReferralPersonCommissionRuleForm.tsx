@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { CalendarDays, Percent, Wrench } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
 import { Button, Select, TextField, Textarea } from "@/ui-kit";
 import { createReferralPersonRule } from "@/services/referralPersons";
 import { fetchServicesCatalog } from "@/store/slices/servicesCatalogSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import styles from "./ReferralPersonCommissionRuleForm.module.css";
+import actionStyles from "./ReferralActions.module.css";
 
 export const ReferralPersonCommissionRuleForm = () => {
   const { t } = useTranslation();
@@ -66,64 +69,83 @@ export const ReferralPersonCommissionRuleForm = () => {
   };
 
   return (
-    <div style={{ padding: 24, display: "grid", gap: 16 }}>
+    <div className={styles.page}>
       <SectionHeader title={t("referralPerson.rules.title")} goBack />
 
-      <div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
-        <Select
-          label={t("referralPerson.rules.service")}
-          value={form.serviceId}
-          disabled={servicesLoading}
-          onChange={(e) => setForm((prev) => ({ ...prev, serviceId: e.target.value }))}
-        >
-          <option value="">
-            {servicesLoading ? t("referralPerson.rules.loadingServices") : t("referralPerson.rules.selectService")}
-          </option>
-          {activeServices.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.name} ({service.code})
-            </option>
-          ))}
-        </Select>
-
-        {selectedService && (
-          <div style={{ color: "#475569", fontSize: 14 }}>
-            {t("referralPerson.rules.servicePrice")}: <strong>{Number(selectedService.internalCost || 0).toLocaleString()} AMD</strong>
+      <div className={styles.formPanel}>
+        <div className={styles.formHeading}>
+          <span className={styles.formIcon}><Percent size={19} /></span>
+          <div>
+            <span className={styles.eyebrow}>{t("header.referralWorkspaceLabel")}</span>
+            <h2>{t("referralPerson.rules.title")}</h2>
           </div>
-        )}
+        </div>
 
-        <TextField
-          label={t("referralPerson.rules.commissionPercent")}
-          type="number"
-          value={form.commissionPercent}
-          onChange={(e) => setForm((prev) => ({ ...prev, commissionPercent: e.target.value }))}
-        />
+        <div className={styles.formGrid}>
+          <Select
+            label={t("referralPerson.rules.service")}
+            value={form.serviceId}
+            disabled={servicesLoading}
+            onChange={(e) => setForm((prev) => ({ ...prev, serviceId: e.target.value }))}
+            searchable
+          >
+            <option value="">
+              {servicesLoading ? t("referralPerson.rules.loadingServices") : t("referralPerson.rules.selectService")}
+            </option>
+            {activeServices.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name} ({service.code})
+              </option>
+            ))}
+          </Select>
 
-        <TextField
-          label={t("referralPerson.rules.effectiveFrom")}
-          type="date"
-          value={form.effectiveFrom}
-          onChange={(e) => setForm((prev) => ({ ...prev, effectiveFrom: e.target.value }))}
-        />
+          {selectedService && (
+            <div className={styles.servicePrice}>
+              <Wrench size={15} />
+              <span>{t("referralPerson.rules.servicePrice")}</span>
+              <strong>{Number(selectedService.internalCost || 0).toLocaleString()} AMD</strong>
+            </div>
+          )}
 
-        <TextField
-          label={t("referralPerson.rules.effectiveTo")}
-          type="date"
-          value={form.effectiveTo}
-          onChange={(e) => setForm((prev) => ({ ...prev, effectiveTo: e.target.value }))}
-        />
+          <TextField
+            label={t("referralPerson.rules.commissionPercent")}
+            type="number"
+            min="0"
+            max="100"
+            value={form.commissionPercent}
+            onChange={(e) => setForm((prev) => ({ ...prev, commissionPercent: e.target.value }))}
+            icon={<Percent size={15} />}
+          />
 
-        <Textarea
-          label={t("referralPerson.fields.notes")}
-          value={form.notes}
-          onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
-        />
+          <TextField
+            label={t("referralPerson.rules.effectiveFrom")}
+            type="date"
+            value={form.effectiveFrom}
+            onChange={(e) => setForm((prev) => ({ ...prev, effectiveFrom: e.target.value }))}
+            icon={<CalendarDays size={15} />}
+          />
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            {t("common.cancel")}
+          <TextField
+            label={t("referralPerson.rules.effectiveTo")}
+            type="date"
+            value={form.effectiveTo}
+            onChange={(e) => setForm((prev) => ({ ...prev, effectiveTo: e.target.value }))}
+            icon={<CalendarDays size={15} />}
+          />
+
+          <Textarea
+            label={t("referralPerson.fields.notes")}
+            value={form.notes}
+            onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
+            rows={3}
+          />
+        </div>
+
+        <div className={styles.actions}>
+          <Button className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`} onClick={() => navigate(-1)}>
+            {t("referralPerson.form.cancel")}
           </Button>
-          <Button onClick={handleSubmit}>{t("common.save")}</Button>
+          <Button className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`} onClick={handleSubmit}>{t("common.save")}</Button>
         </div>
       </div>
     </div>

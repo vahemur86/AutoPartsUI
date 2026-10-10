@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { DataTable, IconButton } from "@/ui-kit";
+import { DataTable } from "@/ui-kit";
 
 // icons
-import { Filter } from "lucide-react";
+import { Boxes, Filter, PackageSearch } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -16,7 +16,7 @@ import {
 } from "@/store/slices/ironSaleReportsSlice";
 
 // components
-import { FilterIronSalesDropdown } from "./FilterIronSalesDropdown";
+import { FilterIronPurchasesDropdown } from "../IronProductsReport/FilterIronPurchasesDropdown";
 
 // columns & utils
 import { getIronSaleColumns } from "./columns";
@@ -24,7 +24,7 @@ import { getApiErrorMessage, getCashRegisterId } from "@/utils";
 import { checkIsToday } from "@/utils/checkIsToday.utils";
 
 // styles
-import styles from "./IronSaleReport.module.css";
+import styles from "../IronProductsReport/IronProductsReport.module.css";
 
 const PAGE_SIZE = 20;
 
@@ -32,17 +32,19 @@ export const IronSaleReport: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { sales } = useAppSelector((state) => state.ironSaleReports);
+  const { sales, isLoading } = useAppSelector((state) => state.ironSaleReports);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<{
-    customerId: number | null;
-  }>({
-    customerId: null,
+  const [activeFilters, setActiveFilters] = useState({
+    fromDate: null as string | null,
+    toDate: null as string | null,
+    productId: null as number | null,
+    operatorUserId: null as number | null,
+    cashRegisterId: null as number | null,
   });
 
-  const filterAnchorRef = useRef<HTMLDivElement>(null);
+  const filterAnchorRef = useRef<HTMLButtonElement>(null);
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
 
   useEffect(() => {
@@ -50,7 +52,13 @@ export const IronSaleReport: FC = () => {
       fetchIronSales({
         cashRegisterId,
         params: {
-          customerId: activeFilters.customerId || undefined,
+          FromUtc: activeFilters.fromDate || undefined,
+          ToUtc: activeFilters.toDate || undefined,
+          ProductId: activeFilters.productId || undefined,
+          OperatorUserId: activeFilters.operatorUserId || undefined,
+          CashRegisterId: activeFilters.cashRegisterId || undefined,
+          Page: currentPage + 1,
+          PageSize: PAGE_SIZE,
           lang: localStorage.getItem("i18nextLng") || "en",
         },
       }),
@@ -65,9 +73,15 @@ export const IronSaleReport: FC = () => {
     return () => {
       dispatch(resetIronSaleReportsState());
     };
-  }, [dispatch, t, activeFilters, cashRegisterId]);
+  }, [dispatch, t, activeFilters, cashRegisterId, currentPage]);
 
-  const handleApplyFilters = (filters: typeof activeFilters) => {
+  const handleApplyFilters = (filters: {
+    fromDate: string | null;
+    toDate: string | null;
+    productId: number | null;
+    operatorUserId: number | null;
+    cashRegisterId: number | null;
+  }) => {
     setActiveFilters(filters);
     setCurrentPage(0);
     setIsFilterOpen(false);
@@ -75,57 +89,67 @@ export const IronSaleReport: FC = () => {
 
   const columns = useMemo(() => getIronSaleColumns(), []);
 
-  // Client-side pagination if API returns all items
-  const paginatedData = useMemo(() => {
-    if (!sales || sales.length === 0) return [];
-    const startIndex = currentPage * PAGE_SIZE;
-    const endIndex = startIndex + PAGE_SIZE;
-    return sales.slice(startIndex, endIndex);
-  }, [sales, currentPage]);
-
   const totalPages = useMemo(
-    () => Math.ceil((sales?.length || 0) / PAGE_SIZE),
-    [sales?.length],
+    () => Math.max(Math.ceil((sales?.totalItems || 0) / PAGE_SIZE), 1),
+    [sales?.totalItems],
   );
+  const rows = sales?.results ?? [];
+  const activeFilterCount = Object.values(activeFilters).filter(
+    (value) => value != null && value !== "",
+  ).length;
 
   return (
     <div className={styles.reportWrapper}>
       <header className={styles.header}>
-        <h1>{t("reports.navigation.ironSale")}</h1>
+        <div className={styles.titleGroup}>
+          <span className={styles.titleIcon} aria-hidden="true"><Boxes size={19} /></span>
+          <div>
+            <span className={styles.eyebrow}>{t("reports.navigationGroups.iron")}</span>
+            <h1>{t("reports.navigation.ironSale")}</h1>
+          </div>
+        </div>
         <div className={styles.headerActions}>
-          <div
+          <button
+            type="button"
             ref={filterAnchorRef}
-            className={styles.filterButtonWrapper}
+            className={`${styles.filterButton} ${activeFilterCount ? styles.filterButtonActive : ""}`}
             onClick={() => setIsFilterOpen(true)}
+            aria-expanded={isFilterOpen}
           >
-            <IconButton
-              size="small"
-              variant="primary"
-              icon={<Filter size={12} color="#0e0f11" />}
-              ariaLabel={t("common.filters")}
-            />
+            <Filter size={15} aria-hidden="true" />
             <span className={styles.filterButtonText}>
               {t("common.filters")}
             </span>
-          </div>
+            {activeFilterCount > 0 && <span className={styles.filterCount}>{activeFilterCount}</span>}
+          </button>
         </div>
       </header>
 
-      <FilterIronSalesDropdown
+      <FilterIronPurchasesDropdown
         open={isFilterOpen}
         anchorRef={filterAnchorRef}
         onOpenChange={setIsFilterOpen}
         onSave={handleApplyFilters}
       />
 
+      <div className={styles.tableToolbar}>
+        <div className={styles.tableTitle}>
+          <PackageSearch size={15} aria-hidden="true" />
+          <span>{t("reports.navigation.ironSale")}</span>
+          <span className={styles.rowCount}>{sales?.totalItems ?? 0}</span>
+        </div>
+      </div>
+
       <div className={styles.tableContainer}>
         <DataTable
           columns={columns}
-          data={paginatedData}
+          data={rows}
           pageSize={PAGE_SIZE}
           manualPagination
           pageCount={totalPages}
           pageIndex={currentPage}
+          isLoading={isLoading}
+          loadingText={t("common.loading")}
           getRowClassName={(row) =>
             checkIsToday(row.purchasedAt) ? styles.todayRow : ""
           }

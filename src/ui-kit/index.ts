@@ -52,6 +52,7 @@ export {
   type TableHeaderProps,
   type TableProps,
   type TableRowProps,
+  type DataTableProps,
   type TextFieldProps,
   type TextareaProps,
   type MultiSelectProps,

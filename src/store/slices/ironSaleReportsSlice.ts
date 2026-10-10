@@ -13,23 +13,23 @@ import { getApiErrorMessage } from "@/utils";
 // types
 import type {
   GetIronSalesParams,
-  PurchaseIronResponse,
 } from "@/types/ironCarShop";
+import type { IronPurchaseResponse } from "@/types/adminProducts";
 
 interface IronSaleReportsState {
-  sales: PurchaseIronResponse[];
+  sales: IronPurchaseResponse | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: IronSaleReportsState = {
-  sales: [],
+  sales: null,
   isLoading: false,
   error: null,
 };
 
 export const fetchIronSales = createAsyncThunk<
-  PurchaseIronResponse[],
+  IronPurchaseResponse,
   { params: GetIronSalesParams; cashRegisterId: number },
   { rejectValue: string }
 >(
@@ -50,7 +50,7 @@ const ironSaleReportsSlice = createSlice({
   initialState,
   reducers: {
     resetIronSaleReportsState: (state) => {
-      state.sales = [];
+      state.sales = null;
       state.isLoading = false;
       state.error = null;
     },
@@ -63,7 +63,7 @@ const ironSaleReportsSlice = createSlice({
       })
       .addCase(
         fetchIronSales.fulfilled,
-        (state, action: PayloadAction<PurchaseIronResponse[]>) => {
+        (state, action: PayloadAction<IronPurchaseResponse>) => {
           state.isLoading = false;
           state.sales = action.payload;
           state.error = null;

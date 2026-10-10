@@ -1,21 +1,21 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import type { CountryCode } from "libphonenumber-js";
+import { isPossiblePhoneNumber } from "libphonenumber-js";
+import { createPortal } from "react-dom";
+import { NotebookPen, Phone, UserRound, UserRoundPlus, X } from "lucide-react";
+import { toast } from "react-toastify";
 
 // ui-kit
-import { Dropdown, TextField, Button, Select } from "@/ui-kit";
+import { TextField, Button, Textarea } from "@/ui-kit";
 
 // common components
 import { CountryPhoneInput, GenderSelect } from "@/components/common";
 
 // types
 import type { CreateCustomerRequest } from "@/types/operator";
-import type { CustomerType } from "@/types/settings";
-
 // styles
-import styles from "./CustomersDropdown.module.css";
-
-type DropdownType = "add" | "filter";
+import pageStyles from "../Customers.module.css";
 
 interface FormState {
   phone: string;
@@ -36,37 +36,17 @@ const initialFormState: FormState = {
 };
 
 interface CustomersDropdownProps {
-  type: DropdownType;
   open: boolean;
-  anchorRef: React.RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
-  customerTypes?: CustomerType[];
   isSubmitting?: boolean;
   onSave?: (data: CreateCustomerRequest) => void;
-  filters?: {
-    phone: string;
-    customerTypeId: string;
-    gender: number | null;
-  };
-  onApply?: (filters: {
-    phone: string;
-    customerTypeId: string;
-    gender: number | null;
-  }) => void;
-  onReset?: () => void;
 }
 
 export const CustomersDropdown = ({
-  type,
   open,
-  anchorRef,
   onOpenChange,
-  customerTypes = [],
   isSubmitting = false,
   onSave,
-  filters,
-  onApply,
-  onReset,
 }: CustomersDropdownProps) => {
   const { t } = useTranslation();
   const [form, setForm] = useState<FormState>(initialFormState);
@@ -76,146 +56,142 @@ export const CustomersDropdown = ({
   };
 
   useEffect(() => {
-    if (open) {
-      if (type === "filter" && filters) {
-        setForm({
-          ...initialFormState,
-          phone: filters.phone,
-          customerTypeId: filters.customerTypeId,
-          gender: filters.gender,
-        });
-      } else {
-        setForm(initialFormState);
-      }
-    }
-  }, [open, type, filters]);
+    if (open) setForm(initialFormState);
+  }, [open]);
 
-  const handlePrimaryAction = () => {
-    if (type === "add") {
-      if (!form.phone || !form.fullName || !onSave) return;
-      onSave({
-        phone: form.phone,
-        fullName: form.fullName,
-        gender: form.gender ?? 0,
-        notes: form.notes.trim() || undefined,
-      });
-    } else if (type === "filter" && onApply) {
-      onApply({
-        phone: form.phone,
-        customerTypeId: form.customerTypeId,
-        gender: form.gender,
-      });
-      onOpenChange(false);
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, onOpenChange]);
+
+  const handleSave = () => {
+    if (!form.phone || !form.fullName || !onSave) return;
+    if (!isPossiblePhoneNumber(form.phone)) {
+      toast.error(t("customers.validation.phoneInvalid"));
+      return;
     }
+    onSave({
+      phone: form.phone,
+      fullName: form.fullName,
+      gender: form.gender ?? 0,
+      notes: form.notes.trim() || undefined,
+    });
   };
 
-  const handleSecondaryAction = () => {
-    if (type === "filter" && onReset) {
-      onReset();
-      onOpenChange(false);
-    } else {
-      onOpenChange(false);
-    }
-  };
+  if (!open) return null;
 
-  const isAddDisabled =
-    type === "add" && (isSubmitting || !form.phone || !form.fullName);
+  const closeDrawer = () => onOpenChange(false);
 
-  return (
-    <Dropdown
-      align="start"
-      side="left"
-      open={open}
-      onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      title={
-        type === "add" ? t("customers.createCustomer") : t("common.filters")
-      }
-    >
-      <div className={styles.content}>
-        <div className={styles.fields}>
-          {type === "add" && (
+  return createPortal(
+    <div className={pageStyles.backdrop} onMouseDown={closeDrawer}>
+      <aside
+        className={pageStyles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="customer-create-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className={pageStyles.drawerHeader}>
+          <div className={pageStyles.headerIcon} aria-hidden="true">
+            <UserRoundPlus size={20} />
+          </div>
+          <div className={pageStyles.headerCopy}>
+            <span className={pageStyles.eyebrow}>{t("header.customers")}</span>
+            <h2 id="customer-create-title">{t("customers.createCustomer")}</h2>
+          </div>
+          <button
+            type="button"
+            className={pageStyles.closeButton}
+            onClick={closeDrawer}
+            aria-label={t("common.close")}
+            title={t("common.close")}
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className={pageStyles.drawerBody}>
+          <div className={pageStyles.fieldGrid}>
             <TextField
               label={t("customers.form.fullName")}
               value={form.fullName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateField({ fullName: e.target.value })
-              }
+              onChange={(event) => updateField({ fullName: event.target.value })}
               placeholder={t("customers.form.fullNamePlaceholder")}
+              icon={<UserRound size={15} />}
               required
               disabled={isSubmitting}
+              autoFocus
             />
-          )}
 
-          <div className={styles.phoneSection}>
-            <label className={styles.fieldLabel}>
-              {t("customers.form.phone")}
+            <div className={pageStyles.phoneField}>
+              <label className={pageStyles.fieldLabel}>
+                <Phone size={14} />
+                <span>{t("customers.form.phone")}</span>
+              </label>
+              <CountryPhoneInput
+                phone={form.phone}
+                selectedCountry={form.selectedCountry}
+                onCountryChange={(country) =>
+                  updateField({ selectedCountry: country, phone: "" })
+                }
+                onPhoneChange={(phone) => updateField({ phone })}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className={pageStyles.genderField}>
+              <GenderSelect
+                label={t("customers.form.gender")}
+                value={form.gender}
+                onChange={(gender) => updateField({ gender })}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <label className={pageStyles.notesLabel} htmlFor="customer-notes">
+              <NotebookPen size={14} />
+              <span>{t("customers.form.notes")}</span>
             </label>
-            <CountryPhoneInput
-              phone={form.phone}
-              selectedCountry={form.selectedCountry}
-              onCountryChange={(country) =>
-                updateField({ selectedCountry: country })
-              }
-              onPhoneChange={(val) => updateField({ phone: val })}
+            <Textarea
+              id="customer-notes"
+              value={form.notes}
+              onChange={(event) => updateField({ notes: event.target.value })}
+              rows={3}
+              resizable={false}
               disabled={isSubmitting}
             />
           </div>
-
-          {type === "filter" && (
-            <Select
-              label={t("customers.form.customerType")}
-              value={form.customerTypeId}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                updateField({ customerTypeId: e.target.value })
-              }
-            >
-              <option value="">{t("customers.form.allTypes")}</option>
-              {customerTypes.map((ct) => (
-                <option key={ct.id} value={ct.id.toString()}>
-                  {ct.code}
-                </option>
-              ))}
-            </Select>
-          )}
-
-          <GenderSelect
-            label={t("customers.form.gender")}
-            value={form.gender}
-            onChange={(val) => updateField({ gender: val })}
-            disabled={isSubmitting}
-          />
-
-          {type === "add" && (
-            <TextField
-              label={t("customers.form.notes")}
-              value={form.notes}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateField({ notes: e.target.value })
-              }
-              disabled={isSubmitting}
-            />
-          )}
         </div>
 
-        <div className={styles.actions}>
+        <footer className={pageStyles.drawerFooter}>
           <Button
-            variant="secondary"
-            onClick={handleSecondaryAction}
+            className={`${pageStyles.customerButton} ${pageStyles.neutralButton}`}
+            onClick={closeDrawer}
             disabled={isSubmitting}
           >
-            {type === "add" ? t("common.cancel") : t("common.reset")}
+            {t("common.cancel")}
           </Button>
-
           <Button
-            variant="primary"
-            onClick={handlePrimaryAction}
-            disabled={isAddDisabled}
+            className={`${pageStyles.customerButton} ${pageStyles.primaryButton}`}
+            onClick={handleSave}
+            disabled={isSubmitting || !form.phone || !form.fullName}
           >
-            {type === "add" ? t("common.save") : t("common.apply")}
+            {isSubmitting ? t("common.saving") : t("common.save")}
           </Button>
-        </div>
-      </div>
-    </Dropdown>
+        </footer>
+      </aside>
+    </div>,
+    document.body,
   );
 };

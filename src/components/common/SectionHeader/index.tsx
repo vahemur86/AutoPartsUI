@@ -8,6 +8,8 @@ interface SectionHeaderProps {
   icon?: ReactNode;
   actions?: ReactNode;
   goBack?: boolean;
+  appearance?: "default" | "finance" | "warehouse";
+  eyebrow?: string;
 }
 
 export const SectionHeader: FC<SectionHeaderProps> = ({
@@ -15,11 +17,15 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
   icon,
   actions,
   goBack,
+  appearance = "default",
+  eyebrow,
 }) => {
   const navigate = useNavigate();
 
   return (
-    <div className={styles.sectionHeader}>
+    <div
+      className={`${styles.sectionHeader} ${appearance === "finance" ? styles.financeHeader : ""} ${appearance === "warehouse" ? styles.warehouseHeader : ""}`}
+    >
       <div className={styles.titleContainer}>
         {goBack && (
           <button
@@ -32,7 +38,14 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
           </button>
         )}
         {icon && <span className={styles.icon}>{icon}</span>}
-        <h2 className={styles.title}>{title}</h2>
+        {eyebrow ? (
+          <div className={styles.titleCopy}>
+            <span className={styles.eyebrow}>{eyebrow}</span>
+            <h2 className={styles.title}>{title}</h2>
+          </div>
+        ) : (
+          <h2 className={styles.title}>{title}</h2>
+        )}
       </div>
       {actions && <div className={styles.actions}>{actions}</div>}
     </div>

@@ -6,6 +6,14 @@ import {
   type KeyboardEvent,
 } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  CalendarDays,
+  Check,
+  Hash,
+  RotateCcw,
+  SlidersHorizontal,
+  UserRound,
+} from "lucide-react";
 
 // ui-kit
 import { Button, Dropdown, DatePicker, TextField } from "@/ui-kit";
@@ -63,7 +71,6 @@ export const FilterIronPurchasesDropdown: FC<
   };
 
   const handleApply = () => {
-    if (isFiltersEmpty) return;
     onSave({
       fromDate: toSafeISO(tempValues.fromDate),
       toDate: toSafeISO(tempValues.toDate),
@@ -99,13 +106,17 @@ export const FilterIronPurchasesDropdown: FC<
       contentClassName={styles.dropdownContentOverride}
     >
       <div className={styles.header}>
+        <span className={styles.headerIcon} aria-hidden="true">
+          <SlidersHorizontal size={16} />
+        </span>
         <span className={styles.title}>{t("common.filters")}</span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.dateRow}>
           <div className={styles.fieldWrapper}>
-            <label className={styles.label}>
+            <label className={styles.labelWithIcon}>
+              <CalendarDays size={13} aria-hidden="true" />
               {t("reports.filters.fromUtc")}
             </label>
             <DatePicker
@@ -118,7 +129,10 @@ export const FilterIronPurchasesDropdown: FC<
             />
           </div>
           <div className={styles.fieldWrapper}>
-            <label className={styles.label}>{t("reports.filters.toUtc")}</label>
+            <label className={styles.labelWithIcon}>
+              <CalendarDays size={13} aria-hidden="true" />
+              {t("reports.filters.toUtc")}
+            </label>
             <DatePicker
               selected={tempValues.toDate}
               onChange={(date) =>
@@ -134,6 +148,7 @@ export const FilterIronPurchasesDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.filters.operatorUserId")}
+            icon={<UserRound size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.operatorUserId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -150,6 +165,7 @@ export const FilterIronPurchasesDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.filters.cashRegisterId")}
+            icon={<Hash size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.cashRegisterId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -166,6 +182,7 @@ export const FilterIronPurchasesDropdown: FC<
         <div className={styles.fieldWrapper}>
           <TextField
             label={t("reports.ironProducts.columns.productId")}
+            icon={<Hash size={14} aria-hidden="true" />}
             type="number"
             value={tempValues.productId ?? ""}
             onKeyDown={handleIntegerOnlyKeyDown}
@@ -185,6 +202,7 @@ export const FilterIronPurchasesDropdown: FC<
             onClick={handleReset}
             disabled={isFiltersEmpty}
           >
+            <RotateCcw size={14} aria-hidden="true" />
             {t("common.reset")}
           </Button>
 
@@ -193,6 +211,7 @@ export const FilterIronPurchasesDropdown: FC<
             onClick={handleApply}
             disabled={isFiltersEmpty}
           >
+            <Check size={14} aria-hidden="true" />
             {t("common.save")}
           </Button>
         </div>

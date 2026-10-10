@@ -1,8 +1,22 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import i18next from "i18next";
+import {
+  Banknote,
+  ChartColumnIncreasing,
+  CircleDollarSign,
+  Layers3,
+  PackageOpen,
+  TrendingDown,
+  TrendingUp,
+  UserRound,
+  Wallet,
+  Weight,
+  type LucideIcon,
+} from "lucide-react";
 
 // types
 import type { SpecialCustomerBreakdown } from "@/types/warehouses/reports";
+import styles from "./SpecialLotsReport.module.css";
 
 const columnHelper = createColumnHelper<SpecialCustomerBreakdown>();
 
@@ -13,6 +27,12 @@ const formatKg = (value: number) =>
   })} kg`;
 
 const formatAmd = (value: number) => `${(value ?? 0).toLocaleString()} AMD`;
+const columnHeader = (Icon: LucideIcon, key: string) => (
+  <span className={styles.columnHeader}>
+    <Icon size={13} aria-hidden="true" />
+    {i18next.t(key)}
+  </span>
+);
 
 export const getSpecialLotsColumns = (): ColumnDef<
   SpecialCustomerBreakdown,
@@ -20,45 +40,62 @@ export const getSpecialLotsColumns = (): ColumnDef<
   any
 >[] => [
   columnHelper.accessor("specialCustomerName", {
-    header: i18next.t("reports.specialLots.columns.customerName"),
+    header: () => columnHeader(UserRound, "reports.specialLots.columns.customerName"),
     cell: (info) => info.getValue() ?? "-",
   }),
   columnHelper.accessor("totalLotsCount", {
-    header: i18next.t("reports.specialLots.columns.totalLots"),
+    header: () => columnHeader(Layers3, "reports.specialLots.columns.totalLots"),
   }),
   columnHelper.accessor("totalPowderKg", {
-    header: i18next.t("reports.specialLots.columns.totalPowderKg"),
+    header: () => columnHeader(Weight, "reports.specialLots.columns.totalPowderKg"),
     cell: (info) => formatKg(info.getValue()),
   }),
   columnHelper.accessor("totalCostAmd", {
-    header: i18next.t("reports.specialLots.columns.totalCostAmd"),
+    header: () => columnHeader(Wallet, "reports.specialLots.columns.totalCostAmd"),
     cell: (info) => formatAmd(info.getValue()),
   }),
   columnHelper.accessor("remainingPowderKg", {
-    header: i18next.t("reports.specialLots.columns.remainingPowderKg"),
+    header: () => columnHeader(PackageOpen, "reports.specialLots.columns.remainingPowderKg"),
     cell: (info) => formatKg(info.getValue()),
   }),
   columnHelper.accessor("remainingCostAmd", {
-    header: i18next.t("reports.specialLots.columns.remainingCostAmd"),
+    header: () => columnHeader(CircleDollarSign, "reports.specialLots.columns.remainingCostAmd"),
     cell: (info) => formatAmd(info.getValue()),
   }),
   columnHelper.display({
     id: "soldPercent",
-    header: i18next.t("reports.specialLots.columns.soldPercent"),
+    header: () => columnHeader(ChartColumnIncreasing, "reports.specialLots.columns.soldPercent"),
     cell: ({ row }) => {
       const { totalPowderKg, remainingPowderKg } = row.original;
       if (!totalPowderKg) return "-";
       const percent =
         ((totalPowderKg - remainingPowderKg) / totalPowderKg) * 100;
-      return `${percent.toFixed(1)}%`;
+      const progress = Math.max(0, Math.min(100, percent));
+      return (
+        <div className={styles.soldPercentCell} aria-label={`${percent.toFixed(1)}%`}>
+          <span className={styles.soldPercentTrack} aria-hidden="true">
+            <span style={{ width: `${progress}%` }} />
+          </span>
+          <strong>{percent.toFixed(1)}%</strong>
+        </div>
+      );
     },
   }),
   columnHelper.accessor("revenueAmd", {
-    header: i18next.t("reports.specialLots.columns.revenueAmd"),
+    header: () => columnHeader(Banknote, "reports.specialLots.columns.revenueAmd"),
     cell: (info) => formatAmd(info.getValue()),
   }),
   columnHelper.accessor("profitAmd", {
-    header: i18next.t("reports.specialLots.columns.profitAmd"),
-    cell: (info) => formatAmd(info.getValue()),
+    header: () => columnHeader(TrendingUp, "reports.specialLots.columns.profitAmd"),
+    cell: (info) => {
+      const value = info.getValue() ?? 0;
+      const ProfitIcon = value >= 0 ? TrendingUp : TrendingDown;
+      return (
+        <span className={`${styles.profitValue} ${value >= 0 ? styles.profitPositive : styles.profitNegative}`}>
+          <ProfitIcon size={14} aria-hidden="true" />
+          {formatAmd(value)}
+        </span>
+      );
+    },
   }),
 ];

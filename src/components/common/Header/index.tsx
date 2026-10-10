@@ -37,7 +37,6 @@ import {
   PackageSearch,
   Truck,
   PiggyBank,
-  FileSignature,
 } from "lucide-react";
 import logoImage from "@/assets/icons/prp-logo.svg";
 import adminAvatarImage from "@/assets/icons/userVector.svg";
@@ -73,7 +72,6 @@ export const Header: FC = () => {
   const [openDropdown, setOpenDropdown] = useState<
     "operations" | "locations" | "analytics" | null
   >(null);
-  const [openNestedDropdown, setOpenNestedDropdown] = useState<string | null>(null);
   const [isLanguageLoading, setIsLanguageLoading] = useState(false);
   const [selectedLanguageCode, setSelectedLanguageCode] = useState(
     i18n.resolvedLanguage || i18n.language,
@@ -394,43 +392,14 @@ export const Header: FC = () => {
               <button
                 type="button"
                 className={`${styles.menuItem} ${isActive("/referral-persons") || isActive("/commissions") ? styles.menuItemActive : ""}`}
-                onClick={() =>
-                  setOpenNestedDropdown((current) =>
-                    current === "referrals" ? null : "referrals",
-                  )
-                }
+                onClick={() => {
+                  navigate("/referral-persons");
+                  setOpenDropdown(null);
+                }}
               >
                 <Users className={styles.menuItemIcon} size={16} />
                 {t("header.referrals")}
               </button>
-              {openNestedDropdown === "referrals" && (
-                <div className={styles.nestedMenuContainer}>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/referral-persons") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/referral-persons");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <Users className={styles.menuItemIcon} size={16} />
-                    {t("header.referralPersons")}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.nestedMenuItem} ${isActive("/commissions") ? styles.menuItemActive : ""}`}
-                    onClick={() => {
-                      navigate("/commissions");
-                      setOpenDropdown(null);
-                      setOpenNestedDropdown(null);
-                    }}
-                  >
-                    <FileSignature className={styles.menuItemIcon} size={16} />
-                    {t("header.commissions")}
-                  </button>
-                </div>
-              )}
               <button
                 type="button"
                 className={`${styles.menuItem} ${isActive("/catalytic-suppliers") ? styles.menuItemActive : ""}`}
@@ -459,7 +428,6 @@ export const Header: FC = () => {
                 onClick={() => {
                   navigate("/agents");
                   setOpenDropdown(null);
-                  setOpenNestedDropdown(null);
                 }}
               >
                 <Users className={styles.menuItemIcon} size={16} />

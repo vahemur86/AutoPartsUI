@@ -10,7 +10,20 @@ import { fetchSalesLotPreview } from "@/store/slices/warehouses/salesLotsSlice";
 import { Modal, Button, TextField } from "@/ui-kit";
 
 // icons
-import { Trash2 } from "lucide-react";
+import {
+  Atom,
+  Calculator,
+  Check,
+  CircleDollarSign,
+  Layers3,
+  LoaderCircle,
+  Package,
+  Scale,
+  Trash2,
+  TrendingUp,
+  WalletCards,
+  X,
+} from "lucide-react";
 
 // styles
 import styles from "../TotalBatches.module.css";
@@ -191,13 +204,16 @@ export const SalesLotPreviewModal = ({
     <>
       <Button
         variant="secondary"
+        className={styles.previewCancelButton}
         onClick={() => onOpenChange(false)}
         disabled={isCreating}
       >
-        {t("common.cancel")}
+        <X size={16} aria-hidden="true" />
+        <span>{t("common.cancel")}</span>
       </Button>
       <Button
         variant="primary"
+        className={styles.previewConfirmButton}
         onClick={() => onConfirm(getFinalItems())}
         disabled={
           isCreating ||
@@ -207,9 +223,16 @@ export const SalesLotPreviewModal = ({
           getFinalItems().some((i) => i.powderKg <= 0)
         }
       >
-        {isCreating
-          ? t("common.loading")
-          : t("warehouses.totalBatches.createSale")}
+        {isCreating ? (
+          <LoaderCircle size={16} className={styles.spinIcon} aria-hidden="true" />
+        ) : (
+          <Check size={16} aria-hidden="true" />
+        )}
+        <span>
+          {isCreating
+            ? t("common.loading")
+            : t("warehouses.totalBatches.createSale")}
+        </span>
       </Button>
     </>
   );
@@ -218,21 +241,34 @@ export const SalesLotPreviewModal = ({
     <Modal
       open={open}
       onOpenChange={onOpenChange}
-      title={t("warehouses.totalBatches.previewTitle")}
+      title={
+        <span className={styles.previewModalTitle}>
+          <span className={styles.previewModalTitleIcon} aria-hidden="true">
+            <Calculator size={17} />
+          </span>
+          <span>{t("warehouses.totalBatches.previewTitle")}</span>
+        </span>
+      }
       footer={footer}
+      width="min(920px, calc(100vw - 32px))"
+      className={styles.previewModal}
     >
       <div className={styles.previewContainer}>
         <div className={styles.editableItemsList}>
-          <h4 className={styles.summaryMetalsTitle}>
-            {t("warehouses.totalBatches.details.individualIntakes")}
-          </h4>
+          <div className={styles.previewSectionTitle}>
+            <Package size={16} aria-hidden="true" />
+            <h4>{t("warehouses.totalBatches.details.individualIntakes")}</h4>
+          </div>
           {items.map((item) => (
             <div key={item.inventoryLotId} className={styles.editableItemRow}>
               <div className={styles.itemHeaderGroup}>
                 <span className={styles.itemId}>#{item.inventoryLotId}</span>
                 <button
+                  type="button"
                   className={styles.deleteIconButton}
                   onClick={() => handleRemove(item.inventoryLotId)}
+                  aria-label={t("common.delete")}
+                  title={t("common.delete")}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -245,7 +281,7 @@ export const SalesLotPreviewModal = ({
                   onChange={(e) =>
                     handleWeightChange(item.inventoryLotId, e.target.value)
                   }
-                  suffix="kg"
+                  suffix={t("warehouses.totalBatches.unitKg")}
                 />
               </div>
             </div>
@@ -276,35 +312,47 @@ export const SalesLotPreviewModal = ({
               <>
                 <div className={styles.summaryCardsGrid}>
                   <div className={styles.summaryCard}>
-                    <span className={styles.summaryCardLabel}>
-                      {t("warehouses.totalBatches.preview.totalPowderKg")}
-                    </span>
+                    <div className={styles.summaryCardHeader}>
+                      <Scale size={16} aria-hidden="true" />
+                      <span className={styles.summaryCardLabel}>
+                        {t("warehouses.totalBatches.preview.totalPowderKg")}
+                      </span>
+                    </div>
                     <strong className={styles.summaryCardValue}>
-                      {previewData.totalPowderKg} kg
+                      {previewData.totalPowderKg} {t("warehouses.totalBatches.unitKg")}
                     </strong>
                   </div>
 
                   <div className={styles.summaryCard}>
-                    <span className={styles.summaryCardLabel}>
-                      {t("warehouses.totalBatches.preview.totalCost")}
-                    </span>
+                    <div className={styles.summaryCardHeader}>
+                      <CircleDollarSign size={16} aria-hidden="true" />
+                      <span className={styles.summaryCardLabel}>
+                        {t("warehouses.totalBatches.preview.totalCost")}
+                      </span>
+                    </div>
                     <strong className={styles.summaryCardValue}>
                       {formatValue(previewData.totalCost, 0)} AMD
                     </strong>
                   </div>
                    <div className={styles.summaryCard}>
-                    <span className={styles.summaryCardLabel}>
-                      {t("warehouses.totalBatches.preview.totalCostAmd")}
-                    </span>
+                    <div className={styles.summaryCardHeader}>
+                      <WalletCards size={16} aria-hidden="true" />
+                      <span className={styles.summaryCardLabel}>
+                        {t("warehouses.totalBatches.preview.totalCostAmd")}
+                      </span>
+                    </div>
                     <strong className={styles.summaryCardValue}>
                       {formatValue(previewData.totalCostAmd, 0)} AMD
                     </strong>
                   </div>
 
                   <div className={styles.summaryCard}>
-                    <span className={styles.summaryCardLabel}>
-                      {t("warehouses.totalBatches.preview.totalRevenueAmd")}
-                    </span>
+                    <div className={styles.summaryCardHeader}>
+                      <TrendingUp size={16} aria-hidden="true" />
+                      <span className={styles.summaryCardLabel}>
+                        {t("warehouses.totalBatches.preview.totalRevenueAmd")}
+                      </span>
+                    </div>
                     <strong
                       className={`${styles.summaryCardValue} ${styles.revenueValue}`}
                     >
@@ -314,9 +362,10 @@ export const SalesLotPreviewModal = ({
                 </div>
 
                 <div className={styles.summaryMetalsSection}>
-                  <h4 className={styles.summaryMetalsTitle}>
-                    {t("warehouses.totalBatches.preview.composition")}
-                  </h4>
+                  <div className={styles.previewSectionTitle}>
+                    <Layers3 size={16} aria-hidden="true" />
+                    <h4>{t("warehouses.totalBatches.preview.composition")}</h4>
+                  </div>
                   <div className={styles.summaryMetalsList}>
                     {compositionRows.map((row) => (
                       <div key={row.key} className={styles.summaryMetalRow}>
@@ -341,9 +390,10 @@ export const SalesLotPreviewModal = ({
                 </div>
 
                 <div className={styles.summaryMetalsSection}>
-                  <h4 className={styles.summaryMetalsTitle}>
-                    {t("cashbox.powderBatches.summary.metalsTitle")}
-                  </h4>
+                  <div className={styles.previewSectionTitle}>
+                    <Atom size={16} aria-hidden="true" />
+                    <h4>{t("cashbox.powderBatches.summary.metalsTitle")}</h4>
+                  </div>
                   <div className={styles.summaryMetalsList}>
                     {[
                       { label: "Pt", val: previewData.ptTotal_g },

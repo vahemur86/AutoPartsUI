@@ -45,6 +45,7 @@ export {
   TableHeader,
   TableRow,
   DataTable,
+  type DataTableProps,
   type TableBodyProps,
   type TableCellProps,
   type TableHeaderProps,
