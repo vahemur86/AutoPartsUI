@@ -20,16 +20,17 @@
   margin-top: 16px;
 }
 
-.addButtonWrapper {
-  display: flex;
+.addButton {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.addButtonText {
-  font-size: 13px;
-  color: var(--color-secondary-500);
-  font-weight: 400;
+  min-height: 36px;
+  padding: 0 14px;
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  font-weight: 650;
 }
 
 .languagesList {
@@ -136,45 +137,8 @@
   color: var(--color-primary-500) !important;
 }
 
-.actionButtons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: auto;
-  padding-bottom: 24px;
-}
-
-/* Desktop: Hide mobile button */
-.addButtonMobile {
-  display: none;
-}
-
-/* Mobile */
 @media (max-width: 768px) {
-  .languagesHeader {
-    display: none;
-  }
-
-  .addButtonMobile {
-    display: flex;
-    margin-top: 16px;
-    border: 1px solid var(--color-primary-400);
-    border-radius: 8px;
-    padding: 10px 12px;
-    text-align: center;
-  }
-
-  .addButtonMobile .addButtonWrapper {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .actionButtons {
-    padding-top: 16px;
-    gap: 8px;
-  }
-
-  .actionButtons button {
+.addButton {
     width: 100%;
   }
 }

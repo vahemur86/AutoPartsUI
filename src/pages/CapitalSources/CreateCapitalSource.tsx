@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Banknote, Landmark, Sparkles, Wallet } from "lucide-react";
+import { Banknote, Landmark, Save, Sparkles, Wallet, X } from "lucide-react";
 
 import { Button, TextField, Textarea } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
@@ -158,8 +158,8 @@ export const CreateCapitalSource = () => {
         </div>
 
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>{t("common.cancel")}</Button>
-          <Button onClick={submit} disabled={isSubmitting}>{isSubmitting ? t("common.saving") : t("capitalSources.actions.create")}</Button>
+          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}><X size={15} />{t("common.cancel")}</Button>
+          <Button className={styles.sageButton} onClick={submit} disabled={isSubmitting}><Save size={15} />{isSubmitting ? t("common.saving") : t("capitalSources.actions.create")}</Button>
         </div>
       </div>
     </div>
@@ -320,8 +320,8 @@ export const EditCapitalSource = () => {
         </div>
 
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>{t("common.cancel")}</Button>
-          <Button onClick={submit} disabled={isSubmitting || isLoading}>{isSubmitting ? t("common.saving") : t("common.save")}</Button>
+          <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}><X size={15} />{t("common.cancel")}</Button>
+          <Button className={styles.sageButton} onClick={submit} disabled={isSubmitting || isLoading}><Save size={15} />{isSubmitting ? t("common.saving") : t("common.save")}</Button>
         </div>
       </div>
     </div>

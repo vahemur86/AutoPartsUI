@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { Barcode, Car, Hash, PackagePlus, X } from "lucide-react";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -11,7 +12,7 @@ import {
 } from "@/store/slices/productSettingsSlice";
 
 // ui-kit
-import { Button, Switch, TextField, Select, Dropdown } from "@/ui-kit";
+import { Button, Switch, TextField, Select } from "@/ui-kit";
 
 // types
 import type { ProductFormData } from "../types";
@@ -21,14 +22,12 @@ import styles from "./AddProductDropdown.module.css";
 
 export interface AddProductDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement>;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: ProductFormData) => void;
+  onSave: (data: ProductFormData) => Promise<boolean>;
 }
 
 export const AddProductDropdown = ({
   open,
-  anchorRef,
   onOpenChange,
   onSave,
 }: AddProductDropdownProps) => {
@@ -44,6 +43,8 @@ export const AddProductDropdown = ({
   const [unitType, setUnitType] = useState("");
   const [boxSize, setBoxSize] = useState("");
   const [vehicleDependent, setVehicleDependent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const productKeyRef = useRef<HTMLInputElement>(null);
 
   const sortedCategories = useMemo(
     () =>
@@ -130,7 +131,8 @@ export const AddProductDropdown = ({
     }
   }, [open]);
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (
       !productKey.trim() ||
       !sku.trim() ||
@@ -141,51 +143,84 @@ export const AddProductDropdown = ({
     ) {
       return;
     }
-    onSave({
-      productKey: productKey.trim(),
-      sku: sku.trim(),
-      brand: parseInt(brand),
-      category: parseInt(selectedCategoryId),
-      unitType: parseInt(unitType),
-      boxSize: parseInt(boxSize),
-      vehicleDependent,
-    });
-    onOpenChange(false);
+    setIsSubmitting(true);
+    try {
+      const saved = await onSave({
+        productKey: productKey.trim(),
+        sku: sku.trim(),
+        brand: parseInt(brand),
+        category: parseInt(selectedCategoryId),
+        unitType: parseInt(unitType),
+        boxSize: parseInt(boxSize),
+        vehicleDependent,
+      });
+      if (!saved) return;
+
+      setProductKey("");
+      setSku("");
+      setBrand("");
+      setSelectedCategoryPath([]);
+      setUnitType("");
+      setBoxSize("");
+      setVehicleDependent(false);
+      window.requestAnimationFrame(() => productKeyRef.current?.focus());
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  return (
-    <Dropdown
-      open={open}
-      onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      align="start"
-      side="left"
-      title={t("products.form.addProduct")}
-    >
-      {/* Desktop header */}
-      <div className={styles.header}>
-        <span className={styles.title}>{t("products.form.addNewProduct")}</span>
-      </div>
+  if (!open) return null;
 
-      <div className={styles.content}>
-        <div className={styles.fields}>
+  return (
+    <section className={styles.quickAddPanel} aria-labelledby="product-quick-add-title">
+      <header className={styles.quickAddHeader}>
+        <div className={styles.quickAddHeading}>
+          <span className={styles.quickAddIcon} aria-hidden="true">
+            <PackagePlus size={18} />
+          </span>
+          <h2 id="product-quick-add-title">{t("products.form.addNewProduct")}</h2>
+        </div>
+        <button
+          type="button"
+          className={styles.quickAddClose}
+          onClick={() => onOpenChange(false)}
+          disabled={isSubmitting}
+          aria-label={t("common.close")}
+          title={t("common.close")}
+        >
+          <X size={18} />
+        </button>
+      </header>
+
+      <form className={styles.quickAddForm} onSubmit={handleSaveClick}>
+        <div className={styles.quickAddFields}>
           <TextField
+            ref={productKeyRef}
             label={t("products.form.productKey")}
             value={productKey}
             onChange={(e) => setProductKey(e.target.value)}
             placeholder={t("products.form.type")}
+            icon={<Hash size={15} />}
+            disabled={isSubmitting}
+            required
           />
           <TextField
             label={t("products.form.sku")}
             value={sku}
             onChange={(e) => setSku(e.target.value)}
             placeholder={t("products.form.type")}
+            icon={<Barcode size={15} />}
+            disabled={isSubmitting}
+            required
           />
           <Select
             label={t("products.form.brand")}
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
             placeholder={t("products.form.select")}
+            disabled={isSubmitting}
+            required
+            dropdownMaxHeight={200}
           >
             <option value="">{t("products.form.select")}</option>
             {brands.map((brandItem) => (
@@ -214,6 +249,9 @@ export const AddProductDropdown = ({
                 });
               }}
               placeholder={t("products.form.select")}
+              disabled={isSubmitting}
+              required
+              dropdownMaxHeight={200}
             >
               <option value="">{t("products.form.select")}</option>
               {options.map((categoryItem) => (
@@ -228,6 +266,9 @@ export const AddProductDropdown = ({
             value={unitType}
             onChange={(e) => setUnitType(e.target.value)}
             placeholder={t("products.form.select")}
+            disabled={isSubmitting}
+            required
+            dropdownMaxHeight={200}
           >
             <option value="">{t("products.form.select")}</option>
             {unitTypes.map((unitTypeItem) => (
@@ -241,6 +282,9 @@ export const AddProductDropdown = ({
             value={boxSize}
             onChange={(e) => setBoxSize(e.target.value)}
             placeholder={t("products.form.select")}
+            disabled={isSubmitting}
+            required
+            dropdownMaxHeight={200}
           >
             <option value="">{t("products.form.select")}</option>
             {boxSizes.map((boxSizeItem) => (
@@ -251,27 +295,35 @@ export const AddProductDropdown = ({
           </Select>
         </div>
 
-        <Switch
-          checked={vehicleDependent}
-          onCheckedChange={setVehicleDependent}
-          label={t("products.form.vehicleDependent")}
-        />
-
-        <div className={styles.actionswithoutDelete}>
-          <div className={styles.primaryActions}>
+        <div className={styles.quickAddFooter}>
+          <div className={styles.vehicleDependentField}>
+            <Car size={15} aria-hidden="true" />
+            <Switch
+              checked={vehicleDependent}
+              onCheckedChange={setVehicleDependent}
+              label={t("products.form.vehicleDependent")}
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className={styles.quickAddActions}>
             <Button
+              type="button"
               variant="secondary"
-              size="medium"
               onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
             >
-              {t("common.cancel")}
+              <X size={15} />{t("common.cancel")}
             </Button>
-            <Button variant="primary" size="medium" onClick={handleSaveClick}>
-              {t("common.save")}
+            <Button
+              type="submit"
+              className={styles.productPrimaryButton}
+              disabled={isSubmitting || !productKey.trim() || !sku.trim() || !brand || !selectedCategoryId || !unitType || !boxSize}
+            >
+              <PackagePlus size={15} />{isSubmitting ? t("common.saving") : t("products.form.saveAndAddNext")}
             </Button>
           </div>
         </div>
-      </div>
-    </Dropdown>
+      </form>
+    </section>
   );
 };

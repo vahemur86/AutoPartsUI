@@ -34,6 +34,10 @@ export interface DataTableProps<TData, TValue> {
   pageCount?: number;
   pageIndex?: number;
   onPaginationChange?: (pageIndex: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
+  pageSizeLabel?: ReactNode;
+  paginationRangeLabel?: (range: { from: number; to: number; total: number }) => ReactNode;
   canNextPage?: boolean;
   paginationLabel?: ReactNode;
   getRowId?: (row: TData) => string;
@@ -44,6 +48,7 @@ export interface DataTableProps<TData, TValue> {
   renderSubComponent?: (props: { row: Row<TData> }) => ReactNode;
   frozenConfig?: { left?: string[]; right?: string[] };
   freezeHeader?: boolean;
+  fitContainer?: boolean;
   isLoading?: boolean;
   loadingText?: string;
   noResultsText?: string;
@@ -59,6 +64,10 @@ export const DataTable = <TData, TValue>({
   pageCount,
   pageIndex: controlledPageIndex,
   onPaginationChange,
+  onPageSizeChange,
+  pageSizeOptions,
+  pageSizeLabel,
+  paginationRangeLabel,
   canNextPage,
   paginationLabel,
   getRowId,
@@ -68,6 +77,7 @@ export const DataTable = <TData, TValue>({
   renderSubComponent,
   frozenConfig,
   freezeHeader = true,
+  fitContainer = false,
   isLoading = false,
   loadingText,
   noResultsText,
@@ -87,11 +97,14 @@ export const DataTable = <TData, TValue>({
   });
 
   const pagination = useMemo(() => {
-    if (manualPagination && controlledPageIndex !== undefined) {
-      return { pageIndex: controlledPageIndex, pageSize: pageSize };
+    if (controlledPageIndex !== undefined) {
+      return {
+        pageIndex: controlledPageIndex,
+        pageSize: onPageSizeChange ? pageSize : manualPagination ? pageSize : internalPagination.pageSize,
+      };
     }
     return internalPagination;
-  }, [manualPagination, controlledPageIndex, pageSize, internalPagination]);
+  }, [controlledPageIndex, manualPagination, onPageSizeChange, pageSize, internalPagination]);
 
   const selectionColumn: ColumnDef<TData> = useMemo(
     () => ({
@@ -148,15 +161,28 @@ export const DataTable = <TData, TValue>({
     onGroupingChange: setGrouping,
     onPaginationChange: (updater) => {
       const currentPagination =
-        manualPagination && controlledPageIndex !== undefined
-          ? { pageIndex: controlledPageIndex, pageSize: pageSize }
+        controlledPageIndex !== undefined
+          ? {
+              pageIndex: controlledPageIndex,
+              pageSize: manualPagination || onPageSizeChange
+                ? pageSize
+                : internalPagination.pageSize,
+            }
           : internalPagination;
 
       const newPagination =
         typeof updater === "function" ? updater(currentPagination) : updater;
 
-      if (manualPagination && controlledPageIndex !== undefined) {
-        if (onPaginationChange) onPaginationChange(newPagination.pageIndex);
+      if (controlledPageIndex !== undefined) {
+        onPaginationChange?.(newPagination.pageIndex);
+        if (onPageSizeChange && newPagination.pageSize !== currentPagination.pageSize) {
+          onPageSizeChange(newPagination.pageSize);
+        } else if (!manualPagination) {
+          setInternalPagination((current) => ({
+            ...current,
+            pageSize: newPagination.pageSize,
+          }));
+        }
       } else {
         setInternalPagination(newPagination);
       }
@@ -196,10 +222,21 @@ export const DataTable = <TData, TValue>({
     return {};
   };
 
+  const paginationState = table.getState().pagination;
+  const totalRows = table.getPrePaginationRowModel().rows.length;
+  const rangeFrom = totalRows === 0
+    ? 0
+    : paginationState.pageIndex * paginationState.pageSize + 1;
+  const rangeTo = Math.min(
+    (paginationState.pageIndex + 1) * paginationState.pageSize,
+    totalRows,
+  );
+  const totalPages = table.getPageCount();
+
   return (
     <div className={styles.dataTableContainer}>
       <div className={styles.tableWrapper}>
-        <Table className={styles.table}>
+        <Table className={`${styles.table} ${fitContainer ? styles.fitContainerTable : ""}`}>
           <TableHeader
             className={`${styles.tableHeader} ${freezeHeader ? styles.stickyHeader : ""}`}
           >
@@ -227,7 +264,7 @@ export const DataTable = <TData, TValue>({
                         cursor: header.column.getCanSort()
                           ? "pointer"
                           : "default",
-                        width: isSelect ? "48px" : header.getSize(),
+                        width: isSelect ? "48px" : fitContainer ? undefined : header.getSize(),
                       }}
                     >
                       {!header.isPlaceholder && (
@@ -331,7 +368,32 @@ export const DataTable = <TData, TValue>({
       </div>
 
       <div className={styles.tableFooter}>
-        <div className={styles.footerLeft}>{renderBottomLeft?.()}</div>
+        <div className={styles.footerLeft}>
+          {renderBottomLeft?.()}
+          {(paginationRangeLabel || pageSizeOptions?.length) && (
+            <div className={styles.paginationDetails}>
+              {paginationRangeLabel?.({
+                from: rangeFrom,
+                to: rangeTo,
+                total: totalRows,
+              })}
+              {pageSizeOptions && pageSizeOptions.length > 0 && (
+                <label className={styles.pageSizeControl}>
+                  <span>{pageSizeLabel}</span>
+                  <select
+                    value={paginationState.pageSize}
+                    onChange={(event) => table.setPageSize(Number(event.target.value))}
+                    aria-label={typeof pageSizeLabel === "string" ? pageSizeLabel : undefined}
+                  >
+                    {pageSizeOptions.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          )}
+        </div>
         <div className={styles.pagination}>
           <button
             onClick={() => table.previousPage()}
@@ -341,8 +403,8 @@ export const DataTable = <TData, TValue>({
           </button>
           <span>
             {paginationLabel ?? <>
-              {t("common.page")} {table.getState().pagination.pageIndex + 1}{" "}
-              {t("common.of")} {table.getPageCount()}
+              {t("common.page")} {totalPages === 0 ? 0 : paginationState.pageIndex + 1}{" "}
+              {t("common.of")} {totalPages}
             </>}
           </span>
           <button

@@ -24,6 +24,21 @@
   color: var(--color-white);
 }
 
+.fitContainerTable {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.fitContainerTable .tableCell {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.fitContainerTable .tableHeader .tableCell {
+  padding: 9px 10px;
+  white-space: normal;
+}
+
 .stickyHeader {
   position: sticky;
   top: 0;
@@ -172,6 +187,30 @@
   flex: 1;
 }
 
+.paginationDetails {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+}
+
+.pageSizeControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.pageSizeControl select {
+  min-height: 32px;
+  padding: 4px 24px 4px 8px;
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  background: var(--color-black-2);
+}
+
 .pagination {
   display: flex;
   align-items: center;
@@ -211,6 +250,11 @@
   .footerLeft {
     justify-content: center;
     width: 100%;
+  }
+
+  .paginationDetails {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .pagination {

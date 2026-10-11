@@ -4,8 +4,9 @@ import { toast } from "react-toastify";
 import { ArrowLeft, ChevronDown, Search, X } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { Button, IconButton, Select, TextField } from "@/ui-kit";
+import { Button, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 
 import {
   fetchCarCatalysts,
@@ -821,12 +822,15 @@ const searchByVehicle = async () => {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <div className={styles.titleRow}>
-          <IconButton
-            size="large"
+          <button
+            type="button"
+            className={styles.detailIconAction}
             onClick={() => navigate(-1)}
-            icon={<ArrowLeft size={18} />}
-            ariaLabel={t("carCatalyst.details.actions.back")}
-          />
+            aria-label={t("carCatalyst.details.actions.back")}
+            title={t("carCatalyst.details.actions.back")}
+          >
+            <ArrowLeft size={17} aria-hidden="true" />
+          </button>
 
           <div>
             <h2 className={styles.title}>{t("carCatalyst.details.title")}</h2>
@@ -878,21 +882,24 @@ const searchByVehicle = async () => {
               <div className={styles.searchActions}>
                 <Button
                   variant="primary"
-                  size="small"
+                  size="medium"
+                  className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
                   onClick={searchByCode}
                   disabled={isLoading}
                 >
-                  <Search size={16} />
+                  <Search size={16} aria-hidden="true" />
                   {t("carCatalyst.details.actions.search")}
                 </Button>
 
-                <IconButton
-                  size="medium"
-                  variant="secondary400"
+                <button
+                  type="button"
+                  className={styles.detailIconAction}
                   onClick={clearFilters}
-                  icon={<X size={16} />}
-                  ariaLabel={t("carCatalyst.details.actions.deleteFilters")}
-                />
+                  aria-label={t("carCatalyst.details.actions.deleteFilters")}
+                  title={t("carCatalyst.details.actions.deleteFilters")}
+                >
+                  <X size={16} aria-hidden="true" />
+                </button>
               </div>
             </div>
           )}
@@ -999,21 +1006,24 @@ const searchByVehicle = async () => {
               <div className={styles.searchActions}>
                 <Button
                   variant="primary"
-                  size="small"
+                  size="medium"
+                  className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
                   onClick={searchByVehicle}
                   disabled={isLoading}
                 >
-                  <Search size={16} />
+                  <Search size={16} aria-hidden="true" />
                   {t("carCatalyst.details.actions.searchVehicles")}
                 </Button>
 
-                <IconButton
-                  size="medium"
-                  variant="secondary400"
+                <button
+                  type="button"
+                  className={styles.detailIconAction}
                   onClick={clearFilters}
-                  icon={<X size={16} />}
-                  ariaLabel={t("carCatalyst.details.actions.deleteFilters")}
-                />
+                  aria-label={t("carCatalyst.details.actions.deleteFilters")}
+                  title={t("carCatalyst.details.actions.deleteFilters")}
+                >
+                  <X size={16} aria-hidden="true" />
+                </button>
               </div>
             </div>
           )}

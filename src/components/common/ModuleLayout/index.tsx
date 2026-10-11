@@ -31,6 +31,7 @@ interface ModuleLayoutProps {
   defaultIcon: LucideIcon;
   actions?: ReactNode;
   headerAppearance?: "default" | "finance" | "warehouse";
+  appearance?: "settings";
 }
 
 export const ModuleLayout: FC<ModuleLayoutProps> = ({
@@ -40,11 +41,13 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
   defaultIcon: DefaultIcon,
   actions,
   headerAppearance,
+  appearance,
 }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isWarehouseLayout = headerAppearance === "warehouse";
+  const isSettingsLayout = appearance === "settings";
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
@@ -151,9 +154,9 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
         eyebrow={activeItem?.group}
       />
 
-      <div className={`${styles.container} ${isWarehouseLayout ? styles.warehouseContainer : ""}`}>
-        <div className={`${styles.layout} ${isWarehouseLayout ? styles.warehouseLayout : ""}`}>
-          <aside className={`${styles.sidebar} ${isWarehouseLayout ? styles.warehouseSidebar : ""}`}>
+      <div className={`${styles.container} ${isWarehouseLayout ? styles.warehouseContainer : ""} ${isSettingsLayout ? styles.settingsContainer : ""}`}>
+        <div className={`${styles.layout} ${isWarehouseLayout ? styles.warehouseLayout : ""} ${isSettingsLayout ? styles.settingsLayout : ""}`}>
+          <aside className={`${styles.sidebar} ${isWarehouseLayout ? styles.warehouseSidebar : ""} ${isSettingsLayout ? styles.settingsSidebar : ""}`}>
             {navigationGroups.map((group, groupIndex) => (
               <section
                 className={`${styles.sidebarGroup} ${group.title ? styles.sidebarGroupTitled : ""}`}
@@ -182,8 +185,13 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
                       variant="vertical"
                       active={getIsActive(item.path)}
                       text={item.label}
-                      icon={<item.icon size={20} color="#ffffff" />}
-                      showCheckmark={item.showCheckmark}
+                      icon={
+                        <item.icon
+                          size={20}
+                          color={isSettingsLayout ? "#d2bf8a" : "#ffffff"}
+                        />
+                      }
+                      showCheckmark={isSettingsLayout ? false : item.showCheckmark}
                       onClick={() => handleNavigate(item.path)}
                     />
                   </div>
@@ -203,7 +211,7 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
             )}
           </aside>
 
-          <div className={`${styles.content} ${isWarehouseLayout ? styles.warehouseContent : ""}`}>
+          <div className={`${styles.content} ${isWarehouseLayout ? styles.warehouseContent : ""} ${isSettingsLayout ? styles.settingsContent : ""}`}>
             <div className={styles.mobileStepper}>
               {hasNavigationGroups ? (
                 <nav className={styles.mobileGroupedNav} aria-label={defaultTitle}>
@@ -248,7 +256,7 @@ export const ModuleLayout: FC<ModuleLayoutProps> = ({
               )}
             </div>
             <div
-              className={`${styles.contentWrapper} ${isWarehouseLayout ? styles.warehouseContentWrapper : ""}`}
+              className={`${styles.contentWrapper} ${isWarehouseLayout ? styles.warehouseContentWrapper : ""} ${isSettingsLayout ? styles.settingsContentWrapper : ""}`}
             >
               <Outlet />
             </div>

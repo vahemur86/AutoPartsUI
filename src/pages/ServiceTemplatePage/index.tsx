@@ -1,7 +1,46 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
+import {
+  siAudi,
+  siBmw,
+  siChevrolet,
+  siFiat,
+  siFord,
+  siHonda,
+  siHyundai,
+  siKia,
+  siMazda,
+  siNissan,
+  siPorsche,
+  siSubaru,
+  siTesla,
+  siToyota,
+  siVolkswagen,
+  type SimpleIcon,
+} from "simple-icons";
+import {
+  BadgeCheck,
+  Car,
+  ChevronDown,
+  ChevronUp,
+  CircleDollarSign,
+  Clock3,
+  Eye,
+  FileText,
+  Hash,
+  Pencil,
+  Plus,
+  Power,
+  RefreshCw,
+  Save,
+  Search,
+  Trash2,
+  Wrench,
+  X,
+} from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchVehicleDefinitions } from "@/store/slices/vehiclesSlice";
@@ -31,8 +70,12 @@ import {
 } from "@/store/slices/vehicleServicePricingSlice";
 import { EmployeeManagement } from "@/components/settings/EmployeeManagement/EmployeeManagement";
 import { ProgrammingPricingAdmin } from "@/components/settings/ProgrammingPricingAdmin";
+import { SectionHeader } from "@/components/common";
+import { FormDrawer } from "@/components/common/FormDrawer";
+import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 
-import { DataTable, Button, Select, Tab, TabGroup, TextField } from "@/ui-kit";
+import { DataTable, Button, Select, Tab, TabGroup, TextField, Textarea } from "@/ui-kit";
 
 import type {
   EmployeeCreatePayload,
@@ -85,6 +128,33 @@ type ServiceTemplateTab =
   | "employees"
   | "services"
   | "programmers";
+
+type VehicleBrandLogo = SimpleIcon | "mercedes" | "dodge";
+
+const vehicleBrandLogos: Record<string, VehicleBrandLogo> = {
+  audi: siAudi,
+  bmw: siBmw,
+  chevrolet: siChevrolet,
+  dodge: "dodge",
+  fiat: siFiat,
+  ford: siFord,
+  honda: siHonda,
+  hyundai: siHyundai,
+  kia: siKia,
+  mazda: siMazda,
+  mercedes: "mercedes",
+  mercedesbenz: "mercedes",
+  nissan: siNissan,
+  porsche: siPorsche,
+  subaru: siSubaru,
+  tesla: siTesla,
+  toyota: siToyota,
+  volkswagen: siVolkswagen,
+  vw: siVolkswagen,
+};
+
+const normalizeVehicleBrandKey = (value?: string) =>
+  (value ?? "").toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
 
 type EmployeeFormState = {
   id: number | null;
@@ -172,9 +242,11 @@ export const ServiceTemplatePage = () => {
   const { definitions, isDefinitionsLoading } = useAppSelector(
     (state) => state.vehicles,
   );
-  const { items: serviceCategories, isLoading: isServiceCategoriesLoading } = useAppSelector(
-    (state) => state.serviceCategory,
-  );
+  const {
+    items: serviceCategories,
+    isLoading: isServiceCategoriesLoading,
+    error: serviceCategoriesError,
+  } = useAppSelector((state) => state.serviceCategory);
   const { items: employees, isLoading: isEmployeesLoading } = useAppSelector(
     (state) => state.employees,
   );
@@ -184,9 +256,7 @@ export const ServiceTemplatePage = () => {
     (state) => state.vehicleServicePricing,
   );
   const showPricingTableSkeleton = useMinimumLoadingDuration(isPricingLoading);
-  const showCategoryTableSkeleton = useMinimumLoadingDuration(
-    isServiceCategoriesLoading && serviceCategories.length === 0,
-  );
+  const showCategoryTableSkeleton = useMinimumLoadingDuration(isServiceCategoriesLoading);
   const showServiceTableSkeleton = useMinimumLoadingDuration(
     isServiceCatalogLoading,
   );
@@ -196,20 +266,31 @@ export const ServiceTemplatePage = () => {
   const [categoryForm, setCategoryForm] = useState<CategoryFormState>(
     getInitialCategoryForm(),
   );
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
+  const [isCategorySaving, setIsCategorySaving] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [categoryStatusFilter, setCategoryStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [categoryPageIndex, setCategoryPageIndex] = useState(0);
+  const [categoryPageSize, setCategoryPageSize] = useState(10);
 
   const [employeeForm, setEmployeeForm] = useState<EmployeeFormState>(
     getInitialEmployeeForm(),
   );
   const [isEmployeeFormOpen, setIsEmployeeFormOpen] = useState(false);
   const [isPricingFormOpen, setIsPricingFormOpen] = useState(false);
+  const [isPricingSaving, setIsPricingSaving] = useState(false);
   const [expandedTemplateId, setExpandedTemplateId] = useState<number | null>(null);
   const [employeeCategoryFilterId, setEmployeeCategoryFilterId] = useState(0);
   const [pricingFuelTypeFilterId, setPricingFuelTypeFilterId] = useState(0);
   const [pricingEngineFilterId, setPricingEngineFilterId] = useState(0);
+  const [pricingSearch, setPricingSearch] = useState("");
 
   const [serviceForm, setServiceForm] = useState<ServiceFormState>(
     getInitialServiceForm(),
   );
+  const [isServiceFormOpen, setIsServiceFormOpen] = useState(false);
+  const [isServiceViewOnly, setIsServiceViewOnly] = useState(false);
+  const [serviceSearch, setServiceSearch] = useState("");
   const [pricingServiceOptionsByCategoryId, setPricingServiceOptionsByCategoryId] =
     useState<Record<number, ServiceCatalogItem[]>>({});
   const [isPricingServicesLoading, setIsPricingServicesLoading] = useState(false);
@@ -235,6 +316,42 @@ export const ServiceTemplatePage = () => {
     [serviceCategories],
   );
 
+  const filteredServiceCategories = useMemo(() => {
+    const query = categorySearch.trim().toLocaleLowerCase();
+    return (serviceCategories ?? []).filter((item: ServiceCategoryItem) => {
+      const matchesSearch = !query || [item.code, item.name]
+        .filter(Boolean)
+        .some((value) => value!.toLocaleLowerCase().includes(query));
+      const matchesStatus =
+        categoryStatusFilter === "all" ||
+        (categoryStatusFilter === "active"
+          ? item.isActive !== false
+          : item.isActive === false);
+      return matchesSearch && matchesStatus;
+    });
+  }, [serviceCategories, categorySearch, categoryStatusFilter]);
+
+  useEffect(() => {
+    const lastPageIndex = Math.max(
+      0,
+      Math.ceil(filteredServiceCategories.length / categoryPageSize) - 1,
+    );
+    if (categoryPageIndex > lastPageIndex) {
+      setCategoryPageIndex(lastPageIndex);
+    }
+  }, [filteredServiceCategories.length, categoryPageIndex, categoryPageSize]);
+
+  const filteredServiceCatalog = useMemo(() => {
+    const query = serviceSearch.trim().toLocaleLowerCase();
+    if (!query) return serviceCatalog ?? [];
+
+    return (serviceCatalog ?? []).filter((item) =>
+      [item.code, item.name, item.description, item.serviceCategoryName]
+        .filter(Boolean)
+        .some((value) => value!.toLocaleLowerCase().includes(query)),
+    );
+  }, [serviceCatalog, serviceSearch]);
+
   const getServiceOptionsForCategory = (categoryId: number) =>
     (pricingServiceOptionsByCategoryId[categoryId] ?? []).filter(
       (item: ServiceCatalogItem) => item.isActive !== false,
@@ -249,39 +366,72 @@ export const ServiceTemplatePage = () => {
   );
 
   const serviceTotal = useMemo(
-    () =>
-      form.categories.reduce(
-        (sum, category) =>
-          sum +
-          category.services.reduce(
-            (servicesSum, service) => servicesSum + Number(service.customerPrice || 0),
-            0,
-          ),
-        0,
-      ),
-    [form.categories],
-  );
+    () => form.categories.reduce((sum, category) => {
+      const selectedCategory = rootServiceCategories.find(
+        (item) => item.id === category.serviceCategoryId,
+      );
+      const isProgrammingCategory =
+        isProgrammingServiceCategory(selectedCategory?.code) ||
+        isProgrammingServiceCategory(selectedCategory?.name);
 
-  const expandedTemplate = useMemo(
-    () =>
-      pricingItems.find((item) => item.id === expandedTemplateId) ?? null,
-    [expandedTemplateId, pricingItems],
+      return sum + category.services.reduce(
+        (categorySum, service) => categorySum + Number(
+          isProgrammingCategory
+            ? programmingResolvedByServiceId[service.serviceId]?.programmerSellingPrice || 0
+            : service.customerPrice || 0,
+        ),
+        0,
+      );
+    }, 0),
+    [form.categories, rootServiceCategories, programmingResolvedByServiceId],
   );
 
   const filteredPricingItems = useMemo(
-    () =>
-      (pricingItems ?? []).filter((item) => {
+    () => {
+      const query = pricingSearch.trim().toLocaleLowerCase();
+      const queryTerms = query.split(/\s+/).filter(Boolean);
+
+      return (pricingItems ?? []).filter((item) => {
         const matchesFuel =
           pricingFuelTypeFilterId === 0 ||
           Number(item.fuelTypeId || 0) === pricingFuelTypeFilterId;
         const matchesEngine =
           pricingEngineFilterId === 0 ||
           Number(item.engineId || 0) === pricingEngineFilterId;
+        const brand = definitions?.brands.find((entry) => entry.id === item.brandId);
+        const model = definitions?.models.find((entry) => entry.id === item.modelId);
+        const searchText = [
+          item.brandName,
+          brand?.name,
+          brand?.code,
+          item.modelName,
+          model?.name,
+          model?.code,
+          String(item.year),
+          item.location,
+          item.fuelTypeName,
+          item.engineName,
+        ]
+          .filter((value): value is string => Boolean(value))
+          .join(" ")
+          .toLocaleLowerCase();
+        const matchesSearch = queryTerms.every((term) => searchText.includes(term));
 
-        return matchesFuel && matchesEngine;
-      }),
-    [pricingItems, pricingFuelTypeFilterId, pricingEngineFilterId],
+        return matchesFuel && matchesEngine && matchesSearch;
+      });
+    },
+    [definitions, pricingEngineFilterId, pricingFuelTypeFilterId, pricingItems, pricingSearch],
   );
+
+  const hasPricingFilters = Boolean(
+    pricingSearch.trim() || pricingFuelTypeFilterId || pricingEngineFilterId,
+  );
+
+  const resetPricingFilters = () => {
+    setPricingSearch("");
+    setPricingFuelTypeFilterId(0);
+    setPricingEngineFilterId(0);
+  };
 
   const selectedServicesSummary = useMemo(
     () =>
@@ -506,10 +656,11 @@ export const ServiceTemplatePage = () => {
     const description = categoryForm.description.trim();
 
     if (!name || (!categoryForm.id && !code)) {
-      toast.error(t("serviceTemplates.messages.validationFailed"));
+      toast.error(t("serviceTemplates.categoryCatalog.messages.validationFailed"));
       return;
     }
 
+    setIsCategorySaving(true);
     try {
       if (categoryForm.id) {
         const payload: ServiceCategoryUpdatePayload = {
@@ -519,7 +670,7 @@ export const ServiceTemplatePage = () => {
           displayOrder: Number(categoryForm.displayOrder || 0),
         };
         await dispatch(editServiceCategory(payload)).unwrap();
-        toast.success(t("serviceTemplates.messages.updated"));
+        toast.success(t("serviceTemplates.categoryCatalog.messages.updated"));
       } else {
         const payload: ServiceCategoryCreatePayload = {
           code,
@@ -528,18 +679,37 @@ export const ServiceTemplatePage = () => {
           displayOrder: Number(categoryForm.displayOrder || 0),
         };
         await dispatch(addServiceCategory(payload)).unwrap();
-        toast.success(t("serviceTemplates.messages.created"));
+        toast.success(t("serviceTemplates.categoryCatalog.messages.created"));
       }
 
       setCategoryForm(getInitialCategoryForm());
+      setIsCategoryFormOpen(false);
       dispatch(fetchServiceCategories());
     } catch {
       toast.error(
         categoryForm.id
-          ? t("serviceTemplates.messages.updateFailed")
-          : t("serviceTemplates.messages.createFailed"),
+          ? t("serviceTemplates.categoryCatalog.messages.updateFailed")
+          : t("serviceTemplates.categoryCatalog.messages.createFailed"),
       );
+    } finally {
+      setIsCategorySaving(false);
     }
+  };
+
+  const handleCategoryOpenChange = (open: boolean) => {
+    if (open) {
+      setIsCategoryFormOpen(true);
+      return;
+    }
+    if (isCategorySaving) return;
+
+    setCategoryForm(getInitialCategoryForm());
+    setIsCategoryFormOpen(false);
+  };
+
+  const handleOpenCreateCategory = () => {
+    setCategoryForm(getInitialCategoryForm());
+    setIsCategoryFormOpen(true);
   };
 
   const handleEditCategory = (item: ServiceCategoryItem) => {
@@ -550,10 +720,12 @@ export const ServiceTemplatePage = () => {
       description: item.description || "",
       displayOrder: Number(item.displayOrder || 0),
     });
+    setIsCategoryFormOpen(true);
   };
 
   const handleCancelCategory = () => {
     setCategoryForm(getInitialCategoryForm());
+    setIsCategoryFormOpen(false);
   };
 
   const handleCreateOrUpdateEmployee = async () => {
@@ -657,6 +829,8 @@ export const ServiceTemplatePage = () => {
   };
 
   const handleCreateOrUpdateService = async () => {
+    if (isServiceViewOnly) return;
+
     const code = serviceForm.code.trim();
     const name = serviceForm.name.trim();
     const description = serviceForm.description.trim();
@@ -692,6 +866,8 @@ export const ServiceTemplatePage = () => {
       }
 
       setServiceForm(getInitialServiceForm());
+      setIsServiceFormOpen(false);
+      setIsServiceViewOnly(false);
       dispatch(fetchServicesCatalog());
     } catch {
       toast.error(
@@ -712,11 +888,56 @@ export const ServiceTemplatePage = () => {
       internalCost: Number(item.internalCost || 0),
       estimatedDurationMinutes: Number(item.estimatedDurationMinutes || 0),
     });
+    setIsServiceViewOnly(false);
+    setIsServiceFormOpen(true);
+  };
+
+  const handleViewService = (item: ServiceCatalogItem) => {
+    setServiceForm({
+      id: item.id,
+      code: item.code || "",
+      name: item.name || "",
+      description: item.description || "",
+      serviceCategoryId: item.serviceCategoryId || 0,
+      internalCost: Number(item.internalCost || 0),
+      estimatedDurationMinutes: Number(item.estimatedDurationMinutes || 0),
+    });
+    setIsServiceViewOnly(true);
+    setIsServiceFormOpen(true);
+  };
+
+  const handleNewService = () => {
+    setServiceForm(getInitialServiceForm());
+    setIsServiceViewOnly(false);
+    setIsServiceFormOpen(true);
   };
 
   const handleCancelService = () => {
     setServiceForm(getInitialServiceForm());
+    setIsServiceViewOnly(false);
+    setIsServiceFormOpen(false);
   };
+
+  useEffect(() => {
+    if (!isServiceFormOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setServiceForm(getInitialServiceForm());
+        setIsServiceViewOnly(false);
+        setIsServiceFormOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isServiceFormOpen]);
 
   const validateForm = () => {
     if (!form.vehicleBrandId || !form.vehicleModelId) return false;
@@ -744,12 +965,31 @@ export const ServiceTemplatePage = () => {
     }
   };
 
+  const handlePricingOpenChange = (open: boolean) => {
+    if (open) {
+      setIsPricingFormOpen(true);
+      return;
+    }
+    if (isPricingSaving) return;
+
+    setForm(getInitialForm());
+    setPricingServiceOptionsByCategoryId({});
+    setIsPricingFormOpen(false);
+  };
+
+  const handleOpenPricingForm = () => {
+    setForm(getInitialForm());
+    setPricingServiceOptionsByCategoryId({});
+    setIsPricingFormOpen(true);
+  };
+
   const handleSave = async () => {
     if (!validateForm()) {
       toast.error(t("serviceTemplates.messages.validationFailed"));
       return;
     }
 
+    setIsPricingSaving(true);
     try {
       const selectedLocation = locationOptions.find(
         (item) => item.id === form.locationId,
@@ -815,6 +1055,8 @@ export const ServiceTemplatePage = () => {
           ? t("serviceTemplates.messages.updateFailed")
           : t("serviceTemplates.messages.createFailed"),
       );
+    } finally {
+      setIsPricingSaving(false);
     }
   };
 
@@ -1057,7 +1299,12 @@ export const ServiceTemplatePage = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.section}>
+      <SectionHeader
+        title={t("serviceTemplates.title")}
+        icon={<Wrench size={17} color="#d2bf8a" aria-hidden="true" />}
+      />
+
+      <div className={`${styles.section} ${styles.tabNavigation}`}>
         <TabGroup>
           <Tab
             variant="segmented"
@@ -1069,7 +1316,12 @@ export const ServiceTemplatePage = () => {
             variant="segmented"
             active={activeTab === "categories"}
             text={t("serviceTemplates.tabs.categories")}
-            onClick={() => setActiveTab("categories")}
+            onClick={() => {
+              if (activeTab !== "categories" && !isServiceCategoriesLoading) {
+                dispatch(fetchServiceCategories());
+              }
+              setActiveTab("categories");
+            }}
           />
           <Tab
             variant="segmented"
@@ -1094,11 +1346,19 @@ export const ServiceTemplatePage = () => {
 
       {activeTab === "pricing" && (
         <>
-          <div className={`${styles.section} ${styles.tableSection}`}>
+          <div className={`${styles.section} ${styles.pricingSection}`}>
             <div className={styles.header}>
-              <h3 className={styles.title}>{t("serviceTemplates.title")}</h3>
+              <h3 className={styles.title}>{t("serviceTemplates.tabs.pricing")}</h3>
               <div className={styles.pricingToolbar}>
                 <div className={styles.pricingFilters}>
+                  <TextField
+                    className={styles.pricingSearch}
+                    aria-label={t("serviceTemplates.filters.search")}
+                    placeholder={t("serviceTemplates.filters.searchPlaceholder")}
+                    value={pricingSearch}
+                    onChange={(event) => setPricingSearch(event.target.value)}
+                    icon={<Search size={14} aria-hidden="true" />}
+                  />
                   <Select
                     className={styles.filterControl}
                     value={String(pricingFuelTypeFilterId)}
@@ -1126,267 +1386,233 @@ export const ServiceTemplatePage = () => {
                       </option>
                     ))}
                   </Select>
+                  {hasPricingFilters && (
+                    <Button
+                      className={styles.pricingResetButton}
+                      size="small"
+                      variant="secondary"
+                      onClick={resetPricingFilters}
+                    >
+                      <X size={13} aria-hidden="true" />
+                      {t("serviceTemplates.filters.reset")}
+                    </Button>
+                  )}
                 </div>
 
                 <div className={styles.pricingActions}>
-                  <Button variant="secondary" onClick={handleLoadVehiclePricing}>
-                    {t("serviceTemplates.actions.loadPricing")}
+                  <Button
+                    variant="secondary"
+                    onClick={handleLoadVehiclePricing}
+                    disabled={isPricingLoading}
+                    aria-label={t("common.refresh")}
+                    title={t("common.refresh")}
+                  >
+                    <RefreshCw size={14} aria-hidden="true" />
+                    {t("common.refresh")}
                   </Button>
                   <Button
                     variant={isPricingFormOpen ? "secondary" : "primary"}
-                    onClick={() => setIsPricingFormOpen((prev) => !prev)}
+                    onClick={handleOpenPricingForm}
+                    disabled={isPricingFormOpen}
                   >
-                    {isPricingFormOpen ? t("common.cancel") : t("common.add")}
+                    <Plus size={15} aria-hidden="true" />
+                    {t("serviceTemplates.actions.addPricing")}
                   </Button>
                 </div>
               </div>
             </div>
 
             {showPricingTableSkeleton ? (
-              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
-                <div className={styles.tableSkeletonHeader}>
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-                </div>
-                <div className={styles.tableSkeletonRows}>
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div key={index} className={styles.tableSkeletonRow}>
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-                    </div>
-                  ))}
-                </div>
+              <PrpServiceLoader />
+            ) : filteredPricingItems.length === 0 ? (
+              <div className={styles.pricingEmptyState}>
+                <Car size={24} aria-hidden="true" />
+                <span>{t("serviceTemplates.messages.noPricingMatches")}</span>
               </div>
             ) : (
-              <DataTable
-                data={filteredPricingItems}
-                columns={[
-                  {
-                    header: t("serviceTemplates.fields.vehicleBrand"),
-                    accessorKey: "brandName",
-                    cell: ({ row }) => row.original.brandName || `#${row.original.brandId}`,
-                  },
-                  {
-                    header: t("serviceTemplates.fields.vehicleModel"),
-                    accessorKey: "modelName",
-                    cell: ({ row }) => row.original.modelName || `#${row.original.modelId}`,
-                  },
-                  {
-                    header: t("serviceTemplates.fields.year"),
-                    accessorKey: "year",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.fuelType"),
-                    accessorKey: "fuelTypeName",
-                    cell: ({ row }) => row.original.fuelTypeName || `#${row.original.fuelTypeId || 0}`,
-                  },
-                  {
-                    header: t("serviceTemplates.fields.engine"),
-                    accessorKey: "engineName",
-                    cell: ({ row }) => row.original.engineName || `#${row.original.engineId || 0}`,
-                  },
-                  {
-                    header: t("serviceTemplates.fields.location"),
-                    accessorKey: "location",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.serviceCategory"),
-                    accessorKey: "serviceCategoryName",
-                    cell: ({ row }) => {
-                      const categoryLabels = getTemplateCategories(row.original)
-                        .map((category) => {
-                          const selectedCategory = rootServiceCategories.find(
-                            (item) => item.id === category.serviceCategoryId,
-                          );
-                          return (
-                            selectedCategory?.name ||
-                            selectedCategory?.code ||
-                            `#${category.serviceCategoryId}`
-                          );
-                        })
-                        .filter((label) => !!label);
-
-                      return categoryLabels.length > 0 ? categoryLabels.join(", ") : "-";
-                    },
-                  },
-                  {
-                    header: t("serviceTemplates.fields.services"),
-                    accessorKey: "items",
-                    cell: ({ row }) =>
-                      getTemplateItems(row.original)
-                        ?.map((item) => {
-                          const serviceName = item.serviceName || `#${item.serviceId}`;
-
-                          if (!item.isProgrammerService) {
-                            return serviceName;
-                          }
-
-                          if (!item.bestProgrammerUsername) {
-                            return `${serviceName} (${t("serviceTemplates.messages.noProgrammerForVehicle")})`;
-                          }
-
-                          return `${serviceName} (${item.bestProgrammerUsername})`;
-                        })
-                        .join(", ") || "-",
-                  },
-                  {
-                    header: t("serviceTemplates.table.totalAmount"),
-                    accessorKey: "electricityPrice",
-                    cell: ({ row }) => {
-                      const servicesTotal = getTemplateItems(row.original)?.reduce(
-                        (sum, item) =>
-                          sum +
-                          Number(
-                            item.isProgrammerService
-                              ? item.programmerSellingPrice || 0
-                              : item.customerPrice || 0,
-                          ),
-                        0,
-                      );
-                      return servicesTotal ?? 0;
-                    },
-                  },
-                  {
-                    header: t("serviceTemplates.fields.status"),
-                    accessorKey: "isActive",
-                    cell: ({ getValue }) =>
-                      getValue<boolean>() ? t("common.active") : t("common.inactive"),
-                  },
-                  {
-                    header: t("common.actions"),
-                    accessorKey: "id",
-                    cell: ({ row }) => (
-                      <div className={styles.actions}>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() => handleEditPricingTemplate(row.original)}
-                        >
-                          {t("common.edit")}
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() =>
-                            setExpandedTemplateId((prev) =>
-                              prev === row.original.id ? null : row.original.id,
-                            )
-                          }
-                        >
-                          {expandedTemplateId === row.original.id
-                            ? t("serviceTemplates.actions.hideItems")
-                            : t("serviceTemplates.actions.viewItems")}
-                        </Button>
-                      </div>
+              <div className={styles.pricingCardGrid}>
+                {filteredPricingItems.map((item) => {
+                  const items = getTemplateItems(item);
+                  const categories = getTemplateCategories(item)
+                    .map((category) => rootServiceCategories.find(
+                      (serviceCategory) => serviceCategory.id === category.serviceCategoryId,
+                    ))
+                    .filter((category): category is ServiceCategoryItem => Boolean(category));
+                  const total = items.reduce(
+                    (sum, service) => sum + Number(
+                      service.isProgrammerService
+                        ? service.programmerSellingPrice || 0
+                        : service.customerPrice || 0,
                     ),
-                  },
-                ]}
-              />
-            )}
+                    0,
+                  );
+                  const fuelTypeLabel = item.fuelTypeName ||
+                    fuelTypeOptions.find((option) => option.id === item.fuelTypeId)?.name ||
+                    (item.fuelTypeId ? `#${item.fuelTypeId}` : "");
+                  const engineLabel = item.engineName ||
+                    engineOptions.find((option) => option.id === item.engineId)?.name ||
+                    (item.engineId ? `#${item.engineId}` : "");
+                  const brandDefinition = definitions?.brands.find(
+                    (brand) => brand.id === item.brandId,
+                  );
+                  const modelDefinition = definitions?.models.find(
+                    (model) => model.id === item.modelId,
+                  );
+                  const brandName = item.brandName || brandDefinition?.name || `#${item.brandId}`;
+                  const brandLogoKeys = [
+                    normalizeVehicleBrandKey(brandDefinition?.code),
+                    normalizeVehicleBrandKey(item.brandName),
+                    normalizeVehicleBrandKey(brandDefinition?.name),
+                  ];
+                  const brandLogo = brandLogoKeys
+                    .map((key) => vehicleBrandLogos[key])
+                    .find(Boolean);
+                  const isExpanded = expandedTemplateId === item.id;
 
-            {expandedTemplate && (
-              <div className={styles.templateItemsPanel}>
-                <div className={styles.templateItemsTitle}>
-                  {expandedTemplate.brandName || "-"} / {expandedTemplate.modelName || "-"} / {expandedTemplate.year}
-                </div>
-                {getTemplateItems(expandedTemplate).length === 0 ? (
-                  <div className={styles.templateItemsEmpty}>{t("common.noData")}</div>
-                ) : (
-                  <div className={styles.templateItemsAccordion}>
-                    {getTemplateItems(expandedTemplate).map((item) => (
-                      <details
-                        key={item.id || item.serviceId}
-                        className={styles.templateItemCard}
-                      >
-                        <summary className={styles.templateItemSummary}>
-                          <span>{item.serviceName || `#${item.serviceId}`}</span>
-                          <span className={styles.templateItemSummaryPrice}>
-                            {t("serviceTemplates.table.servicePrice")}: {item.customerPrice ?? 0}
+                  return (
+                    <article key={item.id} className={styles.pricingCard}>
+                      <div className={styles.pricingCardHeader}>
+                        <div className={styles.pricingCardVehicle}>
+                          <span className={styles.pricingCardIcon} aria-hidden="true">
+                            {brandLogo === "mercedes" ? (
+                              <svg className={styles.pricingBrandLogo} viewBox="0 0 24 24" aria-label={brandName}>
+                                <circle cx="12" cy="12" r="9" fill="none" stroke="#a7acb2" strokeWidth="1.5" />
+                                <path d="M12 3v9m0 0 7.8 4.5M12 12 4.2 16.5" fill="none" stroke="#a7acb2" strokeWidth="1.5" strokeLinecap="round" />
+                              </svg>
+                            ) : brandLogo === "dodge" ? (
+                              <svg className={styles.dodgeBrandLogo} viewBox="0 0 36 24" aria-label={brandName}>
+                                <text x="2" y="12" fill="#e7e5e4" fontSize="8" fontWeight="700" fontFamily="Arial, sans-serif">DODGE</text>
+                                <path d="m21 15 12-4m-10 7 10-3" fill="none" stroke="#d71920" strokeWidth="1.8" strokeLinecap="square" />
+                              </svg>
+                            ) : brandLogo ? (
+                              <svg
+                                className={styles.pricingBrandLogo}
+                                viewBox="0 0 24 24"
+                                role="img"
+                                aria-label={brandName}
+                                style={{ color: `#${brandLogo.hex}` }}
+                              >
+                                <path d={brandLogo.path} fill="currentColor" />
+                              </svg>
+                            ) : <Car size={17} />}
                           </span>
-                        </summary>
-                        <div className={styles.templateItemMetrics}>
-                          {!item.isProgrammerService ? (
-                            <>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.internalCost")}</span>
-                                <strong>{item.internalCost ?? 0}</strong>
-                              </div>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.servicePrice")}</span>
-                                <strong>{item.customerPrice ?? 0}</strong>
-                              </div>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.profit")}</span>
-                                <strong>{item.profit ?? 0}</strong>
-                              </div>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.marginPercent")}</span>
-                                <strong>{item.profitMargin ?? 0}%</strong>
-                              </div>
-                            </>
-                          ) : item.bestProgrammerUsername ? (
-                            <>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.bestProgrammer")}</span>
-                                <strong>{item.bestProgrammerUsername}</strong>
-                              </div>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.servicePrice")}</span>
-                                <strong>{item.programmerSellingPrice ?? 0}</strong>
-                              </div>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.programmerCost")}</span>
-                                <strong>{item.programmerServiceCost ?? 0}</strong>
-                              </div>
-                              <div className={styles.templateItemMetric}>
-                                <span>{t("serviceTemplates.table.profit")}</span>
-                                <strong>{item.programmerProfit ?? 0}</strong>
-                              </div>
-                            </>
-                          ) : (
-                            <div className={styles.noProgrammerWarning}>
-                              {t("serviceTemplates.messages.noProgrammerForVehicle")}
-                            </div>
-                          )}
+                          <div>
+                            <h3>{brandName} {item.modelName || modelDefinition?.name || `#${item.modelId}`}</h3>
+                            <span>{item.year}{item.location ? ` · ${item.location}` : ""}</span>
+                          </div>
                         </div>
-                      </details>
-                    ))}
-                  </div>
-                )}
+                        <span className={`${styles.pricingStatus} ${item.isActive ? styles.pricingStatusActive : styles.pricingStatusInactive}`}>
+                          {item.isActive ? t("common.active") : t("common.inactive")}
+                        </span>
+                      </div>
+
+                      {(fuelTypeLabel || engineLabel) && (
+                        <div className={styles.pricingCardSpecs}>
+                          {fuelTypeLabel && <span>{fuelTypeLabel}</span>}
+                          {engineLabel && <span>{engineLabel}</span>}
+                        </div>
+                      )}
+
+                      <div className={styles.pricingCardCategories}>
+                        {categories.length > 0 ? categories.map((category) => (
+                          <span key={category.id} className={styles.pricingCategoryBadge}>
+                            {category.name || category.code}
+                          </span>
+                        )) : <span className={styles.pricingMuted}>-</span>}
+                      </div>
+
+                      <div className={styles.pricingCardSummary}>
+                        <span>{t("serviceTemplates.table.services")}: <strong>{items.length}</strong></span>
+                        <strong className={`${styles.pricingAmount} ${items.length === 0 ? styles.pricingAmountEmpty : ""}`}>
+                          {items.length > 0
+                            ? `${total.toLocaleString(i18n.language)} AMD`
+                            : t("serviceTemplates.pricingForm.noServicesPrice")}
+                        </strong>
+                      </div>
+
+                      {isExpanded && (
+                        <div className={styles.pricingCardDetails}>
+                          {items.length === 0 ? (
+                            <span className={styles.pricingMuted}>{t("common.noData")}</span>
+                          ) : items.map((service, index) => (
+                            <div className={styles.pricingCardService} key={`${service.id || service.serviceId}-${index}`}>
+                              <span>{service.serviceName || `#${service.serviceId}`}</span>
+                              <strong>
+                                {Number(service.isProgrammerService
+                                  ? service.programmerSellingPrice || 0
+                                  : service.customerPrice || 0).toLocaleString(i18n.language)} AMD
+                              </strong>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className={styles.pricingCardActions}>
+                        <button
+                          type="button"
+                          className={styles.pricingExpandButton}
+                          onClick={() => setExpandedTemplateId((previous) => previous === item.id ? null : item.id)}
+                          aria-expanded={isExpanded}
+                        >
+                          {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                          {t(isExpanded ? "serviceTemplates.actions.hideItems" : "serviceTemplates.actions.viewItems")}
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.serviceRowAction}
+                          onClick={() => handleEditPricingTemplate(item)}
+                          aria-label={t("common.edit")}
+                          title={t("common.edit")}
+                        >
+                          <Pencil size={14} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             )}
           </div>
 
           {isPricingFormOpen && (
-            <div className={`${styles.section} ${styles.collapsiblePanel}`}>
-              <div className={styles.header}>
-                <h3 className={styles.title}>
-                  {form.id
-                    ? t("serviceTemplates.actions.update")
-                    : t("serviceTemplates.actions.create")}
-                </h3>
-                <div className={styles.actions}>
-                  <Button onClick={handleSave}>
-                    {form.id
-                      ? t("serviceTemplates.actions.update")
-                      : t("serviceTemplates.actions.create")}
-                  </Button>
+            <FormDrawer
+              open={isPricingFormOpen}
+              onOpenChange={handlePricingOpenChange}
+              eyebrow={t("serviceTemplates.tabs.pricing")}
+              title={t(form.id ? "serviceTemplates.pricingForm.editTitle" : "serviceTemplates.pricingForm.createTitle")}
+              titleId="vehicle-service-pricing-title"
+              closeLabel={t("common.close")}
+              icon={<Car size={20} />}
+              footer={
+                <>
                   <Button
+                    className={styles.pricingSecondaryButton}
                     variant="secondary"
-                    onClick={() => {
-                      setForm(getInitialForm());
-                      setPricingServiceOptionsByCategoryId({});
-                      setIsPricingFormOpen(false);
-                    }}
+                    onClick={() => handlePricingOpenChange(false)}
+                    disabled={isPricingSaving}
                   >
+                    <X size={15} aria-hidden="true" />
                     {t("common.cancel")}
                   </Button>
-                </div>
-              </div>
-
-              <div className={styles.form}>
-              <div className={styles.gridTwo}>
+                  <Button
+                    className={styles.pricingDrawerSaveButton}
+                    onClick={handleSave}
+                    disabled={isPricingSaving || !validateForm()}
+                  >
+                    <Save size={15} aria-hidden="true" />
+                    {isPricingSaving
+                      ? t("common.saving")
+                      : t(form.id ? "serviceTemplates.actions.update" : "serviceTemplates.actions.create")}
+                  </Button>
+                </>
+              }
+            >
+              <div className={`${styles.form} ${styles.pricingDrawerForm}`}>
+                <section className={styles.pricingFormSection}>
+                  <h3 className={styles.pricingFormSectionTitle}>
+                    {t("serviceTemplates.pricingForm.vehicleSection")}
+                  </h3>
+                  <div className={styles.gridTwo}>
                 <Select
                   label={t("serviceTemplates.fields.vehicleBrand")}
                   value={String(form.vehicleBrandId || "")}
@@ -1510,15 +1736,21 @@ export const ServiceTemplatePage = () => {
                   ))}
                 </Select>
 
-              </div>
+                  </div>
+                </section>
 
-              <div className={styles.actions}>
-                <Button size="small" variant="secondary" onClick={addCategory}>
-                  {t("serviceTemplates.actions.addCategory")}
-                </Button>
-              </div>
+                <section className={styles.pricingFormSection}>
+                  <div className={styles.pricingFormSectionHeader}>
+                    <h3 className={styles.pricingFormSectionTitle}>
+                      {t("serviceTemplates.pricingForm.servicesSection")}
+                    </h3>
+                    <Button className={styles.pricingSecondaryButton} size="small" variant="secondary" onClick={addCategory}>
+                      <Plus size={14} aria-hidden="true" />
+                      {t("serviceTemplates.actions.addCategory")}
+                    </Button>
+                  </div>
 
-              {form.categories.map((category, categoryIndex) => {
+                  {form.categories.map((category, categoryIndex) => {
                 const selectedCategory = rootServiceCategories.find(
                   (item) => item.id === category.serviceCategoryId,
                 );
@@ -1538,19 +1770,23 @@ export const ServiceTemplatePage = () => {
                       <span>{t("serviceTemplates.fields.services")}</span>
                       <div className={styles.actions}>
                         <Button
+                          className={styles.pricingSecondaryButton}
                           size="small"
                           variant="secondary"
                           onClick={() => addLine(categoryIndex)}
                         >
+                          <Plus size={14} aria-hidden="true" />
                           {t("serviceTemplates.actions.addService")}
                         </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
+                        <button
+                          type="button"
+                          className={`${styles.serviceRowAction} ${styles.pricingDeleteAction}`}
                           onClick={() => removeCategory(categoryIndex)}
+                          aria-label={t("common.delete")}
+                          title={t("common.delete")}
                         >
-                          {t("common.delete")}
-                        </Button>
+                          <Trash2 size={14} aria-hidden="true" />
+                        </button>
                       </div>
                     </div>
 
@@ -1641,38 +1877,41 @@ export const ServiceTemplatePage = () => {
                           />
                         )}
 
-                        <Button
-                          size="small"
-                          variant="secondary"
+                        <button
+                          type="button"
+                          className={`${styles.serviceRowAction} ${styles.pricingDeleteAction}`}
                           onClick={() => removeLine(categoryIndex, lineIndex)}
+                          aria-label={t("common.delete")}
+                          title={t("common.delete")}
                         >
-                          {t("common.delete")}
-                        </Button>
+                          <Trash2 size={14} aria-hidden="true" />
+                        </button>
                       </div>
                     ))}
                   </div>
                 );
-              })}
+                  })}
 
-                {selectedServicesSummary.length > 0 && (
-                  <div className={styles.selectedServicesSummary}>
+                  {selectedServicesSummary.length > 0 && (
+                    <div className={styles.selectedServicesSummary}>
                     <div className={styles.selectedServicesTitle}>
                       {t("serviceTemplates.fields.services")}
                     </div>
-                    {selectedServicesSummary.map((item) => (
-                      <div key={`${item.id}-${item.categoryLabel}`} className={styles.selectedServiceItem}>
-                        <span>{item.categoryLabel}: {item.label}</span>
-                        <b>
-                          {item.isAutoResolved
-                            ? item.hasProgrammerPricing
-                              ? `${Number(item.price || 0).toLocaleString()} AMD`
-                              : t("serviceTemplates.messages.noProgrammerForVehicle")
-                            : item.price}
-                        </b>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      {selectedServicesSummary.map((item) => (
+                        <div key={`${item.id}-${item.categoryLabel}`} className={styles.selectedServiceItem}>
+                          <span>{item.categoryLabel}: {item.label}</span>
+                          <b>
+                            {item.isAutoResolved
+                              ? item.hasProgrammerPricing
+                                ? `${Number(item.price || 0).toLocaleString()} AMD`
+                                : t("serviceTemplates.messages.noProgrammerForVehicle")
+                              : `${Number(item.price || 0).toLocaleString()} AMD`}
+                          </b>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
 
                 <TextField
                   label={t("serviceTemplates.fields.notes")}
@@ -1684,17 +1923,12 @@ export const ServiceTemplatePage = () => {
                     }))
                   }
                 />
-              </div>
-
-              <div className={styles.totalsPanel}>
-                <div>
-                  {t("serviceTemplates.fields.servicesTotal")}: <b>{serviceTotal}</b>
-                </div>
-                <div>
-                  {t("serviceTemplates.table.totalAmount")}: <b>{serviceTotal}</b>
+                <div className={styles.pricingTotalsPanel}>
+                  <span>{t("serviceTemplates.fields.servicesTotal")}</span>
+                  <strong>{serviceTotal.toLocaleString(i18n.language)} AMD</strong>
                 </div>
               </div>
-            </div>
+            </FormDrawer>
           )}
         </>
       )}
@@ -1702,133 +1936,246 @@ export const ServiceTemplatePage = () => {
       {activeTab === "categories" && (
         <>
           <div className={styles.section}>
-            <div className={styles.header}>
-              <h3 className={styles.title}>{t("serviceTemplates.tabs.categories")}</h3>
-              <div className={styles.actions}>
-                <Button onClick={handleCreateOrUpdateCategory}>
-                  {categoryForm.id ? t("serviceTemplates.actions.update") : t("common.add")}
-                </Button>
-                {categoryForm.id && (
-                  <Button variant="secondary" onClick={handleCancelCategory}>
-                    {t("common.cancel")}
-                  </Button>
-                )}
+            <div className={styles.categoryHeading}>
+              <div className={styles.categoryHeadingCopy}>
+                <h3>{t("serviceTemplates.tabs.categories")}</h3>
+                <p>{t("serviceTemplates.categoryCatalog.description")}</p>
               </div>
+              <span className={styles.categoryTotal}>
+                {t("serviceTemplates.categoryCatalog.totalCount", { count: serviceCategories.length })}
+              </span>
+              <Button onClick={handleOpenCreateCategory}>
+                <Plus size={15} aria-hidden="true" />
+                {t("serviceTemplates.actions.addCategory")}
+              </Button>
             </div>
-            <div className={styles.gridTwo}>
+            <div className={styles.categoryToolbar}>
               <TextField
-                label={t("serviceTemplates.fields.code")}
-                value={categoryForm.code}
-                onChange={(e) =>
-                  setCategoryForm((prev) => ({ ...prev, code: e.target.value }))
-                }
-                disabled={Boolean(categoryForm.id)}
+                className={styles.categorySearch}
+                label={t("serviceTemplates.categoryCatalog.searchLabel")}
+                placeholder={t("serviceTemplates.categoryCatalog.searchPlaceholder")}
+                value={categorySearch}
+                onChange={(event) => {
+                  setCategorySearch(event.target.value);
+                  setCategoryPageIndex(0);
+                }}
+                icon={<Search size={15} aria-hidden="true" />}
               />
-              <TextField
-                label={t("serviceTemplates.fields.name")}
-                value={categoryForm.name}
-                onChange={(e) =>
-                  setCategoryForm((prev) => ({ ...prev, name: e.target.value }))
-                }
-              />
-              <TextField
-                label={t("serviceTemplates.fields.description")}
-                value={categoryForm.description}
-                onChange={(e) =>
-                  setCategoryForm((prev) => ({ ...prev, description: e.target.value }))
-                }
-              />
-              <TextField
-                label={t("serviceTemplates.fields.displayOrder")}
-                type="number"
-                value={String(categoryForm.displayOrder)}
-                onChange={(e) =>
-                  setCategoryForm((prev) => ({
-                    ...prev,
-                    displayOrder: Number(e.target.value) || 0,
-                  }))
-                }
-              />
+              <Select
+                className={styles.categoryStatusFilter}
+                label={t("serviceTemplates.fields.status")}
+                value={categoryStatusFilter}
+                onChange={(event) => {
+                  setCategoryStatusFilter(event.target.value as typeof categoryStatusFilter);
+                  setCategoryPageIndex(0);
+                }}
+              >
+                <option value="all">{t("common.all")}</option>
+                <option value="active">{t("common.active")}</option>
+                <option value="inactive">{t("serviceTemplates.categoryCatalog.inactiveLabel")}</option>
+              </Select>
+              {(categorySearch || categoryStatusFilter !== "all") && (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setCategorySearch("");
+                    setCategoryStatusFilter("all");
+                    setCategoryPageIndex(0);
+                  }}
+                >
+                  <X size={14} aria-hidden="true" />
+                  {t("serviceTemplates.filters.reset")}
+                </Button>
+              )}
             </div>
           </div>
 
-          <div className={`${styles.section} ${styles.tableSection}`}>
+          <div className={`${styles.section} ${styles.tableSection} ${styles.categoryTableSection}`}>
+            <div className={styles.categoryTableHeader}>
+              <span>
+                {t("serviceTemplates.categoryCatalog.resultCount", {
+                  filtered: filteredServiceCategories.length,
+                  total: serviceCategories.length,
+                })}
+              </span>
+            </div>
             {showCategoryTableSkeleton ? (
-              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
-                <div className={styles.tableSkeletonHeader}>
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-                </div>
-                <div className={styles.tableSkeletonRows}>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className={styles.tableSkeletonRow}>
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-                    </div>
-                  ))}
-                </div>
+              <PrpServiceLoader />
+            ) : serviceCategoriesError ? (
+              <div className={styles.categoryError} role="alert">
+                <span>{t("serviceTemplates.categoryCatalog.loadFailed")}</span>
+                <Button
+                  variant="secondary"
+                  onClick={() => void dispatch(fetchServiceCategories())}
+                >
+                  {t("serviceTemplates.categoryCatalog.retryLabel")}
+                </Button>
               </div>
             ) : (
               <DataTable
-                data={serviceCategories ?? []}
+                data={filteredServiceCategories}
+                pageSize={categoryPageSize}
+                pageSizeOptions={[10, 20, 50]}
+                pageSizeLabel={t("serviceTemplates.categoryCatalog.pageSizeLabel")}
+                pageIndex={categoryPageIndex}
+                onPaginationChange={setCategoryPageIndex}
+                onPageSizeChange={(pageSize) => {
+                  setCategoryPageSize(pageSize);
+                  setCategoryPageIndex(0);
+                }}
+                paginationRangeLabel={({ from, to, total }) =>
+                  total > 0
+                    ? t("serviceTemplates.categoryCatalog.rangeLabel", { from, to, total })
+                    : null
+                }
+                noResultsText={t("serviceTemplates.categoryCatalog.emptyState")}
                 columns={[
-                {
-                  header: t("serviceTemplates.fields.code"),
-                  accessorKey: "code",
-                },
-                {
-                  header: t("serviceTemplates.fields.name"),
-                  accessorKey: "name",
-                },
-                {
-                  header: t("serviceTemplates.fields.description"),
-                  accessorKey: "description",
-                  cell: ({ row }) => row.original.description || "-",
-                },
-                {
-                  header: t("serviceTemplates.fields.displayOrder"),
-                  accessorKey: "displayOrder",
-                },
-                {
-                  header: t("serviceTemplates.fields.status"),
-                  accessorKey: "isActive",
-                  cell: ({ getValue }) =>
-                    getValue<boolean>() ? t("common.active") : t("common.inactive"),
-                },
-                {
-                  header: t("common.actions"),
-                  accessorKey: "id",
-                  cell: ({ row }) => (
-                    <div className={styles.actions}>
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        onClick={() => handleEditCategory(row.original)}
-                      >
-                        {t("common.edit")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        onClick={() =>
-                          dispatch(
-                            toggleServiceCategoryActive({
-                              id: row.original.id,
-                              isActive: !row.original.isActive,
-                            }),
-                          )
-                        }
-                      >
-                        {row.original.isActive ? t("actions.deactivate") : t("actions.activate")}
-                      </Button>
-                    </div>
-                  ),
-                },
+                  {
+                    header: t("serviceTemplates.fields.code"),
+                    accessorKey: "code",
+                  },
+                  {
+                    header: t("serviceTemplates.categoryCatalog.nameLabel"),
+                    accessorKey: "name",
+                    cell: ({ row }) => (
+                      <div className={styles.categoryNameCell}>
+                        <strong>{row.original.name}</strong>
+                        <div className={styles.categoryNameMeta}>
+                          {row.original.description && <span>{row.original.description}</span>}
+                          <span>
+                            {t("serviceTemplates.categoryCatalog.displayOrderLabel", {
+                              order: row.original.displayOrder,
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    header: t("serviceTemplates.fields.status"),
+                    accessorKey: "isActive",
+                    cell: ({ row }) =>
+                      <span className={`${styles.categoryStatus} ${row.original.isActive !== false ? styles.categoryStatusActive : styles.categoryStatusInactive}`}>
+                        {row.original.isActive !== false
+                          ? t("common.active")
+                          : t("serviceTemplates.categoryCatalog.inactiveLabel")}
+                      </span>,
+                  },
+                  {
+                    header: t("common.actions"),
+                    accessorKey: "id",
+                    cell: ({ row }) => (
+                      <div className={styles.serviceRowActions}>
+                        <button
+                          type="button"
+                          className={styles.serviceRowAction}
+                          onClick={() => handleEditCategory(row.original)}
+                          aria-label={t("common.edit")}
+                          title={t("common.edit")}
+                        >
+                          <Pencil size={14} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.serviceRowAction}
+                          onClick={() =>
+                            void dispatch(
+                              toggleServiceCategoryActive({
+                                id: row.original.id,
+                                isActive: !row.original.isActive,
+                              }),
+                            )
+                          }
+                          aria-label={row.original.isActive ? t("actions.deactivate") : t("actions.activate")}
+                          title={row.original.isActive ? t("actions.deactivate") : t("actions.activate")}
+                          aria-pressed={row.original.isActive}
+                        >
+                          <Power size={14} aria-hidden="true" />
+                        </button>
+                      </div>
+                    ),
+                  },
                 ]}
               />
             )}
           </div>
+
+          <FormDrawer
+            open={isCategoryFormOpen}
+            onOpenChange={handleCategoryOpenChange}
+            eyebrow={t("serviceTemplates.tabs.categories")}
+            title={categoryForm.id
+              ? t("serviceTemplates.categoryCatalog.editTitle")
+              : t("serviceTemplates.categoryCatalog.addTitle")}
+            titleId="service-category-drawer-title"
+            closeLabel={t("common.close")}
+            icon={<Wrench size={20} />}
+            footer={
+              <>
+                <Button
+                  variant="secondary"
+                  onClick={handleCancelCategory}
+                  disabled={isCategorySaving}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button
+                  onClick={() => void handleCreateOrUpdateCategory()}
+                  disabled={isCategorySaving}
+                >
+                  {isCategorySaving
+                    ? t("common.loading")
+                    : categoryForm.id
+                      ? t("common.save")
+                      : t("common.add")}
+                </Button>
+              </>
+            }
+          >
+            <div className={styles.categoryDrawerForm}>
+              <div className={styles.gridTwo}>
+                <TextField
+                  label={t("serviceTemplates.fields.code")}
+                  value={categoryForm.code}
+                  onChange={(event) =>
+                    setCategoryForm((prev) => ({ ...prev, code: event.target.value }))
+                  }
+                  disabled={Boolean(categoryForm.id) || isCategorySaving}
+                />
+                <TextField
+                  label={t("serviceTemplates.categoryCatalog.nameLabel")}
+                  value={categoryForm.name}
+                  onChange={(event) =>
+                    setCategoryForm((prev) => ({ ...prev, name: event.target.value }))
+                  }
+                  disabled={isCategorySaving}
+                />
+              </div>
+              <Textarea
+                label={t("serviceTemplates.fields.description")}
+                value={categoryForm.description}
+                onChange={(event) =>
+                  setCategoryForm((prev) => ({ ...prev, description: event.target.value }))
+                }
+                rows={3}
+                disabled={isCategorySaving}
+              />
+              <TextField
+                label={t("serviceTemplates.fields.displayOrder")}
+                type="number"
+                min="0"
+                step="1"
+                value={String(categoryForm.displayOrder)}
+                onChange={(event) =>
+                  setCategoryForm((prev) => ({
+                    ...prev,
+                    displayOrder: Number(event.target.value) || 0,
+                  }))
+                }
+                disabled={isCategorySaving}
+              />
+            </div>
+          </FormDrawer>
         </>
       )}
 
@@ -1875,7 +2222,7 @@ export const ServiceTemplatePage = () => {
             </div>
 
             {isEmployeesLoading ? (
-              <div className={styles.loading}>{t("common.loading")}</div>
+              <PrpServiceLoader />
             ) : (
               <DataTable
                 data={employees ?? []}
@@ -2040,174 +2387,271 @@ export const ServiceTemplatePage = () => {
 
       {activeTab === "services" && (
         <>
-          <div className={styles.section}>
-            <div className={styles.header}>
-              <h3 className={styles.title}>{t("serviceTemplates.tabs.services")}</h3>
-              <div className={styles.actions}>
-                <Button onClick={handleCreateOrUpdateService}>
-                  {serviceForm.id ? t("serviceTemplates.actions.update") : t("common.add")}
+          <div className={styles.serviceCatalogPage}>
+            <SectionHeader
+              title={t("serviceTemplates.tabs.services")}
+              icon={<Wrench size={17} color="#d2bf8a" aria-hidden="true" />}
+              actions={
+                <Button
+                  className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+                  onClick={handleNewService}
+                >
+                  <Plus size={15} aria-hidden="true" />
+                  {t("serviceTemplates.actions.addService")}
                 </Button>
-                {serviceForm.id && (
-                  <Button variant="secondary" onClick={handleCancelService}>
-                    {t("common.cancel")}
-                  </Button>
-                )}
-              </div>
+              }
+            />
+
+            <div className={styles.serviceCatalogToolbar}>
+              <TextField
+                className={styles.serviceCatalogSearch}
+                label={t("serviceTemplates.serviceCatalog.searchLabel")}
+                placeholder={t("serviceTemplates.serviceCatalog.searchPlaceholder")}
+                value={serviceSearch}
+                onChange={(event) => setServiceSearch(event.target.value)}
+                icon={<Search size={15} aria-hidden="true" />}
+              />
             </div>
-            <div className={styles.gridTwo}>
-              <TextField
-                label={t("serviceTemplates.fields.code")}
-                value={serviceForm.code}
-                onChange={(e) =>
-                  setServiceForm((prev) => ({ ...prev, code: e.target.value }))
-                }
-                disabled={Boolean(serviceForm.id)}
-              />
-              <TextField
-                label={t("serviceTemplates.fields.name")}
-                value={serviceForm.name}
-                onChange={(e) =>
-                  setServiceForm((prev) => ({ ...prev, name: e.target.value }))
-                }
-              />
-              <TextField
-                label={t("serviceTemplates.fields.description")}
-                value={serviceForm.description}
-                onChange={(e) =>
-                  setServiceForm((prev) => ({ ...prev, description: e.target.value }))
-                }
-              />
-              <Select
-                label={t("serviceTemplates.fields.serviceCategory")}
-                value={String(serviceForm.serviceCategoryId || "")}
-                onChange={(e) =>
-                  setServiceForm((prev) => ({
-                    ...prev,
-                    serviceCategoryId: Number(e.target.value) || 0,
-                  }))
-                }
-                placeholder={t("common.select")}
+
+            <div className={styles.serviceCatalogTable}>
+              <div className={styles.serviceCatalogTableHeader}>
+                <h3>{t("serviceTemplates.serviceCatalog.listTitle")}</h3>
+                <span>
+                  {filteredServiceCatalog.length} / {serviceCatalog?.length ?? 0}
+                </span>
+              </div>
+
+              {showServiceTableSkeleton ? (
+                <PrpServiceLoader />
+              ) : (
+                <DataTable
+                  data={filteredServiceCatalog}
+                  columns={[
+                    { header: t("serviceTemplates.fields.code"), accessorKey: "code" },
+                    { header: t("serviceTemplates.fields.name"), accessorKey: "name" },
+                    {
+                      header: t("serviceTemplates.fields.description"),
+                      accessorKey: "description",
+                      cell: ({ row }) => row.original.description || "-",
+                    },
+                    {
+                      header: t("serviceTemplates.fields.serviceCategory"),
+                      accessorKey: "serviceCategoryName",
+                      cell: ({ row }) =>
+                        row.original.serviceCategoryName || `#${row.original.serviceCategoryId}`,
+                    },
+                    { header: t("serviceTemplates.table.internalCost"), accessorKey: "internalCost" },
+                    {
+                      header: t("serviceTemplates.fields.estimatedDurationMinutes"),
+                      accessorKey: "estimatedDurationMinutes",
+                    },
+                    {
+                      header: t("serviceTemplates.fields.status"),
+                      accessorKey: "isActive",
+                      cell: ({ getValue }) =>
+                        getValue<boolean>() ? t("common.active") : t("common.inactive"),
+                    },
+                    {
+                      header: t("serviceTemplates.table.actions"),
+                      accessorKey: "id",
+                      cell: ({ row }) => (
+                        <div className={styles.serviceRowActions}>
+                          <button
+                            type="button"
+                            className={styles.serviceRowAction}
+                            onClick={() => handleViewService(row.original)}
+                            aria-label={t("serviceTemplates.serviceCatalog.view")}
+                            title={t("serviceTemplates.serviceCatalog.view")}
+                          >
+                            <Eye size={15} aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.serviceRowAction}
+                            onClick={() => handleEditService(row.original)}
+                            aria-label={t("common.edit")}
+                            title={t("common.edit")}
+                          >
+                            <Pencil size={14} aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            className={`${styles.serviceRowAction} ${row.original.isActive ? styles.serviceDeactivate : styles.serviceActivate}`}
+                            onClick={() =>
+                              void dispatch(
+                                toggleServiceCatalogActive({
+                                  id: row.original.id,
+                                  isActive: !row.original.isActive,
+                                }),
+                              )
+                            }
+                            aria-label={row.original.isActive ? t("actions.deactivate") : t("actions.activate")}
+                            title={row.original.isActive ? t("actions.deactivate") : t("actions.activate")}
+                          >
+                            <Power size={14} aria-hidden="true" />
+                          </button>
+                        </div>
+                      ),
+                    },
+                  ]}
+                  isLoading={false}
+                  noResultsText={t("serviceTemplates.serviceCatalog.emptyState")}
+                />
+              )}
+            </div>
+          </div>
+
+          {isServiceFormOpen &&
+            createPortal(
+              <div
+                className={styles.serviceDrawerBackdrop}
+                onMouseDown={handleCancelService}
               >
-                <option value="">{t("common.select")}</option>
-                {rootServiceCategories.map((item: ServiceCategoryItem) => (
-                  <option key={item.id} value={item.id}>
-                    {item.code}
-                  </option>
-                ))}
-              </Select>
-
-              <TextField
-                label={t("serviceTemplates.table.internalCost")}
-                type="number"
-                value={toDisplayNumber(serviceForm.internalCost)}
-                onChange={(e) =>
-                  setServiceForm((prev) => ({
-                    ...prev,
-                    internalCost: Number(e.target.value) || 0,
-                  }))
-                }
-              />
-              <TextField
-                label={t("serviceTemplates.fields.estimatedDurationMinutes")}
-                type="number"
-                value={toDisplayNumber(serviceForm.estimatedDurationMinutes)}
-                onChange={(e) =>
-                  setServiceForm((prev) => ({
-                    ...prev,
-                    estimatedDurationMinutes: Number(e.target.value) || 0,
-                  }))
-                }
-              />
-            </div>
-          </div>
-
-          <div className={`${styles.section} ${styles.tableSection}`}>
-            {showServiceTableSkeleton ? (
-              <div className={styles.tableSkeleton} aria-busy="true" aria-live="polite">
-                <div className={styles.tableSkeletonHeader}>
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-                </div>
-                <div className={styles.tableSkeletonRows}>
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div key={index} className={styles.tableSkeletonRow}>
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
-                      <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                <aside
+                  className={styles.serviceDrawer}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="service-catalog-drawer-title"
+                  onMouseDown={(event) => event.stopPropagation()}
+                >
+                  <header className={styles.serviceDrawerHeader}>
+                    <div className={styles.serviceDrawerIcon} aria-hidden="true">
+                      <Wrench size={20} />
                     </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <DataTable
-                data={serviceCatalog ?? []}
-                columns={[
-                  {
-                    header: t("serviceTemplates.fields.code"),
-                    accessorKey: "code",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.name"),
-                    accessorKey: "name",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.description"),
-                    accessorKey: "description",
-                    cell: ({ row }) => row.original.description || "-",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.serviceCategory"),
-                    accessorKey: "serviceCategoryName",
-                    cell: ({ row }) =>
-                      row.original.serviceCategoryName || `#${row.original.serviceCategoryId}`,
-                  },
-                  {
-                    header: t("serviceTemplates.table.internalCost"),
-                    accessorKey: "internalCost",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.estimatedDurationMinutes"),
-                    accessorKey: "estimatedDurationMinutes",
-                  },
-                  {
-                    header: t("serviceTemplates.fields.status"),
-                    accessorKey: "isActive",
-                    cell: ({ getValue }) =>
-                      getValue<boolean>() ? t("common.active") : t("common.inactive"),
-                  },
-                  {
-                    header: t("common.actions"),
-                    accessorKey: "id",
-                    cell: ({ row }) => (
-                      <div className={styles.actions}>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() => handleEditService(row.original)}
-                        >
-                          {t("common.edit")}
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() =>
-                            dispatch(
-                              toggleServiceCatalogActive({
-                                id: row.original.id,
-                                isActive: !row.original.isActive,
-                              }),
-                            )
+                    <div className={styles.serviceDrawerHeaderCopy}>
+                      <span>{t("serviceTemplates.tabs.services")}</span>
+                      <h2 id="service-catalog-drawer-title">
+                        {isServiceViewOnly
+                          ? t("serviceTemplates.serviceCatalog.viewTitle")
+                          : serviceForm.id
+                            ? t("serviceTemplates.serviceCatalog.editTitle")
+                            : t("serviceTemplates.serviceCatalog.addTitle")}
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.serviceDrawerClose}
+                      onClick={handleCancelService}
+                      aria-label={t("common.close")}
+                      title={t("common.close")}
+                    >
+                      <X size={18} />
+                    </button>
+                  </header>
+
+                  <div className={styles.serviceDrawerBody}>
+                    <div className={styles.serviceDrawerSectionHeading}>
+                      <BadgeCheck size={15} aria-hidden="true" />
+                      <span>{t("serviceTemplates.serviceCatalog.details")}</span>
+                    </div>
+
+                    <div className={styles.serviceDrawerGrid}>
+                      <TextField
+                        label={t("serviceTemplates.fields.code")}
+                        value={serviceForm.code}
+                        onChange={(event) =>
+                          setServiceForm((previous) => ({ ...previous, code: event.target.value }))
+                        }
+                        icon={<Hash size={15} aria-hidden="true" />}
+                        disabled={Boolean(serviceForm.id) || isServiceViewOnly}
+                      />
+                      <TextField
+                        label={t("serviceTemplates.fields.name")}
+                        value={serviceForm.name}
+                        onChange={(event) =>
+                          setServiceForm((previous) => ({ ...previous, name: event.target.value }))
+                        }
+                        icon={<Wrench size={15} aria-hidden="true" />}
+                        disabled={isServiceViewOnly}
+                      />
+                      <div className={styles.serviceDrawerWide}>
+                        <label className={styles.serviceDrawerLabel}>
+                          <FileText size={14} aria-hidden="true" />
+                          <span>{t("serviceTemplates.fields.description")}</span>
+                        </label>
+                        <Textarea
+                          value={serviceForm.description}
+                          onChange={(event) =>
+                            setServiceForm((previous) => ({ ...previous, description: event.target.value }))
                           }
-                        >
-                          {row.original.isActive ? t("actions.deactivate") : t("actions.activate")}
-                        </Button>
+                          rows={3}
+                          resizable={false}
+                          disabled={isServiceViewOnly}
+                        />
                       </div>
-                    ),
-                  },
-                ]}
-              />
+                      <Select
+                        label={t("serviceTemplates.fields.serviceCategory")}
+                        value={String(serviceForm.serviceCategoryId || "")}
+                        onChange={(event) =>
+                          setServiceForm((previous) => ({
+                            ...previous,
+                            serviceCategoryId: Number(event.target.value) || 0,
+                          }))
+                        }
+                        placeholder={t("common.select")}
+                        disabled={isServiceViewOnly}
+                      >
+                        <option value="">{t("common.select")}</option>
+                        {(isServiceViewOnly ? serviceCategories : rootServiceCategories).map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.code}
+                          </option>
+                        ))}
+                      </Select>
+                      <TextField
+                        label={t("serviceTemplates.table.internalCost")}
+                        type="number"
+                        value={toDisplayNumber(serviceForm.internalCost)}
+                        onChange={(event) =>
+                          setServiceForm((previous) => ({
+                            ...previous,
+                            internalCost: Number(event.target.value) || 0,
+                          }))
+                        }
+                        icon={<CircleDollarSign size={15} aria-hidden="true" />}
+                        disabled={isServiceViewOnly}
+                      />
+                      <TextField
+                        label={t("serviceTemplates.fields.estimatedDurationMinutes")}
+                        type="number"
+                        value={toDisplayNumber(serviceForm.estimatedDurationMinutes)}
+                        onChange={(event) =>
+                          setServiceForm((previous) => ({
+                            ...previous,
+                            estimatedDurationMinutes: Number(event.target.value) || 0,
+                          }))
+                        }
+                        icon={<Clock3 size={15} aria-hidden="true" />}
+                        disabled={isServiceViewOnly}
+                      />
+                    </div>
+                  </div>
+
+                  <footer className={styles.serviceDrawerFooter}>
+                    <Button
+                      variant="secondary"
+                      className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
+                      onClick={handleCancelService}
+                      disabled={isServiceCatalogLoading}
+                    >
+                      {isServiceViewOnly ? t("common.close") : t("common.cancel")}
+                    </Button>
+                    {!isServiceViewOnly && (
+                      <Button
+                        className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+                        onClick={() => void handleCreateOrUpdateService()}
+                        disabled={isServiceCatalogLoading}
+                      >
+                        {isServiceCatalogLoading
+                          ? t("common.loading")
+                          : t("common.save")}
+                      </Button>
+                    )}
+                  </footer>
+                </aside>
+              </div>,
+              document.body,
             )}
-          </div>
         </>
       )}
 

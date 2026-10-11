@@ -3,6 +3,7 @@ import {
   type ColumnDef,
   type Row,
 } from "@tanstack/react-table";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import i18next from "i18next";
 
 // types
@@ -43,8 +44,12 @@ export const getShopProductColumns =
           type="button"
           className={styles.productIdButton}
           onClick={() => onProductClick(info.row)}
+          aria-expanded={info.row.getIsExpanded()}
+          aria-label={i18next.t("shops.products.toggleDetails", { id: info.getValue() || "-" })}
+          title={i18next.t("shops.products.toggleDetails", { id: info.getValue() || "-" })}
         >
-          #{info.getValue() || "-"}
+          <span className={styles.productIdText}>#{info.getValue() || "-"}</span>
+          {info.row.getIsExpanded() ? <ChevronDown size={13} aria-hidden="true" /> : <ChevronRight size={13} aria-hidden="true" />}
         </button>
       ),
     }),
@@ -55,7 +60,7 @@ export const getShopProductColumns =
     }),
     columnHelper.accessor("salePrice", {
       header: i18next.t("shops.products.columns.salePrice"),
-      cell: (info) => info.getValue().toFixed(2),
+      cell: (info) => Number(info.getValue() || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     }),
     columnHelper.accessor("quantity", {
       header: i18next.t("shops.products.columns.quantity"),

@@ -1,7 +1,68 @@
 .productsContent {
-  padding: 24px;
+  min-width: 0;
   width: 100%;
-  overflow-x: auto;
+  overflow: hidden;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.2);
+}
+
+.productsContent :global(table) {
+  min-width: 840px;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.productsContent :global(th) {
+  height: 44px;
+  padding: 10px 14px;
+  color: #d2bf8a;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.2);
+  background: rgba(196, 169, 106, 0.07) !important;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.productsContent :global(td) {
+  height: 52px;
+  padding: 10px 14px;
+  color: #e3e5de;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
+  background: transparent;
+  font-size: 13px;
+}
+
+.productsContent :global(tbody tr) {
+  transition: background-color 150ms ease;
+}
+
+.productsContent :global(tbody tr:hover) {
+  background: rgba(196, 169, 106, 0.055) !important;
+}
+
+.productsContent :global(tbody tr:last-child td) {
+  border-bottom: 0 !important;
+}
+
+.productsContent :global([class*="tableFooter"]) {
+  padding: 12px 14px;
+  color: #aab1a9;
+  border-top: 1px solid rgba(196, 169, 106, 0.14);
+  background: rgba(9, 13, 10, 0.45);
+  font-size: 12px;
+}
+
+.productsContent :global([class*="tableFooter"] button) {
+  color: #e5d29a;
+  border-color: rgba(196, 169, 106, 0.24);
+  border-radius: 5px;
+}
+
+.productsContent :global([class*="tableFooter"] button:hover:not(:disabled)) {
+  border-color: rgba(196, 169, 106, 0.55);
+  background: rgba(196, 169, 106, 0.08);
 }
 
 .productsContentMobile {
@@ -130,12 +191,6 @@
 }
 
 @media (max-width: 768px) {
-  .productsContent {
-    padding: 16px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
   .loadingContainer,
   .emptyContainer {
     padding: 32px 16px;

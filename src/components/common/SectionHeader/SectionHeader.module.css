@@ -44,6 +44,10 @@
   text-transform: uppercase;
 }
 
+:global(body.settings-theme) .eyebrow {
+  text-transform: none;
+}
+
 .financeHeader .title {
   color: #eee9db;
   font-size: 15px;

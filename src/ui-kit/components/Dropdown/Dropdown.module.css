@@ -95,6 +95,34 @@
   background: transparent;
 }
 
+:global(body.settings-theme) .dropdownContent {
+  color: #f2f0e8;
+  border-color: rgba(196, 169, 106, 0.28);
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(121, 102, 57, 0.11), transparent 38%),
+    linear-gradient(165deg, #171d18 0%, #111612 52%, #0e1210 100%);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+}
+
+:global(body.settings-theme) .sheetContent {
+  color: #f2f0e8;
+  background: linear-gradient(165deg, #171d18 0%, #111612 52%, #0e1210 100%);
+}
+
+:global(body.settings-theme) .sheetHeader {
+  border-bottom-color: rgba(196, 169, 106, 0.2);
+  background: #171d18;
+}
+
+:global(body.settings-theme) .sheetTitle {
+  color: #eee9db;
+}
+
+:global(body.settings-theme) .closeButton {
+  color: #d2bf8a;
+}
+
 @keyframes slideUpFullScreen {
   from {
     transform: translateY(100%);

@@ -1,18 +1,10 @@
 .shopsPage {
-  display: flex;
-  gap: 0;
-  background-color: var(--color-black-1);
-  border-radius: 8px;
-  margin-top: 24px;
-  overflow: hidden;
-  min-height: calc(100vh - 270px);
+  min-width: 0;
+  margin-top: 14px;
 }
 
 @media (max-width: 768px) {
   .shopsPage {
-    padding: 0;
-    margin-top: 16px;
-    overflow-x: auto;
-    overflow-y: visible;
+    margin-top: 10px;
   }
 }

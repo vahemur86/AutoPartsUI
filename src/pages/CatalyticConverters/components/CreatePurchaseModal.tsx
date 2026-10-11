@@ -1,9 +1,22 @@
 import { useEffect, useMemo, useState, type FC } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import {
+  BadgeCheck,
+  CalendarClock,
+  CircleDollarSign,
+  Package,
+  Plus,
+  Search,
+  ShoppingCart,
+  UserRound,
+  X,
+} from "lucide-react";
 
 // ui-kit
-import { Button, Modal, Select, TextField, DatePicker } from "@/ui-kit";
+import { Button, Select, TextField, DatePicker } from "@/ui-kit";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -101,6 +114,24 @@ export const CreatePurchaseModal: FC<CreatePurchaseModalProps> = ({
     return () => window.clearTimeout(timeoutId);
   }, [open, supplierSearch, t]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isSubmitting && !isSupplierModalOpen) {
+        onOpenChange(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isSubmitting, isSupplierModalOpen, onOpenChange, open]);
+
   const totalAmount =
     (Number(quantity) || 0) * (purchasePrice === "" ? 0 : Number(purchasePrice));
 
@@ -193,149 +224,207 @@ export const CreatePurchaseModal: FC<CreatePurchaseModalProps> = ({
 
   return (
     <>
-      <Modal
-        open={open}
-        onOpenChange={onOpenChange}
-        title={t("catalyticConverters.purchase.title")}
-        footer={
-          <div className={styles.modalFooter}>
-            <Button
-              variant="secondary"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button onClick={handleSave} disabled={isSubmitting}>
-              {isSubmitting ? t("common.loading") : t("common.add")}
-            </Button>
-          </div>
-        }
-      >
-        <div className={styles.formGrid}>
-          <div className={styles.autocompleteField}>
-            <TextField
-              label={t("catalyticConverters.purchase.form.supplier")}
-              value={supplierSearch}
-              onFocus={() => setIsSupplierDropdownOpen(true)}
-              onBlur={() => {
-                window.setTimeout(() => setIsSupplierDropdownOpen(false), 150);
-              }}
-              onChange={(e) => {
-                setSupplierSearch(e.target.value);
-                setSupplierId("");
-                setIsSupplierDropdownOpen(true);
-              }}
-              placeholder={t(
-                "catalyticConverters.purchase.form.supplierSearchPlaceholder",
-              )}
-              helperText={
-                selectedSupplier
-                  ? selectedSupplier.displayName
-                  : t("catalyticConverters.purchase.form.supplierSearch")
-              }
-            />
-
-            {isSupplierDropdownOpen && (
-              <div className={styles.autocompleteDropdown}>
-                {isLoadingSuppliers ? (
-                  <div className={styles.autocompleteEmpty}>
-                    {t("common.loading")}
-                  </div>
-                ) : supplierOptions.length > 0 ? (
-                  supplierOptions.map((supplier) => (
-                    <button
-                      key={supplier.id}
-                      type="button"
-                      className={styles.autocompleteOption}
-                      onMouseDown={() => {
-                        setSupplierId(String(supplier.id));
-                        setSupplierSearch(supplier.displayName);
-                        setIsSupplierDropdownOpen(false);
-                      }}
-                    >
-                      <span className={styles.autocompleteOptionPrimary}>
-                        {supplier.fullName}
-                      </span>
-                      <span className={styles.autocompleteOptionMeta}>
-                        {supplier.phone}
-                      </span>
-                    </button>
-                  ))
-                ) : (
-                  <div className={styles.autocompleteEmpty}>
-                    {t("catalyticSuppliers.emptyState")}
-                  </div>
-                )}
+      {open && createPortal(
+        <div
+          className={styles.drawerBackdrop}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !isSubmitting) {
+              onOpenChange(false);
+            }
+          }}
+        >
+          <aside
+            className={styles.converterDrawer}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="purchase-drawer-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className={styles.drawerHeader}>
+              <div className={styles.drawerIcon} aria-hidden="true">
+                <ShoppingCart size={20} />
               </div>
-            )}
-          </div>
+              <div className={styles.drawerHeaderCopy}>
+                <span>{t("catalyticConverters.title")}</span>
+                <h2 id="purchase-drawer-title">
+                  {t("catalyticConverters.purchase.title")}
+                </h2>
+              </div>
+              <button
+                type="button"
+                className={styles.drawerClose}
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+                aria-label={t("common.close")}
+                title={t("common.close")}
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </header>
 
-          <TextField
-            label={t("catalyticConverters.purchase.form.quantity")}
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
+            <div className={styles.drawerBody}>
+              <div className={styles.drawerSectionHeading}>
+                <BadgeCheck size={15} aria-hidden="true" />
+                <span>{t("catalyticConverters.purchase.title")}</span>
+              </div>
 
-          <TextField
-            label={t("catalyticConverters.purchase.form.purchasePrice")}
-            type="number"
-            value={purchasePrice}
-            onChange={(e) => setPurchasePrice(e.target.value)}
-          />
+              <div className={`${styles.formGrid} ${styles.purchaseFormGrid}`}>
+                <div className={styles.autocompleteField}>
+                  <TextField
+                    label={t("catalyticConverters.purchase.form.supplier")}
+                    value={supplierSearch}
+                    onFocus={() => setIsSupplierDropdownOpen(true)}
+                    onBlur={() => {
+                      window.setTimeout(() => setIsSupplierDropdownOpen(false), 150);
+                    }}
+                    onChange={(event) => {
+                      setSupplierSearch(event.target.value);
+                      setSupplierId("");
+                      setIsSupplierDropdownOpen(true);
+                    }}
+                    placeholder={t("catalyticConverters.purchase.form.supplierSearchPlaceholder")}
+                    helperText={
+                      selectedSupplier
+                        ? selectedSupplier.displayName
+                        : t("catalyticConverters.purchase.form.supplierSearch")
+                    }
+                    icon={<Search size={15} aria-hidden="true" />}
+                    disabled={isSubmitting}
+                  />
 
-          <TextField
-            label={t("catalyticConverters.purchase.form.totalAmount")}
-            value={totalAmount.toFixed(2)}
-            readOnly
-            disabled
-          />
+                  {isSupplierDropdownOpen && (
+                    <div className={styles.autocompleteDropdown}>
+                      {isLoadingSuppliers ? (
+                        <div className={styles.autocompleteEmpty}>
+                          {t("common.loading")}
+                        </div>
+                      ) : supplierOptions.length > 0 ? (
+                        supplierOptions.map((supplier) => (
+                          <button
+                            key={supplier.id}
+                            type="button"
+                            className={styles.autocompleteOption}
+                            onMouseDown={() => {
+                              setSupplierId(String(supplier.id));
+                              setSupplierSearch(supplier.displayName);
+                              setIsSupplierDropdownOpen(false);
+                            }}
+                          >
+                            <span className={styles.autocompleteOptionPrimary}>
+                              {supplier.fullName}
+                            </span>
+                            <span className={styles.autocompleteOptionMeta}>
+                              {supplier.phone}
+                            </span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className={styles.autocompleteEmpty}>
+                          {t("catalyticSuppliers.emptyState")}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-          <Select
-            label={t("catalyticConverters.purchase.form.warehouse")}
-            value={warehouseId}
-            onChange={(e) => setWarehouseId(e.target.value)}
-          >
-            <option value="">{t("common.select")}</option>
-            {warehouses.map((warehouse) => (
-              <option key={warehouse.id} value={warehouse.id}>
-                {warehouse.code}
-              </option>
-            ))}
-          </Select>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
+                    onClick={() => setIsSupplierModalOpen(true)}
+                    disabled={isSubmitting}
+                  >
+                    <Plus size={14} aria-hidden="true" />
+                    {t("catalyticSuppliers.actions.create")}
+                  </Button>
+                </div>
 
-          <div>
-            <label style={{ display: "block", marginBottom: 6, fontSize: 13 }}>
-              {t("catalyticConverters.purchase.form.purchasedAt")}
-            </label>
-            <DatePicker
-              selected={purchasedAt}
-              onChange={(date) => setPurchasedAt(date)}
-              showTimeSelect
-              dateFormat="MM/dd/yyyy HH:mm"
-            />
-          </div>
+                <TextField
+                  label={t("catalyticConverters.purchase.form.quantity")}
+                  type="number"
+                  value={quantity}
+                  onChange={(event) => setQuantity(event.target.value)}
+                  icon={<Package size={15} aria-hidden="true" />}
+                  disabled={isSubmitting}
+                />
 
-          <TextField
-            label={t("catalyticConverters.purchase.form.operator")}
-            value={authUser?.username ?? "-"}
-            readOnly
-            disabled
-          />
-        </div>
+                <TextField
+                  label={t("catalyticConverters.purchase.form.purchasePrice")}
+                  type="number"
+                  value={purchasePrice}
+                  onChange={(event) => setPurchasePrice(event.target.value)}
+                  icon={<CircleDollarSign size={15} aria-hidden="true" />}
+                  disabled={isSubmitting}
+                />
 
-        <div className={styles.filtersActions} style={{ marginTop: 16 }}>
-          <Button
-            variant="secondary"
-            size="small"
-            onClick={() => setIsSupplierModalOpen(true)}
-            disabled={isSubmitting}
-          >
-            {t("catalyticSuppliers.actions.create")}
-          </Button>
-        </div>
-      </Modal>
+                <TextField
+                  label={t("catalyticConverters.purchase.form.totalAmount")}
+                  value={totalAmount.toFixed(2)}
+                  readOnly
+                  disabled
+                  icon={<CircleDollarSign size={15} aria-hidden="true" />}
+                />
+
+                <Select
+                  label={t("catalyticConverters.purchase.form.warehouse")}
+                  value={warehouseId}
+                  onChange={(event) => setWarehouseId(event.target.value)}
+                  disabled={isSubmitting}
+                >
+                  <option value="">{t("common.select")}</option>
+                  {warehouses.map((warehouse) => (
+                    <option key={warehouse.id} value={warehouse.id}>
+                      {warehouse.code}
+                    </option>
+                  ))}
+                </Select>
+
+                <div className={styles.purchaseDateField}>
+                  <label className={styles.purchaseDateLabel}>
+                    <CalendarClock size={14} aria-hidden="true" />
+                    <span>{t("catalyticConverters.purchase.form.purchasedAt")}</span>
+                  </label>
+                  <DatePicker
+                    selected={purchasedAt}
+                    onChange={(date) => setPurchasedAt(date)}
+                    showTimeSelect
+                    dateFormat="MM/dd/yyyy HH:mm"
+                  />
+                </div>
+
+                <TextField
+                  label={t("catalyticConverters.purchase.form.operator")}
+                  value={authUser?.username ?? "-"}
+                  readOnly
+                  disabled
+                  icon={<UserRound size={15} aria-hidden="true" />}
+                />
+
+              </div>
+            </div>
+
+            <footer className={styles.drawerFooter}>
+              <Button
+                variant="secondary"
+                className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                <X size={15} aria-hidden="true" />
+                {t("common.cancel")}
+              </Button>
+              <Button
+                className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+                onClick={handleSave}
+                disabled={isSubmitting}
+              >
+                <ShoppingCart size={15} aria-hidden="true" />
+                {isSubmitting ? t("common.loading") : t("common.add")}
+              </Button>
+            </footer>
+          </aside>
+        </div>,
+        document.body,
+      )}
 
       <SupplierModal
         open={isSupplierModalOpen}

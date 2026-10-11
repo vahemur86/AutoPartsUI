@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { CarFront } from "lucide-react";
+import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
 
 import {
   getAllProgrammingPricingForAdmin,
@@ -359,7 +360,7 @@ export const ProgrammingPricingAdmin = () => {
               <TableRow>
                 <TableCell colSpan={2} className={styles.emptyCell}>
                   {isLoading
-                    ? t("common.loading")
+                    ? <PrpServiceLoader />
                     : t("serviceTemplates.programmerAdmin.messages.noEntries")}
                 </TableCell>
               </TableRow>

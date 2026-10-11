@@ -1,0 +1,186 @@
+.financeReportsHome {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  margin-top: 20px;
+}
+
+.description {
+  margin: 0;
+  color: #aeb6ad;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.groupGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 14px;
+}
+
+.groupCard {
+  --finance-accent: 196, 169, 106;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(var(--finance-accent), 0.22);
+  border-top: 2px solid rgba(var(--finance-accent), 0.72);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(var(--finance-accent), 0.045), rgba(25, 32, 26, 0.96) 38%, rgba(15, 19, 16, 0.98));
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.groupCard[data-group="operations"] {
+  --finance-accent: 196, 169, 106;
+}
+
+.groupCard[data-group="profitability"] {
+  --finance-accent: 184, 137, 103;
+}
+
+.groupCard[data-group="inventory"] {
+  --finance-accent: 139, 166, 144;
+}
+
+.groupCard[data-group="expenses"] {
+  --finance-accent: 119, 157, 174;
+}
+
+.groupCard:hover {
+  border-color: rgba(var(--finance-accent), 0.4);
+  box-shadow: inset 0 1px 0 rgba(var(--finance-accent), 0.1), 0 8px 22px rgba(0, 0, 0, 0.14);
+}
+
+.groupHeader {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  min-width: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(var(--finance-accent), 0.18);
+}
+
+.groupIcon {
+  display: grid;
+  width: 36px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: rgb(var(--finance-accent));
+  border: 1px solid rgba(var(--finance-accent), 0.34);
+  border-radius: 7px;
+  background: rgba(var(--finance-accent), 0.085);
+}
+
+.groupCopy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.groupCopy h2 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.groupCopy p {
+  margin: 0;
+  color: #aeb6ad;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.groupCount {
+  display: grid;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  place-items: center;
+  color: rgb(var(--finance-accent));
+  border: 1px solid rgba(var(--finance-accent), 0.28);
+  border-radius: 6px;
+  background: rgba(var(--finance-accent), 0.07);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.reportLinks {
+  display: grid;
+  gap: 2px;
+  padding-top: 8px;
+}
+
+.reportLink {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 15px;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  padding: 6px 8px;
+  color: #d4d8d0;
+  border-left: 2px solid transparent;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.reportLink > svg:first-child {
+  color: rgba(var(--finance-accent), 0.92);
+}
+
+.reportLink > svg:last-child {
+  color: #858e84;
+  transition: transform 140ms ease, color 140ms ease;
+}
+
+.reportLink span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.reportLink:hover,
+.reportLink:focus-visible {
+  color: #f1e6c5;
+  border-left-color: rgb(var(--finance-accent));
+  background: rgba(var(--finance-accent), 0.085);
+  outline: none;
+}
+
+.reportLink:hover > svg:last-child,
+.reportLink:focus-visible > svg:last-child {
+  color: rgb(var(--finance-accent));
+  transform: translateX(2px);
+}
+
+@media (max-width: 720px) {
+  .financeReportsHome {
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .groupGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .groupCard {
+    padding: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .groupCard,
+  .reportLink,
+  .reportLink > svg:last-child {
+    transition: none;
+  }
+}

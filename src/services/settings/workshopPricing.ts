@@ -12,6 +12,8 @@ import type {
   EmployeeItem,
   EmployeeSalaryCalculatePayload,
   EmployeeSalaryRecordItem,
+  EmployeeUnpaidSalaryPaymentResult,
+  EmployeeUnpaidSalarySummary,
   EmployeeServicePercentageItem,
   EmployeeServicePercentagePayload,
   EmployeeUpdatePayload,
@@ -24,7 +26,9 @@ import type {
   ServiceCategoryUpdatePayload,
   ServiceUpdatePayload,
   VehicleServiceTemplateCreatePayload,
+  VehicleServiceTemplateCategoryItem,
   VehicleServiceTemplateItem,
+  VehicleServiceTemplateLineItem,
   VehicleServiceTemplateUpdatePayload,
 } from "@/types/settings";
 
@@ -32,6 +36,82 @@ const serviceCategoryBase = "/ServiceCategory";
 const employeeBase = "/Employee";
 const serviceBase = "/Service";
 const vehicleTemplateBase = "/VehicleServiceTemplate";
+
+const normalizeVehicleServiceTemplate = (
+  template: VehicleServiceTemplateItem,
+): VehicleServiceTemplateItem => {
+  const rawTemplate = template as unknown as Record<string, unknown>;
+  const rawCategories = Array.isArray(rawTemplate.categories)
+    ? (rawTemplate.categories as Array<Record<string, unknown>>)
+    : [];
+
+  const normalizeLineItem = (value: unknown): VehicleServiceTemplateLineItem => {
+    const line = (value ?? {}) as Record<string, unknown>;
+    const optionalNumber = (field: unknown) =>
+      field == null ? undefined : Number(field);
+    const nullableNumber = (field: unknown) =>
+      field == null ? null : Number(field);
+
+    return {
+      id: optionalNumber(line.id),
+      serviceId: Number(line.serviceId ?? 0),
+      serviceName: line.serviceName == null ? undefined : String(line.serviceName),
+      internalCost: optionalNumber(line.internalCost),
+      customerPrice: nullableNumber(line.customerPrice),
+      employeeId: optionalNumber(line.employeeId),
+      profit: nullableNumber(line.profit),
+      profitMargin: nullableNumber(line.profitMargin),
+      isProgrammerService:
+        line.isProgrammerService == null
+          ? undefined
+          : Boolean(line.isProgrammerService),
+      bestProgrammerUserId: nullableNumber(line.bestProgrammerUserId),
+      bestProgrammerUsername:
+        line.bestProgrammerUsername == null
+          ? null
+          : String(line.bestProgrammerUsername),
+      programmerServiceCost: nullableNumber(line.programmerServiceCost),
+      programmerSellingPrice: nullableNumber(line.programmerSellingPrice),
+      programmerProfit: nullableNumber(line.programmerProfit),
+    };
+  };
+
+  const categories: VehicleServiceTemplateCategoryItem[] = rawCategories.map(
+    (category) => {
+      const rawServices = Array.isArray(category.services)
+        ? category.services
+        : Array.isArray(category.items)
+          ? category.items
+          : [];
+
+      return {
+        serviceCategoryId: Number(category.serviceCategoryId ?? 0),
+        serviceCategoryName:
+          category.serviceCategoryName == null
+            ? undefined
+            : String(category.serviceCategoryName),
+        isProgrammerCategory:
+          category.isProgrammerCategory == null
+            ? undefined
+            : Boolean(category.isProgrammerCategory),
+        services: rawServices.map(normalizeLineItem),
+      };
+    },
+  );
+
+  const rawItems = Array.isArray(rawTemplate.items)
+    ? rawTemplate.items.map(normalizeLineItem)
+    : [];
+  const items = rawItems.length > 0
+    ? rawItems
+    : categories.flatMap((category) => category.services);
+
+  return {
+    ...template,
+    categories,
+    items,
+  };
+};
 
 const salaryTypeToApi = (salaryType: unknown): number => {
   if (salaryType === 1 || salaryType === "1" || salaryType === "PercentageBased") {
@@ -71,6 +151,71 @@ const normalizeSalaryRecordSalaryType = (
     ...record,
     employeeType: employeeTypeFromApi(rawRecord.employeeType),
     salaryType: salaryTypeFromApi(rawRecord.salaryType),
+    paidByUserId: rawRecord.paidByUserId == null
+      ? null
+      : String(rawRecord.paidByUserId),
+    directorPowderBonusIncludedInNetPayable:
+      rawRecord.directorPowderBonusIncludedInNetPayable == null
+        ? undefined
+        : rawRecord.directorPowderBonusIncludedInNetPayable === true ||
+          rawRecord.directorPowderBonusIncludedInNetPayable === 1 ||
+          rawRecord.directorPowderBonusIncludedInNetPayable === "1" ||
+          rawRecord.directorPowderBonusIncludedInNetPayable === "true",
+    calculationSource: rawRecord.calculationSource == null ||
+      rawRecord.calculationSource === "SalaryRecord"
+      ? null
+      : String(rawRecord.calculationSource),
+  };
+};
+
+const normalizeEmployeeUnpaidSalarySummary = (
+  value: unknown,
+): EmployeeUnpaidSalarySummary => {
+  const raw = (value ?? {}) as Record<string, unknown>;
+  const numberValue = (...values: unknown[]): number => {
+    const value = values.find((item) => item != null);
+    return Number(value ?? 0);
+  };
+  const stringValue = (...values: unknown[]): string | null => {
+    const value = values.find((item) => item != null);
+    return value == null ? null : String(value);
+  };
+  const booleanValue = (value: unknown): boolean =>
+    value === true || value === 1 || value === "1" || value === "true";
+
+  return {
+    ...raw,
+    employeeId: numberValue(raw.employeeId),
+    employeeFullName: String(raw.employeeFullName ?? ""),
+    employeeType: raw.employeeType == null
+      ? undefined
+      : employeeTypeFromApi(raw.employeeType),
+    salaryType: raw.salaryType == null
+      ? undefined
+      : salaryTypeFromApi(raw.salaryType),
+    firstUnpaidDate: stringValue(raw.firstUnpaidDate, raw.fromDate),
+    lastIncludedDate: stringValue(raw.lastIncludedDate, raw.toDate),
+    salaryPeriodEndDate: stringValue(raw.salaryPeriodEndDate, raw.periodEndDate),
+    unpaidRecordCount: numberValue(raw.unpaidRecordCount),
+    totalUnpaidGrossSalary: numberValue(raw.totalUnpaidGrossSalary, raw.unpaidGrossSalary),
+    recordedDepositDeductions: numberValue(
+      raw.recordedDepositDeductions,
+      raw.recordedDepositDeduction,
+    ),
+    netPayableAmount: numberValue(raw.netPayableAmount, raw.netPayable),
+    activeAdvanceBalance: numberValue(raw.activeAdvanceBalance),
+    paymentAllowed: booleanValue(raw.paymentAllowed),
+    paymentBlockedReason: stringValue(raw.paymentBlockedReason),
+    directorPowderQuantityKg: raw.directorPowderQuantityKg == null
+      ? null
+      : numberValue(raw.directorPowderQuantityKg),
+    directorPowderBonus: raw.directorPowderBonus == null
+      ? null
+      : numberValue(raw.directorPowderBonus),
+    directorPowderBonusIncludedInNetPayable:
+      raw.directorPowderBonusIncludedInNetPayable == null
+        ? undefined
+        : booleanValue(raw.directorPowderBonusIncludedInNetPayable),
   };
 };
 
@@ -493,7 +638,9 @@ export const calculateEmployeeSalary = async (
       workDate: payload.workDate.includes("T")
         ? payload.workDate.split("T")[0]
         : payload.workDate,
-      shopId: Number(payload.shopId ?? 0),
+      ...(payload.shopId && payload.shopId > 0
+        ? { shopId: Number(payload.shopId) }
+        : {}),
       ...(payload.employeeId && payload.employeeId > 0
         ? { employeeId: Number(payload.employeeId) }
         : {}),
@@ -538,6 +685,38 @@ export const getSalaryByDate = async (
       : [];
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch salary by date."));
+  }
+};
+
+export const getEmployeeUnpaidSalarySummary = async (
+  employeeId: number,
+  toDate: string,
+): Promise<EmployeeUnpaidSalarySummary> => {
+  try {
+    const normalizedDate = toDate.includes("T") ? toDate.split("T")[0] : toDate;
+    const response = await api.get(`${employeeBase}/${employeeId}/salary/unpaid-summary`, {
+      params: { toDate: normalizedDate },
+    });
+    return normalizeEmployeeUnpaidSalarySummary(response.data);
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch unpaid salary summary."));
+  }
+};
+
+export const payEmployeeUnpaidSalary = async (
+  employeeId: number,
+  toDate: string,
+): Promise<EmployeeUnpaidSalaryPaymentResult> => {
+  try {
+    const normalizedDate = toDate.includes("T") ? toDate.split("T")[0] : toDate;
+    const response = await api.post(
+      `${employeeBase}/${employeeId}/salary/pay-unpaid`,
+      undefined,
+      { params: { toDate: normalizedDate } },
+    );
+    return response.data as EmployeeUnpaidSalaryPaymentResult;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to pay accumulated employee salary."));
   }
 };
 
@@ -716,7 +895,9 @@ export const getVehicleServiceTemplates = async (
     const response = await api.get(vehicleTemplateBase, {
       headers: getHeaders(cashRegisterId),
     });
-    return Array.isArray(response.data) ? response.data : [];
+    return Array.isArray(response.data)
+      ? response.data.map(normalizeVehicleServiceTemplate)
+      : [];
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to fetch vehicle service templates."),
@@ -729,7 +910,7 @@ export const createVehicleServiceTemplate = async (
 ): Promise<VehicleServiceTemplateItem> => {
   try {
     const response = await api.post(vehicleTemplateBase, payload);
-    return response.data;
+    return normalizeVehicleServiceTemplate(response.data);
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to create vehicle service template."),
@@ -742,7 +923,7 @@ export const updateVehicleServiceTemplate = async (
 ): Promise<VehicleServiceTemplateItem> => {
   try {
     const response = await api.put(vehicleTemplateBase, payload);
-    return response.data;
+    return normalizeVehicleServiceTemplate(response.data);
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to update vehicle service template."),

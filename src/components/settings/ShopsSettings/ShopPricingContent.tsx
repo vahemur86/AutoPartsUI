@@ -31,12 +31,27 @@ export const ShopPricingContent: FC<ShopPricingContentProps> = ({
   pricingSettings,
   isLoading,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = (i18n.resolvedLanguage ?? i18n.language).startsWith("en")
+    ? "en-US"
+    : (i18n.resolvedLanguage ?? i18n.language).startsWith("ru")
+      ? "ru-RU"
+      : "en-GB";
+  const dateTimeFormat = new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const updatedAtValue = pricingSettings?.updatedAt || pricingSettings?.createdAt || "";
+  const parsedUpdatedAt = new Date(updatedAtValue);
+  const updatedAtLabel = updatedAtValue && !Number.isNaN(parsedUpdatedAt.getTime())
+    ? dateTimeFormat.format(parsedUpdatedAt)
+    : updatedAtValue;
 
   return (
     <div className={styles.shopNameSection}>
-      {actionButtons}
-
       <div className={styles.formRow}>
         <div className={styles.formColumn}>
           <Select
@@ -86,15 +101,17 @@ export const ShopPricingContent: FC<ShopPricingContentProps> = ({
             </div>
             <div className={styles.pricingDetailsRow}>
               <span className={styles.pricingLabel}>{t("shops.pricing.updatedAt")}</span>
-              <span className={styles.pricingValue}>
-                {pricingSettings.updatedAt || pricingSettings.createdAt}
-              </span>
+              <time className={styles.pricingValue} dateTime={updatedAtValue}>
+                {updatedAtLabel}
+              </time>
             </div>
           </div>
         ) : (
           <div className={styles.emptyState}>{t("shops.pricing.noSettings")}</div>
         )}
       </div>
+
+      {actionButtons}
     </div>
   );
 };

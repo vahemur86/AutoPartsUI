@@ -2,6 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  CircleX,
+  Pencil,
+  Power,
+  PowerOff,
+  RotateCcw,
+  Search,
+  X,
+} from "lucide-react";
 
 import { Button, DataTable, Modal, TextField, Textarea } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
@@ -46,6 +57,8 @@ export const CapitalSourceDetails = () => {
   const [fundingHistory, setFundingHistory] = useState<FundingDailyCostDto[]>([]);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [appliedFromDate, setAppliedFromDate] = useState("");
+  const [appliedToDate, setAppliedToDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState(false);
@@ -57,9 +70,9 @@ export const CapitalSourceDetails = () => {
 
   const toDateTimeRange = (value: string, endOfDay: boolean) => {
     if (!value) return undefined;
-    const parsed = new Date(`${value}T00:00:00`);
+    const parsed = new Date(`${value}T00:00:00.000Z`);
     if (Number.isNaN(parsed.getTime())) return undefined;
-    if (endOfDay) parsed.setHours(23, 59, 59, 999);
+    if (endOfDay) parsed.setUTCHours(23, 59, 59, 999);
     return parsed.toISOString();
   };
 
@@ -74,8 +87,8 @@ export const CapitalSourceDetails = () => {
       setSource(sourceData);
       setTransactions(history ?? []);
       const params = {
-        fromDate: toDateTimeRange(fromDate, false),
-        toDate: toDateTimeRange(toDate, true),
+        fromDate: toDateTimeRange(appliedFromDate, false),
+        toDate: toDateTimeRange(appliedToDate, true),
       };
       try {
         const [analytics, costs] = await Promise.all([
@@ -98,14 +111,22 @@ export const CapitalSourceDetails = () => {
 
   useEffect(() => {
     void load();
-  }, [id, fromDate, toDate, t]);
+  }, [id, appliedFromDate, appliedToDate, t]);
 
   const applyFundingFilters = () => {
     if (fromDate && toDate && new Date(`${fromDate}T00:00:00`) > new Date(`${toDate}T00:00:00`)) {
       toast.error(t("fundingAnalytics.validation.dateRange"));
       return;
     }
-    void load();
+    setAppliedFromDate(fromDate);
+    setAppliedToDate(toDate);
+  };
+
+  const resetFundingFilters = () => {
+    setFromDate("");
+    setToDate("");
+    setAppliedFromDate("");
+    setAppliedToDate("");
   };
 
   const fundingHistoryColumns = useMemo(
@@ -207,12 +228,12 @@ export const CapitalSourceDetails = () => {
     <div className={styles.page}>
       <SectionHeader title={source.name} goBack actions={
         <div className={styles.headerActions}>
-          <Button variant="secondary" onClick={() => navigate(`/capital-sources/${id}/edit`)}>{t("capitalSources.actions.edit")}</Button>
-          <Button onClick={() => setIsReceiveOpen(true)}>{t("capitalSources.actions.receiveMoney")}</Button>
-          <Button variant="secondary" onClick={() => setIsReturnOpen(true)}>{t("capitalSources.actions.returnMoney")}</Button>
-          {source.status === "Inactive" && <Button variant="secondary" onClick={() => void handleStatusAction("activate")}>{t("capitalSources.actions.activate")}</Button>}
-          {source.status === "Active" && <Button variant="secondary" onClick={() => void handleStatusAction("deactivate")}>{t("capitalSources.actions.deactivate")}</Button>}
-          {source.status !== "Closed" && <Button variant="danger" onClick={() => void handleStatusAction("close")}>{t("capitalSources.actions.close")}</Button>}
+          <Button variant="secondary" onClick={() => navigate(`/capital-sources/${id}/edit`)}><Pencil size={15} />{t("capitalSources.actions.edit")}</Button>
+          <Button className={styles.sageButton} onClick={() => setIsReceiveOpen(true)}><ArrowDownToLine size={15} />{t("capitalSources.actions.receiveMoney")}</Button>
+          <Button variant="secondary" onClick={() => setIsReturnOpen(true)}><ArrowUpFromLine size={15} />{t("capitalSources.actions.returnMoney")}</Button>
+          {source.status === "Inactive" && <Button variant="secondary" onClick={() => void handleStatusAction("activate")}><Power size={15} />{t("capitalSources.actions.activate")}</Button>}
+          {source.status === "Active" && <Button variant="secondary" onClick={() => void handleStatusAction("deactivate")}><PowerOff size={15} />{t("capitalSources.actions.deactivate")}</Button>}
+          {source.status !== "Closed" && <Button variant="secondary" onClick={() => void handleStatusAction("close")}><CircleX size={15} />{t("capitalSources.actions.close")}</Button>}
         </div>
       } />
 
@@ -249,10 +270,13 @@ export const CapitalSourceDetails = () => {
             <h3>{t("fundingAnalytics.capitalSource.title")}</h3>
             <p>{t("fundingAnalytics.capitalSource.description")}</p>
           </div>
-          <div className={styles.analyticsFilters}>
-            <TextField label={t("fundingAnalytics.filters.fromDate")} type="date" value={fromDate} onChange={(event) => setFromDate(event.target.value)} />
-            <TextField label={t("fundingAnalytics.filters.toDate")} type="date" value={toDate} onChange={(event) => setToDate(event.target.value)} />
-            <Button variant="secondary" onClick={applyFundingFilters} disabled={isLoading}>{t("common.apply")}</Button>
+          <div className={styles.filterPanel}>
+            <div className={styles.analyticsFilters}>
+              <TextField label={t("fundingAnalytics.filters.fromDate")} type="date" value={fromDate} max={toDate || undefined} onChange={(event) => setFromDate(event.target.value)} />
+              <TextField label={t("fundingAnalytics.filters.toDate")} type="date" value={toDate} min={fromDate || undefined} onChange={(event) => setToDate(event.target.value)} />
+              <Button variant="secondary" onClick={applyFundingFilters} disabled={isLoading}><Search size={15} />{t("common.apply")}</Button>
+              <Button variant="secondary" onClick={resetFundingFilters} disabled={isLoading || (!fromDate && !toDate && !appliedFromDate && !appliedToDate)}><RotateCcw size={15} />{t("common.reset")}</Button>
+            </div>
           </div>
         </div>
         {fundingAnalytics && (
@@ -270,33 +294,37 @@ export const CapitalSourceDetails = () => {
             <div className={styles.analyticsChart}>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={fundingHistory}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.18)" />
-                  <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString()} stroke="#94a3b8" />
-                  <YAxis yAxisId="principal" stroke="#c4a96a" />
-                  <YAxis yAxisId="cost" orientation="right" stroke="#6ee7b7" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(145,169,154,0.18)" />
+                  <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString()} stroke="#aab2a9" />
+                  <YAxis yAxisId="principal" stroke="#91a99a" />
+                  <YAxis yAxisId="cost" orientation="right" stroke="#c4a96a" />
                   <Tooltip formatter={(value) => `${formatMoney(Number(value))} AMD`} labelFormatter={(value) => new Date(String(value)).toLocaleDateString()} />
-                  <Line yAxisId="principal" type="monotone" dataKey="outstandingPrincipal" stroke="#c4a96a" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.outstandingPrincipal")} />
-                  <Line yAxisId="cost" type="monotone" dataKey="dailyFundingCost" stroke="#6ee7b7" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.dailyFundingCost")} />
+                  <Line yAxisId="principal" type="monotone" dataKey="outstandingPrincipal" stroke="#91a99a" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.outstandingPrincipal")} />
+                  <Line yAxisId="cost" type="monotone" dataKey="dailyFundingCost" stroke="#c4a96a" strokeWidth={2} dot={false} name={t("fundingAnalytics.fields.dailyFundingCost")} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <div className={styles.section}>
+            <div className={`${styles.section} ${styles.tableSection}`}>
               <h3>{t("fundingAnalytics.capitalSource.historyTitle")}</h3>
-              <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} isLoading={isLoading} noResultsText={t("fundingAnalytics.capitalSource.historyEmpty")} loadingText={t("common.loading")} />
+              <div className={`${styles.tableContainer} ${styles.fundingHistoryTable}`}>
+                <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} isLoading={isLoading} noResultsText={t("fundingAnalytics.capitalSource.historyEmpty")} loadingText={t("common.loading")} />
+              </div>
             </div>
           </>
         )}
       </section>
 
-      <div className={styles.section}>
+      <div className={`${styles.section} ${styles.tableSection}`}>
         <h3>{t("capitalSources.transactions.title")}</h3>
-        <DataTable columns={columns as any} data={transactions} isLoading={isLoading} noResultsText={t("capitalSources.transactions.empty")} loadingText={t("common.loading")} />
+        <div className={styles.tableContainer}>
+          <DataTable columns={columns as any} data={transactions} isLoading={isLoading} noResultsText={t("capitalSources.transactions.empty")} loadingText={t("common.loading")} />
+        </div>
       </div>
 
       <Modal open={isReceiveOpen} onOpenChange={setIsReceiveOpen} title={t("capitalSources.actions.receiveMoney")} footer={
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => setIsReceiveOpen(false)}>{t("common.cancel")}</Button>
-          <Button onClick={() => void handleMoneyAction("receive")} disabled={isActionLoading}>{isActionLoading ? t("capitalSources.actions.processing") : t("capitalSources.actions.receive")}</Button>
+          <Button variant="secondary" onClick={() => setIsReceiveOpen(false)}><X size={15} />{t("common.cancel")}</Button>
+          <Button className={styles.sageButton} onClick={() => void handleMoneyAction("receive")} disabled={isActionLoading}><ArrowDownToLine size={15} />{isActionLoading ? t("capitalSources.actions.processing") : t("capitalSources.actions.receive")}</Button>
         </div>
       }>
         <div className={styles.modalField}>
@@ -307,8 +335,8 @@ export const CapitalSourceDetails = () => {
 
       <Modal open={isReturnOpen} onOpenChange={setIsReturnOpen} title={t("capitalSources.actions.returnMoney")} footer={
         <div className={styles.actionRow}>
-          <Button variant="secondary" onClick={() => setIsReturnOpen(false)}>{t("common.cancel")}</Button>
-          <Button onClick={() => void handleMoneyAction("return")} disabled={isActionLoading}>{isActionLoading ? t("capitalSources.actions.processing") : t("capitalSources.actions.return")}</Button>
+          <Button variant="secondary" onClick={() => setIsReturnOpen(false)}><X size={15} />{t("common.cancel")}</Button>
+          <Button className={styles.sageButton} onClick={() => void handleMoneyAction("return")} disabled={isActionLoading}><ArrowUpFromLine size={15} />{isActionLoading ? t("capitalSources.actions.processing") : t("capitalSources.actions.return")}</Button>
         </div>
       }>
         <div className={styles.modalField}>

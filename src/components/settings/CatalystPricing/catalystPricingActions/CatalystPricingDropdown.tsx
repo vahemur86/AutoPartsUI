@@ -1,18 +1,20 @@
-import { useState, useEffect, type RefObject } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
+import { FlaskConical, X } from "lucide-react";
 
 // ui-kit
-import { Button, Dropdown, TextField } from "@/ui-kit";
+import { Button, TextField } from "@/ui-kit";
 
 // types
 import type { CatalystPricing } from "@/types/settings";
 
 // styles
 import styles from "./CatalystPricingDropdown.module.css";
+import drawerStyles from "../CatalystPricing.module.css";
 
 interface CatalystPricingDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement | null>;
   initialData?: CatalystPricing | null;
   isLoading?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -21,7 +23,6 @@ interface CatalystPricingDropdownProps {
 
 export const CatalystPricingDropdown = ({
   open,
-  anchorRef,
   initialData,
   isLoading = false,
   onOpenChange,
@@ -54,6 +55,20 @@ export const CatalystPricingDropdown = ({
       setMargins(initialData.customerMargins ?? []);
     }
   }, [open, initialData]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, onOpenChange]);
 
   const numPt = parseFloat(ptReducePercent);
   const numPd = parseFloat(pdReducePercent);
@@ -110,20 +125,41 @@ export const CatalystPricingDropdown = ({
 
   const titleText = isEditMode ? t("common.update") : t("common.save");
 
-  return (
-    <Dropdown
-      open={open}
-      onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      align="start"
-      side="left"
-      title={titleText}
-    >
-      <div className={styles.header}>
-        <span className={styles.title}>{titleText}</span>
-      </div>
+  if (!open) return null;
 
-      <div className={styles.content}>
+  return createPortal(
+    <div
+      className={drawerStyles.drawerBackdrop}
+      onMouseDown={() => onOpenChange(false)}
+    >
+      <aside
+        className={drawerStyles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="catalyst-pricing-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className={drawerStyles.drawerHeader}>
+          <span className={drawerStyles.drawerIcon} aria-hidden="true">
+            <FlaskConical size={20} />
+          </span>
+          <div className={drawerStyles.drawerHeading}>
+            <span>{t("catalystPricing.title")}</span>
+            <h2 id="catalyst-pricing-title">{titleText}</h2>
+          </div>
+          <button
+            type="button"
+            className={drawerStyles.drawerClose}
+            onClick={() => onOpenChange(false)}
+            aria-label={t("common.close")}
+            title={t("common.close")}
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className={drawerStyles.drawerBody}>
+          <div className={styles.content}>
         <div className={styles.grid}>
           <TextField
             label={t("catalystPricing.columns.ptReducePercent")}
@@ -203,19 +239,13 @@ export const CatalystPricingDropdown = ({
                     </div>
                   </div>
 
-                  <div className={styles.marginBar}>
-                    <div
-                      className={styles.marginFill}
-                      style={{ width: `${Math.min(value, 100)}%` }}
-                    />
-                  </div>
-
                   <div className={styles.marginEdit}>
                     <input
                       type="number"
                       min={0}
                       max={100}
                       value={value}
+                      disabled={isLoading}
                       onChange={(e) =>
                         updateMargin(m.customerTypeId, e.target.value)
                       }
@@ -229,28 +259,29 @@ export const CatalystPricingDropdown = ({
           </div>
         </div>
 
-        <div className={styles.actionswithoutDelete}>
-          <div className={styles.primaryActions}>
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-            >
-              {t("common.cancel")}
-            </Button>
-
-            <Button
-              variant="primary"
-              size="medium"
-              onClick={handleSaveClick}
-              disabled={isLoading}
-            >
-              {isEditMode ? t("common.update") : t("common.save")}
-            </Button>
           </div>
         </div>
-      </div>
-    </Dropdown>
+
+        <footer className={drawerStyles.drawerFooter}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+          >
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleSaveClick}
+            disabled={isLoading}
+          >
+            {isEditMode ? t("common.update") : t("common.save")}
+          </Button>
+        </footer>
+      </aside>
+    </div>,
+    document.body,
   );
 };

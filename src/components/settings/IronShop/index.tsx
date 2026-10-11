@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Button, DataTable, TextField, Select, Modal, Tab, TabGroup } from "@/ui-kit";
+import { Button, ConfirmationModal, DataTable, TextField, Select, Modal, Tab, TabGroup } from "@/ui-kit";
 import { getApiErrorMessage, getCashRegisterId, getHeaders, mapI18nCodeToApiCode } from "@/utils";
 import i18n from "i18next";
 import api from "@/services";
@@ -69,6 +69,11 @@ export const IronShopSettings = () => {
   const [form, setForm] = useState(initialIronTypeForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{
+    kind: "ironType" | "price";
+    id: number;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [priceForm, setPriceForm] = useState(initialPriceForm);
   const [recalculationStepForm, setRecalculationStepForm] = useState(initialRecalculationStepForm);
   const [activeTab, setActiveTab] = useState<"iron-types" | "prices">("iron-types");
@@ -223,18 +228,8 @@ export const IronShopSettings = () => {
     }
   };
 
-  const deleteIronType = async (id: number) => {
-    const confirmed = window.confirm(t("ironManagement.confirmation.deleteDescription") || "Are you sure you want to delete this iron type?");
-    if (!confirmed) return;
-
-    try {
-      const lang = getApiLang();
-      await api.delete(`${IRON_SHOP_BASE_PATH}/iron-types/${id}`, { params: { lang }, headers: { ...getHeaders(cashRegisterId) } });
-      toast.success(t("ironManagement.success.ironTypeUpdated"));
-      void loadData();
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, t("ironManagement.error.failedToUpdateIronType")));
-    }
+  const deleteIronType = (id: number) => {
+    setPendingDelete({ kind: "ironType", id });
   };
 
   const submitPrice = async () => {
@@ -350,24 +345,32 @@ export const IronShopSettings = () => {
     }
   };
 
-  const deletePrice = async (id: number) => {
-    const confirmed = window.confirm(
-      t("ironManagement.confirmation.deletePriceDescription", "Delete this price entry?"),
-    );
-    if (!confirmed) return;
+  const deletePrice = (id: number) => {
+    setPendingDelete({ kind: "price", id });
+  };
 
+  const confirmPendingDelete = async () => {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
     try {
       const lang = getApiLang();
-      await api.delete(`${IRON_SHOP_BASE_PATH}/brand-iron-prices/${id}`, { params: { lang }, headers: { ...getHeaders(cashRegisterId) } });
-      toast.success(t("ironManagement.success.ironPriceDeleted", "Price deleted successfully"));
-      void loadPrices(Number(selectedBrandId || 0) || undefined, Number(selectedIronTypeId || 0) || undefined);
+      if (pendingDelete.kind === "ironType") {
+        await api.delete(`${IRON_SHOP_BASE_PATH}/iron-types/${pendingDelete.id}`, { params: { lang }, headers: { ...getHeaders(cashRegisterId) } });
+        toast.success(t("ironManagement.success.ironTypeUpdated"));
+        await loadData();
+      } else {
+        await api.delete(`${IRON_SHOP_BASE_PATH}/brand-iron-prices/${pendingDelete.id}`, { params: { lang }, headers: { ...getHeaders(cashRegisterId) } });
+        toast.success(t("ironManagement.success.ironPriceDeleted", "Price deleted successfully"));
+        await loadPrices(Number(selectedBrandId || 0) || undefined, Number(selectedIronTypeId || 0) || undefined);
+      }
+      setPendingDelete(null);
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("ironManagement.error.failedToDeleteIronPrice", "Failed to delete iron price"),
-        ),
-      );
+      const fallback = pendingDelete.kind === "ironType"
+        ? t("ironManagement.error.failedToUpdateIronType")
+        : t("ironManagement.error.failedToDeleteIronPrice", "Failed to delete iron price");
+      toast.error(getApiErrorMessage(error, fallback));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -453,9 +456,9 @@ export const IronShopSettings = () => {
               minWidth: 30,
               justifyContent: "center",
               padding: "4px 10px",
-              borderRadius: 9999,
-              background: "#eef2ff",
-              color: "#4338ca",
+              borderRadius: 6,
+              background: "rgba(196, 169, 106, 0.12)",
+              color: "#d2bf8a",
               fontWeight: 600,
               fontSize: 12,
             }}
@@ -463,7 +466,7 @@ export const IronShopSettings = () => {
             {count}
           </span>
         ) : (
-          <span style={{ color: "#6b7280" }}>-</span>
+          <span style={{ color: "#aab1a9" }}>-</span>
         );
       },
     },
@@ -482,25 +485,25 @@ export const IronShopSettings = () => {
                   alignItems: "center",
                   gap: 8,
                   padding: "6px 10px",
-                  borderRadius: 12,
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
+                  borderRadius: 6,
+                  background: "rgba(196, 169, 106, 0.04)",
+                  border: "1px solid rgba(196, 169, 106, 0.16)",
                   whiteSpace: "nowrap",
                 }}
               >
-                <span style={{ color: "#374151", fontWeight: 600 }}>
+                <span style={{ color: "#c9cec5", fontWeight: 600 }}>
                   {t("ironManagement.recalculateStepLabel", "Step {{step}}:", {
                     step: step.stepNumber,
                   })}
                 </span>
-                <span style={{ color: "#111827" }}>
+                <span style={{ color: "#e3e5de" }}>
                   {step.pricePerKg.toLocaleString()}
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <span style={{ color: "#6b7280" }}>
+          <span style={{ color: "#aab1a9" }}>
             {t("ironManagement.noRecalculateSteps", "No steps")}
           </span>
         );
@@ -546,7 +549,7 @@ export const IronShopSettings = () => {
       </TabGroup>
 
       {activeTab === "iron-types" ? (
-        <div style={{ display: "grid", gap: 12, border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+        <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
           <h4>{t("ironManagement.section.ironTypes", "Iron Types")}</h4>
           <DataTable data={ironTypes} columns={ironTypeColumns} pageSize={10} />
         </div>
@@ -555,7 +558,7 @@ export const IronShopSettings = () => {
 
       {activeTab === "prices" ? (
         <div style={{ display: "grid", gap: 16 }}>
-          <div style={{ display: "grid", gap: 12, border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+          <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
             <h4>{t("ironManagement.section.priceRules", "Price Rules")}</h4>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <Select value={selectedBrandId} onChange={(e) => setSelectedBrandId(e.target.value)}>
@@ -581,9 +584,9 @@ export const IronShopSettings = () => {
             <DataTable data={prices} columns={priceColumns} pageSize={10} />
           </div>
 
-          <div style={{ display: "grid", gap: 12, border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+          <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
             <h4>{t("ironManagement.addPrice", "Create Base Price")}</h4>
-            <p style={{ color: "#6b7280", fontSize: 14 }}>
+            <p style={{ color: "#aab1a9", fontSize: 14 }}>
               {t("ironManagement.note.basePriceHint", "Select brand and iron type, then input prices for all customer types")}
             </p>
             <Select value={priceForm.autoBrandId} onChange={(e) => setPriceForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}>
@@ -603,15 +606,15 @@ export const IronShopSettings = () => {
               ))}
             </Select>
             
-            <div style={{ display: "grid", gap: 12, padding: 12, background: "#f9fafb", borderRadius: 8, border: "1px solid #e5e7eb" }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#374151", margin: 0 }}>
+            <div style={{ display: "grid", gap: 12, padding: 12, background: "rgba(196, 169, 106, 0.035)", borderRadius: 6, border: "1px solid rgba(196, 169, 106, 0.14)" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#c9cec5", margin: 0 }}>
                 {t("ironManagement.pricesByCustomerType", "Prices by Customer Type")}
               </p>
               {customerTypes && customerTypes.length > 0 ? (
                 <div style={{ display: "grid", gap: 10 }}>
                   {customerTypes.map((customerType) => (
                     <div key={customerType.id} style={{ display: "grid", gap: 4 }}>
-                      <label style={{ fontSize: 12, fontWeight: 500, color: "#1f2937" }}>
+                      <label style={{ fontSize: 12, fontWeight: 500, color: "#c9cec5" }}>
                         {customerType.code} - {t("ironManagement.form.pricePerKg", "Price Per Kg")}
                       </label>
                       <input
@@ -629,8 +632,10 @@ export const IronShopSettings = () => {
                         }
                         style={{
                           padding: "8px 12px",
-                          border: "1px solid #d1d5db",
+                          border: "1px solid rgba(196, 169, 106, 0.2)",
                           borderRadius: 6,
+                          background: "rgba(255, 255, 255, 0.04)",
+                          color: "#e3e5de",
                           fontSize: 14,
                           fontFamily: "inherit",
                         }}
@@ -639,7 +644,7 @@ export const IronShopSettings = () => {
                   ))}
                 </div>
               ) : (
-                <div style={{ color: "#9ca3af", fontSize: 13, padding: "8px 0" }}>
+                <div style={{ color: "#aab1a9", fontSize: 13, padding: "8px 0" }}>
                   {t("common.loading", "Loading...")}
                 </div>
               )}
@@ -657,9 +662,9 @@ export const IronShopSettings = () => {
             </div>
           </div>
 
-          <div style={{ display: "grid", gap: 12, border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+          <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
             <h4>{t("ironManagement.addRecalculationStep", "Add Recalculation Step (Standard Customer)")}</h4>
-            <p style={{ color: "#6b7280", fontSize: 14 }}>
+            <p style={{ color: "#aab1a9", fontSize: 14 }}>
               {t("ironManagement.note.recalculationStepHint", "Select brand and iron type, then add step prices for Standard customers (Step 1, Step 2, etc.)")}
             </p>
             <Select value={recalculationStepForm.autoBrandId} onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}>
@@ -767,6 +772,22 @@ export const IronShopSettings = () => {
           </div>
         </div>
       </Modal>
+
+      <ConfirmationModal
+        open={!!pendingDelete}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title={pendingDelete?.kind === "ironType"
+          ? t("ironManagement.confirmation.deleteIronTypeTitle")
+          : t("ironManagement.confirmation.deletePriceTitle")}
+        description={pendingDelete?.kind === "ironType"
+          ? t("ironManagement.confirmation.deleteIronTypeDescription")
+          : t("ironManagement.confirmation.deletePriceDescription")}
+        confirmText={isDeleting ? t("common.loading") : t("common.delete")}
+        cancelText={t("common.cancel")}
+        confirmLoading={isDeleting}
+        onConfirm={() => void confirmPendingDelete()}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 };

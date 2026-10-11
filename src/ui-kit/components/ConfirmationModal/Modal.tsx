@@ -12,6 +12,7 @@ import { IconButton } from "../IconButton";
 
 // icons
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // hooks
 import { useIsMobile } from "@/hooks/isMobile";
@@ -40,6 +41,7 @@ export const Modal: FC<ModalProps> = ({
   width = "520px",
   className = "",
 }) => {
+  const { t } = useTranslation();
   const { isMobile, mounted } = useIsMobile();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const headingId = useId();
@@ -89,7 +91,7 @@ export const Modal: FC<ModalProps> = ({
           {!preventClose && (
             <IconButton
               variant="secondary500"
-              ariaLabel="Close"
+              ariaLabel={t("common.close")}
               onClick={() => onOpenChange(false)}
               icon={<X className="h-6 w-6" />}
             />

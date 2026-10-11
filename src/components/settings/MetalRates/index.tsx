@@ -1,27 +1,22 @@
 import {
   useState,
   useCallback,
-  useRef,
-  useMemo,
   useEffect,
   type FC,
 } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
+import { Button, ConfirmationModal, IconButton } from "@/ui-kit";
 
 // icons
-import { Plus } from "lucide-react";
+import { CalendarDays, Coins, Pencil, Plus, Trash2 } from "lucide-react";
 
 // components
 import {
   MetalRateDropdown,
   type MetalRateForm,
 } from "./metalRatesActions/MetalRateDropdown";
-
-// columns
-import { getMetalRateColumns } from "./columns";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -39,7 +34,7 @@ import type { MetalRate } from "@/types/settings";
 import styles from "./MetalRates.module.css";
 
 export const MetalRates: FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const { metalRates } = useAppSelector((state) => state.metalRates);
 
@@ -48,21 +43,17 @@ export const MetalRates: FC = () => {
   const [deletingRate, setDeletingRate] = useState<MetalRate | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
-  const anchorRef = useRef<HTMLElement | null>(null);
-
   useEffect(() => {
     dispatch(fetchMetalRates());
   }, [dispatch]);
 
-  const handleOpenAdd = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    anchorRef.current = e.currentTarget;
+  const handleOpenAdd = useCallback(() => {
     setActiveRate(null);
     setIsDropdownOpen(true);
   }, []);
 
   const handleOpenEdit = useCallback(
-    (rate: MetalRate, e: React.MouseEvent<HTMLElement>) => {
-      anchorRef.current = e.currentTarget;
+    (rate: MetalRate) => {
       setActiveRate(rate);
       setIsDropdownOpen(true);
     },
@@ -107,42 +98,34 @@ export const MetalRates: FC = () => {
     [dispatch],
   );
 
-  const columns = useMemo(
-    () => getMetalRateColumns({ onEdit: handleOpenEdit }),
-    [handleOpenEdit],
-  );
+  const language = i18n.resolvedLanguage ?? i18n.language;
+  const formatLocale = language.startsWith("am")
+    ? "hy-AM"
+    : language.startsWith("ru")
+      ? "ru-RU"
+      : "en-US";
+  const numberFormat = new Intl.NumberFormat(formatLocale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const dateLocale = language.startsWith("en") ? "en-US" : "en-GB";
+  const dateFormat = new Intl.DateTimeFormat(dateLocale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   return (
     <div className={styles.metalRatesWrapper}>
       <div className={styles.header}>
-        <div className={styles.addButtonWrapper}>
-          <IconButton
-            ariaLabel={t("metals.addRate")}
-            size="small"
-            variant="primary"
-            icon={<Plus size={12} color="#0e0f11" />}
-            onClick={handleOpenAdd}
-          />
-          <span className={styles.addButtonText}>{t("metals.addRate")}</span>
-        </div>
-      </div>
-
-      <div className={styles.addRateButtonMobile}>
-        <div className={styles.addButtonWrapperMobile}>
-          <IconButton
-            size="small"
-            variant="primary"
-            icon={<Plus size={12} />}
-            ariaLabel={t("metals.addRate")}
-            onClick={handleOpenAdd}
-          />
-          <span className={styles.addButtonText}>{t("metals.addRate")}</span>
-        </div>
+        <Button className={styles.createButton} onClick={handleOpenAdd}>
+          <Plus size={16} />
+          {t("metals.addRate")}
+        </Button>
       </div>
 
       <MetalRateDropdown
         open={isDropdownOpen}
-        anchorRef={anchorRef}
         initialData={activeRate}
         isLoading={isMutating}
         onOpenChange={setIsDropdownOpen}
@@ -164,9 +147,88 @@ export const MetalRates: FC = () => {
         />
       )}
 
-      <div className={styles.tableWrapper}>
-        <DataTable data={metalRates} columns={columns} pageSize={10} />
-      </div>
+      {metalRates.length === 0 ? (
+        <div className={styles.emptyState}>
+          <Coins size={24} aria-hidden="true" />
+          <span>{t("common.noData")}</span>
+        </div>
+      ) : (
+        <div className={styles.rateGrid}>
+          {metalRates.map((rate) => (
+            <article className={styles.rateCard} key={rate.id}>
+              <header className={styles.cardHeader}>
+                <div className={styles.currencyIdentity}>
+                  <span className={styles.currencyIcon} aria-hidden="true">
+                    <Coins size={19} />
+                  </span>
+                  <div className={styles.currencyCopy}>
+                    <span className={styles.cardEyebrow}>
+                      {t("metals.columns.currency")}
+                    </span>
+                    <h2>{rate.currencyCode}</h2>
+                  </div>
+                </div>
+                <span
+                  className={`${styles.status} ${rate.isActive ? styles.statusActive : styles.statusInactive}`}
+                >
+                  <span className={styles.statusDot} />
+                  {rate.isActive ? t("common.active") : t("common.inactive")}
+                </span>
+              </header>
+
+              <div className={styles.priceGrid}>
+                <div className={styles.priceMetric}>
+                  <span className={styles.priceLabel}>
+                    {t("metals.columns.platinum")}
+                  </span>
+                  <strong>${numberFormat.format(rate.ptPricePerGram)}</strong>
+                </div>
+                <div className={styles.priceMetric}>
+                  <span className={styles.priceLabel}>
+                    {t("metals.columns.palladium")}
+                  </span>
+                  <strong>${numberFormat.format(rate.pdPricePerGram)}</strong>
+                </div>
+                <div className={styles.priceMetric}>
+                  <span className={styles.priceLabel}>
+                    {t("metals.columns.rhodium")}
+                  </span>
+                  <strong>${numberFormat.format(rate.rhPricePerGram)}</strong>
+                </div>
+              </div>
+
+              <footer className={styles.cardFooter}>
+                <span className={styles.effectiveDate}>
+                  <CalendarDays size={14} aria-hidden="true" />
+                  <span>{t("metals.columns.effectiveFrom")}</span>
+                  <time dateTime={rate.effectiveFrom}>
+                    {dateFormat.format(new Date(rate.effectiveFrom))}
+                  </time>
+                </span>
+                <div className={styles.cardActions}>
+                  <IconButton
+                    variant="secondary"
+                    size="medium"
+                    icon={<Pencil size={15} />}
+                    ariaLabel={`${t("common.edit")} ${rate.currencyCode}`}
+                    title={`${t("common.edit")} ${rate.currencyCode}`}
+                    onClick={() => handleOpenEdit(rate)}
+                  />
+                  <IconButton
+                    variant="secondary"
+                    size="medium"
+                    className={styles.deleteAction}
+                    icon={<Trash2 size={15} />}
+                    ariaLabel={`${t("common.delete")} ${rate.currencyCode}`}
+                    title={`${t("common.delete")} ${rate.currencyCode}`}
+                    onClick={() => setDeletingRate(rate)}
+                  />
+                </div>
+              </footer>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

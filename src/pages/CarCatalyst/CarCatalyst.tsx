@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-import { Button, IconButton, Select, TextField } from "@/ui-kit";
+import { Button, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   getVehicleDefinitions,
@@ -18,7 +18,8 @@ import type {
 
 import styles from "./CarCatalyst.module.css";
 import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
-import { Copy, ExternalLink, Trash } from "lucide-react";
+import { Copy, ExternalLink, Plus, Save, Trash } from "lucide-react";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 import { useNavigate } from "react-router-dom";
 import { getYearOptions } from "./yearOptions";
 
@@ -364,7 +365,12 @@ export const CarCatalystPage = () => {
           {title}
         </h3>
 
-        <Button size="small" onClick={() => addBucket(side)}>
+        <Button
+          size="medium"
+          className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+          onClick={() => addBucket(side)}
+        >
+          <Plus size={15} aria-hidden="true" />
           {t("common.add")}
         </Button>
       </div>
@@ -384,25 +390,33 @@ export const CarCatalystPage = () => {
               <div className={styles.bucketActions}>
                 <Button
                   size="small"
+                  variant="secondary"
+                  className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
                   onClick={() => addComposition(side, bucketIndex)}
                 >
+                  <Plus size={14} aria-hidden="true" />
                   {t("carCatalyst.table.addComposition")}
                 </Button>
 
-                <IconButton
-                  size="medium"
+                <button
+                  type="button"
+                  className={styles.iconAction}
                   onClick={() => duplicateBucket(side, bucketIndex)}
-                  icon={<Copy size={18} />}
-                  ariaLabel="duplicate"
-                />
+                  aria-label={t("carCatalyst.actions.duplicateBucket")}
+                  title={t("carCatalyst.actions.duplicateBucket")}
+                >
+                  <Copy size={16} aria-hidden="true" />
+                </button>
 
-                <IconButton
-                  className={styles.trashIconButton}
-                  size="medium"
+                <button
+                  type="button"
+                  className={`${styles.iconAction} ${styles.iconActionDanger}`}
                   onClick={() => deleteBucket(side, bucketIndex)}
-                  icon={<Trash className={styles.trashIcon} />}
-                  ariaLabel=""
-                />
+                  aria-label={t("carCatalyst.actions.deleteBucket")}
+                  title={t("carCatalyst.actions.deleteBucket")}
+                >
+                  <Trash size={15} aria-hidden="true" />
+                </button>
               </div>
             </div>
 
@@ -574,15 +588,17 @@ export const CarCatalystPage = () => {
 
                     {bucket.compositions.length > 1 && (
                       <div className={styles.compositionDeleteWrap}>
-                        <IconButton
-                          className={styles.trashIconButton}
-                          size="medium"
+                        <button
+                          type="button"
+                          className={`${styles.iconAction} ${styles.iconActionDanger}`}
                           onClick={() =>
                             deleteComposition(side, bucketIndex, compositionIndex)
                           }
-                          icon={<Trash className={styles.trashIcon} />}
-                          ariaLabel=""
-                        />
+                          aria-label={t("carCatalyst.actions.deleteComposition")}
+                          title={t("carCatalyst.actions.deleteComposition")}
+                        >
+                          <Trash size={15} aria-hidden="true" />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -605,15 +621,23 @@ export const CarCatalystPage = () => {
         <div className={styles.titleRow}>
           <h2 className={styles.title}>{t("carCatalyst.title")}</h2>
 
-          <IconButton
-            size="large"
+          <button
+            type="button"
+            className={styles.detailsAction}
             onClick={goToDetails}
-            icon={<ExternalLink size={18} />}
-            ariaLabel="details"
-          />
+            aria-label={t("common.details")}
+            title={t("common.details")}
+          >
+            <ExternalLink size={17} aria-hidden="true" />
+          </button>
         </div>
 
-        <Button variant="primary" size="small" onClick={handleSave}>
+        <Button
+          size="medium"
+          className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+          onClick={handleSave}
+        >
+          <Save size={15} aria-hidden="true" />
           {t("carCatalyst.actions.save")}
         </Button>
       </div>

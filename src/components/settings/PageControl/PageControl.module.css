@@ -16,3 +16,35 @@
 .tableWrapper {
   width: 100%;
 }
+
+.pageControlWrapper .tableWrapper {
+  min-width: 0;
+  overflow: visible;
+}
+
+.tableWrapper :global([class*="dataTableContainer"]) {
+  height: auto;
+  overflow: visible;
+}
+
+.tableWrapper :global([class*="tableWrapper"]) {
+  overflow: visible;
+}
+
+.tableWrapper :global(table) {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.tableWrapper :global(th[class*="tableCell"]),
+.tableWrapper :global(td[class*="tableCell"]) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  width: auto !important;
+}
+
+.tableWrapper :global([class*="selectionCell"]) {
+  width: 48px !important;
+  min-width: 48px;
+}

@@ -10,6 +10,7 @@
     "warehouses": "Պահեստներ",
     "shops": "Խանութներ",
     "products": "Ապրանքներ",
+    "productCatalog": "Ապրանքացանկ",
     "users": "Օգտատերերի կառավարում",
     "agents": "Գործակալներ",
     "customers": "Հաճախորդներ",
@@ -39,6 +40,8 @@
     "save": "Պահպանել",
     "saving": "Պահպանվում է...",
     "add": "Ավելացնել",
+    "edit": "Խմբագրել",
+    "delete": "Ջնջել",
     "update": "Թարմացնել",
     "actions": "Գործողություններ",
     "active": "Ակտիվ",
@@ -108,6 +111,20 @@
   },
 
   "settings": {
+    "groups": {
+      "system": "Համակարգ",
+      "organization": "Կազմակերպության կառուցվածք",
+      "productsAndCatalysts": "Ապրանքներ և կատալիզատորներ",
+      "customersAndSales": "Հաճախորդներ և վաճառք",
+      "financialSettings": "Ֆինանսական կարգավորումներ"
+    },
+    "groupDescriptions": {
+      "system": "Լեզուների, էջերի և թարգմանությունների կարգավորումներ։",
+      "organization": "Խանութների, պահեստների և դրամարկղերի կառավարում։",
+      "productsAndCatalysts": "Ապրանքների կատալոգի, թեգերի և մետաղների գների կառավարում։",
+      "customersAndSales": "Հաճախորդների տեսակների և վաճառքի կանոնների կարգավորում։",
+      "financialSettings": "Փոխարժեքների և վճարումների կանոնների կառավարում։"
+    },
     "navigation": {
       "projectLanguages": "Նախագծի լեզուներ",
       "pageControl": "Էջերի կառավարում",
@@ -118,6 +135,7 @@
       "productSettings": "Ապրանքի կարգավորումներ",
       "vehicleManagement": "Տրանսպորտային միջոցների կառավարում",
       "serviceTasks": "Ծառայություններ",
+      "programmingPricing": "Ծրագրավորման գներ",
       "tags": "Թեգեր",
       "metalRates": "Մետաղի գներ",
       "catalystBuckets": "Կոդեր",
@@ -134,6 +152,15 @@
       "classificationRules": "Դասակարգման կանոններ"
     },
     "otherExpenses": {
+      "createTitle": "Ավելացնել ծախս",
+      "editTitle": "Խմբագրել ծախսը",
+      "viewTitle": "Ծախսի տվյալներ",
+      "listTitle": "Ծախսերի ցանկ",
+      "searchPlaceholder": "Որոնել անվանմամբ, խանութով կամ պահեստով",
+      "emptyState": "Ծախսեր չեն գտնվել",
+      "actions": {
+        "view": "Դիտել"
+      },
       "fields": {
         "entityType": "Օբյեկտի տեսակ",
         "entity": "Խանութ / Պահեստ",
@@ -182,6 +209,12 @@
   "tags": {
     "addTag": "Ավելացնել թեգ",
     "editTag": "Խմբագրել թեգը",
+    "listTitle": "Թեգերի ցանկ",
+    "loading": "Թեգերը բեռնվում են...",
+    "emptyState": "Թեգեր դեռ չկան։ Ավելացրեք առաջինը։",
+    "columns": {
+      "name": "Անվանում"
+    },
     "form": {
       "name": "Թեգի անուն",
       "enterTagName": "Մուտքագրեք թեգի անունը",
@@ -240,6 +273,9 @@
     }
   },
   "reports": {
+    "overview": {
+      "description": "Ընտրեք հաշվետվությունը՝ անհրաժեշտ տվյալները դիտելու համար։"
+    },
     "navigationGroups": {
       "cashbox": "Դրամարկղ և հերթափոխեր",
       "inventory": "Պաշարներ և խմբաքանակներ",
@@ -250,7 +286,7 @@
       "workshopOrders": "Աշխատարանի պատվերներ",
       "zReports": "Z-հաշիվներ",
       "batchReports": "Խմբերի հաշվետվություններ",
-      "openSessions": "Բաց սեսսիաներ",
+      "openSessions": "Բաց սեսիաներ",
       "powderBatches": "Փոշու խմբեր",
       "cashboxSessionsReports": "Դրամարկղի հերթափոխերի հաշվետվություններ",
       "ironProducts": "Երկաթյա արտադրանք",
@@ -429,6 +465,15 @@
     }
   },
   "financeReports": {
+    "overview": {
+      "description": "Դիտեք գործառնական ցուցանիշները, շահույթը, մնացորդներն ու ծախսերը մեկ վայրից։"
+    },
+    "groupDescriptions": {
+      "operations": "Խանութների, ծառայությունների, պահեստի և վաճառքների ցուցանիշներ։",
+      "profitability": "Շահույթի ամփոփ և մանրամասն տվյալներ, ինչպես նաև վաճառքների շահույթ։",
+      "inventory": "Պահեստի և խանութների ընթացիկ մնացորդներ։",
+      "expenses": "Այլ ծախսերի հաշվետվություն։"
+    },
     "navigation": {
       "dashboard": "Դաշբորդ",
       "shopReports": "Խանութի հաշվետվություններ",
@@ -852,6 +897,13 @@
     "actions": {
       "addUser": "Ավելացնել օգտատեր"
     },
+    "roles": {
+      "superAdmin": "Սուպեր ադմին",
+      "admin": "Ադմինիստրատոր",
+      "programmer": "Ծրագրավորող",
+      "operator": "Օպերատոր",
+      "cashier": "Գանձապահ"
+    },
     "table": {
       "title": "Օգտատերեր",
       "id": "ID",
@@ -874,12 +926,78 @@
     }
   },
   "shops": {
+    "confirmation": {
+      "deleteTitle": "Ջնջել խանութը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել {{name}} խանութը։"
+    },
+    "sections": {
+      "form": "Խանութի տվյալներ",
+      "list": "Գրանցված խանութներ"
+    },
+    "form": {
+      "shopKey": "Խանութի կոդ",
+      "warehouse": "Պահեստ",
+      "selectWarehouse": "Ընտրեք պահեստը"
+    },
+    "validation": {
+      "enterShopKey": "Մուտքագրեք խանութի կոդը",
+      "selectWarehouse": "Ընտրեք պահեստը"
+    },
+    "success": {
+      "shopCreated": "Խանութը հաջողությամբ ստեղծվեց",
+      "shopUpdated": "Խանութի տվյալները թարմացվեցին",
+      "shopDeleted": "Խանութը ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել խանութը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել խանութի տվյալները",
+      "failedToDelete": "Չհաջողվեց ջնջել խանութը"
+    },
+    "loading": "Խանութները բեռնվում են...",
+    "emptyState": "Գրանցված խանութներ չկան։",
+    "pricing": {
+      "sectionTitle": "Խանութների գնային կարգավորումներ",
+      "shop": "Խանութ",
+      "selectShop": "Ընտրեք խանութը",
+      "markupPercentage": "Վաճառքի հավելավճար",
+      "markupPlaceholder": "Մուտքագրեք տոկոսը",
+      "save": "Պահպանել տոկոսը",
+      "applyToExisting": "Կիրառել առկա ապրանքների վրա",
+      "loading": "Գնային կարգավորումները բեռնվում են...",
+      "noSettings": "Այս խանութի համար գնային կարգավորումներ չկան։",
+      "currentMarkup": "Գործող հավելավճար",
+      "isActive": "Ակտիվ է",
+      "updatedAt": "Վերջին թարմացումը",
+      "validation": {
+        "selectShop": "Ընտրեք խանութը",
+        "enterValidMarkup": "Մուտքագրեք զրոյից մեծ կամ հավասար վավեր տոկոս"
+      },
+      "success": {
+        "saved": "Խանութի գնային կարգավորումները պահպանվեցին",
+        "applied": "Գները կիրառվեցին խանութի առկա ապրանքների համար"
+      },
+      "error": {
+        "failedToLoad": "Չհաջողվեց բեռնել գնային կարգավորումները",
+        "failedToSave": "Չհաջողվեց պահպանել գնային կարգավորումները",
+        "failedToApply": "Չհաջողվեց գները կիրառել առկա ապրանքների վրա"
+      }
+    },
     "products": {
       "title": "Խանութի ապրանքներ",
       "shop": "Խանութ",
       "selectShop": "Ընտրեք խանութը",
+      "selectShopHint": "Ընտրեք խանութ՝ պաշարի տվյալները դիտելու համար։",
+      "inventoryFor": "{{shop}} խանութի պաշար",
+      "search": "Որոնել ապրանքներ",
+      "searchPlaceholder": "Կոդով, SKU-ով, բրենդով կամ կատեգորիայով",
+      "resultCount": "Ցուցադրված է {{shown}}՝ {{total}} ապրանքից",
+      "stockLines": "Ապրանքատեսակներ",
+      "totalUnits": "Ընդհանուր միավորներ",
+      "saleValue": "Պաշարի վաճառքի արժեք",
       "loading": "Խանութի ապրանքները բեռնվում են...",
       "emptyState": "Այս խանութում ապրանքներ չեն գտնվել։",
+      "noMatches": "Այս որոնմամբ ապրանքներ չեն գտնվել։",
+      "toggleDetails": "Դիտել կամ փակել ապրանքի #{{id}} տվյալները",
       "columns": {
         "id": "ID",
         "productId": "Ապրանքի ID",
@@ -891,14 +1009,22 @@
     }
   },
   "warehouses": {
+    "confirmation": {
+      "deleteTitle": "Ջնջել պահեստը",
+      "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել {{name}} պահեստը։"
+    },
+    "sections": {
+      "form": "Պահեստի տվյալներ",
+      "list": "Գրանցված պահեստներ"
+    },
     "navigation": {
       "totalBatches": "Ընդհանուր խմբեր",
       "batchesToSale": "Վաճառքի խմբեր",
       "soldBatches": "Վաճառված խմբեր",
       "adjustedSales": "Ճշգրտված վաճառքներ",
       "profit": "Շահույթ",
-      "addProduct": "Ավելացնել ապրանք",
-      "products": "Ապրանքներ",
+      "addProduct": "Ապրանքի մուտք",
+      "products": "Պահեստի պաշարներ",
       "transferToShop": "Տեղափոխել խանութ"
     },
     "navigationGroups": {
@@ -907,8 +1033,23 @@
       "financial": "Ֆինանսական հաշվետվություն"
     },
     "form": {
-      "selectWarehouse": "Ընտրեք պահեստը"
+      "warehouseKey": "Պահեստի կոդ"
     },
+    "validation": {
+      "enterWarehouseCode": "Մուտքագրեք պահեստի կոդը"
+    },
+    "success": {
+      "warehouseCreated": "Պահեստը հաջողությամբ ստեղծվեց",
+      "warehouseUpdated": "Պահեստի տվյալները թարմացվեցին",
+      "warehouseDeleted": "Պահեստը ջնջվեց"
+    },
+    "error": {
+      "failedToCreate": "Չհաջողվեց ստեղծել պահեստը",
+      "failedToUpdate": "Չհաջողվեց թարմացնել պահեստի տվյալները",
+      "failedToDelete": "Չհաջողվեց ջնջել պահեստը"
+    },
+    "loading": "Պահեստները բեռնվում են...",
+    "emptyState": "Գրանցված պահեստներ չկան։",
     "totalBatches": {
       "loading": "Խմբերը բեռնվում են...",
       "emptyState": "Խմբեր չեն գտնվել։",
@@ -1288,6 +1429,9 @@
   "customerTypes": {
     "addCustomerType": "Ավելացնել հաճախորդի տեսակ",
     "editCustomerType": "Խմբագրել հաճախորդի տեսակը",
+    "listTitle": "Գրանցված հաճախորդների տեսակներ",
+    "loading": "Հաճախորդների տեսակները բեռնվում են...",
+    "emptyState": "Հաճախորդների տեսակներ դեռ չկան։ Ավելացրեք առաջինը։",
     "confirmation": {
       "deleteTitle": "Ջնջել հաճախորդի տեսակը",
       "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել «{{code}}» հաճախորդի տեսակը։ Այս գործողությունը հետադարձելի չէ։",
@@ -1342,7 +1486,9 @@
       "deleteDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել։ Այս գործողությունը հետադարձելի չէ։",
       "delete": "Ջնջել",
       "deleteIronTypeTitle": "Ջնջել մետաղի տեսակը",
-      "deleteIronTypeDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել։ Այս գործողությունը հետադարձելի չէ։"
+      "deleteIronTypeDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել։ Այս գործողությունը հետադարձելի չէ։",
+      "deletePriceTitle": "Ջնջել գինը",
+      "deletePriceDescription": "Վստա՞հ եք, որ ցանկանում եք ջնջել այս գնի գրառումը։"
     },
     "note": {
       "basePriceHint": "Ընտրեք բրենդը և երկաթի տեսակը, այնուհետև մուտքագրեք գները բոլոր հաճախորդի տեսակների համար",
@@ -1936,6 +2082,7 @@
   "products": {
     "iconAlt": "Ապրանքների պատկերակ",
     "addNew": "Ավելացնել",
+    "quickAdd": "Արագ մուտքագրում",
     "loading": "Ապրանքները բեռնվում են...",
     "emptyState": "Ապրանքներ չեն գտնվել։ Սեղմեք «Ավելացնել», որպեսզի ստեղծեք առաջին ապրանքը։",
     "loadingGeneric": "Բեռնվում է...",
@@ -1944,8 +2091,9 @@
       "ironProducts": "Երկաթյա ապրանքներ"
     },
     "columns": {
+      "id": "Համար",
       "productKey": "Ապրանքի կոդ",
-      "sku": "SKU",
+      "sku": "Sku",
       "brand": "Բրենդ",
       "category": "Կատեգորիա",
       "unitType": "Չափման միավոր",
@@ -1958,7 +2106,7 @@
     },
     "mobile": {
       "actions": "Գործողություններ",
-      "sku": "SKU",
+      "sku": "Sku",
       "code": "Կոդ",
       "brand": "Բրենդ",
       "category": "Կատեգորիա",
@@ -1971,9 +2119,10 @@
     "form": {
       "addProduct": "Ավելացնել ապրանք",
       "addNewProduct": "Ավելացնել նոր ապրանք",
+      "saveAndAddNext": "Պահպանել և ավելացնել հաջորդը",
       "editProduct": "Խմբագրել ապրանքը",
       "productKey": "Ապրանքի կոդ",
-      "sku": "SKU",
+      "sku": "Sku",
       "brand": "Բրենդ",
       "category": "Կատեգորիա",
       "rootCategory": "Ծնող կատեգորիա",
@@ -2637,6 +2786,12 @@
   "catalystPricing": {
     "title": "Կատալիզատորի գնագոյացում",
     "editPricing": "Խմբագրել կատալիզատորի գնագոյացումը",
+    "marginLevels": {
+      "none": "Առանց մարժայի",
+      "low": "Ցածր մարժա",
+      "medium": "Միջին մարժա",
+      "high": "Բարձր մարժա"
+    },
     "columns": {
       "id": "ID",
       "pdReducePercent": "Պալադիումի նվազեցման տոկոս",
@@ -2930,12 +3085,16 @@
     "list": "Մատակարարների ցանկ",
     "createTitle": "Ստեղծել մատակարար",
     "editTitle": "Խմբագրել մատակարարին",
+    "viewTitle": "Մատակարարի տվյալներ",
     "searchLabel": "Որոնում",
     "searchPlaceholder": "Որոնել մատակարարի անունով կամ հեռախոսահամարով",
-    "helperText": "Այս էջից կարող եք ստեղծել, խմբագրել և հեռացնել մատակարարներին։",
+    "helperText": "Դիտեք, ստեղծեք, խմբագրեք կամ հեռացրեք մատակարարներին։",
     "emptyState": "Մատակարարներ չեն գտնվել",
     "actions": {
-      "create": "Ստեղծել մատակարար"
+      "create": "Ստեղծել մատակարար",
+      "view": "Դիտել",
+      "edit": "Խմբագրել",
+      "delete": "Հեռացնել"
     },
     "columns": {
       "id": "ID",
@@ -2990,7 +3149,10 @@
     },
 
     "actions": {
-      "save": "Պահպանել"
+      "save": "Պահպանել",
+      "duplicateBucket": "Կրկնօրինակել բաքը",
+      "deleteBucket": "Հեռացնել բաքը",
+      "deleteComposition": "Հեռացնել բաղադրիչը"
     },
 
     "sections": {
@@ -3115,9 +3277,48 @@
       "programmers": "Ծրագրավորողների գրառումներ"
     },
 
+    "categoryCatalog": {
+      "description": "Կառավարեք ծառայությունների կատեգորիաներն ու դրանց ակտիվությունը։",
+      "totalCount": "Կատեգորիաներ՝ {{count}}",
+      "resultCount": "{{filtered}} / {{total}}",
+      "searchLabel": "Որոնել կատեգորիա",
+      "searchPlaceholder": "Կոդով կամ անվամբ",
+      "emptyState": "Այս չափանիշներով կատեգորիա չի գտնվել։",
+      "nameLabel": "Կատեգորիայի անվանում",
+      "displayOrderLabel": "Հերթ {{order}}",
+      "addTitle": "Ավելացնել կատեգորիա",
+      "editTitle": "Խմբագրել կատեգորիան",
+      "inactiveLabel": "Ապաակտիվ",
+      "pageSizeLabel": "Տողերը մեկ էջում",
+      "rangeLabel": "{{from}}–{{to}}՝ {{total}}-ից",
+      "loadFailed": "Չհաջողվեց բեռնել կատեգորիաները։",
+      "retryLabel": "Կրկին փորձել",
+      "messages": {
+        "created": "Կատեգորիան հաջողությամբ ավելացվել է։",
+        "updated": "Կատեգորիայի փոփոխությունները պահպանվել են։",
+        "createFailed": "Չհաջողվեց ավելացնել կատեգորիան։",
+        "updateFailed": "Չհաջողվեց պահպանել կատեգորիայի փոփոխությունները։",
+        "validationFailed": "Լրացրեք կատեգորիայի կոդն ու անվանումը։"
+      }
+    },
+
+    "serviceCatalog": {
+      "listTitle": "Ծառայությունների ցանկ",
+      "searchLabel": "Որոնել ծառայություններ",
+      "searchPlaceholder": "Կոդով, անունով կամ կատեգորիայով",
+      "emptyState": "Ծառայություններ չեն գտնվել",
+      "addTitle": "Ավելացնել ծառայություն",
+      "editTitle": "Խմբագրել ծառայությունը",
+      "viewTitle": "Ծառայության տվյալներ",
+      "details": "Ծառայության տվյալներ",
+      "view": "Դիտել",
+      "validationFailed": "Լրացրեք կոդը, անունը և կատեգորիան։"
+    },
+
     "actions": {
       "create": "Ստեղծել",
       "update": "Թարմացնել",
+      "addPricing": "Ավելացնել գների քարտ",
       "addCategory": "Ավելացնել կատեգորիա",
       "addService": "Ավելացնել ծառայություն",
       "loadPricing": "Բեռնել մեքենայի գները",
@@ -3165,6 +3366,7 @@
     "table": {
       "name": "Ձևանմուշ",
       "vehicle": "Մեքենա",
+      "specification": "Տեխնիկական տվյալներ",
       "location": "Տեղակայություն",
       "service": "Ծառայություն",
       "internalCost": "Ներքին ինքնարժեք",
@@ -3191,6 +3393,19 @@
       "programmingPriceAutoResolved": "Գինը որոշվում է ավտոմատ՝ ծրագրավորողների գրառումների հիման վրա։",
       "noProgrammerForVehicle": "Այս մեքենայի համար հասանելի ծրագրավորող չկա։",
       "loadFailed": "Չհաջողվեց բեռնել մեքենայի ծառայությունների գնագոյացման տվյալները։"
+    },
+    "pricingForm": {
+      "createTitle": "Նոր մեքենայի գների քարտ",
+      "editTitle": "Խմբագրել գների քարտը",
+      "vehicleSection": "Մեքենայի տվյալներ",
+      "servicesSection": "Ծառայությունների գներ",
+      "noServicesPrice": "Գին սահմանված չէ",
+      "noPricingMatches": "Այս զտիչներով գների քարտեր չեն գտնվել։"
+    },
+    "filters": {
+      "search": "Մակնիշ, մոդել կամ տարի",
+      "searchPlaceholder": "Audi Q7, BMW 3 Series...",
+      "reset": "Մաքրել"
     },
     "programmerAdmin": {
       "badge": "Ադմին վահանակ",
@@ -3230,6 +3445,85 @@
       }
     },
     "employeeManagement": {
+      "list": {
+        "description": "Գտեք աշխատակիցներին և կառավարեք նրանց տվյալներն ու աշխատանքային պայմանները։",
+        "powderBonusSummary": "Փոշու բոնուս՝ ${{amount}} (շեմ՝ {{threshold}} կգ)",
+        "totalCount": "Աշխատակիցներ՝ {{count}}",
+        "resultCount": "{{filtered}} / {{total}}",
+        "addEmployee": "Ավելացնել աշխատակից",
+        "searchLabel": "Որոնել աշխատակից",
+        "searchPlaceholder": "Անուն, ազգանուն, հեռախոս կամ էլ. փոստ",
+        "statusLabel": "Կարգավիճակ",
+        "emptyState": "Աշխատակիցներ չեն գտնվել։",
+        "loadFailed": "Չհաջողվեց բեռնել աշխատակիցների ցանկը։",
+        "retry": "Կրկին փորձել",
+        "pageSizeLabel": "Տողերը մեկ էջում",
+        "rangeLabel": "{{from}}–{{to}}՝ {{total}}-ից",
+        "addTitle": "Նոր աշխատակից",
+        "editTitle": "Խմբագրել աշխատակցին",
+        "personalSection": "Անձնական տվյալներ",
+        "assignmentSection": "Աշխատանքային տվյալներ",
+        "compensationSection": "Աշխատավարձ և բոնուս"
+      },
+      "percentageWorkspace": {
+        "description": "Ընտրեք դիտման ուղղությունը, հետո ֆիլտրեք ըստ աշխատակցի կամ ծառայության։",
+        "upsertHint": "Նույն աշխատակցի և ծառայության համար պահպանելիս գործող տոկոսը կթարմացվի։",
+        "selectContext": "Ընտրեք աշխատակցին կամ ծառայությունը՝ տոկոսները դիտելու համար։",
+        "selectEmployee": "Ընտրեք աշխատակցին՝ նրա ծառայությունների տոկոսները դիտելու համար։",
+        "selectService": "Ընտրեք ծառայությունը՝ աշխատակիցների տոկոսները դիտելու համար։",
+        "byEmployee": "Ըստ աշխատակցի",
+        "byService": "Ըստ ծառայության",
+        "employeeFilterLabel": "Աշխատակից",
+        "serviceFilterLabel": "Ծառայություն",
+        "employeeResultsTitle": "Աշխատակցի ծառայությունների տոկոսներ",
+        "serviceResultsTitle": "Ծառայության տոկոսները՝ ըստ աշխատակցի",
+        "setPercentage": "Սահմանել տոկոս",
+        "drawerTitle": "Աշխատակցի ծառայության տոկոս",
+        "noEmployeeRates": "Այս աշխատակցի համար ծառայությունների տոկոսներ դեռ սահմանված չեն։",
+        "noServiceRates": "Այս ծառայության համար աշխատակիցների տոկոսներ դեռ սահմանված չեն։",
+        "employeeLoadFailed": "Չհաջողվեց բեռնել աշխատակցի ծառայությունների տոկոսները։",
+        "serviceLoadFailed": "Չհաջողվեց բեռնել ծառայության տոկոսները։",
+        "retry": "Կրկին փորձել"
+      },
+      "depositsWorkspace": {
+        "description": "Ավանսը կանխավճար է աշխատակցին մինչև աշխատավարձի օրը։ Ընտրեք աշխատակցի պատմությունը կամ դիտեք բոլոր ավանսները։",
+        "byEmployee": "Ըստ աշխատակցի",
+        "allDeposits": "Բոլոր ավանսները",
+        "employeeFilterLabel": "Աշխատակից",
+        "statusFilter": "Ավանսի կարգավիճակ",
+        "remainingBalance": "Չմարված մնացորդ",
+        "balanceAcrossAdvances": "Բոլոր {{count}} ավանսների չմարված գումարը",
+        "advanceCount": "Ավանս՝ {{count}}",
+        "activeDepositHint": "Բոլոր ավանսների չմարված գումարը",
+        "noActiveDeposit": "Ակտիվ ավանս չկա",
+        "issuedAt": "Տրվել է",
+        "allCount": "Գրառումներ՝ {{count}}",
+        "selectEmployee": "Ընտրեք աշխատակցին՝ ավանսների պատմությունը դիտելու համար։",
+        "noHistory": "Այս աշխատակցի համար ավանսներ չեն գրանցվել։",
+        "noAllDeposits": "Այս ֆիլտրերով ավանսներ չեն գտնվել։",
+        "historyLoadFailed": "Չհաջողվեց բեռնել աշխատակցի ավանսների պատմությունը։",
+        "allLoadFailed": "Չհաջողվեց բեռնել ավանսների ցանկը։",
+        "retry": "Կրկին փորձել",
+        "drawerTitle": "Նոր ավանս",
+        "drawerDescription": "Ընտրեք աշխատակցին և մուտքագրեք տրամադրվող ավանսի գումարը։"
+      },
+      "attendanceWorkspace": {
+        "description": "Նշեք յուրաքանչյուր աշխատակցի ներկայությունը ընտրված օրվա և խանութի համար։",
+        "searchLabel": "Որոնել աշխատակից",
+        "searchPlaceholder": "Անուն, ազգանուն կամ հեռախոս",
+        "presentCount": "Ներկա",
+        "absentCount": "Բացակա",
+        "employeeCount": "Ցուցադրվում է",
+        "statusForEmployee": "{{employee}}-ի հաճախումը",
+        "noteForEmployee": "Նշում՝ {{employee}}",
+        "notePlaceholder": "Նշում (ըստ ցանկության)",
+        "noEmployees": "Ընտրված խանութում ակտիվ աշխատակիցներ չկան։",
+        "noSearchMatches": "Այս որոնմամբ աշխատակից չի գտնվել։",
+        "noHistory": "Ընտրված ժամանակահատվածում հաճախման գրառումներ չկան։",
+        "retry": "Կրկին փորձել",
+        "markShownPresent": "Ցուցադրվածներին ներկա",
+        "markShownAbsent": "Ցուցադրվածներին բացակա"
+      },
       "tabs": {
         "employees": "Աշխատակիցներ",
         "percentages": "Ծառայությունների տոկոսներ",
@@ -3241,14 +3535,18 @@
         "save": "Պահպանել",
         "giveDeposit": "Տալ ավանս",
         "saveAttendance": "Պահպանել հաճախումը",
+        "markAllPresent": "Բոլորին ներկա",
+        "markAllAbsent": "Բոլորին բացակա",
         "calculate": "Հաշվել աշխատավարձը",
-        "markPaid": "Նշել որպես վճարված"
+        "markPaid": "Նշել որպես վճարված",
+        "openAttendance": "Լրացնել հաճախումը",
+        "payUnpaidSalary": "Վճարել կուտակված աշխատավարձը"
       },
       "fields": {
         "shop": "Խանութ",
         "employeeType": "Աշխատակցի տեսակ",
         "powderBonusKgThreshold": "Փոշու բոնուսի շեմ (կգ)",
-        "powderBonusAmount": "Փոշու բոնուսի գումար (դրամ)",
+        "powderBonusAmount": "Փոշու բոնուսի գումար (USD)",
         "salaryType": "Աշխատավարձի տեսակ",
         "fixedDailySalary": "Ֆիքսված օրական աշխատավարձ",
         "selectShop": "Ընտրեք խանութը",
@@ -3273,6 +3571,13 @@
         "Regular": "Սովորական",
         "Director": "Տնօրեն"
       },
+      "calculationSources": {
+        "FixedDaily": "Ֆիքսված օրական աշխատավարձ",
+        "EmployeeCommission": "Աշխատակցի ծառայության տոկոս",
+        "ProgrammerServicePricing": "Ծրագրավորողի համաձայնեցված գին",
+        "ProgrammerInternalCostFallback": "Ծրագրավորողի գնի պահուստային հաշվարկ",
+        "DirectorMonthlyPowderBonus": "Տնօրենի ամսական փոշու բոնուս"
+      },
       "attendanceStatus": {
         "Present": "Ներկա",
         "Absent": "Բացակա"
@@ -3281,8 +3586,34 @@
         "activeDeposit": "Գործող ավանս",
         "presentCount": "Ներկա աշխատակիցներ",
         "absentCount": "Բացակա աշխատակիցներ",
+        "payrollCount": "Աշխատավարձի գրառումներ",
+        "totalPayable": "Ընդհանուր վճարման ենթակա",
+        "unpaidCount": "Չվճարված",
+        "notYetPayable": "Դեռ վճարման ենթակա չէ",
+        "missingPayrollRecords": "Առանց աշխատավարձի գրառման աշխատակիցներ՝ {{count}}",
         "paid": "Վճարված",
-        "unpaid": "Չվճարված"
+        "unpaid": "Չվճարված",
+        "sourceUnavailable": "Հաշվարկի աղբյուրը նշված չէ",
+        "programmerPriceWarning": "Ստուգեք ծրագրավորողի համաձայնեցված գինը։",
+        "powderReceived": "Ընդունված փոշի՝ {{amount}} կգ",
+        "bonusIncluded": "Ամսական բոնուսը ներառված է վճարման մեջ",
+        "bonusAccrued": "Կուտակված է, վճարելի է միայն ամսվա վերջին օրը",
+        "bonusNotIncluded": "Վերջնական ամսական գումարը դեռ ներառված չէ",
+        "estimatedFinalPayable": "Ամսվա վերջի նախնական վճարումը՝ {{amount}} (կարող է փոխվել)",
+        "advanceDeducted": "Այս հաշվարկից պահված ավանս",
+        "advanceBalanceAfter": "Ավանսի մնացորդը հետո",
+        "readyToPay": "Պատրաստ է վճարման",
+        "paidBy": "Վճարել է՝ {{user}}",
+        "noPaymentPermission": "Վճարման իրավասություն չկա",
+        "noPaymentDue": "Վճարման ենթակա գումար չկա",
+        "unpaidGrossSalary": "Չվճարված համախառն աշխատավարձ",
+        "advanceDeduction": "Ավանսի պահում",
+        "activeAdvanceBalance": "Գործող ավանսի մնացորդ",
+        "unpaidRecordCount": "Չվճարված գրառումներ՝ {{count}}",
+        "unpaidPeriod": "Ժամանակահատված՝ {{from}} – {{to}}",
+        "paymentThroughDate": "Հաշվարկված մինչև {{date}}",
+        "salaryPeriodEnds": "Աշխատավարձի շրջանի ավարտը՝ {{date}}",
+        "noCashPaymentRequired": "Դրամական վճարում չի պահանջվում"
       },
       "sections": {
         "employeeForm": "Աշխատակցի ձև",
@@ -3295,17 +3626,23 @@
         "depositsAll": "Բոլոր աշխատողների ավանսները",
         "depositsByEmployee": "Ընթացիկ մնացորդը",
         "attendance": "Օրական հաճախում",
+        "attendanceRoster": "Օրվա աշխատակիցներ",
         "attendanceHistory": "Հաճախման պատմություն",
         "payroll": "Օրական աշխատավարձ",
-        "salaryHistory": "Աշխատավարձի պատմություն"
+        "salaryHistory": "Աշխատավարձի պատմություն",
+        "unpaidSalary": "Կուտակված չվճարված աշխատավարձ"
       },
       "confirmation": {
         "markPaidTitle": "Հաստատեք աշխատավարձի վճարումը",
-        "markPaidDescription": "Նշե՞լ {{employee}}-ի {{amount}} աշխատավարձը որպես վճարված։"
+        "markPaidDescription": "Նշե՞լ {{employee}}-ի {{amount}} աշխատավարձը որպես վճարված։",
+        "payUnpaidSalaryTitle": "Հաստատել կուտակված աշխատավարձի վճարումը",
+        "payUnpaidSalaryDescription": "Վճարե՞լ {{employee}}-ի մինչև {{date}} կուտակված {{amount}} աշխատավարձը։"
       },
       "columns": {
         "fullName": "Լրիվ անուն",
         "shop": "Խանութ",
+        "assignment": "Խանութ / կատեգորիա",
+        "compensation": "Աշխատավարձի պայմաններ",
         "employeeType": "Աշխատակցի տեսակ",
         "serviceCategory": "Ծառայության կատեգորիա",
         "salaryType": "Աշխատավարձի տեսակ",
@@ -3321,6 +3658,8 @@
         "workDate": "Աշխատանքի օր",
         "notes": "Նշումներ",
         "grossSalary": "Համախառն աշխատավարձ",
+        "calculationSource": "Հաշվարկի աղբյուր",
+        "advance": "Ավանս",
         "depositDeduction": "Ավանսի պահում",
         "depositRemainingAfter": "Մնացորդը աշխատավարձից հետո",
         "netPayable": "Վճարման ենթակա",
@@ -3328,8 +3667,9 @@
         "paidAt": "Վճարման ամսաթիվ",
         "powderQuantityKg": "Փոշու քանակ",
         "powderBonusKgThreshold": "Փոշու բոնուսի շեմ",
-        "powderBonusAmount": "Փոշու բոնուսի գումար",
-        "powderBonus": "Տնօրենի փոշու բոնուս"
+        "powderBonusAmount": "Փոշու բոնուսի գումար (USD)",
+        "powderBonus": "Տնօրենի փոշու բոնուս (AMD)",
+        "bonusRule": "Շեմը՝ {{threshold}} կգ, բոնուսը՝ {{amount}} USD"
       },
       "messages": {
         "validationFailed": "Լրացրեք աշխատակցի պարտադիր տվյալները։",
@@ -3345,14 +3685,25 @@
         "attendanceSaveFailed": "Չհաջողվեց պահպանել հաճախման տվյալները",
         "depositsAllLoadFailed": "Չհաջողվեց բեռնել բոլոր աշխատողների ավանսները",
         "calculated": "Աշխատավարձը հաջողությամբ հաշվարկվեց",
+        "noSalaryCalculated": "Այս պահին ընտրված չափանիշներով աշխատավարձի հաշվարկ չկա։",
         "salaryFailed": "Չհաջողվեց հաշվարկել աշխատավարձը",
         "salaryByDateLoadFailed": "Չհաջողվեց բեռնել աշխատավարձերը ընտրված օրվա համար",
+        "unpaidSummaryLoadFailed": "Չհաջողվեց բեռնել չվճարված աշխատավարձի ամփոփումը։",
+        "noUnpaidSalary": "Այս աշխատակցի համար ընտրված օրվա դրությամբ չվճարված աշխատավարձ չկա։",
+        "selectEmployeeForUnpaidSalary": "Ընտրեք աշխատակցին՝ կուտակված չվճարված աշխատավարձը տեսնելու համար։",
+        "noPresentEmployees": "Ընտրված օրը ներկա աշխատակիցներ չկան։ Նախ լրացրեք հաճախումը։",
         "salaryHistoryLoadFailed": "Չհաջողվեց բեռնել աշխատավարձի պատմությունը",
+        "noSalaryHistory": "Ընտրված ժամանակահատվածում հաշվարկված աշխատավարձ չկա։ Պատմության էջը բացակայող օրերի հաշվարկ չի կատարում։",
         "salaryMarkedPaid": "Աշխատավարձը նշվեց որպես վճարված",
         "salaryMarkPaidFailed": "Չհաջողվեց նշել աշխատավարձը որպես վճարված",
+        "salaryRefreshAfterPaymentFailed": "Վճարումը կատարվել է, բայց տվյալները չհաջողվեց թարմացնել։ Կրկին փորձեք բեռնել ամփոփումը։",
         "salaryRecordIdMissing": "Աշխատավարձի գրառման ID-ն բացակայում է",
         "selectEmployeeHint": "Ընտրեք աշխատակցին՝ ավանսը և պատմությունը տեսնելու համար։",
-        "selectEmployeeForSalaryHistory": "Աշխատավարձի պատմությունը տեսնելու համար ընտրեք աշխատակցին։"
+        "selectEmployeeForSalaryHistory": "Աշխատավարձի պատմությունը տեսնելու համար ընտրեք աշխատակցին։",
+        "selectEmployeeForAttendanceHistory": "Ընտրեք աշխատակցին՝ հաճախումների պատմությունը դիտելու համար։",
+        "noPayrollRecords": "Հաշվարկված աշխատավարձ չկա։ Ստուգեք հաճախումը (հաշվարկվում են միայն ներկաները), ընտրված խանութը կամ աշխատակցին, ծրագրավորողի համաձայնեցված գինը, ապա գործարկեք հաշվարկը։ Գրառումը կարող է նաև արդեն հաշվարկված կամ վճարված լինել։",
+        "missingPayrollRecordsHint": "Գրանցում չկա այս օրվա համար։ Ստուգեք հաճախումը, զտիչները կամ՝ արդյոք հաշվարկն արդեն կատարվել ու վճարվել է։",
+        "payrollShopHint": "Աշխատակցով զտելու համար նախ ընտրեք խանութ։"
       }
     }
   },

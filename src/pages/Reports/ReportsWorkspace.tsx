@@ -30,6 +30,7 @@ interface ReportNavItem {
 export interface ReportNavSection {
   key: string;
   title: string;
+  icon?: LucideIcon;
   items: ReportNavItem[];
 }
 
@@ -99,7 +100,7 @@ export const ReportsWorkspace = ({
       <div className={styles.reportLayout}>
         <nav className={styles.navigation} aria-label={pageTitle}>
           {sections.map((section) => {
-            const SectionIcon = sectionIcons[section.key] ?? FolderOpen;
+            const SectionIcon = section.icon ?? sectionIcons[section.key] ?? FolderOpen;
 
             return (
               <div className={styles.navigationSection} key={section.key}>

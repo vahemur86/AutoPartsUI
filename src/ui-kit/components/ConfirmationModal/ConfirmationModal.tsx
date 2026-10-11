@@ -39,7 +39,7 @@ export interface ConfirmationModalProps {
 export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   open,
   onOpenChange,
-  title = "Confirm action",
+  title,
   description,
   confirmText,
   cancelText,
@@ -56,6 +56,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   const { t } = useTranslation();
   const { isMobile, mounted } = useIsMobile();
 
+  const resolvedTitle = title ?? t("common.areYouSure");
   const resolvedConfirmText = confirmText ?? t("common.confirm");
   const resolvedCancelText = cancelText ?? t("common.cancel");
 
@@ -121,13 +122,13 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
       <div className={`${styles.card} ${className}`} role="document">
         <header className={styles.header}>
           <h3 className={styles.title} id={headingId}>
-            {title}
+            {resolvedTitle}
           </h3>
 
           {!preventClose && (
             <IconButton
               variant="secondary500"
-              ariaLabel="Close"
+              ariaLabel={t("common.close")}
               onClick={handleCancelClick}
               icon={<X className="h-6 w-6" />}
             />
@@ -161,7 +162,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
             disabled={confirmDisabled || confirmLoading}
           >
             {!confirmLoading && confirmIcon}
-            {confirmLoading ? "Working..." : resolvedConfirmText}
+            {confirmLoading ? t("common.loading") : resolvedConfirmText}
           </Button>
         </footer>
       </div>

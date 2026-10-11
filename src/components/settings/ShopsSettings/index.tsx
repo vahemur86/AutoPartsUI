@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 // ui-kit
-import { Button, Tab, TabGroup } from "@/ui-kit";
+import { Button, ConfirmationModal, IconButton } from "@/ui-kit";
+import { Check, Plus } from "lucide-react";
 // components
 import { ShopContent } from "./ShopContent";
 import { ShopPricingContent } from "./ShopPricingContent";
@@ -35,10 +36,11 @@ export const ShopsSettings = () => {
   const { warehouses } = useAppSelector((state) => state.warehouses);
   const { shops, isLoading, error } = useAppSelector((state) => state.shops);
 
-  const [activeTab, setActiveTab] = useState("add-new");
+  const [isShopFormOpen, setIsShopFormOpen] = useState(false);
   const [shopKey, setShopKey] = useState("");
   const [warehouseId, setWarehouseId] = useState(0);
   const [editingShop, setEditingShop] = useState<Shop | null>(null);
+  const [deletingShop, setDeletingShop] = useState<Shop | null>(null);
   const [pricingShopId, setPricingShopId] = useState(0);
   const [markupPercentage, setMarkupPercentage] = useState("");
   const [pricingSettings, setPricingSettings] = useState<ShopPricing | null>(null);
@@ -85,6 +87,7 @@ export const ShopsSettings = () => {
 
       setShopKey("");
       setWarehouseId(0);
+      setIsShopFormOpen(false);
     } catch (error: unknown) {
       console.error(error);
       toast.error(
@@ -98,34 +101,37 @@ export const ShopsSettings = () => {
     }
   }, [shopKey, warehouseId, t, editingShop, dispatch]);
 
-  const handleDeleteShop = useCallback(async () => {
-    if (!editingShop) {
-      return;
-    }
+  const handleOpenShopForm = useCallback(() => {
+    setShopKey("");
+    setWarehouseId(0);
+    setEditingShop(null);
+    setIsShopFormOpen(true);
+  }, []);
 
-    const shouldDelete = window.confirm(t("common.areYouSure"));
-    if (!shouldDelete) {
-      return;
-    }
+  const handleCloseShopForm = useCallback(() => {
+    setShopKey("");
+    setWarehouseId(0);
+    setEditingShop(null);
+    setIsShopFormOpen(false);
+  }, []);
 
+  const confirmDeleteShop = useCallback(async () => {
+    if (!deletingShop) return;
     try {
-      await dispatch(removeShop(editingShop.id)).unwrap();
+      await dispatch(removeShop(deletingShop.id)).unwrap();
       toast.success(t("shops.success.shopDeleted"));
-      setShopKey("");
-      setWarehouseId(0);
-      setEditingShop(null);
+      if (editingShop?.id === deletingShop.id) {
+        setShopKey("");
+        setWarehouseId(0);
+        setEditingShop(null);
+        setIsShopFormOpen(false);
+      }
+      setDeletingShop(null);
     } catch (error: unknown) {
       console.error(error);
       toast.error(getErrorMessage(error, t("shops.error.failedToDelete")));
     }
-  }, [dispatch, editingShop, t]);
-
-  const handleTabChange = useCallback((tab: string) => {
-    setActiveTab(tab);
-    setShopKey("");
-    setWarehouseId(0);
-    setEditingShop(null);
-  }, []);
+  }, [dispatch, deletingShop, editingShop, t]);
 
   const loadShopPricing = useCallback(
     async (shopId: number) => {
@@ -207,51 +213,37 @@ export const ShopsSettings = () => {
     setEditingShop(shop);
     setShopKey(shop.code);
     setWarehouseId(shop.warehouseId);
-    setActiveTab("add-new");
+    setIsShopFormOpen(true);
   }, []);
 
   const handleDelete = useCallback(
-    async (id: number) => {
-      try {
-        await dispatch(removeShop(id)).unwrap();
-        toast.success(t("shops.success.shopDeleted"));
-      } catch (error: unknown) {
-        console.error(error);
-        toast.error(getErrorMessage(error, t("shops.error.failedToDelete")));
-      }
+    (id: number) => {
+      const shop = shops.find((item) => item.id === id);
+      if (shop) setDeletingShop(shop);
     },
-    [dispatch, t],
+    [shops],
   );
 
   useEffect(() => {
-    if (activeTab === "shops-history") {
-      dispatch(fetchShops());
-    }
-  }, [activeTab, dispatch]);
+    dispatch(fetchShops());
+  }, [dispatch]);
 
   useEffect(() => {
-    if (activeTab === "shop-pricing") {
-      dispatch(fetchShops());
-    }
-  }, [activeTab, dispatch]);
-
-  useEffect(() => {
-    if (activeTab !== "shop-pricing") {
+    if (shops.length === 0) {
+      if (pricingShopId !== 0) setPricingShopId(0);
       return;
     }
 
-    if (shops.length > 0 && pricingShopId === 0) {
+    if (!shops.some((shop) => shop.id === pricingShopId)) {
       setPricingShopId(shops[0].id);
     }
-  }, [activeTab, shops, pricingShopId]);
+  }, [shops, pricingShopId]);
 
   useEffect(() => {
-    if (activeTab !== "shop-pricing" || pricingShopId === 0) {
-      return;
-    }
+    if (pricingShopId === 0) return;
 
     loadShopPricing(pricingShopId);
-  }, [activeTab, pricingShopId, loadShopPricing]);
+  }, [pricingShopId, loadShopPricing]);
 
   useEffect(() => {
     if (error) {
@@ -262,99 +254,47 @@ export const ShopsSettings = () => {
   return (
     <div className={styles.shopsSettingsWrapper}>
       <div className={styles.shopsSettings}>
-        <div className={styles.tabsContainer}>
-          <TabGroup variant="segmented">
-            <Tab
-              variant="segmented"
-              active={activeTab === "add-new"}
-              text={t("shops.tabs.addNew")}
-              onClick={() => handleTabChange("add-new")}
-            />
-            <Tab
-              variant="segmented"
-              active={activeTab === "shops-history"}
-              text={t("shops.tabs.shopsHistory")}
-              onClick={() => handleTabChange("shops-history")}
-            />
-            <Tab
-              variant="segmented"
-              active={activeTab === "shop-pricing"}
-              text={t("shops.tabs.shopPricing")}
-              onClick={() => handleTabChange("shop-pricing")}
-            />
-          </TabGroup>
-        </div>
+        <ShopContent
+          isFormOpen={isShopFormOpen}
+          isEditing={!!editingShop}
+          onOpenForm={handleOpenShopForm}
+          onCloseForm={handleCloseShopForm}
+          actionButtons={
+            <div className={styles.managementActions}>
+              <IconButton
+                variant="primary"
+                size="medium"
+                icon={editingShop ? <Check size={16} /> : <Plus size={16} />}
+                ariaLabel={editingShop ? t("common.update") : t("common.add")}
+                title={editingShop ? t("common.update") : t("common.add")}
+                onClick={() => void handleAddShop()}
+                disabled={isLoading || !shopKey.trim() || warehouseId === 0}
+              />
+            </div>
+          }
+          shopKey={shopKey}
+          setShopKey={setShopKey}
+          warehouseId={warehouseId}
+          setWarehouseId={setWarehouseId}
+          warehouses={warehouses}
+          shops={shops}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
 
-        {(activeTab === "add-new" || activeTab === "shops-history") && (
-          <ShopContent
-            actionButtons={
-              activeTab === "add-new" ? (
-                <div className={styles.actionButtons}>
-                  <Button
-                    variant="secondary"
-                    size="medium"
-                    onClick={() => {
-                      setShopKey("");
-                      setWarehouseId(0);
-                      setEditingShop(null);
-                    }}
-                    disabled={isLoading}
-                  >
-                    {t("common.cancel")}
-                  </Button>
-
-                  {editingShop && (
-                    <Button
-                      variant="secondary"
-                      size="medium"
-                      onClick={handleDeleteShop}
-                      disabled={isLoading}
-                    >
-                      {t("common.delete")}
-                    </Button>
-                  )}
-
-                  <Button
-                    variant="primary"
-                    size="medium"
-                    onClick={handleAddShop}
-                    disabled={
-                      isLoading ||
-                      !shopKey.trim() ||
-                      !warehouseId ||
-                      warehouseId === 0
-                    }
-                  >
-                    {editingShop ? t("common.update") : t("common.add")}
-                  </Button>
-                </div>
-              ) : undefined
-            }
-            shopKey={shopKey}
-            setShopKey={setShopKey}
-            activeTab={activeTab}
-            warehouseId={warehouseId}
-            setWarehouseId={setWarehouseId}
-            warehouses={warehouses}
-            shops={shops}
-            isLoading={isLoading}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        )}
-
-        {activeTab === "shop-pricing" && (
+        <section className={styles.pricingSection} aria-labelledby="shop-pricing-title">
+          <header className={styles.sectionHeading}>
+            <h2 id="shop-pricing-title">{t("shops.pricing.sectionTitle")}</h2>
+          </header>
           <ShopPricingContent
             actionButtons={
               <div className={styles.actionButtons}>
                 <Button
                   variant="secondary"
                   size="medium"
-                  onClick={() => {
-                    setPricingSettings(null);
-                    setMarkupPercentage("");
-                  }}
-                  disabled={isSavingPricing || isApplyingPricing}
+                  onClick={() => void loadShopPricing(pricingShopId)}
+                  disabled={isPricingLoading || isSavingPricing || isApplyingPricing}
                 >
                   {t("common.cancel")}
                 </Button>
@@ -396,8 +336,21 @@ export const ShopsSettings = () => {
             pricingSettings={pricingSettings}
             isLoading={isPricingLoading || isLoading}
           />
-        )}
+        </section>
       </div>
+
+      <ConfirmationModal
+        open={!!deletingShop}
+        onOpenChange={(open) => !open && setDeletingShop(null)}
+        title={t("shops.confirmation.deleteTitle")}
+        description={t("shops.confirmation.deleteDescription", {
+          name: deletingShop?.code ?? "",
+        })}
+        confirmText={isLoading ? t("common.loading") : t("common.delete")}
+        cancelText={t("common.cancel")}
+        onConfirm={() => void confirmDeleteShop()}
+        onCancel={() => setDeletingShop(null)}
+      />
     </div>
   );
 };

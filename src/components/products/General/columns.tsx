@@ -25,7 +25,7 @@ interface ColumnHandlers {
   }>;
   unitTypes: Array<{ id: number; code: string }>;
   boxSizes: Array<{ id: number; code: string }>;
-  onEdit: (product: Product, buttonRef: React.RefObject<HTMLElement>) => void;
+  onEdit: (product: Product) => void;
   onDelete: (productId: number) => void;
 }
 
@@ -87,7 +87,7 @@ export const getProductColumns = ({
 }: ColumnHandlers): ColumnDef<Product, any>[] => {
   return [
     columnHelper.accessor("id", {
-      header: i18next.t("columns.id"),
+      header: i18next.t("products.columns.id"),
       cell: (info) => `#${info.getValue()}`,
     }),
     columnHelper.accessor("code", {
@@ -131,12 +131,7 @@ export const getProductColumns = ({
               size="small"
               icon={<Pencil size={14} color="#ffffff" />}
               ariaLabel={i18next.t("common.edit")}
-              onClick={(e) => {
-                const buttonRef = {
-                  current: e.currentTarget,
-                } as React.RefObject<HTMLElement>;
-                onEdit(product, buttonRef);
-              }}
+              onClick={() => onEdit(product)}
             />
             <IconButton
               variant="secondary"

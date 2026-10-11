@@ -596,7 +596,7 @@ export const Header: FC = () => {
                 }}
               >
                 <Box className={styles.menuItemIcon} size={16} />
-                {t("header.products")}
+                {t("header.productCatalog")}
               </button>
               <button
                 type="button"

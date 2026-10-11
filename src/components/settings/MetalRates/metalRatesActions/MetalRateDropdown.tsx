@@ -1,8 +1,10 @@
-import { useState, useEffect, type RefObject } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
+import { Coins, X } from "lucide-react";
 
 // ui-kit
-import { Button, Dropdown, TextField, Switch } from "@/ui-kit";
+import { Button, TextField, Switch } from "@/ui-kit";
 
 // types
 import type { MetalRate } from "@/types/settings";
@@ -14,7 +16,6 @@ export type MetalRateForm = Omit<MetalRate, "id">;
 
 interface MetalRateDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement | null>;
   initialData?: (MetalRateForm & { id?: number }) | null;
   isLoading?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,7 +24,6 @@ interface MetalRateDropdownProps {
 
 export const MetalRateDropdown = ({
   open,
-  anchorRef,
   initialData,
   isLoading = false,
   onOpenChange,
@@ -51,6 +51,20 @@ export const MetalRateDropdown = ({
     }
   }, [open, initialData]);
 
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, onOpenChange]);
+
   const numPt = parseFloat(ptPrice);
   const numPd = parseFloat(pdPrice);
   const numRh = parseFloat(rhPrice);
@@ -75,24 +89,47 @@ export const MetalRateDropdown = ({
 
   const titleText = isEditMode ? t("metals.editRate") : t("metals.addRate");
 
-  return (
-    <Dropdown
-      open={open}
-      onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      align="start"
-      side="left"
-      title={titleText}
-    >
-      <div className={styles.header}>
-        <span className={styles.title}>{titleText}</span>
-      </div>
+  if (!open) return null;
 
-      <div className={styles.content}>
-        <div className={styles.grid}>
+  return createPortal(
+    <div
+      className={styles.drawerBackdrop}
+      onMouseDown={() => onOpenChange(false)}
+    >
+      <aside
+        className={styles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="metal-rate-drawer-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className={styles.drawerHeader}>
+          <span className={styles.drawerIcon} aria-hidden="true">
+            <Coins size={20} />
+          </span>
+          <div className={styles.drawerHeading}>
+            <span>{t("metals.columns.currency")}</span>
+            <h2 id="metal-rate-drawer-title">{titleText}</h2>
+          </div>
+          <button
+            type="button"
+            className={styles.drawerClose}
+            onClick={() => onOpenChange(false)}
+            aria-label={t("common.close")}
+            title={t("common.close")}
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className={styles.drawerBody}>
+          <div className={styles.sectionTitle}>
+            {t("metals.columns.currency")}
+          </div>
+          <div className={styles.grid}>
           <TextField
             label={t("metals.form.currency")}
-            placeholder="e.g. USD"
+            placeholder="USD"
             value={currencyCode}
             onChange={(e) => setCurrencyCode(e.target.value)}
             error={hasTriedSave && !isCurrencyValid}
@@ -138,27 +175,28 @@ export const MetalRateDropdown = ({
           </div>
         </div>
 
-        <div className={styles.actionswithoutDelete}>
-          <div className={styles.primaryActions}>
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button
-              variant="primary"
-              size="medium"
-              onClick={handleSaveClick}
-              disabled={isLoading}
-            >
-              {isEditMode ? t("common.update") : t("common.save")}
-            </Button>
-          </div>
         </div>
-      </div>
-    </Dropdown>
+
+        <footer className={styles.drawerFooter}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+          >
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleSaveClick}
+            disabled={isLoading}
+          >
+            {isEditMode ? t("common.update") : t("common.save")}
+          </Button>
+        </footer>
+      </aside>
+    </div>,
+    document.body,
   );
 };

@@ -11,7 +11,7 @@ import { useDefaultLanguage } from "@/hooks/useDefaultLanguage";
 
 // Pages
 import { Home } from "@/pages/Home/index";
-import { Settings } from "@/pages/Settings/index";
+import { Settings, SettingsHome } from "@/pages/Settings/index";
 import { Warehouses } from "@/pages/Warehouses/index";
 import { Shops } from "@/pages/Shops/index";
 import { Login } from "@/pages/Login/index";
@@ -20,8 +20,8 @@ import { Customers } from "@/pages/Customers";
 import { OperatorPage } from "@/pages/Operator";
 import { ShopOperatorPage } from "@/pages/ShopOperator";
 import { ProgrammerPage } from "@/pages/Programmer";
-import { Reports } from "@/pages/Reports";
-import { FinanceReports } from "@/pages/FinanceReports";
+import { Reports, ReportsHome } from "@/pages/Reports";
+import { FinanceReports, FinanceReportsHome } from "@/pages/FinanceReports";
 import { Products } from "@/pages/Products";
 import { ServiceTemplatePage } from "@/pages/ServiceTemplatePage";
 import {
@@ -114,7 +114,6 @@ import { TransferToShop } from "@/components/warehouses/TransferToShop";
 
 // Products components
 import { GeneralProducts } from "@/components/products/General";
-import { IronProducts } from "@/components/products/IronProducts";
 
 // Stores
 import { store } from "@/store/store";
@@ -224,10 +223,7 @@ export const App = () => {
                 />
 
                 <Route path="settings" element={<Settings />}>
-                  <Route
-                    index
-                    element={<Navigate to="product-settings" replace />}
-                  />
+                  <Route index element={<SettingsHome />} />
                   <Route
                     path="project-languages"
                     element={<ProjectLanguages />}
@@ -291,7 +287,7 @@ export const App = () => {
                 />
 
                 <Route path="reports" element={<Reports />}>
-                  <Route index element={<Navigate to="z-reports" replace />} />
+                  <Route index element={<ReportsHome />} />
                   <Route path="z-reports" element={<ZReports />} />
                   <Route path="batch-reports" element={<BatchReports />} />
                   <Route path="open-sessions" element={<OpenSessions />} />
@@ -312,10 +308,7 @@ export const App = () => {
                 </Route>
 
                 <Route path="finance-reports">
-                  <Route
-                    index
-                    element={<Navigate to="shop-reports" replace />}
-                  />
+                  <Route index element={<FinanceReportsHome />} />
                   <Route path="dashboard" element={<DashboardReports />} />
                   <Route element={<FinanceReports />}>
                     <Route path="shop-reports" element={<ShopReports />} />
@@ -355,7 +348,6 @@ export const App = () => {
                     element={<Navigate to="products-list" replace />}
                   />
                   <Route path="products-list" element={<GeneralProducts />} />
-                  <Route path="iron-products" element={<IronProducts />} />
                 </Route>
 
                 <Route path="shops" element={<Shops />} />

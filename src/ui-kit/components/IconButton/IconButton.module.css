@@ -151,3 +151,27 @@
   opacity: 0.6;
   transform: none !important;
 }
+
+:global(body.settings-theme) .iconButton {
+  border: 1px solid rgba(196, 169, 106, 0.24);
+  border-radius: 5px;
+  box-shadow: none;
+}
+
+:global(body.settings-theme) .primary,
+:global(body.settings-theme) .primary300,
+:global(body.settings-theme) .primary400,
+:global(body.settings-theme) .primary500 {
+  color: #17170f;
+  border-color: rgba(232, 210, 151, 0.72);
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+}
+
+:global(body.settings-theme) .secondary,
+:global(body.settings-theme) .secondary300,
+:global(body.settings-theme) .secondary400,
+:global(body.settings-theme) .secondary500 {
+  color: #d2d7cf;
+  border-color: rgba(196, 169, 106, 0.22);
+  background: rgba(196, 169, 106, 0.055);
+}

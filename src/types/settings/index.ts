@@ -186,11 +186,44 @@ export interface EmployeeSalaryRecordItem {
   createdAt?: string;
   isPaid?: boolean;
   paidAt?: string | null;
-  paidByUserId?: string | null;
+  paidByUserId?: string | number | null;
   directorPowderQuantityKg?: number | null;
   directorPowderBonusKgThreshold?: number | null;
   directorPowderBonusAmount?: number | null;
   directorPowderBonus?: number | null;
+  directorPowderBonusIncludedInNetPayable?: boolean;
+  calculationSource?: string | null;
+}
+
+export interface EmployeeUnpaidSalarySummary {
+  employeeId: number;
+  employeeFullName: string;
+  employeeType?: EmployeeType;
+  salaryType?: EmployeeSalaryType;
+  firstUnpaidDate?: string | null;
+  lastIncludedDate?: string | null;
+  salaryPeriodEndDate?: string | null;
+  unpaidRecordCount: number;
+  totalUnpaidGrossSalary: number;
+  recordedDepositDeductions: number;
+  netPayableAmount: number;
+  activeAdvanceBalance: number;
+  paymentAllowed: boolean;
+  paymentBlockedReason?: string | null;
+  directorPowderQuantityKg?: number | null;
+  directorPowderBonus?: number | null;
+  directorPowderBonusIncludedInNetPayable?: boolean;
+}
+
+export interface EmployeeUnpaidSalaryPaymentResult {
+  employeeId: number;
+  employeeFullName: string;
+  paidRecordCount?: number;
+  totalUnpaidGrossSalary: number;
+  recordedDepositDeductions: number;
+  netPayableAmount: number;
+  activeAdvanceBalance: number;
+  paidAt?: string | null;
 }
 
 export interface EmployeeServicePercentagePayload {
@@ -305,6 +338,7 @@ export interface VehicleServiceTemplateItem {
 export interface VehicleServiceTemplateCategoryItem {
   serviceCategoryId: number;
   serviceCategoryName?: string;
+  isProgrammerCategory?: boolean;
   services: VehicleServiceTemplateLineItem[];
 }
 

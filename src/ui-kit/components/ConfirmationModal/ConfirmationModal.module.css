@@ -78,6 +78,30 @@
   line-height: 1.4;
 }
 
+:global(body.settings-theme) .card {
+  color: #f2f0e8;
+  border: 1px solid rgba(196, 169, 106, 0.28);
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(121, 102, 57, 0.1), transparent 38%),
+    linear-gradient(165deg, #171d18 0%, #111612 52%, #0e1210 100%);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+}
+
+:global(body.settings-theme) .header,
+:global(body.settings-theme) .footer {
+  border-color: rgba(196, 169, 106, 0.17);
+  background: rgba(9, 13, 10, 0.42);
+}
+
+:global(body.settings-theme) .title {
+  color: #f3f0e5;
+}
+
+:global(body.settings-theme) .body {
+  color: #d2d7cf;
+}
+
 .footer {
   padding: 16px 24px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);

@@ -6,10 +6,11 @@ import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Plus, RotateCcw, Eye, ShoppingCart } from "lucide-react";
 
 // ui-kit
-import { Button, DataTable, IconButton, Select, TextField } from "@/ui-kit";
+import { Button, DataTable, Select, TextField } from "@/ui-kit";
 
 // components
 import { SectionHeader } from "@/components/common";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 import { CreateCatalyticConverterModal } from "./components/CreateCatalyticConverterModal";
 import { CreatePurchaseModal } from "./components/CreatePurchaseModal";
 
@@ -193,22 +194,26 @@ export const CatalyticConverters = () => {
         header: t("common.actions"),
         cell: ({ row }) => (
           <div className={styles.rowActions}>
-            <IconButton
-              ariaLabel={t("catalyticConverters.actions.viewDetails")}
-              variant="secondary"
-              size="small"
-              icon={<Eye size={14} />}
+            <button
+              type="button"
+              className={styles.rowAction}
               onClick={() =>
                 navigate(`/catalytic-converters/${row.original.id}`)
               }
-            />
-            <IconButton
-              ariaLabel={t("catalyticConverters.actions.createPurchase")}
-              variant="secondary"
-              size="small"
-              icon={<ShoppingCart size={14} />}
+              aria-label={t("catalyticConverters.actions.viewDetails")}
+              title={t("catalyticConverters.actions.viewDetails")}
+            >
+              <Eye size={15} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={styles.rowAction}
               onClick={() => setPurchaseForProductId(row.original.id)}
-            />
+              aria-label={t("catalyticConverters.actions.createPurchase")}
+              title={t("catalyticConverters.actions.createPurchase")}
+            >
+              <ShoppingCart size={15} aria-hidden="true" />
+            </button>
           </div>
         ),
       }),
@@ -217,12 +222,16 @@ export const CatalyticConverters = () => {
   );
 
   return (
-    <>
+    <div className={styles.page}>
       <SectionHeader
         title={t("catalyticConverters.title")}
         actions={
-          <Button size="small" onClick={() => setIsCreateOpen(true)}>
-            <Plus size={16} />
+          <Button
+            size="medium"
+            className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+            onClick={() => setIsCreateOpen(true)}
+          >
+            <Plus size={16} aria-hidden="true" />
             {t("catalyticConverters.actions.createProduct")}
           </Button>
         }
@@ -323,6 +332,7 @@ export const CatalyticConverters = () => {
               <Button
                 variant="secondary"
                 size="small"
+                className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
                 onClick={handleResetFilters}
               >
                 <RotateCcw size={14} />
@@ -367,6 +377,6 @@ export const CatalyticConverters = () => {
         }}
         onCreated={handlePurchaseCreated}
       />
-    </>
+    </div>
   );
 };

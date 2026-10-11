@@ -1,9 +1,14 @@
 .wrapper {
+  --color-primary-500: #91a99a;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 20px 24px 32px;
+  gap: 16px;
+  padding: 22px 24px 28px;
   min-width: 0;
+}
+
+.wrapper :global(label) {
+  text-transform: none;
 }
 
 .header {
@@ -15,10 +20,11 @@
 }
 
 .title {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 650;
   line-height: 1.2;
   word-break: break-word;
+  letter-spacing: 0;
 }
 
 .formGrid {
@@ -27,8 +33,9 @@
   gap: 12px;
   padding: 16px;
   background: var(--color-black-2);
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  background: linear-gradient(115deg, rgba(23, 29, 24, 0.84), rgba(15, 19, 16, 0.78));
 }
 
 .formGrid :global(select),
@@ -55,9 +62,9 @@
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background: var(--color-black-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98));
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 8px;
   min-width: 0;
   overflow: hidden;
 }
@@ -68,7 +75,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  color: var(--color-primary-500);
+  color: #a8b9ad;
 }
 
 .sectionTitle {
@@ -90,7 +97,7 @@
   padding: 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: 6px;
 }
 
 .bucketHeaderRow {
@@ -120,7 +127,7 @@
   gap: 8px;
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -144,20 +151,54 @@
   font-size: 0.95rem;
 }
 
-.trashIconButton {
-  background-color: var(--color-danger-500);
-}
-
-.trashIcon {
-  color: #ffffff;
-}
-
 .frontTitle {
-  color: #5fd68b;
+  color: #a8b9ad;
 }
 
 .backTitle {
-  color: #5d93e9;
+  color: #d2bf8a;
+}
+
+.iconAction,
+.detailsAction {
+  display: grid;
+  width: 34px;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 0;
+  color: #c7b57e;
+  border: 1px solid rgba(196, 169, 106, 0.24);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.055);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.iconAction:hover,
+.detailsAction:hover {
+  color: #f1dfaa;
+  border-color: rgba(196, 169, 106, 0.56);
+  background: rgba(196, 169, 106, 0.14);
+}
+
+.iconActionDanger {
+  color: #d2a6a2;
+  border-color: rgba(177, 105, 97, 0.24);
+  background: rgba(137, 64, 57, 0.08);
+}
+
+.iconActionDanger:hover {
+  color: #f0c3bd;
+  border-color: rgba(204, 122, 111, 0.56);
+  background: rgba(143, 62, 54, 0.2);
+}
+
+.iconAction:focus-visible,
+.detailsAction:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
 }
 
 .titleRow {
@@ -212,15 +253,25 @@
 @media (max-width: 768px) {
   .header {
     flex-wrap: wrap;
+    align-items: flex-start;
     gap: 10px;
   }
 
   .title {
-    font-size: 20px;
+    flex: 1;
+    min-width: 0;
+    font-size: 18px;
   }
 
   .titleRow {
+    flex: 1 1 100%;
+    width: 100%;
+    flex-wrap: nowrap;
     gap: 6px;
+  }
+
+  .header > button {
+    margin-left: auto;
   }
 
   .header button {

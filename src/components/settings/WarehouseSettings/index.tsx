@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 // ui-kit
-import { Button, Tab, TabGroup } from "@/ui-kit";
+import { ConfirmationModal, IconButton } from "@/ui-kit";
+import { Check, Plus } from "lucide-react";
 // components
 import { WarehouseContent } from "./WarehouseContent";
 // types
@@ -27,11 +28,12 @@ export const WarehouseSettings = () => {
     (state) => state.warehouses,
   );
 
-  const [activeTab, setActiveTab] = useState("add-new");
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [warehouseCode, setWarehouseCode] = useState("");
   const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
     null,
   );
+  const [deletingWarehouse, setDeletingWarehouse] = useState<Warehouse | null>(null);
 
   const handleAddWarehouse = useCallback(async () => {
     if (!warehouseCode.trim()) {
@@ -58,6 +60,7 @@ export const WarehouseSettings = () => {
       }
 
       setWarehouseCode("");
+      setIsFormOpen(false);
     } catch (error: unknown) {
       console.error(error);
       toast.error(
@@ -71,61 +74,54 @@ export const WarehouseSettings = () => {
     }
   }, [warehouseCode, t, editingWarehouse, dispatch]);
 
-  const handleDeleteWarehouse = useCallback(async () => {
-    if (!editingWarehouse) {
-      return;
-    }
+  const handleCloseForm = useCallback(() => {
+    setWarehouseCode("");
+    setEditingWarehouse(null);
+    setIsFormOpen(false);
+  }, []);
 
-    const shouldDelete = window.confirm(t("common.areYouSure"));
-    if (!shouldDelete) {
-      return;
-    }
+  const handleOpenForm = useCallback(() => {
+    setWarehouseCode("");
+    setEditingWarehouse(null);
+    setIsFormOpen(true);
+  }, []);
 
+  const confirmDeleteWarehouse = useCallback(async () => {
+    if (!deletingWarehouse) return;
     try {
-      await dispatch(removeWarehouse(editingWarehouse.id)).unwrap();
+      await dispatch(removeWarehouse(deletingWarehouse.id)).unwrap();
       toast.success(t("warehouses.success.warehouseDeleted"));
-      setWarehouseCode("");
-      setEditingWarehouse(null);
+      if (editingWarehouse?.id === deletingWarehouse.id) {
+        setWarehouseCode("");
+        setEditingWarehouse(null);
+        setIsFormOpen(false);
+      }
+      setDeletingWarehouse(null);
     } catch (error: unknown) {
       console.error(error);
       toast.error(
         getErrorMessage(error, t("warehouses.error.failedToDelete")),
       );
     }
-  }, [dispatch, editingWarehouse, t]);
-
-  const handleTabChange = useCallback((tab: string) => {
-    setActiveTab(tab);
-    setWarehouseCode("");
-    setEditingWarehouse(null);
-  }, []);
+  }, [dispatch, deletingWarehouse, editingWarehouse, t]);
 
   const handleEdit = useCallback((warehouse: Warehouse) => {
     setEditingWarehouse(warehouse);
     setWarehouseCode(warehouse.code);
-    setActiveTab("add-new");
+    setIsFormOpen(true);
   }, []);
 
   const handleDelete = useCallback(
-    async (id: number) => {
-      try {
-        await dispatch(removeWarehouse(id)).unwrap();
-        toast.success(t("warehouses.success.warehouseDeleted"));
-      } catch (error: unknown) {
-        console.error(error);
-        toast.error(
-          getErrorMessage(error, t("warehouses.error.failedToDelete")),
-        );
-      }
+    (id: number) => {
+      const warehouse = warehouses.find((item) => item.id === id);
+      if (warehouse) setDeletingWarehouse(warehouse);
     },
-    [dispatch, t],
+    [warehouses],
   );
 
   useEffect(() => {
-    if (activeTab === "warehouses-history") {
-      dispatch(fetchWarehouses());
-    }
-  }, [activeTab, dispatch]);
+    dispatch(fetchWarehouses());
+  }, [dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -136,60 +132,24 @@ export const WarehouseSettings = () => {
   return (
     <div className={styles.warehouseSettingsWrapper}>
       <div className={styles.warehouseSettings}>
-        <div className={styles.tabsContainer}>
-          <TabGroup variant="segmented">
-            <Tab
-              variant="segmented"
-              active={activeTab === "add-new"}
-              text={t("warehouses.tabs.addNew")}
-              onClick={() => handleTabChange("add-new")}
-            />
-            <Tab
-              variant="segmented"
-              active={activeTab === "warehouses-history"}
-              text={t("warehouses.tabs.warehousesHistory")}
-              onClick={() => handleTabChange("warehouses-history")}
-            />
-          </TabGroup>
-        </div>
-
         <WarehouseContent
+          isFormOpen={isFormOpen}
+          isEditing={!!editingWarehouse}
+          onOpenForm={handleOpenForm}
+          onCloseForm={handleCloseForm}
           actionButtons={
-            activeTab === "add-new" ? (
-              <div className={styles.actionButtons}>
-                <Button
-                  variant="secondary"
-                  size="medium"
-                  onClick={() => {
-                    setWarehouseCode("");
-                    setEditingWarehouse(null);
-                  }}
-                  disabled={isLoading}
-                >
-                  {t("common.cancel")}
-                </Button>
-                {editingWarehouse && (
-                  <Button
-                    variant="secondary"
-                    size="medium"
-                    onClick={handleDeleteWarehouse}
-                    disabled={isLoading}
-                  >
-                    {t("common.delete")}
-                  </Button>
-                )}
-                <Button
-                  variant="primary"
-                  size="medium"
-                  onClick={handleAddWarehouse}
-                  disabled={isLoading || !warehouseCode.trim()}
-                >
-                  {editingWarehouse ? t("common.update") : t("common.add")}
-                </Button>
-              </div>
-            ) : undefined
+            <div className={styles.actionButtons}>
+              <IconButton
+                variant="primary"
+                size="medium"
+                icon={editingWarehouse ? <Check size={16} /> : <Plus size={16} />}
+                ariaLabel={editingWarehouse ? t("common.update") : t("common.add")}
+                title={editingWarehouse ? t("common.update") : t("common.add")}
+                onClick={() => void handleAddWarehouse()}
+                disabled={isLoading || !warehouseCode.trim()}
+              />
+            </div>
           }
-          activeTab={activeTab}
           warehouseCode={warehouseCode}
           setWarehouseCode={setWarehouseCode}
           warehouses={warehouses}
@@ -198,6 +158,19 @@ export const WarehouseSettings = () => {
           onDelete={handleDelete}
         />
       </div>
+
+      <ConfirmationModal
+        open={!!deletingWarehouse}
+        onOpenChange={(open) => !open && setDeletingWarehouse(null)}
+        title={t("warehouses.confirmation.deleteTitle")}
+        description={t("warehouses.confirmation.deleteDescription", {
+          name: deletingWarehouse?.code ?? "",
+        })}
+        confirmText={isLoading ? t("common.loading") : t("common.delete")}
+        cancelText={t("common.cancel")}
+        onConfirm={() => void confirmDeleteWarehouse()}
+        onCancel={() => setDeletingWarehouse(null)}
+      />
     </div>
   );
 };

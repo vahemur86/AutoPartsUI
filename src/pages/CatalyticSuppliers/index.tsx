@@ -2,16 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Trash2, Truck } from "lucide-react";
 
 import {
   Button,
   ConfirmationModal,
   DataTable,
-  IconButton,
   TextField,
 } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 import {
   createCatalyticConverterSupplier,
   deleteCatalyticConverterSupplier,
@@ -38,6 +38,7 @@ export const CatalyticSuppliers = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewOnly, setIsViewOnly] = useState(false);
   const [editingSupplier, setEditingSupplier] =
     useState<CatalyticConverterSupplier | null>(null);
   const [deletingSupplier, setDeletingSupplier] =
@@ -75,6 +76,18 @@ export const CatalyticSuppliers = () => {
 
   const handleCreateClick = () => {
     setEditingSupplier(null);
+    setIsViewOnly(false);
+    setIsModalOpen(true);
+  };
+
+  const handleViewClick = (supplier: CatalyticConverterSupplierLookup) => {
+    setEditingSupplier({
+      id: supplier.id,
+      fullName: supplier.fullName,
+      phone: supplier.phone,
+      notes: supplier.notes ?? null,
+    });
+    setIsViewOnly(true);
     setIsModalOpen(true);
   };
 
@@ -85,6 +98,7 @@ export const CatalyticSuppliers = () => {
       phone: supplier.phone,
       notes: supplier.notes ?? null,
     });
+    setIsViewOnly(false);
     setIsModalOpen(true);
   };
 
@@ -160,20 +174,33 @@ export const CatalyticSuppliers = () => {
         header: t("common.actions"),
         cell: ({ row }) => (
           <div className={styles.rowActions}>
-            <IconButton
-              ariaLabel={t("common.edit")}
-              variant="secondary"
-              size="small"
-              icon={<Pencil size={14} />}
-              onClick={() => handleEditClick(row.original)}
-            />
-            <IconButton
-              ariaLabel={t("common.delete")}
-              variant="secondary"
-              size="small"
-              icon={<Trash2 size={14} />}
-              onClick={() => setDeletingSupplier(row.original)}
-            />
+              <button
+                type="button"
+                className={`${styles.rowAction} ${styles.rowActionView}`}
+                onClick={() => handleViewClick(row.original)}
+                aria-label={t("catalyticSuppliers.actions.view")}
+                title={t("catalyticSuppliers.actions.view")}
+              >
+                <Eye size={15} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className={`${styles.rowAction} ${styles.rowActionEdit}`}
+                onClick={() => handleEditClick(row.original)}
+                aria-label={t("catalyticSuppliers.actions.edit")}
+                title={t("catalyticSuppliers.actions.edit")}
+              >
+                <Pencil size={14} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className={`${styles.rowAction} ${styles.rowActionDelete}`}
+                onClick={() => setDeletingSupplier(row.original)}
+                aria-label={t("catalyticSuppliers.actions.delete")}
+                title={t("catalyticSuppliers.actions.delete")}
+              >
+                <Trash2 size={14} aria-hidden="true" />
+              </button>
           </div>
         ),
       }),
@@ -182,11 +209,16 @@ export const CatalyticSuppliers = () => {
   );
 
   return (
-    <>
+    <div className={styles.page}>
       <SectionHeader
         title={t("catalyticSuppliers.title")}
+        icon={<Truck size={17} color="#d2bf8a" aria-hidden="true" />}
         actions={
-          <Button size="small" onClick={handleCreateClick}>
+          <Button
+            size="medium"
+            className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+            onClick={handleCreateClick}
+          >
             <Plus size={16} />
             {t("catalyticSuppliers.actions.create")}
           </Button>
@@ -229,9 +261,11 @@ export const CatalyticSuppliers = () => {
         onOpenChange={(open) => {
           setIsModalOpen(open);
           if (!open) setEditingSupplier(null);
+          if (!open) setIsViewOnly(false);
         }}
         onSave={handleSave}
         supplier={editingSupplier}
+        viewOnly={isViewOnly}
         isSubmitting={isSubmitting}
       />
 
@@ -243,12 +277,14 @@ export const CatalyticSuppliers = () => {
           name: deletingSupplier?.fullName || deletingSupplier?.phone || "",
         })}
         confirmText={
-          isSubmitting ? t("common.loading") : t("common.delete")
+          isSubmitting
+            ? t("common.loading")
+            : t("catalyticSuppliers.actions.delete")
         }
         cancelText={t("common.cancel")}
         onConfirm={handleDelete}
         onCancel={() => setDeletingSupplier(null)}
       />
-    </>
+    </div>
   );
 };

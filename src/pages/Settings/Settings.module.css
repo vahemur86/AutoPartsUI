@@ -1,0 +1,171 @@
+.settingsHome {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.sectionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  align-items: stretch;
+  gap: 14px;
+}
+
+.sectionCard {
+  --section-accent: 196, 169, 106;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid rgba(var(--section-accent), 0.23);
+  border-top: 2px solid rgba(var(--section-accent), 0.72);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(var(--section-accent), 0.055), rgba(25, 32, 26, 0.96) 38%, rgba(15, 19, 16, 0.98));
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sectionCard[data-section="system"] {
+  --section-accent: 196, 169, 106;
+}
+
+.sectionCard[data-section="organization"] {
+  --section-accent: 139, 166, 144;
+}
+
+.sectionCard[data-section="productsAndCatalysts"] {
+  --section-accent: 184, 137, 103;
+}
+
+.sectionCard[data-section="customersAndSales"] {
+  --section-accent: 119, 157, 174;
+}
+
+.sectionCard[data-section="financialSettings"] {
+  --section-accent: 171, 130, 136;
+}
+
+.sectionCard:hover {
+  border-color: rgba(var(--section-accent), 0.4);
+  box-shadow: inset 0 1px 0 rgba(var(--section-accent), 0.1), 0 8px 22px rgba(0, 0, 0, 0.14);
+}
+
+.sectionCardHeader {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+  min-height: 76px;
+}
+
+.sectionIcon {
+  display: grid;
+  width: 40px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: rgb(var(--section-accent));
+  border: 1px solid rgba(var(--section-accent), 0.34);
+  border-radius: 8px;
+  background: rgba(var(--section-accent), 0.09);
+}
+
+.sectionCopy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sectionCopy h2 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.sectionCopy p {
+  margin: 0;
+  color: #aab2a9;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.sectionLinks {
+  display: grid;
+  gap: 3px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(var(--section-accent), 0.18);
+}
+
+.sectionLink {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 7px 9px;
+  color: #d4d8d0;
+  border-left: 2px solid transparent;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.35;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.sectionLink > svg:first-child {
+  color: rgba(var(--section-accent), 0.92);
+}
+
+.sectionLink > svg:last-child {
+  color: #858e84;
+  transition: transform 140ms ease, color 140ms ease;
+}
+
+.sectionLink span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sectionLink:hover,
+.sectionLink:focus-visible {
+  color: #f1e6c5;
+  border-left-color: rgb(var(--section-accent));
+  background: rgba(var(--section-accent), 0.09);
+  outline: none;
+}
+
+.sectionLink:hover > svg:last-child,
+.sectionLink:focus-visible > svg:last-child {
+  color: rgb(var(--section-accent));
+  transform: translateX(2px);
+}
+
+@media (max-width: 600px) {
+  .settingsHome {
+    gap: 12px;
+  }
+
+  .sectionGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .sectionCard {
+    padding: 14px;
+  }
+
+  .sectionCardHeader {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sectionLink,
+  .sectionLink > svg:last-child {
+    transition: none;
+  }
+}

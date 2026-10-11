@@ -2,9 +2,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
-// ui-kit
-import { Button } from "@/ui-kit";
-
 // components
 import { LanguagesContent } from "./LanguagesContent";
 import { EditLanguageDropdown } from "./languagesActions/EditLanguageDropdown";
@@ -43,7 +40,6 @@ export const ProjectLanguages = () => {
   const [isAddingLanguage, setIsAddingLanguage] = useState(false);
 
   const editAnchorRef = useRef<HTMLElement>(null);
-  const addAnchorRef = useRef<HTMLElement>(null);
   const fetchInitiatedRef = useRef(false);
 
   useEffect(() => {
@@ -64,9 +60,7 @@ export const ProjectLanguages = () => {
   }, [dispatch, t]);
 
   // UI Helper functions
-  const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
-    if (!anchorEl) return;
-    addAnchorRef.current = anchorEl;
+  const handleAddNewClick = useCallback(() => {
     setIsAddingLanguage(true);
   }, []);
 
@@ -86,7 +80,6 @@ export const ProjectLanguages = () => {
 
   const handleCloseAddDropdown = useCallback(() => {
     setIsAddingLanguage(false);
-    addAnchorRef.current = null;
   }, []);
 
   /**
@@ -271,21 +264,11 @@ export const ProjectLanguages = () => {
 
       <AddLanguageDropdown
         open={isAddingLanguage}
-        anchorRef={addAnchorRef}
         onOpenChange={(open) => {
           if (!open) handleCloseAddDropdown();
         }}
         onSave={handleAddLanguage}
       />
-
-      <div className={styles.actionButtons}>
-        <Button variant="secondary" size="medium" onClick={() => {}}>
-          {t("common.cancel")}
-        </Button>
-        <Button variant="primary" size="medium" onClick={() => {}}>
-          {t("common.save")}
-        </Button>
-      </div>
     </div>
   );
 };

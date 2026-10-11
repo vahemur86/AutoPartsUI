@@ -1,6 +1,6 @@
 import { useRef, createRef, useCallback, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { IconButton, InteractiveField } from "@/ui-kit";
+import { Button, InteractiveField } from "@/ui-kit";
 import { Plus, Edit } from "lucide-react";
 import type { Language } from "@/types/settings";
 import styles from "./ProjectLanguages.module.css";
@@ -8,7 +8,7 @@ import styles from "./ProjectLanguages.module.css";
 interface LanguagesContentProps {
   languages: Language[];
   isLoading: boolean;
-  onAddNewClick: (anchorEl: HTMLElement | null) => void;
+  onAddNewClick: () => void;
   activeLanguageId?: number | null;
   onEditClick?: (languageId: number, anchorEl: HTMLElement | null) => void;
 }
@@ -30,17 +30,6 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
       languageItemRefs.current.set(languageId, createRef<HTMLDivElement>());
     }
     return languageItemRefs.current.get(languageId)!;
-  };
-
-  const addButtonDesktopWrapperRef = useRef<HTMLDivElement>(null);
-  const addButtonMobileWrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleAddClick = (isMobile: boolean) => {
-    const wrapper = isMobile
-      ? addButtonMobileWrapperRef.current
-      : addButtonDesktopWrapperRef.current;
-
-    onAddNewClick(wrapper);
   };
 
   const handleEditButtonClick = useCallback(
@@ -81,21 +70,15 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
     <>
       {/* Desktop header */}
       <div className={styles.languagesHeader}>
-        <div
-          ref={addButtonDesktopWrapperRef}
-          className={styles.addButtonWrapper}
+        <Button
+          className={styles.addButton}
+          variant="primary"
+          size="medium"
+          onClick={onAddNewClick}
         >
-          <IconButton
-            variant="primary"
-            size="small"
-            icon={<Plus size={12} color="#0e0f11" />}
-            ariaLabel={t("languages.addNew")}
-            onClick={() => handleAddClick(false)}
-          />
-          <span className={styles.addButtonText}>
-            {t("languages.addLanguage")}
-          </span>
-        </div>
+          <Plus size={16} />
+          {t("languages.addLanguage")}
+        </Button>
       </div>
 
       {/* List */}
@@ -166,24 +149,6 @@ export const LanguagesContent: FC<LanguagesContentProps> = ({
         )}
       </div>
 
-      {/* Mobile add button */}
-      <div className={styles.addButtonMobile}>
-        <div
-          ref={addButtonMobileWrapperRef}
-          className={styles.addButtonWrapper}
-        >
-          <IconButton
-            variant="primary"
-            size="small"
-            icon={<Plus size={12} />}
-            ariaLabel={t("languages.addNew")}
-            onClick={() => handleAddClick(true)}
-          />
-          <span className={styles.addButtonText}>
-            {t("languages.addLanguage")}
-          </span>
-        </div>
-      </div>
     </>
   );
 };

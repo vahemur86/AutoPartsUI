@@ -1,32 +1,126 @@
-.header {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.title {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-white);
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-}
-
-.grid {
-  display: grid;
-  gap: 16px;
-}
-
-.actionswithoutDelete {
+.drawerBackdrop {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
   display: flex;
   justify-content: flex-end;
+  background: rgba(5, 8, 7, 0.64);
+  backdrop-filter: blur(5px);
 }
 
-.primaryActions {
+.drawer {
   display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  height: 100%;
+  color: #f2f0e8;
+  border-left: 1px solid rgba(196, 169, 106, 0.28);
+  background: linear-gradient(165deg, #171d18 0%, #111612 52%, #0e1210 100%);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.48);
+  animation: tagDrawerIn 220ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 84px;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.17);
+}
+
+.drawerIcon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 40px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #d4bc7c;
+  border: 1px solid rgba(196, 169, 106, 0.36);
+  border-radius: 8px;
+  background: rgba(196, 169, 106, 0.09);
+}
+
+.drawerHeading {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+  min-width: 0;
+}
+
+.drawerHeading > span,
+.sectionTitle {
+  color: #c4a96a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.drawerHeading h2 {
+  margin: 0;
+  color: #f3f0e5;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.drawerClose {
+  display: grid;
+  flex: 0 0 auto;
+  width: 36px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #a8afa8;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+}
+
+.drawerBody {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  flex: 1;
+  padding: 24px 22px;
+}
+
+.sectionTitle {
+  padding-bottom: 11px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.drawerFooter {
+  display: flex;
+  justify-content: flex-end;
   gap: 10px;
+  padding: 14px 22px max(14px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(196, 169, 106, 0.17);
+  background: rgba(9, 13, 10, 0.56);
+}
+
+@keyframes tagDrawerIn {
+  from { opacity: 0.7; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 520px) {
+  .drawerHeader {
+    min-height: 76px;
+    padding: 13px 16px;
+  }
+
+  .drawerBody {
+    padding: 20px 16px;
+  }
+
+  .drawerFooter {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer {
+    animation: none;
+  }
 }

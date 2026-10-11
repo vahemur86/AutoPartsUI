@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 // icons
 import {
@@ -12,18 +13,28 @@ import {
   Warehouse,
   Store,
   HandCoins,
+  Boxes,
+  ArrowRight,
 } from "lucide-react";
 
 // components
 import { ReportsWorkspace, type ReportNavSection } from "@/pages/Reports/ReportsWorkspace";
+import { SectionHeader } from "@/components/common";
+import styles from "./FinanceReportsHome.module.css";
 
-export const FinanceReports = () => {
+interface FinanceReportSection extends ReportNavSection {
+  description: string;
+}
+
+const useFinanceReportSections = (): FinanceReportSection[] => {
   const { t } = useTranslation();
 
-  const navigationSections: ReportNavSection[] = [
+  return [
     {
       key: "operations",
       title: t("financeReports.navigationGroups.operations"),
+      description: t("financeReports.groupDescriptions.operations"),
+      icon: Factory,
       items: [
         {
           path: "/shop-reports",
@@ -50,6 +61,8 @@ export const FinanceReports = () => {
     {
       key: "profitability",
       title: t("financeReports.navigationGroups.profitability"),
+      description: t("financeReports.groupDescriptions.profitability"),
+      icon: ChartColumnBig,
       items: [
         {
           path: "/profit-summary",
@@ -71,6 +84,8 @@ export const FinanceReports = () => {
     {
       key: "inventory",
       title: t("financeReports.navigationGroups.inventory"),
+      description: t("financeReports.groupDescriptions.inventory"),
+      icon: Boxes,
       items: [
         {
           path: "/warehouse-inventory",
@@ -87,6 +102,8 @@ export const FinanceReports = () => {
     {
       key: "expenses",
       title: t("financeReports.navigationGroups.expenses"),
+      description: t("financeReports.groupDescriptions.expenses"),
+      icon: HandCoins,
       items: [
         {
           path: "/other-expenses",
@@ -96,12 +113,75 @@ export const FinanceReports = () => {
       ],
     },
   ];
+};
+
+export const FinanceReports = () => {
+  const { t } = useTranslation();
+  const sections = useFinanceReportSections();
 
   return (
     <ReportsWorkspace
-      sections={navigationSections}
+      sections={sections}
       basePath="/finance-reports"
       title={t("header.financeReports")}
     />
+  );
+};
+
+export const FinanceReportsHome = () => {
+  const { t } = useTranslation();
+  const sections = useFinanceReportSections();
+
+  return (
+    <div className={styles.financeReportsHome}>
+      <SectionHeader
+        title={t("header.financeReports")}
+        icon={<ChartColumnBig size={20} />}
+      />
+      <p className={styles.description}>
+        {t("financeReports.overview.description")}
+      </p>
+      <div className={styles.groupGrid}>
+        {sections.map((section) => {
+          const GroupIcon = section.icon ?? ChartColumnBig;
+          return (
+            <section
+              className={styles.groupCard}
+              data-group={section.key}
+              key={section.key}
+              aria-labelledby={`finance-report-group-${section.key}`}
+            >
+              <header className={styles.groupHeader}>
+                <span className={styles.groupIcon} aria-hidden="true">
+                  <GroupIcon size={18} />
+                </span>
+                <div className={styles.groupCopy}>
+                  <h2 id={`finance-report-group-${section.key}`}>
+                    {section.title}
+                  </h2>
+                  <p>{section.description}</p>
+                </div>
+                <span className={styles.groupCount}>
+                  {section.items.length}
+                </span>
+              </header>
+              <nav className={styles.reportLinks} aria-label={section.title}>
+                {section.items.map(({ path, label, icon: ReportIcon }) => (
+                  <Link
+                    className={styles.reportLink}
+                    key={path}
+                    to={`/finance-reports${path}`}
+                  >
+                    <ReportIcon size={16} aria-hidden="true" />
+                    <span>{label}</span>
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                ))}
+              </nav>
+            </section>
+          );
+        })}
+      </div>
+    </div>
   );
 };

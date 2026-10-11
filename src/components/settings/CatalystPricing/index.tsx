@@ -1,14 +1,14 @@
 import {
   useState,
   useCallback,
-  useRef,
   useMemo,
   useEffect,
   type FC,
 } from "react";
+import { Pencil } from "lucide-react";
 
 // ui-kit
-import { Button } from "@/ui-kit";
+import { IconButton } from "@/ui-kit";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -35,15 +35,12 @@ export const CatalystPricings: FC = () => {
   const [activeRate, setActiveRate] = useState<CatalystPricing | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
-  const anchorRef = useRef<HTMLElement | null>(null);
-
   useEffect(() => {
     dispatch(fetchCatalystPricing(1));
   }, [dispatch]);
 
   const handleOpenEdit = useCallback(
-    (rate: CatalystPricing, e: React.MouseEvent<HTMLElement>) => {
-      anchorRef.current = e.currentTarget;
+    (rate: CatalystPricing) => {
       setActiveRate(rate);
       setIsDropdownOpen(true);
     },
@@ -74,7 +71,6 @@ export const CatalystPricings: FC = () => {
     <div className={styles.catalystPricingWrapper}>
       <CatalystPricingDropdown
         open={isDropdownOpen}
-        anchorRef={anchorRef}
         initialData={activeRate}
         isLoading={isMutating}
         onOpenChange={setIsDropdownOpen}
@@ -89,12 +85,15 @@ export const CatalystPricings: FC = () => {
                 {t("catalystPricing.title")} #{item.id}
               </div>
 
-              <Button
+              <IconButton
                 className={styles.editBtn}
-                onClick={(e) => handleOpenEdit(item, e)}
-              >
-                {t("common.edit")}
-              </Button>
+                variant="secondary"
+                size="medium"
+                icon={<Pencil size={16} />}
+                ariaLabel={t("common.edit")}
+                title={t("common.edit")}
+                onClick={() => handleOpenEdit(item)}
+              />
             </div>
 
             <div className={styles.cardGrid}>
@@ -165,12 +164,12 @@ export const CatalystPricings: FC = () => {
                         {/* label */}
                         <div className={styles.marginFooter}>
                           {percent === 0
-                            ? "No margin"
+                            ? t("catalystPricing.marginLevels.none")
                             : percent < 20
-                              ? "Low margin"
+                              ? t("catalystPricing.marginLevels.low")
                               : percent < 40
-                                ? "Medium margin"
-                                : "High margin"}
+                                ? t("catalystPricing.marginLevels.medium")
+                                : t("catalystPricing.marginLevels.high")}
                         </div>
                       </div>
                     );

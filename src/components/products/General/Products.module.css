@@ -1,14 +1,9 @@
 .productsWrapper {
-  display: flex;
+  display: grid;
+  min-width: 0;
   flex-direction: column;
-  gap: 24px;
-  padding: 20px;
-}
-
-.tableContainer {
-  background-color: var(--color-black-2);
-  border-radius: 8px;
-  overflow: hidden;
+  gap: 14px;
+  padding: 16px 20px 24px;
 }
 
 .languagesHeader {
@@ -30,6 +25,21 @@
   color: var(--color-secondary-500);
 }
 
+.addButton.addButton {
+  min-height: 36px;
+  padding: 0 14px;
+  color: #17170f;
+  border: 1px solid rgba(196, 169, 106, 0.5);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d2bf8a, #a78e57);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.12);
+  font-weight: 650;
+}
+
+.addButton.addButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ddc995, #b69b61);
+}
+
 .detailContainer {
   padding: 24px 32px 32px 64px;
   background-color: rgba(255, 255, 255, 0.015);
@@ -40,6 +50,11 @@
 
 @media (max-width: 768px) {
   .productsWrapper {
-    padding: 16px;
+    padding: 12px 12px 20px;
+  }
+
+  .addButton.addButton {
+    min-height: 34px;
+    padding: 0 11px;
   }
 }

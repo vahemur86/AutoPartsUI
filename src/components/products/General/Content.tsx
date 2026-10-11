@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useMemo, type RefObject } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +31,7 @@ import { getErrorMessage } from "@/utils";
 import styles from "./Content.module.css";
 
 interface ProductsContentProps {
-  onEdit: (product: Product, buttonRef: RefObject<HTMLElement>) => void;
+  onEdit: (product: Product) => void;
 }
 
 export const ProductsContent = ({ onEdit }: ProductsContentProps) => {

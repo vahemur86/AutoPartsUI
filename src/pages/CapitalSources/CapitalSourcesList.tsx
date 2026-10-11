@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { ArrowRight, Banknote, Building2, Landmark, Plus, Sparkles, Wallet } from "lucide-react";
+import { Banknote, Building2, Eye, Landmark, Pencil, Plus, RotateCcw, Sparkles, Wallet } from "lucide-react";
 
 import { Button, Select, TextField } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
@@ -117,7 +117,7 @@ export const CapitalSourcesList = () => {
         title={t("capitalSources.title")}
         actions={
           <div className={styles.headerActions}>
-            <Button onClick={() => navigate("/capital-sources/create")}>
+            <Button className={styles.sageButton} onClick={() => navigate("/capital-sources/create")}>
               <Plus size={14} /> {t("capitalSources.actions.create")}
             </Button>
           </div>
@@ -172,6 +172,7 @@ export const CapitalSourcesList = () => {
           <div className={styles.filterFooter}>
             <span>{t("capitalSources.summary.totalItems", { count: totalItems })}</span>
             <Button variant="secondary" size="small" onClick={resetFilters}>
+              <RotateCcw size={14} />
               {t("common.reset")}
             </Button>
           </div>
@@ -208,7 +209,7 @@ export const CapitalSourcesList = () => {
             <Sparkles size={24} />
             <h3>{t("capitalSources.emptyState")}</h3>
             <p>{t("capitalSources.portfolio.emptyHint")}</p>
-            <Button onClick={() => navigate("/capital-sources/create")}>
+            <Button className={styles.sageButton} onClick={() => navigate("/capital-sources/create")}>
               <Plus size={16} /> {t("capitalSources.actions.create")}
             </Button>
           </div>
@@ -261,10 +262,11 @@ export const CapitalSourcesList = () => {
 
                   <div className={styles.cardActions}>
                     <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${item.id}`)}>
+                      <Eye size={14} />
                       {t("capitalSources.actions.view")}
-                      <ArrowRight size={14} />
                     </Button>
                     <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${item.id}/edit`)}>
+                      <Pencil size={14} />
                       {t("capitalSources.actions.edit")}
                     </Button>
                   </div>

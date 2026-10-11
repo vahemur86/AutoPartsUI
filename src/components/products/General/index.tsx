@@ -1,4 +1,4 @@
-import { useState, useCallback, type RefObject } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
@@ -29,20 +29,15 @@ export const GeneralProducts = () => {
 
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [editButtonRef, setEditButtonRef] = useState<
-    RefObject<HTMLElement> | undefined
-  >(undefined);
 
   const handleCloseEditDropdown = useCallback(() => {
     setIsEditingProduct(false);
     setEditingProduct(null);
-    setEditButtonRef(undefined);
   }, []);
 
   const handleEditProduct = useCallback(
-    (product: Product, buttonRef: RefObject<HTMLElement>) => {
+    (product: Product) => {
       setEditingProduct(product);
-      setEditButtonRef(buttonRef);
       setIsEditingProduct(true);
     },
     [],
@@ -79,13 +74,10 @@ export const GeneralProducts = () => {
 
   return (
     <div className={styles.productsWrapper}>
-      <div className={styles.tableContainer}>
-        <ProductsContent onEdit={handleEditProduct} />
-      </div>
+      <ProductsContent onEdit={handleEditProduct} />
 
       <EditProductDropdown
         open={isEditingProduct}
-        anchorRef={editButtonRef}
         onOpenChange={handleCloseEditDropdown}
         onSave={handleUpdateProduct}
         product={editingProduct}

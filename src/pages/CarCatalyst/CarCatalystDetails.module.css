@@ -735,8 +735,8 @@
   font-size: 11px;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.52);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .bucketCalculationResult strong {
@@ -764,6 +764,182 @@
 
 .converterList .emptyState {
   grid-column: 1 / -1;
+}
+
+.wrapper {
+  --color-primary-500: #91a99a;
+  min-height: 0;
+  gap: 16px;
+  padding: 22px 24px 28px;
+  background: var(--color-black-1);
+}
+.wrapper :global(label) {
+  text-transform: none;
+}
+
+.wrapper::before {
+  display: none;
+}
+
+.title {
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.contentGrid {
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.leftPanel,
+.resultsPanel {
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  padding: 16px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98));
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.leftPanel {
+  top: 16px;
+}
+
+.tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.tabButton {
+  padding: 10px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.activeTab {
+  color: #c3d0c6;
+  border-color: rgba(145, 169, 154, 0.34);
+  background: rgba(145, 169, 154, 0.12);
+  box-shadow: none;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.resultsHeader {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-color: rgba(196, 169, 106, 0.16);
+}
+
+.resultsSummaryChip span,
+.bucketCount {
+  padding: 5px 8px;
+  border-radius: 6px;
+}
+
+.resultCardWrapper {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: none;
+}
+
+.resultCardWrapper:hover {
+  transform: none;
+  border-color: rgba(196, 169, 106, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+}
+
+.selectedCard {
+  border-color: rgba(145, 169, 154, 0.48);
+  box-shadow: inset 3px 0 #91a99a;
+}
+
+.resultCard {
+  padding: 14px 16px;
+}
+
+.resultInfo h4 {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.priceSummaryChipCeramic {
+  color: #c3d0c6;
+  border-color: rgba(145, 169, 154, 0.24);
+  background: rgba(145, 169, 154, 0.12);
+}
+
+.totalBox > div,
+.priceCardCeramic,
+.priceCardIron,
+.priceCardFilter,
+.priceCardTotal {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.totalBox div:nth-child(1),
+.priceCardCeramic {
+  --total-accent: #91a99a;
+  --total-glow: rgba(145, 169, 154, 0.24);
+}
+
+.bucketCard {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.bucketCard:hover {
+  transform: none;
+}
+
+.compositionItem,
+.fallbackComposition,
+.bucketCalculationResult,
+.emptyState {
+  border-radius: 6px;
+}
+
+.bucketCalculateButton {
+  border-color: rgba(145, 169, 154, 0.34);
+  border-radius: 6px;
+  background: rgba(145, 169, 154, 0.12);
+  color: #c3d0c6;
+  font-weight: 650;
+}
+
+.bucketCalculateButton:hover:not(:disabled) {
+  border-color: rgba(145, 169, 154, 0.56);
+  background: rgba(145, 169, 154, 0.2);
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 16px 12px 24px;
+  }
+
+  .tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @keyframes dropdownOpen {
@@ -926,4 +1102,187 @@
   .bucketTop span {
     width: fit-content;
   }
+}
+
+.wrapper {
+  --color-primary-500: #91a99a;
+}
+
+.activeTab,
+.selectedCard,
+.priceSummaryChipCeramic,
+.priceSummaryChipTotal,
+.bucketCount,
+.frontCode,
+.chevronOpen,
+.compositionHeader span,
+.bucketCalculationResult strong {
+  color: #c3d0c6;
+}
+
+.activeTab {
+  border-color: rgba(145, 169, 154, 0.34);
+  background: rgba(145, 169, 154, 0.12);
+  box-shadow: none;
+}
+
+.selectedCard {
+  border-color: rgba(145, 169, 154, 0.48);
+  box-shadow: inset 3px 0 #91a99a;
+}
+
+.priceSummaryChipCeramic,
+.priceSummaryChipTotal,
+.bucketCount {
+  border-color: rgba(145, 169, 154, 0.24);
+  background: rgba(145, 169, 154, 0.12);
+}
+
+.priceSummaryChipIron,
+.rearCode {
+  color: #d2bf8a;
+}
+
+.priceSummaryChipIron {
+  border-color: rgba(196, 169, 106, 0.24);
+  background: rgba(196, 169, 106, 0.1);
+}
+
+.frontCode {
+  text-shadow: none;
+}
+
+.rearCode {
+  text-shadow: none;
+}
+
+.totalBox div:nth-child(1),
+.priceCardCeramic,
+.priceCardTotal {
+  --total-accent: #91a99a;
+  --total-glow: rgba(145, 169, 154, 0.2);
+}
+
+.totalBox div:nth-child(2),
+.priceCardIron {
+  --total-accent: #c4a96a;
+  --total-glow: rgba(196, 169, 106, 0.2);
+}
+
+.totalBox div:nth-child(3),
+.priceCardFilter {
+  --total-accent: #aab1a9;
+  --total-glow: rgba(170, 177, 169, 0.16);
+}
+
+.totalBox div:nth-child(4) {
+  --total-accent: #91a99a;
+  --total-glow: rgba(145, 169, 154, 0.2);
+}
+
+.bucketCard:hover {
+  border-color: rgba(145, 169, 154, 0.24);
+}
+
+.bucketCalculateButton {
+  border-color: rgba(145, 169, 154, 0.34);
+  background: rgba(145, 169, 154, 0.12);
+  color: #c3d0c6;
+}
+
+.bucketCalculateButton:hover:not(:disabled) {
+  border-color: rgba(145, 169, 154, 0.56);
+  background: rgba(145, 169, 154, 0.2);
+}
+
+.leftPanel,
+.resultsPanel,
+.resultCardWrapper,
+.totalBox > div,
+.priceCardCeramic,
+.priceCardIron,
+.priceCardFilter,
+.priceCardTotal,
+.bucketCard {
+  border-radius: 8px;
+}
+
+.resultsPanel,
+.leftPanel {
+  border-color: rgba(196, 169, 106, 0.18);
+}
+
+@media (max-width: 768px) {
+  .leftPanel,
+  .resultsPanel {
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .leftPanel,
+  .resultsPanel {
+    border-radius: 8px;
+  }
+}
+
+.resultsSummaryChip span,
+.priceSummaryChipFilter {
+  color: #c3d0c6;
+  border-color: rgba(145, 169, 154, 0.24);
+  background: rgba(145, 169, 154, 0.12);
+}
+
+.resultsSummaryChip span {
+  border-radius: 6px;
+}
+
+.totalBox div:nth-child(2),
+.priceCardIron {
+  --total-accent: #c4a96a;
+  --total-glow: rgba(196, 169, 106, 0.2);
+}
+
+.totalBox div:nth-child(3),
+.priceCardFilter {
+  --total-accent: #aab1a9;
+  --total-glow: rgba(170, 177, 169, 0.16);
+}
+
+.totalBox div:nth-child(4),
+.priceCardTotal {
+  --total-accent: #91a99a;
+  --total-glow: rgba(145, 169, 154, 0.2);
+}
+
+.bucketCalculationResult {
+  background: rgba(145, 169, 154, 0.08);
+  border-color: rgba(145, 169, 154, 0.2);
+}
+
+.detailIconAction {
+  display: grid;
+  width: 36px;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 0;
+  color: #c7b57e;
+  border: 1px solid rgba(196, 169, 106, 0.24);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.055);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.detailIconAction:hover {
+  color: #f1dfaa;
+  border-color: rgba(196, 169, 106, 0.56);
+  background: rgba(196, 169, 106, 0.14);
+}
+
+.detailIconAction:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
 }

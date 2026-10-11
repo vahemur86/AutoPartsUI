@@ -10,6 +10,7 @@
     "warehouses": "Warehouses",
     "shops": "Shops",
     "products": "Products",
+    "productCatalog": "Product Catalog",
     "users": "User Management",
     "agents": "Agents",
     "customers": "Customers",
@@ -109,6 +110,20 @@
     "deactivate": "Deactivate"
   },
   "settings": {
+    "groups": {
+      "system": "System",
+      "organization": "Organization Structure",
+      "productsAndCatalysts": "Products & Catalysts",
+      "customersAndSales": "Customers & Sales",
+      "financialSettings": "Financial Settings"
+    },
+    "groupDescriptions": {
+      "system": "Manage project languages, page access, and translations.",
+      "organization": "Manage shops, warehouses, and cash registers.",
+      "productsAndCatalysts": "Configure the product catalog, tags, and metal pricing.",
+      "customersAndSales": "Configure customer types and sales rules.",
+      "financialSettings": "Manage exchange rates and repayment rules."
+    },
     "navigation": {
       "projectLanguages": "Project Languages",
       "pageControl": "Page Control",
@@ -119,6 +134,7 @@
       "productSettings": "Product Settings",
       "vehicleManagement": "Vehicle Management",
       "serviceTasks": "Service Tasks",
+      "programmingPricing": "Programming Pricing",
       "tags": "Tags",
       "metalRates": "Metal Rates",
       "catalystBuckets": "Codes",
@@ -135,6 +151,15 @@
       "ironManagement": "Iron Management"
     },
     "otherExpenses": {
+      "createTitle": "Add expense",
+      "editTitle": "Edit expense",
+      "viewTitle": "Expense details",
+      "listTitle": "Expense list",
+      "searchPlaceholder": "Search by name, shop, or warehouse",
+      "emptyState": "No expenses found",
+      "actions": {
+        "view": "View"
+      },
       "fields": {
         "entityType": "Entity type",
         "entity": "Shop / Warehouse",
@@ -183,6 +208,12 @@
   "tags": {
     "addTag": "Add Tag",
     "editTag": "Edit Tag",
+    "listTitle": "Tag library",
+    "loading": "Loading tags...",
+    "emptyState": "No tags yet. Add your first tag.",
+    "columns": {
+      "name": "Name"
+    },
     "form": {
       "name": "Tag Name",
       "enterTagName": "Enter tag name",
@@ -240,6 +271,9 @@
     }
   },
   "reports": {
+    "overview": {
+      "description": "Choose a report to view the data you need."
+    },
     "navigationGroups": {
       "cashbox": "Cash and sessions",
       "inventory": "Inventory and batches",
@@ -459,6 +493,15 @@
     }
   },
   "financeReports": {
+    "overview": {
+      "description": "View operational metrics, profit, inventory, and expenses in one place."
+    },
+    "groupDescriptions": {
+      "operations": "Shop, service, warehouse, and sales performance reports.",
+      "profitability": "Profit summaries, detailed profit, and sales profitability.",
+      "inventory": "Current warehouse and shop inventory balances.",
+      "expenses": "Reports for other expenses."
+    },
     "navigation": {
       "dashboard": "Dashboard",
       "shopReports": "Shop Reports",
@@ -474,8 +517,8 @@
     },
     "navigationGroups": {
       "overview": "Overview",
-      "operations": "Operations",
-      "profitability": "Profitability",
+      "operations": "Operational Reports",
+      "profitability": "Profit and Sales",
       "inventory": "Inventory",
       "expenses": "Expenses"
     },
@@ -880,6 +923,13 @@
     "actions": {
       "addUser": "Add user"
     },
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Admin",
+      "programmer": "Programmer",
+      "operator": "Operator",
+      "cashier": "Cashier"
+    },
     "table": {
       "title": "Users",
       "id": "ID",
@@ -902,6 +952,14 @@
     }
   },
   "shops": {
+    "confirmation": {
+      "deleteTitle": "Delete shop",
+      "deleteDescription": "Are you sure you want to delete shop {{name}}?"
+    },
+    "sections": {
+      "form": "Shop details",
+      "list": "Registered shops"
+    },
     "tabs": {
       "addNew": "Add New Shop",
       "shopsHistory": "Shops History",
@@ -933,8 +991,18 @@
       "title": "Shop Products",
       "shop": "Shop",
       "selectShop": "Select shop",
+      "selectShopHint": "Select a shop to view its inventory.",
+      "inventoryFor": "{{shop}} inventory",
+      "search": "Search products",
+      "searchPlaceholder": "Search by code, SKU, brand, or category",
+      "resultCount": "Showing {{shown}} of {{total}} products",
+      "stockLines": "Product lines",
+      "totalUnits": "Total units",
+      "saleValue": "Stock sale value",
       "loading": "Loading shop products...",
       "emptyState": "No products found in this shop.",
+      "noMatches": "No products match this search.",
+      "toggleDetails": "Show or hide details for product #{{id}}",
       "columns": {
         "id": "ID",
         "productId": "Product ID",
@@ -945,6 +1013,7 @@
       }
     },
     "pricing": {
+      "sectionTitle": "Shop pricing settings",
       "shop": "Shop",
       "selectShop": "Select shop",
       "markupPercentage": "Sale Percentage",
@@ -972,14 +1041,22 @@
     }
   },
   "warehouses": {
+    "confirmation": {
+      "deleteTitle": "Delete warehouse",
+      "deleteDescription": "Are you sure you want to delete warehouse {{name}}?"
+    },
+    "sections": {
+      "form": "Warehouse details",
+      "list": "Registered warehouses"
+    },
     "navigation": {
       "totalBatches": "Total Batches",
       "batchesToSale": "Batches To Sale",
       "soldBatches": "Sold Batches",
       "adjustedSales": "Adjusted Sales",
       "profit": "Profit",
-      "addProduct": "Add Product",
-      "products": "Products",
+      "addProduct": "Receive Products",
+      "products": "Warehouse Inventory",
       "transferToShop": "Transfer to Shop"
     },
     "navigationGroups": {
@@ -1440,6 +1517,9 @@
   "customerTypes": {
     "addCustomerType": "Add Customer Type",
     "editCustomerType": "Edit Customer Type",
+    "listTitle": "Registered customer types",
+    "loading": "Loading customer types...",
+    "emptyState": "No customer types yet. Add the first one.",
     "confirmation": {
       "deleteTitle": "Delete Customer Type",
       "deleteDescription": "Are you sure you want to delete customer type \"{{code}}\"? This action cannot be undone.",
@@ -1493,7 +1573,9 @@
       "deleteDescription": "Are you sure you want to delete? This action is irreversible.",
       "delete": "Delete",
       "deleteIronTypeTitle": "Delete metal type",
-      "deleteIronTypeDescription": "Are you sure you want to delete? This action is irreversible."
+      "deleteIronTypeDescription": "Are you sure you want to delete? This action is irreversible.",
+      "deletePriceTitle": "Delete price",
+      "deletePriceDescription": "Are you sure you want to delete this price entry?"
     },
     "addCarModel": "Add Car Model",
     "editCarModel": "Edit Car Model",
@@ -1886,6 +1968,7 @@
   "products": {
     "iconAlt": "Products icon",
     "addNew": "Add New",
+    "quickAdd": "Quick Entry",
     "loading": "Loading products...",
     "emptyState": "No products found. Click \"Add New\" to create your first product.",
     "loadingGeneric": "Loading...",
@@ -1894,8 +1977,9 @@
       "ironProducts": "Iron Products"
     },
     "columns": {
+      "id": "Id",
       "productKey": "Product Key",
-      "sku": "SKU",
+      "sku": "Sku",
       "brand": "Brand",
       "category": "Category",
       "unitType": "Unit Type",
@@ -1908,22 +1992,23 @@
     },
     "mobile": {
       "actions": "Actions",
-      "sku": "SKU",
+      "sku": "Sku",
       "code": "Code",
-      "brand": "BRAND",
-      "category": "CATEGORY",
-      "unitType": "UNIT TYPE",
-      "boxSize": "BOX SIZE",
-      "vehicleDependent": "VEHICLE DEPENDENT",
+      "brand": "Brand",
+      "category": "Category",
+      "unitType": "Unit Type",
+      "boxSize": "Box Size",
+      "vehicleDependent": "Vehicle Dependent",
       "viewMore": "View more",
       "viewLess": "View less"
     },
     "form": {
       "addProduct": "Add Product",
       "addNewProduct": "Add New Product",
+      "saveAndAddNext": "Save & Add Next",
       "editProduct": "Edit Product",
       "productKey": "Product Key",
-      "sku": "SKU",
+      "sku": "Sku",
       "brand": "Brand",
       "category": "Category",
       "rootCategory": "Root Category",
@@ -2531,9 +2616,46 @@
       "services": "Services",
       "programmers": "Programmer Entries"
     },
+    "categoryCatalog": {
+      "description": "Manage service categories and their status.",
+      "totalCount": "Categories: {{count}}",
+      "resultCount": "{{filtered}} / {{total}}",
+      "searchLabel": "Search categories",
+      "searchPlaceholder": "Search by code or name",
+      "emptyState": "No categories match these filters.",
+      "nameLabel": "Category name",
+      "displayOrderLabel": "Order {{order}}",
+      "addTitle": "Add category",
+      "editTitle": "Edit category",
+      "inactiveLabel": "Inactive",
+      "pageSizeLabel": "Rows per page",
+      "rangeLabel": "{{from}}–{{to}} of {{total}}",
+      "loadFailed": "Could not load categories.",
+      "retryLabel": "Try again",
+      "messages": {
+        "created": "Category added successfully.",
+        "updated": "Category changes saved.",
+        "createFailed": "Could not add the category.",
+        "updateFailed": "Could not save category changes.",
+        "validationFailed": "Enter a category code and name."
+      }
+    },
+    "serviceCatalog": {
+      "listTitle": "Service Catalog",
+      "searchLabel": "Search services",
+      "searchPlaceholder": "Search by code, name, or category",
+      "emptyState": "No services found",
+      "addTitle": "Add service",
+      "editTitle": "Edit service",
+      "viewTitle": "Service details",
+      "details": "Service details",
+      "view": "View",
+      "validationFailed": "Enter a code and name, then select a category."
+    },
     "actions": {
       "create": "Create",
       "update": "Update",
+      "addPricing": "Add pricing card",
       "addCategory": "Add Category",
       "addService": "Add Service",
       "loadPricing": "Load Vehicle Pricing",
@@ -2579,6 +2701,7 @@
     "table": {
       "name": "Template",
       "vehicle": "Vehicle",
+      "specification": "Specifications",
       "location": "Location",
       "service": "Service",
       "internalCost": "Internal Cost",
@@ -2604,6 +2727,19 @@
       "programmingPriceAutoResolved": "Price is resolved automatically from programmer entries.",
       "noProgrammerForVehicle": "No programmer available for this vehicle.",
       "loadFailed": "Failed to load vehicle service pricing data."
+    },
+    "pricingForm": {
+      "createTitle": "New vehicle pricing card",
+      "editTitle": "Edit pricing card",
+      "vehicleSection": "Vehicle details",
+      "servicesSection": "Service prices",
+      "noServicesPrice": "No prices set",
+      "noPricingMatches": "No pricing cards match these filters."
+    },
+    "filters": {
+      "search": "Brand, model, or year",
+      "searchPlaceholder": "Audi Q7, BMW 3 Series...",
+      "reset": "Reset"
     },
     "programmerAdmin": {
       "badge": "Admin Panel",
@@ -2643,6 +2779,85 @@
       }
     },
     "employeeManagement": {
+      "list": {
+        "description": "Find employees and manage their details and work terms.",
+        "powderBonusSummary": "Powder bonus: ${{amount}} ({{threshold}} kg threshold)",
+        "totalCount": "Employees: {{count}}",
+        "resultCount": "{{filtered}} / {{total}}",
+        "addEmployee": "Add employee",
+        "searchLabel": "Search employees",
+        "searchPlaceholder": "Name, phone, or email",
+        "statusLabel": "Status",
+        "emptyState": "No employees found.",
+        "loadFailed": "Could not load the employee list.",
+        "retry": "Try again",
+        "pageSizeLabel": "Rows per page",
+        "rangeLabel": "{{from}}–{{to}} of {{total}}",
+        "addTitle": "New employee",
+        "editTitle": "Edit employee",
+        "personalSection": "Personal details",
+        "assignmentSection": "Work assignment",
+        "compensationSection": "Pay and bonus"
+      },
+      "percentageWorkspace": {
+        "description": "Choose how to browse, then filter by employee or service.",
+        "upsertHint": "Saving the same employee and service pair updates its existing percentage.",
+        "selectContext": "Choose an employee or service to review its percentages.",
+        "selectEmployee": "Choose an employee to view their service percentages.",
+        "selectService": "Choose a service to view employee percentages.",
+        "byEmployee": "By employee",
+        "byService": "By service",
+        "employeeFilterLabel": "Employee",
+        "serviceFilterLabel": "Service",
+        "employeeResultsTitle": "Employee service percentages",
+        "serviceResultsTitle": "Service percentages by employee",
+        "setPercentage": "Set percentage",
+        "drawerTitle": "Employee service percentage",
+        "noEmployeeRates": "No service percentages are configured for this employee.",
+        "noServiceRates": "No employee percentages are configured for this service.",
+        "employeeLoadFailed": "Could not load this employee's service percentages.",
+        "serviceLoadFailed": "Could not load percentages for this service.",
+        "retry": "Try again"
+      },
+      "depositsWorkspace": {
+        "description": "An advance is paid to an employee before payday. Review one employee's history or browse all advances.",
+        "byEmployee": "By employee",
+        "allDeposits": "All advances",
+        "employeeFilterLabel": "Employee",
+        "statusFilter": "Advance status",
+        "remainingBalance": "Outstanding balance",
+        "balanceAcrossAdvances": "Outstanding across {{count}} advances",
+        "advanceCount": "Advances: {{count}}",
+        "activeDepositHint": "Outstanding across all advances",
+        "noActiveDeposit": "No active advance",
+        "issuedAt": "Issued",
+        "allCount": "Records: {{count}}",
+        "selectEmployee": "Choose an employee to review their advance history.",
+        "noHistory": "No advances have been recorded for this employee.",
+        "noAllDeposits": "No advances match these filters.",
+        "historyLoadFailed": "Could not load this employee's advance history.",
+        "allLoadFailed": "Could not load the advances list.",
+        "retry": "Try again",
+        "drawerTitle": "New advance",
+        "drawerDescription": "Choose an employee and enter the advance amount to issue."
+      },
+      "attendanceWorkspace": {
+        "description": "Record attendance for each employee on the selected day and shop.",
+        "searchLabel": "Search employees",
+        "searchPlaceholder": "Name or phone",
+        "presentCount": "Present",
+        "absentCount": "Absent",
+        "employeeCount": "Showing",
+        "statusForEmployee": "Attendance for {{employee}}",
+        "noteForEmployee": "Note for {{employee}}",
+        "notePlaceholder": "Optional note",
+        "noEmployees": "There are no employees in the selected shop.",
+        "noSearchMatches": "No employees match this search.",
+        "noHistory": "No attendance records for this period.",
+        "retry": "Try again",
+        "markShownPresent": "Mark shown present",
+        "markShownAbsent": "Mark shown absent"
+      },
       "tabs": {
         "employees": "Employees",
         "percentages": "Service Percentages",
@@ -2654,14 +2869,18 @@
         "save": "Save",
         "giveDeposit": "Give deposit",
         "saveAttendance": "Save attendance",
+        "markAllPresent": "Mark all present",
+        "markAllAbsent": "Mark all absent",
         "calculate": "Calculate salary",
-        "markPaid": "Mark as paid"
+        "markPaid": "Mark as paid",
+        "openAttendance": "Enter attendance",
+        "payUnpaidSalary": "Pay accumulated salary"
       },
       "fields": {
         "shop": "Shop",
         "employeeType": "Employee type",
         "powderBonusKgThreshold": "Powder bonus threshold (kg)",
-        "powderBonusAmount": "Powder bonus amount (AMD)",
+        "powderBonusAmount": "Powder bonus amount (USD)",
         "salaryType": "Salary type",
         "fixedDailySalary": "Fixed daily salary",
         "selectShop": "Select shop",
@@ -2686,6 +2905,13 @@
         "Regular": "Regular",
         "Director": "Director"
       },
+      "calculationSources": {
+        "FixedDaily": "Fixed daily salary",
+        "EmployeeCommission": "Employee service commission",
+        "ProgrammerServicePricing": "Programmer agreed price",
+        "ProgrammerInternalCostFallback": "Programmer fallback pricing",
+        "DirectorMonthlyPowderBonus": "Director monthly powder bonus"
+      },
       "attendanceStatus": {
         "Present": "Present",
         "Absent": "Absent"
@@ -2694,8 +2920,34 @@
         "activeDeposit": "Active deposit",
         "presentCount": "Present employees",
         "absentCount": "Absent employees",
+        "payrollCount": "Payroll records",
+        "totalPayable": "Total payable",
+        "unpaidCount": "Unpaid",
+        "notYetPayable": "Not yet payable",
+        "missingPayrollRecords": "Employees without a salary record: {{count}}",
         "paid": "Paid",
-        "unpaid": "Unpaid"
+        "unpaid": "Unpaid",
+        "sourceUnavailable": "Calculation source unavailable",
+        "programmerPriceWarning": "Check the programmer's agreed service price.",
+        "powderReceived": "Accepted powder: {{amount}} kg",
+        "bonusIncluded": "Monthly bonus included in payment",
+        "bonusAccrued": "Accrued, payable only on the last day of the month",
+        "bonusNotIncluded": "Final monthly amount is not included yet",
+        "estimatedFinalPayable": "Estimated month-end payment: {{amount}} (may change)",
+        "advanceDeducted": "Advance deducted from this calculation",
+        "advanceBalanceAfter": "Remaining advance balance",
+        "readyToPay": "Ready to pay",
+        "paidBy": "Paid by: {{user}}",
+        "noPaymentPermission": "You do not have permission to pay salaries",
+        "noPaymentDue": "No amount is due for payment",
+        "unpaidGrossSalary": "Unpaid gross salary",
+        "advanceDeduction": "Advance deduction",
+        "activeAdvanceBalance": "Active advance balance",
+        "unpaidRecordCount": "Unpaid records: {{count}}",
+        "unpaidPeriod": "Period: {{from}} – {{to}}",
+        "paymentThroughDate": "Calculated through {{date}}",
+        "salaryPeriodEnds": "Salary period ends: {{date}}",
+        "noCashPaymentRequired": "No cash payment required"
       },
       "sections": {
         "employeeForm": "Employee form",
@@ -2708,17 +2960,23 @@
         "depositsAll": "All employee deposits",
         "depositsByEmployee": "Current employee balance",
         "attendance": "Daily attendance",
+        "attendanceRoster": "Employees for this day",
         "attendanceHistory": "Attendance history",
         "payroll": "Daily payroll",
-        "salaryHistory": "Salary history"
+        "salaryHistory": "Salary history",
+        "unpaidSalary": "Accumulated unpaid salary"
       },
       "confirmation": {
         "markPaidTitle": "Confirm salary payment",
-        "markPaidDescription": "Mark {{employee}} salary as paid for {{amount}}?"
+        "markPaidDescription": "Mark {{employee}} salary as paid for {{amount}}?",
+        "payUnpaidSalaryTitle": "Confirm accumulated salary payment",
+        "payUnpaidSalaryDescription": "Pay {{amount}} in accumulated salary to {{employee}} through {{date}}?"
       },
       "columns": {
         "fullName": "Full name",
         "shop": "Shop",
+        "assignment": "Shop / category",
+        "compensation": "Pay terms",
         "employeeType": "Employee type",
         "serviceCategory": "Service category",
         "salaryType": "Salary type",
@@ -2734,6 +2992,8 @@
         "workDate": "Work date",
         "notes": "Notes",
         "grossSalary": "Gross salary",
+        "calculationSource": "Calculation source",
+        "advance": "Advance",
         "depositDeduction": "Deposit deduction",
         "depositRemainingAfter": "Balance after salary",
         "netPayable": "Net payable",
@@ -2741,8 +3001,9 @@
         "paidAt": "Paid at",
         "powderQuantityKg": "Powder quantity",
         "powderBonusKgThreshold": "Powder bonus threshold",
-        "powderBonusAmount": "Powder bonus amount",
-        "powderBonus": "Director powder bonus"
+        "powderBonusAmount": "Powder bonus amount (USD)",
+        "powderBonus": "Director powder bonus (AMD)",
+        "bonusRule": "Threshold: {{threshold}} kg, bonus: {{amount}} USD"
       },
       "messages": {
         "validationFailed": "Please fill in the required employee data.",
@@ -2758,14 +3019,25 @@
         "attendanceSaveFailed": "Failed to save attendance data",
         "depositsAllLoadFailed": "Failed to load all employee deposits",
         "calculated": "Salary calculated successfully",
+        "noSalaryCalculated": "No salary calculation is available for the selected filters right now.",
         "salaryFailed": "Failed to calculate salary",
         "salaryByDateLoadFailed": "Failed to load payroll for the selected date",
+        "unpaidSummaryLoadFailed": "Failed to load the unpaid salary summary.",
+        "noUnpaidSalary": "This employee has no unpaid salary through the selected date.",
+        "selectEmployeeForUnpaidSalary": "Select an employee to view accumulated unpaid salary.",
+        "noPresentEmployees": "No employees are marked present for this date. Enter attendance first.",
         "salaryHistoryLoadFailed": "Failed to load salary history",
+        "noSalaryHistory": "No calculated salary records for this employee in the selected period. History does not calculate missing dates.",
         "salaryMarkedPaid": "Salary marked as paid",
         "salaryMarkPaidFailed": "Failed to mark salary as paid",
+        "salaryRefreshAfterPaymentFailed": "Payment succeeded, but the data could not be refreshed. Reload the summary.",
         "salaryRecordIdMissing": "Salary record ID is missing",
         "selectEmployeeHint": "Select an employee to view deposit and history details.",
-        "selectEmployeeForSalaryHistory": "Select an employee to view salary history."
+        "selectEmployeeForSalaryHistory": "Select an employee to view salary history.",
+        "selectEmployeeForAttendanceHistory": "Select an employee to view attendance history.",
+        "noPayrollRecords": "No salary calculation found. Check attendance (only present employees are included), the selected shop or employee, and programmer pricing, then run the calculation. A record may already have been calculated or paid.",
+        "missingPayrollRecordsHint": "No record was returned for this date. Check attendance, filters, or whether the salary was already calculated and paid.",
+        "payrollShopHint": "Choose a shop before filtering payroll by employee."
       }
     }
   },
@@ -2863,6 +3135,12 @@
   "catalystPricing": {
     "title": "Catalyst Pricing",
     "editPricing": "Edit Catalyst Pricing",
+    "marginLevels": {
+      "none": "No margin",
+      "low": "Low margin",
+      "medium": "Medium margin",
+      "high": "High margin"
+    },
     "columns": {
       "id": "Id",
       "pdReducePercent": "Palladium Reduce Percent",
@@ -3050,49 +3328,49 @@
     }
   },
   "catalyticConverters": {
-    "title": "Catalytic Converters",
-    "list": "Catalytic Converters List",
+    "title": "Catalytic converters",
+    "list": "Catalytic converters list",
     "emptyState": "No catalytic converters found",
     "columns": {
       "code": "Code",
       "description": "Description",
-      "sellingPrice": "Selling Price",
+      "sellingPrice": "Selling price",
       "available": "Available",
       "batches": "Batches",
-      "priceRange": "Price Range"
+      "priceRange": "Price range"
     },
     "filters": {
       "brand": "Brand",
       "model": "Model",
       "engine": "Engine",
-      "fuelType": "Fuel Type",
+      "fuelType": "Fuel type",
       "year": "Year",
       "powerHp": "Power (HP)"
     },
     "actions": {
-      "createProduct": "Create Product",
-      "viewDetails": "View Details",
-      "createPurchase": "Create Purchase",
-      "addCompatibility": "Add Compatibility"
+      "createProduct": "Create product",
+      "viewDetails": "View details",
+      "createPurchase": "Create purchase",
+      "addCompatibility": "Add compatibility"
     },
     "create": {
-      "title": "Create Catalytic Converter"
+      "title": "Create catalytic converter"
     },
     "edit": {
-      "title": "Edit Catalytic Converter"
+      "title": "Edit catalytic converter"
     },
     "form": {
       "code": "Code",
       "description": "Description",
-      "sellingPrice": "Selling Price",
-      "compatibilities": "Vehicle Compatibilities",
+      "sellingPrice": "Selling price",
+      "compatibilities": "Vehicle compatibilities",
       "compatibilitiesHint": "Add the vehicle compatibility rows below. Years are selected from the lists to keep the data consistent.",
       "compatibilityItem": "Compatibility",
-      "engineDisplacement": "Engine Displacement",
+      "engineDisplacement": "Engine displacement",
       "enginePowerHp": "Power (HP)",
-      "yearFrom": "Year From",
-      "yearTo": "Year To",
-      "maxMileageKm": "Max Mileage (km)"
+      "yearFrom": "Year from",
+      "yearTo": "Year to",
+      "maxMileageKm": "Max mileage (km)"
     },
     "validation": {
       "codeRequired": "Code is required",
@@ -3111,18 +3389,18 @@
       "loadingLookups": "Failed to load vehicle lookups"
     },
     "purchase": {
-      "title": "Create Purchase",
+      "title": "Create purchase",
       "success": "Purchase recorded; batch created.",
       "form": {
         "supplier": "Supplier",
-        "supplierSearch": "Search Supplier",
+        "supplierSearch": "Search supplier",
         "supplierSearchPlaceholder": "Search by name or phone",
         "quantity": "Quantity",
-        "purchasePrice": "Purchase Price",
-        "totalAmount": "Total Amount",
+        "purchasePrice": "Purchase price",
+        "totalAmount": "Total amount",
         "warehouse": "Warehouse",
         "operator": "Operator",
-        "purchasedAt": "Purchased At"
+        "purchasedAt": "Purchased at"
       },
       "validation": {
         "supplier": "Supplier is required",
@@ -3137,11 +3415,11 @@
       }
     },
     "details": {
-      "title": "Catalytic Converter Details",
-      "summary": "Inventory Summary",
+      "title": "Catalytic converter details",
+      "summary": "Inventory summary",
       "compatibilities": "Compatibilities",
       "noCompatibilities": "No compatibilities yet",
-      "batches": "Stock Batches",
+      "batches": "Stock batches",
       "noBatches": "No batches yet",
       "notFound": "Catalytic converter not found",
       "batchColumns": {
@@ -3149,9 +3427,9 @@
         "warehouse": "Warehouse",
         "quantity": "Quantity",
         "remaining": "Remaining",
-        "purchasePrice": "Purchase Price",
+        "purchasePrice": "Purchase price",
         "supplier": "Supplier",
-        "createdAt": "Created At"
+        "createdAt": "Created at"
       }
     }
   },
@@ -3160,12 +3438,16 @@
     "list": "Suppliers List",
     "createTitle": "Create Supplier",
     "editTitle": "Edit Supplier",
+    "viewTitle": "Supplier details",
     "searchLabel": "Search",
     "searchPlaceholder": "Search by supplier name or phone",
-    "helperText": "Use this page to create, update, or remove suppliers.",
+    "helperText": "View, create, edit, or remove suppliers from this page.",
     "emptyState": "No suppliers found",
     "actions": {
-      "create": "Create Supplier"
+      "create": "Create Supplier",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
     },
     "columns": {
       "id": "ID",
@@ -3221,7 +3503,10 @@
     },
 
     "actions": {
-      "save": "Save"
+      "save": "Save",
+      "duplicateBucket": "Duplicate bucket",
+      "deleteBucket": "Delete bucket",
+      "deleteComposition": "Delete composition"
     },
 
     "sections": {

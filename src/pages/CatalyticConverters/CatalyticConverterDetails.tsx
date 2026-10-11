@@ -9,6 +9,7 @@ import { Button, Table, TableBody, TableCell, TableHeader, TableRow } from "@/ui
 
 // components
 import { SectionHeader } from "@/components/common";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 import { CreatePurchaseModal } from "./components/CreatePurchaseModal";
 import { CreateCatalyticConverterModal } from "./components/CreateCatalyticConverterModal";
 
@@ -89,23 +90,28 @@ export const CatalyticConverterDetails = () => {
   }
 
   return (
-    <>
+    <div className={styles.page}>
       <SectionHeader
         title={selected?.code ?? t("catalyticConverters.details.title")}
         goBack
         actions={
           <div className={styles.rowActions}>
             <Button
-              size="small"
+              size="medium"
               variant="secondary"
+              className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
               onClick={() => setIsEditOpen(true)}
               disabled={!canEditProduct}
             >
-              <Pencil size={16} />
+              <Pencil size={16} aria-hidden="true" />
               {t("common.edit")}
             </Button>
-            <Button size="small" onClick={() => setIsPurchaseOpen(true)}>
-              <ShoppingCart size={16} />
+            <Button
+              size="medium"
+              className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+              onClick={() => setIsPurchaseOpen(true)}
+            >
+              <ShoppingCart size={16} aria-hidden="true" />
               {t("catalyticConverters.actions.createPurchase")}
             </Button>
           </div>
@@ -294,6 +300,6 @@ export const CatalyticConverterDetails = () => {
           }}
         />
       )}
-    </>
+    </div>
   );
 };

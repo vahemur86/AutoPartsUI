@@ -1,18 +1,52 @@
 .employeeManagement {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  min-width: 0;
+  gap: 14px;
 }
 
 .managementTabs {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+
+.managementTabs :global([class*="segmentedGroup"]) {
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 3px;
+  border-color: rgba(196, 169, 106, 0.16);
+  border-radius: 6px;
+  background: rgba(13, 18, 14, 0.88);
+}
+
+.managementTabs :global([class*="segmented_"]) {
+  height: 36px;
+  padding: 8px 12px;
+  border-radius: 5px;
+}
+
+.managementTabs :global([class*="segmented_"] [class*="tabText"]) {
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.managementTabs :global([class*="segmented_"][class*="active"]) {
+  border: 1px solid rgba(196, 169, 106, 0.3);
+  background: rgba(196, 169, 106, 0.12);
+  box-shadow: none;
+}
+
+.managementTabs :global([class*="segmented_"][class*="active"] [class*="tabText"]) {
+  color: #e8dfc7;
 }
 
 .section {
-  background: var(--color-black-2);
+  min-width: 0;
+  border: 1px solid rgba(196, 169, 106, 0.14);
   border-radius: 8px;
   padding: 16px;
+  background: linear-gradient(145deg, rgba(25, 32, 26, 0.96), rgba(15, 19, 16, 0.98));
 }
 
 .header {
@@ -41,6 +75,480 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+}
+
+.employeeHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.employeeHeaderCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.employeeHeaderCopy p {
+  margin: 5px 0 0;
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.employeeCount {
+  color: #c9c3b2;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.employeeFilters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(150px, 190px) auto;
+  align-items: end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.employeeSearch,
+.employeeFilter {
+  width: 100%;
+  min-width: 0;
+}
+
+.employeeTableMeta {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.employeeTableSection :global(table) {
+  min-width: 760px;
+}
+
+.employeeIdentity,
+.employeeAssignment,
+.employeeCompensation {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.employeeIdentity strong,
+.employeeAssignment strong {
+  overflow: hidden;
+  color: #eee9db;
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employeeIdentity span,
+.employeeAssignment span,
+.employeeCompensation > span:not(:first-child) {
+  overflow: hidden;
+  color: #aab2a9;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employeeCompensation > strong {
+  color: #e8dfc7;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.employeePowderBonus {
+  color: #d2bf8a !important;
+}
+
+.employeeTypeBadge,
+.employeeActiveBadge,
+.employeeInactiveBadge {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 22px;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.employeeTypeBadge {
+  color: #bdc8be;
+  border-color: rgba(168, 195, 162, 0.18);
+  background: rgba(122, 153, 120, 0.08);
+}
+
+.employeeActiveBadge {
+  color: #bad4bb;
+  border-color: rgba(132, 177, 137, 0.24);
+  background: rgba(91, 137, 98, 0.12);
+}
+
+.employeeInactiveBadge {
+  color: #aeb4ae;
+  border-color: rgba(174, 180, 174, 0.16);
+  background: rgba(174, 180, 174, 0.06);
+}
+
+.employeeError {
+  display: flex;
+  min-height: 150px;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #d5d8d2;
+}
+
+.employeeDrawerForm {
+  display: grid;
+  gap: 20px;
+}
+
+.employeeFormSection {
+  display: grid;
+  gap: 12px;
+}
+
+.employeeFormSection h3 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.depositWorkspace {
+  display: grid;
+  min-width: 0;
+  gap: 16px;
+}
+
+.depositHeader,
+.depositAllHeader,
+.depositHistoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.depositHeaderCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.depositHeaderCopy p,
+.depositAllHeader > div:first-child > span {
+  margin: 5px 0 0;
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.depositHeader > button {
+  flex: 0 0 auto;
+}
+
+.depositViewTabs {
+  display: flex;
+  min-width: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.14);
+}
+
+.depositEmployeeContext {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(260px, 1fr);
+  align-items: end;
+  gap: 16px;
+}
+
+.depositEmployeeFilter {
+  width: 100%;
+}
+
+.depositBalanceSummary {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  justify-content: start;
+  gap: 4px 10px;
+  min-height: 62px;
+  padding: 10px 14px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.055);
+}
+
+.depositBalanceSummary > svg {
+  grid-row: span 2;
+  color: #d2bf8a;
+}
+
+.depositBalanceSummary > span:not(.depositBalanceMeta) {
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.depositBalanceSummary > strong {
+  color: #e8dfc7;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.depositBalanceMeta {
+  grid-column: 2 / -1;
+  color: #929c92;
+  font-size: 10px;
+}
+
+.depositAdvanceList,
+.depositEmployeeGroups {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.depositAdvanceRow {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.8fr) minmax(110px, 1fr) minmax(110px, 1fr) minmax(120px, 1.5fr) auto;
+  align-items: center;
+  gap: 10px 14px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.depositAdvanceDate,
+.depositAdvanceAmount,
+.depositAdvanceBalance {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.depositAdvanceDate > span,
+.depositAdvanceAmount > span,
+.depositAdvanceBalance > span,
+.depositGroupBalance > span {
+  color: #929c92;
+  font-size: 10px;
+}
+
+.depositAdvanceDate > strong,
+.depositAdvanceAmount > strong,
+.depositAdvanceBalance > strong {
+  overflow: hidden;
+  color: #e8dfc7;
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.depositAdvanceDetails {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.depositAdvanceDetails > span {
+  overflow-wrap: anywhere;
+}
+
+.depositEmployeeGroup {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.depositEmployeeGroup > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto) 18px;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.depositEmployeeGroup > summary::-webkit-details-marker {
+  display: none;
+}
+
+.depositEmployeeGroup > summary:hover {
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.depositEmployeeGroup > summary:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: -2px;
+}
+
+.depositEmployeeGroup[open] > summary > svg {
+  transform: rotate(180deg);
+}
+
+.depositGroupIdentity,
+.depositGroupBalance {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.depositGroupIdentity > strong {
+  overflow: hidden;
+  color: #eee9db;
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.depositGroupIdentity > span {
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.depositGroupBalance > strong {
+  color: #e8dfc7;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.depositEmployeeGroup > summary > svg {
+  color: #c4a96a;
+  transition: transform 140ms ease;
+}
+
+.depositEmployeeGroup > .depositAdvanceList {
+  padding: 0 10px 10px;
+}
+
+.depositEmployeeGroup .depositAdvanceRow {
+  background: rgba(11, 16, 12, 0.38);
+}
+
+.depositHistoryHeader > div,
+.depositAllHeader > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.depositHistoryHeader h4,
+.depositAllHeader h4 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.depositHistoryHeader > div > span {
+  display: inline-grid;
+  min-width: 22px;
+  min-height: 22px;
+  width: fit-content;
+  padding: 0 6px;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.06);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.depositAllHeader {
+  align-items: flex-end;
+}
+
+.depositAllFilters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 210px));
+  gap: 10px;
+}
+
+.depositError,
+.depositEmptyState {
+  display: flex;
+  min-height: 140px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px;
+  color: #aab2a9;
+  border: 1px dashed rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
+  text-align: center;
+}
+
+.depositError {
+  color: #d5d8d2;
+}
+
+.depositDrawerForm {
+  display: grid;
+  gap: 18px;
+}
+
+.depositDrawerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.depositDrawerActions .depositDrawerCancel {
+  color: #c7b9b5;
+  border: 1px solid rgba(177, 105, 97, 0.26);
+  border-radius: 6px;
+  background: rgba(137, 84, 77, 0.08);
+}
+
+.depositDrawerActions .depositDrawerCancel:hover:not(:disabled) {
+  color: #f0cfca;
+  border-color: rgba(177, 105, 97, 0.48);
+  background: rgba(137, 84, 77, 0.16);
+}
+
+.depositDrawerActions .depositDrawerSubmit {
+  color: #17170f;
+  border: 1px solid rgba(196, 169, 106, 0.5);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d2bf8a, #a78e57);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.12);
+}
+
+.depositDrawerActions .depositDrawerSubmit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ddc995, #b69b61);
+  box-shadow: 0 6px 18px rgba(170, 137, 65, 0.18);
+}
+
+.depositDrawerActions .depositDrawerSubmit:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.depositDrawerHint {
+  margin: 0;
+  color: #aab2a9;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .gridTwo {
@@ -57,12 +565,69 @@
 
 .rowActions {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.rowAction {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.rowAction:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 2px;
+}
+
+.rowActionEdit {
+  color: #d2bf8a;
+  border-color: rgba(196, 169, 106, 0.2);
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.rowActionEdit:hover {
+  color: #f1dfaa;
+  border-color: rgba(196, 169, 106, 0.52);
+  background: rgba(196, 169, 106, 0.13);
+}
+
+.rowActionDeactivate {
+  color: #d4b7b2;
+  border-color: rgba(177, 105, 97, 0.22);
+  background: rgba(137, 84, 77, 0.08);
+}
+
+.rowActionDeactivate:hover {
+  color: #f0cfca;
+  border-color: rgba(177, 105, 97, 0.48);
+  background: rgba(137, 84, 77, 0.18);
+}
+
+.rowActionActivate {
+  color: #b8c9bc;
+  border-color: rgba(119, 157, 128, 0.24);
+  background: rgba(91, 133, 103, 0.08);
+}
+
+.rowActionActivate:hover {
+  color: #d6e5d9;
+  border-color: rgba(119, 157, 128, 0.48);
+  background: rgba(91, 133, 103, 0.17);
 }
 
 .paidBadge,
-.unpaidBadge {
+.unpaidBadge,
+.noPaymentBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,26 +643,37 @@
   align-items: center;
   border-radius: 999px;
   padding: 4px 10px;
-  color: #fff0c2;
-  background: rgba(234, 179, 8, 0.2);
-  border: 1px solid rgba(234, 179, 8, 0.45);
+  color: #e0d2ad;
+  background: rgba(196, 169, 106, 0.12);
+  border: 1px solid rgba(196, 169, 106, 0.28);
   font-weight: 700;
 }
 
 .paidBadge {
-  color: #d9fbe6;
-  background: rgba(34, 197, 94, 0.2);
-  border: 1px solid rgba(34, 197, 94, 0.45);
+  color: #b8c9bc;
+  background: rgba(91, 133, 103, 0.16);
+  border: 1px solid rgba(119, 157, 128, 0.28);
 }
 
 .unpaidBadge {
-  color: #ffe3e3;
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #d4b7b2;
+  background: rgba(137, 84, 77, 0.13);
+  border: 1px solid rgba(177, 105, 97, 0.25);
+}
+
+.noPaymentBadge {
+  width: fit-content;
+  min-width: 0;
+  color: #b9c1ba;
+  border: 1px solid rgba(174, 180, 174, 0.18);
+  background: rgba(174, 180, 174, 0.07);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: normal;
 }
 
 .paidText {
-  color: #7ee8a8;
+  color: #a8c1ad;
   font-weight: 700;
 }
 
@@ -111,6 +687,706 @@
 
 .summaryRow strong {
   color: var(--color-secondary-200);
+}
+
+.attendanceWorkspace {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.workflowHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.16);
+}
+
+.workflowTitle {
+  display: grid;
+  gap: 4px;
+}
+
+.sectionEyebrow {
+  color: #c4a96a;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.attendanceFilters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 220px));
+  gap: 10px;
+  align-items: end;
+}
+
+.attendanceSearch {
+  min-width: 0;
+}
+
+.attendanceToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.attendanceSummary {
+  display: flex;
+  gap: 10px;
+}
+
+.attendanceMetric {
+  display: grid;
+  min-width: 140px;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.attendanceMetric span {
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.attendanceMetric strong {
+  color: #eee9db;
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+}
+
+.attendancePresentMetric {
+  border-left: 2px solid #91a99a;
+}
+
+.attendanceAbsentMetric {
+  border-left: 2px solid #b78678;
+}
+
+.attendanceActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rosterHeader {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.rosterHeader .title {
+  font-size: 15px;
+}
+
+.rosterCount {
+  display: grid;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.07);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.attendanceRoster {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.attendanceRosterRow {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) minmax(220px, auto) minmax(180px, 0.8fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.attendanceEmployeeIdentity {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.attendanceEmployeeIdentity strong {
+  overflow: hidden;
+  color: #eee9db;
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attendanceEmployeeIdentity span {
+  overflow: hidden;
+  color: #929c92;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attendanceNoteField {
+  min-width: 0;
+}
+
+.attendanceState {
+  display: flex;
+  min-height: 136px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px;
+  color: #aab2a9;
+  border: 1px dashed rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
+  text-align: center;
+}
+
+.attendanceChoice {
+  display: flex;
+  gap: 6px;
+}
+
+.attendanceChoiceButton {
+  min-width: 100px;
+  gap: 6px;
+  padding: 6px 9px;
+  color: #aab2a9;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.attendanceChoiceButton:hover:not(:disabled) {
+  color: #eee9db;
+  border-color: rgba(196, 169, 106, 0.36);
+  background: rgba(196, 169, 106, 0.07);
+}
+
+.attendancePresentSelected {
+  color: #c5d2c8;
+  border-color: rgba(145, 169, 154, 0.4);
+  background: rgba(91, 133, 103, 0.16);
+}
+
+.attendanceAbsentSelected {
+  color: #d6beb8;
+  border-color: rgba(183, 134, 120, 0.36);
+  background: rgba(137, 84, 77, 0.14);
+}
+
+.historyFilters {
+  width: min(300px, 100%);
+}
+
+.attendanceHistoryFilters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.3fr) repeat(2, minmax(145px, 1fr));
+  gap: 10px;
+  align-items: end;
+  width: min(680px, 100%);
+  min-width: 0;
+}
+
+.percentageResults {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+}
+
+.percentageResultsHeader p {
+  margin: 5px 0 0;
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.percentageBrowseControls {
+  display: grid;
+  grid-template-columns: max-content minmax(220px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.percentageViewFilter {
+  width: 100%;
+  min-width: 0;
+}
+
+.percentageDrawerForm {
+  display: grid;
+  gap: 18px;
+}
+
+.percentageHint {
+  margin: 0;
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.percentageResultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.percentageResultsHeader .title {
+  font-size: 16px;
+}
+
+.percentageResultsTitle {
+  margin: 0;
+  color: #eee9db;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.percentageCount {
+  display: inline-grid;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.07);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.percentageViewTabs {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.percentageEmptyState,
+.percentageError {
+  display: flex;
+  min-height: 140px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px;
+  color: #aab2a9;
+  border: 1px dashed rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
+  text-align: center;
+}
+
+.percentageError {
+  color: #d5d8d2;
+}
+
+.payrollWorkspace {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.unpaidSalaryWorkspace {
+  display: grid;
+  gap: 14px;
+}
+
+.unpaidSalaryWorkspace .payrollResultsHeader {
+  margin-bottom: 0;
+}
+
+.unpaidSalaryEmployee {
+  width: min(320px, 100%);
+}
+
+.unpaidSalaryPeriod {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.unpaidSalaryPeriod strong {
+  color: #e8dfc7;
+  font-size: 12px;
+}
+
+.unpaidSalaryMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.directorSalarySummary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  padding: 11px 13px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.045);
+  color: #bfc7be;
+  font-size: 11px;
+}
+
+.directorSalarySummary strong {
+  color: #e8dfc7;
+  font-size: 12px;
+}
+
+.directorSalarySummary .salaryBonusIncluded {
+  color: #a8c1ad;
+}
+
+.directorSalarySummary .salaryBonusAccrued {
+  color: #e2bc83;
+}
+
+.salaryPaymentBlocked,
+.payrollCalculationNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  color: #e2bc83;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.055);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.unpaidSalaryActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.payrollCalculationNotice {
+  margin-top: 4px;
+}
+
+.payrollFilters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(145px, 1fr)) auto;
+  gap: 10px;
+  align-items: end;
+  min-width: 0;
+}
+
+.payrollFilters > button {
+  min-height: 44px;
+  gap: 7px;
+  padding: 0 14px;
+}
+
+.payrollHint {
+  margin: 0;
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.payrollResultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.payrollResultsHeader > div {
+  display: grid;
+  gap: 3px;
+}
+
+.payrollResultsHeader .title {
+  font-size: 15px;
+}
+
+.resultsDate,
+.resultsCount {
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.resultsCount {
+  padding: 5px 9px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.05);
+  white-space: nowrap;
+}
+
+.payrollSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.payrollMetric {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.payrollMetric span {
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.payrollMetric strong {
+  color: #e8dfc7;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.payrollTable {
+  min-width: 0;
+}
+
+.payrollTable :global(table) {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.payrollTable :global(th:nth-child(1)),
+.payrollTable :global(td:nth-child(1)) {
+  width: 25%;
+}
+
+.payrollTable :global(th:nth-child(2)),
+.payrollTable :global(td:nth-child(2)) {
+  width: 15%;
+}
+
+.payrollTable :global(th:nth-child(3)),
+.payrollTable :global(td:nth-child(3)) {
+  width: 14%;
+}
+
+.payrollTable :global(th:nth-child(4)),
+.payrollTable :global(td:nth-child(4)) {
+  width: 12%;
+}
+
+.payrollTable :global(th:nth-child(5)),
+.payrollTable :global(td:nth-child(5)) {
+  width: 13%;
+}
+
+.payrollTable :global(th:nth-child(6)),
+.payrollTable :global(td:nth-child(6)) {
+  width: 10%;
+}
+
+.payrollTable :global(th:nth-child(7)),
+.payrollTable :global(td:nth-child(7)) {
+  width: 11%;
+}
+
+.salaryEmployee,
+.salaryAmount,
+.salaryPaymentStatus,
+.salarySource {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.salarySource > span,
+.salarySource > small,
+.salaryBonus > span,
+.salaryBonus > small {
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+.salarySource > span {
+  color: #d9ddd7;
+  font-size: 11px;
+}
+
+.salarySource > small {
+  color: #e2bc83;
+  font-size: 10px;
+}
+
+.salaryAmount strong {
+  color: #eee9db;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.salaryBonus {
+  display: grid;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.salaryBonus > span {
+  color: #d2bf8a;
+  font-size: 10px;
+}
+
+.salaryBonus > small {
+  color: #aab2a9;
+  font-size: 10px;
+}
+
+.salaryBonus > .salaryBonusAccrued {
+  color: #e2bc83;
+}
+
+.salaryBonus > .salaryBonusIncluded {
+  color: #a8c1ad;
+}
+
+.salaryAmount > small {
+  color: #aab2a9;
+  font-size: 10px;
+}
+
+.salaryAmount > .salaryBonusAccrued {
+  color: #e2bc83;
+}
+
+.salaryAmount > .salaryBonusIncluded {
+  color: #a8c1ad;
+}
+
+.salaryEmployee strong {
+  overflow: hidden;
+  color: #eee9db;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.salaryEmployee span,
+.salaryPaymentStatus small {
+  color: #aab2a9;
+  font-size: 10px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.salaryPaymentStatus > span {
+  width: fit-content;
+}
+
+.payrollTable :global(td:last-child button) {
+  max-width: 100%;
+  min-width: 0;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 8px;
+  white-space: normal;
+}
+
+.salaryMarkPaidLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.payrollEmptyState {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 76px;
+  padding: 14px;
+  color: #aab2a9;
+  border: 1px dashed rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
+}
+
+.payrollEmptyState svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.payrollEmptyState p {
+  margin: 0;
+}
+
+.payrollMissing {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.payrollMissingHeader {
+  display: grid;
+  gap: 4px;
+}
+
+.payrollMissingHeader strong {
+  color: #e8dfc7;
+  font-size: 12px;
+}
+
+.payrollMissingHeader span,
+.payrollMissing li {
+  color: #aab2a9;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.payrollMissing ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.salaryHistoryFilters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.3fr) repeat(2, minmax(150px, 1fr));
+  gap: 10px;
+  align-items: end;
+  width: 100%;
+  min-width: 0;
+}
+
+.historyPrompt {
+  padding: 14px;
+  color: #aab2a9;
+  border: 1px dashed rgba(196, 169, 106, 0.18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
 }
 
 .noteBox {
@@ -128,9 +1404,392 @@
   color: var(--color-secondary-500);
 }
 
+.employeeManagement :global([class*="tableWrapper"]) {
+  overflow: auto;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 7px;
+  background: #121814;
+}
+
+.employeeManagement .payrollTable :global([class*="tableWrapper"]) {
+  overflow-x: hidden;
+}
+
+.employeeManagement :global(table) {
+  background: #121814;
+}
+
+.employeeManagement :global(th) {
+  color: #d2bf8a;
+  border-bottom-color: rgba(196, 169, 106, 0.2);
+  background: #1b231e;
+}
+
+.employeeManagement :global(td) {
+  color: #dfe3dc;
+  border-bottom-color: rgba(196, 169, 106, 0.08);
+}
+
+.employeeManagement :global(tbody tr:hover) {
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.employeeManagement :global(button[class*="primary"]) {
+  color: #17170f;
+  border: 1px solid rgba(196, 169, 106, 0.5);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d2bf8a, #a78e57);
+}
+
+.employeeManagement :global(button[class*="primary"]:hover:not(:disabled)) {
+  background: linear-gradient(135deg, #ddc995, #b69b61);
+}
+
+.employeeManagement :global(button[class*="danger"]) {
+  border-radius: 6px;
+  background: #805d58;
+}
+
 @media (max-width: 900px) {
   .gridTwo,
   .gridThree {
     grid-template-columns: 1fr;
+  }
+
+  .managementTabs :global([class*="segmentedGroup"]) {
+    justify-content: flex-start;
+  }
+
+  .employeeFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .employeeSearch {
+    grid-column: 1 / -1;
+  }
+
+  .employeeHeader {
+    flex-wrap: wrap;
+  }
+
+  .employeeHeaderCopy {
+    flex-basis: 100%;
+  }
+
+  .header {
+    align-items: stretch;
+  }
+
+  .actions {
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  .actions > * {
+    min-width: 0;
+    flex: 1 1 160px;
+  }
+
+  .workflowHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .depositEmployeeContext {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .depositAllHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .depositAllFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .depositAdvanceRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .depositAdvanceDetails {
+    grid-column: span 2;
+  }
+
+  .attendanceFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .attendanceSearch {
+    grid-column: 1 / -1;
+  }
+
+  .attendanceRosterRow {
+    grid-template-columns: minmax(150px, 1fr) minmax(210px, auto);
+  }
+
+  .attendanceNoteField {
+    grid-column: 1 / -1;
+  }
+
+  .percentageBrowseControls {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .percentageViewTabs {
+    grid-column: 1 / -1;
+  }
+
+  .attendanceToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .attendanceActions {
+    justify-content: flex-start;
+  }
+
+  .payrollFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .unpaidSalaryMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payrollFilters > button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .salaryHistoryFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .attendanceHistoryFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .depositHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .depositHeader > button {
+    width: 100%;
+  }
+
+  .depositAllFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .depositAdvanceRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 11px;
+  }
+
+  .depositAdvanceDetails {
+    grid-column: 1 / -1;
+  }
+
+  .depositEmployeeGroup > summary {
+    grid-template-columns: minmax(0, 1fr) 18px;
+  }
+
+  .depositGroupBalance {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .depositEmployeeGroup > summary > svg {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .depositError {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .employeeHeader {
+    align-items: stretch;
+  }
+
+  .employeeHeader > button {
+    width: 100%;
+  }
+
+  .employeeFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .employeeSearch {
+    grid-column: auto;
+  }
+
+  .employeeFilters > button {
+    width: 100%;
+  }
+
+  .employeeError {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .attendanceWorkspace {
+    padding: 14px;
+  }
+
+  .attendanceFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .attendanceSearch,
+  .attendanceNoteField {
+    grid-column: auto;
+  }
+
+  .attendanceRosterRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .percentageBrowseControls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .percentageBrowseControls > button {
+    width: 100%;
+  }
+
+  .percentageResultsHeader {
+    align-items: flex-start;
+  }
+
+  .attendanceSummary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .attendanceMetric {
+    min-width: 0;
+  }
+
+  .attendanceActions > button {
+    flex: 1 1 auto;
+  }
+
+  .attendanceActions > button:last-child {
+    width: 100%;
+  }
+
+  .attendanceChoice {
+    flex-direction: column;
+    min-width: 100px;
+  }
+
+  .attendanceChoiceButton {
+    width: 100%;
+  }
+
+  .attendanceState {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .header {
+    align-items: stretch;
+  }
+
+  .payrollWorkspace {
+    padding: 14px;
+  }
+
+  .payrollFilters,
+  .salaryHistoryFilters,
+  .attendanceHistoryFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .payrollFilters > button {
+    width: 100%;
+  }
+
+  .payrollResultsHeader {
+    align-items: flex-start;
+  }
+
+  .unpaidSalaryWorkspace .payrollResultsHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .unpaidSalaryEmployee {
+    width: 100%;
+  }
+
+  .unpaidSalaryPeriod,
+  .payrollCalculationNotice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .unpaidSalaryMetrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .unpaidSalaryActions > button,
+  .payrollCalculationNotice > button {
+    width: 100%;
+  }
+
+  .payrollTable :global(th:nth-child(2)),
+  .payrollTable :global(td:nth-child(2)),
+  .payrollTable :global(th:nth-child(4)),
+  .payrollTable :global(td:nth-child(4)) {
+    display: none;
+  }
+
+  .payrollTable :global(th:nth-child(1)),
+  .payrollTable :global(td:nth-child(1)) {
+    width: 25%;
+  }
+
+  .payrollTable :global(th:nth-child(3)),
+  .payrollTable :global(td:nth-child(3)) {
+    width: 23%;
+  }
+
+  .payrollTable :global(th:nth-child(5)),
+  .payrollTable :global(td:nth-child(5)) {
+    width: 23%;
+  }
+
+  .payrollTable :global(th:nth-child(6)),
+  .payrollTable :global(td:nth-child(6)) {
+    width: 14%;
+  }
+
+  .payrollTable :global(th:nth-child(7)),
+  .payrollTable :global(td:nth-child(7)) {
+    width: 15%;
+  }
+
+  .salaryPaymentStatus > span {
+    min-width: 0;
+    max-width: 100%;
+    padding: 3px 4px;
+    font-size: 9px;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .salaryMarkPaidLabel {
+    display: none;
   }
 }

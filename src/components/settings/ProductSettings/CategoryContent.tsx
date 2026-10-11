@@ -18,7 +18,7 @@ import type {
   CreateCategoryPayload,
   UpdateCategoryPayload,
 } from "@/types/settings";
-import { Button, Select, Switch, TextField } from "@/ui-kit";
+import { Button, ConfirmationModal, Select, Switch, TextField } from "@/ui-kit";
 
 import styles from "./ProductSettings.module.css";
 
@@ -70,6 +70,8 @@ export const CategoryContent = () => {
   const [createDisplayOrder, setCreateDisplayOrder] = useState("1");
 
   const [editingNode, setEditingNode] = useState<FlatCategoryNode | null>(null);
+  const [deletingNode, setDeletingNode] = useState<FlatCategoryNode | null>(null);
+  const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [editCode, setEditCode] = useState("");
   const [editParentId, setEditParentId] = useState("");
   const [editDisplayOrder, setEditDisplayOrder] = useState("1");
@@ -231,35 +233,36 @@ export const CategoryContent = () => {
   ]);
 
   const handleDelete = useCallback(
-    async (node: FlatCategoryNode) => {
-      const accepted = window.confirm(
-        t("productSettings.categoryTree.confirmDelete", {
-          name: node.name || node.code,
-        }),
-      );
-
-      if (!accepted) return;
-
-      try {
-        await deleteCategory(node.id);
-        await refreshAllCategoryData();
-        toast.success(t("productSettings.categoryTree.success.deleted"));
-
-        if (editingNode?.id === node.id) {
-          cancelEdit();
-        }
-      } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : t("productSettings.categoryTree.error.delete");
-        toast.error(message);
-      }
-    },
-    [cancelEdit, editingNode?.id, refreshAllCategoryData, t],
+    (node: FlatCategoryNode) => setDeletingNode(node),
+    [],
   );
 
+  const confirmDeleteNode = useCallback(async () => {
+    if (!deletingNode) return;
+    setIsDeletingNode(true);
+    const node = deletingNode;
+    try {
+      await deleteCategory(node.id);
+      await refreshAllCategoryData();
+      toast.success(t("productSettings.categoryTree.success.deleted"));
+
+      if (editingNode?.id === node.id) {
+        cancelEdit();
+      }
+      setDeletingNode(null);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : t("productSettings.categoryTree.error.delete");
+      toast.error(message);
+    } finally {
+      setIsDeletingNode(false);
+    }
+  }, [cancelEdit, deletingNode, editingNode?.id, refreshAllCategoryData, t]);
+
   return (
+    <>
     <div className={styles.categoryLayout}>
       <div className={styles.categoryFormCard}>
         <div className={styles.categoryCardHeader}>
@@ -468,6 +471,20 @@ export const CategoryContent = () => {
           )}
         </div>
       </div>
-    </div>
+      </div>
+      <ConfirmationModal
+        open={!!deletingNode}
+        onOpenChange={(open) => !open && setDeletingNode(null)}
+        title={t("common.delete")}
+        description={t("productSettings.categoryTree.confirmDelete", {
+          name: deletingNode?.name || deletingNode?.code || "",
+        })}
+        confirmText={isDeletingNode ? t("common.loading") : t("common.delete")}
+        cancelText={t("common.cancel")}
+        confirmLoading={isDeletingNode}
+        onConfirm={() => void confirmDeleteNode()}
+        onCancel={() => setDeletingNode(null)}
+      />
+    </>
   );
 };

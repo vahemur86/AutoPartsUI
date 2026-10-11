@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Eye, Pencil, Plus } from "lucide-react";
+import { Eye, Pencil, Plus, Users } from "lucide-react";
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { SectionHeader } from "@/components/common";
@@ -100,6 +100,7 @@ export const ReferralPersons = () => {
     <div className={styles.page}>
       <SectionHeader
         title={t("referralPerson.title")}
+        icon={<Users size={17} color="#d2bf8a" aria-hidden="true" />}
         actions={
           <div className={styles.headerActions}>
             <Button className={`${styles.createButton} ${actionStyles.referralButton} ${actionStyles.referralPrimary}`} onClick={() => navigate("/referral-persons/create")}>

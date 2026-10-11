@@ -57,3 +57,328 @@
     background-position: -200% 0;
   }
 }
+
+.page {
+  display: grid;
+  min-width: 0;
+  gap: 16px;
+  padding: 22px 24px 28px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr);
+  align-items: end;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  background: linear-gradient(115deg, rgba(23, 29, 24, 0.84), rgba(15, 19, 16, 0.78));
+}
+
+.searchField {
+  --color-primary-500: #91a99a;
+  width: min(520px, 100%);
+}
+
+.searchField :global([class*="textFieldIcon"]) {
+  color: #a8b9ad;
+}
+
+.tableSection {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.2);
+}
+
+.tableHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #aab1a9;
+  font-size: 12px;
+}
+
+.tableHeading h3 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.tableSection :global(table) {
+  min-width: 760px;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.tableSection :global(th) {
+  height: 44px;
+  padding: 10px 14px;
+  color: #d2bf8a;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.2);
+  background: rgba(196, 169, 106, 0.07) !important;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tableSection :global(td) {
+  height: 52px;
+  padding: 10px 14px;
+  color: #e3e5de;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
+  background: transparent;
+  font-size: 13px;
+}
+
+.tableSection :global(tbody tr:hover) {
+  background: rgba(196, 169, 106, 0.055) !important;
+}
+
+.tableSection :global([class*="tableFooter"]) {
+  padding: 12px 14px;
+  color: #aab1a9;
+  border-top: 1px solid rgba(196, 169, 106, 0.14);
+  background: rgba(9, 13, 10, 0.45);
+  font-size: 12px;
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rowAction {
+  display: grid;
+  width: 32px;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  color: #c7b57e;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.045);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.rowAction:hover {
+  color: #f1dfaa;
+  border-color: rgba(196, 169, 106, 0.52);
+  background: rgba(196, 169, 106, 0.13);
+}
+
+.rowActionDelete {
+  color: #d2a6a2;
+  border-color: rgba(177, 105, 97, 0.2);
+  background: rgba(137, 64, 57, 0.08);
+}
+
+.rowActionDelete:hover {
+  color: #f0c3bd;
+  border-color: rgba(204, 122, 111, 0.56);
+  background: rgba(143, 62, 54, 0.2);
+}
+
+.rowAction:focus-visible,
+.drawerClose:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+
+.drawerBackdrop {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(5, 8, 7, 0.64);
+  backdrop-filter: blur(5px);
+  animation: drawerBackdropIn 180ms ease-out both;
+}
+
+.drawer {
+  display: flex;
+  width: min(100%, 560px);
+  height: 100%;
+  flex-direction: column;
+  color: #f2f0e8;
+  border-left: 1px solid rgba(196, 169, 106, 0.28);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(121, 102, 57, 0.13), transparent 38%),
+    linear-gradient(165deg, #171d18 0%, #111612 52%, #0e1210 100%);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.48);
+  animation: drawerSlideIn 260ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.drawerHeader {
+  display: flex;
+  min-height: 96px;
+  align-items: center;
+  gap: 13px;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.17);
+}
+
+.drawerIcon {
+  display: grid;
+  width: 42px;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #d4bc7c;
+  border: 1px solid rgba(196, 169, 106, 0.36);
+  border-radius: 8px;
+  background: rgba(196, 169, 106, 0.09);
+}
+
+.drawerHeaderCopy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 5px;
+}
+
+.drawerEyebrow {
+  color: #c4a96a;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.drawerHeaderCopy h2 {
+  margin: 0;
+  color: #f3f0e5;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.drawerClose {
+  display: grid;
+  width: 36px;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  color: #a8afa8;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.drawerClose:hover {
+  color: #f1e6c5;
+  border-color: rgba(196, 169, 106, 0.38);
+  background: rgba(196, 169, 106, 0.09);
+}
+
+.drawerClose:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.drawerBody {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 18px;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.drawerSectionHeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  color: #d2bf8a;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.16);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 12px;
+}
+
+.drawerWide {
+  grid-column: 1 / -1;
+}
+
+.drawerFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(196, 169, 106, 0.17);
+  background: rgba(9, 13, 10, 0.42);
+}
+
+@keyframes drawerBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes drawerSlideIn {
+  from { opacity: 0.7; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px 12px 24px;
+  }
+
+  .tableSection {
+    padding: 12px;
+  }
+
+  .drawerHeader {
+    min-height: 82px;
+    padding: 16px;
+  }
+
+  .drawerBody {
+    gap: 15px;
+    padding: 18px 16px;
+  }
+
+  .formGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+  }
+
+  .drawerWide {
+    grid-column: auto;
+  }
+
+  .drawerFooter {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawerBackdrop,
+  .drawer {
+    animation: none;
+  }
+}

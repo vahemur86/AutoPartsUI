@@ -10,6 +10,7 @@
     "warehouses": "Склады",
     "shops": "Магазины",
     "products": "Товары",
+    "productCatalog": "Каталог товаров",
     "users": "Управление пользователями",
     "agents": "Агенты",
     "customers": "Клиенты",
@@ -108,6 +109,20 @@
     "deactivate": "Деактивировать"
   },
   "settings": {
+    "groups": {
+      "system": "Система",
+      "organization": "Структура организации",
+      "productsAndCatalysts": "Товары и катализаторы",
+      "customersAndSales": "Клиенты и продажи",
+      "financialSettings": "Финансовые настройки"
+    },
+    "groupDescriptions": {
+      "system": "Языки проекта, доступ к страницам и переводы.",
+      "organization": "Управление магазинами, складами и кассами.",
+      "productsAndCatalysts": "Настройка каталога товаров, тегов и цен на металлы.",
+      "customersAndSales": "Настройка типов клиентов и правил продаж.",
+      "financialSettings": "Управление курсами валют и правилами выплат."
+    },
     "navigation": {
       "projectLanguages": "Языки проекта",
       "pageControl": "Управление страницами",
@@ -118,6 +133,7 @@
       "productSettings": "Настройки товаров",
       "vehicleManagement": "Управление транспортными средствами",
       "serviceTasks": "Сервисные задачи",
+      "programmingPricing": "Цены на программирование",
       "tags": "Теги",
       "metalRates": "Курсы металлов",
       "catalystBuckets": "Коды",
@@ -134,6 +150,15 @@
       "classificationRules": "Правила классификации"
     },
     "otherExpenses": {
+      "createTitle": "Добавить расход",
+      "editTitle": "Редактировать расход",
+      "viewTitle": "Данные о расходе",
+      "listTitle": "Список расходов",
+      "searchPlaceholder": "Поиск по названию, магазину или складу",
+      "emptyState": "Расходы не найдены",
+      "actions": {
+        "view": "Просмотр"
+      },
       "fields": {
         "entityType": "Тип объекта",
         "entity": "Магазин / Склад",
@@ -182,6 +207,12 @@
   "tags": {
     "addTag": "Добавить тег",
     "editTag": "Редактировать тег",
+    "listTitle": "Список тегов",
+    "loading": "Загрузка тегов...",
+    "emptyState": "Тегов пока нет. Добавьте первый.",
+    "columns": {
+      "name": "Название"
+    },
     "form": {
       "name": "Название тега",
       "enterTagName": "Введите название тега",
@@ -239,6 +270,9 @@
     }
   },
   "reports": {
+    "overview": {
+      "description": "Выберите отчет, чтобы просмотреть нужные данные."
+    },
     "navigationGroups": {
       "cashbox": "Касса и смены",
       "inventory": "Запасы и партии",
@@ -454,6 +488,15 @@
     }
   },
   "financeReports": {
+    "overview": {
+      "description": "Операционные показатели, прибыль, остатки и расходы в одном месте."
+    },
+    "groupDescriptions": {
+      "operations": "Показатели магазинов, услуг, склада и продаж.",
+      "profitability": "Сводная и подробная прибыль, а также прибыль по продажам.",
+      "inventory": "Текущие остатки на складе и в магазинах.",
+      "expenses": "Отчеты по прочим расходам."
+    },
     "navigation": {
       "dashboard": "Дашборд",
       "shopReports": "Отчеты магазина",
@@ -879,6 +922,13 @@
     "actions": {
       "addUser": "Добавить пользователя"
     },
+    "roles": {
+      "superAdmin": "Суперадминистратор",
+      "admin": "Администратор",
+      "programmer": "Программист",
+      "operator": "Оператор",
+      "cashier": "Кассир"
+    },
     "table": {
       "title": "Пользователи",
       "id": "ID",
@@ -901,6 +951,14 @@
     }
   },
   "shops": {
+    "confirmation": {
+      "deleteTitle": "Удалить магазин",
+      "deleteDescription": "Вы уверены, что хотите удалить магазин {{name}}?"
+    },
+    "sections": {
+      "form": "Данные магазина",
+      "list": "Зарегистрированные магазины"
+    },
     "tabs": {
       "addNew": "Добавить новый магазин",
       "shopsHistory": "История магазинов",
@@ -932,8 +990,18 @@
       "title": "Товары магазина",
       "shop": "Магазин",
       "selectShop": "Выберите магазин",
+      "selectShopHint": "Выберите магазин, чтобы посмотреть его остатки.",
+      "inventoryFor": "Остатки магазина {{shop}}",
+      "search": "Поиск товаров",
+      "searchPlaceholder": "По коду, SKU, бренду или категории",
+      "resultCount": "Показано {{shown}} из {{total}} товаров",
+      "stockLines": "Товарные позиции",
+      "totalUnits": "Всего единиц",
+      "saleValue": "Стоимость остатков по цене продажи",
       "loading": "Загрузка товаров магазина...",
       "emptyState": "В этом магазине товары не найдены.",
+      "noMatches": "По этому запросу товары не найдены.",
+      "toggleDetails": "Показать или скрыть сведения о товаре #{{id}}",
       "columns": {
         "id": "ID",
         "productId": "ID товара",
@@ -944,6 +1012,7 @@
       }
     },
     "pricing": {
+      "sectionTitle": "Настройки цен магазина",
       "shop": "Магазин",
       "selectShop": "Выберите магазин",
       "markupPercentage": "Процент продажи",
@@ -971,14 +1040,22 @@
     }
   },
   "warehouses": {
+    "confirmation": {
+      "deleteTitle": "Удалить склад",
+      "deleteDescription": "Вы уверены, что хотите удалить склад {{name}}?"
+    },
+    "sections": {
+      "form": "Данные склада",
+      "list": "Зарегистрированные склады"
+    },
     "navigation": {
       "totalBatches": "Всего партий",
       "batchesToSale": "Партии к продаже",
       "soldBatches": "Проданные партии",
       "adjustedSales": "Скорректированные продажи",
       "profit": "Прибыль",
-      "addProduct": "Добавить товар",
-      "products": "Товары",
+      "addProduct": "Приход товара",
+      "products": "Остатки склада",
       "transferToShop": "Передать в магазин"
     },
     "navigationGroups": {
@@ -1438,6 +1515,9 @@
   "customerTypes": {
     "addCustomerType": "Добавить тип клиента",
     "editCustomerType": "Редактировать тип клиента",
+    "listTitle": "Зарегистрированные типы клиентов",
+    "loading": "Загрузка типов клиентов...",
+    "emptyState": "Типов клиентов пока нет. Добавьте первый.",
     "confirmation": {
       "deleteTitle": "Удалить тип клиента",
       "deleteDescription": "Вы уверены, что хотите удалить тип клиента \"{{code}}\"? Это действие нельзя отменить.",
@@ -1491,7 +1571,9 @@
       "deleteDescription": "Вы уверены, что хотите удалить? Это действие необратимо.",
       "delete": "Удалить",
       "deleteIronTypeTitle": "Удалить тип металла",
-      "deleteIronTypeDescription": "Вы уверены, что хотите удалить? Это действие необратимо."
+      "deleteIronTypeDescription": "Вы уверены, что хотите удалить? Это действие необратимо.",
+      "deletePriceTitle": "Удалить цену",
+      "deletePriceDescription": "Вы уверены, что хотите удалить эту запись цены?"
     },
     "addCarModel": "Добавить модель автомобиля",
     "editCarModel": "Изменить модель автомобиля",
@@ -1888,6 +1970,7 @@
   "products": {
     "iconAlt": "Иконка товаров",
     "addNew": "Добавить новый",
+    "quickAdd": "Быстрый ввод",
     "loading": "Загрузка товаров...",
     "emptyState": "Товары не найдены. Нажмите \"Добавить новый\", чтобы создать первый товар.",
     "loadingGeneric": "Загрузка...",
@@ -1896,8 +1979,9 @@
       "ironProducts": "Железные изделия"
     },
     "columns": {
+      "id": "Идентификатор",
       "productKey": "Код товара",
-      "sku": "SKU",
+      "sku": "Sku",
       "brand": "Бренд",
       "category": "Категория",
       "unitType": "Тип единицы",
@@ -1910,7 +1994,7 @@
     },
     "mobile": {
       "actions": "Действия",
-      "sku": "SKU",
+      "sku": "Sku",
       "code": "Код",
       "brand": "Бренд",
       "category": "Категория",
@@ -1923,9 +2007,10 @@
     "form": {
       "addProduct": "Добавить товар",
       "addNewProduct": "Добавить новый товар",
+      "saveAndAddNext": "Сохранить и добавить следующий",
       "editProduct": "Редактировать товар",
       "productKey": "Код товара",
-      "sku": "SKU",
+      "sku": "Sku",
       "brand": "Бренд",
       "category": "Категория",
       "rootCategory": "Родительская категория",
@@ -2533,9 +2618,46 @@
       "services": "Услуги",
       "programmers": "Записи программистов"
     },
+    "categoryCatalog": {
+      "description": "Управляйте категориями услуг и их статусами.",
+      "totalCount": "Категории: {{count}}",
+      "resultCount": "{{filtered}} / {{total}}",
+      "searchLabel": "Поиск категорий",
+      "searchPlaceholder": "По коду или названию",
+      "emptyState": "По заданным фильтрам категории не найдены.",
+      "nameLabel": "Название категории",
+      "displayOrderLabel": "Порядок {{order}}",
+      "addTitle": "Добавить категорию",
+      "editTitle": "Редактировать категорию",
+      "inactiveLabel": "Неактивна",
+      "pageSizeLabel": "Строк на странице",
+      "rangeLabel": "{{from}}–{{to}} из {{total}}",
+      "loadFailed": "Не удалось загрузить категории.",
+      "retryLabel": "Повторить",
+      "messages": {
+        "created": "Категория успешно добавлена.",
+        "updated": "Изменения категории сохранены.",
+        "createFailed": "Не удалось добавить категорию.",
+        "updateFailed": "Не удалось сохранить изменения категории.",
+        "validationFailed": "Укажите код и название категории."
+      }
+    },
+    "serviceCatalog": {
+      "listTitle": "Список услуг",
+      "searchLabel": "Поиск услуг",
+      "searchPlaceholder": "По коду, названию или категории",
+      "emptyState": "Услуги не найдены",
+      "addTitle": "Добавить услугу",
+      "editTitle": "Редактировать услугу",
+      "viewTitle": "Данные услуги",
+      "details": "Данные услуги",
+      "view": "Просмотр",
+      "validationFailed": "Введите код и название, затем выберите категорию."
+    },
     "actions": {
       "create": "Создать",
       "update": "Обновить",
+      "addPricing": "Добавить прайс-карту",
       "addCategory": "Добавить категорию",
       "addService": "Добавить услугу",
       "loadPricing": "Загрузить тарификацию по автомобилю",
@@ -2581,6 +2703,7 @@
     "table": {
       "name": "Шаблон",
       "vehicle": "Автомобиль",
+      "specification": "Параметры",
       "location": "Локация",
       "service": "Услуга",
       "internalCost": "Внутренняя стоимость",
@@ -2606,6 +2729,19 @@
       "programmingPriceAutoResolved": "Цена определяется автоматически по записям программистов.",
       "noProgrammerForVehicle": "Для этого автомобиля нет доступного программиста.",
       "loadFailed": "Не удалось загрузить данные по тарификации услуг для автомобиля."
+    },
+    "pricingForm": {
+      "createTitle": "Новая карта цен автомобиля",
+      "editTitle": "Редактировать карту цен",
+      "vehicleSection": "Данные автомобиля",
+      "servicesSection": "Цены услуг",
+      "noServicesPrice": "Цены не заданы",
+      "noPricingMatches": "По этим фильтрам карты цен не найдены."
+    },
+    "filters": {
+      "search": "Марка, модель или год",
+      "searchPlaceholder": "Audi Q7, BMW 3 Series...",
+      "reset": "Сбросить"
     },
     "programmerAdmin": {
       "badge": "Панель администратора",
@@ -2645,6 +2781,85 @@
       }
     },
     "employeeManagement": {
+      "list": {
+        "description": "Поиск сотрудников и управление их данными и условиями работы.",
+        "powderBonusSummary": "Бонус за порошок: ${{amount}} USD (порог {{threshold}} кг)",
+        "totalCount": "Сотрудники: {{count}}",
+        "resultCount": "{{filtered}} / {{total}}",
+        "addEmployee": "Добавить сотрудника",
+        "searchLabel": "Поиск сотрудников",
+        "searchPlaceholder": "Имя, телефон или электронная почта",
+        "statusLabel": "Статус",
+        "emptyState": "Сотрудники не найдены.",
+        "loadFailed": "Не удалось загрузить список сотрудников.",
+        "retry": "Повторить",
+        "pageSizeLabel": "Строк на странице",
+        "rangeLabel": "{{from}}–{{to}} из {{total}}",
+        "addTitle": "Новый сотрудник",
+        "editTitle": "Редактировать сотрудника",
+        "personalSection": "Личные данные",
+        "assignmentSection": "Рабочие данные",
+        "compensationSection": "Зарплата и бонус"
+      },
+      "percentageWorkspace": {
+        "description": "Выберите режим просмотра, затем отфильтруйте по сотруднику или услуге.",
+        "upsertHint": "При повторном сохранении пары сотрудник/услуга процент обновится.",
+        "selectContext": "Выберите сотрудника или услугу, чтобы посмотреть проценты.",
+        "selectEmployee": "Выберите сотрудника, чтобы увидеть проценты по его услугам.",
+        "selectService": "Выберите услугу, чтобы увидеть проценты сотрудников.",
+        "byEmployee": "По сотруднику",
+        "byService": "По услуге",
+        "employeeFilterLabel": "Сотрудник",
+        "serviceFilterLabel": "Услуга",
+        "employeeResultsTitle": "Проценты сотрудника по услугам",
+        "serviceResultsTitle": "Проценты по услуге сотрудникам",
+        "setPercentage": "Задать процент",
+        "drawerTitle": "Процент сотрудника по услуге",
+        "noEmployeeRates": "Для этого сотрудника проценты по услугам ещё не заданы.",
+        "noServiceRates": "Для этой услуги проценты сотрудников ещё не заданы.",
+        "employeeLoadFailed": "Не удалось загрузить проценты по услугам сотрудника.",
+        "serviceLoadFailed": "Не удалось загрузить проценты по этой услуге.",
+        "retry": "Повторить"
+      },
+      "depositsWorkspace": {
+        "description": "Аванс выдаётся сотруднику до дня выплаты зарплаты. Просмотрите историю сотрудника или все авансы.",
+        "byEmployee": "По сотруднику",
+        "allDeposits": "Все авансы",
+        "employeeFilterLabel": "Сотрудник",
+        "statusFilter": "Статус аванса",
+        "remainingBalance": "Непогашенный остаток",
+        "balanceAcrossAdvances": "Остаток по всем авансам: {{count}}",
+        "advanceCount": "Авансов: {{count}}",
+        "activeDepositHint": "Непогашенный остаток по всем авансам",
+        "noActiveDeposit": "Нет активного аванса",
+        "issuedAt": "Выдан",
+        "allCount": "Записей: {{count}}",
+        "selectEmployee": "Выберите сотрудника, чтобы просмотреть историю авансов.",
+        "noHistory": "Для этого сотрудника авансы не зарегистрированы.",
+        "noAllDeposits": "По этим фильтрам авансы не найдены.",
+        "historyLoadFailed": "Не удалось загрузить историю авансов сотрудника.",
+        "allLoadFailed": "Не удалось загрузить список авансов.",
+        "retry": "Повторить",
+        "drawerTitle": "Новый аванс",
+        "drawerDescription": "Выберите сотрудника и укажите сумму выдаваемого аванса."
+      },
+      "attendanceWorkspace": {
+        "description": "Отметьте посещаемость сотрудников за выбранный день и магазин.",
+        "searchLabel": "Поиск сотрудников",
+        "searchPlaceholder": "Имя или телефон",
+        "presentCount": "Присутствуют",
+        "absentCount": "Отсутствуют",
+        "employeeCount": "Показано",
+        "statusForEmployee": "Посещаемость: {{employee}}",
+        "noteForEmployee": "Примечание для {{employee}}",
+        "notePlaceholder": "Примечание (необязательно)",
+        "noEmployees": "В выбранном магазине нет активных сотрудников.",
+        "noSearchMatches": "Сотрудники не найдены по этому запросу.",
+        "noHistory": "За выбранный период записей посещаемости нет.",
+        "retry": "Повторить",
+        "markShownPresent": "Отметить показанных присутствующими",
+        "markShownAbsent": "Отметить показанных отсутствующими"
+      },
       "tabs": {
         "employees": "Сотрудники",
         "percentages": "Проценты по услугам",
@@ -2656,14 +2871,18 @@
         "save": "Сохранить",
         "giveDeposit": "Выдать аванс",
         "saveAttendance": "Сохранить посещаемость",
+        "markAllPresent": "Отметить всех присутствующими",
+        "markAllAbsent": "Отметить всех отсутствующими",
         "calculate": "Рассчитать зарплату",
-        "markPaid": "Отметить как выплаченную"
+        "markPaid": "Отметить как выплаченную",
+        "openAttendance": "Заполнить посещаемость",
+        "payUnpaidSalary": "Выплатить накопленную зарплату"
       },
       "fields": {
         "shop": "Магазин",
         "employeeType": "Тип сотрудника",
         "powderBonusKgThreshold": "Порог бонуса за порошок (кг)",
-        "powderBonusAmount": "Сумма бонуса за порошок (AMD)",
+        "powderBonusAmount": "Сумма бонуса за порошок (USD)",
         "salaryType": "Тип зарплаты",
         "fixedDailySalary": "Фиксированная дневная зарплата",
         "selectShop": "Выберите магазин",
@@ -2688,6 +2907,13 @@
         "Regular": "Обычный сотрудник",
         "Director": "Директор"
       },
+      "calculationSources": {
+        "FixedDaily": "Фиксированная дневная зарплата",
+        "EmployeeCommission": "Процент сотрудника за услугу",
+        "ProgrammerServicePricing": "Согласованная цена программиста",
+        "ProgrammerInternalCostFallback": "Резервный расчет цены программиста",
+        "DirectorMonthlyPowderBonus": "Ежемесячный бонус директора за порошок"
+      },
       "attendanceStatus": {
         "Present": "Присутствует",
         "Absent": "Отсутствует"
@@ -2696,8 +2922,34 @@
         "activeDeposit": "Активный аванс",
         "presentCount": "Присутствуют",
         "absentCount": "Отсутствуют",
+        "payrollCount": "Записи зарплаты",
+        "totalPayable": "Всего к выплате",
+        "unpaidCount": "Не выплачено",
+        "notYetPayable": "Пока не подлежит выплате",
+        "missingPayrollRecords": "Сотрудники без записи о зарплате: {{count}}",
         "paid": "Выплачено",
-        "unpaid": "Не выплачено"
+        "unpaid": "Не выплачено",
+        "sourceUnavailable": "Источник расчета не указан",
+        "programmerPriceWarning": "Проверьте согласованную цену услуги программиста.",
+        "powderReceived": "Принято порошка: {{amount}} кг",
+        "bonusIncluded": "Месячный бонус включен в выплату",
+        "bonusAccrued": "Начислен, выплачивается только в последний день месяца",
+        "bonusNotIncluded": "Итоговая сумма за месяц пока не включена",
+        "estimatedFinalPayable": "Предварительная выплата в конце месяца: {{amount}} (может измениться)",
+        "advanceDeducted": "Аванс удержан из этого расчета",
+        "advanceBalanceAfter": "Остаток аванса",
+        "readyToPay": "Готово к выплате",
+        "paidBy": "Выплатил: {{user}}",
+        "noPaymentPermission": "У вас нет прав на выплату зарплаты",
+        "noPaymentDue": "Сумма к выплате отсутствует",
+        "unpaidGrossSalary": "Начисленная невыплаченная зарплата",
+        "advanceDeduction": "Удержание аванса",
+        "activeAdvanceBalance": "Остаток активного аванса",
+        "unpaidRecordCount": "Невыплаченных записей: {{count}}",
+        "unpaidPeriod": "Период: {{from}} – {{to}}",
+        "paymentThroughDate": "Рассчитано по {{date}}",
+        "salaryPeriodEnds": "Конец расчетного периода: {{date}}",
+        "noCashPaymentRequired": "Денежная выплата не требуется"
       },
       "sections": {
         "employeeForm": "Форма сотрудника",
@@ -2710,17 +2962,23 @@
         "depositsAll": "Авансы всех сотрудников",
         "depositsByEmployee": "Текущий баланс",
         "attendance": "Дневная посещаемость",
+        "attendanceRoster": "Сотрудники за день",
         "attendanceHistory": "История посещаемости",
         "payroll": "Дневная зарплата",
-        "salaryHistory": "История зарплаты"
+        "salaryHistory": "История зарплаты",
+        "unpaidSalary": "Накопленная невыплаченная зарплата"
       },
       "confirmation": {
         "markPaidTitle": "Подтвердите выплату зарплаты",
-        "markPaidDescription": "Отметить зарплату сотрудника {{employee}} в размере {{amount}} как выплаченную?"
+        "markPaidDescription": "Отметить зарплату сотрудника {{employee}} в размере {{amount}} как выплаченную?",
+        "payUnpaidSalaryTitle": "Подтвердите выплату накопленной зарплаты",
+        "payUnpaidSalaryDescription": "Выплатить {{employee}} накопленную зарплату в размере {{amount}} по {{date}}?"
       },
       "columns": {
         "fullName": "Полное имя",
         "shop": "Магазин",
+        "assignment": "Магазин / категория",
+        "compensation": "Условия оплаты",
         "employeeType": "Тип сотрудника",
         "serviceCategory": "Категория услуги",
         "salaryType": "Тип зарплаты",
@@ -2736,6 +2994,8 @@
         "workDate": "Дата работы",
         "notes": "Примечания",
         "grossSalary": "Валовая зарплата",
+        "calculationSource": "Источник расчета",
+        "advance": "Аванс",
         "depositDeduction": "Удержание из аванса",
         "depositRemainingAfter": "Остаток после зарплаты",
         "netPayable": "К выплате",
@@ -2743,8 +3003,9 @@
         "paidAt": "Выплачено в",
         "powderQuantityKg": "Количество порошка",
         "powderBonusKgThreshold": "Порог бонуса за порошок",
-        "powderBonusAmount": "Сумма бонуса за порошок",
-        "powderBonus": "Бонус директора за порошок"
+        "powderBonusAmount": "Сумма бонуса за порошок (USD)",
+        "powderBonus": "Бонус директора за порошок (AMD)",
+        "bonusRule": "Порог: {{threshold}} кг, бонус: {{amount}} USD"
       },
       "messages": {
         "validationFailed": "Заполните обязательные данные сотрудника.",
@@ -2760,14 +3021,25 @@
         "attendanceSaveFailed": "Не удалось сохранить данные посещаемости",
         "depositsAllLoadFailed": "Не удалось загрузить авансы всех сотрудников",
         "calculated": "Зарплата успешно рассчитана",
+        "noSalaryCalculated": "Сейчас нет расчета зарплаты по выбранным фильтрам.",
         "salaryFailed": "Не удалось рассчитать зарплату",
         "salaryByDateLoadFailed": "Не удалось загрузить зарплаты за выбранную дату",
+        "unpaidSummaryLoadFailed": "Не удалось загрузить сводку невыплаченной зарплаты.",
+        "noUnpaidSalary": "У сотрудника нет невыплаченной зарплаты по выбранную дату.",
+        "selectEmployeeForUnpaidSalary": "Выберите сотрудника, чтобы посмотреть накопленную невыплаченную зарплату.",
+        "noPresentEmployees": "На эту дату нет сотрудников с отметкой «Присутствует». Сначала заполните посещаемость.",
         "salaryHistoryLoadFailed": "Не удалось загрузить историю зарплат",
+        "noSalaryHistory": "За выбранный период нет рассчитанных записей зарплаты. История не рассчитывает пропущенные даты.",
         "salaryMarkedPaid": "Зарплата отмечена как выплаченная",
         "salaryMarkPaidFailed": "Не удалось отметить зарплату как выплаченную",
+        "salaryRefreshAfterPaymentFailed": "Выплата прошла, но данные не удалось обновить. Загрузите сводку повторно.",
         "salaryRecordIdMissing": "Отсутствует ID записи зарплаты",
         "selectEmployeeHint": "Выберите сотрудника, чтобы увидеть аванс и историю.",
-        "selectEmployeeForSalaryHistory": "Выберите сотрудника, чтобы посмотреть историю зарплаты."
+        "selectEmployeeForSalaryHistory": "Выберите сотрудника, чтобы посмотреть историю зарплаты.",
+        "selectEmployeeForAttendanceHistory": "Выберите сотрудника, чтобы посмотреть историю посещаемости.",
+        "noPayrollRecords": "Расчет зарплаты не найден. Проверьте посещаемость (учитываются только присутствующие), выбранный магазин или сотрудника и цену программиста, затем запустите расчет. Возможно, запись уже рассчитана или выплачена.",
+        "missingPayrollRecordsHint": "За эту дату запись не возвращена. Проверьте посещаемость, фильтры или не была ли зарплата уже рассчитана и выплачена.",
+        "payrollShopHint": "Чтобы отфильтровать зарплату по сотруднику, сначала выберите магазин."
       }
     }
   },
@@ -2865,6 +3137,12 @@
   "catalystPricing": {
     "title": "Ценообразование катализатора",
     "editPricing": "Редактировать ценообразование катализатора",
+    "marginLevels": {
+      "none": "Без маржи",
+      "low": "Низкая маржа",
+      "medium": "Средняя маржа",
+      "high": "Высокая маржа"
+    },
     "columns": {
       "id": "ID",
       "pdReducePercent": "Процент снижения палладия",
@@ -3161,12 +3439,16 @@
     "list": "Список поставщиков",
     "createTitle": "Создать поставщика",
     "editTitle": "Редактировать поставщика",
+    "viewTitle": "Данные поставщика",
     "searchLabel": "Поиск",
     "searchPlaceholder": "Поиск по имени поставщика или телефону",
-    "helperText": "На этой странице можно создавать, редактировать и удалять поставщиков.",
+    "helperText": "Просматривайте, создавайте, редактируйте и удаляйте поставщиков.",
     "emptyState": "Поставщики не найдены",
     "actions": {
-      "create": "Создать поставщика"
+      "create": "Создать поставщика",
+      "view": "Просмотр",
+      "edit": "Редактировать",
+      "delete": "Удалить"
     },
     "columns": {
       "id": "ID",
@@ -3222,7 +3504,10 @@
     },
 
     "actions": {
-      "save": "Сохранить"
+      "save": "Сохранить",
+      "duplicateBucket": "Дублировать бак",
+      "deleteBucket": "Удалить бак",
+      "deleteComposition": "Удалить компонент"
     },
 
     "sections": {

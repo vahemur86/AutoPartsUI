@@ -46,6 +46,18 @@ const dollarInitialState: DollarCalculatorRequest = {
   dollarCostPerKg: null,
 };
 
+const CalculatorPrpLoader = ({ label }: { label: string }) => (
+  <div className={styles.loaderWrapper} role="status" aria-live="polite" aria-busy="true">
+    <div className={styles.prpLoader} aria-hidden="true">
+      <div className={styles.prpLoaderCore}>
+        <span className={styles.prpLoaderLetters}>PRP</span>
+        <span className={styles.prpLoaderService}>Service</span>
+      </div>
+    </div>
+    <span className={styles.loaderText}>{label}</span>
+  </div>
+);
+
 export const NewCalculator: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -203,14 +215,14 @@ export const NewCalculator: FC = () => {
           className={`${styles.tab} ${activeTab === "catalyst" ? styles.activeTab : ""}`}
           onClick={() => setActiveTab("catalyst")}
         >
-          <Calculator size={18} />
+          <Weight size={18} />
           {t("calculator.tabs.catalyst")}
         </button>
         <button
           className={`${styles.tab} ${activeTab === "dollar" ? styles.activeTab : ""}`}
           onClick={() => setActiveTab("dollar")}
         >
-          <DollarSign size={18} />
+          <Calculator size={18} />
           {t("calculator.tabs.dollar")}
         </button>
       </div>
@@ -220,7 +232,7 @@ export const NewCalculator: FC = () => {
         <div className={styles.calculatorContent}>
       <div className={styles.header}>
         <h2 className={styles.title}>
-          <Calculator size={24} style={{ marginRight: '8px' }} />
+          <Scale size={24} className={styles.titleIcon} />
           {t("calculator.title")}
         </h2>
 
@@ -441,18 +453,14 @@ export const NewCalculator: FC = () => {
           </h3>
 
           {!result ? (
-            <div className={styles.loaderWrapper}>
-              <div
-                className={`${styles.loader} ${
-                  loading ? styles.loaderActive : styles.loaderIdle
-                }`}
-              />
-              <span className={styles.loaderText}>
-                {loading
-                  ? t("calculator.form.button.calculating")
-                  : t("calculator.columns.noResult")}
-              </span>
-            </div>
+            loading ? (
+              <CalculatorPrpLoader label={t("calculator.form.button.calculating")} />
+            ) : (
+              <div className={styles.emptyResult}>
+                <BarChart3 size={28} aria-hidden="true" />
+                <span>{t("calculator.columns.noResult")}</span>
+              </div>
+            )
           ) : (
             <>
               <div className={styles.resultGrid}>
@@ -512,7 +520,7 @@ export const NewCalculator: FC = () => {
         <div className={styles.calculatorContent}>
           <div className={styles.header}>
             <h2 className={styles.title}>
-              <DollarSign size={24} style={{ marginRight: '8px' }} />
+              <BarChart3 size={24} className={styles.titleIcon} />
               {t("dollarCalculator.title")}
             </h2>
           </div>
@@ -683,16 +691,14 @@ export const NewCalculator: FC = () => {
               </h3>
 
               {!dollarResult ? (
-                <div className={styles.loaderWrapper}>
-                  <div
-                    className={`${styles.loader} ${
-                      dollarLoading ? styles.loaderActive : styles.loaderIdle
-                    }`}
-                  />
-                  <span className={styles.loaderText}>
-                    {dollarLoading ? t("dollarCalculator.form.button.calculating") : t("dollarCalculator.result.noResult")}
-                  </span>
-                </div>
+                dollarLoading ? (
+                  <CalculatorPrpLoader label={t("dollarCalculator.form.button.calculating")} />
+                ) : (
+                  <div className={styles.emptyResult}>
+                    <BarChart3 size={28} aria-hidden="true" />
+                    <span>{t("dollarCalculator.result.noResult")}</span>
+                  </div>
+                )
               ) : (
                 <>
                   <div className={styles.resultGrid}>
@@ -730,9 +736,9 @@ export const NewCalculator: FC = () => {
                       </>
                     )}
 
-                    <div style={{ gridColumn: "1 / -1", marginTop: "12px", padding: "16px", background: "rgba(34, 197, 94, 0.1)", borderRadius: "8px", border: "1px solid rgba(34, 197, 94, 0.3)" }}>
-                      <span style={{ fontSize: "14px", opacity: 0.8 }}>{t("dollarCalculator.result.finalTotal")}</span>
-                      <b style={{ display: "block", fontSize: "24px", color: "#22c55e", marginTop: "4px" }}>
+                    <div className={styles.dollarFinalTotal}>
+                      <span className={styles.dollarFinalTotalLabel}>{t("dollarCalculator.result.finalTotal")}</span>
+                      <b className={styles.dollarFinalTotalValue}>
                         ${dollarResult.finalTotalUsd.toFixed(2)}
                       </b>
                     </div>

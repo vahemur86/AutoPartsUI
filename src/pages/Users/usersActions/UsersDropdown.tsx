@@ -1,10 +1,10 @@
 import { useState, useEffect, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { Mail, UserRoundPlus } from "lucide-react";
 
-// ui-kit
-import { Dropdown, TextField, Button, Select } from "@/ui-kit";
+import { Button, Select, TextField } from "@/ui-kit";
+import { FormDrawer } from "@/components/common/FormDrawer";
 
-// styles
 import styles from "../Users.module.css";
 
 // types
@@ -12,7 +12,6 @@ import type { CreateUserPayload } from "@/types/users";
 
 interface UsersDropdownProps {
   open: boolean;
-  anchorRef: React.RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
   onSave: (data: CreateUserPayload) => void;
   userTypes: { value: string; label: string }[];
@@ -35,7 +34,6 @@ const initialFormState = {
 
 export const UsersDropdown = ({
   open,
-  anchorRef,
   onOpenChange,
   onSave,
   userTypes,
@@ -91,16 +89,26 @@ export const UsersDropdown = ({
   };
 
   return (
-    <Dropdown
+    <FormDrawer
       open={open}
       onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      align="start"
-      side="bottom"
+      eyebrow={t("header.users")}
       title={t("users.tabs.create")}
-      contentClassName={styles.dropdownContent}
+      titleId="user-create-title"
+      closeLabel={t("common.close")}
+      icon={<UserRoundPlus size={20} />}
+      footer={
+        <>
+          <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
+            {t("common.cancel")}
+          </Button>
+          <Button className={styles.usersPrimaryButton} variant="primary" onClick={handleSave} disabled={isSubmitting}>
+            {isSubmitting ? t("common.saving") : t("common.save")}
+          </Button>
+        </>
+      }
     >
-      <div className={styles.dropdownContentInner}>
+      <div className={styles.userCreateForm}>
         <TextField
           label={t("users.form.email")}
           placeholder={t("users.form.enterEmail")}
@@ -109,6 +117,7 @@ export const UsersDropdown = ({
           error={hasTriedSubmit && !isEmailValid}
           helperText={hasTriedSubmit && !isEmailValid ? t("users.validation.emailInvalid") : ""}
           disabled={isSubmitting}
+          icon={<Mail size={15} />}
         />
 
         <Select
@@ -183,15 +192,7 @@ export const UsersDropdown = ({
           </Select>
         )}
 
-        <div className={styles.dropdownActions}>
-          <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
-            {t("common.cancel")}
-          </Button>
-          <Button variant="primary" onClick={handleSave} disabled={isSubmitting}>
-            {t("common.save")}
-          </Button>
-        </div>
       </div>
-    </Dropdown>
+    </FormDrawer>
   );
 };

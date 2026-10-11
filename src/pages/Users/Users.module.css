@@ -1,11 +1,9 @@
 .usersContainer {
-  display: flex;
-  gap: 0;
-  background-color: var(--color-black-1);
+  display: grid;
+  min-width: 0;
+  gap: 14px;
   border-radius: 8px;
-  margin-top: 24px;
-  overflow: hidden;
-  min-height: calc(100vh - 270px);
+  margin-top: 16px;
 }
 
 .formWrapper {
@@ -75,8 +73,14 @@
 }
 
 .tableSection {
+  box-sizing: border-box;
+  min-width: 0;
   width: 100%;
-  padding: 24px;
+  padding: 16px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(25, 32, 26, 0.96), rgba(15, 19, 16, 0.98));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .tableHeader {
@@ -84,13 +88,14 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .formHeader {
@@ -108,14 +113,186 @@
 }
 
 .tableTitle {
-  font-size: 18px;
-  font-weight: 600;
+  margin: 0;
+  color: #eee9db;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.roleBadge {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 4px 9px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.roleSuperAdmin {
+  color: #e7d49e;
+  border-color: rgba(196, 169, 106, 0.3);
+  background: rgba(196, 169, 106, 0.1);
+}
+
+.roleAdmin {
+  color: #e7b5a8;
+  border-color: rgba(196, 112, 92, 0.26);
+  background: rgba(196, 112, 92, 0.1);
+}
+
+.roleProgrammer {
+  color: #b8d2dc;
+  border-color: rgba(112, 164, 184, 0.25);
+  background: rgba(112, 164, 184, 0.09);
+}
+
+.roleOperator {
+  color: #b6d6b9;
+  border-color: rgba(122, 185, 127, 0.24);
+  background: rgba(81, 145, 87, 0.1);
+}
+
+.roleCashier {
+  color: #acd8d4;
+  border-color: rgba(91, 170, 163, 0.25);
+  background: rgba(66, 143, 137, 0.1);
+}
+
+.roleDefault {
+  color: #c4c8c3;
+  border-color: rgba(160, 166, 161, 0.18);
+  background: rgba(160, 166, 161, 0.07);
 }
 
 .tableWrapper {
-  background-color: var(--color-black-2);
-  border-radius: 12px;
-  padding: 16px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.2);
+}
+
+.tableWrapper :global(table) {
+  min-width: 840px;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.tableWrapper :global([class*="tableWrapper"]) {
+  border-radius: 7px;
+  background: transparent;
+}
+
+.tableWrapper :global(th) {
+  height: 44px;
+  padding: 10px 14px;
+  color: #d2bf8a;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.2);
+  background: rgba(196, 169, 106, 0.07) !important;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tableWrapper :global(td) {
+  height: 52px;
+  padding: 10px 14px;
+  color: #e3e5de;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
+  background: transparent;
+  font-size: 13px;
+}
+
+.tableWrapper :global(tbody tr) {
+  transition: background-color 150ms ease;
+}
+
+.tableWrapper :global(tbody tr:hover) {
+  background: rgba(196, 169, 106, 0.055) !important;
+}
+
+.tableWrapper :global(tbody tr:last-child td) {
+  border-bottom: 0 !important;
+}
+
+.tableWrapper :global([class*="tableFooter"]) {
+  padding: 12px 14px;
+  color: #aab1a9;
+  border-top: 1px solid rgba(196, 169, 106, 0.14);
+  background: rgba(9, 13, 10, 0.45);
+  font-size: 12px;
+}
+
+.tableWrapper :global([class*="tableFooter"] button) {
+  color: #e5d29a;
+  border-color: rgba(196, 169, 106, 0.24);
+  border-radius: 5px;
+}
+
+.tableWrapper :global([class*="tableFooter"] button:hover:not(:disabled)) {
+  border-color: rgba(196, 169, 106, 0.55);
+  background: rgba(196, 169, 106, 0.08);
+}
+
+.usersPrimaryButton.usersPrimaryButton {
+  min-height: 36px;
+  padding: 0 14px;
+  color: #17170f;
+  border: 1px solid rgba(196, 169, 106, 0.5);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d2bf8a, #a78e57);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.12);
+  font-weight: 650;
+}
+
+.usersPrimaryButton.usersPrimaryButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ddc995, #b69b61);
+}
+
+.refreshButton.refreshButton {
+  min-height: 36px;
+  border-radius: 6px;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+}
+
+.tableAction {
+  display: grid;
+  width: 32px;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  color: #c7b57e;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.045);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.tableAction:hover {
+  color: #f1dfaa;
+  border-color: rgba(196, 169, 106, 0.52);
+  background: rgba(196, 169, 106, 0.13);
+}
+
+.userCreateForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 16px 12px;
+}
+
+.userCreateForm > :first-child {
+  grid-column: 1 / -1;
 }
 
 .dropdownContent {
@@ -231,5 +408,22 @@
   .actionButtons {
     margin-top: 16px;
     padding-top: 12px;
+  }
+
+  .tableHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .headerActions > button {
+    flex: 1 1 auto;
+  }
+
+  .userCreateForm {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

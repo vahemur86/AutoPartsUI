@@ -7,6 +7,7 @@ import {
   type FC,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { Sheet } from "./Sheet";
 import { useIsMobile } from "@/hooks/isMobile";
 import { X } from "lucide-react";
@@ -45,11 +46,13 @@ export const Dropdown: FC<DropdownProps> = ({
   align = "start",
   side = "right",
   sideOffset = 8,
-  title = "Edit Language",
+  title,
   contentClassName = "",
   contentWidth = 490,
 }) => {
+  const { t } = useTranslation();
   const { isMobile, mounted } = useIsMobile();
+  const dropdownTitle = title ?? t("common.edit");
   const [position, setPosition] = useState<{
     top: number;
     left: number;
@@ -177,11 +180,12 @@ export const Dropdown: FC<DropdownProps> = ({
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <header className={styles.sheetHeader}>
-          <h3 className={styles.sheetTitle}>{title}</h3>
+          <h3 className={styles.sheetTitle}>{dropdownTitle}</h3>
           <button
+            type="button"
             onClick={() => onOpenChange(false)}
             className={styles.closeButton}
-            aria-label="Close"
+            aria-label={t("common.close")}
           >
             <X className="h-6 w-6" />
           </button>

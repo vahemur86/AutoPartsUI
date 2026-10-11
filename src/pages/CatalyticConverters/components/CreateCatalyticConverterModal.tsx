@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState, type FC } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Plus, Trash } from "lucide-react";
+import { BadgeCheck, Plus, Trash, Wrench, X } from "lucide-react";
 
 // ui-kit
-import { Button, Modal, Select, TextField } from "@/ui-kit";
+import { Button, Select, TextField } from "@/ui-kit";
+import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 
 // stores
 import { useAppDispatch } from "@/store/hooks";
@@ -147,6 +149,22 @@ export const CreateCatalyticConverterModal: FC<
     });
   }, [open, rows, t]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isSubmitting) onOpenChange(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isSubmitting, onOpenChange, open]);
+
   const addRow = () => {
     setRows((prev) => [...prev, emptyRow()]);
   };
@@ -257,40 +275,58 @@ export const CreateCatalyticConverterModal: FC<
     }
   };
 
-  return (
-    <Modal
-      open={open}
-      onOpenChange={onOpenChange}
-      title={
-        mode === "edit"
-          ? t("catalyticConverters.edit.title")
-          : t("catalyticConverters.create.title")
-      }
-      width="980px"
-      footer={
-        <div className={styles.modalFooter}>
-          <Button
-            variant="secondary"
+  if (!open) return null;
+
+  const title = mode === "edit"
+    ? t("catalyticConverters.edit.title")
+    : t("catalyticConverters.create.title");
+
+  return createPortal(
+    <div
+      className={styles.drawerBackdrop}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !isSubmitting) {
+          onOpenChange(false);
+        }
+      }}
+    >
+      <aside
+        className={styles.converterDrawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="converter-drawer-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className={styles.drawerHeader}>
+          <div className={styles.drawerIcon} aria-hidden="true">
+            <Wrench size={20} />
+          </div>
+          <div className={styles.drawerHeaderCopy}>
+            <span>{t("catalyticConverters.title")}</span>
+            <h2 id="converter-drawer-title">{title}</h2>
+          </div>
+          <button
+            type="button"
+            className={styles.drawerClose}
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
+            aria-label={t("common.close")}
+            title={t("common.close")}
           >
-            {t("common.cancel")}
-          </Button>
-          <Button onClick={handleSave} disabled={isSubmitting}>
-            {isSubmitting
-              ? t("common.loading")
-              : mode === "edit"
-                ? t("common.save")
-                : t("common.add")}
-          </Button>
-        </div>
-      }
-    >
-      <div className={styles.modalIntro}>
-        {t("catalyticConverters.form.compatibilitiesHint")}
-      </div>
+            <X size={18} aria-hidden="true" />
+          </button>
+        </header>
 
-      <div className={styles.formGrid}>
+        <div className={styles.drawerBody}>
+          <div className={styles.drawerSectionHeading}>
+            <BadgeCheck size={15} aria-hidden="true" />
+            <span>{t("catalyticConverters.form.compatibilities")}</span>
+          </div>
+          <div className={styles.modalIntro}>
+            {t("catalyticConverters.form.compatibilitiesHint")}
+          </div>
+
+          <div className={styles.formGrid}>
         <TextField
           label={t("catalyticConverters.form.code")}
           value={code}
@@ -316,7 +352,7 @@ export const CreateCatalyticConverterModal: FC<
           value={sellingPrice}
           onChange={(e) => setSellingPrice(e.target.value)}
         />
-      </div>
+          </div>
 
       <div className={styles.compatibilityHeader}>
         <div>
@@ -324,8 +360,13 @@ export const CreateCatalyticConverterModal: FC<
             {t("catalyticConverters.form.compatibilities")}
           </h4>
         </div>
-        <Button size="small" variant="secondary" onClick={addRow}>
-          <Plus size={14} />
+        <Button
+          size="small"
+          variant="secondary"
+          className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
+          onClick={addRow}
+        >
+          <Plus size={14} aria-hidden="true" />
           {t("catalyticConverters.actions.addCompatibility")}
         </Button>
       </div>
@@ -337,15 +378,15 @@ export const CreateCatalyticConverterModal: FC<
               <h5 className={styles.compatibilityCardTitle}>
                 {t("catalyticConverters.form.compatibilityItem")} #{index + 1}
               </h5>
-              <Button
-                variant="danger"
-                size="small"
+                <button
+                  type="button"
+                  className={styles.compatibilityRemoveIcon}
                 onClick={() => removeRow(row.rowId)}
-                className={styles.compatibilityRemoveButton}
+                  aria-label={t("common.delete")}
+                  title={t("common.delete")}
               >
-                <Trash size={14} />
-                {t("common.delete")}
-              </Button>
+                  <Trash size={14} aria-hidden="true" />
+                </button>
             </div>
 
             <div className={styles.compatibilityFields}>
@@ -449,6 +490,32 @@ export const CreateCatalyticConverterModal: FC<
           </div>
         ))}
       </div>
-    </Modal>
+
+        </div>
+
+        <footer className={styles.drawerFooter}>
+          <Button
+            variant="secondary"
+            className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            {t("common.cancel")}
+          </Button>
+          <Button
+            className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+            onClick={handleSave}
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? t("common.loading")
+              : mode === "edit"
+                ? t("common.save")
+                : t("common.add")}
+          </Button>
+        </footer>
+      </aside>
+    </div>,
+    document.body,
   );
 };

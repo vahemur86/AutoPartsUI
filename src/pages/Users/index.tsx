@@ -1,14 +1,12 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
+import { Pencil, Plus, RefreshCw, UsersRound } from "lucide-react";
 
 // components
 import { SectionHeader } from "@/components/common";
 import { UsersDropdown } from "./usersActions/UsersDropdown";
-
-// icons
-import userIcon from "@/assets/icons/userVector.svg";
 
 // ui-kit
 import { Button, TextField, Select, Switch, DataTable, Modal } from "@/ui-kit";
@@ -34,6 +32,14 @@ import { getErrorMessage } from "@/utils";
 // styles
 import styles from "./Users.module.css";
 
+const roleBadgeStyles: Record<string, string> = {
+  SuperAdmin: styles.roleSuperAdmin,
+  Admin: styles.roleAdmin,
+  Programmer: styles.roleProgrammer,
+  Operator: styles.roleOperator,
+  Cashier: styles.roleCashier,
+};
+
 export const UserManagement = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -56,7 +62,6 @@ export const UserManagement = () => {
   const [editIsActive, setEditIsActive] = useState(true);
   const [isMutatingEdit, setIsMutatingEdit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const addButtonRef = useRef<HTMLDivElement>(null);
 
   const isSuperAdmin = currentUser?.role === "SuperAdmin";
   const isAdmin = currentUser?.role === "Admin";
@@ -190,6 +195,16 @@ export const UserManagement = () => {
       {
         accessorKey: "role",
         header: t("users.table.role"),
+        cell: (info) => {
+          const role = String(info.getValue() ?? "");
+          const roleKey = role === "SuperAdmin" ? "superAdmin" : role.toLowerCase();
+
+          return (
+            <span className={`${styles.roleBadge} ${roleBadgeStyles[role] ?? styles.roleDefault}`}>
+              {t(`users.roles.${roleKey}`, { defaultValue: role || "-" })}
+            </span>
+          );
+        },
       },
       {
         accessorKey: "userType",
@@ -222,13 +237,15 @@ export const UserManagement = () => {
         header: t("common.actions"),
         cell: ({ row }) => (
           <div className={styles.actionButtons}>
-            <Button
-              variant="secondary"
-              size="small"
+            <button
+              type="button"
+              className={styles.tableAction}
               onClick={() => handleOpenEdit(row.original)}
+              aria-label={t("common.edit")}
+              title={t("common.edit")}
             >
-              {t("common.edit")}
-            </Button>
+              <Pencil size={14} aria-hidden="true" />
+            </button>
           </div>
         ),
       },
@@ -271,7 +288,7 @@ export const UserManagement = () => {
     <>
       <SectionHeader
         title={t("header.users")}
-        icon={<img src={userIcon} alt={t("users.iconAlt")} />}
+        icon={<UsersRound size={17} aria-hidden="true" />}
       />
 
       <div className={styles.usersContainer}>
@@ -280,30 +297,30 @@ export const UserManagement = () => {
             <h3 className={styles.tableTitle}>{t("users.table.title")}</h3>
             <div className={styles.headerActions}>
               <Button
-              variant="secondary"
-              onClick={() => void loadUsers()}
-              disabled={isLoadingUsers}
-            >
-              {t("common.refresh")}
-            </Button>
-            <div ref={addButtonRef}>
-              <Button variant="primary" onClick={handleOpenCreate}>
+                variant="secondary"
+                className={styles.refreshButton}
+                onClick={() => void loadUsers()}
+                disabled={isLoadingUsers}
+              >
+                <RefreshCw size={15} />
+                {t("common.refresh")}
+              </Button>
+              <Button className={styles.usersPrimaryButton} onClick={handleOpenCreate}>
+                <Plus size={16} />
                 {t("users.actions.addUser")}
               </Button>
-            </div>
-            <UsersDropdown
-              open={isCreateOpen}
-              anchorRef={addButtonRef}
-              onOpenChange={setIsCreateOpen}
-              onSave={handleSaveUser}
-              userTypes={USER_TYPES}
-              roles={filteredRoles}
-              shops={shops.map((shop) => ({ id: String(shop.id), code: shop.code }))}
-              warehouses={warehouses.map((warehouse) => ({ id: String(warehouse.id), code: warehouse.code }))}
-              isSubmitting={isSubmitting}
-              isSuperAdmin={isSuperAdmin}
-              isAdmin={isAdmin}
-            />
+              <UsersDropdown
+                open={isCreateOpen}
+                onOpenChange={setIsCreateOpen}
+                onSave={handleSaveUser}
+                userTypes={USER_TYPES}
+                roles={filteredRoles}
+                shops={shops.map((shop) => ({ id: String(shop.id), code: shop.code }))}
+                warehouses={warehouses.map((warehouse) => ({ id: String(warehouse.id), code: warehouse.code }))}
+                isSubmitting={isSubmitting}
+                isSuperAdmin={isSuperAdmin}
+                isAdmin={isAdmin}
+              />
           </div>
           </div>
 

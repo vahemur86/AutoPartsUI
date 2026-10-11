@@ -71,7 +71,6 @@ export const PageControl = () => {
       }));
       setItems(formatted);
       setOriginalItems(formatted);
-      setOriginalItems([...items]);
 
       toast.info(t("pageControl.toast.pagesUpdated"));
     } catch (error) {
@@ -124,7 +123,7 @@ export const PageControl = () => {
           onClick={handleSave}
           disabled={isSaving}
         >
-          {isSaving ? "Saving..." : "Save"}
+          {isSaving ? t("common.saving") : t("common.save")}
         </Button>
       </div>
     </div>
