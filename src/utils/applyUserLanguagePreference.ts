@@ -32,7 +32,7 @@ const getPreferredLanguage = (
     return preference.language;
   }
 
-  return navigator.language || localStorage.getItem("i18nextLng") || "en";
+  return localStorage.getItem("i18nextLng") || navigator.language || "en";
 };
 
 export const applyUserLanguagePreference = async () => {
@@ -51,7 +51,7 @@ export const applyUserLanguagePreference = async () => {
   }
 
   const fallbackCode = resolveSupportedLanguage(
-    navigator.language || localStorage.getItem("i18nextLng") || "en",
+    localStorage.getItem("i18nextLng") || navigator.language || "en",
   );
 
   if (i18n.hasResourceBundle(fallbackCode, "translation")) {

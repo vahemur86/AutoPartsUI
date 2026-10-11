@@ -220,7 +220,7 @@ export const App = () => {
               <Route path="/" element={<Home />}>
                 <Route
                   index
-                  element={<Navigate to="/settings/product-settings" replace />}
+                  element={<Navigate to="/finance-reports/dashboard" replace />}
                 />
 
                 <Route path="settings" element={<Settings />}>
@@ -316,8 +316,8 @@ export const App = () => {
                     index
                     element={<Navigate to="shop-reports" replace />}
                   />
+                  <Route path="dashboard" element={<DashboardReports />} />
                   <Route element={<FinanceReports />}>
-                    <Route path="dashboard" element={<DashboardReports />} />
                     <Route path="shop-reports" element={<ShopReports />} />
                     <Route path="service-reports" element={<ServiceReports />} />
                     <Route path="warehouse-reports" element={<WarehouseReports />} />

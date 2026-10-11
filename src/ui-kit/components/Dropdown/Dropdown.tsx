@@ -33,6 +33,7 @@ export interface DropdownProps {
   sideOffset?: number;
   title?: string;
   contentClassName?: string;
+  contentWidth?: number;
 }
 
 export const Dropdown: FC<DropdownProps> = ({
@@ -46,6 +47,7 @@ export const Dropdown: FC<DropdownProps> = ({
   sideOffset = 8,
   title = "Edit Language",
   contentClassName = "",
+  contentWidth = 490,
 }) => {
   const { isMobile, mounted } = useIsMobile();
   const [position, setPosition] = useState<{
@@ -88,7 +90,6 @@ export const Dropdown: FC<DropdownProps> = ({
 
       let top = 0;
       let left = 0;
-      const contentWidth = 490;
       const estimatedContentHeight = 400;
 
       // Horizontal Positioning
@@ -141,7 +142,7 @@ export const Dropdown: FC<DropdownProps> = ({
         window.removeEventListener("scroll", updatePosition, true);
       };
     }
-  }, [mounted, isMobile, open, anchorRef, anchorRectProp, align, side, sideOffset]);
+  }, [mounted, isMobile, open, anchorRef, anchorRectProp, align, side, sideOffset, contentWidth]);
 
   // Click Outside / Escape Logic for Desktop only
   useEffect(() => {
@@ -204,6 +205,7 @@ export const Dropdown: FC<DropdownProps> = ({
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,
+          width: `${contentWidth}px`,
         }}
       >
         {children}

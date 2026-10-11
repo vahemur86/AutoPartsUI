@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 // icons
 import {
   Settings,
+  Home,
   Warehouse,
   ShoppingBag,
   PackageSearch,
@@ -26,6 +27,11 @@ export const BottomNav: FC = () => {
   const { isActive } = useActiveRoute();
 
   const navItems = [
+    {
+      path: "/finance-reports/dashboard",
+      icon: Home,
+      label: "Dashboard",
+    },
     {
       path: "/settings",
       icon: Settings,

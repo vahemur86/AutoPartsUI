@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -12,16 +12,37 @@ import { applyUserLanguagePreference } from "@/utils";
 
 // ui-kit
 import { TextField, Button } from "@/ui-kit";
+import { Dropdown } from "@/ui-kit/components/Dropdown";
 
 // icons
-import { Lock, Eye, EyeOff, User } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  Languages,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  LogIn,
+} from "lucide-react";
+
+// i18n and languages
+import i18n from "@/i18n/config";
+import { getLanguages } from "@/services/settings/languages";
+import type { Language } from "@/types/settings";
+import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
 
 // images
-import logoImage from "@/assets/icons/Subtract.svg";
 import platformScene from "@/assets/images/catalyst-platform-scene.svg";
 
 // styles
 import styles from "./Login.module.css";
+
+const FALLBACK_LANGUAGES = [
+  { code: "en", name: "English" },
+  { code: "ru", name: "Русский" },
+  { code: "am", name: "Հայերեն" },
+];
 
 export const Login = () => {
   const dispatch = useAppDispatch();
@@ -39,6 +60,76 @@ export const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
+  const [languageOptions, setLanguageOptions] = useState(FALLBACK_LANGUAGES);
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState(() =>
+    mapApiCodeToI18nCode(i18n.resolvedLanguage || i18n.language),
+  );
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const languageControlRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+
+    let isCancelled = false;
+
+    const initializeLoginLanguage = async () => {
+      let projectLanguages: Language[] = [];
+
+      try {
+        projectLanguages = await getLanguages();
+      } catch {
+        // Login stays available if public language settings cannot be loaded.
+      }
+
+      if (isCancelled) return;
+
+      const enabledLanguages = projectLanguages
+        .filter((language) => language.isEnabled)
+        .map((language) => ({
+          code: mapApiCodeToI18nCode(language.code),
+          name: language.name,
+          isDefault: language.isDefault,
+        }))
+        .filter((language) =>
+          i18n.hasResourceBundle(language.code, "translation"),
+        );
+      const uniqueLanguages = Array.from(
+        new Map(enabledLanguages.map((language) => [language.code, language])).values(),
+      );
+      const options = uniqueLanguages.length
+        ? uniqueLanguages.map(({ code, name }) => ({ code, name }))
+        : FALLBACK_LANGUAGES;
+      const adminDefault = enabledLanguages.find((language) => language.isDefault);
+      const savedLanguage = mapApiCodeToI18nCode(
+        localStorage.getItem("i18nextLng") || i18n.resolvedLanguage || i18n.language,
+      );
+      const initialLanguage =
+        adminDefault?.code ||
+        (options.some((language) => language.code === savedLanguage)
+          ? savedLanguage
+          : options[0].code);
+
+      setLanguageOptions(options);
+      setSelectedLanguageCode(initialLanguage);
+      await i18n.changeLanguage(initialLanguage);
+      localStorage.setItem("i18nextLng", initialLanguage);
+    };
+
+    void initializeLoginLanguage();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  const handleLanguageChange = async (languageCode: string) => {
+    if (!i18n.hasResourceBundle(languageCode, "translation")) return;
+
+    await i18n.changeLanguage(languageCode);
+    localStorage.setItem("i18nextLng", languageCode);
+    setSelectedLanguageCode(languageCode);
+    setIsLanguageMenuOpen(false);
+  };
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -113,14 +204,70 @@ export const Login = () => {
       <div className={styles.overlay} />
 
       <div className={styles.content}>
+        <div className={styles.languageRow}>
+          <div className={styles.languageControl} ref={languageControlRef}>
+            <button
+              type="button"
+              className={styles.languageButton}
+              onClick={() => setIsLanguageMenuOpen((open) => !open)}
+              aria-label={t("header.language")}
+              aria-haspopup="menu"
+              aria-expanded={isLanguageMenuOpen}
+            >
+              <span className={styles.languageIcon} aria-hidden="true">
+                <Languages size={16} />
+              </span>
+              <span className={styles.languageCopy}>
+                <span className={styles.languageLabel}>{t("header.language")}</span>
+                <span className={styles.languageValue}>
+                  {languageOptions.find((language) => language.code === selectedLanguageCode)?.name || selectedLanguageCode.toUpperCase()}
+                </span>
+              </span>
+              <ChevronDown size={15} aria-hidden="true" />
+            </button>
+          </div>
+          <Dropdown
+            open={isLanguageMenuOpen}
+            onOpenChange={setIsLanguageMenuOpen}
+            anchorRef={languageControlRef}
+            align="start"
+            side="bottom"
+            sideOffset={8}
+            title={t("header.language")}
+            contentWidth={260}
+            contentClassName={styles.languageDropdown}
+          >
+            {languageOptions.map((language) => {
+              const isSelected = language.code === selectedLanguageCode;
+              return (
+                <button
+                  key={language.code}
+                  type="button"
+                  className={`${styles.languageOption} ${isSelected ? styles.languageOptionSelected : ""}`}
+                  onClick={() => void handleLanguageChange(language.code)}
+                  aria-pressed={isSelected}
+                >
+                  <span className={styles.languageCode}>
+                    {language.code.toUpperCase()}
+                  </span>
+                  <span className={styles.languageOptionName}>{language.name}</span>
+                  {isSelected && <Check size={17} aria-hidden="true" />}
+                </button>
+              );
+            })}
+          </Dropdown>
+        </div>
+
         <div className={styles.brandPanel}>
           <div className={styles.logoContainer}>
             <div className={styles.logo}>
-              <img src={logoImage} alt="PRP" className={styles.logoImage} />
+              <span className={styles.logoBrand} aria-hidden="true">
+                <span className={styles.logoPrp}>PRP</span>
+                <span className={styles.logoService}>Service</span>
+              </span>
             </div>
           </div>
           <div className={styles.brandCopy}>
-            <span className={styles.brandEyebrow}>Precision Resource Platform</span>
             <h1 className={styles.heading}>{t("auth.login.title")}</h1>
           </div>
         </div>
@@ -198,7 +345,14 @@ export const Login = () => {
             className={styles.loginButton}
             disabled={isLoading}
           >
-            {isLoading ? t("auth.login.loggingIn") : t("auth.login.submit")}
+            {isLoading ? (
+              t("auth.login.loggingIn")
+            ) : (
+              <>
+                <LogIn size={17} aria-hidden="true" />
+                {t("auth.login.submit")}
+              </>
+            )}
           </Button>
         </form>
       </div>

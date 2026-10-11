@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { createColumnHelper } from "@tanstack/react-table";
+import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 import {
   Activity,
   AlertTriangle,
@@ -58,7 +59,7 @@ import { FinanceReportLoadButton } from "./FinanceReportLoadButton";
 
 const alertColumnHelper = createColumnHelper<DashboardStockAlertItem>();
 
-const CHART_COLORS = ["#22d3ee", "#f97316", "#38bdf8", "#f43f5e"];
+const CHART_COLORS = ["#D2BF8A", "#A8C3A2", "#B98170", "#7F9B88"];
 
 const money = (value: number): string => {
   return value.toLocaleString(undefined, {
@@ -76,6 +77,12 @@ const formatDateTime = (value?: string): string => {
 
 const DashboardSkeleton = () => (
   <div className={`${styles.panel} ${styles.dashboardSkeleton}`} aria-busy="true" aria-live="polite" aria-label="Dashboard is loading">
+    <div className={styles.dashboardPrpLoader} aria-hidden="true">
+        <div className={styles.dashboardPrpCore}>
+          <span className={styles.dashboardPrpLetters}>PRP</span>
+          <span className={styles.dashboardServiceText}>Service</span>
+        </div>
+    </div>
     <div className={`${styles.dashboardHero} ${styles.dashboardSkeletonHero}`}>
       <div className={styles.dashboardSkeletonHeroContent}>
         <div className={`${styles.skeletonText} ${styles.skeletonTextXL} ${styles.skeleton}`} />
@@ -142,12 +149,15 @@ export const DashboardReports = () => {
   const { warehouses } = useAppSelector((state) => state.warehouses);
 
   const [shopId, setShopId] = useState<number>(0);
+  const [shopError, setShopError] = useState(false);
   const [warehouseId, setWarehouseId] = useState<number>(0);
   const [lowStockThreshold, setLowStockThreshold] = useState<string>("5");
+  const [thresholdError, setThresholdError] = useState(false);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
+  const showLoading = useMinimumLoadingDuration(isLoading, 4000);
   const [report, setReport] = useState<DashboardReportResponse | null>(null);
   const [warehouseProfitTrend, setWarehouseProfitTrend] = useState<
     DailyProfitReportItem[]
@@ -163,6 +173,7 @@ export const DashboardReports = () => {
   useEffect(() => {
     if (shops.length > 0 && shopId === 0) {
       setShopId(shops[0].id);
+      setShopError(false);
     }
   }, [shops, shopId]);
 
@@ -197,13 +208,20 @@ export const DashboardReports = () => {
 
   const handleLoad = useCallback(async () => {
     if (!shopId) {
-      toast.error(t("financeReports.validation.selectShop"));
+      setShopError(true);
       return;
     }
 
+    const hasThreshold = lowStockThreshold.trim().length > 0;
     const parsedThreshold = Number(lowStockThreshold);
-    const resolvedThreshold =
-      Number.isFinite(parsedThreshold) && parsedThreshold > 0 ? parsedThreshold : 5;
+    if (hasThreshold && (!Number.isFinite(parsedThreshold) || parsedThreshold < 1)) {
+      setThresholdError(true);
+      return;
+    }
+
+    setShopError(false);
+    setThresholdError(false);
+    const resolvedThreshold = hasThreshold ? parsedThreshold : 5;
     const fromUtc = toSafeISO(fromDate);
     const toUtc = toSafeISO(toDate);
 
@@ -362,12 +380,18 @@ export const DashboardReports = () => {
 
   return (
     <div className={`${styles.panel} ${styles.dashboardPanel}`}>
-      <div className={styles.filters}>
+      <div className={`${styles.filters} ${styles.dashboardFilters}`}>
         <FinanceFilterHeading />
         <Select
           label={t("financeReports.filters.shop")}
           value={shopId > 0 ? String(shopId) : ""}
-          onChange={(e) => setShopId(Number(e.target.value) || 0)}
+          onChange={(e) => {
+            const nextShopId = Number(e.target.value) || 0;
+            setShopId(nextShopId);
+            if (nextShopId) setShopError(false);
+          }}
+          error={shopError}
+          helperText={shopError ? t("financeReports.validation.selectShop") : undefined}
         >
           <option value="">{t("financeReports.filters.selectShop")}</option>
           {shops.map((shop) => (
@@ -390,47 +414,67 @@ export const DashboardReports = () => {
           ))}
         </Select>
 
+        <div className={styles.dashboardDateRange}>
+          <div className={styles.dashboardDateField}>
+            <span className={styles.dashboardDateLabel}>{t("financeReports.filters.fromDate")}</span>
+            <DatePicker
+              selected={fromDate}
+              onChange={(date: Date | null) => setFromDate(date)}
+              dateFormat="MM/dd/yyyy"
+              placeholderText="MM/DD/YYYY"
+              isClearable
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+            />
+          </div>
+
+          <div className={styles.dashboardDateField}>
+            <span className={styles.dashboardDateLabel}>{t("financeReports.filters.toDate")}</span>
+            <DatePicker
+              selected={toDate}
+              onChange={(date: Date | null) => setToDate(date)}
+              dateFormat="MM/dd/yyyy"
+              placeholderText="MM/DD/YYYY"
+              isClearable
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              minDate={fromDate || undefined}
+            />
+          </div>
+        </div>
+
         <TextField
           label={t("financeReports.dashboard.filters.lowStockThreshold")}
           value={lowStockThreshold}
-          onChange={(e) => setLowStockThreshold(e.target.value)}
+          onChange={(e) => {
+            setLowStockThreshold(e.target.value);
+            setThresholdError(false);
+          }}
           placeholder={t("financeReports.dashboard.filters.lowStockThresholdPlaceholder")}
-          helperText={t("financeReports.dashboard.filters.lowStockThresholdHelp")}
+          title={t("financeReports.dashboard.filters.lowStockThresholdHelp")}
+          error={thresholdError}
+          helperText={
+            thresholdError
+              ? t("financeReports.validation.lowStockThresholdMinimum")
+              : undefined
+          }
           type="number"
           min="1"
         />
 
-        <DatePicker
-          label={t("financeReports.filters.fromDate")}
-          selected={fromDate}
-          onChange={(date: Date | null) => setFromDate(date)}
-          dateFormat="MM/dd/yyyy"
-          placeholderText={t("financeReports.filters.fromDate")}
-          isClearable
-          showMonthDropdown
-          showYearDropdown
-          dropdownMode="select"
-        />
-
-        <DatePicker
-          label={t("financeReports.filters.toDate")}
-          selected={toDate}
-          onChange={(date: Date | null) => setToDate(date)}
-          dateFormat="MM/dd/yyyy"
-          placeholderText={t("financeReports.filters.toDate")}
-          isClearable
-          showMonthDropdown
-          showYearDropdown
-          dropdownMode="select"
-          minDate={fromDate || undefined}
-        />
+        <div className={styles.dashboardAction}>
+          <FinanceReportLoadButton
+            loading={showLoading}
+            label={t("financeReports.actions.load")}
+            onClick={handleLoad}
+            className={styles.dashboardApplyButton}
+          />
+        </div>
       </div>
 
-      <div className={styles.actions}>
-        <FinanceReportLoadButton loading={isLoading} label={t("financeReports.actions.load")} onClick={handleLoad} />
-      </div>
-
-      {isLoading ? (
+      {showLoading ? (
         <DashboardSkeleton />
       ) : !hasData ? (
         <div className={styles.info}>{t("financeReports.dashboard.empty")}</div>
@@ -549,13 +593,17 @@ export const DashboardReports = () => {
               <div className={styles.dashboardChartWrap}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-                    <XAxis dataKey="period" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
-                    <Tooltip formatter={(value) => money(Number(value || 0))} />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#06b6d4" radius={[8, 8, 0, 0]} name={t("financeReports.dashboard.charts.revenue")} />
-                    <Bar dataKey="profit" fill="#f97316" radius={[8, 8, 0, 0]} name={t("financeReports.dashboard.charts.profit")} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(168,195,162,0.15)" />
+                    <XAxis dataKey="period" stroke="#A8B3A7" tick={{ fill: "#A8B3A7", fontSize: 11 }} />
+                    <YAxis stroke="#A8B3A7" tick={{ fill: "#A8B3A7", fontSize: 11 }} />
+                    <Tooltip
+                      formatter={(value) => money(Number(value || 0))}
+                      contentStyle={{ backgroundColor: "#151C17", borderColor: "rgba(196,169,106,0.32)", borderRadius: 8, color: "#EEE9DB" }}
+                      labelStyle={{ color: "#D2BF8A" }}
+                    />
+                    <Legend wrapperStyle={{ color: "#C6CEC3", fontSize: 11 }} />
+                    <Bar dataKey="revenue" fill="#D2BF8A" radius={[8, 8, 0, 0]} name={t("financeReports.dashboard.charts.revenue")} />
+                    <Bar dataKey="profit" fill="#A8C3A2" radius={[8, 8, 0, 0]} name={t("financeReports.dashboard.charts.profit")} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -570,14 +618,18 @@ export const DashboardReports = () => {
                 {warehouseProfitChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={warehouseProfitChartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-                      <XAxis dataKey="name" stroke="#94a3b8" minTickGap={12} />
-                      <YAxis stroke="#94a3b8" />
-                      <Tooltip formatter={(value) => money(Number(value || 0))} />
-                      <Legend />
-                      <Line type="monotone" dataKey="revenue" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.revenue")} />
-                      <Line type="monotone" dataKey="cost" stroke="#f97316" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.cost")} />
-                      <Line type="monotone" dataKey="profit" stroke="#34d399" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.profit")} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(168,195,162,0.15)" />
+                      <XAxis dataKey="name" stroke="#A8B3A7" minTickGap={12} tick={{ fill: "#A8B3A7", fontSize: 11 }} />
+                      <YAxis stroke="#A8B3A7" tick={{ fill: "#A8B3A7", fontSize: 11 }} />
+                      <Tooltip
+                        formatter={(value) => money(Number(value || 0))}
+                        contentStyle={{ backgroundColor: "#151C17", borderColor: "rgba(196,169,106,0.32)", borderRadius: 8, color: "#EEE9DB" }}
+                        labelStyle={{ color: "#D2BF8A" }}
+                      />
+                      <Legend wrapperStyle={{ color: "#C6CEC3", fontSize: 11 }} />
+                      <Line type="monotone" dataKey="revenue" stroke="#D2BF8A" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.revenue")} />
+                      <Line type="monotone" dataKey="cost" stroke="#B98170" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.cost")} />
+                      <Line type="monotone" dataKey="profit" stroke="#A8C3A2" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} name={t("financeReports.dashboard.charts.profit")} />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (

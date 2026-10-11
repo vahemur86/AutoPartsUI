@@ -309,6 +309,8 @@
 }
 
 .dashboardSkeleton {
+  position: relative;
+  isolation: isolate;
   gap: 14px;
 }
 
@@ -457,12 +459,10 @@
 }
 
 .dashboardChartCard {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
   padding: 12px;
-  background:
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 40%),
-    rgba(15, 23, 42, 0.5);
+  background: linear-gradient(145deg, rgba(26, 34, 28, 0.78), rgba(13, 18, 14, 0.76));
 }
 
 .dashboardChartWrap {
@@ -975,5 +975,233 @@
 
   .dashboardHero {
     flex-direction: column;
+  }
+}
+
+.dashboardFilters {
+  grid-template-columns: max-content repeat(2, minmax(120px, 1fr)) minmax(290px, 360px) minmax(120px, 1fr) max-content;
+  align-items: end;
+  gap: 8px;
+}
+
+.dashboardFilters .filterHeading {
+  grid-column: auto;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.dashboardFilters :global([class*="textFieldWrapper"]),
+.dashboardFilters :global([class*="selectWrapper"]) {
+  min-width: 0;
+  gap: 5px;
+}
+
+.dashboardFilters :global([class*="textFieldLabel"]),
+.dashboardFilters :global([class*="selectLabel"]),
+.dashboardDateLabel {
+  display: flex;
+  min-height: 24px;
+  align-items: flex-end;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.dashboardFilters :global([class*="textFieldContainer"]),
+.dashboardFilters :global([class*="selectContainer"]) {
+  height: 40px;
+  min-height: 40px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.dashboardFilters :global([class*="textFieldContainer"]) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.dashboardFilters :global([class*="textFieldHelperText"]),
+.dashboardFilters :global([class*="selectHelperText"]) {
+  margin-top: -2px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.dashboardDateField {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dashboardDateRange {
+  display: grid;
+  width: 100%;
+  max-width: 360px;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dashboardDateLabel {
+  color: #b3ad99;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.dashboardFilters :global(.date-picker-input) {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
+.dashboardAction {
+  align-self: end;
+}
+
+.dashboardAction button {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.dashboardAction .dashboardApplyButton {
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.13);
+}
+
+.dashboardAction .dashboardApplyButton:hover:not(:disabled) {
+  color: #17170f;
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+  box-shadow: 0 6px 18px rgba(170, 137, 65, 0.2);
+}
+
+.dashboardAction .dashboardApplyButton:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+
+.dashboardPrpLoader {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  z-index: 10;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-items: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.dashboardPrpLoader::before {
+  position: absolute;
+  inset: 0;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ff2d2d;
+  border-right-color: #ffffff;
+  border-radius: 50%;
+  content: "";
+  animation: dashboardPrpSpin 1.3s linear infinite;
+}
+
+.dashboardPrpCore {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 82px;
+  height: 82px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(14, 15, 17, 0.96);
+}
+
+.dashboardPrpLetters {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(255, 45, 45, 0.7);
+}
+
+.dashboardServiceText {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  color: #e5d29a;
+  font-family: "Segoe Script", "Bradley Hand", "Brush Script MT", cursive;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-shadow: 0 0 6px rgba(196, 169, 106, 0.24);
+  animation: dashboardServiceType 1.6s steps(7, end) infinite;
+}
+
+@keyframes dashboardPrpSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dashboardServiceType {
+  to {
+    width: 7ch;
+  }
+}
+
+@media (max-width: 1050px) {
+  .dashboardFilters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboardDateRange {
+    grid-column: span 2;
+    width: 100%;
+    max-width: 360px;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboardDateRange {
+    grid-column: 1 / -1;
+    max-width: 360px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboardDateRange {
+    grid-column: auto;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboardAction button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboardPrpLoader::before {
+    animation: none;
+  }
+
+  .dashboardServiceText {
+    width: 7ch;
+    animation: none;
   }
 }

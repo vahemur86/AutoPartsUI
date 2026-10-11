@@ -7,12 +7,14 @@ interface FinanceReportLoadButtonProps {
   loading: boolean;
   label: string;
   onClick: () => void;
+  className?: string;
 }
 
 export const FinanceReportLoadButton = ({
   loading,
   label,
   onClick,
+  className,
 }: FinanceReportLoadButtonProps) => {
   const { t } = useTranslation();
 
@@ -22,6 +24,7 @@ export const FinanceReportLoadButton = ({
       size="medium"
       onClick={onClick}
       disabled={loading}
+      className={className}
     >
       {loading ? (
         <LoaderCircle className={styles.loadSpinner} size={15} aria-hidden="true" />

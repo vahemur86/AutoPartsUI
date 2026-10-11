@@ -41,12 +41,28 @@ describe("applyUserLanguagePreference", () => {
   it("uses the active backend language when the API returns only the language value", async () => {
     vi.mocked(getUserLanguagePreference).mockResolvedValue({
       language: "am",
-    } as any);
+      isPersonal: true,
+      usingGlobalDefault: false,
+    });
 
     await applyUserLanguagePreference();
 
     expect(changeLanguageMock).toHaveBeenCalledWith("am");
     expect(localStorage.getItem("i18nextLng")).toBe("am");
     expect(hasResourceBundleMock).toHaveBeenCalledWith("am", "translation");
+  });
+
+  it("keeps the selected login language when there is no personal preference", async () => {
+    vi.mocked(getUserLanguagePreference).mockResolvedValue({
+      language: null,
+      isPersonal: false,
+      usingGlobalDefault: true,
+    });
+    localStorage.setItem("i18nextLng", "ru");
+
+    await applyUserLanguagePreference();
+
+    expect(changeLanguageMock).toHaveBeenCalledWith("ru");
+    expect(localStorage.getItem("i18nextLng")).toBe("ru");
   });
 });

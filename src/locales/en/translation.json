@@ -514,7 +514,8 @@
     "validation": {
       "selectShop": "Please select a shop",
       "selectWarehouse": "Please select a warehouse",
-      "enterSaleId": "Please enter a valid sale ID"
+      "enterSaleId": "Please enter a valid sale ID",
+      "lowStockThresholdMinimum": "Enter 1 or more."
     },
     "error": {
       "failedToLoad": "Failed to load finance report data"
@@ -2836,7 +2837,7 @@
 
   "auth": {
     "login": {
-      "title": "Welcome to PRP",
+      "title": "PRP — Management Platform",
       "welcome": "Welcome back",
       "username": "Username",
       "usernameRequired": "Username is required",

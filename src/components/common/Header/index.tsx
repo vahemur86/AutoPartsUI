@@ -14,10 +14,13 @@ import { fetchLanguages } from "@/store/slices/languagesSlice";
 
 // icons
 import {
-  Bell,
+  CalendarDays,
   Check,
+  ChevronDown,
+  CircleDollarSign,
   Languages,
   LogOut,
+  DoorOpen,
   Home,
   Layers,
   MapPin,
@@ -38,8 +41,6 @@ import {
   Truck,
   PiggyBank,
 } from "lucide-react";
-import logoImage from "@/assets/icons/prp-logo.svg";
-import adminAvatarImage from "@/assets/icons/userVector.svg";
 
 // hooks
 import { useActiveRoute } from "@/hooks/useIsActive";
@@ -70,7 +71,7 @@ export const Header: FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<
-    "operations" | "locations" | "analytics" | null
+    "operations" | "locations" | "analytics" | "management" | "language" | null
   >(null);
   const [isLanguageLoading, setIsLanguageLoading] = useState(false);
   const [selectedLanguageCode, setSelectedLanguageCode] = useState(
@@ -85,25 +86,21 @@ export const Header: FC = () => {
     left: 0,
     visible: false,
   });
-  const avatarRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
   const operationsRef = useRef<HTMLDivElement>(null);
   const locationsRef = useRef<HTMLDivElement>(null);
   const analyticsRef = useRef<HTMLDivElement>(null);
+  const managementRef = useRef<HTMLDivElement>(null);
+  const languageRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { isActive } = useActiveRoute();
+  const isDashboardActive = isActive("/finance-reports/dashboard");
   const isOperationsActive =
-    isActive("/products") ||
-    isActive("/customers") ||
-    isActive("/capital-sources") ||
     isActive("/referral-persons") ||
     isActive("/commissions") ||
-    isActive("/service-templates") ||
-    isActive("/users") ||
     isActive("/service-tasks") ||
     isActive("/car-catalyst") ||
-    isActive("/settings") ||
-    isActive("/calculator") ||
     isActive("/agents") ||
     isActive("/agent-types") ||
     isActive("/agent-classification-rules") ||
@@ -111,7 +108,14 @@ export const Header: FC = () => {
   const isLocationsActive =
     isActive("/warehouses") || isActive("/shops") || isActive("/service-templates");
   const isAnalyticsActive =
-    isActive("/reports") || isActive("/finance-reports");
+    isActive("/reports") ||
+    (isActive("/finance-reports") && !isDashboardActive) ||
+    isActive("/capital-sources");
+  const isManagementActive =
+    isActive("/products") ||
+    isActive("/customers") ||
+    isActive("/users") ||
+    isActive("/settings");
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -119,8 +123,8 @@ export const Header: FC = () => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node) &&
-        avatarRef.current &&
-        !avatarRef.current.contains(event.target as Node)
+        accountRef.current &&
+        !accountRef.current.contains(event.target as Node)
       ) {
         setIsDropdownOpen(false);
       }
@@ -148,11 +152,11 @@ export const Header: FC = () => {
     if (!isDropdownOpen) return;
 
     const updateDropdownPosition = () => {
-      if (!avatarRef.current) return;
+      if (!accountRef.current) return;
 
-      const rect = avatarRef.current.getBoundingClientRect();
+      const rect = accountRef.current.getBoundingClientRect();
       const dropdownWidth =
-        window.innerWidth <= 480 ? 200 : window.innerWidth <= 768 ? 220 : 250;
+        window.innerWidth <= 480 ? 190 : window.innerWidth <= 768 ? 200 : 220;
       const horizontalPadding = 8;
 
       const nextTop = rect.bottom + 8;
@@ -241,7 +245,7 @@ export const Header: FC = () => {
   }, [user?.cashRegisterId]);
 
   useEffect(() => {
-    if (!isDropdownOpen) return;
+    if (openDropdown !== "language") return;
 
     const loadLanguageData = async () => {
       setIsLanguageLoading(true);
@@ -265,7 +269,7 @@ export const Header: FC = () => {
     };
 
     loadLanguageData();
-  }, [dispatch, i18n.language, i18n.resolvedLanguage, isDropdownOpen, languages.length]);
+  }, [dispatch, i18n.language, i18n.resolvedLanguage, openDropdown, languages.length]);
 
   const handleSetLanguage = async (languageCode: string) => {
     try {
@@ -284,6 +288,7 @@ export const Header: FC = () => {
       console.error(getApiErrorMessage(error, "Failed to set language"));
     } finally {
       setIsLanguageLoading(false);
+      setOpenDropdown(null);
     }
   };
 
@@ -304,16 +309,29 @@ export const Header: FC = () => {
     setTooltip((prev) => ({ ...prev, visible: false }));
   };
 
+  const dateLocale =
+    selectedLanguageCode === "am"
+      ? "hy-AM"
+      : selectedLanguageCode === "ru"
+        ? "ru-RU"
+        : "en-US";
+
   return (
     <div className={styles.headerContainer}>
       <header className={styles.header}>
-        <div
+        <button
+          type="button"
           className={styles.logoContainer}
           onClick={() => navigate("/finance-reports/dashboard")}
-          style={{ cursor: "pointer" }}
+          aria-label={t("header.dashboard")}
         >
-          <img src={logoImage} alt="Logo" className={styles.logoImage} />
-        </div>
+          <span className={styles.logoMark} aria-hidden="true">
+            <span className={styles.logoBrand}>
+              <span className={styles.logoPrp}>PRP</span>
+              <span className={styles.logoService}>Service</span>
+            </span>
+          </span>
+        </button>
 
         <div className={styles.rightContent}>
           <nav className={styles.nav}>
@@ -324,7 +342,7 @@ export const Header: FC = () => {
             >
               <Tab
                 variant="underline"
-                active={isActive("/finance-reports/dashboard")}
+                active={isDashboardActive}
                 icon={<Home size={16} />}
                 text={t("header.dashboard")}
                 onClick={() => navigate("/finance-reports/dashboard")}
@@ -358,39 +376,6 @@ export const Header: FC = () => {
             >
               <button
                 type="button"
-                className={`${styles.menuItem} ${isActive("/products") ? styles.menuItemActive : ""}`}
-                onClick={() => {
-                  navigate("/products");
-                  setOpenDropdown(null);
-                }}
-              >
-                <Box className={styles.menuItemIcon} size={16} />
-                {t("header.products")}
-              </button>
-              <button
-                type="button"
-                className={`${styles.menuItem} ${isActive("/customers") ? styles.menuItemActive : ""}`}
-                onClick={() => {
-                  navigate("/customers");
-                  setOpenDropdown(null);
-                }}
-              >
-                <Users className={styles.menuItemIcon} size={16} />
-                {t("header.customers")}
-              </button>
-              <button
-                type="button"
-                className={`${styles.menuItem} ${isActive("/capital-sources") ? styles.menuItemActive : ""}`}
-                onClick={() => {
-                  navigate("/capital-sources");
-                  setOpenDropdown(null);
-                }}
-              >
-                <PiggyBank className={styles.menuItemIcon} size={16} />
-                {t("header.capitalSources")}
-              </button>
-              <button
-                type="button"
                 className={`${styles.menuItem} ${isActive("/referral-persons") || isActive("/commissions") ? styles.menuItemActive : ""}`}
                 onClick={() => {
                   navigate("/referral-persons");
@@ -410,17 +395,6 @@ export const Header: FC = () => {
               >
                 <Truck className={styles.menuItemIcon} size={16} />
                 {t("catalyticSuppliers.title")}
-              </button>
-              <button
-                type="button"
-                className={`${styles.menuItem} ${isActive("/users") ? styles.menuItemActive : ""}`}
-                onClick={() => {
-                  navigate("/users");
-                  setOpenDropdown(null);
-                }}
-              >
-                <User className={styles.menuItemIcon} size={16} />
-                {t("header.users")}
               </button>
               <button
                 type="button"
@@ -465,28 +439,6 @@ export const Header: FC = () => {
               >
                 <PackageSearch className={styles.menuItemIcon} size={16} />
                 {t("catalyticConverters.title")}
-              </button>
-              <button
-                type="button"
-                className={`${styles.menuItem} ${isActive("/settings") ? styles.menuItemActive : ""}`}
-                onClick={() => {
-                  navigate("/settings");
-                  setOpenDropdown(null);
-                }}
-              >
-                <Settings2 className={styles.menuItemIcon} size={16} />
-                {t("header.settings")}
-              </button>
-              <button
-                type="button"
-                className={`${styles.menuItem} ${isActive("/calculator") ? styles.menuItemActive : ""}`}
-                onClick={() => {
-                  navigate("/calculator");
-                  setOpenDropdown(null);
-                }}
-              >
-                <Calculator className={styles.menuItemIcon} size={16} />
-                {t("header.calculator")}
               </button>
             </Dropdown>
             <div
@@ -597,22 +549,129 @@ export const Header: FC = () => {
                 <PieChart className={styles.menuItemIcon} size={16} />
                 {t("header.financeReports")}
               </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/capital-sources") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/capital-sources");
+                  setOpenDropdown(null);
+                }}
+              >
+                <PiggyBank className={styles.menuItemIcon} size={16} />
+                {t("header.capitalSources")}
+              </button>
             </Dropdown>
+            <div
+              ref={managementRef}
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.administration"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isManagementActive}
+                icon={<Settings2 size={16} />}
+                text={t("header.administration")}
+                onClick={() =>
+                  setOpenDropdown((current) =>
+                    current === "management" ? null : "management",
+                  )
+                }
+              />
+            </div>
+            <Dropdown
+              open={openDropdown === "management"}
+              onOpenChange={(open) => setOpenDropdown(open ? "management" : null)}
+              anchorRef={managementRef}
+              align="start"
+              side="bottom"
+              contentClassName={styles.menuDropdown}
+            >
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/products") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/products");
+                  setOpenDropdown(null);
+                }}
+              >
+                <Box className={styles.menuItemIcon} size={16} />
+                {t("header.products")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/customers") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/customers");
+                  setOpenDropdown(null);
+                }}
+              >
+                <Users className={styles.menuItemIcon} size={16} />
+                {t("header.customers")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/users") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/users");
+                  setOpenDropdown(null);
+                }}
+              >
+                <User className={styles.menuItemIcon} size={16} />
+                {t("header.users")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/settings") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/settings");
+                  setOpenDropdown(null);
+                }}
+              >
+                <Settings2 className={styles.menuItemIcon} size={16} />
+                {t("header.settings")}
+              </button>
+            </Dropdown>
+            <div
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, t("header.calculator"))}
+              onMouseLeave={handleHideTooltip}
+              style={{ display: "flex" }}
+            >
+              <Tab
+                variant="underline"
+                active={isActive("/calculator")}
+                icon={<Calculator size={16} />}
+                text={t("header.calculator")}
+                onClick={() => {
+                  navigate("/calculator");
+                  setOpenDropdown(null);
+                }}
+              />
+            </div>
           </nav>
 
           <div className={styles.actions}>
             {exchangeRate != null ? (
               <div className={styles.exchangeRateInfo}>
-                <span className={styles.timeLabel}>{t("header.exchangeRate")}</span>
-                <span className={styles.exchangeRateValue}>$ 1 / {exchangeRate.toLocaleString()} AMD</span>
+                <CircleDollarSign
+                  className={styles.exchangeRateIcon}
+                  size={16}
+                  aria-hidden="true"
+                />
+                <div className={styles.exchangeRateText}>
+                  <span className={styles.exchangeRateLabel}>{t("header.exchangeRate")}</span>
+                  <span className={styles.exchangeRateValue}>
+                    $ 1 / {exchangeRate.toLocaleString()} AMD
+                  </span>
+                </div>
               </div>
             ) : null}
 
             <div className={styles.timeInfo}>
+              <CalendarDays size={15} aria-hidden="true" />
               <span className={styles.timeLabel}>{t("header.today")}</span>
               <span className={styles.timeValue}>
-                {new Intl.DateTimeFormat("en-US", {
-                  weekday: "long",
+                {new Intl.DateTimeFormat(dateLocale, {
                   month: "short",
                   day: "numeric",
                   hour: "2-digit",
@@ -622,28 +681,79 @@ export const Header: FC = () => {
               </span>
             </div>
 
-            <button className={styles.bellButton}>
-              <Bell className={styles.bellIcon} />
-            </button>
-
-            {user?.username ? (
-              <span className={styles.usernameLabel}>{user.username}</span>
-            ) : null}
-
-            <div className={styles.avatarContainer} ref={avatarRef}>
+            <div className={styles.languageControl} ref={languageRef}>
               <button
-                className={styles.avatarButton}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                aria-label={t("header.userMenu")}
-                aria-expanded={isDropdownOpen}
+                type="button"
+                className={styles.languageButton}
+                onClick={() => {
+                  setIsDropdownOpen(false);
+                  setOpenDropdown((current) =>
+                    current === "language" ? null : "language",
+                  );
+                }}
+                aria-label={t("header.language")}
+                aria-haspopup="menu"
+                aria-expanded={openDropdown === "language"}
+                title={t("header.language")}
               >
-                <div className={styles.avatar}>
-                  <img
-                    src={user?.avatarUrl || adminAvatarImage}
-                    alt={user?.username ? `${user.username} avatar` : "User"}
-                    className={styles.avatarImage}
-                  />
+                <Languages size={15} aria-hidden="true" />
+                <span>{selectedLanguageCode.toUpperCase()}</span>
+                <ChevronDown size={13} aria-hidden="true" />
+              </button>
+            </div>
+            <Dropdown
+              open={openDropdown === "language"}
+              onOpenChange={(open) => setOpenDropdown(open ? "language" : null)}
+              anchorRef={languageRef}
+              align="end"
+              side="bottom"
+              title={t("header.language")}
+              contentWidth={260}
+              contentClassName={styles.languageDropdown}
+            >
+              {isLanguageLoading ? (
+                <div className={styles.languageLoadingText}>
+                  {t("header.languageLoading")}
                 </div>
+              ) : (
+                enabledLanguages.map((lang) => {
+                  const langI18nCode = mapApiCodeToI18nCode(lang.code);
+                  const isSelected = selectedLanguageCode === langI18nCode;
+
+                  return (
+                    <button
+                      key={lang.id}
+                      type="button"
+                      className={`${styles.languageOption} ${isSelected ? styles.languageOptionSelected : ""}`}
+                      onClick={() => void handleSetLanguage(lang.code)}
+                      aria-pressed={isSelected}
+                    >
+                      <span className={styles.languageCode}>
+                        {langI18nCode.toUpperCase()}
+                      </span>
+                      <span className={styles.languageOptionName}>{lang.name}</span>
+                      {isSelected && <Check size={17} aria-hidden="true" />}
+                    </button>
+                  );
+                })
+              )}
+            </Dropdown>
+
+            <div className={styles.accountControl} ref={accountRef}>
+              <button
+                type="button"
+                className={styles.accountButton}
+                onClick={() => {
+                  setOpenDropdown(null);
+                  setIsDropdownOpen((current) => !current);
+                }}
+                aria-label={t("header.userMenu")}
+                aria-haspopup="menu"
+                aria-expanded={isDropdownOpen}
+                title={user?.username || t("header.userMenu")}
+              >
+                <LogOut size={16} aria-hidden="true" />
+                <ChevronDown size={13} aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -657,42 +767,17 @@ export const Header: FC = () => {
               ref={dropdownRef}
               style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
             >
-              <div className={styles.dropdownBody}>
-                <div className={styles.dropdownSectionTitle}>
-                  <Languages size={14} />
-                  <span>{t("header.language")}</span>
-                </div>
-
-                {isLanguageLoading ? (
-                  <div className={styles.languageLoadingText}>
-                    {t("header.languageLoading")}
-                  </div>
-                ) : (
-                  <div className={styles.languageList}>
-                    {enabledLanguages.map((lang) => {
-                      const langI18nCode = mapApiCodeToI18nCode(lang.code);
-                      const isSelected = selectedLanguageCode === langI18nCode;
-
-                      return (
-                        <button
-                          key={lang.id}
-                          className={styles.dropdownItem}
-                          onClick={() => handleSetLanguage(lang.code)}
-                        >
-                          <span>{lang.name}</span>
-                          {isSelected && (
-                            <Check className={styles.dropdownIcon} size={16} />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+              {user?.username ? (
+                <div className={styles.profileSummary}>{user.username}</div>
+              ) : null}
 
               <div className={styles.dropdownFooter}>
-                <button className={styles.dropdownItem} onClick={handleLogout}>
-                  <LogOut className={styles.dropdownIcon} size={16} />
+                <button
+                  type="button"
+                  className={styles.dropdownItem}
+                  onClick={handleLogout}
+                >
+                  <DoorOpen className={styles.dropdownIcon} size={16} aria-hidden="true" />
                   <span>{t("header.logout")}</span>
                 </button>
               </div>

@@ -2,7 +2,7 @@
   "header": {
     "dashboard": "Դաշբորդ",
     "operations": "Օպերացիաներ",
-    "administration": "Մասնավորումներ",
+    "administration": "Կառավարում",
     "analytics": "Վերլուծություն",
     "notifications": "Ծանուցումներ",
     "settings": "Կարգավորումներ",
@@ -484,7 +484,8 @@
     "validation": {
       "selectShop": "Ընտրեք խանութը",
       "selectWarehouse": "Ընտրեք պահեստը",
-      "enterSaleId": "Մուտքագրեք վավեր վաճառքի ID"
+      "enterSaleId": "Մուտքագրեք վավեր վաճառքի ID",
+      "lowStockThresholdMinimum": "Մուտքագրեք 1 կամ ավելի։"
     },
     "error": {
       "failedToLoad": "Չհաջողվեց բեռնել ֆինանսական հաշվետվության տվյալները"
@@ -2610,7 +2611,7 @@
   },
   "auth": {
     "login": {
-      "title": "PRP մուտք",
+      "title": "PRP — Կառավարման հարթակ",
       "welcome": "Բարի գալուստ",
       "username": "Օգտանուն",
       "usernameRequired": "Օգտանունը պարտադիր է",
