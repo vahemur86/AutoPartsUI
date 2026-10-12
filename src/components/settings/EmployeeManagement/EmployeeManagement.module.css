@@ -5,42 +5,6 @@
   gap: 14px;
 }
 
-.managementTabs {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.managementTabs :global([class*="segmentedGroup"]) {
-  justify-content: flex-start;
-  gap: 4px;
-  padding: 3px;
-  border-color: rgba(196, 169, 106, 0.16);
-  border-radius: 6px;
-  background: rgba(13, 18, 14, 0.88);
-}
-
-.managementTabs :global([class*="segmented_"]) {
-  height: 36px;
-  padding: 8px 12px;
-  border-radius: 5px;
-}
-
-.managementTabs :global([class*="segmented_"] [class*="tabText"]) {
-  color: #aab2a9;
-  font-size: 12px;
-}
-
-.managementTabs :global([class*="segmented_"][class*="active"]) {
-  border: 1px solid rgba(196, 169, 106, 0.3);
-  background: rgba(196, 169, 106, 0.12);
-  box-shadow: none;
-}
-
-.managementTabs :global([class*="segmented_"][class*="active"] [class*="tabText"]) {
-  color: #e8dfc7;
-}
-
 .section {
   min-width: 0;
   border: 1px solid rgba(196, 169, 106, 0.14);
@@ -1005,6 +969,12 @@
   padding: 18px;
 }
 
+.payrollTabLoader {
+  display: grid;
+  min-height: 340px;
+  place-items: center;
+}
+
 .unpaidSalaryWorkspace {
   display: grid;
   gap: 14px;
@@ -1454,10 +1424,6 @@
   .gridTwo,
   .gridThree {
     grid-template-columns: 1fr;
-  }
-
-  .managementTabs :global([class*="segmentedGroup"]) {
-    justify-content: flex-start;
   }
 
   .employeeFilters {

@@ -2865,6 +2865,7 @@
         "attendance": "Attendance",
         "payroll": "Payroll"
       },
+      "navigationLabel": "Employee subsections",
       "actions": {
         "save": "Save",
         "giveDeposit": "Give deposit",
@@ -2932,6 +2933,7 @@
         "powderReceived": "Accepted powder: {{amount}} kg",
         "bonusIncluded": "Monthly bonus included in payment",
         "bonusAccrued": "Accrued, payable only on the last day of the month",
+        "directorPaymentBlocked": "Director salary can be paid only after the salary period ends.",
         "bonusNotIncluded": "Final monthly amount is not included yet",
         "estimatedFinalPayable": "Estimated month-end payment: {{amount}} (may change)",
         "advanceDeducted": "Advance deducted from this calculation",

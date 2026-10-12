@@ -6,6 +6,10 @@ import { Plus, Wallet, CalendarCheck2, Calculator, Percent, UserCog, Check, Circ
 import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
 import { FormDrawer } from "@/components/common/FormDrawer";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
+import {
+  EmployeeManagementNavigation,
+  type EmployeeManagementTab,
+} from "./EmployeeManagementNavigation";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -148,8 +152,6 @@ const emptyPercentageForm = () => ({
   percentage: 0,
 });
 
-type ManagementTab = "employees" | "percentages" | "deposits" | "attendance" | "payroll";
-
 export const EmployeeManagement = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -168,7 +170,7 @@ export const EmployeeManagement = () => {
     user?.role?.toLowerCase() || "",
   );
 
-  const [activeTab, setActiveTab] = useState<ManagementTab>("employees");
+  const [activeTab, setActiveTab] = useState<EmployeeManagementTab>("employees");
   const [categoryFilterId, setCategoryFilterId] = useState(0);
   const [employeeSearch, setEmployeeSearch] = useState("");
   const [employeeStatusFilter, setEmployeeStatusFilter] = useState<"all" | "active" | "inactive">("all");
@@ -881,6 +883,11 @@ export const EmployeeManagement = () => {
         return matchesShop && matchesEmployee;
       });
       setDailyPayroll(sortPayrollRecords(filteredSalary));
+      if (payrollEmployeeId > 0) {
+        setSalaryPaymentEmployeeId(payrollEmployeeId);
+      } else if (salaryPaymentEmployeeId <= 0 && filteredSalary.length === 1) {
+        setSalaryPaymentEmployeeId(filteredSalary[0].employeeId);
+      }
       if (calculatedRecords.length === 0 || filteredSalary.length === 0) {
         setSalaryCalculationNotice("serviceTemplates.employeeManagement.messages.noSalaryCalculated");
         toast.info(t("serviceTemplates.employeeManagement.messages.noSalaryCalculated"));
@@ -954,6 +961,12 @@ export const EmployeeManagement = () => {
         });
 
         setDailyPayroll(sortPayrollRecords(filteredSalary));
+        if (payrollEmployeeId > 0) {
+          setSalaryPaymentEmployeeId(payrollEmployeeId);
+        } else if (filteredSalary.length === 1) {
+          const onlyEmployeeId = filteredSalary[0].employeeId;
+          setSalaryPaymentEmployeeId((current) => current > 0 ? current : onlyEmployeeId);
+        }
 
       } catch {
         if (isCurrent) {
@@ -1486,52 +1499,22 @@ export const EmployeeManagement = () => {
     ? employees.find((employee) => employee.id === selectedPercentageEmployeeId)?.fullName
     : serviceOptions.find((service) => service.id === servicePercentageForm.serviceId)?.name;
 
+  const handleManagementTabChange = (tab: EmployeeManagementTab) => {
+    if (tab === "employees" && activeTab !== "employees" && !isEmployeesLoading) {
+      dispatch(fetchEmployees({ includeInactive: true }));
+    }
+    if (tab === "payroll" && activeTab !== "payroll") {
+      setSalaryLoading(true);
+    }
+    setActiveTab(tab);
+  };
+
   return (
     <div className={styles.employeeManagement}>
-      <div className={styles.managementTabs}>
-        <TabGroup variant="segmented">
-          <Tab
-            variant="segmented"
-            active={activeTab === "employees"}
-            text={t("serviceTemplates.employeeManagement.tabs.employees")}
-            icon={<UserCog size={14} />}
-            onClick={() => {
-              if (activeTab !== "employees" && !isEmployeesLoading) {
-                dispatch(fetchEmployees({ includeInactive: true }));
-              }
-              setActiveTab("employees");
-            }}
-          />
-          <Tab
-            variant="segmented"
-            active={activeTab === "percentages"}
-            text={t("serviceTemplates.employeeManagement.tabs.percentages")}
-            icon={<Percent size={14} />}
-            onClick={() => setActiveTab("percentages")}
-          />
-          <Tab
-            variant="segmented"
-            active={activeTab === "deposits"}
-            text={t("serviceTemplates.employeeManagement.tabs.deposits")}
-            icon={<Wallet size={14} />}
-            onClick={() => setActiveTab("deposits")}
-          />
-          <Tab
-            variant="segmented"
-            active={activeTab === "attendance"}
-            text={t("serviceTemplates.employeeManagement.tabs.attendance")}
-            icon={<CalendarCheck2 size={14} />}
-            onClick={() => setActiveTab("attendance")}
-          />
-          <Tab
-            variant="segmented"
-            active={activeTab === "payroll"}
-            text={t("serviceTemplates.employeeManagement.tabs.payroll")}
-            icon={<Calculator size={14} />}
-            onClick={() => setActiveTab("payroll")}
-          />
-        </TabGroup>
-      </div>
+      <EmployeeManagementNavigation
+        activeTab={activeTab}
+        onChange={handleManagementTabChange}
+      />
 
       {activeTab === "employees" && (
         <div className={styles.stack}>
@@ -2359,6 +2342,11 @@ export const EmployeeManagement = () => {
       )}
 
       {activeTab === "payroll" && (
+        salaryLoading ? (
+          <div className={styles.payrollTabLoader}>
+            <PrpServiceLoader />
+          </div>
+        ) : (
         <div className={styles.stack}>
           <section className={`${styles.section} ${styles.payrollWorkspace}`}>
             <div className={styles.workflowHeader}>
@@ -2478,7 +2466,7 @@ export const EmployeeManagement = () => {
                   disabled={isPayingUnpaidSalary}
                 >
                   <option value="0">{t("serviceTemplates.employeeManagement.fields.selectEmployee")}</option>
-                  {historyEmployees.map((employee) => (
+                  {employees.map((employee) => (
                     <option key={employee.id} value={employee.id}>{employee.fullName}</option>
                   ))}
                 </Select>
@@ -2559,7 +2547,10 @@ export const EmployeeManagement = () => {
                 )}
                 {unpaidSalarySummary.paymentBlockedReason && (
                   <div className={styles.salaryPaymentBlocked} role="status">
-                    {unpaidSalarySummary.paymentBlockedReason}
+                    {unpaidSalarySummary.paymentBlockedReason ===
+                    "Director salary can be paid only after the salary period ends."
+                      ? t("serviceTemplates.employeeManagement.labels.directorPaymentBlocked")
+                      : unpaidSalarySummary.paymentBlockedReason}
                   </div>
                 )}
                 {Number(unpaidSalarySummary.netPayableAmount || 0) <= 0 ? (
@@ -2634,6 +2625,7 @@ export const EmployeeManagement = () => {
             )}
           </section>
         </div>
+        )
       )}
 
       {!!salaryToPayConfirm && (

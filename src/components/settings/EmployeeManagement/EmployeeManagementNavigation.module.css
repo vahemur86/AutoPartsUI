@@ -1,0 +1,50 @@
+.navigation {
+  min-width: 0;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.18);
+}
+
+.navigation > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 169, 106, 0.35) transparent;
+}
+
+.navigation > div :global([class*="underline_"]) {
+  min-height: 42px;
+  padding: 8px 10px;
+}
+
+.navigation > div :global([class*="tabText_"]) {
+  color: #aab2a9;
+  font-size: 12px;
+}
+
+.navigation > div :global([class*="active_"] [class*="tabText_"]) {
+  color: #eee9db;
+}
+
+.navigation > div :global([class*="active_"] [class*="tabText_"]::after) {
+  background-color: #c4a96a;
+}
+
+.navigation > div :global([class*="iconWrapper_"]) {
+  color: #929c92;
+}
+
+.navigation > div :global([class*="active_"] [class*="iconWrapper_"]) {
+  color: #d2bf8a;
+}
+
+@media (max-width: 560px) {
+  .navigation > div {
+    gap: 2px;
+  }
+
+  .navigation > div :global([class*="underline_"]) {
+    padding: 8px;
+  }
+}
