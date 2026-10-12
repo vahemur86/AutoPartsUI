@@ -62,7 +62,7 @@ type CartItem = {
 };
 
 export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { shops } = useAppSelector((state) => state.shops);
@@ -100,34 +100,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [selectedEstimate, setSelectedEstimate] =
     useState<ServiceEstimateLookupResponse | null>(null);
   const skuInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    const previousLanguage = i18n.language || "en";
-    const previousStoredLanguage = window.localStorage.getItem("i18nextLng");
-    let languageChangedManually = false;
-    const trackLanguageChange = (language: string) => {
-      if (language !== "am") languageChangedManually = true;
-    };
-
-    i18n.on("languageChanged", trackLanguageChange);
-    if (previousLanguage !== "am") {
-      void i18n.changeLanguage("am").then(() => {
-        if (languageChangedManually) return;
-        if (previousStoredLanguage === null) window.localStorage.removeItem("i18nextLng");
-        else window.localStorage.setItem("i18nextLng", previousStoredLanguage);
-      });
-    }
-
-    return () => {
-      i18n.off("languageChanged", trackLanguageChange);
-      if (!languageChangedManually && previousLanguage !== "am" && i18n.language === "am") {
-        void i18n.changeLanguage(previousLanguage).then(() => {
-          if (previousStoredLanguage === null) window.localStorage.removeItem("i18nextLng");
-          else window.localStorage.setItem("i18nextLng", previousStoredLanguage);
-        });
-      }
-    };
-  }, [i18n]);
 
   const cashRegister = useMemo(() => getCashRegisterId(0), []);
   const resolvedCashRegisterId = useMemo(() => {

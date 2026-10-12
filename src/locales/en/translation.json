@@ -2503,6 +2503,18 @@
     },
     "workshop": {
       "title": "Workshop Services",
+      "workflow": {
+        "title": "Service Intake Workflow",
+        "vehicle": "Vehicle",
+        "referral": "Referral",
+        "services": "Services",
+        "products": "Products",
+        "orderDetails": "Order Details",
+        "summary": "Summary",
+        "selectedServices": "Selected services ({{count}})",
+        "selectedProducts": "Selected products ({{count}})",
+        "vehicleNotSelected": "Vehicle not selected"
+      },
       "fields": {
         "brand": "Brand",
         "model": "Model",
@@ -2511,6 +2523,7 @@
         "location": "Location",
         "year": "Year",
         "services": "Services",
+        "referralPerson": "Referral Person",
         "parentCategory": "Category",
         "childCategory": "Subcategory",
         "categoryLevel": "Category Level {{level}}",
@@ -2522,6 +2535,18 @@
       },
       "orderInfo": {
         "title": "Order Details"
+      },
+      "states": {
+        "loadingReferralPersons": "Loading referral people...",
+        "selectReferralPerson": "Select a referral person",
+        "noReferralPersons": "No referral people found",
+        "selectVehicleBeforeServices": "Select the vehicle details before choosing services."
+      },
+      "productCount": "{{count}} products",
+      "placeholders": {
+        "vinCode": "e.g. WVWZZZ1JZXW000001",
+        "mileageKm": "e.g. 150000",
+        "comment": "Add quick notes..."
       },
       "actions": {
         "addProduct": "Add Product",
@@ -3119,7 +3144,10 @@
       "passwordRequired": "Password is required",
       "loggingIn": "Signing in...",
       "submit": "Sign in",
-      "welcomeBack": "Welcome back!"
+      "welcomeBack": "Welcome back!",
+      "redirectEyebrow": "Access confirmed",
+      "redirectTitle": "Preparing your workspace",
+      "redirectMessage": "You’re signed in. We’ll take you to the right workspace in a moment."
     }
   },
   "OTP": {

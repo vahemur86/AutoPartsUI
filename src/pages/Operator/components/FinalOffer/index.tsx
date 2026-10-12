@@ -40,6 +40,7 @@ export const FinalOffer: FC<{
   userData: any;
   isRecalculationsLimitReached?: boolean;
   withRecalculate?: boolean;
+  isCatalyst?: boolean;
   ironItems?: Array<{
     ironTypeId: number;
     name: string;
@@ -72,6 +73,7 @@ export const FinalOffer: FC<{
 }> = ({
   isRecalculationsLimitReached = false,
   withRecalculate = false,
+  isCatalyst = false,
   offerPrice = 0,
   agentPayment,
   currencyCode = "AMD",
@@ -278,6 +280,7 @@ export const FinalOffer: FC<{
             variant="primary"
             size="small"
             fullWidth
+            className={isCatalyst ? sharedStyles.catalystPrimaryAction : undefined}
             onClick={handleOffer}
             disabled={offerConfirmed || isAnyActionLoading || !isTransactionReady}
           >

@@ -2616,6 +2616,18 @@
     },
     "workshop": {
       "title": "Աշխատանոցի ծառայություններ",
+      "workflow": {
+        "title": "Սպասարկման ընդունման փուլեր",
+        "vehicle": "Մեքենա",
+        "referral": "Հղում",
+        "services": "Ծառայություններ",
+        "products": "Ապրանքներ",
+        "orderDetails": "Պատվերի տվյալներ",
+        "summary": "Ամփոփում",
+        "selectedServices": "Ընտրված ծառայություններ ({{count}})",
+        "selectedProducts": "Ընտրված ապրանքներ ({{count}})",
+        "vehicleNotSelected": "Մեքենա չի ընտրվել"
+      },
       "fields": {
         "brand": "Մակնիշ",
         "model": "Մոդել",
@@ -2624,6 +2636,7 @@
         "location": "Տեղակայություն",
         "year": "Տարի",
         "services": "Ծառայություններ",
+        "referralPerson": "Ուղղորդող անձ",
         "parentCategory": "Կատեգորիա",
         "childCategory": "Ենթակատեգորիա",
         "categoryLevel": "Կատեգորիայի մակարդակ {{level}}",
@@ -2635,6 +2648,18 @@
       },
       "orderInfo": {
         "title": "Պատվերի տվյալներ"
+      },
+      "states": {
+        "loadingReferralPersons": "Ուղղորդող անձինք բեռնվում են...",
+        "selectReferralPerson": "Ընտրեք ուղղորդող անձին",
+        "noReferralPersons": "Ուղղորդող անձինք չեն գտնվել",
+        "selectVehicleBeforeServices": "Ծառայություններն ընտրելու համար նախ նշեք մեքենայի տվյալները։"
+      },
+      "productCount": "{{count}} ապրանք",
+      "placeholders": {
+        "vinCode": "օր. WVWZZZ1JZXW000001",
+        "mileageKm": "օր. 150000",
+        "comment": "Ավելացրեք հակիրճ նշումներ..."
       },
       "actions": {
         "addProduct": "Ավելացնել ապրանք",
@@ -2768,7 +2793,10 @@
       "passwordRequired": "Գաղտնաբառը պարտադիր է",
       "loggingIn": "Մուտք է գործվում...",
       "submit": "Մուտք գործել",
-      "welcomeBack": "Բարի վերադարձ!"
+      "welcomeBack": "Բարի վերադարձ!",
+      "redirectEyebrow": "Մուտքը հաստատված է",
+      "redirectTitle": "Պատրաստում ենք Ձեր աշխատանքային միջավայրը",
+      "redirectMessage": "Մի պահից կտեղափոխենք Ձեզ համապատասխան աշխատանքային էջ։"
     }
   },
   "OTP": {

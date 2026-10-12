@@ -1,8 +1,440 @@
-.workshopCard {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.workshopWorkspace {
+  display: grid;
   width: 100%;
+  min-width: 0;
+  gap: 18px;
+  color: #e9e8e2;
+}
+
+.workshopHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(29, 26, 18, 0.96), rgba(18, 20, 17, 0.84)),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.12), transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 32px rgba(0, 0, 0, 0.14);
+}
+
+.headingCopy {
+  display: grid;
+  gap: 2px;
+}
+
+.workshopHeading h2 {
+  margin: 0;
+  color: #f4efe6;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.workshopEyebrow {
+  color: #d5bf85;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.workspaceContext {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.workspaceMetaPill {
+  min-width: 112px;
+  display: grid;
+  gap: 3px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.workspaceMetaPill span {
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workspaceMetaPill strong {
+  color: #f5f1e8;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.workspaceSignals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.miniStat {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 14px;
+  background: rgba(15, 20, 17, 0.9);
+}
+
+.miniStat span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.miniStat strong {
+  color: #f3eddc;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.workshopColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 350px);
+  align-items: start;
+  gap: 18px;
+  min-width: 0;
+}
+
+.workshopMain {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+}
+
+.stepperShell {
+  padding: 8px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 14px;
+  background: rgba(10, 12, 16, 0.58);
+}
+
+.stepperBar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stepPill {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.72);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stepPill:hover {
+  border-color: rgba(217, 198, 123, 0.2);
+  color: #f3eedb;
+}
+
+.stepPill:disabled,
+.lockedStep {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.activeStep {
+  border-color: rgba(217, 198, 123, 0.34);
+  background: linear-gradient(135deg, rgba(217, 198, 123, 0.12), rgba(255, 255, 255, 0.03));
+  color: #f7f2e5;
+}
+
+.doneStep {
+  border-color: rgba(125, 211, 252, 0.15);
+  background: rgba(125, 211, 252, 0.05);
+}
+
+.stepNumber {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: rgba(217, 198, 123, 0.1);
+  color: #d9c67b;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.stepNavigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.stepNavigation > button {
+  flex: 1;
+}
+
+.actionPrimary {
+  border: 1px solid rgba(163, 137, 48, 0.72) !important;
+  background: linear-gradient(110deg, #80691f 0%, #3b3219 48%, #10120f 100%) !important;
+  color: #f7f4e9 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 5px 14px rgba(0, 0, 0, 0.24);
+}
+
+.actionPrimary:hover:not(:disabled) {
+  background: linear-gradient(110deg, #9a7e25 0%, #49401f 48%, #171a16 100%) !important;
+}
+
+.actionPrimary:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.workshopStep {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(18, 23, 20, 0.96), rgba(12, 16, 14, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.workshopStepHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.workshopStepHeader h3 {
+  margin: 0;
+  color: #f0ecdf;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.workshopStepNumber {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d9c67b;
+  border: 1px solid rgba(217, 198, 123, 0.3);
+  border-radius: 10px;
+  background: rgba(217, 198, 123, 0.09);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.workshopStep > .fieldBlock {
+  margin-top: 12px;
+}
+
+.workshopProductSection {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.workshopSubsectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.workshopSubsectionHeader h4 {
+  margin: 0;
+  color: #c9c9c0;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.workshopSubsectionHeader span {
+  color: #9ca49b;
+  font-size: 10px;
+}
+
+.workshopSummary {
+  position: sticky;
+  top: 12px;
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(20, 23, 18, 0.98), rgba(12, 15, 13, 0.98));
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.18);
+}
+
+.summaryHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #eee9db;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.summaryTitleWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summaryTitleIcon {
+  color: #d9c67b;
+}
+
+.summaryHeading strong {
+  color: #d2bf8a;
+  font-size: 11px;
+}
+
+.summaryVehicle {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.summaryVehicle > span {
+  color: #9ca49b;
+  font-size: 10px;
+}
+
+.summaryVehicle > strong {
+  color: #eee9db;
+  font-size: 13px;
+}
+
+.summaryVehicle > small {
+  color: #aab2a9;
+  font-size: 10px;
+}
+
+.summaryCounts {
+  display: grid;
+  gap: 8px;
+}
+
+.summaryCounts > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.summaryCounts strong {
+  color: #eee9db;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.summaryItem span {
+  color: #aab2a9;
+  font-size: 11px;
+}
+
+.summaryItem strong {
+  color: #eee9db;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(196, 169, 106, 0.26);
+}
+
+.summaryTotal span {
+  color: #e4dec9;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.summaryTotal strong {
+  color: #e9d59b;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.summaryActions > button {
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.buttonIcon {
+  flex-shrink: 0;
+}
+
+.workshopField :global(input::placeholder),
+.workshopTextarea :global(textarea::placeholder),
+.placeholderSoft::placeholder {
+  color: rgba(211, 218, 211, 0.58);
+  font-style: italic;
+  opacity: 1;
 }
 
 .fieldBlock {
@@ -187,7 +619,8 @@
 }
 
 .submitButton {
-  min-width: 200px;
+  grid-column: 1 / -1;
+  min-width: 0;
 }
 
 .printArea {
@@ -371,6 +804,14 @@
 }
 
 @media (max-width: 1100px) {
+  .workshopColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workshopSummary {
+    position: static;
+  }
+
   .gridTwo,
   .summaryGrid {
     grid-template-columns: 1fr 1fr;
@@ -382,6 +823,43 @@
 }
 
 @media (max-width: 720px) {
+  .workshopHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspaceContext {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .workspaceMetaPill {
+    flex: 1 1 120px;
+    min-width: 0;
+  }
+
+  .workspaceSignals {
+    grid-template-columns: 1fr;
+  }
+
+  .stepperBar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stepPill {
+    min-width: 0;
+    padding-inline: 8px;
+    font-size: 12px;
+  }
+
+  .workshopSummary {
+    padding: 14px;
+  }
+
+  .summaryActions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .gridTwo,
   .summaryGrid,
   .receiptGrid,
@@ -391,6 +869,12 @@
   }
 
   .submitButton {
-    min-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .stepNavigation > button {
+    min-width: 0;
+    padding-inline: 10px;
   }
 }

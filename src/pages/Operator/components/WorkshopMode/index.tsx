@@ -1,5 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calculator,
+  CarFront,
+  CheckCheck,
+  Plus,
+  Printer,
+  Trash2,
+  Wrench,
+} from "lucide-react";
 import { Button, Checkbox, Select, TextField, Textarea } from "@/ui-kit";
 import { useTranslation } from "react-i18next";
 import { CountryPhoneInput } from "@/components/common/CountryPhoneInput";
@@ -1022,6 +1033,55 @@ export const WorkshopMode = ({
   const totalPrice = servicesPrice + productsPrice;
   const printedAt = useMemo(() => new Date().toLocaleString(), [hasCalculated]);
 
+  const workshopSteps = [
+    { key: "vehicle", label: t("operatorPage.workshop.workflow.vehicle") },
+    { key: "referral", label: t("operatorPage.workshop.workflow.referral") },
+    { key: "services", label: t("operatorPage.workshop.workflow.services") },
+    { key: "products", label: t("operatorPage.workshop.workflow.products") },
+    { key: "order", label: t("operatorPage.workshop.workflow.orderDetails") },
+  ] as const;
+
+  const [currentStep, setCurrentStep] = useState<number>(1);
+
+  const stepCompletion = {
+    1: Boolean(brandId && modelId && fuelTypeId && engineId && location && year),
+    2: true,
+    3: Boolean(selectedTemplate && selectedServiceLines.length > 0),
+    4: true,
+    5: Boolean(
+      vinCode.trim() &&
+        mileageKm.trim() &&
+        Number(mileageKm) > 0 &&
+        customerPhone.trim() &&
+        orderComment.trim(),
+    ),
+  } as const;
+
+  const gotoStep = (step: number) => {
+    if (step > 1 && !stepCompletion[1]) {
+      toast.error(t("operatorPage.workshop.error.requiredVehicleFields"));
+      return;
+    }
+
+    setCurrentStep(Math.min(workshopSteps.length, Math.max(1, step)));
+  };
+
+  const goToNextStep = () => {
+    if (currentStep === 1 && !stepCompletion[1]) {
+      toast.error(t("operatorPage.workshop.error.requiredVehicleFields"));
+      return;
+    }
+
+    if (currentStep === 3 && !stepCompletion[3]) {
+      toast.error(t("operatorPage.workshop.error.selectAtLeastOneService"));
+      return;
+    }
+
+    if (currentStep < workshopSteps.length) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
   const addProductLine = () => {
     const stockId = Number(selectedProductId || 0);
     if (!stockId) return;
@@ -1202,424 +1262,597 @@ export const WorkshopMode = ({
   };
 
   return (
-    <div className={styles.workshopCard}>
-      <h2 className={sharedStyles.cardTitle}>{t("operatorPage.workshop.title")}</h2>
-      <div className={sharedStyles.divider} />
+    <div className={styles.workshopWorkspace}>
+      <header className={styles.workshopHeading}>
+        <div className={styles.headingCopy}>
+          <span className={styles.workshopEyebrow}>{t("operatorPage.workshop.title")}</span>
+          <h2>{t("operatorPage.workshop.workflow.title")}</h2>
+        </div>
+        <div className={styles.workspaceContext}>
+          <div className={styles.workspaceMetaPill}>
+            <span>{t("operatorPage.workshop.receipt.cashRegister")}</span>
+            <strong>{cashRegisterName || "-"}</strong>
+          </div>
+          <div className={styles.workspaceMetaPill}>
+            <span>{t("operatorPage.workshop.receipt.operator")}</span>
+            <strong>{operatorName || "-"}</strong>
+          </div>
+        </div>
+      </header>
 
-      <div className={styles.fieldBlock}>
-        <div className={styles.gridTwo}>
-          <Select
-            label={t("operatorPage.workshop.fields.brand")}
-            value={String(brandId || "")}
-            onChange={(e) => {
-              setBrandId(Number(e.target.value) || 0);
-              setModelId(0);
-              setFuelTypeId(0);
-              setEngineId(0);
-              setLocation("");
-              setYear("");
-              setHasCalculated(false);
-            }}
-            disabled={vehicleTemplatesLoading}
-            searchable
-          >
-            <option value="">{t("common.select")}</option>
-            {brandOptions.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("operatorPage.workshop.fields.model")}
-            value={String(modelId || "")}
-            onChange={(e) => {
-              setModelId(Number(e.target.value) || 0);
-              setFuelTypeId(0);
-              setEngineId(0);
-              setLocation("");
-              setYear("");
-              setHasCalculated(false);
-            }}
-            disabled={vehicleTemplatesLoading || !brandId}
-            searchable
-          >
-            <option value="">{t("common.select")}</option>
-            {modelOptions.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("operatorPage.workshop.fields.fuelType")}
-            value={String(fuelTypeId || "")}
-            onChange={(e) => {
-              setFuelTypeId(Number(e.target.value) || 0);
-              setEngineId(0);
-              setLocation("");
-              setYear("");
-              setHasCalculated(false);
-            }}
-            disabled={vehicleTemplatesLoading || !brandId || !modelId}
-            searchable
-          >
-            <option value="">{t("common.select")}</option>
-            {fuelTypeOptions.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("operatorPage.workshop.fields.engine")}
-            value={String(engineId || "")}
-            onChange={(e) => {
-              setEngineId(Number(e.target.value) || 0);
-              setLocation("");
-              setYear("");
-              setHasCalculated(false);
-            }}
-            disabled={vehicleTemplatesLoading || !brandId || !modelId || !fuelTypeId}
-            searchable
-          >
-            <option value="">{t("common.select")}</option>
-            {engineOptions.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("operatorPage.workshop.fields.location")}
-            value={location}
-            onChange={(e) => {
-              setLocation(e.target.value);
-              setYear("");
-              setHasCalculated(false);
-            }}
-            disabled={
-              vehicleTemplatesLoading ||
-              !brandId ||
-              !modelId ||
-              !fuelTypeId ||
-              !engineId
-            }
-          >
-            <option value="">{t("common.select")}</option>
-            {locationOptions.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("operatorPage.workshop.fields.year")}
-            value={year}
-            onChange={(e) => {
-              setYear(e.target.value);
-              setHasCalculated(false);
-            }}
-            disabled={
-              vehicleTemplatesLoading ||
-              !brandId ||
-              !modelId ||
-              !fuelTypeId ||
-              !engineId ||
-              !location
-            }
-          >
-            <option value="">{t("common.select")}</option>
-            {yearOptions.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </Select>
+      <div className={styles.workspaceSignals}>
+        <div className={styles.miniStat}>
+          <span>{t("operatorPage.workshop.workflow.vehicle")}</span>
+          <strong>
+            {selectedTemplate
+              ? `${selectedTemplate.brandName} ${selectedTemplate.modelName}`
+              : t("operatorPage.workshop.workflow.vehicleNotSelected")}
+          </strong>
+        </div>
+        <div className={styles.miniStat}>
+          <span>{t("operatorPage.workshop.workflow.selectedServices", { count: selectedServiceLines.length })}</span>
+          <strong>{selectedServiceLines.length}</strong>
+        </div>
+        <div className={styles.miniStat}>
+          <span>{t("operatorPage.workshop.workflow.selectedProducts", { count: productLines.length })}</span>
+          <strong>{productLines.length}</strong>
         </div>
       </div>
 
-      <div className={styles.fieldBlock}>
-        <Select
-          label="Referral Person"
-          value={referralPersonId}
-          onChange={(e) => {
-            setReferralPersonId(e.target.value);
-            setHasCalculated(false);
-          }}
-          disabled={isReferralPersonsLoading}
-          searchable
-        >
-          <option value="">
-            {isReferralPersonsLoading
-              ? "Loading referral persons..."
-              : referralPersons.length
-                ? "Select referral person (optional)"
-                : "No active referral persons found"}
-          </option>
-          {referralPersons.map((person) => (
-            <option key={person.id} value={person.id}>
-              {person.name} ({person.code})
-            </option>
-          ))}
-        </Select>
-      </div>
+      <div className={styles.workshopColumns}>
+        <div className={styles.workshopMain}>
+          <div className={styles.stepperShell}>
+            <div className={styles.stepperBar}>
+              {workshopSteps.map((step, index) => {
+                const stepNumber = index + 1;
+                const isActive = currentStep === stepNumber;
+                const isDone = currentStep > stepNumber || Boolean(stepCompletion[stepNumber as keyof typeof stepCompletion]);
+                const isLocked = stepNumber > 1 && !stepCompletion[1];
 
-      <div className={styles.fieldBlock}>
-        {selectedTemplate && (renderedServiceLines.length > 0 || isProgrammingServicesLoading) && (
-          <div className={styles.servicesSelector}>
-            <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.fields.services")}</div>
-            {isSelectedTemplateProgramming && isProgrammingServicesLoading && (
-              <div className={styles.emptyProducts}>
-                {t("operatorPage.workshop.programming.loading")}
-              </div>
-            )}
-            <div className={styles.servicesList}>
-              {renderedServiceLines.map((line) => {
-                const serviceId = Number(line.serviceId || 0);
-                const checked = selectedServiceIds.includes(serviceId);
-                const assignedEmployee = assignedEmployeeByServiceId.get(serviceId) ?? null;
-                const onDutyForService = getOnDutyForLine(line);
                 return (
-                  <div key={serviceId} className={styles.serviceLine}>
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(value) => {
-                        setSelectedServiceIds((prev) => {
-                          if (value) {
-                            return prev.includes(serviceId) ? prev : [...prev, serviceId];
-                          }
-                          return prev.filter((id) => id !== serviceId);
-                        });
-                        setHasCalculated(false);
-                      }}
-                    />
-                    <div className={styles.serviceLineText}>
-                      <span>{line.serviceName || `#${serviceId}`}</span>
-                      <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
-                    </div>
-                    {checked && (
-                      <div className={styles.emptyProducts}>
-                        {isOnDutyLoading ? (
-                          t("operatorPage.workshop.onDuty.loading")
-                        ) : assignedEmployee ? (
-                          t("operatorPage.workshop.onDuty.assigned", {
-                            employee: assignedEmployee.fullName,
-                          })
-                        ) : onDutyForService.length ? (
-                          <div>
-                            {onDutyForService.map((emp, idx) => (
-                              <span key={emp.id}>
-                                {emp.fullName}
-                                {idx < onDutyForService.length - 1 ? ", " : ""}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          t("operatorPage.workshop.onDuty.none")
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    key={step.key}
+                    type="button"
+                    className={`${styles.stepPill} ${isActive ? styles.activeStep : ""} ${isDone ? styles.doneStep : ""} ${isLocked ? styles.lockedStep : ""}`}
+                    disabled={isLocked}
+                    onClick={() => gotoStep(stepNumber)}
+                  >
+                    <span className={styles.stepNumber}>{stepNumber}</span>
+                    <span>{step.label}</span>
+                  </button>
                 );
               })}
             </div>
           </div>
-        )}
 
-        <div className={styles.productPickerRow}>
-          {selectedCategoryBreadcrumb ? (
-            <div className={styles.categoryBreadcrumb}>
-              {selectedCategoryBreadcrumb}
-            </div>
-          ) : null}
-
-          {categorySelection.levels.map((options, levelIndex) => (
-            <Select
-              key={`category-level-${levelIndex}`}
-              label={
-                levelIndex === 0
-                  ? t("operatorPage.workshop.fields.parentCategory")
-                  : t("operatorPage.workshop.fields.categoryLevel", {
-                      level: levelIndex + 1,
-                    })
-              }
-              value={String(selectedCategoryPath[levelIndex] || "")}
-              onChange={(e) => {
-                const selectedId = Number(e.target.value) || 0;
-                setSelectedCategoryPath((prev) => {
-                  const next = prev.slice(0, levelIndex);
-                  if (selectedId > 0) {
-                    next[levelIndex] = selectedId;
-                  }
-                  return next;
-                });
-                setSelectedProductId("");
-              }}
-              disabled={
-                isProductsLoading ||
-                isCategoriesLoading ||
-                (levelIndex > 0 && !selectedCategoryPath[levelIndex - 1])
-              }
-              searchable
-            >
-              <option value="">{t("common.select")}</option>
-              {options.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Select>
-          ))}
-
-          <Select
-            label={t("operatorPage.workshop.fields.product")}
-            value={selectedProductId}
-            onChange={(e) => setSelectedProductId(e.target.value)}
-            disabled={
-              isProductsLoading ||
-              isCategoriesLoading ||
-              !categorySelection.isComplete
-            }
-            searchable
-          >
-            <option value="">{t("common.select")}</option>
-            {filteredProductOptions.map((item) => (
-              <option key={`${item.stockId}-${item.productId}`} value={item.stockId}>
-                {item.sku} / {item.code} ({item.salePrice})
-              </option>
-            ))}
-          </Select>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={addProductLine}
-            disabled={!selectedProductId}
-          >
-            {t("operatorPage.workshop.actions.addProduct")}
-          </Button>
-          {productLines.length === 0 ? (
-            <div className={styles.emptyProducts}>{t("operatorPage.workshop.emptyProducts")}</div>
-          ) : (
-            productLines.map((line) => (
-              <div key={line.shopStockId} className={styles.productLine}>
-                <div className={styles.productCode}>{line.code}</div>
-                <TextField
-                  type="number"
-                  value={String(line.quantity)}
-                  onChange={(e) => updateQuantity(line.shopStockId, e.target.value)}
-                  label={t("operatorPage.workshop.fields.quantity")}
-                />
-                <div className={styles.productPrice}>{line.unitPrice.toLocaleString()} AMD</div>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => removeLine(line.shopStockId)}
+          {currentStep === 1 && (
+            <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
+              <div className={styles.workshopStepHeader}>
+                <span className={styles.workshopStepNumber}>01</span>
+                <h3>{t("operatorPage.workshop.workflow.vehicle")}</h3>
+              </div>
+              <div className={`${styles.gridTwo} ${styles.vehicleFields}`}>
+                <Select
+                  label={t("operatorPage.workshop.fields.brand")}
+                  value={String(brandId || "")}
+                  onChange={(e) => {
+                    setBrandId(Number(e.target.value) || 0);
+                    setModelId(0);
+                    setFuelTypeId(0);
+                    setEngineId(0);
+                    setLocation("");
+                    setYear("");
+                    setHasCalculated(false);
+                  }}
+                  disabled={vehicleTemplatesLoading}
+                  searchable
                 >
-                  {t("common.remove")}
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+                  <option value="">{t("common.select")}</option>
+                  {brandOptions.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </Select>
 
-      <div className={styles.fieldBlock}>
-        <div className={styles.orderInfoBlock}>
-          <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.orderInfo.title")}</div>
-          <div className={styles.gridTwo}>
-            <TextField
-              label={t("operatorPage.workshop.fields.vinCode")}
-              value={vinCode}
-              onChange={(e) => setVinCode(e.target.value.toUpperCase())}
-              placeholder="WVWZZZ1JZXW000001"
-            />
-            <TextField
-              type="number"
-              label={t("operatorPage.workshop.fields.mileageKm")}
-              value={mileageKm}
-              onChange={(e) => setMileageKm(e.target.value)}
-              placeholder="150000"
-            />
-            <div>
-              <label className={sharedStyles.fieldLabel}>{t("operatorPage.workshop.fields.customerPhone")}</label>
-              <CountryPhoneInput
-                phone={customerPhone}
-                selectedCountry={selectedCountry}
-                onCountryChange={(c) => {
-                  setSelectedCountry(c);
-                  // reset phone local part when country changes
-                  setCustomerPhone("");
+                <Select
+                  label={t("operatorPage.workshop.fields.model")}
+                  value={String(modelId || "")}
+                  onChange={(e) => {
+                    setModelId(Number(e.target.value) || 0);
+                    setFuelTypeId(0);
+                    setEngineId(0);
+                    setLocation("");
+                    setYear("");
+                    setHasCalculated(false);
+                  }}
+                  disabled={vehicleTemplatesLoading || !brandId}
+                  searchable
+                >
+                  <option value="">{t("common.select")}</option>
+                  {modelOptions.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </Select>
+
+                <Select
+                  label={t("operatorPage.workshop.fields.fuelType")}
+                  value={String(fuelTypeId || "")}
+                  onChange={(e) => {
+                    setFuelTypeId(Number(e.target.value) || 0);
+                    setEngineId(0);
+                    setLocation("");
+                    setYear("");
+                    setHasCalculated(false);
+                  }}
+                  disabled={vehicleTemplatesLoading || !brandId || !modelId}
+                  searchable
+                >
+                  <option value="">{t("common.select")}</option>
+                  {fuelTypeOptions.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </Select>
+
+                <Select
+                  label={t("operatorPage.workshop.fields.engine")}
+                  value={String(engineId || "")}
+                  onChange={(e) => {
+                    setEngineId(Number(e.target.value) || 0);
+                    setLocation("");
+                    setYear("");
+                    setHasCalculated(false);
+                  }}
+                  disabled={vehicleTemplatesLoading || !brandId || !modelId || !fuelTypeId}
+                  searchable
+                >
+                  <option value="">{t("common.select")}</option>
+                  {engineOptions.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </Select>
+
+                <Select
+                  label={t("operatorPage.workshop.fields.location")}
+                  value={location}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    setYear("");
+                    setHasCalculated(false);
+                  }}
+                  disabled={
+                    vehicleTemplatesLoading ||
+                    !brandId ||
+                    !modelId ||
+                    !fuelTypeId ||
+                    !engineId
+                  }
+                >
+                  <option value="">{t("common.select")}</option>
+                  {locationOptions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </Select>
+
+                <Select
+                  label={t("operatorPage.workshop.fields.year")}
+                  value={year}
+                  onChange={(e) => {
+                    setYear(e.target.value);
+                    setHasCalculated(false);
+                  }}
+                  disabled={
+                    vehicleTemplatesLoading ||
+                    !brandId ||
+                    !modelId ||
+                    !fuelTypeId ||
+                    !engineId ||
+                    !location
+                  }
+                >
+                  <option value="">{t("common.select")}</option>
+                  {yearOptions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            </section>
+          )}
+
+          {currentStep === 2 && (
+            <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
+              <div className={styles.workshopStepHeader}>
+                <span className={styles.workshopStepNumber}>02</span>
+                <h3>{t("operatorPage.workshop.workflow.referral")}</h3>
+              </div>
+              <Select
+                label={t("operatorPage.workshop.fields.referralPerson")}
+                value={referralPersonId}
+                onChange={(e) => {
+                  setReferralPersonId(e.target.value);
+                  setHasCalculated(false);
                 }}
-                onPhoneChange={(full) => setCustomerPhone(full)}
-              />
+                disabled={isReferralPersonsLoading}
+                searchable
+              >
+                <option value="">
+                  {isReferralPersonsLoading
+                    ? t("operatorPage.workshop.states.loadingReferralPersons")
+                    : referralPersons.length
+                      ? t("operatorPage.workshop.states.selectReferralPerson")
+                      : t("operatorPage.workshop.states.noReferralPersons")}
+                </option>
+                {referralPersons.map((person) => (
+                  <option key={person.id} value={person.id}>
+                    {person.name} ({person.code})
+                  </option>
+                ))}
+              </Select>
+            </section>
+          )}
+
+          {(currentStep === 3 || currentStep === 4) && (
+            <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
+              <div className={styles.workshopStepHeader}>
+                <span className={styles.workshopStepNumber}>{currentStep === 3 ? "03" : "04"}</span>
+                <h3>
+                  {t(
+                    currentStep === 3
+                      ? "operatorPage.workshop.workflow.services"
+                      : "operatorPage.workshop.workflow.products",
+                  )}
+                </h3>
+              </div>
+              {currentStep === 3 && selectedTemplate && (renderedServiceLines.length > 0 || isProgrammingServicesLoading) && (
+                <div className={styles.servicesSelector}>
+                  <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.fields.services")}</div>
+                  {isSelectedTemplateProgramming && isProgrammingServicesLoading && (
+                    <div className={styles.emptyProducts}>
+                      {t("operatorPage.workshop.programming.loading")}
+                    </div>
+                  )}
+                  <div className={styles.servicesList}>
+                    {renderedServiceLines.map((line) => {
+                      const serviceId = Number(line.serviceId || 0);
+                      const checked = selectedServiceIds.includes(serviceId);
+                      const assignedEmployee = assignedEmployeeByServiceId.get(serviceId) ?? null;
+                      const onDutyForService = getOnDutyForLine(line);
+                      return (
+                        <div key={serviceId} className={styles.serviceLine}>
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(value) => {
+                              setSelectedServiceIds((prev) => {
+                                if (value) {
+                                  return prev.includes(serviceId) ? prev : [...prev, serviceId];
+                                }
+                                return prev.filter((id) => id !== serviceId);
+                              });
+                              setHasCalculated(false);
+                            }}
+                          />
+                          <div className={styles.serviceLineText}>
+                            <span>{line.serviceName || `#${serviceId}`}</span>
+                            <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
+                          </div>
+                          {checked && (
+                            <div className={styles.emptyProducts}>
+                              {isOnDutyLoading ? (
+                                t("operatorPage.workshop.onDuty.loading")
+                              ) : assignedEmployee ? (
+                                t("operatorPage.workshop.onDuty.assigned", {
+                                  employee: assignedEmployee.fullName,
+                                })
+                              ) : onDutyForService.length ? (
+                                <div>
+                                  {onDutyForService.map((emp, idx) => (
+                                    <span key={emp.id}>
+                                      {emp.fullName}
+                                      {idx < onDutyForService.length - 1 ? ", " : ""}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                t("operatorPage.workshop.onDuty.none")
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {currentStep === 3 && !selectedTemplate && (
+                <div className={styles.workshopEmptyState}>
+                  {t("operatorPage.workshop.states.selectVehicleBeforeServices")}
+                </div>
+              )}
+
+              {currentStep === 4 && <div className={styles.workshopProductSection}>
+                <div className={styles.workshopSubsectionHeader}>
+                  <h4>{t("operatorPage.workshop.workflow.products")}</h4>
+                  <span>{t("operatorPage.workshop.productCount", { count: productLines.length })}</span>
+                </div>
+                <div className={styles.productPickerRow}>
+                  {selectedCategoryBreadcrumb ? (
+                    <div className={styles.categoryBreadcrumb}>
+                      {selectedCategoryBreadcrumb}
+                    </div>
+                  ) : null}
+
+                  {categorySelection.levels.map((options, levelIndex) => (
+                    <Select
+                      key={`category-level-${levelIndex}`}
+                      label={
+                        levelIndex === 0
+                          ? t("operatorPage.workshop.fields.parentCategory")
+                          : t("operatorPage.workshop.fields.categoryLevel", {
+                              level: levelIndex + 1,
+                            })
+                      }
+                      value={String(selectedCategoryPath[levelIndex] || "")}
+                      onChange={(e) => {
+                        const selectedId = Number(e.target.value) || 0;
+                        setSelectedCategoryPath((prev) => {
+                          const next = prev.slice(0, levelIndex);
+                          if (selectedId > 0) {
+                            next[levelIndex] = selectedId;
+                          }
+                          return next;
+                        });
+                        setSelectedProductId("");
+                      }}
+                      disabled={
+                        isProductsLoading ||
+                        isCategoriesLoading ||
+                        (levelIndex > 0 && !selectedCategoryPath[levelIndex - 1])
+                      }
+                      searchable
+                    >
+                      <option value="">{t("common.select")}</option>
+                      {options.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </Select>
+                  ))}
+
+                  <Select
+                    label={t("operatorPage.workshop.fields.product")}
+                    value={selectedProductId}
+                    onChange={(e) => setSelectedProductId(e.target.value)}
+                    disabled={
+                      isProductsLoading ||
+                      isCategoriesLoading ||
+                      !categorySelection.isComplete
+                    }
+                    searchable
+                  >
+                    <option value="">{t("common.select")}</option>
+                    {filteredProductOptions.map((item) => (
+                      <option key={`${item.stockId}-${item.productId}`} value={item.stockId}>
+                        {item.sku} / {item.code} ({item.salePrice})
+                      </option>
+                    ))}
+                  </Select>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={addProductLine}
+                    disabled={!selectedProductId}
+                  >
+                    <span className={styles.buttonContent}>
+                      <Plus className={styles.buttonIcon} size={14} />
+                      {t("operatorPage.workshop.actions.addProduct")}
+                    </span>
+                  </Button>
+                  {productLines.length === 0 ? (
+                    <div className={styles.emptyProducts}>{t("operatorPage.workshop.emptyProducts")}</div>
+                  ) : (
+                    productLines.map((line) => (
+                      <div key={line.shopStockId} className={styles.productLine}>
+                        <div className={styles.productCode}>{line.code}</div>
+                        <TextField
+                          type="number"
+                          value={String(line.quantity)}
+                          onChange={(e) => updateQuantity(line.shopStockId, e.target.value)}
+                          label={t("operatorPage.workshop.fields.quantity")}
+                        />
+                        <div className={styles.productPrice}>{line.unitPrice.toLocaleString()} AMD</div>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => removeLine(line.shopStockId)}
+                        >
+                          <span className={styles.buttonContent}>
+                            <Trash2 className={styles.buttonIcon} size={14} />
+                            {t("common.remove")}
+                          </span>
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>}
+            </section>
+          )}
+
+          {currentStep === 5 && (
+            <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
+              <div className={styles.workshopStepHeader}>
+                <span className={styles.workshopStepNumber}>05</span>
+                <h3>{t("operatorPage.workshop.workflow.orderDetails")}</h3>
+              </div>
+              <div className={styles.orderInfoBlock}>
+                <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.orderInfo.title")}</div>
+                <div className={styles.gridTwo}>
+                  <TextField
+                    label={t("operatorPage.workshop.fields.vinCode")}
+                    value={vinCode}
+                    onChange={(e) => setVinCode(e.target.value.toUpperCase())}
+                    placeholder={t("operatorPage.workshop.placeholders.vinCode")}
+                    className={styles.workshopField}
+                    inputClassName={styles.placeholderSoft}
+                  />
+                  <TextField
+                    type="number"
+                    label={t("operatorPage.workshop.fields.mileageKm")}
+                    value={mileageKm}
+                    onChange={(e) => setMileageKm(e.target.value)}
+                    placeholder={t("operatorPage.workshop.placeholders.mileageKm")}
+                    className={styles.workshopField}
+                    inputClassName={styles.placeholderSoft}
+                  />
+                  <div>
+                    <label className={sharedStyles.fieldLabel}>{t("operatorPage.workshop.fields.customerPhone")}</label>
+                    <CountryPhoneInput
+                      phone={customerPhone}
+                      selectedCountry={selectedCountry}
+                      onCountryChange={(c) => {
+                        setSelectedCountry(c);
+                        setCustomerPhone("");
+                      }}
+                      onPhoneChange={(full) => setCustomerPhone(full)}
+                    />
+                  </div>
+                </div>
+                <Textarea
+                  label={t("operatorPage.workshop.commentLabel")}
+                  value={orderComment}
+                  onChange={(e) => setOrderComment(e.target.value)}
+                  placeholder={t("operatorPage.workshop.placeholders.comment")}
+                  rows={4}
+                  className={styles.workshopTextarea}
+                />
+              </div>
+            </section>
+          )}
+
+          <div className={styles.stepNavigation}>
+            <Button type="button" variant="secondary" onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))} disabled={currentStep === 1}>
+              <span className={styles.buttonContent}>
+                <ArrowLeft className={styles.buttonIcon} size={16} />
+              {t("common.back")}
+              </span>
+            </Button>
+            {currentStep < workshopSteps.length ? (
+              <Button type="button" variant="primary" className={styles.actionPrimary} onClick={goToNextStep}>
+                <span className={styles.buttonContent}>
+                {t("common.next")}
+                  <ArrowRight className={styles.buttonIcon} size={16} />
+                </span>
+              </Button>
+            ) : (
+              <Button type="button" variant="primary" className={styles.actionPrimary} onClick={handleCalculate}>
+                <span className={styles.buttonContent}>
+                  <Calculator className={styles.buttonIcon} size={16} />
+                  {t("operatorPage.workshop.actions.calculate")}
+                </span>
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <aside className={styles.workshopSummary}>
+          <div className={styles.summaryHeading}>
+            <div className={styles.summaryTitleWrap}>
+              <CarFront className={styles.summaryTitleIcon} size={16} />
+              <span>{t("operatorPage.workshop.workflow.summary")}</span>
+            </div>
+            {createdEstimate?.estimateNumber && (
+              <strong>{createdEstimate.estimateNumber}</strong>
+            )}
+          </div>
+          <div className={styles.summaryVehicle}>
+            <span>{t("operatorPage.workshop.workflow.vehicle")}</span>
+            <strong>
+              {selectedTemplate
+                ? `${selectedTemplate.brandName} ${selectedTemplate.modelName}`
+                : t("operatorPage.workshop.workflow.vehicleNotSelected")}
+            </strong>
+            {selectedTemplate && (
+              <small>{[selectedTemplate.year, selectedTemplate.location].filter(Boolean).join(" · ")}</small>
+            )}
+          </div>
+          <div className={styles.summaryCounts}>
+            <div>
+              <span>{t("operatorPage.workshop.workflow.selectedServices", { count: selectedServiceLines.length })}</span>
+              <strong>{servicesPrice.toLocaleString()} AMD</strong>
+            </div>
+            <div>
+              <span>{t("operatorPage.workshop.workflow.selectedProducts", { count: productLines.length })}</span>
+              <strong>{productsPrice.toLocaleString()} AMD</strong>
             </div>
           </div>
-          <Textarea
-            label={t("operatorPage.workshop.commentLabel")}
-            value={orderComment}
-            onChange={(e) => setOrderComment(e.target.value)}
-            placeholder={t("operatorPage.workshop.commentPlaceholder")}
-            rows={4}
-          />
-        </div>
-      </div>
-
-      <div ref={resultsRef} className={styles.summaryGrid}>
-        <div className={styles.summaryItem}>
-          <span>{t("operatorPage.workshop.sparePartsPrice")}</span>
-          <strong>{productsPrice.toLocaleString()} AMD</strong>
-        </div>
-        <div className={styles.summaryItem}>
-          <span>{t("operatorPage.workshop.totalAmount")}</span>
-          <strong>{totalPrice.toLocaleString()} AMD</strong>
-        </div>
-      </div>
-
-      {selectedServiceLines.length > 0 && (
-        <div className={styles.selectedServicesBreakdown}>
-          <div className={styles.selectedServicesTitle}>
-            {t("operatorPage.workshop.receipt.servicesSection")}
-          </div>
-          <div className={styles.selectedServicesList}>
-            {selectedServiceLines.map((line) => (
-              <div key={line.serviceId} className={styles.selectedServiceRow}>
-                <span>{line.serviceName || `#${line.serviceId}`}</span>
-                <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
+          {selectedServiceLines.length > 0 && (
+            <div className={styles.selectedServicesBreakdown}>
+              <div className={styles.selectedServicesTitle}>
+                {t("operatorPage.workshop.receipt.servicesSection")}
               </div>
-            ))}
+              <div className={styles.selectedServicesList}>
+                {selectedServiceLines.map((line) => (
+                  <div key={line.serviceId} className={styles.selectedServiceRow}>
+                    <span>{line.serviceName || `#${line.serviceId}`}</span>
+                    <strong>{getServiceLinePrice(line).toLocaleString()} AMD</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <div ref={resultsRef} className={styles.summaryTotal}>
+            <span>{t("operatorPage.workshop.totalAmount")}</span>
+            <strong>{totalPrice.toLocaleString()} AMD</strong>
           </div>
-        </div>
-      )}
-
-      <div className={styles.summaryRow}>
-        <Button
-          variant="secondary"
-          onClick={handleCalculate}
-          disabled={vehicleTemplatesLoading || isSubmitting}
-        >
-          {t("operatorPage.workshop.actions.calculate")}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={handlePrintCheck}
-          disabled={!createdEstimate?.estimateNumber}
-        >
-          {t("operatorPage.workshop.actions.printCheck")}
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleCreateOrder}
-          disabled={!hasCalculated || isSubmitting}
-          className={styles.submitButton}
-        >
-          {t("operatorPage.workshop.createOrder")}
-        </Button>
+          <div className={styles.summaryActions}>
+            <Button
+              variant="secondary"
+              onClick={handleCalculate}
+              disabled={vehicleTemplatesLoading || isSubmitting}
+            >
+              <span className={styles.buttonContent}>
+                <Calculator className={styles.buttonIcon} size={14} />
+                {t("operatorPage.workshop.actions.calculate")}
+              </span>
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateOrder}
+              disabled={!hasCalculated || isSubmitting}
+              className={`${styles.submitButton} ${styles.actionPrimary}`}
+            >
+              <span className={styles.buttonContent}>
+                {isSubmitting ? (
+                  <Wrench className={styles.buttonIcon} size={14} />
+                ) : (
+                  <CheckCheck className={styles.buttonIcon} size={14} />
+                )}
+                {isSubmitting ? t("common.saving") : t("operatorPage.workshop.createOrder")}
+              </span>
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handlePrintCheck}
+              disabled={!createdEstimate?.estimateNumber}
+            >
+              <span className={styles.buttonContent}>
+                <Printer className={styles.buttonIcon} size={14} />
+                {t("operatorPage.workshop.actions.printCheck")}
+              </span>
+            </Button>
+          </div>
+        </aside>
       </div>
 
       {hasCalculated && (

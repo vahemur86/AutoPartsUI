@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
 
 // ui-kit
 import { Button, ConfirmationModal, Tab } from "@/ui-kit";
@@ -33,7 +34,6 @@ import {
   Calculator,
   Factory,
   FlaskConical,
-  LoaderCircle,
   Pickaxe,
   ShoppingBag,
 } from "lucide-react";
@@ -304,6 +304,7 @@ export const OperatorPage = () => {
                       }
                     />
                     <FinalOffer
+                      isCatalyst
                       withRecalculate={
                         !isNonStandardCustomer &&
                         !selectors.operator.intake?.agentPayment?.isAgent
@@ -395,7 +396,7 @@ export const OperatorPage = () => {
             {!isIron && calculationLoaderVisible && (
               <div className={styles.calculationOverlay} role="status" aria-live="polite">
                 <div className={styles.calculationLoader}>
-                  <LoaderCircle className={styles.calculationSpinner} size={30} />
+                  <PrpServiceLoader ariaLabel={calculationLoaderTitle} />
                   <span className={styles.calculationLoaderTitle}>
                     {calculationLoaderTitle}
                   </span>

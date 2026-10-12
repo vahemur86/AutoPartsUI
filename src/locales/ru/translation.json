@@ -2506,6 +2506,18 @@
     },
     "workshop": {
       "title": "Услуги мастерской",
+      "workflow": {
+        "title": "Пошаговый прием заказа",
+        "vehicle": "Автомобиль",
+        "referral": "Реферал",
+        "services": "Услуги",
+        "products": "Товары",
+        "orderDetails": "Данные заказа",
+        "summary": "Итог",
+        "selectedServices": "Выбранные услуги ({{count}})",
+        "selectedProducts": "Выбранные товары ({{count}})",
+        "vehicleNotSelected": "Автомобиль не выбран"
+      },
       "fields": {
         "brand": "Марка",
         "model": "Модель",
@@ -2514,6 +2526,7 @@
         "location": "Локация",
         "year": "Год",
         "services": "Услуги",
+        "referralPerson": "Рекомендатель",
         "parentCategory": "Категория",
         "childCategory": "Подкатегория",
         "categoryLevel": "Уровень категории {{level}}",
@@ -2525,6 +2538,18 @@
       },
       "orderInfo": {
         "title": "Данные заказа"
+      },
+      "states": {
+        "loadingReferralPersons": "Загружаем рекомендателей...",
+        "selectReferralPerson": "Выберите рекомендателя",
+        "noReferralPersons": "Рекомендатели не найдены",
+        "selectVehicleBeforeServices": "Сначала укажите автомобиль, затем выберите услуги."
+      },
+      "productCount": "Товаров: {{count}}",
+      "placeholders": {
+        "vinCode": "напр. WVWZZZ1JZXW000001",
+        "mileageKm": "напр. 150000",
+        "comment": "Добавьте краткие заметки..."
       },
       "actions": {
         "addProduct": "Добавить товар",
@@ -3121,7 +3146,10 @@
       "passwordRequired": "Требуется пароль",
       "loggingIn": "Вход в систему...",
       "submit": "Войти",
-      "welcomeBack": "С возвращением!"
+      "welcomeBack": "С возвращением!",
+      "redirectEyebrow": "Доступ подтверждён",
+      "redirectTitle": "Готовим ваше рабочее пространство",
+      "redirectMessage": "Вход выполнен. Сейчас откроем рабочую страницу, подходящую вашей роли."
     }
   },
   "OTP": {

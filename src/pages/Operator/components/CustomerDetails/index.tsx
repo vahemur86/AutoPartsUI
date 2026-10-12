@@ -368,6 +368,7 @@ export const CustomerDetails = ({
               variant="primary"
               size="small"
               fullWidth
+              className={sharedStyles.catalystPrimaryAction}
               onClick={handleAccept}
               disabled={
                 isGlobalLoading || (!intake && !isIronTab) || !hasSearched

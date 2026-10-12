@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -44,6 +45,17 @@ const FALLBACK_LANGUAGES = [
   { code: "am", name: "Հայերեն" },
 ];
 
+const getLoginRedirectPath = (role: string) => {
+  const userRole = role.toLowerCase();
+  return userRole === "operator"
+    ? "/operator"
+    : userRole === "cashier"
+      ? "/shop-operator"
+      : userRole === "programmer"
+        ? "/programmer"
+        : "/finance-reports/dashboard";
+};
+
 export const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -65,6 +77,8 @@ export const Login = () => {
     mapApiCodeToI18nCode(i18n.resolvedLanguage || i18n.language),
   );
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const loginRedirectPending = useRef(false);
   const languageControlRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -132,17 +146,8 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      const userRole = user.role.toLowerCase();
-      const targetPath =
-        userRole === "operator"
-          ? "/operator"
-          : userRole === "cashier"
-            ? "/shop-operator"
-            : userRole === "programmer"
-              ? "/programmer"
-              : "/finance-reports/dashboard";
-      navigate(targetPath, { replace: true });
+    if (isAuthenticated && user && !loginRedirectPending.current) {
+      navigate(getLoginRedirectPath(user.role), { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -171,24 +176,17 @@ export const Login = () => {
 
     if (!isFormValid) return;
 
+    loginRedirectPending.current = true;
     const resultAction = await dispatch(login(credentials));
 
     if (login.fulfilled.match(resultAction)) {
-      // Use the same casing as the API returns
-      const userRole = resultAction.payload.role.toLowerCase();
-
+      setIsRedirecting(true);
       await initializeDefaultLanguage();
       toast.success(t("auth.login.welcomeBack"));
-
-      if (userRole === "cashier") {
-        navigate("/shop-operator", { replace: true });
-      } else if (userRole === "operator") {
-        navigate("/operator", { replace: true });
-      } else if (userRole === "programmer") {
-        navigate("/programmer", { replace: true });
-      } else {
-        navigate("/finance-reports/dashboard", { replace: true });
-      }
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 5000));
+      navigate(getLoginRedirectPath(resultAction.payload.role), { replace: true });
+    } else {
+      loginRedirectPending.current = false;
     }
   };
 
@@ -203,6 +201,25 @@ export const Login = () => {
       <div className={styles.gridBackground} />
       <div className={styles.overlay} />
 
+      {isRedirecting ? (
+        <main className={styles.redirectStage} role="status" aria-live="polite">
+          <section className={styles.redirectCard}>
+            <span className={styles.redirectEyebrow}>
+              {t("auth.login.redirectEyebrow")}
+            </span>
+            <PrpServiceLoader ariaLabel={t("auth.login.redirectTitle")} />
+            <h2 className={styles.redirectTitle}>
+              {t("auth.login.redirectTitle")}
+            </h2>
+            <p className={styles.redirectMessage}>
+              {t("auth.login.redirectMessage")}
+            </p>
+            <div className={styles.redirectTrack} aria-hidden="true">
+              <span />
+            </div>
+          </section>
+        </main>
+      ) : (
       <div className={styles.content}>
         <div className={styles.languageRow}>
           <div className={styles.languageControl} ref={languageControlRef}>
@@ -356,6 +373,7 @@ export const Login = () => {
           </Button>
         </form>
       </div>
+      )}
     </div>
   );
 };

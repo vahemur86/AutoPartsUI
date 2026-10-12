@@ -105,6 +105,7 @@ export const PricingBreakdown = ({
         <div style={{ marginTop: "8px" }}>
           <Button
             variant="primary"
+            className={sharedStyles.catalystPrimaryAction}
             onClick={onSubmit}
             disabled={isLoading || isDisabled}
             style={{ width: "100%" }}
