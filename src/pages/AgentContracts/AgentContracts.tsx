@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Plus } from "lucide-react";
+import { ChevronDown, CircleDollarSign, Eye, Plus, Save, X } from "lucide-react";
 import { SectionHeader } from "@/components/common";
 import {
   Button,
@@ -36,6 +36,9 @@ import {
   normalizeAgentStatus,
 } from "@/utils/agentStatus";
 import styles from "./AgentContracts.module.css";
+import { AgentActionButton } from "@/pages/Agents/AgentActionButton";
+import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
+import { AgentTableDetails } from "@/pages/Agents/AgentTableDetails";
 
 const statuses: AgentContractStatus[] = [
   "Draft",
@@ -156,31 +159,33 @@ export const AgentContractsList = () => {
         cell: ({ row }: any) => money(row.original.totalAdvancedAmount),
       },
       {
-        id: "repaid",
-        header: t("agentContracts.fields.repaid"),
-        cell: ({ row }: any) => money(row.original.totalRepaidAmount),
-      },
-      {
         id: "outstanding",
         header: t("agentContracts.fields.outstanding"),
         cell: ({ row }: any) => money(row.original.outstandingAmount),
       },
       {
-        id: "created",
-        header: t("agentContracts.fields.createdAt"),
-        cell: ({ row }: any) => datetime(row.original.createdAt),
-      },
-      {
         id: "actions",
         header: t("agentContracts.fields.actions"),
         cell: ({ row }: any) => (
-          <Button
-            size="small"
-            variant="secondary"
-             onClick={() => navigate(`/agents/cash-powder/contracts/${row.original.id}`)}
-          >
-            {t("agentContracts.actions.view")}
-          </Button>
+          <div className={styles.headerActions}>
+            <AgentIconButton
+              size="medium"
+              tone="secondary"
+              icon={<ChevronDown size={16} />}
+              ariaLabel={`${t("common.details")} ${row.original.contractNumber}`}
+              title={t("common.details")}
+              aria-expanded={row.getIsExpanded()}
+              onClick={row.getToggleExpandedHandler()}
+            />
+            <AgentIconButton
+              size="medium"
+              tone="primary"
+              icon={<Eye size={16} />}
+              ariaLabel={`${t("agentContracts.actions.view")} ${row.original.contractNumber}`}
+              title={t("agentContracts.actions.view")}
+              onClick={() => navigate(`/agents/cash-powder/contracts/${row.original.id}`)}
+            />
+          </div>
         ),
       },
     ],
@@ -192,9 +197,9 @@ export const AgentContractsList = () => {
       <SectionHeader
         title={t("agentContracts.title")}
         actions={
-          <Button onClick={() => navigate("/agents/cash-powder/contracts/create")}>
-            <Plus size={14} /> {t("agentContracts.actions.createContract")}
-          </Button>
+          <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate("/agents/cash-powder/contracts/create")}>
+            {t("agentContracts.actions.createContract")}
+          </AgentActionButton>
         }
       />
       <div className={styles.filters}>
@@ -258,6 +263,18 @@ export const AgentContractsList = () => {
         pageCount={totalPages}
         pageIndex={page - 1}
         onPaginationChange={(index) => setFilter("page", String(index + 1))}
+        fitContainer
+        renderSubComponent={({ row }) => (
+          <AgentTableDetails
+            fields={[
+              { label: t("agentContracts.fields.repaid"), value: money(row.original.totalRepaidAmount) },
+              { label: t("agentContracts.fields.createdAt"), value: datetime(row.original.createdAt) },
+              { label: t("agentContracts.terms.ruleVersion"), value: row.original.repaymentTerms?.ruleVersion ?? "—" },
+              { label: t("agentContracts.terms.repaymentPeriod"), value: row.original.repaymentTerms?.defaultRepaymentPeriodDays ?? "—" },
+              { label: t("agentContracts.terms.maximumExtensions"), value: row.original.repaymentTerms?.maximumExtensions ?? "—" },
+            ]}
+          />
+        )}
         noResultsText={t("agentContracts.list.empty")}
         loadingText={t("agentContracts.list.loading")}
       />
@@ -466,14 +483,14 @@ export const CreateAgentContract = ({ productCreditMode = false }: { productCred
           selected && <Terms terms={selected} title={t("agentContracts.form.termsPreview")} />
         )}
         <div className={`${styles.actions} ${productCreditMode ? styles.productCreditActions : ""}`}>
-          <Button variant="secondary" onClick={() => navigate(-1)}>
+          <AgentActionButton tone="secondary" icon={<X size={16} />} onClick={() => navigate(-1)}>
             {t("common.cancel")}
-          </Button>
-          <Button onClick={submit} disabled={submitting || Boolean(contractId && !existingContract)}>
+          </AgentActionButton>
+          <AgentActionButton icon={contractId ? <Save size={16} /> : <Plus size={16} />} onClick={submit} disabled={submitting || Boolean(contractId && !existingContract)}>
             {submitting
               ? t(contractId ? "agentContracts.form.saving" : "agentContracts.form.creating")
               : t(contractId ? "agentContracts.actions.saveChanges" : "agentContracts.actions.createContract")}
-          </Button>
+          </AgentActionButton>
         </div>
       </div>
       )}
@@ -812,12 +829,13 @@ export const AgentContractDetails = () => {
               {t("agentContracts.actions.deliveryHistory")}
             </Button>
             {isDraft(contract.status) && (
-              <Button onClick={() => setAdvanceOpen(true)}>
-                <Plus size={14} /> {t("agentContracts.actions.createAdvance")}
-              </Button>
+              <AgentActionButton icon={<Plus size={16} />} onClick={() => setAdvanceOpen(true)}>
+                {t("agentContracts.actions.createAdvance")}
+              </AgentActionButton>
             )}
             {isDraft(contract.status) && (
               <Button variant="danger" onClick={() => setCancelOpen(true)}>
+                <X size={16} aria-hidden="true" />
                 {t("agentContracts.actions.cancelContract")}
               </Button>
             )}
@@ -942,6 +960,7 @@ export const AgentContractDetails = () => {
               },
             ]}
             data={fundingRows as any}
+            fitContainer
             noResultsText={t("agentContracts.details.noCapitalFundingRows")}
           />
         ) : (
@@ -966,9 +985,9 @@ export const AgentContractDetails = () => {
         <h2>{t("agentContracts.details.advanceFunding")}</h2>
         {isDraft(contract.status) && (
           <div style={{ marginBottom: 12 }}>
-            <Button onClick={() => setAdvanceOpen(true)}>
-              <Plus size={14} /> {t("agentContracts.actions.createAdvance")}
-            </Button>
+            <AgentActionButton icon={<Plus size={16} />} onClick={() => setAdvanceOpen(true)}>
+              {t("agentContracts.actions.createAdvance")}
+            </AgentActionButton>
           </div>
         )}
         {cashAdvances.length ? (
@@ -997,30 +1016,16 @@ export const AgentContractDetails = () => {
                 header: t("agentContracts.fields.actions"),
                 cell: ({ row }: any) => (
                   <div className={styles.inlineActions}>
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      onClick={() =>
-                        navigate(`/agents/cash-powder/advances/${row.original.id}`)
-                      }
-                    >
-                      {t("agentContracts.actions.view")}
-                    </Button>
+                    <AgentIconButton size="medium" tone="primary" icon={<Eye size={16} />} ariaLabel={`${t("agentContracts.actions.view")} ${row.original.advanceNumber}`} title={t("agentContracts.actions.view")} onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)} />
                     {isDraftAgentStatus(row.original.status) && (
-                      <Button
-                        size="small"
-                        onClick={() =>
-                          navigate(`/agents/cash-powder/advances/${row.original.id}`)
-                        }
-                      >
-                        {t("agentContracts.actions.addAllocation")}
-                      </Button>
+                      <AgentIconButton size="medium" tone="secondary" icon={<CircleDollarSign size={16} />} ariaLabel={`${t("agentContracts.actions.addAllocation")} ${row.original.advanceNumber}`} title={t("agentContracts.actions.addAllocation")} onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)} />
                     )}
                   </div>
                 ),
               },
             ]}
             data={cashAdvances}
+            fitContainer
             noResultsText={t("agentContracts.details.noAdvances")}
           />
         ) : (
@@ -1036,6 +1041,7 @@ export const AgentContractDetails = () => {
           <DataTable
             columns={deliveryColumns as any}
             data={deliveries}
+            fitContainer
             noResultsText={t("agentContracts.details.noConfirmedPowderDeliveries")}
           />
         ) : (
@@ -1084,6 +1090,11 @@ export const AgentContractDetails = () => {
         title={t("agentContracts.actions.createAdvance")}
         description={t("agentContracts.details.advanceDescription")}
         confirmText={t("agentContracts.actions.createAdvance")}
+        confirmIcon={<Plus size={16} />}
+        cancelIcon={<X size={16} />}
+        confirmVariant="primary"
+        confirmClassName={styles.modalPrimaryButton}
+        cancelClassName={styles.modalCancelButton}
         confirmLoading={advanceSaving}
         onConfirm={createAdvance}
       >
@@ -1115,6 +1126,9 @@ export const AgentContractDetails = () => {
         title={t("agentContracts.actions.cancelContract")}
         description={t("agentContracts.details.cancelDescription")}
         confirmText={t("agentContracts.actions.cancelContract")}
+        confirmIcon={<X size={16} />}
+        cancelIcon={<X size={16} />}
+        cancelClassName={styles.modalCancelButton}
         onConfirm={cancel}
       />
     </div>
@@ -1282,6 +1296,7 @@ export const AgentAdvancesList = () => {
         pageCount={Math.max(1, Math.ceil(total / pageSize))}
         pageIndex={page - 1}
         onPaginationChange={(index) => setFilter("page", String(index + 1))}
+        fitContainer
         noResultsText="No advances found"
         loadingText="Loading advances..."
       />
@@ -1481,6 +1496,7 @@ export const AgentAdvanceDetails = () => {
         <DataTable
           columns={columns as any}
           data={advance.allocations ?? []}
+          fitContainer
           noResultsText="No allocations yet"
         />
       </section>

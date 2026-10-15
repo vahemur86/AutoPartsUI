@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Pencil, Plus, Power } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button } from "@/ui-kit";
 import { agentsService } from "@/services/agents";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import { getAgentTypeIcon, getAgentTypeColor } from "@/utils/agentTypeIcons";
 import type { AgentTypeDto } from "@/types/agents";
 import styles from "./Agents.module.css";
+import { AgentActionButton, AgentIconButton } from "./AgentActionButton";
 
 export const AgentTypes = () => {
   const { t } = useTranslation();
@@ -65,7 +66,9 @@ export const AgentTypes = () => {
       <SectionHeader title={t("agentTypes.title")} />
 
       <div className={styles.listHeader}>
-        <Button onClick={() => navigate("/agents/types/new")}>{t("agentTypes.actions.create")}</Button>
+        <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate("/agents/types/new")}>
+          {t("agentTypes.actions.create")}
+        </AgentActionButton>
       </div>
 
       {types.length === 0 ? (
@@ -85,40 +88,47 @@ export const AgentTypes = () => {
             const iconColor = getAgentTypeColor(type.code);
             return (
               <div key={type.id} className={styles.tableRow}>
-                <div className={styles.agentTypeWithIcon}>
+                <div className={styles.agentTypeWithIcon} data-label={t("agentTypes.fields.code")}>
                   <IconComponent size={16} style={{ color: iconColor }} />
                   <span>{type.code}</span>
                 </div>
-                <div>{type.name}</div>
-                <div>{type.priority}</div>
-                <div>{type.isSystem ? t("common.yes") : t("common.no")}</div>
-                <div>
+                <div data-label={t("agentTypes.fields.name")}>{type.name}</div>
+                <div data-label={t("agentTypes.fields.priority")}>{type.priority}</div>
+                <div data-label={t("agentTypes.fields.system")}>{type.isSystem ? t("common.yes") : t("common.no")}</div>
+                <div data-label={t("agentTypes.fields.active")}>
                   <span className={type.isActive ? styles.badgeActive : styles.badgeInactive}>
                     {type.isActive ? t("common.active") : t("common.inactive")}
                   </span>
                 </div>
-                <div className={styles.actions}>
-                  <Button
-                    variant="secondary"
-                    size="small"
+                <div className={styles.actions} data-label={t("common.actions")}>
+                  <AgentIconButton
+                    size="medium"
+                    tone="secondary"
+                    icon={<Pencil size={16} />}
+                    ariaLabel={`${t("actions.edit")} ${type.code}`}
+                    title={t("actions.edit")}
                     onClick={() => navigate(`/agents/types/${type.id}`)}
-                  >
-                    {t("actions.edit")}
-                  </Button>
+                  />
                   {type.code !== "NEW" && (
-                    <Button
-                      variant={type.isActive ? "danger" : "primary"}
-                      size="small"
+                    <AgentIconButton
+                      size="medium"
+                      tone={type.isActive ? "danger" : "primary"}
+                      icon={<Power size={16} />}
+                      ariaLabel={`${t(type.isActive ? "actions.deactivate" : "actions.activate")} ${type.code}`}
+                      title={t(type.isActive ? "actions.deactivate" : "actions.activate")}
                       onClick={() => handleToggleStatus(type.id, type.isActive)}
                       disabled={mutatingId === type.id}
-                    >
-                      {type.isActive ? t("actions.deactivate") : t("actions.activate")}
-                    </Button>
+                    />
                   )}
                   {type.code === "NEW" && (
-                    <Button variant="secondary" size="small" disabled title={t("agentTypes.messages.newCannotDeactivate")}>
-                      {t("actions.deactivate")}
-                    </Button>
+                    <AgentIconButton
+                      size="medium"
+                      tone="secondary"
+                      icon={<Power size={16} />}
+                      ariaLabel={t("agentTypes.messages.newCannotDeactivate")}
+                      title={t("agentTypes.messages.newCannotDeactivate")}
+                      disabled
+                    />
                   )}
                 </div>
               </div>

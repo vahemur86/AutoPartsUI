@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Plus, Save, X } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button, TextField, Textarea } from "@/ui-kit";
+import { TextField, Textarea } from "@/ui-kit";
+import { AgentActionButton } from "./AgentActionButton";
 import { agentsService } from "@/services/agents";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentTypeDto, AgentTypeRequest } from "@/types/agents";
@@ -156,12 +158,12 @@ export const CreateEditAgentType = () => {
         </div>
 
         <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => navigate("/agents/types")}>
+          <AgentActionButton tone="secondary" icon={<X size={16} />} onClick={() => navigate("/agents/types")}>
             {t("common.cancel")}
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          </AgentActionButton>
+          <AgentActionButton icon={id ? <Save size={16} /> : <Plus size={16} />} onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? t("common.saving") : t("common.save")}
-          </Button>
+          </AgentActionButton>
         </div>
       </div>
     </div>

@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Archive, UserRound } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button, TextField } from "@/ui-kit";
+import { TextField } from "@/ui-kit";
+import { AgentIconButton } from "./AgentActionButton";
 import { agentsService } from "@/services/agents";
 import { fundingAnalyticsService } from "@/services/fundingAnalytics";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
@@ -103,12 +105,8 @@ const AgentFinancialSummary = () => {
         goBack
         actions={
           <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${id}`)}>
-              {t("agentFinancialSummary.viewAgent")}
-            </Button>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${id}/powder-deliveries`)}>
-              {t("agentFinancialSummary.deliveries")}
-            </Button>
+            <AgentIconButton size="medium" tone="secondary" icon={<UserRound size={16} />} ariaLabel={t("agentFinancialSummary.viewAgent")} title={t("agentFinancialSummary.viewAgent")} onClick={() => navigate(`/agents/${id}`)} />
+            <AgentIconButton size="medium" tone="secondary" icon={<Archive size={16} />} ariaLabel={t("agentFinancialSummary.deliveries")} title={t("agentFinancialSummary.deliveries")} onClick={() => navigate(`/agents/${id}/powder-deliveries`)} />
           </div>
         }
       />

@@ -1,0 +1,85 @@
+.actionButton {
+  min-height: 38px;
+  gap: 8px;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid #f1e2b8;
+  outline-offset: 2px;
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton.primary {
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  background: #c4a96a;
+  color: #111713;
+}
+
+.actionButton.primary:hover:not(:disabled) {
+  background: #d2bf8a;
+  transform: translateY(-1px);
+}
+
+.actionButton.secondary {
+  border: 1px solid rgba(196, 169, 106, 0.3);
+  background: rgba(196, 169, 106, 0.07);
+  color: #e8e3d6;
+}
+
+.actionButton.secondary:hover:not(:disabled) {
+  border-color: rgba(196, 169, 106, 0.58);
+  background: rgba(196, 169, 106, 0.14);
+}
+
+.iconButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  box-shadow: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.iconButton.primary {
+  border-color: rgba(232, 210, 151, 0.72);
+  background: #c4a96a;
+  color: #111713;
+}
+
+.iconButton.primary:hover:not(:disabled) {
+  background: #d2bf8a;
+}
+
+.iconButton.secondary {
+  border-color: rgba(196, 169, 106, 0.3);
+  background: rgba(196, 169, 106, 0.07);
+  color: #e8e3d6;
+}
+
+.iconButton.secondary:hover:not(:disabled) {
+  border-color: rgba(196, 169, 106, 0.58);
+  background: rgba(196, 169, 106, 0.14);
+}
+
+.iconButton.danger {
+  border-color: rgba(248, 113, 113, 0.32);
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+}
+
+.iconButton.danger:hover:not(:disabled) {
+  border-color: rgba(248, 113, 113, 0.58);
+  background: rgba(248, 113, 113, 0.18);
+}
+
+.iconButton:focus-visible {
+  outline: 2px solid #f1e2b8;
+  outline-offset: 2px;
+}

@@ -1,0 +1,27 @@
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 8px 20px;
+  margin: 0;
+  padding: 14px 4px 4px;
+  border-top: 1px solid rgba(196, 169, 106, 0.18);
+}
+
+.detail {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.detail dt {
+  color: #aeb5ab;
+  font-size: 11px;
+}
+
+.detail dd {
+  margin: 0;
+  color: #f1eee4;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}

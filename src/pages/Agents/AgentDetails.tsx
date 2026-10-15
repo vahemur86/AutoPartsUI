@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Ban, Layers, Pause, Pencil, Power } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
 import { Button, DataTable, ConfirmationModal } from "@/ui-kit";
+import { AgentIconButton } from "./AgentActionButton";
 import { agentsService } from "@/services/agents";
 import { agentContractsService } from "@/services/agentContracts";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
@@ -248,32 +250,27 @@ export const AgentDetails = () => {
       </div>
 
       <div className={styles.actionRow}>
-        <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/edit`)}>
-          {t("common.edit")}
-        </Button>
+        <AgentIconButton
+          size="medium"
+          tone="secondary"
+          icon={<Pencil size={16} />}
+          ariaLabel={`${t("common.edit")} ${agent.code}`}
+          title={t("common.edit")}
+          onClick={() => navigate(`/agents/${agent.id}/edit`)}
+        />
         {allowedNext.includes(AgentStatus.Active) && (
-          <Button variant="primary" size="small" onClick={() => handleStatusChange(AgentStatus.Active)} disabled={isMutating}>
-            {t("agents.actions.activate")}
-          </Button>
+          <AgentIconButton size="medium" tone="primary" icon={<Power size={16} />} ariaLabel={t("agents.actions.activate")} title={t("agents.actions.activate")} onClick={() => handleStatusChange(AgentStatus.Active)} disabled={isMutating} />
         )}
         {allowedNext.includes(AgentStatus.Inactive) && (
-          <Button variant="secondary" size="small" onClick={() => handleStatusChange(AgentStatus.Inactive)} disabled={isMutating}>
-            {t("agents.actions.deactivate")}
-          </Button>
+          <AgentIconButton size="medium" tone="danger" icon={<Power size={16} />} ariaLabel={t("agents.actions.deactivate")} title={t("agents.actions.deactivate")} onClick={() => handleStatusChange(AgentStatus.Inactive)} disabled={isMutating} />
         )}
         {allowedNext.includes(AgentStatus.Suspended) && (
-          <Button variant="secondary" size="small" onClick={() => handleStatusChange(AgentStatus.Suspended)} disabled={isMutating}>
-            {t("agents.actions.suspend")}
-          </Button>
+          <AgentIconButton size="medium" tone="secondary" icon={<Pause size={16} />} ariaLabel={t("agents.actions.suspend")} title={t("agents.actions.suspend")} onClick={() => handleStatusChange(AgentStatus.Suspended)} disabled={isMutating} />
         )}
         {allowedNext.includes(AgentStatus.Blocked) && (
-          <Button variant="danger" size="small" onClick={() => handleStatusChange(AgentStatus.Blocked)} disabled={isMutating}>
-            {t("agents.actions.block")}
-          </Button>
+          <AgentIconButton size="medium" tone="danger" icon={<Ban size={16} />} ariaLabel={t("agents.actions.block")} title={t("agents.actions.block")} onClick={() => handleStatusChange(AgentStatus.Blocked)} disabled={isMutating} />
         )}
-        <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${agent.id}/classify`)}>
-          {t("agents.actions.classify")}
-        </Button>
+        <AgentIconButton size="medium" tone="secondary" icon={<Layers size={16} />} ariaLabel={t("agents.actions.classify")} title={t("agents.actions.classify")} onClick={() => navigate(`/agents/${agent.id}/classify`)} />
       </div>
 
       <nav className={styles.detailTabs} aria-label={t("agents.details.financialNavigation")}>
@@ -318,7 +315,7 @@ export const AgentDetails = () => {
 
         <div className={styles.infoCard}>
           <h3>{t("agents.history.title")}</h3>
-          <DataTable columns={historyColumns as any} data={history} isLoading={isLoading} noResultsText={t("agents.history.empty")} loadingText={t("agents.loading")} />
+          <DataTable columns={historyColumns as any} data={history} isLoading={isLoading} fitContainer noResultsText={t("agents.history.empty")} loadingText={t("agents.loading")} />
         </div>
       </div>}
 
@@ -405,6 +402,7 @@ export const AgentDetails = () => {
             columns={productDebtPaymentColumns as any}
             data={productDebtPayments}
             isLoading={isLoading}
+            fitContainer
             noResultsText={t("agents.productCredit.noPayments")}
             loadingText={t("agents.loading")}
           />

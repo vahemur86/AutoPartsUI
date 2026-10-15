@@ -9,7 +9,7 @@ import {
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import styles from "./ConfirmationModal.module.css";
-import { Button } from "../Button";
+import { Button, type ButtonVariant } from "../Button";
 import { IconButton } from "../IconButton";
 import { useIsMobile } from "@/hooks/isMobile";
 
@@ -24,6 +24,9 @@ export interface ConfirmationModalProps {
   cancelText?: string;
   confirmIcon?: ReactNode;
   cancelIcon?: ReactNode;
+  confirmVariant?: ButtonVariant;
+  confirmClassName?: string;
+  cancelClassName?: string;
 
   onConfirm: () => void;
   onCancel?: () => void;
@@ -45,6 +48,9 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   cancelText,
   confirmIcon,
   cancelIcon,
+  confirmVariant = "danger",
+  confirmClassName = "",
+  cancelClassName = "",
   onConfirm,
   onCancel,
   confirmDisabled = false,
@@ -149,6 +155,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
         <footer className={styles.footer}>
           <Button
             variant="secondary"
+            className={cancelClassName}
             onClick={handleCancelClick}
             disabled={confirmLoading}
           >
@@ -157,7 +164,8 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
           </Button>
 
           <Button
-            variant="danger"
+            variant={confirmVariant}
+            className={confirmClassName}
             onClick={handleConfirm}
             disabled={confirmDisabled || confirmLoading}
           >

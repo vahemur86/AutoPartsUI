@@ -20,6 +20,23 @@
   gap: 14px;
 }
 
+.primaryKpis {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.additionalMetrics {
+  display: grid;
+  gap: 14px;
+}
+
+.additionalMetrics summary {
+  width: fit-content;
+  color: #d7c38b;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .kpiCard {
   position: relative;
   overflow: hidden;
@@ -82,10 +99,23 @@
   box-shadow: 0 22px 44px rgba(0, 0, 0, 0.16);
 }
 
+.rowActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chevronExpanded {
+  transform: rotate(180deg);
+}
+
 .detailPanel {
   display: grid;
   gap: 20px;
-  width: min(1200px, calc(100vw - 72px));
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 24px;
   background: rgba(10, 13, 17, 0.97);
 }
@@ -211,14 +241,16 @@
   }
 
   .detailPanel {
-    width: min(100vw - 28px, 1200px);
     padding: 18px 14px;
   }
 }
 
 @media (max-width: 640px) {
-  .filterBar,
   .kpiGrid {
     grid-template-columns: 1fr;
+  }
+
+  .primaryKpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

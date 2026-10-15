@@ -5,16 +5,24 @@ import { toast } from "react-toastify";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
+  Banknote,
+  CalendarDays,
+  CircleCheck,
   CircleX,
+  FileText,
+  Hash,
+  Landmark,
+  Percent,
   Pencil,
   Power,
   PowerOff,
   RotateCcw,
   Search,
+  Wallet,
   X,
 } from "lucide-react";
 
-import { Button, DataTable, Modal, TextField, Textarea } from "@/ui-kit";
+import { Button, DataTable, IconButton, Modal, TextField, Textarea } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
 import { capitalSourcesService } from "@/services/capitalSources";
 import { fundingAnalyticsService } from "@/services/fundingAnalytics";
@@ -44,6 +52,18 @@ const formatSigned = (type: string, amount: number) => {
   const positiveTypes = ["MoneyReceived", "MoneyReturned", "OtherIncome"];
   const prefix = positiveTypes.includes(type) ? "+" : "-";
   return `${prefix}${formatMoney(amount)}`;
+};
+
+const getStatusIcon = (status: string) => {
+  if (status === "Active") return CircleCheck;
+  if (status === "Closed") return CircleX;
+  return PowerOff;
+};
+
+const getStatusClass = (status: string) => {
+  if (status === "Active") return styles.statusActive;
+  if (status === "Closed") return styles.statusClosed;
+  return styles.statusInactive;
 };
 
 export const CapitalSourceDetails = () => {
@@ -224,13 +244,23 @@ export const CapitalSourceDetails = () => {
     return <div>{t("common.loading")}</div>;
   }
 
+  const StatusIcon = getStatusIcon(source.status);
+
   return (
     <div className={styles.page}>
       <SectionHeader title={source.name} goBack actions={
         <div className={styles.headerActions}>
-          <Button variant="secondary" onClick={() => navigate(`/capital-sources/${id}/edit`)}><Pencil size={15} />{t("capitalSources.actions.edit")}</Button>
+          <IconButton
+            variant="primary"
+            size="medium"
+            icon={<Pencil size={17} />}
+            ariaLabel={`${t("capitalSources.actions.edit")} ${source.name}`}
+            title={t("capitalSources.actions.edit")}
+            className={styles.editIconAction}
+            onClick={() => navigate(`/capital-sources/${id}/edit`)}
+          />
           <Button className={styles.sageButton} onClick={() => setIsReceiveOpen(true)}><ArrowDownToLine size={15} />{t("capitalSources.actions.receiveMoney")}</Button>
-          <Button variant="secondary" onClick={() => setIsReturnOpen(true)}><ArrowUpFromLine size={15} />{t("capitalSources.actions.returnMoney")}</Button>
+          <Button className={styles.outlineButton} onClick={() => setIsReturnOpen(true)}><ArrowUpFromLine size={15} />{t("capitalSources.actions.returnMoney")}</Button>
           {source.status === "Inactive" && <Button variant="secondary" onClick={() => void handleStatusAction("activate")}><Power size={15} />{t("capitalSources.actions.activate")}</Button>}
           {source.status === "Active" && <Button variant="secondary" onClick={() => void handleStatusAction("deactivate")}><PowerOff size={15} />{t("capitalSources.actions.deactivate")}</Button>}
           {source.status !== "Closed" && <Button variant="secondary" onClick={() => void handleStatusAction("close")}><CircleX size={15} />{t("capitalSources.actions.close")}</Button>}
@@ -238,30 +268,59 @@ export const CapitalSourceDetails = () => {
       } />
 
       <div className={styles.statsGrid}>
-        <div className={styles.contentCard}>
-          <div className={styles.statLabel}>{t("capitalSources.fields.currentBalance")}</div>
-          <h3 className={styles.statValue}>{formatMoney(source.currentBalance)}</h3>
+        <div className={`${styles.contentCard} ${styles.detailStatCard}`}>
+          <span className={`${styles.statIcon} ${styles.statIconGold}`}><Banknote size={18} /></span>
+          <div>
+            <div className={styles.statLabel}>{t("capitalSources.fields.currentBalance")}</div>
+            <h3 className={styles.statValue}>{formatMoney(source.currentBalance)} AMD</h3>
+          </div>
         </div>
-        <div className={styles.contentCard}>
-          <div className={styles.statLabel}>{t("capitalSources.fields.initialAmount")}</div>
-          <h3 className={styles.statValue}>{formatMoney(source.initialAmount)}</h3>
+        <div className={`${styles.contentCard} ${styles.detailStatCard}`}>
+          <span className={styles.statIcon}><Landmark size={18} /></span>
+          <div>
+            <div className={styles.statLabel}>{t("capitalSources.fields.initialAmount")}</div>
+            <h3 className={styles.statValue}>{formatMoney(source.initialAmount)} AMD</h3>
+          </div>
         </div>
-        <div className={styles.contentCard}>
-          <div className={styles.statLabel}>{t("capitalSources.fields.type")}</div>
-          <h3 className={styles.statValue}>{t(`capitalSources.types.${source.type}`, { defaultValue: source.type })}</h3>
+        <div className={`${styles.contentCard} ${styles.detailStatCard}`}>
+          <span className={styles.statIcon}><Wallet size={18} /></span>
+          <div>
+            <div className={styles.statLabel}>{t("capitalSources.fields.type")}</div>
+            <h3 className={styles.statValue}>{t(`capitalSources.types.${source.type}`, { defaultValue: source.type })}</h3>
+          </div>
         </div>
-        <div className={styles.contentCard}>
-          <div className={styles.statLabel}>{t("capitalSources.fields.status")}</div>
-          <h3 className={styles.statValue}>{t(`capitalSources.statuses.${source.status}`, { defaultValue: source.status })}</h3>
+        <div className={`${styles.contentCard} ${styles.detailStatCard}`}>
+          <span className={styles.statIcon}><StatusIcon size={18} /></span>
+          <div>
+            <div className={styles.statLabel}>{t("capitalSources.fields.status")}</div>
+            <span className={`${styles.statusBadge} ${getStatusClass(source.status)}`}>
+              {t(`capitalSources.statuses.${source.status}`, { defaultValue: source.status })}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className={styles.detailsGrid}>
-        <div><strong>{t("capitalSources.fields.code")}:</strong> {source.code}</div>
-        <div><strong>{t("capitalSources.fields.interestRate")}:</strong> {source.interestRate != null ? `${source.interestRate}%` : "—"}</div>
-        <div><strong>{t("capitalSources.fields.startDate")}:</strong> {source.startDate ? new Date(source.startDate).toLocaleDateString() : "—"}</div>
-        <div><strong>{t("capitalSources.fields.endDate")}:</strong> {source.endDate ? new Date(source.endDate).toLocaleDateString() : "—"}</div>
-        <div><strong>{t("capitalSources.fields.description")}:</strong> {source.description || "—"}</div>
+        <div className={styles.detailItem}>
+          <span><Hash size={14} />{t("capitalSources.fields.code")}</span>
+          <strong>{source.code}</strong>
+        </div>
+        <div className={styles.detailItem}>
+          <span><Percent size={14} />{t("capitalSources.fields.interestRate")}</span>
+          <strong>{source.interestRate != null ? `${source.interestRate}%` : "—"}</strong>
+        </div>
+        <div className={styles.detailItem}>
+          <span><CalendarDays size={14} />{t("capitalSources.fields.startDate")}</span>
+          <strong>{source.startDate ? new Date(source.startDate).toLocaleDateString() : "—"}</strong>
+        </div>
+        <div className={styles.detailItem}>
+          <span><CalendarDays size={14} />{t("capitalSources.fields.endDate")}</span>
+          <strong>{source.endDate ? new Date(source.endDate).toLocaleDateString() : "—"}</strong>
+        </div>
+        <div className={`${styles.detailItem} ${styles.detailDescription}`}>
+          <span><FileText size={14} />{t("capitalSources.fields.description")}</span>
+          <strong>{source.description || "—"}</strong>
+        </div>
       </div>
 
       <section className={styles.analyticsSection}>

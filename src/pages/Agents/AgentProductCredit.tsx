@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { ChevronDown, CircleCheck, Eye, Plus, Power } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
 import { Button, ConfirmationModal, DataTable, Select, TextField } from "@/ui-kit";
@@ -20,6 +21,8 @@ import type {
   AgentProductDebtPaymentDto,
 } from "@/types/agents";
 import { AgentProductCreditSaleItems } from "./AgentProductCreditPurchases";
+import { AgentActionButton, AgentIconButton } from "./AgentActionButton";
+import { AgentTableDetails } from "./AgentTableDetails";
 import styles from "@/pages/AgentContracts/AgentContracts.module.css";
 
 export type AgentProductCreditView = "contracts" | "advances" | "sales" | "debt" | "payments";
@@ -28,14 +31,6 @@ const money = (amount?: number | null) =>
   new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(amount ?? 0);
 const date = (value?: string | null) =>
   value ? new Date(value).toLocaleDateString() : "-";
-const formatProductLabel = (item: { productId: number; productCode?: string | null; productSku?: string | null }) => {
-  const productCode = item.productCode?.trim();
-  const productSku = item.productSku?.trim();
-
-  if (productCode) return productSku ? `${productCode} · ${productSku}` : productCode;
-  if (productSku) return productSku;
-  return `#${item.productId}`;
-};
 const isProductAdvance = (advance: AgentAdvanceDto) =>
   String(advance.advanceType ?? "").toLowerCase().includes("product");
 
@@ -68,9 +63,21 @@ const PaymentHistory = ({ items, loading }: { items: AgentProductDebtPaymentDto[
       },
       { accessorKey: "agentContractId", header: t("agents.productCredit.contract") },
       { accessorKey: "cashRegisterId", header: t("agents.productCredit.cashRegister") },
-      { accessorKey: "cashSessionId", header: t("agents.productCredit.cashSession") },
-      { accessorKey: "cashLedgerEntryId", header: t("agents.productCredit.cashLedgerEntry") },
-      { accessorKey: "createdBy", header: t("agents.productCredit.createdBy") },
+      {
+        id: "details",
+        header: t("common.actions"),
+        cell: ({ row }: any) => (
+          <AgentIconButton
+            size="medium"
+            tone="secondary"
+            icon={<ChevronDown size={16} />}
+            ariaLabel={`${t("common.details")} ${row.original.agentContractId}`}
+            title={t("common.details")}
+            aria-expanded={row.getIsExpanded()}
+            onClick={row.getToggleExpandedHandler()}
+          />
+        ),
+      },
     ],
     [t],
   );
@@ -80,6 +87,16 @@ const PaymentHistory = ({ items, loading }: { items: AgentProductDebtPaymentDto[
       columns={columns as any}
       data={items}
       isLoading={loading}
+      fitContainer
+      renderSubComponent={({ row }) => (
+        <AgentTableDetails
+          fields={[
+            { label: t("agents.productCredit.cashSession"), value: row.original.cashSessionId || "—" },
+            { label: t("agents.productCredit.cashLedgerEntry"), value: row.original.cashLedgerEntryId || "—" },
+            { label: t("agents.productCredit.createdBy"), value: row.original.createdBy || "—" },
+          ]}
+        />
+      )}
       noResultsText={t("agents.productCredit.noPayments")}
       loadingText={t("common.loading")}
     />
@@ -234,23 +251,6 @@ const ProductContractList = () => {
         cell: ({ row }: { row: { original: AgentContractListItemDto } }) => <Status value={String(row.original.status)} />,
       },
       {
-        id: "permission",
-        header: t("agentContracts.productCredit.allowProductAdvance"),
-        cell: ({ row }: { row: { original: AgentContractListItemDto } }) => t(row.original.allowsProductAdvance ? "agentContracts.productCredit.allowed" : "agentContracts.productCredit.notAllowed"),
-      },
-      {
-        id: "rule",
-        header: t("agentContracts.productCredit.repaymentRule"),
-        cell: ({ row }: { row: { original: AgentContractListItemDto } }) => row.original.repaymentTerms?.ruleVersion != null
-          ? t("agentContracts.productCredit.ruleVersionNumber", { version: row.original.repaymentTerms.ruleVersion })
-          : "-",
-      },
-      {
-        id: "date",
-        header: t("agentContracts.fields.contractDate"),
-        cell: ({ row }: { row: { original: AgentContractListItemDto } }) => date(row.original.contractDate),
-      },
-      {
         id: "actions",
         header: t("agentContracts.fields.actions"),
         cell: ({ row }: { row: { original: AgentContractListItemDto } }) => {
@@ -261,18 +261,12 @@ const ProductContractList = () => {
           return (
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {canManageContracts && canActivate && (
-                <Button className={styles.productContractAction} size="small" variant="primary" disabled={isPending} onClick={() => setConfirmActivationId(contract.id)}>
-                  {t("agentContracts.actions.activateProductContract")}
-                </Button>
+                <AgentIconButton size="medium" tone="primary" icon={<CircleCheck size={16} />} ariaLabel={`${t("agentContracts.actions.activateProductContract")} ${contract.contractNumber}`} title={t("agentContracts.actions.activateProductContract")} disabled={isPending} onClick={() => setConfirmActivationId(contract.id)} />
               )}
               {canManageContracts && canDeactivate && (
-                <Button className={styles.productContractAction} size="small" variant="secondary" disabled={isPending} onClick={() => setConfirmDeactivationId(contract.id)}>
-                  {t("agentContracts.actions.deactivateProductContract")}
-                </Button>
+                <AgentIconButton size="medium" tone="danger" icon={<Power size={16} />} ariaLabel={`${t("agentContracts.actions.deactivateProductContract")} ${contract.contractNumber}`} title={t("agentContracts.actions.deactivateProductContract")} disabled={isPending} onClick={() => setConfirmDeactivationId(contract.id)} />
               )}
-              <Button size="small" variant="secondary" onClick={() => navigate(`/agents/product-credit/contracts/${contract.id}`)}>
-                {t("agentContracts.actions.view")}
-              </Button>
+              <AgentIconButton size="medium" tone="secondary" icon={<Eye size={16} />} ariaLabel={`${t("agentContracts.actions.view")} ${contract.contractNumber}`} title={t("agentContracts.actions.view")} onClick={() => navigate(`/agents/product-credit/contracts/${contract.id}`)} />
             </div>
           );
         },
@@ -285,12 +279,29 @@ const ProductContractList = () => {
     <div className={styles.page}>
       <SectionHeader
         title={t("agentWorkspace.productContracts")}
-        actions={<Button onClick={() => navigate("/agents/product-credit/contracts/create")}>{t("agentContracts.actions.createContract")}</Button>}
+        actions={
+          <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate("/agents/product-credit/contracts/create")}>
+            {t("agentContracts.actions.createContract")}
+          </AgentActionButton>
+        }
       />
       <DataTable
         columns={columns as any}
         data={items}
         isLoading={loading}
+        fitContainer
+        renderSubComponent={({ row }) => (
+          <AgentTableDetails
+            fields={[
+              { label: t("agentContracts.productCredit.allowProductAdvance"), value: t(row.original.allowsProductAdvance ? "agentContracts.productCredit.allowed" : "agentContracts.productCredit.notAllowed") },
+              { label: t("agentContracts.productCredit.repaymentRule"), value: row.original.repaymentTerms?.ruleVersion != null ? t("agentContracts.productCredit.ruleVersionNumber", { version: row.original.repaymentTerms.ruleVersion }) : "—" },
+              { label: t("agentContracts.fields.contractDate"), value: date(row.original.contractDate) },
+              { label: t("agentContracts.fields.advanced"), value: `${money(row.original.totalAdvancedAmount)} AMD` },
+              { label: t("agentContracts.fields.repaid"), value: `${money(row.original.totalRepaidAmount)} AMD` },
+              { label: t("agentContracts.fields.outstanding"), value: `${money(row.original.outstandingAmount)} AMD` },
+            ]}
+          />
+        )}
         noResultsText={t("agentWorkspace.noProductContracts")}
         loadingText={t("agentContracts.list.loading")}
       />
@@ -395,39 +406,36 @@ const ProductAdvanceList = () => {
   const columns = useMemo(
     () => [
       { accessorKey: "advanceNumber", header: t("agentAdvances.fields.advanceNumber") },
-      { accessorKey: "productSaleId", header: t("agentAdvances.fields.productSaleId") },
-      {
-        id: "products",
-        header: t("agents.productCredit.products"),
-        cell: ({ row }: { row: { original: AgentAdvanceDto; getIsExpanded: () => boolean; getToggleExpandedHandler: () => () => void } }) =>
-          row.original.productSaleId == null ? "—" : (
-            <Button size="small" variant="secondary" onClick={row.getToggleExpandedHandler()}>
-              {t(row.getIsExpanded() ? "agents.productCredit.hideDetails" : "agents.productCredit.showDetails")}
-            </Button>
-          ),
-      },
       {
         id: "agent",
         header: t("agentAdvances.fields.agent"),
         cell: ({ row }: { row: { original: AgentAdvanceDto } }) => `${row.original.agent.code} - ${row.original.agent.fullName}`,
       },
-      { accessorKey: "agentContractId", header: t("agentAdvances.fields.contract") },
       {
         id: "amount",
         header: t("agentAdvances.fields.advancedAmount"),
         cell: ({ row }: { row: { original: AgentAdvanceDto } }) => `${money(row.original.advancedAmount)} AMD`,
       },
       {
-        id: "date",
-        header: t("agentAdvances.fields.advanceDate"),
-        cell: ({ row }: { row: { original: AgentAdvanceDto } }) => date(row.original.advanceDate),
-      },
-      {
         accessorKey: "status",
         header: t("agentAdvances.fields.status"),
         cell: ({ row }: { row: { original: AgentAdvanceDto } }) => <Status value={String(row.original.status)} />,
       },
-      { accessorKey: "notes", header: t("agentAdvances.fields.notes") },
+      {
+        id: "details",
+        header: t("common.actions"),
+        cell: ({ row }: any) => (
+          <AgentIconButton
+            size="medium"
+            tone="secondary"
+            icon={<ChevronDown size={16} className={row.getIsExpanded() ? styles.chevronExpanded : ""} />}
+            ariaLabel={`${t("common.details")} ${row.original.advanceNumber}`}
+            title={t("common.details")}
+            aria-expanded={row.getIsExpanded()}
+            onClick={row.getToggleExpandedHandler()}
+          />
+        ),
+      },
     ],
     [t],
   );
@@ -440,16 +448,29 @@ const ProductAdvanceList = () => {
         columns={columns as any}
         data={items}
         isLoading={loading}
+        fitContainer
         noResultsText={t("agentWorkspace.noProductAdvances")}
         loadingText={t("agentAdvances.list.loading")}
         getRowId={(advance) => advance.id}
         renderSubComponent={({ row }) => {
           const sale = row.original.productSaleId == null ? undefined : salesById[String(row.original.productSaleId)];
-          if (salesLoading) return <div>{t("agents.productCredit.loadingSales")}</div>;
+          if (salesLoading) return <><AgentTableDetails fields={[
+            { label: t("agentAdvances.fields.contract"), value: row.original.agentContractId },
+            { label: t("agentAdvances.fields.advanceDate"), value: date(row.original.advanceDate) },
+            { label: t("agentAdvances.fields.notes"), value: row.original.notes || "—" },
+          ]} /><div>{t("agents.productCredit.loadingSales")}</div></>;
           if (!sale) {
-            return <div>{t(salesLoadFailed ? "agents.productCredit.productItemsUnavailable" : "agents.productCredit.noProductItems")}</div>;
+            return <><AgentTableDetails fields={[
+              { label: t("agentAdvances.fields.contract"), value: row.original.agentContractId },
+              { label: t("agentAdvances.fields.advanceDate"), value: date(row.original.advanceDate) },
+              { label: t("agentAdvances.fields.notes"), value: row.original.notes || "—" },
+            ]} /><div>{t(salesLoadFailed ? "agents.productCredit.productItemsUnavailable" : "agents.productCredit.noProductItems")}</div></>;
           }
-          return <AgentProductCreditSaleItems items={sale.items ?? []} />;
+          return <><AgentTableDetails fields={[
+            { label: t("agentAdvances.fields.contract"), value: row.original.agentContractId },
+            { label: t("agentAdvances.fields.advanceDate"), value: date(row.original.advanceDate) },
+            { label: t("agentAdvances.fields.notes"), value: row.original.notes || "—" },
+          ]} /><AgentProductCreditSaleItems items={sale.items ?? []} /></>;
         }}
       />
     </div>
@@ -580,6 +601,7 @@ const ProductCreditContractDetails = () => {
             { accessorKey: "status", header: t("agentAdvances.fields.status"), cell: ({ row }: { row: { original: AgentAdvanceDto } }) => <Status value={String(row.original.status)} /> },
           ] as any}
           data={productAdvances}
+          fitContainer
           noResultsText={t("agentWorkspace.noProductAdvances")}
         />
       </section>
@@ -790,39 +812,9 @@ const ProductSalesView = () => {
         cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => date(row.original.saleDate),
       },
       {
-        id: "agent",
-        header: t("agents.productCredit.agent"),
-        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) =>
-          agents.find((agent) => agent.id === row.original.agentId)?.customer?.fullName || row.original.agentId,
-      },
-      { accessorKey: "contractId", header: t("agents.productCredit.contract") },
-      {
-        id: "products",
-        header: t("agents.productCredit.products"),
-        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => (
-          <details className={styles.saleProducts}>
-            <summary>{t("agents.productCredit.productCount", { count: row.original.items?.length ?? 0 })}</summary>
-            <ul>
-              {(row.original.items ?? []).map((item, index) => (
-                <li key={`${item.productId}-${index}`}>
-                  <span>{formatProductLabel(item)}</span>
-                  <span>{item.quantity} × {money(item.unitPrice)} AMD</span>
-                  <strong>{t("agents.productCredit.lineTotal")}: {money(item.lineTotal)} AMD</strong>
-                </li>
-              ))}
-            </ul>
-          </details>
-        ),
-      },
-      {
         id: "total",
         header: t("agents.productCredit.totalAmount"),
         cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => `${money(row.original.totalAmount)} AMD`,
-      },
-      {
-        id: "paid",
-        header: t("agents.productCredit.paymentAmount"),
-        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => `${money(row.original.paidAmount)} AMD`,
       },
       {
         id: "outstanding",
@@ -830,6 +822,21 @@ const ProductSalesView = () => {
         cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) => `${money(row.original.outstandingAmount)} AMD`,
       },
       { accessorKey: "status", header: t("agents.productCredit.saleStatus") },
+      {
+        id: "details",
+        header: t("common.actions"),
+        cell: ({ row }: any) => (
+          <AgentIconButton
+            size="medium"
+            tone="secondary"
+            icon={<ChevronDown size={16} className={row.getIsExpanded() ? styles.chevronExpanded : ""} />}
+            ariaLabel={`${t("common.details")} ${row.original.saleId}`}
+            title={t("common.details")}
+            aria-expanded={row.getIsExpanded()}
+            onClick={row.getToggleExpandedHandler()}
+          />
+        ),
+      },
     ],
     [agents, t],
   );
@@ -865,12 +872,24 @@ const ProductSalesView = () => {
             columns={columns as any}
             data={items}
             isLoading={loading}
+            fitContainer
             manualPagination
             pageCount={items.length === pageSize ? page + 1 : page}
             pageIndex={page - 1}
             canNextPage={items.length === pageSize}
             paginationLabel={<>{t("common.page")} {page}</>}
             getRowId={(sale) => String(sale.saleId)}
+            renderSubComponent={({ row }) => (
+              <>
+                <AgentTableDetails fields={[
+                  { label: t("agents.productCredit.agent"), value: agents.find((agent) => agent.id === row.original.agentId)?.customer?.fullName || row.original.agentId },
+                  { label: t("agents.productCredit.contract"), value: row.original.contractId },
+                  { label: t("agents.productCredit.paymentAmount"), value: `${money(row.original.paidAmount)} AMD` },
+                  { label: t("agents.productCredit.products"), value: row.original.items?.length ?? 0 },
+                ]} />
+                <AgentProductCreditSaleItems items={row.original.items ?? []} />
+              </>
+            )}
             onPaginationChange={(index) => {
               const next = new URLSearchParams(searchParams);
               next.set("page", String(index + 1));

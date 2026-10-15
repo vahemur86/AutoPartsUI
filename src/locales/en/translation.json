@@ -570,12 +570,14 @@
       "filters": {
         "warehouse": "Warehouse",
         "allWarehouses": "All warehouses",
+        "warehouseTrendPeriod": "Warehouse profit trend period",
         "lowStockThreshold": "Low stock threshold",
         "lowStockThresholdHelp": "Optional. Products at or below this quantity are included in low stock alerts.",
         "lowStockThresholdPlaceholder": "Default: 5"
       },
       "sections": {
         "overview": "Executive Overview",
+        "moreMetrics": "More performance metrics",
         "otherExpenses": "Other Expenses",
         "lowStock": "Low Stock Alerts",
         "outOfStock": "Out-of-Stock Alerts"
@@ -590,6 +592,7 @@
         "monthlyNetProfit": "Monthly net profit",
         "monthlySalesCount": "Monthly sales count",
         "todayNetProfit": "Today net profit",
+        "netMargin": "Net profit margin",
         "totalProductRevenue": "Product revenue",
         "totalServiceRevenue": "Service revenue",
         "totalRevenue": "Total revenue",
@@ -1563,6 +1566,10 @@
       "ironManagementSections": "Iron Management Sections"
     },
     "title": "Iron Shop Settings",
+    "workspaceHint": "Add iron types first, then configure their prices by brand.",
+    "ironTypesHint": "Create the types used in brand pricing rules.",
+    "ironTypesEmpty": "No iron types yet. Add the first type to start configuring prices.",
+    "priceRulesHint": "Choose a brand and iron type to review existing prices and add rules.",
     "section": {
       "ironTypes": "Iron Types",
       "brands": "Brands",
@@ -1601,6 +1608,7 @@
       "standardPrice": "Standard Price Per Kg",
       "vipPrice": "VIP Price Per Kg",
       "customerType": "Customer Type",
+      "status": "Status",
       "selectCustomerType": "Select customer type...",
       "selectBrand": "Select brand",
       "selectIronType": "Select iron type",
@@ -1670,6 +1678,18 @@
     "addCashRegister": "Add Cash Register",
     "editCashRegister": "Edit Cash Register",
     "fetchingBalance": "Fetching balance...",
+    "loading": "Loading cash registers...",
+    "summary": {
+      "totalRegisters": "Cash registers: {{count}}",
+      "activeRegisters": "Active: {{count}}"
+    },
+    "empty": {
+      "title": "No cash registers yet",
+      "description": "Add a register to manage a shop's incoming cash and payments."
+    },
+    "assignedOperator": {
+      "notAssigned": "No operator assigned"
+    },
     "form": {
       "shop": "Shop",
       "selectShop": "Select shop",
@@ -1682,7 +1702,8 @@
       "code": "Code",
       "description": "Description",
       "shopId": "Shop ID",
-      "status": "Status"
+      "status": "Status",
+      "assignedOperator": "Operator"
     },
     "success": {
       "created": "Cash register created successfully",
@@ -3540,6 +3561,12 @@
     },
 
     "sections": {
+      "vehicleTitle": "Vehicle details",
+      "vehicleHint": "Select the vehicle whose catalytic converter buckets you are entering.",
+      "vehicleReady": "Vehicle selected",
+      "bucketSides": "Bucket position",
+      "selectVehiclePrompt": "Complete the vehicle details to start adding buckets.",
+      "componentCount": "{{count}} components",
       "frontBuckets": "Front casing",
       "backBuckets": "Rear casing"
     },
@@ -3572,6 +3599,7 @@
     "details": {
       "title": "Catalytic Converter Search",
       "subtitle": "Search by converter code or by vehicle details",
+      "searchModes": "Search modes",
 
       "tabs": {
         "code": "Search by Code",
@@ -3606,7 +3634,9 @@
         "noCompositions": "no compositions",
         "engine": "Engine",
           "totalPrice": "Total price",
-        "empty": "Select one result to see details",
+        "loading": "Searching catalytic converters...",
+        "empty": "No results yet",
+        "emptyHint": "Enter a converter code or search by vehicle details.",
         "emptyBuckets": "No buckets found",
         "totalWeight": "Total Weight",
         "totalPt": "Average Pt",
@@ -3676,7 +3706,9 @@
       "programmingService": "Programming Service",
       "notes": "Notes",
       "serviceCost": "Service Cost",
-      "sellingPrice": "Selling Price"
+      "sellingPrice": "Selling Price",
+      "reportFrom": "From",
+      "reportTo": "To"
     },
     "values": {
       "programming": "Programming"
@@ -3731,6 +3763,7 @@
       "vehicleSearchFailed": "Vehicle search failed.",
       "selectVehicleAndService": "Please select both vehicle and programming service.",
       "invalidCosts": "Service Cost and Selling Price must be valid numbers.",
+      "invalidReportDateRange": "The report start date must be on or before the end date.",
       "created": "Programming pricing entry created.",
       "createFailed": "Failed to create entry.",
       "invalidServiceCost": "Service cost must be a valid number.",
@@ -3780,6 +3813,8 @@
     "summary": {
       "total": "Total",
       "active": "Active",
+      "activeOnPage": "Active on page",
+      "inactiveOnPage": "Inactive on page",
       "blocked": "Blocked"
     },
     "fields": {

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Pencil, Plus, Power } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button } from "@/ui-kit";
 import { agentsService } from "@/services/agents";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentClassificationRuleDto } from "@/types/agents";
 import styles from "./Agents.module.css";
+import { AgentActionButton, AgentIconButton } from "./AgentActionButton";
 
 export const ClassificationRules = () => {
   const { t } = useTranslation();
@@ -69,9 +70,9 @@ export const ClassificationRules = () => {
       <div className={styles.banner}>{t("classificationRules.info.metricsUnavailable")}</div>
 
       <div className={styles.listHeader}>
-        <Button onClick={() => navigate("/agents/classification-rules/new")}>
+        <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate("/agents/classification-rules/new")}>
           {t("classificationRules.actions.create")}
-        </Button>
+        </AgentActionButton>
         <div className={styles.filters}>
           <label>
             <input
@@ -98,31 +99,33 @@ export const ClassificationRules = () => {
           </div>
           {rules.map((rule) => (
             <div key={rule.id} className={styles.tableRow}>
-              <div>{rule.name}</div>
-              <div>{rule.agentTypeCode}</div>
-              <div>{rule.priority}</div>
-              <div>{rule.conditions.length}</div>
-              <div>
+              <div data-label={t("classificationRules.fields.name")}>{rule.name}</div>
+              <div data-label={t("classificationRules.fields.agentType")}>{rule.agentTypeCode}</div>
+              <div data-label={t("classificationRules.fields.priority")}>{rule.priority}</div>
+              <div data-label={t("classificationRules.fields.conditions")}>{rule.conditions.length}</div>
+              <div data-label={t("common.active")}>
                 <span className={rule.isActive ? styles.badgeActive : styles.badgeInactive}>
                   {rule.isActive ? t("common.active") : t("common.inactive")}
                 </span>
               </div>
-              <div className={styles.actions}>
-                <Button
-                  variant="secondary"
-                  size="small"
+              <div className={styles.actions} data-label={t("common.actions")}>
+                <AgentIconButton
+                  size="medium"
+                  tone="secondary"
+                  icon={<Pencil size={16} />}
+                  ariaLabel={`${t("actions.edit")} ${rule.name}`}
+                  title={t("actions.edit")}
                   onClick={() => navigate(`/agents/classification-rules/${rule.id}`)}
-                >
-                  {t("actions.edit")}
-                </Button>
-                <Button
-                  variant={rule.isActive ? "danger" : "primary"}
-                  size="small"
+                />
+                <AgentIconButton
+                  size="medium"
+                  tone={rule.isActive ? "danger" : "primary"}
+                  icon={<Power size={16} />}
+                  ariaLabel={`${t(rule.isActive ? "actions.deactivate" : "actions.activate")} ${rule.name}`}
+                  title={t(rule.isActive ? "actions.deactivate" : "actions.activate")}
                   onClick={() => handleToggleStatus(rule.id, rule.isActive)}
                   disabled={mutatingId === rule.id}
-                >
-                  {rule.isActive ? t("actions.deactivate") : t("actions.activate")}
-                </Button>
+                />
               </div>
             </div>
           ))}

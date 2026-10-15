@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { ChartNoAxesColumn, ChevronLeft, ChevronRight, Eye, Filter, Plus, RotateCcw } from "lucide-react";
 
 import { DataTable, TextField, Button, Select } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
@@ -10,6 +11,7 @@ import { getApiErrorMessage, getAgentTypeIcon, getAgentTypeColor } from "@/utils
 import type { AgentDto, AgentTypeDto } from "@/types/agents";
 import { AgentStatus } from "@/types/agents";
 import { getAgentSummaryCounts } from "./agentSummary";
+import { AgentActionButton, AgentIconButton } from "./AgentActionButton";
 import styles from "./Agents.module.css";
 
 const getStatusLabelKey = (status?: AgentStatus | number | string | null) => {
@@ -64,12 +66,24 @@ export const Agents = () => {
   const agentTypeId = searchParams.get("agentTypeId") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+  const [filterDrafts, setFilterDrafts] = useState({ code, customerName, phone });
 
   const [items, setItems] = useState<AgentDto[]>([]);
   const [total, setTotal] = useState(0);
   const [agentTypes, setAgentTypes] = useState<AgentTypeDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const debounceTimers = useRef<Record<string, NodeJS.Timeout>>({});
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  useEffect(() => {
+    setFilterDrafts({ code, customerName, phone });
+  }, [code, customerName, phone]);
+
+  useEffect(
+    () => () => {
+      Object.values(debounceTimers.current).forEach(clearTimeout);
+    },
+    [],
+  );
 
   // Load agent types
   useEffect(() => {
@@ -129,7 +143,8 @@ export const Agents = () => {
 
   const handleDebounce = useCallback(
     (key: string, value: string) => {
-      clearTimeout(debounceTimers.current[key]);
+      setFilterDrafts((current) => ({ ...current, [key]: value }));
+      if (debounceTimers.current[key]) clearTimeout(debounceTimers.current[key]);
       debounceTimers.current[key] = setTimeout(() => {
         updateQueryParam(key, value);
       }, 300);
@@ -147,6 +162,8 @@ export const Agents = () => {
   );
 
   const resetFilters = useCallback(() => {
+    Object.values(debounceTimers.current).forEach(clearTimeout);
+    setFilterDrafts({ code: "", customerName: "", phone: "" });
     setSearchParams(new URLSearchParams());
   }, [setSearchParams]);
 
@@ -200,12 +217,22 @@ export const Agents = () => {
         header: t("agents.fields.actions"),
         cell: ({ row }: any) => (
           <div className={styles.actionsRow}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${row.original.id}`)}>
-              {t("agents.actions.view")}
-            </Button>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/${row.original.id}/profitability`)}>
-              {t("reports.navigation.agentProfitability")}
-            </Button>
+            <AgentIconButton
+              size="medium"
+              tone="primary"
+              icon={<Eye size={16} />}
+              ariaLabel={`${t("agents.actions.view")} ${row.original.code}`}
+              title={t("agents.actions.view")}
+              onClick={() => navigate(`/agents/${row.original.id}`)}
+            />
+            <AgentIconButton
+              size="medium"
+              tone="secondary"
+              icon={<ChartNoAxesColumn size={16} />}
+              ariaLabel={`${t("reports.navigation.agentProfitability")} ${row.original.code}`}
+              title={t("reports.navigation.agentProfitability")}
+              onClick={() => navigate(`/agents/${row.original.id}/profitability`)}
+            />
           </div>
         ),
       },
@@ -214,7 +241,7 @@ export const Agents = () => {
   );
 
   const activeCount = items.filter((item) => Number(item.status) === AgentStatus.Active).length;
-  const { inactive: inactiveCount } = getAgentSummaryCounts(total, activeCount);
+  const { inactive: inactiveCount } = getAgentSummaryCounts(items.length, activeCount);
   const maxPage = Math.ceil(total / pageSize) || 1;
 
   return (
@@ -222,9 +249,13 @@ export const Agents = () => {
       <SectionHeader
         title={t("agents.title")}
         actions={
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button onClick={() => navigate("/agents/new")}>{t("agents.actions.create")}</Button>
-          </div>
+          <AgentActionButton
+            size="medium"
+            icon={<Plus size={16} />}
+            onClick={() => navigate("/agents/new")}
+          >
+            {t("agents.actions.create")}
+          </AgentActionButton>
         }
       />
 
@@ -236,35 +267,38 @@ export const Agents = () => {
           <div className={styles.summaryValue}>{total}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>{t("agents.summary.active")}</div>
+          <div className={styles.summaryLabel}>{t("agents.summary.activeOnPage")}</div>
           <div className={styles.summaryValue}>{activeCount}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>{t("common.inactive")}</div>
+          <div className={styles.summaryLabel}>{t("agents.summary.inactiveOnPage")}</div>
           <div className={styles.summaryValue}>{inactiveCount}</div>
         </div>
       </div>
 
       {/* Filters Section */}
       <div className={styles.filtersSection}>
-        <h3>{t("common.filters")}</h3>
+        <h3 className={styles.filtersTitle}>
+          <Filter size={16} aria-hidden="true" />
+          {t("common.filters")}
+        </h3>
         <div className={styles.filterGrid}>
           <TextField
             label={t("agents.fields.code")}
             placeholder={t("common.search")}
-            value={code}
+            value={filterDrafts.code}
             onChange={(e) => handleDebounce("code", e.target.value)}
           />
           <TextField
             label={t("agents.fields.fullName")}
             placeholder={t("common.search")}
-            value={customerName}
+            value={filterDrafts.customerName}
             onChange={(e) => handleDebounce("customerName", e.target.value)}
           />
           <TextField
             label={t("agents.fields.phone")}
             placeholder={t("common.search")}
-            value={phone}
+            value={filterDrafts.phone}
             onChange={(e) => handleDebounce("phone", e.target.value)}
           />
           <Select
@@ -292,7 +326,8 @@ export const Agents = () => {
           </Select>
         </div>
         {(code || customerName || phone || status || agentTypeId) && (
-          <Button variant="secondary" size="small" onClick={resetFilters} style={{ marginTop: "8px" }}>
+          <Button variant="secondary" size="small" className={styles.resetButton} onClick={resetFilters}>
+            <RotateCcw size={14} aria-hidden="true" />
             {t("common.reset")}
           </Button>
         )}
@@ -303,6 +338,7 @@ export const Agents = () => {
           columns={columns as any}
           data={items}
           isLoading={isLoading}
+          fitContainer
           noResultsText={t("agents.empty")}
           loadingText={t("agents.loading")}
         />
@@ -311,7 +347,7 @@ export const Agents = () => {
       {/* Pagination */}
       <div className={styles.paginationSection}>
         <div className={styles.paginationInfo}>
-          {t("common.results", { from: (page - 1) * pageSize + 1, to: Math.min(page * pageSize, total), total })}
+          {t("common.results", { from: total === 0 ? 0 : (page - 1) * pageSize + 1, to: Math.min(page * pageSize, total), total })}
         </div>
         <div className={styles.paginationControls}>
           <Button
@@ -320,6 +356,7 @@ export const Agents = () => {
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1 || isLoading}
           >
+            <ChevronLeft size={15} aria-hidden="true" />
             {t("common.previous")}
           </Button>
           <input
@@ -339,6 +376,7 @@ export const Agents = () => {
             disabled={page >= maxPage || isLoading}
           >
             {t("common.next")}
+            <ChevronRight size={15} aria-hidden="true" />
           </Button>
           <Select
             value={String(pageSize)}

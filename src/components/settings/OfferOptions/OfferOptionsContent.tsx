@@ -1,15 +1,8 @@
-import {
-  useRef,
-  createRef,
-  useState,
-  type FC,
-  type RefObject,
-  type ReactNode,
-} from "react";
+import { useState, type FC, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { IconButton, InteractiveField, ConfirmationModal } from "@/ui-kit";
+import { Button, InteractiveField, ConfirmationModal } from "@/ui-kit";
 
 // icons
 import { Plus, Edit, Trash2 } from "lucide-react";
@@ -23,9 +16,9 @@ import styles from "./OfferOptions.module.css";
 interface OfferOptionsContentProps {
   options: OfferIncreaseOption[];
   isLoading: boolean;
-  onAddNewClick: (anchorEl: HTMLElement | null) => void;
+  onAddNewClick: () => void;
   activeOptionId?: number | null;
-  onEditClick?: (optionId: number, anchorEl: HTMLElement | null) => void;
+  onEditClick?: (optionId: number) => void;
   onDeleteClick?: (id: number) => void;
   shopSelector: ReactNode;
 }
@@ -43,20 +36,6 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
   const [optionToDelete, setOptionToDelete] =
     useState<OfferIncreaseOption | null>(null);
 
-  const itemRefs = useRef<Map<number, RefObject<HTMLDivElement | null>>>(
-    new Map(),
-  );
-
-  const getOrCreateItemRef = (id: number) => {
-    if (!itemRefs.current.has(id)) {
-      itemRefs.current.set(id, createRef<HTMLDivElement>());
-    }
-    return itemRefs.current.get(id)!;
-  };
-
-  const desktopAddRef = useRef<HTMLDivElement>(null);
-  const mobileAddRef = useRef<HTMLDivElement>(null);
-
   const handleConfirmDelete = () => {
     if (optionToDelete) {
       onDeleteClick?.(optionToDelete.id);
@@ -67,34 +46,17 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
   return (
     <>
       <div className={styles.header}>
-        <div ref={desktopAddRef} className={styles.addButtonContainer}>
-          <IconButton
-            variant="primary"
-            size="small"
-            icon={<Plus size={12} color="#0e0f11" />}
-            ariaLabel={t("offers.addNew")}
-            onClick={() => onAddNewClick(desktopAddRef.current)}
-          />
-          <span className={styles.addButtonLabel}>{t("offers.addOption")}</span>
-        </div>
-
-        <div ref={mobileAddRef} className={styles.mobileAddButton}>
-          <div className={styles.addButtonContainerMobile}>
-            <IconButton
-              variant="primary"
-              size="small"
-              icon={<Plus size={12} color="#0e0f11" />}
-              ariaLabel={t("offers.addNew")}
-              onClick={() => onAddNewClick(mobileAddRef.current)}
-            />
-            <span className={styles.addButtonLabel}>
-              {t("offers.addOption")}
-            </span>
-          </div>
-        </div>
+        {shopSelector}
+        <Button
+          variant="primary"
+          size="medium"
+          className={styles.addButton}
+          onClick={onAddNewClick}
+        >
+          <Plus size={16} aria-hidden="true" />
+          {t("offers.addOption")}
+        </Button>
       </div>
-
-      {shopSelector}
 
       <div className={styles.optionsList}>
         {isLoading ? (
@@ -103,13 +65,11 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
           <div className={styles.emptyState}>{t("offers.emptyState")}</div>
         ) : (
           options.map((option) => {
-            const itemRef = getOrCreateItemRef(option.id);
             const isActive = option.isActive ?? false;
 
             return (
               <div
                 key={option.id}
-                ref={itemRef}
                 className={[
                   styles.optionItem,
                   activeOptionId === option.id ? styles.isActiveState : "",
@@ -134,12 +94,7 @@ export const OfferOptionsContent: FC<OfferOptionsContentProps> = ({
                   actions={{
                     edit: {
                       icon: <Edit size={16} />,
-                      onClick: () => {
-                        const btn = itemRef.current?.querySelector(
-                          "button",
-                        ) as HTMLElement;
-                        onEditClick?.(option.id, btn || itemRef.current);
-                      },
+                      onClick: () => onEditClick?.(option.id),
                       ariaLabel: t("offers.editOption"),
                     },
                     delete: {

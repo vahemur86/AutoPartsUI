@@ -2,9 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ChevronDown, Eye } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button, DataTable, Select, TextField } from "@/ui-kit";
+import { DataTable, Select, TextField } from "@/ui-kit";
+import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
 import styles from "./AgentProfitabilityReport.module.css";
 import { agentsService } from "@/services/agents";
 import { capitalSourcesService } from "@/services/capitalSources";
@@ -42,12 +44,6 @@ const Detail = ({ label, value }: { label: string; value: React.ReactNode }) => 
     <span>{label}</span>
     <strong>{value ?? "-"}</strong>
   </div>
-);
-
-const Value = ({ value, negative }: { value: number | null | undefined; negative?: boolean }) => (
-  <span className={negative && Number(value ?? 0) < 0 ? styles.profitNegative : styles.profitPositive}>
-    {money(value)}
-  </span>
 );
 
 interface AgentProfitabilityReportProps {
@@ -126,22 +122,31 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
       ...(!initialAgentId ? [{ accessorKey: "agentId", header: t("reports.agentProfitability.columns.agent"), cell: ({ row }: any) => getAgentLabel(row.original.agentId) }] : []),
       { accessorKey: "advanceDate", header: t("reports.agentProfitability.columns.advanceDate"), cell: ({ row }: any) => formatDate(row.original.advanceDate) },
       { accessorKey: "originalAdvanceAmount", header: t("reports.agentProfitability.columns.originalAmount"), cell: ({ row }: any) => `${money(row.original.originalAdvanceAmount)}` },
-      { accessorKey: "currentOutstandingAdvance", header: t("reports.agentProfitability.columns.outstandingAmount"), cell: ({ row }: any) => `${money(row.original.currentOutstandingAdvance)}` },
-      { accessorKey: "status", header: t("reports.agentProfitability.columns.status"), cell: ({ row }: any) => <span className={styles.statusBadge}>{row.original.status || "-"}</span> },
-      { accessorKey: "totalAcceptedPowderValue", header: t("reports.agentProfitability.columns.acceptedPowderValue"), cell: ({ row }: any) => `${money(row.original.totalAcceptedPowderValue)}` },
-      { accessorKey: "totalKitcoValue", header: t("reports.agentProfitability.columns.kitcoValue"), cell: ({ row }: any) => `${money(row.original.totalKitcoValue)}` },
-      { accessorKey: "totalAgentPayout", header: t("reports.agentProfitability.columns.agentPayout"), cell: ({ row }: any) => `${money(row.original.totalAgentPayout)}` },
-      { accessorKey: "grossCatalystMargin", header: t("reports.agentProfitability.columns.grossMargin"), cell: ({ row }: any) => <Value value={row.original.grossCatalystMargin} negative /> },
-      { accessorKey: "fundingCost", header: t("reports.agentProfitability.columns.fundingCost"), cell: ({ row }: any) => <Value value={row.original.fundingCost} negative /> },
       { accessorKey: "netProfitLoss", header: t("reports.agentProfitability.columns.netProfitLoss"), cell: ({ row }: any) => <span className={row.original.netProfitLoss < 0 ? styles.profitNegative : styles.profitPositive}>{money(row.original.netProfitLoss)}</span> },
       { accessorKey: "roiPercent", header: t("reports.agentProfitability.columns.roi"), cell: ({ row }: any) => <span className={row.original.roiPercent < 0 ? styles.profitNegative : styles.profitPositive}>{Number(row.original.roiPercent ?? 0).toFixed(2)}%</span> },
       {
         id: "actions",
         header: t("common.actions"),
         cell: ({ row }: any) => (
-          <Button size="small" variant="secondary" onClick={() => navigate(`/agents/cash-powder/advances/${row.original.agentAdvanceId}`)}>
-            {t("common.details")}
-          </Button>
+          <div className={styles.rowActions}>
+            <AgentIconButton
+              size="small"
+              tone="secondary"
+              icon={<ChevronDown size={15} className={row.getIsExpanded() ? styles.chevronExpanded : ""} />}
+              ariaLabel={`${t("common.details")} ${row.original.agentAdvanceId}`}
+              title={t("common.details")}
+              aria-expanded={row.getIsExpanded()}
+              onClick={row.getToggleExpandedHandler()}
+            />
+            <AgentIconButton
+              size="small"
+              tone="primary"
+              icon={<Eye size={15} />}
+              ariaLabel={`${t("common.view")} ${row.original.agentAdvanceId}`}
+              title={t("common.view")}
+              onClick={() => navigate(`/agents/cash-powder/advances/${row.original.agentAdvanceId}`)}
+            />
+          </div>
         ),
       },
     ],
@@ -197,6 +202,7 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
                 ] as any}
                 data={advance.allocations ?? []}
                 pageSize={10}
+                fitContainer
                 noResultsText={t("reports.agentProfitability.details.noAllocations")}
               />
             ) : (
@@ -216,6 +222,7 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
                 ] as any}
                 data={advance.dailyHistory ?? []}
                 pageSize={10}
+                fitContainer
                 noResultsText={t("reports.agentProfitability.details.noHistory")}
               />
             ) : (
@@ -264,11 +271,8 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
       </div>
 
       {report && (
-        <div className={styles.kpiGrid}>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalCapital")}</div>
-            <div className={styles.kpiValue}>{money(report.totalCapital)}</div>
-          </div>
+        <>
+          <div className={`${styles.kpiGrid} ${styles.primaryKpis}`}>
           <div className={styles.kpiCard}>
             <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalOutstandingCapital")}</div>
             <div className={styles.kpiValue}>{money(report.totalOutstandingCapital)}</div>
@@ -278,26 +282,6 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
             <div className={styles.kpiValue}>{money(report.totalFundingCost)}</div>
           </div>
           <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalAgentFunding")}</div>
-            <div className={styles.kpiValue}>{money(report.totalAgentFunding)}</div>
-          </div>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalAgentOutstanding")}</div>
-            <div className={styles.kpiValue}>{money(report.totalAgentOutstanding)}</div>
-          </div>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalKitcoValue")}</div>
-            <div className={styles.kpiValue}>{money(report.totalKitcoValue)}</div>
-          </div>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalAgentPayout")}</div>
-            <div className={styles.kpiValue}>{money(report.totalAgentPayout)}</div>
-          </div>
-          <div className={styles.kpiCard}>
-            <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalGrossCatalystMargin")}</div>
-            <div className={styles.kpiValue}>{money(report.totalGrossCatalystMargin)}</div>
-          </div>
-          <div className={styles.kpiCard}>
             <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalNetProfitLoss")}</div>
             <div className={`${styles.kpiValue} ${report.totalNetProfitLoss < 0 ? styles.profitNegative : styles.profitPositive}`}>{money(report.totalNetProfitLoss)}</div>
           </div>
@@ -305,7 +289,37 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
             <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.roi")}</div>
             <div className={`${styles.kpiValue} ${report.roiPercent < 0 ? styles.profitNegative : styles.profitPositive}`}>{Number(report.roiPercent ?? 0).toFixed(2)}%</div>
           </div>
-        </div>
+          </div>
+          <details className={styles.additionalMetrics}>
+            <summary>{t("common.details")}</summary>
+            <div className={styles.kpiGrid}>
+              <div className={styles.kpiCard}>
+                <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalCapital")}</div>
+                <div className={styles.kpiValue}>{money(report.totalCapital)}</div>
+              </div>
+              <div className={styles.kpiCard}>
+                <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalAgentFunding")}</div>
+                <div className={styles.kpiValue}>{money(report.totalAgentFunding)}</div>
+              </div>
+              <div className={styles.kpiCard}>
+                <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalAgentOutstanding")}</div>
+                <div className={styles.kpiValue}>{money(report.totalAgentOutstanding)}</div>
+              </div>
+              <div className={styles.kpiCard}>
+                <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalKitcoValue")}</div>
+                <div className={styles.kpiValue}>{money(report.totalKitcoValue)}</div>
+              </div>
+              <div className={styles.kpiCard}>
+                <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalAgentPayout")}</div>
+                <div className={styles.kpiValue}>{money(report.totalAgentPayout)}</div>
+              </div>
+              <div className={styles.kpiCard}>
+                <div className={styles.kpiLabel}>{t("reports.agentProfitability.summary.totalGrossCatalystMargin")}</div>
+                <div className={styles.kpiValue}>{money(report.totalGrossCatalystMargin)}</div>
+              </div>
+            </div>
+          </details>
+        </>
       )}
 
       <div className={styles.tableWrap}>
@@ -317,6 +331,7 @@ export const AgentProfitabilityReport = ({ agentId: initialAgentId }: AgentProfi
           pageCount={Math.max(1, Math.ceil((report?.advances?.totalItems ?? 0) / pageSize))}
           pageIndex={Math.max(page - 1, 0)}
           onPaginationChange={(newIndex) => setPage(newIndex + 1)}
+          fitContainer
           noResultsText={t("reports.agentProfitability.empty")}
           loadingText={t("common.loading")}
           renderSubComponent={renderAdvanceDetails}

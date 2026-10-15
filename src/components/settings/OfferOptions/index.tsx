@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
@@ -34,8 +34,6 @@ export const OfferIncreaseOptions = () => {
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
   const [activeOptionId, setActiveOptionId] = useState<number | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const anchorRef = useRef<HTMLElement | null>(null);
 
   const { cashRegisterId } = useMemo(() => {
     try {
@@ -78,16 +76,13 @@ export const OfferIncreaseOptions = () => {
     setSelectedShopId(Number(e.target.value));
   };
 
-  const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
-    if (!anchorEl) return;
-    anchorRef.current = anchorEl;
+  const handleAddNewClick = useCallback(() => {
     setActiveOptionId(null);
     setIsDropdownOpen(true);
   }, []);
 
   const handleEditClick = useCallback(
-    (optionId: number, anchorEl: HTMLElement | null) => {
-      anchorRef.current = anchorEl;
+    (optionId: number) => {
       setActiveOptionId(optionId);
       setIsDropdownOpen(true);
     },
@@ -97,7 +92,6 @@ export const OfferIncreaseOptions = () => {
   const handleCloseDropdown = useCallback(() => {
     setIsDropdownOpen(false);
     setActiveOptionId(null);
-    anchorRef.current = null;
   }, []);
 
   const handleSaveOption = useCallback(
@@ -193,7 +187,6 @@ export const OfferIncreaseOptions = () => {
       <OfferIncreaseOptionDropdown
         open={isDropdownOpen}
         option={selectedOption}
-        anchorRef={anchorRef}
         onOpenChange={(open) => {
           if (!open) handleCloseDropdown();
         }}

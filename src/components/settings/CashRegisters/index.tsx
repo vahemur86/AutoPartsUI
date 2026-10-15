@@ -10,10 +10,22 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { ConfirmationModal, DataTable, IconButton } from "@/ui-kit";
+import { ConfirmationModal, IconButton } from "@/ui-kit";
 
 // icons
-import { Plus } from "lucide-react";
+import {
+  Building2,
+  CircleCheck,
+  CircleX,
+  CreditCard,
+  LoaderCircle,
+  Pencil,
+  Plus,
+  Trash2,
+  UserRound,
+  UserRoundCog,
+  Wallet,
+} from "lucide-react";
 
 // utils
 import { getApiErrorMessage } from "@/utils";
@@ -25,9 +37,6 @@ import {
 } from "./cashRegistersActions/CashRegisterDropdown";
 import { TopUpDropdown } from "./cashRegistersActions/TopUpDropdown";
 import { AssignOperatorDropdown } from "./cashRegistersActions/AssignOperatorDropdown";
-
-// columns
-import { getCashRegisterColumns } from "./columns";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -55,7 +64,7 @@ import styles from "./CashRegisters.module.css";
 export const CashRegisters: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { cashRegisters } = useAppSelector((state) => state.cashRegisters);
+  const { cashRegisters, isLoading } = useAppSelector((state) => state.cashRegisters);
   const { shops } = useAppSelector((state) => state.shops);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -75,7 +84,6 @@ export const CashRegisters: FC = () => {
     Record<number, CashRegisterOperatorLink[] | null>
   >({});
 
-  const anchorRef = useRef<HTMLElement | null>(null);
   const topUpAnchorRef = useRef<HTMLElement | null>(null);
   const assignAnchorRef = useRef<HTMLElement | null>(null);
 
@@ -130,15 +138,13 @@ export const CashRegisters: FC = () => {
     void fetchRegisterOperators();
   }, [cashRegisters]);
 
-  const handleOpenAdd = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    anchorRef.current = e.currentTarget;
+  const handleOpenAdd = useCallback(() => {
     setActiveCashRegister(null);
     setIsDropdownOpen(true);
   }, []);
 
   const handleOpenEdit = useCallback(
-    (cashRegister: CashRegister, e: React.MouseEvent<HTMLElement>) => {
-      anchorRef.current = e.currentTarget;
+    (cashRegister: CashRegister) => {
       setActiveCashRegister(cashRegister);
       setIsDropdownOpen(true);
     },
@@ -292,47 +298,31 @@ export const CashRegisters: FC = () => {
     [registerOperators, t],
   );
 
-  const columns = useMemo(
-    () =>
-      getCashRegisterColumns({
-        onEdit: handleOpenEdit,
-        onTopUp: handleOpenTopUp,
-        onAssignOperator: handleOpenAssignOperator,
-        onDelete: (cashRegister) => setDeletingCashRegister(cashRegister),
-        getAssignedOperator: getAssignedOperatorLabel,
-      }),
-    [
-      handleOpenEdit,
-      handleOpenTopUp,
-      handleOpenAssignOperator,
-      getAssignedOperatorLabel,
-    ],
+  const activeRegisterCount = useMemo(
+    () => cashRegisters.filter((register) => register.isActive).length,
+    [cashRegisters],
   );
 
   return (
     <div className={styles.cashRegistersWrapper}>
       <div className={styles.header}>
+        <div className={styles.registerOverview}>
+          <div className={styles.registerCountSummary}>
+            <span className={styles.overviewIcon}>
+              <CreditCard size={18} aria-hidden="true" />
+            </span>
+            <div>
+              <strong>{t("cashRegisters.summary.totalRegisters", { count: cashRegisters.length })}</strong>
+              <span>{t("cashRegisters.summary.activeRegisters", { count: activeRegisterCount })}</span>
+            </div>
+          </div>
+        </div>
         <div className={styles.addButtonWrapper}>
           <IconButton
             ariaLabel={t("cashRegisters.addCashRegister")}
-            size="small"
+            size="medium"
             variant="primary"
-            icon={<Plus size={12} color="#0e0f11" />}
-            onClick={handleOpenAdd}
-          />
-          <span className={styles.addButtonText}>
-            {t("cashRegisters.addCashRegister")}
-          </span>
-        </div>
-      </div>
-
-      <div className={styles.addCashRegisterButtonMobile}>
-        <div className={styles.addButtonWrapperMobile}>
-          <IconButton
-            size="small"
-            variant="primary"
-            icon={<Plus size={12} />}
-            ariaLabel={t("cashRegisters.addCashRegister")}
+            icon={<Plus size={16} />}
             onClick={handleOpenAdd}
           />
           <span className={styles.addButtonText}>
@@ -343,7 +333,6 @@ export const CashRegisters: FC = () => {
 
       <CashRegisterDropdown
         open={isDropdownOpen}
-        anchorRef={anchorRef}
         initialData={activeCashRegister}
         isLoading={isMutating}
         shops={shops}
@@ -396,9 +385,106 @@ export const CashRegisters: FC = () => {
         />
       )}
 
-      <div className={styles.tableWrapper}>
-        <DataTable data={cashRegisters} columns={columns} pageSize={10} />
-      </div>
+      {isLoading && cashRegisters.length === 0 ? (
+        <div className={styles.registerState} role="status" aria-live="polite">
+          <LoaderCircle size={24} aria-hidden="true" />
+          <span>{t("cashRegisters.loading")}</span>
+        </div>
+      ) : cashRegisters.length === 0 ? (
+        <div className={styles.registerState}>
+          <span className={styles.emptyIcon}>
+            <CreditCard size={22} aria-hidden="true" />
+          </span>
+          <strong>{t("cashRegisters.empty.title")}</strong>
+          <span>{t("cashRegisters.empty.description")}</span>
+        </div>
+      ) : (
+        <div className={styles.registerGrid}>
+          {cashRegisters.map((register) => {
+            const shop = shops.find((item) => item.id === register.shopId);
+            const assignedOperator = getAssignedOperatorLabel(register.id);
+
+            return (
+              <article key={register.id} className={styles.registerCard}>
+                <div className={styles.registerCardHeader}>
+                  <div className={styles.registerIdentity}>
+                    <span className={styles.registerIcon}>
+                      <CreditCard size={18} aria-hidden="true" />
+                    </span>
+                    <div className={styles.registerCodeBlock}>
+                      <strong>{register.code}</strong>
+                      <span>#{register.id}</span>
+                    </div>
+                  </div>
+                  <span
+                    className={`${styles.registerStatus} ${register.isActive ? styles.statusActive : styles.statusInactive}`}
+                  >
+                    {register.isActive ? (
+                      <CircleCheck size={14} aria-hidden="true" />
+                    ) : (
+                      <CircleX size={14} aria-hidden="true" />
+                    )}
+                    {register.isActive ? t("common.active") : t("common.inactive")}
+                  </span>
+                </div>
+
+                <p className={styles.registerDescription}>
+                  {register.description || "—"}
+                </p>
+
+                <div className={styles.registerMeta}>
+                  <div className={styles.registerMetaRow}>
+                    <Building2 size={15} aria-hidden="true" />
+                    <span>{t("cashRegisters.form.shop")}</span>
+                    <strong>{shop?.code || `#${register.shopId}`}</strong>
+                  </div>
+                  <div className={styles.registerMetaRow}>
+                    <UserRound size={15} aria-hidden="true" />
+                    <span>{t("cashRegisters.columns.assignedOperator")}</span>
+                    <strong>{assignedOperator}</strong>
+                  </div>
+                </div>
+
+                <div className={styles.registerActions}>
+                  <IconButton
+                    size="small"
+                    variant="primary"
+                    icon={<Wallet size={15} />}
+                    ariaLabel={t("cashRegisters.topUp.button")}
+                    title={t("cashRegisters.topUp.button")}
+                    onClick={(event) => handleOpenTopUp(register, event)}
+                  />
+                  <IconButton
+                    size="small"
+                    variant="secondary"
+                    icon={<UserRoundCog size={15} />}
+                    ariaLabel={t("cashRegisters.assignOperator.button")}
+                    title={t("cashRegisters.assignOperator.button")}
+                    onClick={(event) => handleOpenAssignOperator(register, event)}
+                  />
+                  <IconButton
+                    size="small"
+                    variant="secondary"
+                    icon={<Pencil size={15} />}
+                    ariaLabel={t("common.edit")}
+                    title={t("common.edit")}
+                    onClick={() => handleOpenEdit(register)}
+                  />
+                  <IconButton
+                    size="small"
+                    variant="secondary"
+                    className={styles.deleteAction}
+                    icon={<Trash2 size={15} />}
+                    ariaLabel={t("common.delete")}
+                    title={t("common.delete")}
+                    onClick={() => setDeletingCashRegister(register)}
+                  />
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

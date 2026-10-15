@@ -1,6 +1,7 @@
 import { useEffect, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { UserPlus, X } from "lucide-react";
 
 // ui-kit
 import { Button, Dropdown, Select } from "@/ui-kit";
@@ -157,9 +158,12 @@ export const AssignOperatorDropdown = ({
       anchorRef={anchorRef}
       align="start"
       side="left"
+      contentWidth={420}
+      contentClassName={styles.assignDropdown}
       title={titleText}
     >
       <div className={styles.header}>
+        <UserPlus size={18} aria-hidden="true" />
         <span className={styles.title}>{titleText}</span>
       </div>
 
@@ -179,6 +183,9 @@ export const AssignOperatorDropdown = ({
               })}
               value={selectedOperatorId}
               onChange={(e) => setSelectedOperatorId(e.target.value)}
+              searchable
+              searchPlaceholder={t("common.search")}
+              dropdownMaxHeight={240}
               disabled={isLoading}
               error={hasTriedSave && !isOperatorValid}
             >
@@ -232,6 +239,7 @@ export const AssignOperatorDropdown = ({
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
+            <X size={16} aria-hidden="true" />
             {t("common.cancel")}
           </Button>
           <Button
@@ -240,6 +248,7 @@ export const AssignOperatorDropdown = ({
             onClick={handleAssignClick}
             disabled={isLoading || isLoadingOperators}
           >
+            <UserPlus size={16} aria-hidden="true" />
             {t("cashRegisters.assignOperator.submit")}
           </Button>
         </div>

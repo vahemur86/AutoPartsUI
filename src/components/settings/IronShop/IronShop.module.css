@@ -1,0 +1,932 @@
+.ironShop {
+  --iron-accent: 196, 169, 106;
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  color: #ecebe3;
+}
+
+.workspaceHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(var(--iron-accent), 0.2);
+  border-radius: 8px;
+  background: linear-gradient(115deg, rgba(var(--iron-accent), 0.07), rgba(18, 23, 19, 0.78) 54%, rgba(13, 17, 14, 0.82));
+}
+
+.workspaceHeading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.workspaceIcon,
+.panelIcon,
+.formIcon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(var(--iron-accent), 0.28);
+  background: rgba(var(--iron-accent), 0.08);
+}
+
+.workspaceIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+}
+
+.workspaceEyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: rgba(211, 198, 158, 0.72);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.workspaceHeading h2 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.workspaceHeading p {
+  margin: 4px 0 0;
+  color: rgba(230, 236, 230, 0.57);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.workspaceMetrics {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 14px;
+  padding-left: 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.metric {
+  display: grid;
+  gap: 3px;
+  min-width: 64px;
+}
+
+.metric span {
+  color: rgba(230, 236, 230, 0.55);
+  font-size: 10px;
+}
+
+.metric strong {
+  color: #e8ddbb;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricDivider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.workflowTabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: min(100%, 560px);
+  padding: 5px;
+  border: 1px solid rgba(var(--iron-accent), 0.15);
+  border-radius: 8px;
+  background: rgba(8, 11, 9, 0.58);
+}
+
+.workflowTab {
+  display: flex;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(232, 236, 230, 0.65);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.workflowTab > svg {
+  flex: 0 0 auto;
+  color: #aebcab;
+}
+
+.workflowTab > span:nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workflowTabActive {
+  border-color: rgba(var(--iron-accent), 0.26);
+  background: linear-gradient(110deg, rgba(var(--iron-accent), 0.14), rgba(31, 38, 31, 0.7));
+  color: #f0e7cb;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.workflowTabActive > svg {
+  color: #e1cf9e;
+}
+
+.workflowStep {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(230, 236, 230, 0.46);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.workflowTabActive .workflowStep {
+  border-color: rgba(var(--iron-accent), 0.28);
+  color: #e1cf9e;
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--iron-accent), 0.14);
+  border-radius: 7px;
+  color: rgba(230, 236, 230, 0.68);
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 12px;
+}
+
+.loadingState svg {
+  color: #d2bf8a;
+  animation: ironLoadingSpin 1s linear infinite;
+}
+
+.workspacePanel,
+.ruleFormCard {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(var(--iron-accent), 0.17);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.97), rgba(13, 17, 14, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.panelHeader,
+.panelTitleGroup,
+.formCardHeader {
+  display: flex;
+  align-items: center;
+}
+
+.panelHeader {
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.panelTitleGroup {
+  min-width: 0;
+  gap: 10px;
+}
+
+.panelIcon,
+.formIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+}
+
+.panelTitleGroup h3,
+.formCardHeader h3 {
+  margin: 0;
+  color: #ebe9df;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.panelTitleGroup p,
+.formCardHeader p {
+  margin: 3px 0 0;
+  color: rgba(230, 236, 230, 0.52);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ruleCount {
+  display: grid;
+  min-width: 30px;
+  height: 26px;
+  place-items: center;
+  padding: 0 8px;
+  border: 1px solid rgba(var(--iron-accent), 0.2);
+  border-radius: 999px;
+  background: rgba(var(--iron-accent), 0.08);
+  color: #e3d4aa;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tableSurface {
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.priceRuleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  align-items: start;
+  gap: 12px;
+}
+
+.priceRuleCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(var(--iron-accent), 0.16);
+  border-radius: 7px;
+  background: rgba(5, 8, 6, 0.18);
+}
+
+.priceRuleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(var(--iron-accent), 0.14);
+  background: linear-gradient(110deg, rgba(var(--iron-accent), 0.07), rgba(255, 255, 255, 0.012));
+}
+
+.priceRuleHeader > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.priceRuleHeader > div > span {
+  color: #cbb77f;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.priceRuleHeader strong {
+  overflow: hidden;
+  color: #ece9de;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customerCount {
+  display: grid;
+  min-width: 24px;
+  height: 24px;
+  place-items: center;
+  padding: 0 6px;
+  border: 1px solid rgba(var(--iron-accent), 0.2);
+  border-radius: 6px;
+  background: rgba(var(--iron-accent), 0.08);
+  color: #ddcea4;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.priceRuleRows {
+  display: grid;
+}
+
+.priceRuleRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto 32px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.priceRuleRow:last-child {
+  border-bottom: 0;
+}
+
+.customerTypeTag {
+  overflow: hidden;
+  color: rgba(230, 236, 230, 0.74);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rulePrice {
+  color: #e7dec1;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rulePrice small {
+  margin-left: 4px;
+  color: rgba(230, 236, 230, 0.44);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.stepCount {
+  display: grid;
+  min-width: 24px;
+  height: 22px;
+  place-items: center;
+  padding: 0 5px;
+  border: 1px solid rgba(var(--iron-accent), 0.17);
+  border-radius: 5px;
+  background: rgba(var(--iron-accent), 0.07);
+  color: #d6c692;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepPriceList {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+
+.stepPriceList > span:not(.noSteps) {
+  padding: 4px 7px;
+  border: 1px solid rgba(var(--iron-accent), 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(230, 236, 230, 0.7);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepPriceList .noSteps {
+  color: rgba(230, 236, 230, 0.38);
+  font-size: 10px;
+}
+
+.deleteRuleButton {
+  display: grid;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 0;
+}
+
+.emptyPriceRules {
+  display: grid;
+  min-height: 140px;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed rgba(var(--iron-accent), 0.18);
+  border-radius: 7px;
+  color: rgba(230, 236, 230, 0.52);
+  font-size: 12px;
+  text-align: center;
+}
+
+.emptyPriceRules svg {
+  color: #c4aa6a;
+}
+
+.priceWorkspace {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.filterToolbar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.13);
+}
+
+.resetFilters {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.priceFormsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.ruleFormCard {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.formCardHeader {
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.formCardHeader > div {
+  min-width: 0;
+}
+
+.formFields {
+  display: grid;
+  gap: 12px;
+}
+
+.customerPrices {
+  display: grid;
+  gap: 11px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.customerPrices h4 {
+  margin: 0;
+  color: #d8d9d0;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.customerPriceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mutedState {
+  color: rgba(230, 236, 230, 0.52);
+  font-size: 12px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.formActions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 170px;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 20px;
+  border: 1px dashed rgba(var(--iron-accent), 0.18);
+  border-radius: 7px;
+  color: rgba(230, 236, 230, 0.55);
+  font-size: 12px;
+  text-align: center;
+}
+
+.emptyState svg {
+  color: #c4aa6a;
+}
+
+.emptyState strong {
+  color: #e8e7de;
+  font-size: 13px;
+}
+
+.ironTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 11px;
+}
+
+.ironTypeCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(var(--iron-accent), 0.16);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(8, 11, 9, 0.32));
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.ironTypeCard:hover {
+  border-color: rgba(var(--iron-accent), 0.32);
+  background: linear-gradient(145deg, rgba(var(--iron-accent), 0.055), rgba(8, 11, 9, 0.4));
+}
+
+.ironTypeIdentity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+}
+
+.ironTypeBadge {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(var(--iron-accent), 0.22);
+  border-radius: 7px;
+  background: rgba(var(--iron-accent), 0.075);
+  color: #d2bf8a;
+}
+
+.ironTypeCopy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.ironTypeCopy strong {
+  overflow: hidden;
+  color: #eeece3;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ironTypeCopy > span {
+  overflow: hidden;
+  color: rgba(230, 236, 230, 0.45);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.typeStatus {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.typeStatusActive {
+  border-color: rgba(122, 185, 127, 0.18);
+  background: rgba(122, 185, 127, 0.08);
+  color: #b9d5bd;
+}
+
+.typeStatusInactive {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(230, 236, 230, 0.52);
+}
+
+.ironTypeActions {
+  display: flex;
+  gap: 6px;
+}
+
+.ironTypeActions button {
+  display: grid;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 0;
+  border-radius: 5px;
+}
+
+.ironTypeActions .deleteRuleButton {
+  color: #d3a098;
+  border-color: rgba(189, 105, 94, 0.2);
+  background: rgba(137, 64, 57, 0.07);
+}
+
+.ironTypeActions .deleteRuleButton:hover:not(:disabled) {
+  color: #f0c3bd;
+  border-color: rgba(204, 122, 111, 0.48);
+  background: rgba(143, 62, 54, 0.18);
+}
+
+.priceFormWorkspace {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.priceFormTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(var(--iron-accent), 0.14);
+  border-radius: 7px;
+  background: rgba(8, 11, 9, 0.55);
+}
+
+.priceFormTab {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: rgba(230, 236, 230, 0.6);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.priceFormTab svg {
+  color: #b9a873;
+}
+
+.priceFormTabActive {
+  border-color: rgba(var(--iron-accent), 0.23);
+  background: rgba(var(--iron-accent), 0.09);
+  color: #e9dfbf;
+}
+
+.typeDrawerBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(5, 8, 7, 0.64);
+  backdrop-filter: blur(5px);
+}
+
+.typeDrawer {
+  display: flex;
+  width: min(100%, 560px);
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  color: #f2f0e8;
+  border-left: 1px solid rgba(var(--iron-accent), 0.28);
+  background: linear-gradient(165deg, #171d18 0%, #111612 52%, #0e1210 100%);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.48);
+  animation: ironDrawerIn 220ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.typeDrawerHeader {
+  display: flex;
+  min-height: 86px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(var(--iron-accent), 0.17);
+  background: rgba(23, 29, 24, 0.94);
+}
+
+.typeDrawerIcon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(var(--iron-accent), 0.34);
+  border-radius: 8px;
+  background: rgba(var(--iron-accent), 0.09);
+  color: #d6c28b;
+}
+
+.typeDrawerHeader > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawerEyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: rgba(211, 198, 158, 0.7);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.typeDrawerHeader h2 {
+  margin: 0;
+  color: #f0ede3;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.typeDrawerClose {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #b9ad88;
+  cursor: pointer;
+}
+
+.typeDrawerBody {
+  display: grid;
+  flex: 1 1 auto;
+  align-content: start;
+  gap: 16px;
+  overflow-y: auto;
+  padding: 22px;
+}
+
+.typeDrawerFooter {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 22px max(15px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(var(--iron-accent), 0.17);
+  background: rgba(9, 13, 10, 0.94);
+  backdrop-filter: blur(10px);
+}
+
+.typeDrawerFooter button {
+  min-width: 112px;
+}
+
+@keyframes ironDrawerIn {
+  from { opacity: 0.65; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ironLoadingSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1100px) {
+  .priceFormsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .workspaceHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspaceMetrics {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 0;
+  }
+
+  .workflowTabs {
+    width: 100%;
+  }
+
+  .filterToolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resetFilters {
+    justify-content: center;
+  }
+
+  .customerPriceGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .priceRuleGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .priceRuleRow {
+    grid-template-columns: minmax(0, 1fr) auto 30px;
+  }
+
+  .stepCount {
+    display: none;
+  }
+
+  .panelHeader {
+    align-items: flex-start;
+  }
+
+  .typeDrawerHeader {
+    min-height: 78px;
+    padding: 14px 16px;
+  }
+
+  .typeDrawerBody {
+    padding: 18px 16px;
+  }
+
+  .typeDrawerFooter {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspacePanel,
+  .ruleFormCard {
+    padding: 12px;
+  }
+
+  .workflowTab {
+    gap: 6px;
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .workflowStep {
+    display: none;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .formActions button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .typeDrawer {
+    width: 100%;
+    border-left: 0;
+  }
+
+  .typeDrawerFooter button {
+    min-width: 0;
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typeDrawer {
+    animation: none;
+  }
+
+  .loadingState svg {
+    animation: none;
+  }
+}

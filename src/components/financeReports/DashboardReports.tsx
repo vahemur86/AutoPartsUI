@@ -9,6 +9,7 @@ import {
   BarChart3,
   Boxes,
   CalendarClock,
+  ChevronDown,
   CircleDollarSign,
   PackageX,
   ShoppingCart,
@@ -68,6 +69,9 @@ const money = (value: number): string => {
   });
 };
 
+const formatMargin = (profit: number, revenue: number): string =>
+  revenue === 0 ? "—" : `${((profit / revenue) * 100).toFixed(1)}%`;
+
 const formatDateTime = (value?: string): string => {
   if (!value) return "-";
   const parsed = new Date(value);
@@ -99,7 +103,7 @@ const DashboardSkeleton = () => (
     </div>
 
     <div className={styles.kpiGrid}>
-      {Array.from({ length: 8 }).map((_, index) => (
+      {Array.from({ length: 4 }).map((_, index) => (
         <article key={index} className={`${styles.kpiCard} ${styles.dashboardSkeletonCard} ${styles.skeleton}`}>
           <div className={`${styles.skeletonText} ${styles.skeletonTextSm}`} />
           <div className={`${styles.skeletonText} ${styles.skeletonTextLg}`} />
@@ -157,8 +161,9 @@ export const DashboardReports = () => {
   const [toDate, setToDate] = useState<Date | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
-  const showLoading = useMinimumLoadingDuration(isLoading, 4000);
+  const showLoading = useMinimumLoadingDuration(isLoading, 650);
   const [report, setReport] = useState<DashboardReportResponse | null>(null);
+  const [isLoadingWarehouseTrend, setIsLoadingWarehouseTrend] = useState(false);
   const [warehouseProfitTrend, setWarehouseProfitTrend] = useState<
     DailyProfitReportItem[]
   >([]);
@@ -205,6 +210,21 @@ export const DashboardReports = () => {
     },
     [cashRegisterId],
   );
+
+  const handleLoadWarehouseTrend = useCallback(async () => {
+    setIsLoadingWarehouseTrend(true);
+    try {
+      await loadWarehouseProfitData(
+        warehouseId,
+        toSafeISO(fromDate),
+        toSafeISO(toDate),
+      );
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, t("financeReports.error.failedToLoad")));
+    } finally {
+      setIsLoadingWarehouseTrend(false);
+    }
+  }, [warehouseId, fromDate, toDate, loadWarehouseProfitData, t, toSafeISO]);
 
   const handleLoad = useCallback(async () => {
     if (!shopId) {
@@ -392,6 +412,8 @@ export const DashboardReports = () => {
           }}
           error={shopError}
           helperText={shopError ? t("financeReports.validation.selectShop") : undefined}
+          searchable
+          searchPlaceholder={t("common.search")}
         >
           <option value="">{t("financeReports.filters.selectShop")}</option>
           {shops.map((shop) => (
@@ -405,6 +427,8 @@ export const DashboardReports = () => {
           label={t("financeReports.dashboard.filters.warehouse")}
           value={warehouseId > 0 ? String(warehouseId) : "0"}
           onChange={(e) => setWarehouseId(Number(e.target.value) || 0)}
+          searchable
+          searchPlaceholder={t("common.search")}
         >
           <option value="0">{t("financeReports.dashboard.filters.allWarehouses")}</option>
           {warehouses.map((warehouse) => (
@@ -413,37 +437,6 @@ export const DashboardReports = () => {
             </option>
           ))}
         </Select>
-
-        <div className={styles.dashboardDateRange}>
-          <div className={styles.dashboardDateField}>
-            <span className={styles.dashboardDateLabel}>{t("financeReports.filters.fromDate")}</span>
-            <DatePicker
-              selected={fromDate}
-              onChange={(date: Date | null) => setFromDate(date)}
-              dateFormat="MM/dd/yyyy"
-              placeholderText="MM/DD/YYYY"
-              isClearable
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-            />
-          </div>
-
-          <div className={styles.dashboardDateField}>
-            <span className={styles.dashboardDateLabel}>{t("financeReports.filters.toDate")}</span>
-            <DatePicker
-              selected={toDate}
-              onChange={(date: Date | null) => setToDate(date)}
-              dateFormat="MM/dd/yyyy"
-              placeholderText="MM/DD/YYYY"
-              isClearable
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-              minDate={fromDate || undefined}
-            />
-          </div>
-        </div>
 
         <TextField
           label={t("financeReports.dashboard.filters.lowStockThreshold")}
@@ -500,60 +493,71 @@ export const DashboardReports = () => {
             </div>
           </section>
 
-          <section className={styles.kpiGrid}>
-            <article className={`${styles.kpiCard} ${styles.kpiCardCyan}`}>
-              <span>{t("financeReports.dashboard.kpi.todayRevenue")}</span>
+          <section className={`${styles.kpiGrid} ${styles.dashboardPrimaryGrid}`}>
+            <article className={`${styles.kpiCard} ${styles.dashboardPrimaryCard} ${styles.dashboardRevenueCard}`}>
+              <div className={styles.dashboardPrimaryLabel}>
+                <span>{t("financeReports.dashboard.kpi.todayRevenue")}</span>
+                <CircleDollarSign size={18} />
+              </div>
               <strong>{money(Number(report?.todayRevenue || 0))}</strong>
             </article>
-            <article className={`${styles.kpiCard} ${styles.kpiCardBlue}`}>
-              <span>{t("financeReports.dashboard.kpi.todayProfit")}</span>
-              <strong>{money(Number(report?.todayProfit || 0))}</strong>
+            <article className={`${styles.kpiCard} ${styles.dashboardPrimaryCard} ${styles.dashboardProfitCard}`}>
+              <div className={styles.dashboardPrimaryLabel}>
+                <span>{t("financeReports.dashboard.kpi.todayNetProfit")}</span>
+                <Activity size={18} />
+              </div>
+              <strong className={Number(report?.todayNetProfit || 0) < 0 ? styles.negativeValue : styles.positiveValue}>
+                {money(Number(report?.todayNetProfit || 0))}
+              </strong>
+              <small className={styles.dashboardKpiMeta}>
+                {t("financeReports.dashboard.kpi.netMargin")}: {formatMargin(Number(report?.todayNetProfit || 0), Number(report?.todayRevenue || 0))}
+              </small>
             </article>
-            <article className={`${styles.kpiCard} ${styles.kpiCardOrange}`}>
-              <span>{t("financeReports.dashboard.kpi.monthlyRevenue")}</span>
+            <article className={`${styles.kpiCard} ${styles.dashboardPrimaryCard} ${styles.dashboardRevenueCard}`}>
+              <div className={styles.dashboardPrimaryLabel}>
+                <span>{t("financeReports.dashboard.kpi.monthlyRevenue")}</span>
+                <CircleDollarSign size={18} />
+              </div>
               <strong>{money(Number(report?.monthlyRevenue || 0))}</strong>
             </article>
-            <article className={`${styles.kpiCard} ${styles.kpiCardPink}`}>
-              <span>{t("financeReports.dashboard.kpi.monthlyProfit")}</span>
-              <strong>{money(Number(report?.monthlyProfit || 0))}</strong>
-            </article>
-            <article className={`${styles.kpiCard} ${styles.kpiCardCyan}`}>
-              <span>{t("financeReports.dashboard.kpi.totalProductRevenue")}</span>
-              <strong>{money(Number(report?.totalProductRevenue || 0))}</strong>
-            </article>
-            <article className={`${styles.kpiCard} ${styles.kpiCardBlue}`}>
-              <span>{t("financeReports.dashboard.kpi.totalServiceRevenue")}</span>
-              <strong>{money(Number(report?.totalServiceRevenue || 0))}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.totalRevenue")}</span>
-              <strong>{money(Number(report?.totalRevenue || 0))}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.monthlyOtherExpenses")}</span>
-              <strong>{money(Number(report?.monthlyOtherExpenses || 0))}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.monthlyNetProfit")}</span>
-              <strong>{money(Number(report?.monthlyNetProfit || 0))}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.todayNetProfit")}</span>
-              <strong>{money(Number(report?.todayNetProfit || 0))}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.lowStockAlertsCount")}</span>
-              <strong>{Number(report?.lowStockAlertsCount || 0).toLocaleString()}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.outOfStockCount")}</span>
-              <strong>{Number(report?.outOfStockCount || 0).toLocaleString()}</strong>
-            </article>
-            <article className={styles.kpiCard}>
-              <span>{t("financeReports.dashboard.kpi.threshold")}</span>
-              <strong>{Number(report?.lowStockThreshold || 0).toLocaleString()}</strong>
+            <article className={`${styles.kpiCard} ${styles.dashboardPrimaryCard} ${styles.dashboardProfitCard}`}>
+              <div className={styles.dashboardPrimaryLabel}>
+                <span>{t("financeReports.dashboard.kpi.monthlyNetProfit")}</span>
+                <Activity size={18} />
+              </div>
+              <strong className={Number(report?.monthlyNetProfit || 0) < 0 ? styles.negativeValue : styles.positiveValue}>
+                {money(Number(report?.monthlyNetProfit || 0))}
+              </strong>
+              <small className={styles.dashboardKpiMeta}>
+                {t("financeReports.dashboard.kpi.netMargin")}: {formatMargin(Number(report?.monthlyNetProfit || 0), Number(report?.monthlyRevenue || 0))}
+              </small>
             </article>
           </section>
+
+          <details className={styles.dashboardSecondary}>
+            <summary>
+              <span>{t("financeReports.dashboard.sections.moreMetrics")}</span>
+              <ChevronDown size={16} aria-hidden="true" />
+            </summary>
+            <div className={styles.dashboardSecondaryGrid}>
+              {[
+                { label: t("financeReports.dashboard.kpi.todayProfit"), value: money(Number(report?.todayProfit || 0)) },
+                { label: t("financeReports.dashboard.kpi.monthlyProfit"), value: money(Number(report?.monthlyProfit || 0)) },
+                { label: t("financeReports.dashboard.kpi.totalRevenue"), value: money(Number(report?.totalRevenue || 0)) },
+                { label: t("financeReports.dashboard.kpi.totalProductRevenue"), value: money(Number(report?.totalProductRevenue || 0)) },
+                { label: t("financeReports.dashboard.kpi.totalServiceRevenue"), value: money(Number(report?.totalServiceRevenue || 0)) },
+                { label: t("financeReports.dashboard.kpi.monthlyOtherExpenses"), value: money(Number(report?.monthlyOtherExpenses || 0)) },
+                { label: t("financeReports.dashboard.kpi.lowStockAlertsCount"), value: Number(report?.lowStockAlertsCount || 0).toLocaleString() },
+                { label: t("financeReports.dashboard.kpi.outOfStockCount"), value: Number(report?.outOfStockCount || 0).toLocaleString() },
+                { label: t("financeReports.dashboard.kpi.threshold"), value: Number(report?.lowStockThreshold || 0).toLocaleString() },
+              ].map((metric) => (
+                <div key={metric.label} className={styles.dashboardMetricItem}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                </div>
+              ))}
+            </div>
+          </details>
 
           <section className={styles.dashboardChartsGrid}>
             <article className={styles.dashboardChartCard}>
@@ -609,10 +613,55 @@ export const DashboardReports = () => {
               </div>
             </article>
 
-            <article className={styles.dashboardChartCard}>
+            <article className={`${styles.dashboardChartCard} ${styles.dashboardChartWide}`}>
               <div className={styles.chartTitleRow}>
                 <BarChart3 size={16} />
                 <h4>{t("financeReports.dashboard.charts.warehouseProfit")}</h4>
+              </div>
+              <div className={styles.dashboardTrendControls}>
+                <div>
+                  <p className={styles.dashboardTrendPeriod}>
+                    {t("financeReports.dashboard.filters.warehouseTrendPeriod")}
+                  </p>
+                  <div className={styles.dashboardDateRange}>
+                    <div className={styles.dashboardDateField}>
+                      <span className={styles.dashboardDateLabel}>{t("financeReports.filters.fromDate")}</span>
+                      <DatePicker
+                        selected={fromDate}
+                        onChange={(date: Date | null) => setFromDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        placeholderText="MM/DD/YYYY"
+                        isClearable
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                        maxDate={toDate || undefined}
+                      />
+                    </div>
+                    <div className={styles.dashboardDateField}>
+                      <span className={styles.dashboardDateLabel}>{t("financeReports.filters.toDate")}</span>
+                      <DatePicker
+                        selected={toDate}
+                        onChange={(date: Date | null) => setToDate(date)}
+                        dateFormat="MM/dd/yyyy"
+                        placeholderText="MM/DD/YYYY"
+                        isClearable
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                        minDate={fromDate || undefined}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.dashboardAction}>
+                  <FinanceReportLoadButton
+                    loading={isLoadingWarehouseTrend}
+                    label={t("financeReports.actions.load")}
+                    onClick={() => void handleLoadWarehouseTrend()}
+                    className={styles.dashboardApplyButton}
+                  />
+                </div>
               </div>
               <div className={styles.dashboardChartWrap}>
                 {warehouseProfitChartData.length > 0 ? (

@@ -1,13 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Button, ConfirmationModal, DataTable, TextField, Select, Modal, Tab, TabGroup } from "@/ui-kit";
+import { createPortal } from "react-dom";
+import { Button, ConfirmationModal, IconButton, TextField, Select } from "@/ui-kit";
 import { getApiErrorMessage, getCashRegisterId, getHeaders, mapI18nCodeToApiCode } from "@/utils";
 import i18n from "i18next";
 import api from "@/services";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
-import type { ColumnDef } from "@tanstack/react-table";
+import {
+  CircleCheck,
+  CircleX,
+  CircleDollarSign,
+  Filter,
+  Layers3,
+  LoaderCircle,
+  Pencil,
+  Plus,
+  RotateCcw,
+  Tags,
+  Trash2,
+  Wrench,
+  X,
+} from "lucide-react";
+import styles from "./IronShop.module.css";
 
 const IRON_SHOP_BASE_PATH = "/admin/iron-shop";
 
@@ -68,7 +84,7 @@ export const IronShopSettings = () => {
   const [selectedIronTypeId, setSelectedIronTypeId] = useState<string>("");
   const [form, setForm] = useState(initialIronTypeForm);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [typeDrawerOpen, setTypeDrawerOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<{
     kind: "ironType" | "price";
     id: number;
@@ -77,6 +93,25 @@ export const IronShopSettings = () => {
   const [priceForm, setPriceForm] = useState(initialPriceForm);
   const [recalculationStepForm, setRecalculationStepForm] = useState(initialRecalculationStepForm);
   const [activeTab, setActiveTab] = useState<"iron-types" | "prices">("iron-types");
+  const [activePriceForm, setActivePriceForm] = useState<"base" | "recalculation">("base");
+  const activeIronTypeCount = useMemo(
+    () => ironTypes.filter((item) => item.isActive).length,
+    [ironTypes],
+  );
+
+  useEffect(() => {
+    if (!typeDrawerOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeTypeDrawer();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [typeDrawerOpen]);
 
   const customerTypeMap = useMemo(
     () => Object.fromEntries(customerTypes.map((type) => [type.id, type.code])),
@@ -86,6 +121,11 @@ export const IronShopSettings = () => {
   const resetIronTypeForm = () => {
     setForm(initialIronTypeForm);
     setEditingId(null);
+  };
+
+  const closeTypeDrawer = () => {
+    setTypeDrawerOpen(false);
+    resetIronTypeForm();
   };
 
   const resetPriceForm = () => {
@@ -152,7 +192,7 @@ export const IronShopSettings = () => {
 
   const handleOpenCreateIronType = () => {
     resetIronTypeForm();
-    setModalOpen(true);
+    setTypeDrawerOpen(true);
   };
 
   const getTranslationFieldKey = (langCode: string) =>
@@ -183,7 +223,7 @@ export const IronShopSettings = () => {
       translations: initialTranslations,
       isActive: item.isActive,
     });
-    setModalOpen(true);
+    setTypeDrawerOpen(true);
   };
 
   const submitIronType = async () => {
@@ -221,7 +261,7 @@ export const IronShopSettings = () => {
         toast.success(t("ironManagement.success.ironTypeCreated"));
       }
       resetIronTypeForm();
-      setModalOpen(false);
+      setTypeDrawerOpen(false);
       void loadData();
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("ironManagement.error.failedToUpdateIronType")));
@@ -374,35 +414,6 @@ export const IronShopSettings = () => {
     }
   };
 
-  const ironTypeColumns: ColumnDef<IronTypeItem, unknown>[] = [
-    { accessorKey: "id", header: t("ironManagement.columns.id") },
-    { accessorKey: "code", header: t("ironManagement.form.code") },
-    {
-      accessorKey: "name",
-      header: t("ironManagement.columns.name"),
-      cell: ({ row }) => row.original.name || row.original.code,
-    },
-    {
-      accessorKey: "isActive",
-      header: t("common.active"),
-      cell: ({ getValue }) => (getValue() ? t("common.yes") : t("common.no")),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <Button variant="secondary" size="small" onClick={() => handleEditIronType(row.original)}>
-            {t("common.edit")}
-          </Button>
-          <Button variant="danger" size="small" onClick={() => void deleteIronType(row.original.id)}>
-            {t("common.delete")}
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
   const getCustomerTypeLabel = (item: BrandIronPriceItem) => {
     const backendName = item.customerTypeName?.trim();
     if (backendName && !/^\d+$/.test(backendName)) {
@@ -417,361 +428,495 @@ export const IronShopSettings = () => {
     return t("ironManagement.unknownCustomerType", "Unknown customer type");
   };
 
-  const priceColumns: ColumnDef<BrandIronPriceItem, unknown>[] = [
-    {
-      accessorKey: "dictBrandCode",
-      header: t("ironManagement.columns.brand"),
-      cell: ({ getValue }) => getValue() || "-",
-    },
-    {
-      accessorKey: "ironTypeName",
-      header: t("ironManagement.columns.ironType"),
-      cell: ({ getValue }) => getValue() || "-",
-    },
-    {
-      id: "customerType",
-      header: t("ironManagement.columns.customerType"),
-      cell: ({ row }) => getCustomerTypeLabel(row.original),
-    },
-    {
-      accessorKey: "pricePerKg",
-      header: t("ironManagement.columns.pricePerKg"),
-      cell: ({ getValue }) => {
-        const value = getValue();
-        return typeof value === "number"
-          ? value.toLocaleString()
-          : value || "-";
-      },
-    },
-    {
-      id: "recalculateStepCount",
-      header: t("ironManagement.columns.recalculateStepCount", "Recalc steps"),
-      cell: ({ row }) => {
-        const steps = row.original.recalculateSteps || [];
-        const count = row.original.recalculateStepCount ?? steps.length;
-        return count > 0 ? (
-          <span
-            style={{
-              display: "inline-flex",
-              minWidth: 30,
-              justifyContent: "center",
-              padding: "4px 10px",
-              borderRadius: 6,
-              background: "rgba(196, 169, 106, 0.12)",
-              color: "#d2bf8a",
-              fontWeight: 600,
-              fontSize: 12,
-            }}
-          >
-            {count}
-          </span>
-        ) : (
-          <span style={{ color: "#aab1a9" }}>-</span>
-        );
-      },
-    },
-    {
-      id: "recalculateSteps",
-      header: t("ironManagement.columns.recalculateSteps", "Recalc step prices"),
-      cell: ({ row }) => {
-        const steps = row.original.recalculateSteps || [];
-        return steps.length > 0 ? (
-          <div style={{ display: "grid", gap: 6 }}>
-            {steps.map((step) => (
-              <div
-                key={step.stepNumber}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  background: "rgba(196, 169, 106, 0.04)",
-                  border: "1px solid rgba(196, 169, 106, 0.16)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span style={{ color: "#c9cec5", fontWeight: 600 }}>
-                  {t("ironManagement.recalculateStepLabel", "Step {{step}}:", {
-                    step: step.stepNumber,
-                  })}
-                </span>
-                <span style={{ color: "#e3e5de" }}>
-                  {step.pricePerKg.toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <span style={{ color: "#aab1a9" }}>
-            {t("ironManagement.noRecalculateSteps", "No steps")}
-          </span>
-        );
-      },
-    },
-    {
-      id: "actions",
-      header: t("common.actions"),
-      cell: ({ row }) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <Button variant="danger" size="small" onClick={() => void deletePrice(row.original.id)}>
-            {t("common.delete")}
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  const groupedPriceRules = useMemo(() => {
+    const groups = new Map<
+      string,
+      { brandCode: string; ironTypeName: string; items: BrandIronPriceItem[] }
+    >();
+
+    prices.forEach((item) => {
+      const key = `${item.dictBrandId}-${item.ironTypeId}`;
+      const group = groups.get(key) ?? {
+        brandCode: item.dictBrandCode,
+        ironTypeName: item.ironTypeName,
+        items: [],
+      };
+      group.items.push(item);
+      groups.set(key, group);
+    });
+
+    return Array.from(groups.entries()).map(([key, group]) => ({ key, ...group }));
+  }, [prices]);
 
   return (
-    <div style={{ display: "grid", gap: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <h3>{t("ironManagement.title", "Iron Shop Settings")}</h3>
-        {activeTab === "iron-types" ? (
-          <Button variant="primary" size="medium" onClick={handleOpenCreateIronType}>
-            {t("ironManagement.addIronType")}
-          </Button>
-        ) : null}
+    <div className={styles.ironShop}>
+      <header className={styles.workspaceHeader}>
+        <div className={styles.workspaceHeading}>
+          <span className={styles.workspaceIcon} aria-hidden="true">
+            <Wrench size={20} />
+          </span>
+          <div>
+            <span className={styles.workspaceEyebrow}>
+              {t("ironManagement.section.ironTypes")} · {t("ironManagement.section.priceRules")}
+            </span>
+            <h2>{t("ironManagement.title", "Iron Shop Settings")}</h2>
+            <p>{t("ironManagement.workspaceHint", "Define iron types first, then configure their pricing rules.")}</p>
+          </div>
+        </div>
+        <div className={styles.workspaceMetrics}>
+          <div className={styles.metric}>
+            <span>{t("ironManagement.tabs.ironTypes", "Iron Types")}</span>
+            <strong>{ironTypes.length}</strong>
+          </div>
+          <div className={styles.metricDivider} />
+          <div className={styles.metric}>
+            <span>{t("common.active")}</span>
+            <strong>{activeIronTypeCount}</strong>
+          </div>
+        </div>
+      </header>
+
+      <div className={styles.workflowTabs} role="tablist" aria-label={t("ironManagement.ariaLabels.ironManagementSections")}>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "iron-types"}
+          aria-controls="iron-types-panel"
+          className={`${styles.workflowTab} ${activeTab === "iron-types" ? styles.workflowTabActive : ""}`}
+          onClick={() => setActiveTab("iron-types")}
+        >
+          <Layers3 size={17} aria-hidden="true" />
+          <span>{t("ironManagement.tabs.ironTypes", "Iron Types")}</span>
+          <span className={styles.workflowStep}>01</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "prices"}
+          aria-controls="price-rules-panel"
+          className={`${styles.workflowTab} ${activeTab === "prices" ? styles.workflowTabActive : ""}`}
+          onClick={() => setActiveTab("prices")}
+        >
+          <Tags size={17} aria-hidden="true" />
+          <span>{t("ironManagement.tabs.priceRules", "Price Rules")}</span>
+          <span className={styles.workflowStep}>02</span>
+        </button>
       </div>
 
-      {loading ? <div>{t("ironManagement.loading")}</div> : null}
-
-      <TabGroup variant="segmented">
-        <Tab
-          active={activeTab === "iron-types"}
-          text={t("ironManagement.tabs.ironTypes", "Iron Types")}
-          onClick={() => setActiveTab("iron-types")}
-        />
-        <Tab
-          active={activeTab === "prices"}
-          text={t("ironManagement.tabs.priceRules", "Price Rules")}
-          onClick={() => setActiveTab("prices")}
-        />
-      </TabGroup>
+      {loading && (
+        <div className={styles.loadingState} role="status" aria-live="polite">
+          <LoaderCircle size={18} aria-hidden="true" />
+          {t("ironManagement.loading")}
+        </div>
+      )}
 
       {activeTab === "iron-types" ? (
-        <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
-          <h4>{t("ironManagement.section.ironTypes", "Iron Types")}</h4>
-          <DataTable data={ironTypes} columns={ironTypeColumns} pageSize={10} />
-        </div>
-      ) : null}
-
-
-      {activeTab === "prices" ? (
-        <div style={{ display: "grid", gap: 16 }}>
-          <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
-            <h4>{t("ironManagement.section.priceRules", "Price Rules")}</h4>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <Select value={selectedBrandId} onChange={(e) => setSelectedBrandId(e.target.value)}>
+        <section id="iron-types-panel" role="tabpanel" className={styles.workspacePanel}>
+          <header className={styles.panelHeader}>
+            <div className={styles.panelTitleGroup}>
+              <span className={styles.panelIcon} aria-hidden="true"><Layers3 size={17} /></span>
+              <div>
+                <h3>{t("ironManagement.section.ironTypes", "Iron Types")}</h3>
+                <p>{t("ironManagement.ironTypesHint", "Create the iron types that will be used in brand pricing rules.")}</p>
+              </div>
+            </div>
+            <Button variant="primary" size="medium" onClick={handleOpenCreateIronType}>
+              <Plus size={16} aria-hidden="true" />
+              {t("ironManagement.addIronType")}
+            </Button>
+          </header>
+          {ironTypes.length === 0 && !loading ? (
+            <div className={styles.emptyState}>
+              <Layers3 size={22} aria-hidden="true" />
+              <strong>{t("ironManagement.ironTypesEmpty", "No iron types yet")}</strong>
+              <span>{t("ironManagement.ironTypesHint", "Create the iron types that will be used in brand pricing rules.")}</span>
+            </div>
+          ) : (
+            <div className={styles.ironTypeGrid}>
+              {ironTypes.map((item) => (
+                <article key={item.id} className={styles.ironTypeCard}>
+                  <div className={styles.ironTypeIdentity}>
+                    <span className={styles.ironTypeBadge} aria-hidden="true">
+                      <Layers3 size={17} />
+                    </span>
+                    <div className={styles.ironTypeCopy}>
+                      <strong>{item.name || item.code}</strong>
+                      <span>{item.code} · #{item.id}</span>
+                    </div>
+                    <span className={`${styles.typeStatus} ${item.isActive ? styles.typeStatusActive : styles.typeStatusInactive}`}>
+                      {item.isActive ? <CircleCheck size={13} aria-hidden="true" /> : <CircleX size={13} aria-hidden="true" />}
+                      {item.isActive ? t("common.active") : t("common.inactive")}
+                    </span>
+                  </div>
+                  <div className={styles.ironTypeActions}>
+                    <IconButton
+                      size="small"
+                      variant="secondary"
+                      icon={<Pencil size={14} />}
+                      ariaLabel={`${t("common.edit")}: ${item.name || item.code}`}
+                      title={t("common.edit")}
+                      onClick={() => handleEditIronType(item)}
+                    />
+                    <IconButton
+                      size="small"
+                      variant="secondary"
+                      className={styles.deleteRuleButton}
+                      icon={<Trash2 size={14} />}
+                      ariaLabel={`${t("common.delete")}: ${item.name || item.code}`}
+                      title={t("common.delete")}
+                      onClick={() => void deleteIronType(item.id)}
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : (
+        <div id="price-rules-panel" role="tabpanel" className={styles.priceWorkspace}>
+          <section className={styles.workspacePanel}>
+            <header className={styles.panelHeader}>
+              <div className={styles.panelTitleGroup}>
+                <span className={styles.panelIcon} aria-hidden="true"><Filter size={17} /></span>
+                <div>
+                  <h3>{t("ironManagement.section.priceRules", "Price Rules")}</h3>
+                  <p>{t("ironManagement.priceRulesHint", "Filter by brand and iron type to review configured prices.")}</p>
+                </div>
+              </div>
+              <span className={styles.ruleCount}>{prices.length}</span>
+            </header>
+            <div className={styles.filterToolbar}>
+              <Select
+                label={t("ironManagement.columns.brand")}
+                value={selectedBrandId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(e) => setSelectedBrandId(e.target.value)}
+              >
                 <option value="">{t("common.all", "All brands")}</option>
                 {brands.map((brand) => (
-                  <option key={brand.id} value={brand.id}>
-                    {brand.code}
-                  </option>
+                  <option key={brand.id} value={brand.id}>{brand.code}</option>
                 ))}
               </Select>
-              <Select value={selectedIronTypeId} onChange={(e) => setSelectedIronTypeId(e.target.value)}>
+              <Select
+                label={t("ironManagement.columns.ironType")}
+                value={selectedIronTypeId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(e) => setSelectedIronTypeId(e.target.value)}
+              >
                 <option value="">{t("common.all", "All iron types")}</option>
                 {ironTypes.map((ironType) => (
-                  <option key={ironType.id} value={ironType.id}>
-                    {ironType.name || ironType.code}
-                  </option>
+                  <option key={ironType.id} value={ironType.id}>{ironType.name || ironType.code}</option>
                 ))}
               </Select>
-              <Button variant="secondary" size="small" onClick={() => { setSelectedBrandId(""); setSelectedIronTypeId(""); }}>
+              <Button
+                variant="secondary"
+                size="medium"
+                className={styles.resetFilters}
+                onClick={() => { setSelectedBrandId(""); setSelectedIronTypeId(""); }}
+              >
+                <RotateCcw size={15} aria-hidden="true" />
                 {t("common.reset")}
               </Button>
             </div>
-            <DataTable data={prices} columns={priceColumns} pageSize={10} />
-          </div>
+            {groupedPriceRules.length ? (
+              <div className={styles.priceRuleGrid}>
+                {groupedPriceRules.map((group) => (
+                  <article key={group.key} className={styles.priceRuleCard}>
+                    <header className={styles.priceRuleHeader}>
+                      <div>
+                        <span>{group.brandCode || "—"}</span>
+                        <strong>{group.ironTypeName || "—"}</strong>
+                      </div>
+                      <span className={styles.customerCount}>{group.items.length}</span>
+                    </header>
+                    <div className={styles.priceRuleRows}>
+                      {group.items.map((item) => {
+                        const steps = item.recalculateSteps || [];
+                        const stepCount = item.recalculateStepCount ?? steps.length;
 
-          <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
-            <h4>{t("ironManagement.addPrice", "Create Base Price")}</h4>
-            <p style={{ color: "#aab1a9", fontSize: 14 }}>
-              {t("ironManagement.note.basePriceHint", "Select brand and iron type, then input prices for all customer types")}
-            </p>
-            <Select value={priceForm.autoBrandId} onChange={(e) => setPriceForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}>
-              <option value="">{t("ironManagement.form.selectBrand", "Select brand")}</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.code}
-                </option>
-              ))}
-            </Select>
-            <Select value={priceForm.ironTypeId} onChange={(e) => setPriceForm((prev) => ({ ...prev, ironTypeId: e.target.value }))}>
-              <option value="">{t("ironManagement.form.selectIronType", "Select iron type")}</option>
-              {ironTypes.map((ironType) => (
-                <option key={ironType.id} value={ironType.id}>
-                  {ironType.name || ironType.code}
-                </option>
-              ))}
-            </Select>
-            
-            <div style={{ display: "grid", gap: 12, padding: 12, background: "rgba(196, 169, 106, 0.035)", borderRadius: 6, border: "1px solid rgba(196, 169, 106, 0.14)" }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#c9cec5", margin: 0 }}>
-                {t("ironManagement.pricesByCustomerType", "Prices by Customer Type")}
-              </p>
-              {customerTypes && customerTypes.length > 0 ? (
-                <div style={{ display: "grid", gap: 10 }}>
-                  {customerTypes.map((customerType) => (
-                    <div key={customerType.id} style={{ display: "grid", gap: 4 }}>
-                      <label style={{ fontSize: 12, fontWeight: 500, color: "#c9cec5" }}>
-                        {customerType.code} - {t("ironManagement.form.pricePerKg", "Price Per Kg")}
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="0.00"
-                        value={priceForm.prices[customerType.id] || ""}
-                        onChange={(e) =>
-                          setPriceForm((prev) => ({
-                            ...prev,
-                            prices: {
-                              ...prev.prices,
-                              [customerType.id]: e.target.value,
-                            },
-                          }))
-                        }
-                        style={{
-                          padding: "8px 12px",
-                          border: "1px solid rgba(196, 169, 106, 0.2)",
-                          borderRadius: 6,
-                          background: "rgba(255, 255, 255, 0.04)",
-                          color: "#e3e5de",
-                          fontSize: 14,
-                          fontFamily: "inherit",
-                        }}
-                      />
+                        return (
+                          <div key={item.id} className={styles.priceRuleRow}>
+                            <span className={styles.customerTypeTag}>
+                              {getCustomerTypeLabel(item)}
+                            </span>
+                            <strong className={styles.rulePrice}>
+                              {item.pricePerKg.toLocaleString()}
+                              <small>AMD/kg</small>
+                            </strong>
+                            <span className={styles.stepCount}>
+                              {stepCount > 0 ? stepCount : "—"}
+                            </span>
+                            <div className={styles.stepPriceList}>
+                              {steps.length ? steps.map((step) => (
+                                <span key={step.stepNumber}>
+                                  {t("ironManagement.recalculateStepLabel", "Step {{step}}:", {
+                                    step: step.stepNumber,
+                                  })} {step.pricePerKg.toLocaleString()}
+                                </span>
+                              )) : (
+                                <span className={styles.noSteps}>
+                                  {t("ironManagement.noRecalculateSteps", "No steps")}
+                                </span>
+                              )}
+                            </div>
+                            <Button
+                              variant="danger"
+                              size="small"
+                              className={styles.deleteRuleButton}
+                              aria-label={`${t("common.delete")}: ${group.brandCode} / ${group.ironTypeName} / ${getCustomerTypeLabel(item)}`}
+                              title={t("common.delete")}
+                              onClick={() => void deletePrice(item.id)}
+                            >
+                              <Trash2 size={14} aria-hidden="true" />
+                            </Button>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ color: "#aab1a9", fontSize: 13, padding: "8px 0" }}>
-                  {t("common.loading", "Loading...")}
-                </div>
-              )}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyPriceRules}>
+                <Tags size={21} aria-hidden="true" />
+                <span>{t("ironManagement.noPricesYet", "No prices yet. Add a pricing rule below.")}</span>
+              </div>
+            )}
+          </section>
+
+          <div className={styles.priceFormWorkspace}>
+            <div className={styles.priceFormTabs} role="tablist" aria-label={t("ironManagement.priceSetupModes", "Price setup modes")}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activePriceForm === "base"}
+                aria-controls="iron-base-price-panel"
+                className={`${styles.priceFormTab} ${activePriceForm === "base" ? styles.priceFormTabActive : ""}`}
+                onClick={() => setActivePriceForm("base")}
+              >
+                <CircleDollarSign size={16} aria-hidden="true" />
+                {t("ironManagement.addPrice", "Create Base Price")}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activePriceForm === "recalculation"}
+                aria-controls="iron-recalculation-panel"
+                className={`${styles.priceFormTab} ${activePriceForm === "recalculation" ? styles.priceFormTabActive : ""}`}
+                onClick={() => setActivePriceForm("recalculation")}
+              >
+                <Wrench size={16} aria-hidden="true" />
+                {t("ironManagement.addRecalculationStep", "Add Recalculation Step")}
+              </button>
             </div>
 
-            <div style={{ display: "grid", gap: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-                <Button variant="secondary" size="medium" onClick={() => resetPriceForm()}>
+            {activePriceForm === "base" ? (
+            <section id="iron-base-price-panel" role="tabpanel" className={styles.ruleFormCard}>
+              <header className={styles.formCardHeader}>
+                <span className={styles.formIcon} aria-hidden="true"><CircleDollarSign size={18} /></span>
+                <div>
+                  <h3>{t("ironManagement.addPrice", "Create Base Price")}</h3>
+                  <p>{t("ironManagement.note.basePriceHint", "Select brand and iron type, then input prices for all customer types")}</p>
+                </div>
+              </header>
+              <div className={styles.formFields}>
+                <Select
+                  label={t("ironManagement.columns.brand")}
+                  value={priceForm.autoBrandId}
+                  searchable
+                  searchPlaceholder={t("common.search")}
+                  onChange={(e) => setPriceForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}
+                >
+                  <option value="">{t("ironManagement.form.selectBrand", "Select brand")}</option>
+                  {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.code}</option>)}
+                </Select>
+                <Select
+                  label={t("ironManagement.columns.ironType")}
+                  value={priceForm.ironTypeId}
+                  searchable
+                  searchPlaceholder={t("common.search")}
+                  onChange={(e) => setPriceForm((prev) => ({ ...prev, ironTypeId: e.target.value }))}
+                >
+                  <option value="">{t("ironManagement.form.selectIronType", "Select iron type")}</option>
+                  {ironTypes.map((ironType) => <option key={ironType.id} value={ironType.id}>{ironType.name || ironType.code}</option>)}
+                </Select>
+              </div>
+
+              <div className={styles.customerPrices}>
+                <h4>{t("ironManagement.pricesByCustomerType", "Prices by Customer Type")}</h4>
+                {customerTypes.length > 0 ? (
+                  <div className={styles.customerPriceGrid}>
+                    {customerTypes.map((customerType) => (
+                      <TextField
+                        key={customerType.id}
+                        type="number"
+                        label={`${customerType.code} · ${t("ironManagement.form.pricePerKg", "Price Per Kg")}`}
+                        placeholder="0.00"
+                        value={priceForm.prices[customerType.id] || ""}
+                        onChange={(e) => setPriceForm((prev) => ({
+                          ...prev,
+                          prices: { ...prev.prices, [customerType.id]: e.target.value },
+                        }))}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <span className={styles.mutedState}>{t("common.loading", "Loading...")}</span>
+                )}
+              </div>
+
+              <footer className={styles.formActions}>
+                <Button variant="secondary" size="medium" onClick={resetPriceForm}>
+                  <RotateCcw size={15} aria-hidden="true" />
                   {t("common.reset")}
                 </Button>
                 <Button variant="primary" size="medium" onClick={() => void submitPrice()}>
+                  <Plus size={16} aria-hidden="true" />
                   {t("ironManagement.addPrice", "Create Base Price")}
                 </Button>
+              </footer>
+            </section>
+            ) : (
+            <section id="iron-recalculation-panel" role="tabpanel" className={styles.ruleFormCard}>
+              <header className={styles.formCardHeader}>
+                <span className={styles.formIcon} aria-hidden="true"><Wrench size={18} /></span>
+                <div>
+                  <h3>{t("ironManagement.addRecalculationStep", "Add Recalculation Step")}</h3>
+                  <p>{t("ironManagement.note.recalculationStepHint", "Select brand and iron type, then add step prices for Standard customers (Step 1, Step 2, etc.)")}</p>
+                </div>
+              </header>
+              <div className={styles.formFields}>
+                <Select
+                  label={t("ironManagement.columns.brand")}
+                  value={recalculationStepForm.autoBrandId}
+                  searchable
+                  searchPlaceholder={t("common.search")}
+                  onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}
+                >
+                  <option value="">{t("ironManagement.form.selectBrand", "Select brand")}</option>
+                  {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.code}</option>)}
+                </Select>
+                <Select
+                  label={t("ironManagement.columns.ironType")}
+                  value={recalculationStepForm.ironTypeId}
+                  searchable
+                  searchPlaceholder={t("common.search")}
+                  onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, ironTypeId: e.target.value }))}
+                >
+                  <option value="">{t("ironManagement.form.selectIronType", "Select iron type")}</option>
+                  {ironTypes.map((ironType) => <option key={ironType.id} value={ironType.id}>{ironType.name || ironType.code}</option>)}
+                </Select>
+                <TextField
+                  type="number"
+                  label={t("ironManagement.form.pricePerKg", "Price Per Kg")}
+                  placeholder="0.00"
+                  value={recalculationStepForm.pricePerKg}
+                  onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, pricePerKg: e.target.value }))}
+                />
               </div>
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gap: 12, border: "1px solid rgba(196, 169, 106, 0.18)", borderRadius: 8, padding: 16, background: "linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98))" }}>
-            <h4>{t("ironManagement.addRecalculationStep", "Add Recalculation Step (Standard Customer)")}</h4>
-            <p style={{ color: "#aab1a9", fontSize: 14 }}>
-              {t("ironManagement.note.recalculationStepHint", "Select brand and iron type, then add step prices for Standard customers (Step 1, Step 2, etc.)")}
-            </p>
-            <Select value={recalculationStepForm.autoBrandId} onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}>
-              <option value="">{t("ironManagement.form.selectBrand", "Select brand")}</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.code}
-                </option>
-              ))}
-            </Select>
-            <Select value={recalculationStepForm.ironTypeId} onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, ironTypeId: e.target.value }))}>
-              <option value="">{t("ironManagement.form.selectIronType", "Select iron type")}</option>
-              {ironTypes.map((ironType) => (
-                <option key={ironType.id} value={ironType.id}>
-                  {ironType.name || ironType.code}
-                </option>
-              ))}
-            </Select>
-            <TextField
-              label={t("ironManagement.form.pricePerKg", "Price Per Kg")}
-              value={recalculationStepForm.pricePerKg}
-              onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, pricePerKg: e.target.value }))}
-            />
-            <div style={{ display: "grid", gap: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-                <Button variant="secondary" size="medium" onClick={() => resetRecalculationStepForm()}>
+              <footer className={styles.formActions}>
+                <Button variant="secondary" size="medium" onClick={resetRecalculationStepForm}>
+                  <RotateCcw size={15} aria-hidden="true" />
                   {t("common.reset")}
                 </Button>
                 <Button variant="primary" size="medium" onClick={() => void submitRecalculationStep()}>
+                  <Plus size={16} aria-hidden="true" />
                   {t("ironManagement.addRecalculationStep", "Add Step")}
                 </Button>
-              </div>
-            </div>
+              </footer>
+            </section>
+            )}
           </div>
         </div>
-      ) : null}
+      )}
 
-      <Modal
-        open={modalOpen}
-        onOpenChange={(open) => {
-          setModalOpen(open);
-          if (!open) resetIronTypeForm();
-        }}
-        title={
-          editingId
-            ? t("ironManagement.editIronType", "Edit Iron Type")
-            : t("ironManagement.addIronType", "Add Iron Type")
-        }
-      >
-        <div style={{ display: "grid", gap: 12 }}>
-          <TextField
-            label={t("ironManagement.form.code", "Code")}
-            value={form.code}
-            onChange={(e) => setForm((prev) => ({ ...prev, code: e.target.value }))}
-          />
-          <TextField
-            label={t("ironManagement.form.en", "EN")}
-            value={form.translations.en}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                translations: { ...prev.translations, en: e.target.value },
-              }))
-            }
-          />
-          <TextField
-            label={t("ironManagement.form.hy", "HY")}
-            value={form.translations.hy}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                translations: { ...prev.translations, hy: e.target.value },
-              }))
-            }
-          />
-          <TextField
-            label={t("ironManagement.form.ru", "RU")}
-            value={form.translations.ru}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                translations: { ...prev.translations, ru: e.target.value },
-              }))
-            }
-          />
-          <Select
-            value={form.isActive ? "true" : "false"}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                isActive: e.target.value === "true",
-              }))
-            }
+      {typeDrawerOpen && createPortal(
+        <div className={styles.typeDrawerBackdrop} onMouseDown={closeTypeDrawer}>
+          <aside
+            className={styles.typeDrawer}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="iron-type-drawer-title"
+            onMouseDown={(event) => event.stopPropagation()}
           >
-            <option value="true">{t("common.active")}</option>
-            <option value="false">{t("common.inactive")}</option>
-          </Select>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <Button variant="secondary" size="medium" onClick={() => setModalOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button variant="primary" size="medium" onClick={() => void submitIronType()}>
-              {t("common.save")}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+            <header className={styles.typeDrawerHeader}>
+              <span className={styles.typeDrawerIcon} aria-hidden="true">
+                <Layers3 size={20} />
+              </span>
+              <div>
+                <span className={styles.drawerEyebrow}>{t("ironManagement.tabs.ironTypes")}</span>
+                <h2 id="iron-type-drawer-title">
+                  {editingId
+                    ? t("ironManagement.editIronType", "Edit Iron Type")
+                    : t("ironManagement.addIronType", "Add Iron Type")}
+                </h2>
+              </div>
+              <button
+                type="button"
+                className={styles.typeDrawerClose}
+                onClick={closeTypeDrawer}
+                aria-label={t("common.close")}
+                title={t("common.close")}
+              >
+                <X size={18} />
+              </button>
+            </header>
+            <div className={styles.typeDrawerBody}>
+              <TextField
+                label={t("ironManagement.form.code", "Code")}
+                value={form.code}
+                onChange={(e) => setForm((prev) => ({ ...prev, code: e.target.value }))}
+              />
+              <TextField
+                label={t("ironManagement.form.en", "EN")}
+                value={form.translations.en}
+                onChange={(e) => setForm((prev) => ({
+                  ...prev,
+                  translations: { ...prev.translations, en: e.target.value },
+                }))}
+              />
+              <TextField
+                label={t("ironManagement.form.hy", "HY")}
+                value={form.translations.hy}
+                onChange={(e) => setForm((prev) => ({
+                  ...prev,
+                  translations: { ...prev.translations, hy: e.target.value },
+                }))}
+              />
+              <TextField
+                label={t("ironManagement.form.ru", "RU")}
+                value={form.translations.ru}
+                onChange={(e) => setForm((prev) => ({
+                  ...prev,
+                  translations: { ...prev.translations, ru: e.target.value },
+                }))}
+              />
+              <Select
+                label={t("ironManagement.form.status", "Status")}
+                value={form.isActive ? "true" : "false"}
+                onChange={(e) => setForm((prev) => ({
+                  ...prev,
+                  isActive: e.target.value === "true",
+                }))}
+              >
+                <option value="true">{t("common.active")}</option>
+                <option value="false">{t("common.inactive")}</option>
+              </Select>
+            </div>
+            <footer className={styles.typeDrawerFooter}>
+              <Button variant="secondary" size="medium" onClick={closeTypeDrawer}>
+                {t("common.cancel")}
+              </Button>
+              <Button variant="primary" size="medium" onClick={() => void submitIronType()}>
+                {t("common.save")}
+              </Button>
+            </footer>
+          </aside>
+        </div>,
+        document.body,
+      )}
 
       <ConfirmationModal
         open={!!pendingDelete}

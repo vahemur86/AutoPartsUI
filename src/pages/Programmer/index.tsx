@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Cpu, Globe, LogOut, Pencil, Plus, RefreshCw, RotateCcw, Save, X } from "lucide-react";
 
 import {
   addProgrammingPricing,
@@ -56,6 +57,11 @@ const formatMoney = (value: number | null | undefined) => {
   return value.toFixed(2);
 };
 
+const toDateInputValue = (date: Date) => {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+};
+
 export const ProgrammerPage = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -88,6 +94,12 @@ export const ProgrammerPage = () => {
   const [sellingPrice, setSellingPrice] = useState("");
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProgrammerTab>("add");
+  const [reportDateTo, setReportDateTo] = useState(() => toDateInputValue(new Date()));
+  const [reportDateFrom, setReportDateFrom] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return toDateInputValue(date);
+  });
 
   const modelOptions = useMemo(() => lookups.models, [lookups.models]);
   const languages = useMemo(
@@ -180,11 +192,24 @@ export const ProgrammerPage = () => {
   };
 
   const loadReport = async () => {
+    const from = new Date(`${reportDateFrom}T00:00:00`);
+    const to = new Date(`${reportDateTo}T23:59:59.999`);
+    if (
+      !reportDateFrom ||
+      !reportDateTo ||
+      Number.isNaN(from.getTime()) ||
+      Number.isNaN(to.getTime()) ||
+      from > to
+    ) {
+      toast.error(t("programmerPage.messages.invalidReportDateRange"));
+      return;
+    }
+
     setIsLoadingReport(true);
     try {
       const reportData = await getMyProgrammerReport({
-        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        to: new Date().toISOString(),
+        from: from.toISOString(),
+        to: to.toISOString(),
       });
       setReport(normalizeProgrammerReport(reportData));
     } catch (error: unknown) {
@@ -282,12 +307,16 @@ export const ProgrammerPage = () => {
     }
 
     if (
+      !serviceCost.trim() ||
+      !sellingPrice.trim() ||
       [
         parsedBrandId,
         parsedModelId,
         parsedServiceCost,
         parsedSellingPrice,
-      ].some((value) => Number.isNaN(value)) ||
+      ].some((value) => !Number.isFinite(value)) ||
+      parsedServiceCost < 0 ||
+      parsedSellingPrice < 0 ||
       parsedFuelTypeIds.length === 0 ||
       parsedEngineIds.length === 0 ||
       parsedMarketIds.length === 0 ||
@@ -355,7 +384,14 @@ export const ProgrammerPage = () => {
     const parsedServiceCost = Number(editingCost);
     const parsedSellingPrice = Number(editingSellingPrice);
 
-    if (Number.isNaN(parsedServiceCost) || Number.isNaN(parsedSellingPrice)) {
+    if (
+      !editingCost.trim() ||
+      !editingSellingPrice.trim() ||
+      !Number.isFinite(parsedServiceCost) ||
+      !Number.isFinite(parsedSellingPrice) ||
+      parsedServiceCost < 0 ||
+      parsedSellingPrice < 0
+    ) {
       toast.error(t("programmerPage.messages.invalidCosts"));
       return;
     }
@@ -398,21 +434,30 @@ export const ProgrammerPage = () => {
     <div className={styles.pageContainer}>
       <section className={styles.heroSection}>
         <div className={styles.heroHeaderRow}>
-          <div>
+          <div className={styles.headerBrand}>
+            <div className={styles.brandMark} aria-hidden="true">
+              <Cpu size={21} />
+            </div>
+            <div className={styles.headerCopy}>
             <div className={styles.userInfoRow}>
               <span className={styles.userInfoLabel}>{t("programmerPage.user.username")}</span>
               <span className={styles.userInfoValue}>{displayUsername}</span>
             </div>
             <p className={styles.badge}>{t("programmerPage.badge")}</p>
             <h1 className={styles.title}>{t("programmerPage.title")}</h1>
+            </div>
           </div>
           <div className={styles.heroActions}>
             <div className={styles.languageSelectWrapper}>
+              <Globe className={styles.languageSelectIcon} size={15} aria-hidden="true" />
               <Select
                 placeholder={t("common.select")}
                 onChange={handleLanguageChange}
                 value={currentLanguageCode}
                 disabled={languagesState.isLoading || languages.length === 0}
+                searchable
+                searchPlaceholder={t("common.search")}
+                containerClassName={styles.languageSelectContainer}
               >
                 {languages.map((lang) => (
                   <option key={lang.id} value={lang.code}>
@@ -423,10 +468,11 @@ export const ProgrammerPage = () => {
             </div>
 
             <Button
-              variant="danger"
+              variant="secondary"
               onClick={() => setIsLogoutModalOpen(true)}
               className={styles.logoutButton}
             >
+              <LogOut size={16} />
               {t("header.logout")}
             </Button>
           </div>
@@ -441,18 +487,24 @@ export const ProgrammerPage = () => {
           variant="underline"
           active={activeTab === "add"}
           text={t("programmerPage.tabs.add")}
+          icon={<Plus size={16} color="#d7c38b" />}
+          className={styles.pageTab}
           onClick={() => setActiveTab("add")}
         />
         <Tab
           variant="underline"
           active={activeTab === "entries"}
           text={t("programmerPage.tabs.entries")}
+          icon={<Cpu size={16} color="#d7c38b" />}
+          className={styles.pageTab}
           onClick={() => setActiveTab("entries")}
         />
         <Tab
           variant="underline"
           active={activeTab === "report"}
           text={t("programmerPage.tabs.report")}
+          icon={<RefreshCw size={16} color="#d7c38b" />}
+          className={styles.pageTab}
           onClick={() => {
             setActiveTab("report");
             if (!report) {
@@ -480,6 +532,8 @@ export const ProgrammerPage = () => {
                 setSelectedYears([]);
               }}
               placeholder={t("programmerPage.placeholders.selectBrand")}
+              searchable
+              searchPlaceholder={t("common.search")}
             >
               {lookups.brands.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -491,6 +545,7 @@ export const ProgrammerPage = () => {
             <Select
               label={t("programmerPage.fields.model")}
               value={modelId}
+              disabled={!brandId}
               onChange={(event) => {
                 setModelId(event.target.value);
                 setSelectedFuelTypeIds([]);
@@ -499,6 +554,8 @@ export const ProgrammerPage = () => {
                 setSelectedYears([]);
               }}
               placeholder={t("programmerPage.placeholders.selectModel")}
+              searchable
+              searchPlaceholder={t("common.search")}
             >
               {modelOptions.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -511,53 +568,62 @@ export const ProgrammerPage = () => {
               label={t("programmerPage.fields.fuelType")}
               value={selectedFuelTypeIds}
               onChange={setSelectedFuelTypeIds}
+              disabled={!modelId}
               placeholder={t("programmerPage.placeholders.selectFuelType")}
               options={lookups.fuelTypes.map((item) => ({
                 value: String(item.id),
                 label: item.name,
               }))}
               searchable
+              searchPlaceholder={t("common.search")}
             />
 
             <MultiSelect
               label={t("programmerPage.fields.engine")}
               value={selectedEngineIds}
               onChange={setSelectedEngineIds}
+              disabled={!modelId}
               placeholder={t("programmerPage.placeholders.selectEngine")}
               options={lookups.engines.map((item) => ({
                 value: String(item.id),
                 label: item.name,
               }))}
               searchable
+              searchPlaceholder={t("common.search")}
             />
 
             <MultiSelect
               label={t("programmerPage.fields.location")}
               value={selectedMarketIds}
               onChange={setSelectedMarketIds}
+              disabled={!modelId}
               placeholder={t("programmerPage.placeholders.selectLocation")}
               options={lookups.markets.map((item) => ({
                 value: String(item.id),
                 label: item.name,
               }))}
               searchable
+              searchPlaceholder={t("common.search")}
             />
 
             <MultiSelect
               label={t("programmerPage.fields.year")}
               value={selectedYears}
               onChange={setSelectedYears}
+              disabled={!modelId}
               placeholder={t("programmerPage.placeholders.selectYear")}
               options={years.map((item) => ({
                 value: String(item),
                 label: String(item),
               }))}
               searchable
+              searchPlaceholder={t("common.search")}
             />
           </div>
 
           <div className={styles.actionsRow}>
             <Button variant="secondary" onClick={resetVehicleFilters}>
+              <RotateCcw size={16} />
               {t("programmerPage.actions.resetFilters")}
             </Button>
           </div>
@@ -577,6 +643,8 @@ export const ProgrammerPage = () => {
               value={selectedServiceId}
               onChange={(event) => setSelectedServiceId(event.target.value)}
               placeholder={t("programmerPage.placeholders.chooseService")}
+              searchable
+              searchPlaceholder={t("common.search")}
             >
               {services.map((service) => (
                 <option key={service.id} value={service.id}>
@@ -619,6 +687,7 @@ export const ProgrammerPage = () => {
               onClick={handleCreatePricing}
               disabled={isSaving || isBootstrapping || !canSubmitPricing}
             >
+              <Plus size={16} />
               {isSaving
                 ? t("programmerPage.actions.saving")
                 : t("programmerPage.actions.addPricing")}
@@ -633,10 +702,12 @@ export const ProgrammerPage = () => {
         <div className={styles.tableHeaderRow}>
           <h2 className={styles.cardTitle}>{t("programmerPage.sections.myEntries")}</h2>
           <Button variant="secondary" onClick={() => void loadMyEntries()}>
+            <RefreshCw size={16} />
             {t("common.refresh")}
           </Button>
         </div>
 
+        <div className={styles.tableScroll}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -706,6 +777,7 @@ export const ProgrammerPage = () => {
                               onClick={() => void saveCostEdit(entry.id)}
                               disabled={isSaving}
                             >
+                              <Save size={15} />
                               {t("common.save")}
                             </Button>
                             <Button
@@ -714,6 +786,7 @@ export const ProgrammerPage = () => {
                               onClick={cancelCostEdit}
                               disabled={isSaving}
                             >
+                              <X size={15} />
                               {t("common.cancel")}
                             </Button>
                           </>
@@ -723,6 +796,7 @@ export const ProgrammerPage = () => {
                             variant="secondary"
                             onClick={() => startCostEdit(entry)}
                           >
+                            <Pencil size={15} />
                             {t("programmerPage.actions.editPricing")}
                           </Button>
                         )}
@@ -734,6 +808,7 @@ export const ProgrammerPage = () => {
             )}
           </TableBody>
         </Table>
+        </div>
       </section>
       )}
 
@@ -741,9 +816,26 @@ export const ProgrammerPage = () => {
         <section className={styles.tableSection}>
           <div className={styles.tableHeaderRow}>
             <h2 className={styles.cardTitle}>{t("programmerPage.sections.report")}</h2>
-            <Button variant="secondary" onClick={() => void loadReport()} disabled={isLoadingReport}>
-              {isLoadingReport ? t("programmerPage.actions.saving") : t("common.refresh")}
-            </Button>
+            <div className={styles.reportControls}>
+              <TextField
+                label={t("programmerPage.fields.reportFrom")}
+                type="date"
+                value={reportDateFrom}
+                max={reportDateTo}
+                onChange={(event) => setReportDateFrom(event.target.value)}
+              />
+              <TextField
+                label={t("programmerPage.fields.reportTo")}
+                type="date"
+                value={reportDateTo}
+                min={reportDateFrom}
+                onChange={(event) => setReportDateTo(event.target.value)}
+              />
+              <Button variant="secondary" onClick={() => void loadReport()} disabled={isLoadingReport}>
+                <RefreshCw size={16} />
+                {isLoadingReport ? t("programmerPage.actions.saving") : t("common.refresh")}
+              </Button>
+            </div>
           </div>
 
           <div className={styles.reportSummaryGrid}>
@@ -765,6 +857,7 @@ export const ProgrammerPage = () => {
             </div>
           </div>
 
+          <div className={styles.tableScroll}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -791,6 +884,7 @@ export const ProgrammerPage = () => {
               )}
             </TableBody>
           </Table>
+          </div>
         </section>
       )}
 

@@ -25,6 +25,7 @@
 }
 
 .fitContainerTable {
+  width: 100%;
   min-width: 0;
   table-layout: fixed;
 }
@@ -37,6 +38,12 @@
 .fitContainerTable .tableHeader .tableCell {
   padding: 9px 10px;
   white-space: normal;
+  line-height: 1.35;
+}
+
+.fitContainerTable .tableRow .tableCell {
+  padding: 10px;
+  line-height: 1.4;
 }
 
 .stickyHeader {
@@ -264,5 +271,14 @@
 
   .expandedDetailContent {
     padding-left: 16px;
+  }
+
+  .fitContainerTable {
+    font-size: 12px;
+  }
+
+  .fitContainerTable .tableHeader .tableCell,
+  .fitContainerTable .tableRow .tableCell {
+    padding: 8px 6px;
   }
 }

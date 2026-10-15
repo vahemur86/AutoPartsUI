@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { ChevronDown, Eye, Power } from "lucide-react";
 
 import { DataTable } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
@@ -10,6 +11,8 @@ import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { RepaymentRule } from "@/types/repaymentRules";
 import styles from "./RepaymentRules.module.css";
+import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
+import { AgentTableDetails } from "@/pages/Agents/AgentTableDetails";
 
 const normalizeStatus = (status?: number | string | null) => {
   const value = String(status ?? "").trim().toLowerCase();
@@ -81,7 +84,6 @@ export const RepaymentRules = () => {
         id: "currentVersion",
         header: t("repaymentRules.fields.currentVersion"),
       },
-      { accessorKey: "createdAt", header: t("repaymentRules.fields.createdAt") },
       {
         id: "actions",
         header: t("repaymentRules.fields.actions"),
@@ -90,37 +92,50 @@ export const RepaymentRules = () => {
           const isActive = normalizeStatus(r.status) === "active";
           return (
             <div className={styles.actionsRow}>
-              <Button variant="secondary" size="small" onClick={() => navigate(`/agents/cash-powder/rules/${r.id}`)}>
-                {t("repaymentRules.actions.view")}
-              </Button>
-              {isActive ? (
-                <Button
-                  variant="danger"
-                  size="small"
-                  onClick={() => setConfirm({ open: true, rule: r })}
-                >
-                  {t("repaymentRules.actions.deactivate")}
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  size="small"
-                  onClick={async () => {
+              <AgentIconButton
+                size="medium"
+                tone="secondary"
+                icon={<ChevronDown size={16} />}
+                ariaLabel={`${t("common.details")} ${r.name}`}
+                title={t("common.details")}
+                aria-expanded={row.getIsExpanded()}
+                onClick={row.getToggleExpandedHandler()}
+              />
+              <AgentIconButton
+                size="medium"
+                tone="primary"
+                icon={<Eye size={16} />}
+                ariaLabel={`${t("repaymentRules.actions.view")} ${r.name}`}
+                title={t("repaymentRules.actions.view")}
+                onClick={() => navigate(`/agents/cash-powder/rules/${r.id}`)}
+              />
+              <AgentIconButton
+                size="medium"
+                tone={isActive ? "danger" : "primary"}
+                icon={<Power size={16} />}
+                ariaLabel={`${t(isActive ? "repaymentRules.actions.deactivate" : "repaymentRules.actions.activate")} ${r.name}`}
+                title={t(isActive ? "repaymentRules.actions.deactivate" : "repaymentRules.actions.activate")}
+                disabled={isMutating}
+                onClick={() => {
+                  if (isActive) {
+                    setConfirm({ open: true, rule: r });
+                    return;
+                  }
+
+                  void (async () => {
                     try {
                       setIsMutating(true);
                       await repaymentRulesService.activateRepaymentRule(r.id);
                       toast.success(t("repaymentRules.messages.activated"));
-                      load();
+                      await load();
                     } catch (error) {
                       toast.error(getApiErrorMessage(error, t("repaymentRules.errors.activateFailed")));
                     } finally {
                       setIsMutating(false);
                     }
-                  }}
-                >
-                  {t("repaymentRules.actions.activate")}
-                </Button>
-              )}
+                  })();
+                }}
+              />
             </div>
           );
         },
@@ -175,6 +190,15 @@ export const RepaymentRules = () => {
           columns={columns as any}
           data={items}
           isLoading={isLoading}
+          fitContainer
+          renderSubComponent={({ row }) => (
+            <AgentTableDetails
+              fields={[
+                { label: t("repaymentRules.fields.createdAt"), value: row.original.createdAt ? new Date(row.original.createdAt).toLocaleDateString() : "—" },
+                { label: t("repaymentRules.fields.currentVersion"), value: row.original.currentVersion ?? "—" },
+              ]}
+            />
+          )}
           noResultsText={t("repaymentRules.noRules")}
           loadingText={t("repaymentRules.loadingRules")}
         />

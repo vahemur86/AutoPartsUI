@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Save, X } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button, TextField, Textarea } from "@/ui-kit";
+import { TextField, Textarea } from "@/ui-kit";
 import { agentsService } from "@/services/agents";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { AgentDto, UpdateAgentRequest } from "@/types/agents";
 import styles from "./Agents.module.css";
+import { AgentActionButton } from "./AgentActionButton";
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -99,8 +101,12 @@ export const EditAgent = () => {
           <Textarea label={t("agents.fields.notes")} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} error={!!errors.notes} helperText={errors.notes} maxLength={1000} rows={4} />
         </div>
         <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => navigate(`/agents/${agent.id}`)}>{t("common.cancel")}</Button>
-          <Button onClick={() => void handleSubmit()} disabled={isSubmitting}>{isSubmitting ? t("common.saving") : t("common.save")}</Button>
+          <AgentActionButton tone="secondary" icon={<X size={16} />} onClick={() => navigate(`/agents/${agent.id}`)}>
+            {t("common.cancel")}
+          </AgentActionButton>
+          <AgentActionButton icon={<Save size={16} />} onClick={() => void handleSubmit()} disabled={isSubmitting}>
+            {isSubmitting ? t("common.saving") : t("common.save")}
+          </AgentActionButton>
         </div>
       </div>
     </div>

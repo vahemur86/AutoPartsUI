@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Eye, RotateCw } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button, DataTable, Select, Tab, TabGroup, TextField } from "@/ui-kit";
+import { DataTable, Select, Tab, TabGroup, TextField } from "@/ui-kit";
+import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
+import { AgentTableDetails } from "@/pages/Agents/AgentTableDetails";
 import {
   repaymentsService,
   type AutomaticRepaymentDashboardSummaryDto,
@@ -135,8 +138,6 @@ export const RepaymentManagement = () => {
     () => [
       { accessorKey: "deliveryNumber", header: "Delivery" },
       { accessorKey: "agentName", header: "Agent" },
-      { id: "deliveryValue", header: "Delivery Value", cell: ({ row }: any) => money(row.original.deliveryValueAmd) },
-      { accessorKey: "repaymentNumber", header: "Repayment" },
       { id: "amount", header: "Repayment Amount", cell: ({ row }: any) => money(row.original.debtRepaymentAmd ?? row.original.agentPayoutAmd) },
       { accessorKey: "status", header: "Status", cell: ({ row }: any) => <span className={getStatusTone(row.original.status)}>{row.original.status || "—"}</span> },
       { id: "createdAt", header: "Processed At", cell: ({ row }: any) => formatDate(row.original.createdAt) },
@@ -144,9 +145,14 @@ export const RepaymentManagement = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }: any) => (
-          <Button variant="secondary" size="small" onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.id}`)}>
-            View
-          </Button>
+          <AgentIconButton
+            size="medium"
+            tone="primary"
+            icon={<Eye size={16} />}
+            ariaLabel={`View ${row.original.repaymentNumber || row.original.deliveryNumber}`}
+            title="View repayment"
+            onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.id}`)}
+          />
         ),
       },
     ],
@@ -165,9 +171,14 @@ export const RepaymentManagement = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }: any) => (
-          <Button variant="secondary" size="small" onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.id}`)}>
-            View
-          </Button>
+          <AgentIconButton
+            size="medium"
+            tone="primary"
+            icon={<Eye size={16} />}
+            ariaLabel={`View ${row.original.repaymentNumber}`}
+            title="View repayment"
+            onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.id}`)}
+          />
         ),
       },
     ],
@@ -194,17 +205,23 @@ export const RepaymentManagement = () => {
         header: "Actions",
         cell: ({ row }: any) => (
           <div className={styles.actionRow}>
-            <Button
-              size="small"
-              variant="secondary"
+            <AgentIconButton
+              size="medium"
+              tone="primary"
+              icon={<RotateCw size={16} />}
+              ariaLabel={retryingId === row.original.powderDeliveryId ? "Retrying repayment" : "Retry repayment"}
+              title={retryingId === row.original.powderDeliveryId ? "Retrying repayment" : "Retry repayment"}
               onClick={() => retryFailed(row.original.powderDeliveryId)}
               disabled={retryingId === row.original.powderDeliveryId}
-            >
-              {retryingId === row.original.powderDeliveryId ? "Retrying..." : "Retry"}
-            </Button>
-            <Button size="small" variant="secondary" onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.powderDeliveryId}`)}>
-              Details
-            </Button>
+            />
+            <AgentIconButton
+              size="medium"
+              tone="secondary"
+              icon={<Eye size={16} />}
+              ariaLabel={`Details ${row.original.deliveryNumber}`}
+              title="Details"
+              onClick={() => navigate(`/agents/cash-powder/repayments/${row.original.powderDeliveryId}`)}
+            />
           </div>
         ),
       },
@@ -269,6 +286,17 @@ export const RepaymentManagement = () => {
             columns={automaticColumns as any}
             data={automaticItems}
             isLoading={loading}
+            fitContainer
+            renderSubComponent={({ row }) => (
+              <AgentTableDetails
+                fields={[
+                  { label: "Repayment", value: row.original.repaymentNumber || "—" },
+                  { label: "Delivery Value", value: money(row.original.deliveryValueAmd) },
+                  { label: "Debt Repayment", value: money(row.original.debtRepaymentAmd) },
+                  { label: "Agent Payout", value: money(row.original.agentPayoutAmd) },
+                ]}
+              />
+            )}
             noResultsText="No automatic repayments found."
             loadingText="Loading automatic repayments..."
           />
@@ -281,6 +309,7 @@ export const RepaymentManagement = () => {
             columns={allColumns as any}
             data={allItems}
             isLoading={loading}
+            fitContainer
             noResultsText="No repayments found."
             loadingText="Loading repayments..."
           />
@@ -293,6 +322,7 @@ export const RepaymentManagement = () => {
             columns={failedColumns as any}
             data={failedItems}
             isLoading={loading}
+            fitContainer
             noResultsText="No failed repayments."
             loadingText="Loading failed repayments..."
           />

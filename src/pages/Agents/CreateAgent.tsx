@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Plus, X } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
 import { getCustomers } from "@/services/customers";
@@ -12,6 +13,7 @@ import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { Customer } from "@/types/operator";
 import type { AgentTypeDto } from "@/types/agents";
 import styles from "./Agents.module.css";
+import { AgentActionButton } from "./AgentActionButton";
 
 const initialForm = {
   firstName: "",
@@ -179,8 +181,12 @@ export const CreateAgent = () => {
         </div>
 
         <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => navigate(-1)}>{t("common.cancel")}</Button>
-          <Button onClick={() => void handleSubmit()} disabled={isSubmitting || isLoading}>{isSubmitting ? t("agents.creating") : t("agents.createButton")}</Button>
+          <AgentActionButton tone="secondary" icon={<X size={16} />} onClick={() => navigate(-1)}>
+            {t("common.cancel")}
+          </AgentActionButton>
+          <AgentActionButton icon={<Plus size={16} />} onClick={() => void handleSubmit()} disabled={isSubmitting || isLoading}>
+            {isSubmitting ? t("agents.creating") : t("agents.createButton")}
+          </AgentActionButton>
         </div>
       </div>
     </div>

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Ban, CircleCheck, Eye, Plus } from "lucide-react";
 import { SectionHeader } from "@/components/common";
-import { Button, DataTable, ConfirmationModal } from "@/ui-kit";
+import { DataTable, ConfirmationModal } from "@/ui-kit";
+import { AgentActionButton, AgentIconButton } from "@/pages/Agents/AgentActionButton";
 import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { RepaymentRuleVersion, RepaymentRule } from "@/types/repaymentRules";
@@ -82,9 +84,9 @@ export const RepaymentRuleDetails = () => {
         const isActive = normalizeStatus(v.status) === "active";
         return (
           <div style={{ display: "flex", gap: 8 }}>
-            <Button variant="secondary" size="small" onClick={() => navigate(`/agents/cash-powder/rules/versions/${v.id}`)}>{t("repaymentRules.actions.view")}</Button>
+            <AgentIconButton size="medium" tone="primary" icon={<Eye size={16} />} ariaLabel={`${t("repaymentRules.actions.view")} ${v.version}`} title={t("repaymentRules.actions.view")} onClick={() => navigate(`/agents/cash-powder/rules/versions/${v.id}`)} />
             {isDraft && (
-              <Button variant="primary" size="small" onClick={async () => {
+              <AgentIconButton size="medium" tone="primary" icon={<CircleCheck size={16} />} ariaLabel={`${t("repaymentRules.actions.activate")} ${v.version}`} title={t("repaymentRules.actions.activate")} disabled={isMutating} onClick={async () => {
                 try {
                   setIsMutating(true);
                   await repaymentRulesService.activateRepaymentRuleVersion(v.id);
@@ -95,10 +97,10 @@ export const RepaymentRuleDetails = () => {
                 } finally {
                   setIsMutating(false);
                 }
-              }}>{t("repaymentRules.actions.activate")}</Button>
+              }} />
             )}
             {isActive && (
-              <Button variant="danger" size="small" onClick={() => setConfirmExpire({ open: true, version: v })}>{t("repaymentRules.actions.expire")}</Button>
+              <AgentIconButton size="medium" tone="danger" icon={<Ban size={16} />} ariaLabel={`${t("repaymentRules.actions.expire")} ${v.version}`} title={t("repaymentRules.actions.expire")} onClick={() => setConfirmExpire({ open: true, version: v })} />
             )}
           </div>
         );
@@ -135,12 +137,12 @@ export const RepaymentRuleDetails = () => {
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <Button onClick={() => navigate(`/agents/cash-powder/rules/${id}/versions/create`)}>{t("repaymentRules.actions.createVersion")}</Button>
+          <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate(`/agents/cash-powder/rules/${id}/versions/create`)}>{t("repaymentRules.actions.createVersion")}</AgentActionButton>
         </div>
 
         <div style={{ marginTop: 16 }}>
           <h3>{t("repaymentRules.section.versionHistory")}</h3>
-          <DataTable columns={columns as any} data={versions} isLoading={isLoading} noResultsText={t("repaymentRules.noVersions")} loadingText={t("repaymentRules.loadingVersions")} />
+          <DataTable columns={columns as any} data={versions} isLoading={isLoading} fitContainer noResultsText={t("repaymentRules.noVersions")} loadingText={t("repaymentRules.loadingVersions")} />
         </div>
       </div>
 

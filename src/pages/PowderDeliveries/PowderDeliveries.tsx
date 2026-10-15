@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { ColumnDef } from "@tanstack/react-table";
 import { toast } from "react-toastify";
+import { ChevronDown, CircleCheck, Eye } from "lucide-react";
 import { SectionHeader } from "@/components/common";
 import {
   Button,
@@ -18,6 +19,8 @@ import { agentsService } from "@/services/agents";
 import { agentContractsService } from "@/services/agentContracts";
 import { powderDeliveriesService } from "@/services/powderDeliveries";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
+import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
+import { AgentTableDetails } from "@/pages/Agents/AgentTableDetails";
 import type { AgentDto } from "@/types/agents";
 import type {
   AgentAdvanceDto,
@@ -75,6 +78,20 @@ const DeliveryStatus = ({ status }: { status: PowderDeliveryStatus }) => {
     </span>
   );
 };
+
+const DeliveryDetails = ({ delivery }: { delivery: PowderDeliveryListItemDto }) => {
+  const { t } = useTranslation();
+  return (
+    <AgentTableDetails
+      fields={[
+        { label: t("powderDeliveries.fields.contract"), value: delivery.contract.contractNumber },
+        { label: t("powderDeliveries.fields.advance"), value: delivery.advance?.advanceNumber ?? "—" },
+        { label: t("powderDeliveries.fields.createdAt"), value: timestamp(delivery.createdAt) },
+      ]}
+    />
+  );
+};
+
 const Field = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className={styles.field}>
     <span>{label}</span>
@@ -117,16 +134,6 @@ const useDeliveryColumns = (
           `${row.original.agent.code} - ${row.original.agent.fullName}`,
       },
       {
-        id: "contract",
-        header: t("powderDeliveries.fields.contract"),
-        cell: ({ row }: any) => row.original.contract.contractNumber,
-      },
-      {
-        id: "advance",
-        header: t("powderDeliveries.fields.advance"),
-        cell: ({ row }: any) => row.original.advance?.advanceNumber ?? "-",
-      },
-      {
         id: "weight",
         header: t("powderDeliveries.fields.netWeight"),
         cell: ({ row }: any) => amount(row.original.netWeightKg),
@@ -145,35 +152,39 @@ const useDeliveryColumns = (
         },
       },
       {
-        id: "created",
-        header: t("powderDeliveries.fields.createdAt"),
-        cell: ({ row }: any) => timestamp(row.original.createdAt),
-      },
-      {
         id: "actions",
         header: t("powderDeliveries.fields.actions"),
         cell: ({ row }: any) => (
           <div className={styles.inlineActions}>
             {onConfirm &&
             normalizeStatus(row.original.status) === "valuated" ? (
-              <Button
-                size="small"
-                variant="primary"
-                disabled={
-                  confirmingId === row.original.id || confirmingId !== null
-                }
-                onClick={() => void onConfirm(row.original.id)}
-              >
-                {confirmingId === row.original.id ? t("common.loading") : t("powderDeliveries.actions.confirm")}
-              </Button>
+                <AgentIconButton
+                  size="medium"
+                  tone="primary"
+                  icon={<CircleCheck size={16} />}
+                  ariaLabel={`${t("powderDeliveries.actions.confirm")} ${row.original.deliveryNumber}`}
+                  title={t("powderDeliveries.actions.confirm")}
+                  disabled={confirmingId === row.original.id || confirmingId !== null}
+                  onClick={() => void onConfirm(row.original.id)}
+                />
             ) : null}
-            <Button
-              size="small"
-              variant="secondary"
-              onClick={() => navigate(`/agents/cash-powder/deliveries/${row.original.id}`)}
-            >
-              {t("powderDeliveries.actions.view")}
-            </Button>
+              <AgentIconButton
+                size="medium"
+                tone="primary"
+                icon={<Eye size={16} />}
+                ariaLabel={`${t("powderDeliveries.actions.view")} ${row.original.deliveryNumber}`}
+                title={t("powderDeliveries.actions.view")}
+                onClick={() => navigate(`/agents/cash-powder/deliveries/${row.original.id}`)}
+              />
+              <AgentIconButton
+                size="medium"
+                tone="secondary"
+                icon={<ChevronDown size={16} />}
+                ariaLabel={`${t("common.details")} ${row.original.deliveryNumber}`}
+                title={t("common.details")}
+                aria-expanded={row.getIsExpanded()}
+                onClick={row.getToggleExpandedHandler()}
+              />
           </div>
         ),
       },
@@ -298,6 +309,7 @@ const MonthlyPowderReport = ({ active }: { active: boolean }) => {
         columns={columns}
         data={rows}
         isLoading={loading}
+        fitContainer
         loadingText={t("monthlyPowder.loading")}
         noResultsText={t("monthlyPowder.noData")}
       />
@@ -469,6 +481,8 @@ export const PowderDeliveriesList = () => {
           pageCount={Math.max(1, Math.ceil(total / pageSize))}
           pageIndex={page - 1}
           onPaginationChange={(index) => filter("page", String(index + 1))}
+          fitContainer
+          renderSubComponent={({ row }) => <DeliveryDetails delivery={row.original} />}
           noResultsText={t("powderDeliveries.list.empty")}
           loadingText={t("powderDeliveries.list.loading")}
         />
@@ -1037,6 +1051,8 @@ export const PowderDeliveryHistory = ({
         pageCount={Math.max(1, Math.ceil(total / pageSize))}
         pageIndex={page - 1}
         onPaginationChange={(index) => filter("page", String(index + 1))}
+        fitContainer
+        renderSubComponent={({ row }) => <DeliveryDetails delivery={row.original} />}
           noResultsText={t("powderDeliveries.list.empty")}
           loadingText={t("powderDeliveries.list.loading")}
       />

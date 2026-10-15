@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { BadgeCheck, X } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button } from "@/ui-kit";
 import { agentsService } from "@/services/agents";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import styles from "./Agents.module.css";
+import { AgentActionButton } from "./AgentActionButton";
 
 export const ClassifyAgent = () => {
   const { t } = useTranslation();
@@ -54,10 +55,12 @@ export const ClassifyAgent = () => {
       <div className={styles.infoCard}>
         <div className={styles.detailRow}><strong>{t("agents.classify.currentType")}:</strong> {currentType ?? "—"}</div>
         <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => navigate(-1)}>{t("common.cancel")}</Button>
-          <Button onClick={handleClassify} disabled={isLoading}>
+          <AgentActionButton tone="secondary" icon={<X size={16} />} onClick={() => navigate(-1)}>
+            {t("common.cancel")}
+          </AgentActionButton>
+          <AgentActionButton icon={<BadgeCheck size={16} />} onClick={handleClassify} disabled={isLoading}>
             {isLoading ? t("agents.classify.classifying") : t("agents.classify.button")}
-          </Button>
+          </AgentActionButton>
         </div>
       </div>
     </div>

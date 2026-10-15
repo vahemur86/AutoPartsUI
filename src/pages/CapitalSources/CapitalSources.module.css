@@ -26,6 +26,21 @@
   box-shadow: 0 6px 18px rgba(104, 133, 112, 0.18);
 }
 
+.outlineButton.outlineButton {
+  min-height: 38px;
+  padding: 0 14px;
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.34);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.06);
+  font-weight: 650;
+}
+
+.outlineButton.outlineButton:hover:not(:disabled) {
+  border-color: rgba(210, 191, 138, 0.62);
+  background: rgba(196, 169, 106, 0.12);
+}
+
 .portfolioShell {
   display: grid;
   gap: 20px;
@@ -37,25 +52,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  overflow: hidden;
+  min-height: 172px;
   padding: 28px;
-  border: 1px solid rgba(145, 169, 154, 0.2);
+  border: 1px solid rgba(196, 169, 106, 0.24);
   border-radius: 8px;
   background:
-    radial-gradient(circle at 85% 15%, rgba(145, 169, 154, 0.1), transparent 32%),
+    linear-gradient(105deg, rgba(196, 169, 106, 0.1), transparent 42%),
     linear-gradient(135deg, rgba(25, 32, 26, 0.98), rgba(15, 19, 16, 0.98));
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
-}
-
-.heroGlow {
-  position: absolute;
-  right: -80px;
-  top: -80px;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: rgba(145, 169, 154, 0.07);
-  filter: blur(6px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
 .heroCard > * {
@@ -65,7 +69,7 @@
 
 .eyebrow {
   margin: 0 0 6px;
-  color: #aab8ad;
+  color: #d2bf8a;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
@@ -85,39 +89,95 @@
 }
 
 .heroValue {
-  min-width: 200px;
-  padding: 18px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: 380px;
+  min-width: 320px;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid rgba(210, 191, 138, 0.42);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  text-align: right;
+  background: linear-gradient(135deg, rgba(196, 169, 106, 0.16), rgba(28, 39, 31, 0.96) 72%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.heroValueIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(232, 210, 151, 0.58);
+  border-radius: 8px;
+  color: #17170f;
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+}
+
+.heroValueCopy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
 }
 
 .heroValue span {
   display: block;
-  color: #8a8d93;
+  color: #c7c1ad;
   font-size: 12px;
 }
 
 .heroValue strong {
-  display: block;
-  margin-top: 6px;
-  font-size: 26px;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  color: #f0e7ce;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.heroValue strong small {
+  color: #d2bf8a;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .filterPanel {
   display: grid;
-  gap: 14px;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(196, 169, 106, 0.15);
   border-radius: 8px;
-  background: rgba(18, 23, 20, 0.9);
+  background: linear-gradient(145deg, rgba(27, 35, 29, 0.82), rgba(17, 23, 19, 0.92));
 }
 
 .filterGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 10px;
+}
+
+.filterGrid > * {
+  min-width: 0;
+}
+
+.filterGrid :global([class*="textFieldWrapper"]) {
+  gap: 0;
+}
+
+.filterGrid :global([class*="textFieldContainer"]),
+.filterGrid :global([class*="selectContainer"]) {
+  height: 42px;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+.filterGrid :global([class*="textFieldInput"]),
+.filterGrid :global([class*="trigger"]) {
+  color: #e3e5de;
+  font-size: 12px;
 }
 
 .filterFooter {
@@ -125,6 +185,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(196, 169, 106, 0.1);
   color: #8e9a90;
   font-size: 13px;
 }
@@ -214,8 +276,25 @@
   height: 42px;
   flex-shrink: 0;
   border-radius: 8px;
-  color: #18211b;
-  background: rgba(255, 255, 255, 0.96);
+  color: #d2bf8a;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  background: rgba(196, 169, 106, 0.1);
+}
+
+.bankAccent .cardIcon {
+  color: #d2bf8a;
+}
+
+.ownerAccent .cardIcon {
+  color: #a8c3a2;
+  border-color: rgba(168, 195, 162, 0.22);
+  background: rgba(168, 195, 162, 0.1);
+}
+
+.otherAccent .cardIcon {
+  color: #c6cec3;
+  border-color: rgba(198, 206, 195, 0.18);
+  background: rgba(198, 206, 195, 0.08);
 }
 
 .cardCode {
@@ -302,13 +381,51 @@
 
 .cardActions {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 18px;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid rgba(196, 169, 106, 0.1);
 }
 
 .cardActions button {
-  flex: 1;
+  flex: 0 0 auto;
+}
+
+.viewIconAction.viewIconAction,
+.editIconAction.editIconAction {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.viewIconAction.viewIconAction {
+  color: #c6cec3;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  background: rgba(196, 169, 106, 0.055);
+}
+
+.viewIconAction.viewIconAction:hover:not(:disabled) {
+  color: #eee9db;
+  border-color: rgba(196, 169, 106, 0.48);
+  background: rgba(196, 169, 106, 0.12);
+}
+
+.editIconAction.editIconAction {
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+}
+
+.editIconAction.editIconAction:hover:not(:disabled) {
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+}
+
+.viewIconAction:focus-visible,
+.editIconAction:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 2px;
 }
 
 .statusBadge {
@@ -332,8 +449,8 @@
 }
 
 .statusClosed {
-  background: rgba(126, 140, 130, 0.14);
-  color: #b9c2bb;
+  background: rgba(185, 129, 112, 0.12);
+  color: #cda091;
 }
 
 .bankAccent {
@@ -382,7 +499,7 @@
 
   .heroValue {
     width: 100%;
-    text-align: left;
+    min-width: 0;
   }
 
   .formGrid,
@@ -391,14 +508,24 @@
     grid-template-columns: 1fr;
   }
 
+  .filterGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .typeOptions {
     grid-template-columns: 1fr;
   }
 }
 
+@media (max-width: 420px) {
+  .filterGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .contentCard {
-  background: #192019;
-  border: 1px solid #2b362e;
+  background: linear-gradient(145deg, rgba(28, 37, 30, 0.82), rgba(20, 27, 22, 0.9));
+  border: 1px solid rgba(196, 169, 106, 0.14);
   border-radius: 8px;
   padding: 16px;
 }
@@ -418,12 +545,75 @@
   margin-top: 8px;
   font-size: 1.5rem;
   font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.detailStatCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.detailStatCard > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.detailStatCard .statValue {
+  margin: 0;
+  font-size: 20px;
+}
+
+.statIconGold {
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.5);
+  background: linear-gradient(135deg, rgba(229, 210, 154, 0.92), rgba(189, 157, 85, 0.78));
 }
 
 .detailsGrid {
   display: grid;
-  gap: 12px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.detailItem {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(196, 169, 106, 0.13);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(28, 37, 30, 0.66), rgba(16, 21, 18, 0.7));
+}
+
+.detailItem > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #aab2a9;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.detailItem > span svg {
+  flex: 0 0 auto;
+  color: #c4a96a;
+}
+
+.detailItem > strong {
+  overflow-wrap: anywhere;
+  color: #eee9db;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.detailDescription {
+  grid-column: 1 / -1;
 }
 
 .formShell {

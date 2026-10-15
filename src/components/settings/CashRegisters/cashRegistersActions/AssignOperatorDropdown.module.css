@@ -1,20 +1,27 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 16px 24px 24px;
-  max-height: 80vh;
-  overflow-y: auto;
+  gap: 20px;
+  padding: 14px 20px 20px;
+  max-height: min(70vh, 620px);
+  overflow: visible;
+}
+
+.assignDropdown {
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 .header {
-  padding: 19px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px 12px;
+  color: #d2bf8a;
 }
 
 .title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--color-white);
 }
@@ -22,7 +29,7 @@
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
 .loadingState {
@@ -34,13 +41,37 @@
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid rgba(196, 169, 106, 0.16);
+}
+
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  .assignDropdown {
+    max-width: calc(100vw - 32px) !important;
+  }
 }
 
 @media (max-width: 768px) {
+  .header {
+    display: none;
+  }
+
   .content {
     padding: 16px;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .header {
+    padding: 16px 16px 10px;
   }
 
   .actions {

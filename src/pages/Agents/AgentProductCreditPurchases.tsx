@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { RefreshCw } from "lucide-react";
+import { ChevronDown, RefreshCw } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Button, DataTable, Select } from "@/ui-kit";
+import { AgentIconButton } from "./AgentActionButton";
 import { agentsService } from "@/services/agents";
 import { agentContractsService } from "@/services/agentContracts";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
@@ -202,9 +203,15 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
         id: "details",
         header: t("agents.productCredit.saleDetails"),
         cell: ({ row }: { row: { original: AgentProductCreditSaleDto; getIsExpanded: () => boolean; getToggleExpandedHandler: () => () => void } }) => (
-          <Button size="small" variant="secondary" onClick={row.getToggleExpandedHandler()}>
-            {t(row.getIsExpanded() ? "agents.productCredit.hideDetails" : "agents.productCredit.showDetails")}
-          </Button>
+          <AgentIconButton
+            size="medium"
+            tone="secondary"
+            icon={<ChevronDown size={16} className={row.getIsExpanded() ? styles.chevronExpanded : ""} />}
+            ariaLabel={t(row.getIsExpanded() ? "agents.productCredit.hideDetails" : "agents.productCredit.showDetails")}
+            title={t(row.getIsExpanded() ? "agents.productCredit.hideDetails" : "agents.productCredit.showDetails")}
+            aria-expanded={row.getIsExpanded()}
+            onClick={row.getToggleExpandedHandler()}
+          />
         ),
       },
     ],
@@ -249,6 +256,7 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
         columns={columns}
         data={sales}
         isLoading={loading}
+        fitContainer
         loadingText={t("agents.productCredit.loadingSales")}
         noResultsText={t("agents.productCredit.noSales")}
         renderSubComponent={({ row }) => <AgentProductCreditSaleItems items={row.original.items ?? []} />}

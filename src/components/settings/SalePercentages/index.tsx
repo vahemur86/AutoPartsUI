@@ -2,9 +2,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
-// ui-kit
-import { Button } from "@/ui-kit";
-
 // components
 import { SalePercentagesContent } from "./SalePercentagesContent";
 import { EditSalePercentageDropdown } from "./salePercentageActions/EditSalePercentageDropdown";
@@ -43,8 +40,6 @@ export const SalePercentages = () => {
   >(null);
   const [isAddingSalePercentage, setIsAddingSalePercentage] = useState(false);
 
-  const editAnchorRef = useRef<HTMLElement>(null);
-  const addAnchorRef = useRef<HTMLElement>(null);
   const fetchInitiatedRef = useRef(false);
 
   useEffect(() => {
@@ -62,16 +57,12 @@ export const SalePercentages = () => {
     });
   }, [dispatch, t]);
 
-  const handleAddNewClick = useCallback((anchorEl: HTMLElement | null) => {
-    if (!anchorEl) return;
-    addAnchorRef.current = anchorEl;
+  const handleAddNewClick = useCallback(() => {
     setIsAddingSalePercentage(true);
   }, []);
 
   const handleEditClick = useCallback(
-    (salePercentageId: number, anchorEl: HTMLElement | null) => {
-      if (!anchorEl) return;
-      editAnchorRef.current = anchorEl;
+    (salePercentageId: number) => {
       setEditingSalePercentageId(salePercentageId);
     },
     [],
@@ -79,12 +70,10 @@ export const SalePercentages = () => {
 
   const handleCloseEditDropdown = useCallback(() => {
     setEditingSalePercentageId(null);
-    editAnchorRef.current = null;
   }, []);
 
   const handleCloseAddDropdown = useCallback(() => {
     setIsAddingSalePercentage(false);
-    addAnchorRef.current = null;
   }, []);
 
   const unsetOtherActivePercentages = useCallback(
@@ -239,7 +228,6 @@ export const SalePercentages = () => {
         <EditSalePercentageDropdown
           open={editingSalePercentageId !== null}
           salePercentage={editingSalePercentage}
-          anchorRef={editAnchorRef}
           onOpenChange={(open) => {
             if (!open) handleCloseEditDropdown();
           }}
@@ -250,21 +238,12 @@ export const SalePercentages = () => {
 
       <AddSalePercentageDropdown
         open={isAddingSalePercentage}
-        anchorRef={addAnchorRef}
         onOpenChange={(open) => {
           if (!open) handleCloseAddDropdown();
         }}
         onSave={handleAddSalePercentage}
       />
 
-      <div className={styles.actionButtons}>
-        <Button variant="secondary" size="medium" onClick={() => {}}>
-          {t("common.cancel")}
-        </Button>
-        <Button variant="primary" size="medium" onClick={() => {}}>
-          {t("common.save")}
-        </Button>
-      </div>
     </div>
   );
 };

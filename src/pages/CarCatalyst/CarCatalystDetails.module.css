@@ -1260,6 +1260,129 @@
   border-color: rgba(145, 169, 154, 0.2);
 }
 
+.tabs {
+  padding: 4px;
+  border-color: rgba(196, 169, 106, 0.17);
+  background: rgba(7, 10, 8, 0.72);
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  white-space: normal;
+}
+
+.tabButton svg {
+  flex: 0 0 auto;
+  color: rgba(201, 215, 203, 0.62);
+}
+
+.activeTab svg {
+  color: #d2bf8a;
+}
+
+.searchModeHeading,
+.resultsTitle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.searchModeHeading > svg,
+.resultsTitle > svg {
+  flex: 0 0 auto;
+  color: #aebfad;
+}
+
+.searchModeHeading .cardTitle,
+.resultsTitle .cardTitle {
+  min-width: 0;
+}
+
+.resultsSummaryChip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #c3d0c6;
+  border-color: rgba(145, 169, 154, 0.22);
+  background: rgba(145, 169, 154, 0.09);
+}
+
+.resultsSummaryChip svg {
+  flex: 0 0 auto;
+  color: #9daf9e;
+}
+
+.resultsLoading {
+  display: grid;
+  min-height: 220px;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  border: 1px dashed rgba(196, 169, 106, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.5), rgba(13, 17, 14, 0.32));
+  color: rgba(230, 236, 230, 0.72);
+  font-size: 13px;
+}
+
+.resultsLoading svg {
+  color: #c4a96a;
+  animation: resultSearchSpin 1s linear infinite;
+}
+
+.resultList > .emptyState {
+  display: grid;
+  min-height: 220px;
+  place-content: center;
+  justify-items: center;
+  gap: 9px;
+  padding: 24px;
+  border: 1px dashed rgba(196, 169, 106, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(160deg, rgba(22, 28, 23, 0.5), rgba(13, 17, 14, 0.32));
+  color: rgba(230, 236, 230, 0.56);
+  text-align: center;
+}
+
+.emptyStateIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  margin-bottom: 3px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 10px;
+  background: rgba(196, 169, 106, 0.07);
+  color: #c4a96a;
+}
+
+.resultList > .emptyState strong {
+  color: rgba(237, 241, 236, 0.84);
+  font-size: 14px;
+}
+
+.resultList > .emptyState > span:last-child {
+  max-width: 360px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+@keyframes resultSearchSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resultsLoading svg {
+    animation: none;
+  }
+}
+
 .detailIconAction {
   display: grid;
   width: 36px;

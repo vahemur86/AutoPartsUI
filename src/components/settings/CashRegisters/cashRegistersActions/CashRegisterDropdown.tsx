@@ -1,8 +1,10 @@
-import { useState, useEffect, type RefObject } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
+import { CreditCard, Save, X } from "lucide-react";
 
 // ui-kit
-import { Button, Dropdown, TextField, Switch, Select } from "@/ui-kit";
+import { Button, TextField, Switch, Select } from "@/ui-kit";
 
 // types
 import type { CashRegister } from "@/types/cash";
@@ -17,7 +19,6 @@ export type CashRegisterForm = Omit<CashRegister, "id" | "isActive"> & {
 
 interface CashRegisterDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement | null>;
   initialData?: (CashRegisterForm & { id?: number }) | null;
   isLoading?: boolean;
   shops: Shop[];
@@ -27,7 +28,6 @@ interface CashRegisterDropdownProps {
 
 export const CashRegisterDropdown = ({
   open,
-  anchorRef,
   initialData,
   isLoading = false,
   shops,
@@ -54,6 +54,21 @@ export const CashRegisterDropdown = ({
     }
   }, [open, initialData]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, onOpenChange]);
+
   const isShopIdValid = shopId.trim().length > 0 && !isNaN(Number(shopId));
   const isCodeValid = code.trim().length > 0;
   const isValid = isShopIdValid && isCodeValid;
@@ -70,59 +85,81 @@ export const CashRegisterDropdown = ({
     });
   };
 
+  const handleClose = () => {
+    if (!isLoading) onOpenChange(false);
+  };
+
   const titleText = isEditMode
     ? t("cashRegisters.editCashRegister")
     : t("cashRegisters.addCashRegister");
 
-  return (
-    <Dropdown
-      open={open}
-      onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      align="start"
-      side="left"
-      title={titleText}
-    >
-      <div className={styles.header}>
-        <span className={styles.title}>{titleText}</span>
-      </div>
+  if (!open) return null;
 
-      <div className={styles.content}>
-        <div className={styles.grid}>
-          {!isEditMode && (
-            <Select
-              label={t("cashRegisters.form.shop")}
-              placeholder={t("cashRegisters.form.selectShop")}
-              value={shopId}
-              onChange={(e) => setShopId(e.target.value)}
-              error={hasTriedSave && !isShopIdValid}
+  return createPortal(
+    <div className={styles.drawerBackdrop} onMouseDown={handleClose}>
+      <aside
+        className={styles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cash-register-drawer-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className={styles.drawerHeader}>
+          <span className={styles.drawerIcon} aria-hidden="true">
+            <CreditCard size={20} />
+          </span>
+          <h2 id="cash-register-drawer-title">{titleText}</h2>
+          <button
+            type="button"
+            className={styles.drawerClose}
+            onClick={handleClose}
+            aria-label={t("common.close")}
+            title={t("common.close")}
+            disabled={isLoading}
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className={styles.drawerBody}>
+          <div className={styles.fields}>
+            {!isEditMode && (
+              <Select
+                label={t("cashRegisters.form.shop")}
+                placeholder={t("cashRegisters.form.selectShop")}
+                value={shopId}
+                onChange={(e) => setShopId(e.target.value)}
+                searchable
+                searchPlaceholder={t("common.search")}
+                error={hasTriedSave && !isShopIdValid}
+                disabled={isLoading}
+              >
+                <option value="">{t("cashRegisters.form.selectShop")}</option>
+                {shops.map((shop) => (
+                  <option key={shop.id} value={shop.id}>
+                    {shop.code}
+                  </option>
+                ))}
+              </Select>
+            )}
+
+            <TextField
+              label={t("cashRegisters.form.code")}
+              placeholder={t("cashRegisters.form.enterCode")}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              error={hasTriedSave && !isCodeValid}
               disabled={isLoading}
-            >
-              <option value="">{t("cashRegisters.form.selectShop")}</option>
-              {shops.map((shop) => (
-                <option key={shop.id} value={shop.id}>
-                  {shop.code}
-                </option>
-              ))}
-            </Select>
-          )}
+            />
 
-          <TextField
-            label={t("cashRegisters.form.code")}
-            placeholder={t("cashRegisters.form.enterCode")}
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            error={hasTriedSave && !isCodeValid}
-            disabled={isLoading}
-          />
-
-          <TextField
-            label={t("cashRegisters.form.description")}
-            placeholder={t("cashRegisters.form.enterDescription")}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            disabled={isLoading}
-          />
+            <TextField
+              label={t("cashRegisters.form.description")}
+              placeholder={t("cashRegisters.form.enterDescription")}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
 
           {isEditMode && (
             <div className={styles.switchWrapper}>
@@ -130,32 +167,34 @@ export const CashRegisterDropdown = ({
                 checked={isActive}
                 onCheckedChange={setIsActive}
                 label={t("common.enabled")}
+                disabled={isLoading}
               />
             </div>
           )}
         </div>
 
-        <div className={styles.actionswithoutDelete}>
-          <div className={styles.primaryActions}>
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button
-              variant="primary"
-              size="medium"
-              onClick={handleSaveClick}
-              disabled={isLoading}
-            >
-              {isEditMode ? t("common.update") : t("common.save")}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </Dropdown>
+        <footer className={styles.drawerFooter}>
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={handleClose}
+            disabled={isLoading}
+          >
+            <X size={16} aria-hidden="true" />
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleSaveClick}
+            disabled={isLoading}
+          >
+            <Save size={16} aria-hidden="true" />
+            {isEditMode ? t("common.update") : t("common.save")}
+          </Button>
+        </footer>
+      </aside>
+    </div>,
+    document.body,
   );
 };

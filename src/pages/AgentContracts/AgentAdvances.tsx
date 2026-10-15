@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Plus } from "lucide-react";
+import { ChevronDown, Eye, Plus, X } from "lucide-react";
 import {
   CartesianGrid,
   Line,
@@ -15,6 +15,8 @@ import {
 } from "recharts";
 
 import { SectionHeader } from "@/components/common";
+import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
+import { AgentTableDetails } from "@/pages/Agents/AgentTableDetails";
 import {
   Button,
   ConfirmationModal,
@@ -188,6 +190,7 @@ const ExtensionHistory = ({
         columns={columns as any}
         data={sorted}
         isLoading={loading}
+        fitContainer
         noResultsText={t("agentAdvances.history.empty")}
         loadingText={t("agentAdvances.history.loading")}
       />
@@ -274,6 +277,11 @@ const ExtensionModal = ({
       title={t("agentAdvances.extension.title")}
       description={t("agentAdvances.extension.description", { advanceNumber: advance.advanceNumber, deadline: date(deadline.toISOString()), count: extensionCount, maximum: maximumExtensions })}
       confirmText={t("agentAdvances.extension.submit")}
+      confirmIcon={<Plus size={16} />}
+      cancelIcon={<X size={16} />}
+      confirmVariant="primary"
+      confirmClassName={styles.modalPrimaryButton}
+      cancelClassName={styles.modalCancelButton}
       confirmLoading={saving}
       preventClose
       onConfirm={() => void submit()}
@@ -404,22 +412,28 @@ export const AgentAdvancesList = () => {
         ),
       },
       {
-        id: "extensions",
-        header: t("agentAdvances.fields.extensions"),
-        cell: ({ row }: any) =>
-          `${row.original.extensionCount ?? 0}/${row.original.maximumExtensions ?? row.original.repaymentTerms?.maximumExtensions ?? "-"}`,
-      },
-      {
         id: "actions",
         header: t("agentAdvances.fields.actions"),
         cell: ({ row }: any) => (
-          <Button
-            size="small"
-            variant="secondary"
-            onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)}
-          >
-            {t("agentAdvances.actions.view")}
-          </Button>
+          <div className={styles.headerActions}>
+            <AgentIconButton
+              size="medium"
+              tone="secondary"
+              icon={<ChevronDown size={16} />}
+              ariaLabel={`${t("common.details")} ${row.original.advanceNumber}`}
+              title={t("common.details")}
+              aria-expanded={row.getIsExpanded()}
+              onClick={row.getToggleExpandedHandler()}
+            />
+            <AgentIconButton
+              size="medium"
+              tone="primary"
+              icon={<Eye size={16} />}
+              ariaLabel={`${t("agentAdvances.actions.view")} ${row.original.advanceNumber}`}
+              title={t("agentAdvances.actions.view")}
+              onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)}
+            />
+          </div>
         ),
       },
     ],
@@ -485,6 +499,19 @@ export const AgentAdvancesList = () => {
         pageCount={Math.max(1, Math.ceil(total / pageSize))}
         pageIndex={page - 1}
         onPaginationChange={(index) => setFilter("page", String(index + 1))}
+        fitContainer
+        renderSubComponent={({ row }) => (
+          <AgentTableDetails
+            fields={[
+              { label: t("agentAdvances.fields.contract"), value: row.original.agentContractId },
+              { label: t("agentAdvances.fields.advanceDate"), value: date(row.original.advanceDate) },
+              { label: t("agentAdvances.fields.extensions"), value: `${row.original.extensionCount ?? 0}/${row.original.maximumExtensions ?? row.original.repaymentTerms?.maximumExtensions ?? "—"}` },
+              { label: t("agentAdvances.fields.allocatedAmount"), value: money(row.original.allocatedAmount) },
+              { label: t("agentAdvances.fields.notes"), value: row.original.notes || "—" },
+              { label: t("agentAdvances.fields.createdBy"), value: row.original.createdBy || "—" },
+            ]}
+          />
+        )}
         noResultsText={t("agentAdvances.list.empty")}
         loadingText={t("agentAdvances.list.loading")}
       />
@@ -814,7 +841,7 @@ export const AgentAdvanceDetails = () => {
             <Detail label={t("fundingAnalytics.fields.roi")} value={<span className={fundingAnalytics.roiPercent < 0 ? styles.profitNegative : ""}>{fundingAnalytics.roiPercent}%</span>} />
           </div>
           <h3>{t("fundingAnalytics.advance.allocations")}</h3>
-          <DataTable columns={fundingAllocationColumns as any} data={fundingAnalytics.allocations ?? []} noResultsText={t("fundingAnalytics.advance.noAllocations")} />
+          <DataTable columns={fundingAllocationColumns as any} data={fundingAnalytics.allocations ?? []} fitContainer noResultsText={t("fundingAnalytics.advance.noAllocations")} />
           <h3>{t("fundingAnalytics.advance.dailyFundingHistory")}</h3>
           <div className={styles.fundingChart}>
             <ResponsiveContainer width="100%" height={250}>
@@ -829,7 +856,7 @@ export const AgentAdvanceDetails = () => {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} noResultsText={t("fundingAnalytics.advance.noHistory")} />
+          <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} fitContainer noResultsText={t("fundingAnalytics.advance.noHistory")} />
         </section>
       )}
       <section className={styles.section}>
@@ -878,6 +905,7 @@ export const AgentAdvanceDetails = () => {
         <DataTable
           columns={allocationColumns as any}
           data={advance.allocations ?? []}
+          fitContainer
           noResultsText={t("agentAdvances.allocation.empty")}
         />
       </section>
@@ -897,6 +925,11 @@ export const AgentAdvanceDetails = () => {
         title={t("agentAdvances.allocation.title")}
         description={t("agentAdvances.allocation.description", { amount: money(remaining) })}
         confirmText={t("agentAdvances.actions.addAllocation")}
+        confirmIcon={<Plus size={16} />}
+        cancelIcon={<X size={16} />}
+        confirmVariant="primary"
+        confirmClassName={styles.modalPrimaryButton}
+        cancelClassName={styles.modalCancelButton}
         confirmLoading={saving}
         preventClose
         onConfirm={() => void addAllocation()}

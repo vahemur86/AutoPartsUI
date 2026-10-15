@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -18,7 +18,18 @@ import type {
 
 import styles from "./CarCatalyst.module.css";
 import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
-import { Copy, ExternalLink, Plus, Save, Trash } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  CarFront,
+  ChevronDown,
+  Copy,
+  ExternalLink,
+  Layers3,
+  Plus,
+  Save,
+  Trash,
+} from "lucide-react";
 import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 import { useNavigate } from "react-router-dom";
 import { getYearOptions } from "./yearOptions";
@@ -37,6 +48,7 @@ interface UIComposition {
 }
 
 type UIBucket = Omit<CarCatalystBucket, "compositions"> & {
+  clientKey: string;
   compositions: UIComposition[];
 };
 
@@ -46,14 +58,15 @@ const emptyComposition = (): UIComposition => ({
   id: createCompositionId(),
   code: "",
   type: 0,
-  weightKg: "0",
-  pricePerKg: "0",
-  pt_g: "0",
-  pd_g: "0",
-  rh_g: "0",
+  weightKg: "",
+  pricePerKg: "",
+  pt_g: "",
+  pd_g: "",
+  rh_g: "",
 });
 
 const emptyBucket = (side: number): UIBucket => ({
+  clientKey: createCompositionId(),
   side,
   code: "",
   compositions: [emptyComposition()],
@@ -83,6 +96,8 @@ export const CarCatalystPage = () => {
 
   const [brands, setBrands] = useState<any[]>([]);
   const [models, setModels] = useState<any[]>([]);
+  const [isModelsLoading, setIsModelsLoading] = useState(false);
+  const modelRequestId = useRef(0);
 
   const [brandId, setBrandId] = useState<number | "">("");
   const [birkaId, setBirkaId] = useState<number | "">("");
@@ -96,7 +111,10 @@ export const CarCatalystPage = () => {
 
   const [frontBuckets, setFrontBuckets] = useState<UIBucket[]>([]);
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
+  const [activeSide, setActiveSide] = useState<"front" | "back">("front");
+  const [expandedBucketKey, setExpandedBucketKey] = useState<string | null>(null);
   const yearOptions = getYearOptions();
+  const isVehicleComplete = Boolean(brandId && modelId && year && country && engineId);
 
   useEffect(() => {
     const load = async () => {
@@ -118,24 +136,33 @@ export const CarCatalystPage = () => {
 
   const handleBrandChange = async (value: string) => {
     const id = value === "" ? "" : Number(value);
+    const requestId = ++modelRequestId.current;
 
     setBrandId(id);
     setModelId("");
+    setModels([]);
 
     if (!id) {
-      setModels([]);
+      setIsModelsLoading(false);
       return;
     }
 
+    setIsModelsLoading(true);
     try {
       const data = await getVehicleModels(id);
-      setModels(data || []);
+      if (requestId === modelRequestId.current) setModels(data || []);
     } catch {
-      toast.error(t("carCatalyst.errors.loading"));
+      if (requestId === modelRequestId.current) {
+        toast.error(t("carCatalyst.errors.loading"));
+      }
+    } finally {
+      if (requestId === modelRequestId.current) setIsModelsLoading(false);
     }
   };
 
   const resetForm = () => {
+    modelRequestId.current += 1;
+    setIsModelsLoading(false);
     setBrandId("");
     setBirkaId("");
     setModelId("");
@@ -145,21 +172,32 @@ export const CarCatalystPage = () => {
     setFrontBuckets([]);
     setBackBuckets([]);
     setModels([]);
+    setActiveSide("front");
+    setExpandedBucketKey(null);
   };
 
   const addBucket = (side: "front" | "back") => {
     const setter = side === "front" ? setFrontBuckets : setBackBuckets;
     const sideValue = side === "front" ? 1 : 2;
-    setter((prev) => [...prev, emptyBucket(sideValue)]);
+    const bucket = emptyBucket(sideValue);
+    setActiveSide(side);
+    setExpandedBucketKey(bucket.clientKey);
+    setter((prev) => [...prev, bucket]);
   };
 
   const deleteBucket = (side: "front" | "back", index: number) => {
     const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+    const buckets = side === "front" ? frontBuckets : backBuckets;
+    if (buckets[index]?.clientKey === expandedBucketKey) {
+      setExpandedBucketKey(null);
+    }
     setter((prev) => prev.filter((_, i) => i !== index));
   };
 
   const duplicateBucket = (side: "front" | "back", index: number) => {
     const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+    const duplicateKey = createCompositionId();
+    setExpandedBucketKey(duplicateKey);
 
     setter((prev) => {
       const item = prev[index];
@@ -171,6 +209,7 @@ export const CarCatalystPage = () => {
         {
           ...item,
           id: undefined,
+          clientKey: duplicateKey,
           compositions: item.compositions.map((composition) => ({
             ...composition,
             id: createCompositionId(),
@@ -350,6 +389,12 @@ export const CarCatalystPage = () => {
     navigate("/car-catalyst/details");
   };
 
+  const toggleBucket = (clientKey: string) => {
+    setExpandedBucketKey((current) =>
+      current === clientKey ? null : clientKey,
+    );
+  };
+
   const renderBucketSection = (
     title: string,
     side: "front" | "back",
@@ -362,6 +407,11 @@ export const CarCatalystPage = () => {
             side === "front" ? styles.frontTitle : styles.backTitle
           }`}
         >
+          {side === "front" ? (
+            <ArrowUp size={15} aria-hidden="true" />
+          ) : (
+            <ArrowDown size={15} aria-hidden="true" />
+          )}
           {title}
         </h3>
 
@@ -377,22 +427,40 @@ export const CarCatalystPage = () => {
 
       <div className={styles.bucketList}>
         {data.map((bucket, bucketIndex) => (
-          <div key={`${side}-${bucketIndex}`} className={styles.bucketCard}>
-            <div className={styles.bucketHeaderRow}>
-              <TextField
-                label={t("carCatalyst.table.bucketCode")}
-                value={bucket.code}
-                onChange={(e) =>
-                  updateBucket(side, bucketIndex, "code", e.target.value)
-                }
-              />
+          <div key={bucket.clientKey} className={styles.bucketCard}>
+            <div className={styles.bucketAccordionHeader}>
+              <button
+                type="button"
+                className={styles.bucketToggle}
+                onClick={() => toggleBucket(bucket.clientKey)}
+                aria-expanded={expandedBucketKey === bucket.clientKey}
+              >
+                <ChevronDown
+                  className={`${styles.bucketChevron} ${expandedBucketKey === bucket.clientKey ? styles.bucketChevronOpen : ""}`}
+                  size={17}
+                  aria-hidden="true"
+                />
+                <span className={styles.bucketToggleCode}>
+                  {bucket.code || t("carCatalyst.table.bucketCode")}
+                </span>
+                <span className={styles.countBadge}>
+                  <Layers3 size={12} aria-hidden="true" />
+                  {t("carCatalyst.sections.componentCount", {
+                    count: bucket.compositions.length,
+                  })}
+                </span>
+              </button>
 
               <div className={styles.bucketActions}>
                 <Button
                   size="small"
                   variant="secondary"
                   className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
-                  onClick={() => addComposition(side, bucketIndex)}
+                  onClick={() => {
+                    setActiveSide(side);
+                    setExpandedBucketKey(bucket.clientKey);
+                    addComposition(side, bucketIndex);
+                  }}
                 >
                   <Plus size={14} aria-hidden="true" />
                   {t("carCatalyst.table.addComposition")}
@@ -420,7 +488,16 @@ export const CarCatalystPage = () => {
               </div>
             </div>
 
-            <div className={styles.compositionsList}>
+            {expandedBucketKey === bucket.clientKey && (
+              <>
+                <TextField
+                  label={t("carCatalyst.table.bucketCode")}
+                  value={bucket.code}
+                  onChange={(e) =>
+                    updateBucket(side, bucketIndex, "code", e.target.value)
+                  }
+                />
+                <div className={styles.compositionsList}>
               {bucket.compositions.map((composition, compositionIndex) => (
                 <div key={composition.id} className={styles.compositionCard}>
                   <div className={styles.compositionGrid}>
@@ -441,6 +518,8 @@ export const CarCatalystPage = () => {
                     <Select
                       label={t("carCatalyst.table.compositionType")}
                       value={composition.type}
+                      searchable
+                      searchPlaceholder={t("common.search")}
                       onChange={(e) =>
                         updateComposition(
                           side,
@@ -482,10 +561,6 @@ export const CarCatalystPage = () => {
                           handleNumericChange(e.target.value),
                         )
                       }
-                      onBlur={() => {
-                        if (composition.weightKg === "")
-                          updateComposition(side, bucketIndex, compositionIndex, "weightKg", "0");
-                      }}
                     />
 
                     {composition.type === 1 && (
@@ -506,10 +581,6 @@ export const CarCatalystPage = () => {
                             handleNumericChange(e.target.value),
                           )
                         }
-                        onBlur={() => {
-                          if (composition.pricePerKg === "")
-                            updateComposition(side, bucketIndex, compositionIndex, "pricePerKg", "0");
-                        }}
                       />
                     )}
 
@@ -532,10 +603,6 @@ export const CarCatalystPage = () => {
                               handleNumericChange(e.target.value),
                             )
                           }
-                          onBlur={() => {
-                            if (composition.pt_g === "")
-                              updateComposition(side, bucketIndex, compositionIndex, "pt_g", "0");
-                          }}
                         />
 
                         <TextField
@@ -555,10 +622,6 @@ export const CarCatalystPage = () => {
                               handleNumericChange(e.target.value),
                             )
                           }
-                          onBlur={() => {
-                            if (composition.pd_g === "")
-                              updateComposition(side, bucketIndex, compositionIndex, "pd_g", "0");
-                          }}
                         />
 
                         <TextField
@@ -578,10 +641,6 @@ export const CarCatalystPage = () => {
                               handleNumericChange(e.target.value),
                             )
                           }
-                          onBlur={() => {
-                            if (composition.rh_g === "")
-                              updateComposition(side, bucketIndex, compositionIndex, "rh_g", "0");
-                          }}
                         />
                       </>
                     )}
@@ -604,7 +663,9 @@ export const CarCatalystPage = () => {
                   </div>
                 </div>
               ))}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         ))}
 
@@ -632,17 +693,27 @@ export const CarCatalystPage = () => {
           </button>
         </div>
 
-        <Button
-          size="medium"
-          className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
-          onClick={handleSave}
-        >
-          <Save size={15} aria-hidden="true" />
-          {t("carCatalyst.actions.save")}
-        </Button>
       </div>
 
-      <div className={styles.formGrid}>
+      <section className={styles.vehiclePanel}>
+        <div className={styles.vehiclePanelHeader}>
+          <div className={styles.vehiclePanelTitle}>
+            <span className={styles.vehicleIconBadge}>
+              <CarFront size={19} aria-hidden="true" />
+            </span>
+            <div>
+              <h3>{t("carCatalyst.sections.vehicleTitle")}</h3>
+              <p>{t("carCatalyst.sections.vehicleHint")}</p>
+            </div>
+          </div>
+          {isVehicleComplete && (
+            <span className={styles.vehicleReadyBadge}>
+              {t("carCatalyst.sections.vehicleReady")}
+            </span>
+          )}
+        </div>
+
+      <div className={`${styles.formGrid} ${styles.vehicleFormGrid}`}>
         <Select
           label={t("carCatalyst.fields.brand")}
           value={brandId}
@@ -663,6 +734,7 @@ export const CarCatalystPage = () => {
           value={modelId}
           searchable
           searchPlaceholder={t("common.search")}
+          disabled={!brandId || isModelsLoading}
           onChange={(e) =>
             setModelId(e.target.value === "" ? "" : Number(e.target.value))
           }
@@ -743,19 +815,72 @@ export const CarCatalystPage = () => {
           ))}
         </Select>
       </div>
+      </section>
 
-      <div className={styles.tablesRow}>
-        {renderBucketSection(
-          t("carCatalyst.sections.frontBuckets"),
-          "front",
-          frontBuckets,
-        )}
+      <div className={styles.sideWorkspace}>
+        <div className={styles.sideSwitcher} role="tablist" aria-label={t("carCatalyst.sections.bucketSides")}>
+          {([
+            { key: "front", side: "front", title: t("carCatalyst.sections.frontBuckets"), count: frontBuckets.length },
+            { key: "back", side: "back", title: t("carCatalyst.sections.backBuckets"), count: backBuckets.length },
+          ] as const).map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              role="tab"
+              aria-selected={activeSide === item.side}
+              aria-controls="car-catalyst-active-side"
+              id={`car-catalyst-${item.side}-tab`}
+              disabled={!isVehicleComplete}
+              className={`${styles.sideTab} ${activeSide === item.side ? styles.sideTabActive : ""}`}
+              onClick={() => setActiveSide(item.side)}
+            >
+              {item.side === "front" ? (
+                <ArrowUp size={15} aria-hidden="true" />
+              ) : (
+                <ArrowDown size={15} aria-hidden="true" />
+              )}
+              <span>{item.title}</span>
+              <span className={styles.countBadge}>{item.count}</span>
+            </button>
+          ))}
+        </div>
 
-        {renderBucketSection(
-          t("carCatalyst.sections.backBuckets"),
-          "back",
-          backBuckets,
+        {isVehicleComplete ? (
+          <div
+            id="car-catalyst-active-side"
+            role="tabpanel"
+            aria-labelledby={`car-catalyst-${activeSide}-tab`}
+            className={styles.activeSidePanel}
+          >
+            {activeSide === "front"
+              ? renderBucketSection(
+                  t("carCatalyst.sections.frontBuckets"),
+                  "front",
+                  frontBuckets,
+                )
+              : renderBucketSection(
+                  t("carCatalyst.sections.backBuckets"),
+                  "back",
+                  backBuckets,
+                )}
+          </div>
+        ) : (
+          <div className={styles.vehiclePrompt}>
+            <CarFront size={20} aria-hidden="true" />
+            <span>{t("carCatalyst.sections.selectVehiclePrompt")}</span>
+          </div>
         )}
+      </div>
+
+      <div className={styles.footerActionBar}>
+        <Button
+          size="medium"
+          className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
+          onClick={handleSave}
+        >
+          <Save size={15} aria-hidden="true" />
+          {t("carCatalyst.actions.save")}
+        </Button>
       </div>
     </div>
   );

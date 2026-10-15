@@ -979,7 +979,7 @@
 }
 
 .dashboardFilters {
-  grid-template-columns: max-content repeat(2, minmax(120px, 1fr)) minmax(290px, 360px) minmax(120px, 1fr) max-content;
+  grid-template-columns: max-content repeat(2, minmax(140px, 1fr)) minmax(150px, 1fr) max-content;
   align-items: end;
   gap: 8px;
 }
@@ -1203,5 +1203,204 @@
   .dashboardServiceText {
     width: 7ch;
     animation: none;
+  }
+}
+
+.dashboardPrimaryGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dashboardPrimaryCard {
+  min-width: 0;
+  min-height: 132px;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 12px;
+}
+
+.dashboardPrimaryLabel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  color: #c6cec3;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.dashboardPrimaryLabel svg {
+  flex: 0 0 auto;
+  color: #d2bf8a;
+}
+
+.dashboardPrimaryCard strong {
+  overflow-wrap: anywhere;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboardRevenueCard {
+  border-color: rgba(196, 169, 106, 0.35);
+  background: linear-gradient(145deg, rgba(53, 47, 32, 0.68), rgba(28, 35, 30, 0.82));
+}
+
+.dashboardProfitCard {
+  border-color: rgba(143, 184, 138, 0.32);
+  background: linear-gradient(145deg, rgba(38, 57, 43, 0.76), rgba(22, 31, 25, 0.84));
+}
+
+.dashboardKpiMeta {
+  color: #aeb6ad;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.dashboardSecondary {
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 8px;
+  background: rgba(18, 24, 20, 0.68);
+}
+
+.dashboardSecondary > summary {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  color: #d2bf8a;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  list-style: none;
+}
+
+.dashboardSecondary > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dashboardSecondary[open] > summary {
+  border-bottom: 1px solid rgba(196, 169, 106, 0.12);
+}
+
+.dashboardSecondary[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.dashboardSecondaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+  padding: 12px;
+}
+
+.dashboardMetricItem {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 11px;
+  border: 1px solid rgba(196, 169, 106, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.dashboardMetricItem span {
+  color: #aeb6ad;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.dashboardMetricItem strong {
+  flex: 0 0 auto;
+  color: #eee9db;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboardChartsGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboardChartWide {
+  grid-column: 1 / -1;
+}
+
+.dashboardTrendControls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.dashboardTrendPeriod {
+  margin: 0 0 7px;
+  color: #aeb6ad;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dashboardTrendFilters :global(.date-picker-input) {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  color: #e3e5de;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+}
+
+.dashboardTrendFilters :global(.date-picker-input:focus) {
+  border-color: rgba(196, 169, 106, 0.58);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.1);
+}
+
+@media (max-width: 1200px) {
+  .dashboardPrimaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboardChartsGrid,
+  .inventoryTablesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardChartsGrid,
+  .inventoryTablesGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboardChartWide {
+    grid-column: auto;
+  }
+
+  .dashboardTrendControls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboardTrendControls .dashboardAction button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardPrimaryCard {
+    min-height: 118px;
+    padding: 12px;
+  }
+
+  .dashboardPrimaryCard strong {
+    font-size: 19px;
+  }
+
+  .dashboardSecondaryGrid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

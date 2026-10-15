@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { ArrowLeft, ChevronDown, Search, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Boxes,
+  CarFront,
+  ChevronDown,
+  Hash,
+  LoaderCircle,
+  Search,
+  X,
+} from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { Button, Select, TextField } from "@/ui-kit";
@@ -844,39 +853,54 @@ const searchByVehicle = async () => {
 
       <div className={styles.contentGrid}>
         <aside className={styles.leftPanel}>
-          <div className={styles.tabs}>
+          <div className={styles.tabs} role="tablist" aria-label={t("carCatalyst.details.searchModes")}>
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === "code"}
               className={`${styles.tabButton} ${
                 activeTab === "code" ? styles.activeTab : ""
               }`}
               onClick={() => setActiveTab("code")}
             >
+              <Hash size={15} aria-hidden="true" />
               {t("carCatalyst.details.tabs.code")}
             </button>
 
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === "vehicle"}
               className={`${styles.tabButton} ${
                 activeTab === "vehicle" ? styles.activeTab : ""
               }`}
               onClick={() => setActiveTab("vehicle")}
             >
+              <CarFront size={15} aria-hidden="true" />
               {t("carCatalyst.details.tabs.vehicle")}
             </button>
           </div>
 
           {activeTab === "code" && (
             <div className={styles.searchCard}>
-              <h3 className={styles.cardTitle}>
-                {t("carCatalyst.details.codeSearch.title")}
-              </h3>
+              <div className={styles.searchModeHeading}>
+                <Hash size={17} aria-hidden="true" />
+                <h3 className={styles.cardTitle}>
+                  {t("carCatalyst.details.codeSearch.title")}
+                </h3>
+              </div>
 
               <TextField
                 label={t("carCatalyst.details.codeSearch.label")}
                 value={code}
                 placeholder={t("carCatalyst.details.codeSearch.placeholder")}
                 onChange={(e) => setCode(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void searchByCode();
+                  }
+                }}
               />
 
               <div className={styles.searchActions}>
@@ -906,9 +930,12 @@ const searchByVehicle = async () => {
 
           {activeTab === "vehicle" && (
             <div className={styles.searchCard}>
-              <h3 className={styles.cardTitle}>
-                {t("carCatalyst.details.vehicleSearch.title")}
-              </h3>
+              <div className={styles.searchModeHeading}>
+                <CarFront size={17} aria-hidden="true" />
+                <h3 className={styles.cardTitle}>
+                  {t("carCatalyst.details.vehicleSearch.title")}
+                </h3>
+              </div>
 
               <Select
                 label={t("carCatalyst.fields.brand")}
@@ -930,6 +957,7 @@ const searchByVehicle = async () => {
                 value={modelId}
                 searchable
                 searchPlaceholder={t("common.search")}
+                disabled={!brandId}
                 onChange={(e) =>
                   setModelId(
                     e.target.value === "" ? "" : Number(e.target.value),
@@ -954,7 +982,7 @@ const searchByVehicle = async () => {
       setFromYear(e.target.value ? Number(e.target.value) : "")
     }
   >
-    <option value="">{t("common.from")}</option>
+    <option value="">{t("carCatalyst.fields.fromYear")}</option>
     {years.map((y) => (
       <option key={y} value={y}>
         {y}
@@ -971,7 +999,7 @@ const searchByVehicle = async () => {
       setToYear(e.target.value ? Number(e.target.value) : "")
     }
   >
-    <option value="">{t("common.to")}</option>
+    <option value="">{t("carCatalyst.fields.toYear")}</option>
     {years.map((y) => (
       <option key={y} value={y}>
         {y}
@@ -1032,9 +1060,12 @@ const searchByVehicle = async () => {
         <main className={styles.resultsPanel}>
           <div className={styles.resultsHeader}>
             <div>
-              <h3 className={styles.cardTitle}>
-                {t("carCatalyst.details.results.title")}
-              </h3>
+              <div className={styles.resultsTitle}>
+                <Search size={17} aria-hidden="true" />
+                <h3 className={styles.cardTitle}>
+                  {t("carCatalyst.details.results.title")}
+                </h3>
+              </div>
 
               <p className={styles.resultCount}>
                 {t("carCatalyst.details.results.foundCount", {
@@ -1045,16 +1076,23 @@ const searchByVehicle = async () => {
 
             <div className={styles.resultsSummaryChip}>
               <span>
+                <Boxes size={13} aria-hidden="true" />
                 {displayedList.reduce((total, item) => total + (item.buckets?.length ?? 0), 0)} {t("carCatalyst.details.results.bucketsSummary")}
               </span>
               <span>
+                <Boxes size={13} aria-hidden="true" />
                 {displayedList.reduce((total, item) => total + ((item.buckets ?? []).reduce((bucketTotal, bucket) => bucketTotal + (Array.isArray(bucket.compositions) ? bucket.compositions.filter(Boolean).length : 0), 0)), 0)} {t("carCatalyst.details.results.compositionsSummary")}
               </span>
             </div>
           </div>
 
           <div className={styles.resultList}>
-            {displayedList.map((item) => {
+            {isLoading ? (
+              <div className={styles.resultsLoading} role="status" aria-live="polite">
+                <LoaderCircle size={24} aria-hidden="true" />
+                <span>{t("carCatalyst.details.results.loading")}</span>
+              </div>
+            ) : displayedList.map((item) => {
               const isExpanded = expandedItemId === item.id;
               const birkaLabel =
                 item.birkaName || getBirkaName(item.birkaId);
@@ -1155,7 +1193,11 @@ const searchByVehicle = async () => {
 
             {!isLoading && displayedList.length === 0 && (
               <div className={styles.emptyState}>
-                {t("carCatalyst.details.results.empty")}
+                <span className={styles.emptyStateIcon}>
+                  <Search size={21} aria-hidden="true" />
+                </span>
+                <strong>{t("carCatalyst.details.results.empty")}</strong>
+                <span>{t("carCatalyst.details.results.emptyHint")}</span>
               </div>
             )}
           </div>

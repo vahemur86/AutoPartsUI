@@ -1,21 +1,22 @@
 .cashRegistersWrapper {
+  --register-accent: 196, 169, 106;
   display: flex;
   flex-direction: column;
   min-height: 100%;
   width: 100%;
   max-width: 100%;
-  padding: 24px;
-  gap: 10px;
-  overflow: hidden;
+  padding: 20px 24px 28px;
+  gap: 18px;
+  overflow: visible;
   box-sizing: border-box;
 }
 
 .header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 24px;
-  margin-top: 16px;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 40px;
 }
 
 .addButtonWrapper {
@@ -26,56 +27,314 @@
 }
 
 .addButtonText {
+  transform: translateX(-8px);
   font-size: 13px;
-  font-weight: 400;
-  color: var(--color-secondary-500);
+  font-weight: 650;
+  color: #e4d3a5;
 }
 
-.addCashRegisterButtonMobile {
-  display: none;
+.registerOverview {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+  margin-right: auto;
 }
 
-.addButtonWrapperMobile {
+.registerCountSummary {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 11px;
+  min-width: 210px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--register-accent), 0.18);
+  border-radius: 8px;
+  background: linear-gradient(120deg, rgba(var(--register-accent), 0.065), rgba(15, 19, 16, 0.42));
+}
+
+.overviewIcon,
+.registerIcon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d8c38d;
+  border: 1px solid rgba(var(--register-accent), 0.28);
+  background: rgba(var(--register-accent), 0.09);
+}
+
+.overviewIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+}
+
+.registerCountSummary > div {
+  display: grid;
+  gap: 2px;
+}
+
+.registerCountSummary strong {
+  color: #eee9db;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.registerCountSummary span:not(.overviewIcon) {
+  color: rgba(230, 236, 230, 0.56);
+  font-size: 11px;
+}
+
+.registerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+  align-items: stretch;
+  gap: 14px;
   width: 100%;
 }
 
-.tableWrapper {
-  width: 100%;
-  flex: 1;
-}
-
-.actionButtonsCell {
+.registerCard {
+  position: relative;
   display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 13px;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid rgba(var(--register-accent), 0.2);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(28, 34, 28, 0.92), rgba(13, 17, 14, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 12px 26px rgba(0, 0, 0, 0.18);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.registerCard::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(var(--register-accent), 0.05), rgba(var(--register-accent), 0.75), rgba(var(--register-accent), 0.08));
+  content: "";
+}
+
+.registerCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--register-accent), 0.36);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 30px rgba(0, 0, 0, 0.25);
+}
+
+.registerCardHeader,
+.registerIdentity {
+  display: flex;
+  align-items: center;
+}
+
+.registerCardHeader {
+  justify-content: space-between;
   gap: 12px;
-  padding: 3px;
+}
+
+.registerIdentity {
+  min-width: 0;
+  gap: 10px;
+}
+
+.registerIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+}
+
+.registerCodeBlock {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.registerCodeBlock strong {
+  overflow: hidden;
+  color: #f0ede3;
+  font-size: 15px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.registerCodeBlock span {
+  color: rgba(225, 231, 224, 0.46);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.registerStatus {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.statusActive {
+  border-color: rgba(122, 185, 127, 0.2);
+  background: rgba(122, 185, 127, 0.09);
+  color: #b9d5bd;
+}
+
+.statusInactive {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(235, 235, 230, 0.62);
+}
+
+.registerDescription {
+  min-height: 18px;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: rgba(235, 237, 231, 0.7);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.registerMeta {
+  display: grid;
+  gap: 8px;
+  padding: 11px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.registerMetaRow {
+  display: grid;
+  grid-template-columns: 16px minmax(70px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: rgba(222, 229, 221, 0.56);
+  font-size: 11px;
+}
+
+.registerMetaRow svg {
+  color: #b7a372;
+}
+
+.registerMetaRow strong {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(239, 239, 232, 0.84);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.registerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.registerActions button {
+  border-radius: 6px;
+}
+
+.registerActions .deleteAction {
+  margin-left: auto;
+  color: #d59b92;
+  border-color: rgba(189, 105, 94, 0.22);
+  background: rgba(137, 64, 57, 0.08);
+}
+
+.registerActions .deleteAction:hover:not(:disabled) {
+  color: #f0c3bd;
+  border-color: rgba(204, 122, 111, 0.5);
+  background: rgba(143, 62, 54, 0.2);
+}
+
+.registerState {
+  display: grid;
+  min-height: 220px;
+  justify-items: center;
+  align-content: center;
+  gap: 9px;
+  padding: 24px;
+  border: 1px dashed rgba(var(--register-accent), 0.22);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(28, 34, 28, 0.42), rgba(13, 17, 14, 0.32));
+  color: rgba(230, 236, 230, 0.58);
+  font-size: 12px;
+  text-align: center;
+}
+
+.registerState > svg {
+  color: #c4a96a;
+}
+
+.registerState > strong {
+  color: #e9e9e1;
+  font-size: 14px;
+}
+
+.registerState > span:last-child {
+  max-width: 360px;
+  line-height: 1.55;
+}
+
+.emptyIcon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  margin-bottom: 3px;
+  border: 1px solid rgba(var(--register-accent), 0.28);
+  border-radius: 10px;
+  background: rgba(var(--register-accent), 0.08);
+  color: #d4c18f;
 }
 
 @media (max-width: 768px) {
   .cashRegistersWrapper {
     padding: 16px;
-    gap: 16px;
+    gap: 14px;
   }
 
   .header {
-    display: none;
+    min-height: 38px;
   }
 
-  .addCashRegisterButtonMobile {
-    display: flex;
-    margin-top: 16px;
-    border: 1px solid var(--color-primary-400);
-    border-radius: 8px;
-    padding: 10px 12px;
-    text-align: center;
+  .registerGrid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .addCashRegisterButtonMobile .addButtonWrapperMobile {
-    width: 100%;
-    justify-content: center;
+  .registerCountSummary {
+    min-width: 0;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  .header {
+    flex-wrap: wrap;
+  }
+
+  .registerOverview {
+    flex: 1 1 auto;
+  }
+
+  .addButtonWrapper {
+    margin-left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registerCard {
+    transition: none;
+  }
+
+  .registerCard:hover {
+    transform: none;
   }
 }
 

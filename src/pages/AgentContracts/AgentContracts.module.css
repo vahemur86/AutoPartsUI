@@ -1,4 +1,19 @@
 .page { display: grid; gap: 20px; }
+.page .modalPrimaryButton {
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  background: #c4a96a;
+  color: #111713;
+}
+.page .modalPrimaryButton:hover:not(:disabled) { background: #d2bf8a; }
+.page .modalCancelButton {
+  border: 1px solid rgba(196, 169, 106, 0.3);
+  background: rgba(196, 169, 106, 0.07);
+  color: #e8e3d6;
+}
+.page .modalCancelButton:hover:not(:disabled) {
+  border-color: rgba(196, 169, 106, 0.58);
+  background: rgba(196, 169, 106, 0.14);
+}
 .filters, .detailGrid, .financials { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
 .agentPhoneLookup { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; min-width: 0; }
 .summary, .headerActions, .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -21,6 +36,7 @@
 .productContractAction:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); }
 .productContractAction:focus-visible { outline: 2px solid rgba(196, 169, 106, 0.7); outline-offset: 2px; }
 .productContractDetailAction { box-sizing: border-box; height: 28px !important; min-height: 28px; padding: 4px 10px !important; font-size: 11px !important; }
+.chevronExpanded { transform: rotate(180deg); }
 .productCreditConfig { display: grid; gap: 22px; padding: 22px; border: 1px solid rgba(196, 169, 106, 0.28); border-radius: 10px; background: radial-gradient(ellipse at top right, rgba(196, 169, 106, 0.11), transparent 58%), linear-gradient(145deg, #20291f, #151b17 78%); }
 .productCreditConfig h2 { margin: 5px 0 8px; color: #f1eddf; font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 500; }
 .productCreditConfig p { max-width: 38ch; margin: 0; color: #aeb8ac; font-size: 13px; line-height: 1.6; }

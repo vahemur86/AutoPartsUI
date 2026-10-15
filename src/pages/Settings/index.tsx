@@ -145,13 +145,6 @@ const useSettingsNavigation = () => {
       group: groups.financialSettings,
       groupIcon: WalletCards,
     },
-    {
-      path: "/repayment-rules",
-      label: t("settings.navigation.repaymentRules"),
-      icon: Percent,
-      group: groups.financialSettings,
-      groupIcon: WalletCards,
-    },
   ];
 
   const sectionDefinitions = [

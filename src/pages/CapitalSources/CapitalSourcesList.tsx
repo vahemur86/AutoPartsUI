@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Banknote, Building2, Eye, Landmark, Pencil, Plus, RotateCcw, Sparkles, Wallet } from "lucide-react";
 
-import { Button, Select, TextField } from "@/ui-kit";
+import { Button, IconButton, Select, TextField } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
 import { capitalSourcesService } from "@/services/capitalSources";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
@@ -126,21 +126,28 @@ export const CapitalSourcesList = () => {
 
       <div className={styles.portfolioShell}>
         <section className={styles.heroCard} aria-label={t("capitalSources.portfolio.title")}>
-          <div className={styles.heroGlow} aria-hidden="true" />
           <div>
             <p className={styles.eyebrow}>{t("capitalSources.portfolio.eyebrow")}</p>
             <h2>{t("capitalSources.portfolio.title")}</h2>
             <p className={styles.heroDescription}>{t("capitalSources.portfolio.description")}</p>
           </div>
           <div className={styles.heroValue}>
-            <span>{t("capitalSources.fields.currentBalance")}</span>
-            <strong>{formatMoney(totalBalance)} AMD</strong>
+            <span className={styles.heroValueIcon} aria-hidden="true"><Banknote size={20} /></span>
+            <div className={styles.heroValueCopy}>
+              <span>{t("capitalSources.fields.currentBalance")}</span>
+              <strong>{formatMoney(totalBalance)} <small>AMD</small></strong>
+            </div>
           </div>
         </section>
 
         <div className={styles.filterPanel}>
           <div className={styles.filterGrid}>
-            <Select value={type} onChange={(e) => applyFilter("type", e.target.value)}>
+            <Select
+              value={type}
+              onChange={(e) => applyFilter("type", e.target.value)}
+              searchable
+              searchPlaceholder={t("common.search")}
+            >
               {typeOptions.map((option) => (
                 <option key={option.value || "all"} value={option.value}>
                   {t(option.label)}
@@ -148,7 +155,12 @@ export const CapitalSourcesList = () => {
               ))}
             </Select>
 
-            <Select value={status} onChange={(e) => applyFilter("status", e.target.value)}>
+            <Select
+              value={status}
+              onChange={(e) => applyFilter("status", e.target.value)}
+              searchable
+              searchPlaceholder={t("common.search")}
+            >
               {statusOptions.map((option) => (
                 <option key={option.value || "all"} value={option.value}>
                   {t(option.label)}
@@ -157,13 +169,15 @@ export const CapitalSourcesList = () => {
             </Select>
 
             <TextField
-              label={t("capitalSources.fields.code")}
+              aria-label={t("capitalSources.fields.code")}
+              placeholder={t("capitalSources.fields.code")}
               value={code}
               onChange={(e) => applyFilter("code", e.target.value)}
             />
 
             <TextField
-              label={t("capitalSources.fields.name")}
+              aria-label={t("capitalSources.fields.name")}
+              placeholder={t("capitalSources.fields.name")}
               value={name}
               onChange={(e) => applyFilter("name", e.target.value)}
             />
@@ -261,14 +275,24 @@ export const CapitalSourcesList = () => {
                   </div>
 
                   <div className={styles.cardActions}>
-                    <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${item.id}`)}>
-                      <Eye size={14} />
-                      {t("capitalSources.actions.view")}
-                    </Button>
-                    <Button variant="secondary" size="small" onClick={() => navigate(`/capital-sources/${item.id}/edit`)}>
-                      <Pencil size={14} />
-                      {t("capitalSources.actions.edit")}
-                    </Button>
+                    <IconButton
+                      variant="secondary"
+                      size="medium"
+                      icon={<Eye size={17} />}
+                      ariaLabel={`${t("capitalSources.actions.view")} ${item.name}`}
+                      title={t("capitalSources.actions.view")}
+                      className={styles.viewIconAction}
+                      onClick={() => navigate(`/capital-sources/${item.id}`)}
+                    />
+                    <IconButton
+                      variant="primary"
+                      size="medium"
+                      icon={<Pencil size={17} />}
+                      ariaLabel={`${t("capitalSources.actions.edit")} ${item.name}`}
+                      title={t("capitalSources.actions.edit")}
+                      className={styles.editIconAction}
+                      onClick={() => navigate(`/capital-sources/${item.id}/edit`)}
+                    />
                   </div>
                 </article>
               );
