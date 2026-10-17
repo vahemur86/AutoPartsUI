@@ -1,0 +1,65 @@
+.selectorCard {
+  width: min(100%, 360px);
+  min-width: 0;
+  padding: 11px 12px 12px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 8px;
+  background: linear-gradient(110deg, rgba(27, 35, 30, 0.92), rgba(18, 24, 20, 0.94));
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.14);
+}
+
+.selectorLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  color: #d2bf8a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.selectorLabel svg {
+  flex: 0 0 auto;
+}
+
+.select {
+  width: 100%;
+}
+
+.selectContainer.selectContainer {
+  height: 40px;
+  border-color: rgba(196, 169, 106, 0.24);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.selectContainer.selectContainer:hover,
+.selectContainer.selectContainer:focus-within {
+  border-color: rgba(229, 210, 154, 0.62);
+  background: rgba(196, 169, 106, 0.075);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.08);
+}
+
+.select :global([class*="dropdown"]) {
+  border-color: rgba(196, 169, 106, 0.24);
+  border-radius: 7px;
+  background: linear-gradient(145deg, #1b231e, #121814);
+}
+
+.select :global([class*="option"]) {
+  color: #dfe3dc;
+}
+
+.select :global([class*="option"]:hover:not(:disabled)) {
+  background: rgba(196, 169, 106, 0.12);
+}
+
+.select :global([class*="optionSelected"]) {
+  color: #eee9db;
+  background: rgba(196, 169, 106, 0.16);
+}
+
+@media (max-width: 720px) {
+  .selectorCard {
+    width: 100%;
+  }
+}

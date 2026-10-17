@@ -26,10 +26,6 @@
   flex-wrap: wrap;
 }
 
-.selector {
-  min-width: 200px;
-}
-
 .tableSection {
   width: 100%;
 }

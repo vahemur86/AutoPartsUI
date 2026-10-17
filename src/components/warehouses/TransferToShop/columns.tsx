@@ -77,7 +77,7 @@ export const getTransferToShopColumns = (
     size: 48,
   }),
   columnHelper.accessor("id", {
-    header: "ID",
+    header: i18next.t("warehouses.products.columns.id"),
     cell: (info) => `#${info.getValue()}`,
   }),
   columnHelper.accessor("productId", {

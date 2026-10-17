@@ -454,6 +454,13 @@
   letter-spacing: 0;
 }
 
+.formDescription {
+  margin: 8px 0 0;
+  color: #a8b3a7;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .fieldWrapper {
   position: relative;
   z-index: 1;

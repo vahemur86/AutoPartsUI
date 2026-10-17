@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { Box, Layers3, Ruler, Tags } from "lucide-react";
 
 import { ProductContent } from "./ProductContent";
 import { CategoryContent } from "./CategoryContent";
@@ -10,6 +11,13 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 import { Tab, TabGroup, Button } from "@/ui-kit";
 import styles from "./ProductSettings.module.css";
+
+const TAB_ICONS = {
+  category: Layers3,
+  brand: Tags,
+  unitType: Ruler,
+  boxSize: Box,
+};
 
 export const ProductSettings = () => {
   const { t } = useTranslation();
@@ -36,6 +44,13 @@ export const ProductSettings = () => {
     () => translatedTabs.find((tab) => tab.id === activeTabId),
     [activeTabId, translatedTabs],
   );
+
+  const tabCounts: Record<TabId, number | null> = {
+    category: fetchedData.categories ? categories.length : null,
+    brand: fetchedData.brands ? brands.length : null,
+    unitType: fetchedData.unitTypes ? unitTypes.length : null,
+    boxSize: fetchedData.boxSizes ? boxSizes.length : null,
+  };
 
   const currentData = useMemo((): ProductSettingItem[] => {
     const config = TAB_CONFIG[activeTabId];
@@ -169,15 +184,21 @@ export const ProductSettings = () => {
       <div className={styles.productSettings}>
         <div className={styles.tabsContainer}>
           <TabGroup>
-            {translatedTabs.map((tab) => (
-              <Tab
-                key={tab.id}
-                variant="segmented"
-                active={activeTabId === tab.id}
-                text={tab.label}
-                onClick={() => setActiveTabId(tab.id)}
-              />
-            ))}
+            {translatedTabs.map((tab) => {
+              const TabIcon = TAB_ICONS[tab.id];
+              const count = tabCounts[tab.id];
+              return (
+                <Tab
+                  key={tab.id}
+                  variant="segmented"
+                  active={activeTabId === tab.id}
+                  icon={<TabIcon size={16} aria-hidden="true" />}
+                  text={count === null ? tab.label : `${tab.label} (${count})`}
+                  className={styles.productSettingTab}
+                  onClick={() => setActiveTabId(tab.id)}
+                />
+              );
+            })}
           </TabGroup>
         </div>
 

@@ -44,10 +44,10 @@ import {
   Info,
   Scale,
   WalletCards,
-  Warehouse,
   X,
 } from "lucide-react";
 import { SalesLotDetails } from "./SalesLotDetails";
+import { WarehousePageSelect } from "../WarehousePageSelect";
 
 const PAGE_SIZE = 10;
 
@@ -277,27 +277,17 @@ export const BatchesToSale = () => {
   return (
     <div className={styles.batchesToSaleWrapper}>
       <div className={styles.header}>
-        <div className={styles.warehouseSelector}>
-          <label className={styles.warehouseSelectorLabel}>
-            <Warehouse size={16} aria-hidden="true" />
-            <span>{t("warehouses.batchesToSale.warehouseSelectorTitle")}</span>
-          </label>
-          <Select
-            aria-label={t("warehouses.batchesToSale.warehouseSelectorTitle")}
-            className={styles.warehouseSelect}
-            containerClassName={styles.warehouseSelectContainer}
-            placeholder={t("warehouses.form.selectWarehouse")}
-            value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
-            onChange={handleWarehouseChange}
-            disabled={isLoading}
-          >
-            {warehouses.map((warehouse) => (
-              <option key={warehouse.id} value={warehouse.id}>
-                {warehouse.code}
-              </option>
-            ))}
-          </Select>
-        </div>
+        <WarehousePageSelect
+          label={t("warehouses.batchesToSale.warehouseSelectorTitle")}
+          placeholder={t("warehouses.form.selectWarehouse")}
+          value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
+          onChange={handleWarehouseChange}
+          disabled={isLoading}
+          options={warehouses.map((warehouse) => ({
+            value: String(warehouse.id),
+            label: warehouse.code,
+          }))}
+        />
       </div>
 
       <div className={styles.tableSection}>

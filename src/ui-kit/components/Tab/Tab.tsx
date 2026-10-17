@@ -147,6 +147,7 @@ export const Tab = forwardRef<HTMLDivElement, TabProps>(
           }}
           {...props}
         >
+          {icon && <div className={styles.iconWrapper}>{icon}</div>}
           <span className={styles.tabText}>{text}</span>
         </div>
       );

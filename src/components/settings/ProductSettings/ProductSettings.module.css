@@ -18,13 +18,68 @@
 
 .tabsContainer {
   display: flex;
-  align-items: flex-start;
-  margin-top: 16px;
+  align-items: center;
+  margin-top: 8px;
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+}
+
+.tabsContainer :global([class*="segmentedGroup"]) {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(27, 35, 30, 0.92), rgba(18, 24, 20, 0.94));
+  overflow: visible;
+}
+
+.tabsContainer :global([class*="segmented"]) {
+  min-width: 0;
+  min-height: 46px;
+  height: auto;
+  justify-content: flex-start;
+  gap: 9px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tabsContainer :global([class*="segmented"]:hover:not([class*="disabled"])) {
+  background: rgba(196, 169, 106, 0.08);
+}
+
+.tabsContainer :global([class*="segmented"][class*="active"]) {
+  border-color: rgba(196, 169, 106, 0.38);
+  background: linear-gradient(135deg, rgba(196, 169, 106, 0.17), rgba(168, 195, 162, 0.08));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+.tabsContainer :global([class*="segmented"]:focus-visible) {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 2px;
+}
+
+.tabsContainer :global([class*="tabText"]) {
+  min-width: 0;
+  color: #aeb6ad;
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
+}
+
+.tabsContainer :global([class*="segmented"][class*="active"] [class*="tabText"]) {
+  color: #eee9db;
+}
+
+.productSettingTab {
+  flex: 1 1 0;
 }
 
 .scrollableContent {
@@ -496,6 +551,21 @@
     margin-top: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .tabsContainer :global([class*="segmentedGroup"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .tabsContainer :global([class*="segmented"]) {
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+
+  .tabsContainer :global([class*="tabText"]) {
+    white-space: normal;
+    line-height: 1.25;
   }
 
   .createNewSection {

@@ -5,7 +5,8 @@ import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 import type { Row } from "@tanstack/react-table";
 
 // ui-kit
-import { DataTable, Select, Button } from "@/ui-kit";
+import { DataTable, Button } from "@/ui-kit";
+import { Store } from "lucide-react";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -24,6 +25,7 @@ import { getCashRegisterId, getApiErrorMessage } from "@/utils";
 
 // columns
 import { getTransferToShopColumns } from "./columns";
+import { WarehousePageSelect } from "../WarehousePageSelect";
 
 // styles
 import styles from "./TransferToShop.module.css";
@@ -184,7 +186,7 @@ export const TransferToShop = () => {
       return (
         <div className={styles.detailsGrid}>
           <div className={styles.detailsRow}>
-            <span className={styles.detailsLabel}>ID</span>
+            <span className={styles.detailsLabel}>{t("warehouses.products.columns.productId")}</span>
             <span className={styles.detailsValue}>#{product.id}</span>
           </div>
           <div className={styles.detailsRow}>
@@ -409,38 +411,29 @@ export const TransferToShop = () => {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <div className={styles.selectors}>
-          <div className={styles.selector}>
-            <Select
-              label={t("warehouses.form.warehouse")}
-              placeholder={t("warehouses.form.selectWarehouse")}
-              value={selectedWarehouseId?.toString() || ""}
-              onChange={handleWarehouseChange}
-              disabled={isLoadingWarehouses}
-            >
-              <option value="">{t("warehouses.form.selectWarehouse")}</option>
-              {warehouses.map((warehouse) => (
-                <option key={warehouse.id} value={warehouse.id}>
-                  {warehouse.code}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div className={styles.selector}>
-            <Select
-              label={t("warehouses.transfer.shop")}
-              placeholder={t("warehouses.transfer.selectShop")}
-              value={selectedShopId?.toString() || ""}
-              onChange={handleShopChange}
-              disabled={isLoadingShops}
-            >
-              <option value="">{t("warehouses.transfer.selectShop")}</option>
-              {shops.map((shop) => (
-                <option key={shop.id} value={shop.id}>
-                  {shop.code}
-                </option>
-              ))}
-            </Select>
-          </div>
+          <WarehousePageSelect
+            label={t("warehouses.form.warehouse")}
+            placeholder={t("warehouses.form.selectWarehouse")}
+            value={selectedWarehouseId?.toString() || ""}
+            onChange={handleWarehouseChange}
+            disabled={isLoadingWarehouses}
+            options={warehouses.map((warehouse) => ({
+              value: String(warehouse.id),
+              label: warehouse.code,
+            }))}
+          />
+          <WarehousePageSelect
+            label={t("warehouses.transfer.shop")}
+            placeholder={t("warehouses.transfer.selectShop")}
+            value={selectedShopId?.toString() || ""}
+            onChange={handleShopChange}
+            disabled={isLoadingShops}
+            icon={<Store size={16} aria-hidden="true" />}
+            options={shops.map((shop) => ({
+              value: String(shop.id),
+              label: shop.code,
+            }))}
+          />
         </div>
       </div>
 

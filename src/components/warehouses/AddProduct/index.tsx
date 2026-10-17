@@ -4,10 +4,11 @@ import { toast } from "react-toastify";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
-import { DataTable, Select } from "@/ui-kit";
+import { DataTable } from "@/ui-kit";
 
 // components
 import { getProductColumns } from "./columns";
+import { WarehousePageSelect } from "../WarehousePageSelect";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -232,22 +233,17 @@ export const AddProduct = () => {
   return (
     <div className={styles.addProductWrapper}>
       <div className={styles.header}>
-        <div className={styles.warehouseSelector}>
-          <Select
-            label={t("warehouses.form.warehouse")}
-            placeholder={t("warehouses.form.selectWarehouse")}
-            value={selectedWarehouseId?.toString() || ""}
-            onChange={handleWarehouseChange}
-            disabled={isLoadingWarehouses}
-          >
-            <option value="">{t("warehouses.form.selectWarehouse")}</option>
-            {warehouses.map((warehouse) => (
-              <option key={warehouse.id} value={warehouse.id}>
-                {warehouse.code}
-              </option>
-            ))}
-          </Select>
-        </div>
+        <WarehousePageSelect
+          label={t("warehouses.form.warehouse")}
+          placeholder={t("warehouses.form.selectWarehouse")}
+          value={selectedWarehouseId?.toString() || ""}
+          onChange={handleWarehouseChange}
+          disabled={isLoadingWarehouses}
+          options={warehouses.map((warehouse) => ({
+            value: String(warehouse.id),
+            label: warehouse.code,
+          }))}
+        />
       </div>
 
       <div className={styles.tableSection}>{renderContent()}</div>

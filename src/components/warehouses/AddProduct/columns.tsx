@@ -46,7 +46,7 @@ export const getProductColumns = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: ColumnHandlers): ColumnDef<Product, any>[] => [
   columnHelper.accessor("id", {
-    header: "ID",
+    header: i18next.t("warehouses.addProduct.columns.id"),
     cell: (info) => `#${info.getValue()}`,
   }),
   columnHelper.accessor("code", {

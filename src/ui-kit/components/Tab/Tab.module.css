@@ -203,6 +203,14 @@
   font-weight: 500;
 }
 
+.segmented .iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: rgba(210, 191, 138, 0.66);
+}
+
 .segmented.active {
   background-color: #0e0f11;
   border-radius: 6px;
@@ -212,6 +220,10 @@
 
 .segmented.active .tabText {
   color: var(--color-white);
+}
+
+.segmented.active .iconWrapper {
+  color: #d2bf8a;
 }
 
 .segmented:not(.disabled):hover {

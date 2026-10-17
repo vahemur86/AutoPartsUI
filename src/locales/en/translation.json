@@ -67,6 +67,8 @@
     "page": "Page",
     "of": "of",
     "close": "Close",
+    "show": "Show",
+    "hide": "Hide",
     "areYouSure": "Are you sure you want to proceed?",
     "loading": "Loading...",
     "noData": "No data available.",
@@ -3169,6 +3171,23 @@
       "redirectEyebrow": "Access confirmed",
       "redirectTitle": "Preparing your workspace",
       "redirectMessage": "You’re signed in. We’ll take you to the right workspace in a moment."
+    },
+    "setPassword": {
+      "brandEyebrow": "Account setup",
+      "pageTitle": "Set your password",
+      "badge": "Secure setup",
+      "welcome": "Create your password",
+      "description": "Choose a password to access your account.",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "repeatPassword": "Repeat password",
+      "repeatPasswordPlaceholder": "Repeat password",
+      "passwordMinimum": "Password must be at least 4 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "invalidLink": "This link is invalid or has expired.",
+      "submitting": "Saving...",
+      "submit": "Set password",
+      "success": "Password set successfully."
     }
   },
   "OTP": {
