@@ -49,14 +49,15 @@ export const UsersDropdown = ({
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
 
   const isCashier = form.role === "Cashier";
+  const resolvedUserType = isCashier ? "Shop" : form.userType;
   const isShopRequired =
-    isCashier || form.userType === "Shop" || (form.userType === "System" && !isSuperAdmin);
+    isCashier || resolvedUserType === "Shop" || (resolvedUserType === "System" && !isSuperAdmin);
   const isWarehouseRequired =
-    form.userType === "Warehouse" || (form.userType === "System" && !isSuperAdmin);
+    resolvedUserType === "Warehouse" || (resolvedUserType === "System" && !isSuperAdmin);
 
   const isEmailValid = /\S+@\S+\.\S+/.test(form.email);
   const isRoleValid = !!form.role;
-  const isUserTypeValid = !!form.userType;
+  const isUserTypeValid = !!resolvedUserType;
   const isShopValid = isShopRequired ? !!form.shopId : true;
   const isWarehouseValid = isWarehouseRequired ? !!form.warehouseId : true;
 
@@ -77,7 +78,7 @@ export const UsersDropdown = ({
     onSave({
       email: form.email,
       role: form.role,
-      userType: form.userType,
+      userType: resolvedUserType,
       shopId: form.shopId ? parseInt(form.shopId, 10) : null,
       warehouseId: form.warehouseId ? parseInt(form.warehouseId, 10) : null,
       username: form.email,
@@ -140,14 +141,17 @@ export const UsersDropdown = ({
         <Select
           label={t("users.form.userType")}
           placeholder={t("users.form.selectUserType")}
-          value={form.userType}
+          value={resolvedUserType}
           onChange={(e: ChangeEvent<HTMLSelectElement>) => updateField({ userType: e.target.value, shopId: "", warehouseId: "" })}
           error={hasTriedSubmit && !isUserTypeValid}
           helperText={hasTriedSubmit && !isUserTypeValid ? t("users.validation.userTypeRequired") : ""}
           disabled={isAdmin || isSubmitting || isCashier}
         >
           <option value="">{t("users.form.selectUserType")}</option>
-          {userTypes.map((type) => (
+          {(isCashier
+            ? userTypes.filter((type) => type.value === "Shop")
+            : userTypes
+          ).map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
             </option>
