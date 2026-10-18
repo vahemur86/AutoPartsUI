@@ -42,6 +42,9 @@ export const MetalRates: FC = () => {
   const [activeRate, setActiveRate] = useState<MetalRate | null>(null);
   const [deletingRate, setDeletingRate] = useState<MetalRate | null>(null);
   const [isMutating, setIsMutating] = useState(false);
+  const sortedMetalRates = [...metalRates].sort(
+    (left, right) => Number(right.isActive) - Number(left.isActive),
+  );
 
   useEffect(() => {
     dispatch(fetchMetalRates());
@@ -154,8 +157,11 @@ export const MetalRates: FC = () => {
         </div>
       ) : (
         <div className={styles.rateGrid}>
-          {metalRates.map((rate) => (
-            <article className={styles.rateCard} key={rate.id}>
+          {sortedMetalRates.map((rate) => (
+            <article
+              className={`${styles.rateCard} ${rate.isActive ? styles.rateCardActive : ""}`}
+              key={rate.id}
+            >
               <header className={styles.cardHeader}>
                 <div className={styles.currencyIdentity}>
                   <span className={styles.currencyIcon} aria-hidden="true">

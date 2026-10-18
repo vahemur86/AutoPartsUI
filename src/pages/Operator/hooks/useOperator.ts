@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { handleUnauthorizedResponse } from "@/services";
 
 import {
   HttpTransportType,
@@ -59,6 +60,28 @@ import {
 
 // types
 import type { WorkshopFormData } from "@/types/operator";
+
+const isSignalRUnauthorizedError = (error: unknown): boolean => {
+  if (!error || typeof error !== "object") return false;
+
+  const signalRError = error as {
+    status?: number;
+    statusCode?: number;
+    message?: string;
+  };
+
+  return (
+    signalRError.status === 401 ||
+    signalRError.statusCode === 401 ||
+    /\b401\b|unauthorized/i.test(signalRError.message ?? "")
+  );
+};
+
+const handleSignalRAuthError = (error: unknown) => {
+  if (isSignalRUnauthorizedError(error)) {
+    handleUnauthorizedResponse(error);
+  }
+};
 
 export type TabType = "catalyst" | "iron";
 
@@ -329,6 +352,8 @@ export const useOperator = () => {
       refreshBalance();
       dispatch(fetchPendingTransaction(crId));
     });
+    newConnection.onreconnecting((error) => handleSignalRAuthError(error));
+    newConnection.onclose((error) => handleSignalRAuthError(error));
 
     const startHub = async () => {
       try {
@@ -337,6 +362,7 @@ export const useOperator = () => {
         dispatch(fetchPendingTransaction(crId));
         setConnection(newConnection);
       } catch (err) {
+        handleSignalRAuthError(err);
         console.error("SignalR Connection Error: ", err);
       }
     };

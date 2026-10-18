@@ -1,6 +1,7 @@
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Protection Wrapper
@@ -174,16 +175,29 @@ export const App = () => {
   const AuthEventListener = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
-      const handler = () => {
+      const handler = (event: Event) => {
+        const reason = (event as CustomEvent<{ reason?: string }>).detail?.reason;
+        toast.error(
+          t(
+            reason === "deactivated"
+              ? "auth.sessionExpired.deactivated"
+              : "auth.sessionExpired.unauthorized",
+          ),
+          { toastId: "auth-session-expired" },
+        );
         dispatch(forceLogout());
-        navigate("/login", { replace: true });
+        event.preventDefault();
+        if (window.location.pathname !== "/login") {
+          navigate("/login", { replace: true });
+        }
       };
 
       window.addEventListener("auth:logout", handler);
       return () => window.removeEventListener("auth:logout", handler);
-    }, [dispatch, navigate]);
+    }, [dispatch, navigate, t]);
 
     return null;
   };

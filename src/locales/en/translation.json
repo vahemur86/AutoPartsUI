@@ -3253,6 +3253,10 @@
   },
 
   "auth": {
+    "sessionExpired": {
+      "deactivated": "Your account has been deactivated. Please log in again.",
+      "unauthorized": "Your session is no longer authorized. Please log in again."
+    },
     "login": {
       "title": "PRP — Management Platform",
       "welcome": "Welcome back",
@@ -3260,6 +3264,7 @@
       "usernameRequired": "Username is required",
       "password": "Password",
       "passwordRequired": "Password is required",
+      "invalidCredentials": "The username or password is incorrect.",
       "accountInactive": "Your account is inactive. Contact an administrator.",
       "loggingIn": "Signing in...",
       "submit": "Sign in",

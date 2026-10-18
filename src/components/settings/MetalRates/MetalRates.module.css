@@ -45,6 +45,14 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
 }
 
+.rateCardActive {
+  border: 2px solid rgba(168, 195, 162, 0.82);
+  box-shadow:
+    inset 4px 0 0 rgba(168, 195, 162, 0.82),
+    0 0 0 2px rgba(168, 195, 162, 0.1),
+    0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
 .cardHeader {
   display: flex;
   align-items: center;

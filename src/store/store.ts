@@ -1,5 +1,5 @@
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./slices/authSlice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import authReducer, { forceLogout } from "./slices/authSlice";
 import warehousesReducer from "./slices/warehousesSlice";
 import shopsReducer from "./slices/shopsSlice";
 import productSettingsReducer from "./slices/productSettingsSlice";
@@ -38,8 +38,7 @@ import servicesCatalogReducer from "./slices/servicesCatalogSlice";
 import vehicleServicePricingReducer from "./slices/vehicleServicePricingSlice";
 import catalyticConvertersReducer from "./slices/catalyticConvertersSlice";
 
-export const store = configureStore({
-  reducer: {
+const appReducer = combineReducers({
     auth: authReducer,
     warehouses: warehousesReducer,
     shops: shopsReducer,
@@ -78,7 +77,15 @@ export const store = configureStore({
     servicesCatalog: servicesCatalogReducer,
     vehicleServicePricing: vehicleServicePricingReducer,
     catalyticConverters: catalyticConvertersReducer,
-  },
+});
+
+const rootReducer = (
+  state: ReturnType<typeof appReducer> | undefined,
+  action: Parameters<typeof appReducer>[1],
+) => appReducer(action.type === forceLogout.type ? undefined : state, action);
+
+export const store = configureStore({
+  reducer: rootReducer,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

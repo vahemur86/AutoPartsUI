@@ -157,9 +157,16 @@ export const Login = () => {
         .trim()
         .replace(/[.!?]+$/, "")
         .toLocaleLowerCase();
+      const isCredentialError =
+        /\b401\b|unauthorized|invalid login|login failed|authentication failed|user not found|account not found/.test(normalizedError) ||
+        /(?:invalid|incorrect|wrong|bad).{0,24}(?:credential|username|email|password)/.test(normalizedError) ||
+        /(?:credential|username|email|password).{0,24}(?:invalid|incorrect|wrong)/.test(normalizedError);
+
       toast.error(
         normalizedError === "user account is inactive"
           ? t("auth.login.accountInactive")
+          : isCredentialError
+            ? t("auth.login.invalidCredentials")
           : error,
       );
       dispatch(clearAuthError());
