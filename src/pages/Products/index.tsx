@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
 import { Outlet } from "react-router-dom";
 
 // stores
@@ -16,9 +15,6 @@ import { AddProductDropdown } from "@/components/products/General/actions/AddPro
 
 // ui-kit
 import { Button } from "@/ui-kit";
-
-// utils
-import { getErrorMessage } from "@/utils";
 
 // types
 import type { ProductFormData } from "@/components/products/General/types";
@@ -37,30 +33,20 @@ export const Products = () => {
   }, []);
 
   const handleSaveProduct = useCallback(
-    async (data: ProductFormData): Promise<boolean> => {
-      try {
-        await dispatch(
-          addProduct({
-            code: data.productKey,
-            sku: data.sku,
-            brandId: data.brand,
-            categoryId: data.category,
-            unitTypeId: data.unitType,
-            boxSizeId: data.boxSize,
-            vehicleDependent: data.vehicleDependent,
-          }),
-        ).unwrap();
-
-        toast.success(t("products.success.productCreated"));
-
-        return true;
-      } catch (error: unknown) {
-        console.error(error);
-        toast.error(getErrorMessage(error, t("products.error.failedToCreate")));
-        return false;
-      }
+    async (data: ProductFormData): Promise<void> => {
+      await dispatch(
+        addProduct({
+          code: data.productKey,
+          sku: data.sku,
+          brandId: data.brand,
+          categoryId: data.category,
+          unitTypeId: data.unitType,
+          boxSizeId: data.boxSize,
+          vehicleDependent: data.vehicleDependent,
+        }),
+      ).unwrap();
     },
-    [dispatch, t],
+    [dispatch],
   );
 
   return (

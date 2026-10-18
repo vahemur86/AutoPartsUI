@@ -1,6 +1,6 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, useCallback, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Mail, UserRoundPlus } from "lucide-react";
+import { LoaderCircle, Mail, UserRoundPlus } from "lucide-react";
 
 import { Button, Select, TextField } from "@/ui-kit";
 import { FormDrawer } from "@/components/common/FormDrawer";
@@ -48,6 +48,14 @@ export const UsersDropdown = ({
   const [form, setForm] = useState(initialFormState);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
 
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (isSubmitting && !nextOpen) return;
+      onOpenChange(nextOpen);
+    },
+    [isSubmitting, onOpenChange],
+  );
+
   const isCashier = form.role === "Cashier";
   const resolvedUserType = isCashier ? "Shop" : form.userType;
   const isShopRequired =
@@ -86,25 +94,41 @@ export const UsersDropdown = ({
   };
 
   const handleCancel = () => {
-    onOpenChange(false);
+    handleOpenChange(false);
   };
 
   return (
     <FormDrawer
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
       eyebrow={t("header.users")}
       title={t("users.tabs.create")}
       titleId="user-create-title"
       closeLabel={t("common.close")}
+      closeDisabled={isSubmitting}
       icon={<UserRoundPlus size={20} />}
       footer={
         <>
           <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
             {t("common.cancel")}
           </Button>
-          <Button className={styles.usersPrimaryButton} variant="primary" onClick={handleSave} disabled={isSubmitting}>
-            {isSubmitting ? t("common.saving") : t("common.save")}
+          <Button
+            className={styles.usersPrimaryButton}
+            variant="primary"
+            onClick={handleSave}
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+          >
+            {isSubmitting && (
+              <LoaderCircle
+                className={styles.submitSpinner}
+                size={15}
+                aria-hidden="true"
+              />
+            )}
+            {isSubmitting
+              ? t("users.actions.creatingAndSending")
+              : t("common.save")}
           </Button>
         </>
       }
@@ -197,6 +221,16 @@ export const UsersDropdown = ({
         )}
 
       </div>
+      {isSubmitting && (
+        <div className={styles.submitProgress} role="status" aria-live="polite">
+          <LoaderCircle
+            className={styles.submitProgressSpinner}
+            size={17}
+            aria-hidden="true"
+          />
+          <span>{t("users.status.creatingAndSending")}</span>
+        </div>
+      )}
     </FormDrawer>
   );
 };

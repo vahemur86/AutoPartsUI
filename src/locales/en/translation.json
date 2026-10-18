@@ -995,7 +995,11 @@
       "create": "Create user"
     },
     "actions": {
-      "addUser": "Add user"
+      "addUser": "Add user",
+      "creatingAndSending": "Creating..."
+    },
+    "status": {
+      "creatingAndSending": "The user is being created and the invitation email is being sent. Please wait."
     },
     "roles": {
       "superAdmin": "Super Admin",
@@ -2061,6 +2065,25 @@
     "iconAlt": "Products icon",
     "addNew": "Add New",
     "quickAdd": "Quick Entry",
+    "bulk": {
+      "title": "Add products in bulk",
+      "description": "Set shared attributes once, then enter a code and SKU for each product.",
+      "addRow": "Add row",
+      "removeRow": "Remove row",
+      "status": "Status",
+      "create": "Create {{count}} products",
+      "creating": "Creating; {{count}} remaining",
+      "retryFailed": "Retry failed rows",
+      "duplicateValues": "Product codes and SKUs must be unique within this batch.",
+      "requiredSharedFields": "Select a brand, category, unit, and box size.",
+      "rowFailed": "Product creation failed.",
+      "rowStatus": {
+        "ready": "Ready",
+        "creating": "Creating",
+        "created": "Created",
+        "failed": "Failed"
+      }
+    },
     "loading": "Loading products...",
     "emptyState": "No products found. Click \"Add New\" to create your first product.",
     "loadingGeneric": "Loading...",
@@ -2116,12 +2139,14 @@
     },
     "success": {
       "productCreated": "Product created successfully",
+      "productsCreated": "{{count}} products created successfully",
       "productUpdated": "Product updated successfully",
       "productDeleted": "Product deleted successfully",
       "priceUpdated": "Product price updated successfully"
     },
     "error": {
       "failedToCreate": "Failed to create product",
+      "bulkCreateFailed": "Could not create {{count}} products. You can retry only the failed rows.",
       "failedToUpdate": "Failed to update product",
       "failedToDelete": "Failed to delete product",
       "failedToUpdatePrice": "Failed to update product price"

@@ -10,6 +10,7 @@ interface FormDrawerProps {
   title: string;
   titleId: string;
   closeLabel: string;
+  closeDisabled?: boolean;
   icon: ReactNode;
   children: ReactNode;
   footer: ReactNode;
@@ -22,6 +23,7 @@ export const FormDrawer = ({
   title,
   titleId,
   closeLabel,
+  closeDisabled = false,
   icon,
   children,
   footer,
@@ -66,6 +68,7 @@ export const FormDrawer = ({
             type="button"
             className={styles.closeButton}
             onClick={() => onOpenChange(false)}
+            disabled={closeDisabled}
             aria-label={closeLabel}
             title={closeLabel}
           >
