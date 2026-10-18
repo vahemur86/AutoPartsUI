@@ -2,14 +2,15 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
-import { Pencil, Plus, RefreshCw, UsersRound } from "lucide-react";
+import { LoaderCircle, Pencil, Plus, RefreshCw, UsersRound } from "lucide-react";
 
 // components
 import { SectionHeader } from "@/components/common";
+import { FormDrawer } from "@/components/common/FormDrawer";
 import { UsersDropdown } from "./usersActions/UsersDropdown";
 
 // ui-kit
-import { Button, TextField, Select, Switch, DataTable, Modal } from "@/ui-kit";
+import { Button, TextField, Select, Switch, DataTable } from "@/ui-kit";
 
 // services
 import { createUser, getUsers, updateUser } from "@/services/users";
@@ -120,6 +121,18 @@ export const UserManagement = () => {
     setEditingUser(null);
     setEditPassword("");
   };
+
+  const handleEditOpenChange = useCallback(
+    (open: boolean) => {
+      if (isMutatingEdit && !open) return;
+      if (open) {
+        setIsEditModalOpen(true);
+      } else {
+        handleCloseEdit();
+      }
+    },
+    [isMutatingEdit],
+  );
 
   const isEditShopRequired =
     editRole === "Cashier" ||
@@ -356,12 +369,17 @@ export const UserManagement = () => {
         </div>
       </div>
 
-      <Modal
+      <FormDrawer
         open={isEditModalOpen}
-        onOpenChange={setIsEditModalOpen}
+        onOpenChange={handleEditOpenChange}
+        eyebrow={t("header.users")}
         title={t("users.editModal.title")}
+        titleId="user-edit-title"
+        closeLabel={t("common.close")}
+        closeDisabled={isMutatingEdit}
+        icon={<Pencil size={20} />}
         footer={
-          <div className={styles.editModalFooter}>
+          <div className={styles.editDrawerFooter}>
             <Button
               variant="secondary"
               onClick={handleCloseEdit}
@@ -371,10 +389,15 @@ export const UserManagement = () => {
             </Button>
             <Button
               variant="primary"
+              className={styles.usersEditSaveButton}
               onClick={handleSaveEdit}
               disabled={isMutatingEdit}
+              aria-busy={isMutatingEdit}
             >
-              {t("common.save")}
+              {isMutatingEdit && (
+                <LoaderCircle className={styles.editSaveSpinner} size={15} aria-hidden="true" />
+              )}
+              {isMutatingEdit ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         }
@@ -479,7 +502,7 @@ export const UserManagement = () => {
             </div>
           </div>
         </div>
-      </Modal>
+      </FormDrawer>
     </>
   );
 };

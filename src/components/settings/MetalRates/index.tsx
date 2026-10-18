@@ -157,11 +157,17 @@ export const MetalRates: FC = () => {
         </div>
       ) : (
         <div className={styles.rateGrid}>
-          {sortedMetalRates.map((rate) => (
-            <article
-              className={`${styles.rateCard} ${rate.isActive ? styles.rateCardActive : ""}`}
-              key={rate.id}
-            >
+          {sortedMetalRates.map((rate) => {
+            const effectiveDate = new Date(rate.effectiveFrom);
+            const hasValidEffectiveDate =
+              Boolean(rate.effectiveFrom) &&
+              !Number.isNaN(effectiveDate.getTime());
+
+            return (
+              <article
+                className={`${styles.rateCard} ${rate.isActive ? styles.rateCardActive : ""}`}
+                key={rate.id}
+              >
               <header className={styles.cardHeader}>
                 <div className={styles.currencyIdentity}>
                   <span className={styles.currencyIcon} aria-hidden="true">
@@ -207,9 +213,13 @@ export const MetalRates: FC = () => {
                 <span className={styles.effectiveDate}>
                   <CalendarDays size={14} aria-hidden="true" />
                   <span>{t("metals.columns.effectiveFrom")}</span>
-                  <time dateTime={rate.effectiveFrom}>
-                    {dateFormat.format(new Date(rate.effectiveFrom))}
-                  </time>
+                  {hasValidEffectiveDate ? (
+                    <time dateTime={rate.effectiveFrom}>
+                      {dateFormat.format(effectiveDate)}
+                    </time>
+                  ) : (
+                    <span>{t("common.noData")}</span>
+                  )}
                 </span>
                 <div className={styles.cardActions}>
                   <IconButton
@@ -230,9 +240,10 @@ export const MetalRates: FC = () => {
                     onClick={() => setDeletingRate(rate)}
                   />
                 </div>
-              </footer>
-            </article>
-          ))}
+                </footer>
+              </article>
+            );
+          })}
         </div>
       )}
     </div>
