@@ -2667,6 +2667,7 @@
       },
       "actions": {
         "addProduct": "Add Product",
+        "removeProduct": "Remove product",
         "calculate": "Calculate",
         "printCheck": "Print Receipt"
       },

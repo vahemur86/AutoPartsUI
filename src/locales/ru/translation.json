@@ -2670,6 +2670,7 @@
       },
       "actions": {
         "addProduct": "Добавить товар",
+        "removeProduct": "Удалить товар",
         "calculate": "Рассчитать",
         "printCheck": "Распечатать чек"
       },

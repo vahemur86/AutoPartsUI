@@ -2816,6 +2816,7 @@
       },
       "actions": {
         "addProduct": "Ավելացնել ապրանք",
+        "removeProduct": "Հեռացնել ապրանքը",
         "calculate": "Կատարել հաշվարկ",
         "printCheck": "Տպել չեկը"
       },

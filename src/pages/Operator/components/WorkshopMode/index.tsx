@@ -1663,24 +1663,28 @@ export const WorkshopMode = ({
                   ) : (
                     productLines.map((line) => (
                       <div key={line.shopStockId} className={styles.productLine}>
-                        <div className={styles.productCode}>{line.code}</div>
-                        <TextField
-                          type="number"
-                          value={String(line.quantity)}
-                          onChange={(e) => updateQuantity(line.shopStockId, e.target.value)}
-                          label={t("operatorPage.workshop.fields.quantity")}
-                        />
-                        <div className={styles.productPrice}>{line.unitPrice.toLocaleString()} AMD</div>
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          onClick={() => removeLine(line.shopStockId)}
-                        >
-                          <span className={styles.buttonContent}>
-                            <Trash2 className={styles.buttonIcon} size={14} />
-                            {t("common.remove")}
-                          </span>
-                        </Button>
+                        <div className={styles.productLineMain}>
+                          <div className={styles.productCode}>{line.code}</div>
+                          <TextField
+                            type="number"
+                            value={String(line.quantity)}
+                            onChange={(e) => updateQuantity(line.shopStockId, e.target.value)}
+                            label={t("operatorPage.workshop.fields.quantity")}
+                          />
+                        </div>
+                        <div className={styles.productLineMeta}>
+                          <div className={styles.productPrice}>{line.unitPrice.toLocaleString()} AMD</div>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className={styles.removeProductButton}
+                            onClick={() => removeLine(line.shopStockId)}
+                            aria-label={t("operatorPage.workshop.actions.removeProduct")}
+                            title={t("operatorPage.workshop.actions.removeProduct")}
+                          >
+                            <Trash2 size={15} aria-hidden="true" />
+                          </Button>
+                        </div>
                       </div>
                     ))
                   )}
