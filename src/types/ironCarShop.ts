@@ -35,6 +35,7 @@ export interface PurchaseIronApiPayload {
   customerPhone: string;
   customerTypeId: number;
   weightKg: number;
+  recalculationStep?: number | null;
   notes: string;
 }
 
@@ -166,6 +167,7 @@ export interface RecalculateStepPayload {
 }
 
 export interface RecalculatePayload {
+  dictBrandId: number;
   customerId: number;
   customerTypeId: number;
   currentStep: number;
@@ -175,6 +177,7 @@ export interface RecalculatePayload {
 export interface RecalculateResponse {
   currentStep: number;
   nextStep: number;
+  appliedStep: number;
   isLastStep: boolean;
   totalWeight: number;
   totalAmount: number;

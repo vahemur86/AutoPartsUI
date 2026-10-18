@@ -26,7 +26,7 @@ import { FilterPowderBatchesDropdown } from "./FilterPowderBatchesDropdown";
 import { PowderBatchesSummaryDropdown } from "./PowderBatchesSummaryDropdown";
 
 // utils
-import { getApiErrorMessage, getCashRegisterId, checkIsToday } from "@/utils";
+import { getApiErrorMessage, checkIsToday } from "@/utils";
 
 // types
 import type { GetPowderBatchesParams } from "@/types/cash";
@@ -53,8 +53,6 @@ export const PowderBatches: FC = () => {
   const filterAnchorRef = useRef<HTMLButtonElement>(null);
   const summaryAnchorRef = useRef<HTMLButtonElement>(null);
 
-  const cashRegisterId = useMemo(() => getCashRegisterId(), []);
-
   useEffect(() => {
     if (!isSummaryDropdownOpen) {
       setIsSummaryDelayLoading(false);
@@ -73,7 +71,6 @@ export const PowderBatches: FC = () => {
   useEffect(() => {
     dispatch(
       fetchPowderBatches({
-        cashRegisterId: activeFilters.cashRegisterId || 1,
         fromDate: activeFilters.fromDate,
         toDate: activeFilters.toDate,
         page: currentPage + 1,
@@ -119,7 +116,6 @@ export const PowderBatches: FC = () => {
         fetchPowderBatchesSummaryByDate({
           dateFrom,
           dateTo,
-          cashRegisterId,
         }),
       )
         .unwrap()
@@ -132,7 +128,7 @@ export const PowderBatches: FC = () => {
           );
         });
     },
-    [dispatch, cashRegisterId, t],
+    [dispatch, t],
   );
 
   const handleFetchDefaultSummary = useCallback(() => {

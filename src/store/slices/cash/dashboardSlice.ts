@@ -129,7 +129,7 @@ export const fetchPowderBatchesSummary = createAsyncThunk<
 
 export const fetchPowderBatchesSummaryByDate = createAsyncThunk<
   PowderBatchesSummary,
-  { dateFrom: string; dateTo: string; cashRegisterId: number },
+  { dateFrom: string; dateTo: string },
   { rejectValue: string }
 >(
   "cashDashboard/fetchPowderBatchesSummaryByDate",

@@ -61,7 +61,6 @@ export const getOpenSessionsSummary = async ({
 };
 
 export const getPowderBatches = async ({
-  cashRegisterId,
   fromDate,
   toDate,
   page = 1,
@@ -74,11 +73,9 @@ export const getPowderBatches = async ({
         params: {
           fromDate,
           toDate,
-          cashRegisterId,
           page,
           pageSize,
         },
-        headers: getHeaders(cashRegisterId),
       },
     );
     return data;
@@ -103,11 +100,9 @@ export const getPowderBatchesSummary = async () => {
 export const getPowderBatchesSummaryByDate = async ({
   dateFrom,
   dateTo,
-  cashRegisterId,
 }: {
   dateFrom: string;
   dateTo: string;
-  cashRegisterId: number;
 }) => {
   try {
     const { data } = await api.get<PowderBatchesSummary>(
@@ -117,7 +112,6 @@ export const getPowderBatchesSummaryByDate = async ({
           dateFrom,
           dateTo,
         },
-        headers: getHeaders(cashRegisterId),
       },
     );
     return data;

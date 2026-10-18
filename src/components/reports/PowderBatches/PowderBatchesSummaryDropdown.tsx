@@ -260,7 +260,7 @@ export const PowderBatchesSummaryDropdown: FC<
                       <div className={styles.summaryMetalMeta}>
                         <span className={styles.summaryMetalName}>{label}</span>
                         <span className={styles.summaryMetalPrice}>
-                          {formatPrice(price)} AMD / kg
+                          {formatPrice(price)} USD / kg
                         </span>
                       </div>
                     </div>

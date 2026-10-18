@@ -92,8 +92,9 @@ export const IronShopSettings = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [priceForm, setPriceForm] = useState(initialPriceForm);
   const [recalculationStepForm, setRecalculationStepForm] = useState(initialRecalculationStepForm);
-  const [activeTab, setActiveTab] = useState<"iron-types" | "prices">("iron-types");
-  const [activePriceForm, setActivePriceForm] = useState<"base" | "recalculation">("base");
+  const [activeTab, setActiveTab] = useState<
+    "iron-types" | "prices" | "recalculation"
+  >("iron-types");
   const activeIronTypeCount = useMemo(
     () => ironTypes.filter((item) => item.isActive).length,
     [ironTypes],
@@ -501,6 +502,18 @@ export const IronShopSettings = () => {
           <span>{t("ironManagement.tabs.priceRules", "Price Rules")}</span>
           <span className={styles.workflowStep}>02</span>
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "recalculation"}
+          aria-controls="recalculation-panel"
+          className={`${styles.workflowTab} ${activeTab === "recalculation" ? styles.workflowTabActive : ""}`}
+          onClick={() => setActiveTab("recalculation")}
+        >
+          <Wrench size={17} aria-hidden="true" />
+          <span>{t("ironManagement.tabs.recalculationSteps", "Recalculation Steps")}</span>
+          <span className={styles.workflowStep}>03</span>
+        </button>
       </div>
 
       {loading && (
@@ -573,7 +586,11 @@ export const IronShopSettings = () => {
           )}
         </section>
       ) : (
-        <div id="price-rules-panel" role="tabpanel" className={styles.priceWorkspace}>
+        <div
+          id={activeTab === "recalculation" ? "recalculation-panel" : "price-rules-panel"}
+          role="tabpanel"
+          className={styles.priceWorkspace}
+        >
           <section className={styles.workspacePanel}>
             <header className={styles.panelHeader}>
               <div className={styles.panelTitleGroup}>
@@ -687,32 +704,7 @@ export const IronShopSettings = () => {
           </section>
 
           <div className={styles.priceFormWorkspace}>
-            <div className={styles.priceFormTabs} role="tablist" aria-label={t("ironManagement.priceSetupModes", "Price setup modes")}>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activePriceForm === "base"}
-                aria-controls="iron-base-price-panel"
-                className={`${styles.priceFormTab} ${activePriceForm === "base" ? styles.priceFormTabActive : ""}`}
-                onClick={() => setActivePriceForm("base")}
-              >
-                <CircleDollarSign size={16} aria-hidden="true" />
-                {t("ironManagement.addPrice", "Create Base Price")}
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activePriceForm === "recalculation"}
-                aria-controls="iron-recalculation-panel"
-                className={`${styles.priceFormTab} ${activePriceForm === "recalculation" ? styles.priceFormTabActive : ""}`}
-                onClick={() => setActivePriceForm("recalculation")}
-              >
-                <Wrench size={16} aria-hidden="true" />
-                {t("ironManagement.addRecalculationStep", "Add Recalculation Step")}
-              </button>
-            </div>
-
-            {activePriceForm === "base" ? (
+            {activeTab === "prices" ? (
             <section id="iron-base-price-panel" role="tabpanel" className={styles.ruleFormCard}>
               <header className={styles.formCardHeader}>
                 <span className={styles.formIcon} aria-hidden="true"><CircleDollarSign size={18} /></span>

@@ -1648,7 +1648,8 @@
     "section": {
       "ironTypes": "Iron Types",
       "brands": "Brands",
-      "priceRules": "Price Rules"
+      "priceRules": "Price Rules",
+      "recalculationSteps": "Recalculation Steps"
     },
     "confirmation": {
       "deleteTitle": "Delete vehicle model",

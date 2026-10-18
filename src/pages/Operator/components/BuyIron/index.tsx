@@ -298,6 +298,7 @@ export const BuyIron: FC<BuyIronProps> = ({
           <Button
             fullWidth
             variant="primary"
+            className={sharedStyles.catalystPrimaryAction}
             onClick={handleGlobalCalculate}
             disabled={isCalculateDisabled}
           >

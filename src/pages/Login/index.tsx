@@ -19,6 +19,7 @@ import { Dropdown } from "@/ui-kit/components/Dropdown";
 import {
   Check,
   ChevronDown,
+  CircleAlert,
   Languages,
   Lock,
   Eye,
@@ -72,6 +73,7 @@ export const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [languageOptions, setLanguageOptions] = useState(FALLBACK_LANGUAGES);
   const [selectedLanguageCode, setSelectedLanguageCode] = useState(() =>
     mapApiCodeToI18nCode(i18n.resolvedLanguage || i18n.language),
@@ -143,6 +145,7 @@ export const Login = () => {
     localStorage.setItem("i18nextLng", languageCode);
     setSelectedLanguageCode(languageCode);
     setIsLanguageMenuOpen(false);
+    setLoginError(null);
   };
 
   useEffect(() => {
@@ -162,7 +165,7 @@ export const Login = () => {
         /(?:invalid|incorrect|wrong|bad).{0,24}(?:credential|username|email|password)/.test(normalizedError) ||
         /(?:credential|username|email|password).{0,24}(?:invalid|incorrect|wrong)/.test(normalizedError);
 
-      toast.error(
+      setLoginError(
         normalizedError === "user account is inactive"
           ? t("auth.login.accountInactive")
           : isCredentialError
@@ -188,6 +191,7 @@ export const Login = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setHasTriedSubmit(true);
+    setLoginError(null);
 
     if (!isFormValid) return;
 
@@ -310,6 +314,13 @@ export const Login = () => {
             <h2>{t("auth.login.welcome")}</h2>
           </div>
 
+          {loginError && (
+            <div className={styles.loginError} role="alert" aria-live="assertive">
+              <CircleAlert size={19} aria-hidden="true" />
+              <span>{loginError}</span>
+            </div>
+          )}
+
           <div className={styles.fieldWrapper}>
             <div className={styles.fieldWithLeftIcon}>
               <div className={styles.leftIcon}>
@@ -319,9 +330,10 @@ export const Login = () => {
                 label={t("auth.login.username")}
                 placeholder={t("auth.login.username")}
                 value={credentials.username}
-                onChange={(e) =>
-                  setCredentials({ ...credentials, username: e.target.value })
-                }
+                onChange={(e) => {
+                  setCredentials({ ...credentials, username: e.target.value });
+                  setLoginError(null);
+                }}
                 error={hasTriedSubmit && !isUsernameValid}
                 helperText={
                   hasTriedSubmit && !isUsernameValid
@@ -344,9 +356,10 @@ export const Login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder={t("auth.login.password")}
                 value={credentials.password}
-                onChange={(e) =>
-                  setCredentials({ ...credentials, password: e.target.value })
-                }
+                onChange={(e) => {
+                  setCredentials({ ...credentials, password: e.target.value });
+                  setLoginError(null);
+                }}
                 error={hasTriedSubmit && !isPasswordValid}
                 helperText={
                   hasTriedSubmit && !isPasswordValid

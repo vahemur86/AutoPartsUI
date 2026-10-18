@@ -454,6 +454,29 @@
   letter-spacing: 0;
 }
 
+.loginError {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: -10px 0 20px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 91, 105, 0.35);
+  border-left: 3px solid #ff5b69;
+  border-radius: 6px;
+  background: rgba(110, 27, 36, 0.2);
+  color: #ffd7da;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.loginError svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #ff7b86;
+}
+
 .formDescription {
   margin: 8px 0 0;
   color: #a8b3a7;

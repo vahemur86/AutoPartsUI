@@ -158,7 +158,7 @@ export const CustomerDetails = ({
   }, [customerData, isPhoneValid, t, dispatch, onCustomerChange, intake?.id]);
 
   const handleCreateNewCustomer = useCallback(async () => {
-    if (!customerData.fullName) {
+    if (!customerData.fullName.trim()) {
       toast.error(t("customerDetails.validation.enterFullName"));
       return;
     }
@@ -190,6 +190,10 @@ export const CustomerDetails = ({
 
   const handleAccept = useCallback(async () => {
     setLocalHasTriedAccept(true);
+    if (!customerData.fullName.trim()) {
+      toast.error(t("customerDetails.validation.enterFullName"));
+      return;
+    }
     if (!intake?.id || !isPhoneValid) return;
     try {
       setIsAccepting(true);
@@ -210,7 +214,7 @@ export const CustomerDetails = ({
     } finally {
       setIsAccepting(false);
     }
-  }, [intake?.id, isPhoneValid, t, dispatch, onSuccess]);
+  }, [customerData.fullName, intake?.id, isPhoneValid, t, dispatch, onSuccess]);
 
   const isGlobalLoading =
     isIntakeLoading || isAccepting || isSearching || isCreating;

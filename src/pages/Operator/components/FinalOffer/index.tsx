@@ -55,6 +55,7 @@ export const FinalOffer: FC<{
   recalculationResult?: {
     currentStep: number;
     nextStep: number;
+    appliedStep: number;
     isLastStep: boolean;
     totalWeight: number;
     totalAmount: number;
@@ -166,9 +167,9 @@ export const FinalOffer: FC<{
   })) ?? ironItems;
   const totalWeight = recalculationResult?.totalWeight ?? ironTotals?.weightKgTotal;
   const totalAmount = recalculationResult?.totalAmount ?? ironTotals?.totalAmountTotal;
-  const stepLabel = recalculationResult?.currentStep
+  const stepLabel = recalculationResult?.appliedStep != null
     ? t("operatorPage.ironCarShop.stepLabel", {
-        step: recalculationResult.currentStep,
+        step: recalculationResult.appliedStep,
       })
     : undefined;
 

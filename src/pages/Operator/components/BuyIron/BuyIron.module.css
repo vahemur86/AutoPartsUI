@@ -1,4 +1,8 @@
 .buyIronCard {
+  --color-primary-300: #d2bf8a;
+  --color-primary-400: #9a7e25;
+  --color-primary-500: #a38930;
+
   background-color: var(--color-black-1);
   border-radius: 8px;
   padding: 24px;

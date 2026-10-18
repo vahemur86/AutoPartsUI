@@ -1,9 +1,9 @@
 import { useState, type FC, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { CalendarDays, Check, Hash, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { CalendarDays, Check, RotateCcw, SlidersHorizontal } from "lucide-react";
 
 // ui-kit
-import { Button, TextField, Dropdown, DatePicker } from "@/ui-kit";
+import { Button, Dropdown, DatePicker } from "@/ui-kit";
 
 // types
 import type { GetPowderBatchesParams } from "@/types/cash";
@@ -26,11 +26,9 @@ export const FilterPowderBatchesDropdown: FC<
   const [tempValues, setTempValues] = useState<{
     fromDate: Date | null;
     toDate: Date | null;
-    cashRegisterId: string;
   }>({
     fromDate: null,
     toDate: null,
-    cashRegisterId: "",
   });
 
   const handleApply = () => {
@@ -42,10 +40,6 @@ export const FilterPowderBatchesDropdown: FC<
     if (tempValues.toDate) {
       filters.toDate = tempValues.toDate.toISOString();
     }
-    if (tempValues.cashRegisterId) {
-      filters.cashRegisterId = Number(tempValues.cashRegisterId);
-    }
-
     onSave(filters);
     onOpenChange(false);
   };
@@ -54,7 +48,6 @@ export const FilterPowderBatchesDropdown: FC<
     setTempValues({
       fromDate: null,
       toDate: null,
-      cashRegisterId: "",
     });
     onSave({});
     onOpenChange(false);
@@ -126,25 +119,6 @@ export const FilterPowderBatchesDropdown: FC<
                 minDate={tempValues.fromDate || undefined}
               />
             </div>
-          </div>
-
-          {/* Cash Register ID */}
-          <div className={styles.fullRow}>
-            <TextField
-              label={t("cashbox.powderBatches.filters.cashRegisterId")}
-              icon={<Hash size={14} aria-hidden="true" />}
-              value={tempValues.cashRegisterId}
-              onChange={(e) =>
-                setTempValues((p) => ({
-                  ...p,
-                  cashRegisterId: e.target.value,
-                }))
-              }
-              placeholder={t(
-                "cashbox.powderBatches.filters.enterCashRegisterId",
-              )}
-              type="number"
-            />
           </div>
         </div>
 

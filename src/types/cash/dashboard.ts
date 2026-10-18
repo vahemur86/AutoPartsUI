@@ -79,7 +79,6 @@ export type PowderBatchResponse =
 export type GetPowderBatchesParams = {
   fromDate?: string;
   toDate?: string;
-  cashRegisterId: number;
   page?: number;
   pageSize?: number;
 };

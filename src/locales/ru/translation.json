@@ -1647,7 +1647,8 @@
     "section": {
       "ironTypes": "Типы металла",
       "brands": "Бренды",
-      "priceRules": "Правила цен"
+      "priceRules": "Правила цен",
+      "recalculationSteps": "Шаги перерасчёта"
     },
     "confirmation": {
       "deleteTitle": "Удалить модель автомобиля",

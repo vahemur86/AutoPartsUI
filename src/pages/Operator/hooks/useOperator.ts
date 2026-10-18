@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { handleUnauthorizedResponse } from "@/services";
@@ -89,6 +89,7 @@ export const useOperator = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const authUser = useAppSelector((state) => state.auth.user);
+  const ironRecalculationInFlight = useRef(false);
 
   const [activeTab, setActiveTab] = useState<TabType>("catalyst");
   const [connection, setConnection] = useState<HubConnection | null>(null);
@@ -735,10 +736,19 @@ export const useOperator = () => {
   };
 
   const handleIronRecalculate = useCallback(async () => {
+    if (
+      ironRecalculationInFlight.current ||
+      selectors.ironCarShop.recalculationResult?.isLastStep
+    ) {
+      return;
+    }
+
     const customer =
       selectors.operator.intake?.customer || selectors.customers.items[0];
-    if (!customer || !selectors.ironCarShop.ironPrices.length) return;
+    const brandId = selectors.ironCarShop.selectedBrandId;
+    if (!customer || !selectors.ironCarShop.ironPrices.length || brandId == null) return;
 
+    ironRecalculationInFlight.current = true;
     try {
       const itemsMap: Record<string, number> = {};
       selectors.ironCarShop.ironPrices.forEach((item) => {
@@ -746,11 +756,12 @@ export const useOperator = () => {
       });
 
       const stepToFetch =
-        selectors.ironCarShop.recalculationResult?.nextStep ?? 1;
+        selectors.ironCarShop.recalculationResult?.nextStep ?? 0;
 
       await dispatch(
         recalculatePrices({
           payload: {
+            dictBrandId: brandId,
             customerId: customer.id,
             customerTypeId: customer.customerTypeId,
             currentStep: stepToFetch,
@@ -762,9 +773,12 @@ export const useOperator = () => {
       toast.success(t("finalOffer.success.recalculated"));
     } catch (e) {
       console.error("Iron Recalculate Error:", e);
+    } finally {
+      ironRecalculationInFlight.current = false;
     }
   }, [
     dispatch,
+    ironRecalculationInFlight,
     selectors.operator.intake,
     selectors.customers.items,
     selectors.ironCarShop,
@@ -778,12 +792,22 @@ export const useOperator = () => {
     const brandId = selectors.ironCarShop.selectedBrandId;
     if (!customer || selectors.ironCarShop.ironPrices.length === 0 || !brandId) return;
 
-    const purchases = selectors.ironCarShop.ironPrices.map((item) => ({
+    const recalculationResult = selectors.ironCarShop.recalculationResult;
+    const isStandardCustomer = customer.customerTypeId === 1;
+    const purchaseItems =
+      isStandardCustomer && recalculationResult
+        ? recalculationResult.items
+        : selectors.ironCarShop.ironPrices;
+
+    const purchases = purchaseItems.map((item) => ({
       dictBrandId: brandId,
       ironTypeId: item.ironTypeId,
       customerPhone: customer.phone || "",
       customerTypeId: customer.customerTypeId,
       weightKg: item.weightKg,
+      ...(isStandardCustomer && recalculationResult
+        ? { recalculationStep: recalculationResult.appliedStep }
+        : {}),
       notes: "",
     }));
 
