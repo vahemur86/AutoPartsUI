@@ -153,10 +153,18 @@ export const Login = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      const normalizedError = error
+        .trim()
+        .replace(/[.!?]+$/, "")
+        .toLocaleLowerCase();
+      toast.error(
+        normalizedError === "user account is inactive"
+          ? t("auth.login.accountInactive")
+          : error,
+      );
       dispatch(clearAuthError());
     }
-  }, [error, dispatch]);
+  }, [error, dispatch, t]);
 
   const isUsernameValid = credentials.username.trim().length > 0;
   const isPasswordValid = credentials.password.length >= 4;

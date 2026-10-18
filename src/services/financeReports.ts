@@ -13,8 +13,10 @@ import type {
   ShopReportDateRangeParams,
   ShopReportInventoryAllProductsResponse,
   ShopReportInventoryResponse,
+  ShopInventoryStatusItem,
   ShopReportProductMetric,
   ShopReportSummaryResponse,
+  WarehouseSummaryReportResponse,
   WarehouseFullReportResponse,
   WarehouseMovementItem,
   WarehousePurchaseItem,
@@ -142,6 +144,28 @@ export const getProfitSummary = async (
   }
 };
 
+export const getWarehouseSummary = async (
+  params: {
+    warehouseId: number;
+    fromDate?: string;
+    toDate?: string;
+  },
+  cashRegisterId?: number,
+): Promise<WarehouseSummaryReportResponse> => {
+  try {
+    const query = buildQuery(params);
+    const response = await api.get(
+      `/admin/reports/warehouse-summary?${query}`,
+      { headers: getFinanceHeaders(cashRegisterId) },
+    );
+    return response.data as WarehouseSummaryReportResponse;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch warehouse transfer profit summary."),
+    );
+  }
+};
+
 export const getProfitDetailed = async (
   params: {
     shopId: number;
@@ -186,7 +210,7 @@ export const getWarehouseInventoryStatus = async (
 export const getShopInventoryStatus = async (
   shopId: number,
   options?: { productId?: number; cashRegisterId?: number },
-) => {
+): Promise<ShopInventoryStatusItem[]> => {
   try {
     const path = options?.productId
       ? `/InventoryStatus/shop/${shopId}/product/${options.productId}`
@@ -195,7 +219,7 @@ export const getShopInventoryStatus = async (
     const response = await api.get(path, {
       headers: getFinanceHeaders(options?.cashRegisterId),
     });
-    return response.data;
+    return response.data as ShopInventoryStatusItem[];
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to fetch shop inventory status."),

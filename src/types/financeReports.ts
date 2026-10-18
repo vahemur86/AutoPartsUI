@@ -48,6 +48,25 @@ export interface ShopReportInventoryAllProductsResponse {
   products: ShopReportInventoryProduct[];
 }
 
+export interface ShopInventoryStatusBatch {
+  transferredDate: string;
+  quantityRemaining: number;
+  costPrice: number;
+  salePrice: number;
+}
+
+export interface ShopInventoryStatusItem {
+  shopId: number;
+  productId: number;
+  productSku: string;
+  productCode: string;
+  totalQuantity: number;
+  currentSalePrice: number;
+  weightedAverageCost: number;
+  potentialProfit: number;
+  batches: ShopInventoryStatusBatch[];
+}
+
 export interface ShopReportDateRangeParams {
   fromDate?: string;
   toDate?: string;
@@ -171,6 +190,16 @@ export interface WarehouseTurnoverItem {
   unitsSold: number;
   avgStockOnHand: number;
   turnoverRate: number;
+}
+
+export interface WarehouseSummaryReportResponse {
+  fromDate: string | null;
+  toDate: string | null;
+  totalRevenue: number;
+  totalCost: number;
+  grossProfit: number;
+  averageProfitMargin: number;
+  totalSales: number;
 }
 
 export interface WarehouseFullReportResponse {

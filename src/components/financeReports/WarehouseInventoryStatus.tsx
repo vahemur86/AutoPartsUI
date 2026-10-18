@@ -88,8 +88,8 @@ export const WarehouseInventoryStatus = () => {
           "createdAt",
           "updatedAt",
         ],
-      }),
-    [rows],
+      }, t),
+    [rows, t],
   );
 
   return (

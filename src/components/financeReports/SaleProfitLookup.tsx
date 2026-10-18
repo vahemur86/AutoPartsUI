@@ -62,8 +62,8 @@ export const SaleProfitLookup = () => {
           "createdAt",
           "updatedAt",
         ],
-      }),
-    [rows],
+      }, t),
+    [rows, t],
   );
 
   return (

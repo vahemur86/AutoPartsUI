@@ -10,6 +10,7 @@ import {
 import type { ColumnDef } from "@tanstack/react-table";
 import { FinanceReportState } from "./FinanceReportState";
 import styles from "./FinanceReports.module.css";
+import { useTranslation } from "react-i18next";
 
 interface FinanceReportResultProps {
   rows: DynamicRow[];
@@ -30,6 +31,8 @@ export const FinanceReportResult = ({
   emptyLabel,
   noRowsLabel,
 }: FinanceReportResultProps) => {
+  const { t } = useTranslation();
+
   if (loading) {
     return <FinanceReportState loading label={loadingLabel} />;
   }
@@ -58,13 +61,13 @@ export const FinanceReportResult = ({
               : "";
           const formattedValue = key === "id"
             ? `#${String(value ?? "-")}`
-            : formatFinanceValue(key, value);
+            : formatFinanceValue(key, value, t);
 
           return (
             <article className={styles.financeRecordItem} key={key}>
               <span className={styles.financeRecordLabel}>
                 <Icon size={13} aria-hidden="true" />
-                {toFinanceHeader(key)}
+                {toFinanceHeader(key, t)}
               </span>
               <strong className={valueClass}>{formattedValue}</strong>
             </article>

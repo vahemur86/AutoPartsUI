@@ -60,13 +60,13 @@
 
 .navigation {
   position: sticky;
-  top: 14px;
+  top: 136px;
   align-self: start;
   display: flex;
   flex-direction: column;
   gap: 0;
   min-width: 0;
-  max-height: calc(100vh - 28px);
+  max-height: calc(100vh - 148px);
   overflow-y: auto;
   padding: 10px 8px;
   border: 1px solid rgba(196, 169, 106, 0.11);
@@ -276,6 +276,13 @@
   background: #151b17;
 }
 
+@media (min-width: 1601px) {
+  .navigation {
+    top: 100px;
+    max-height: calc(100vh - 112px);
+  }
+}
+
 @keyframes contentReveal {
   from { opacity: 0.72; }
   to { opacity: 1; }
@@ -289,7 +296,7 @@
 
   .navigation {
     position: sticky;
-    top: 8px;
+    top: 136px;
     flex-direction: row;
     align-items: stretch;
     gap: 8px;
@@ -343,7 +350,17 @@
   }
 }
 
+@media (max-width: 768px) {
+  .navigation {
+    top: 78px;
+  }
+}
+
 @media (max-width: 600px) {
+  .navigation {
+    top: 78px;
+  }
+
   .workspace {
     gap: 10px;
     margin-top: 12px;
@@ -364,6 +381,12 @@
 
   .reportLayout {
     min-height: calc(100vh - 160px);
+  }
+}
+
+@media (max-width: 480px) {
+  .navigation {
+    top: 74px;
   }
 }
 

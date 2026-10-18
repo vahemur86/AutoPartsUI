@@ -1,4 +1,6 @@
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
+import type { ReactNode } from "react";
 import {
   Banknote,
   CalendarClock,
@@ -24,18 +26,21 @@ const columnHelper = createColumnHelper<DynamicRow>();
 interface DynamicColumnsOptions {
   preferredKeys?: string[];
   hiddenKeys?: string[];
+  cellRenderers?: Record<string, (value: unknown, row: DynamicRow) => ReactNode>;
 }
 
 const moneyKeyRegex = /(amount|cost|price|profit|revenue|balance|value|expense|sales)/i;
 const percentKeyRegex = /(percent|percentage|margin|markup)/i;
-const dateKeyRegex = /(date|at)$/i;
+const dateKeyRegex = /(date|at|time)$/i;
 const idKeyRegex = /id$/i;
 const quantityKeyRegex = /(count|quantity|units|products|items|number)/i;
+const salesCountKeyRegex = /^(total)?sales$/i;
 
 export const isFinanceMoneyKey = (key: string) =>
   moneyKeyRegex.test(key) &&
   !percentKeyRegex.test(key) &&
-  !quantityKeyRegex.test(key);
+  !quantityKeyRegex.test(key) &&
+  !salesCountKeyRegex.test(key);
 
 export const getFinanceColumnIcon = (key: string): LucideIcon => {
   if (/(date|created|updated|occurred|purchased|last)/i.test(key)) return CalendarClock;
@@ -66,7 +71,7 @@ const toText = (value: unknown): string => {
   return String(value);
 };
 
-const formatValue = (key: string, value: unknown): string => {
+const formatValue = (key: string, value: unknown, t?: TFunction): string => {
   if (value === null || value === undefined) {
     return "-";
   }
@@ -93,7 +98,7 @@ const formatValue = (key: string, value: unknown): string => {
   }
 
   if (typeof value === "boolean") {
-    return value ? "Yes" : "No";
+    return t ? t(value ? "common.yes" : "common.no") : value ? "Yes" : "No";
   }
 
   if (typeof value === "string") {
@@ -110,8 +115,12 @@ const formatValue = (key: string, value: unknown): string => {
   return toText(value);
 };
 
-export const formatFinanceValue = (key: string, value: unknown): string => {
-  const formatted = formatValue(key, value);
+export const formatFinanceValue = (
+  key: string,
+  value: unknown,
+  t?: TFunction,
+): string => {
+  const formatted = formatValue(key, value, t);
   if (
     typeof value === "number" && isFinanceMoneyKey(key)
   ) {
@@ -122,12 +131,15 @@ export const formatFinanceValue = (key: string, value: unknown): string => {
 
 export const isFinanceProfitKey = (key: string) => /profit/i.test(key);
 
-export const toFinanceHeader = (key: string): string => {
-  return key
+export const toFinanceHeader = (key: string, t?: TFunction): string => {
+  const fallback = key
     .replace(/([A-Z])/g, " $1")
     .replace(/_/g, " ")
     .replace(/^./, (char) => char.toUpperCase())
     .trim();
+  return t
+    ? t(`financeReports.fields.${key}`, { defaultValue: fallback })
+    : fallback;
 };
 
 export const toDynamicRows = (data: unknown): DynamicRow[] => {
@@ -173,6 +185,7 @@ export const toDynamicRows = (data: unknown): DynamicRow[] => {
 export const getDynamicColumns = (
   rows: DynamicRow[],
   options: DynamicColumnsOptions = {},
+  t?: TFunction,
 ): ColumnDef<DynamicRow, unknown>[] => {
   if (rows.length === 0) {
     return [];
@@ -196,7 +209,7 @@ export const getDynamicColumns = (
         header: () => (
           <span className={styles.dynamicColumnHeader}>
             <Hash size={13} aria-hidden="true" />
-            ID
+            {toFinanceHeader("id", t)}
           </span>
         ),
         cell: ({ row }) => `#${toText(row.original.id)}`,
@@ -210,12 +223,16 @@ export const getDynamicColumns = (
         return (
           <span className={styles.dynamicColumnHeader}>
             <Icon size={13} aria-hidden="true" />
-            {toFinanceHeader(key)}
+            {toFinanceHeader(key, t)}
           </span>
         );
       },
       cell: ({ row }) => {
         const value = row.original[key];
+        const customRenderer = options.cellRenderers?.[key];
+        if (customRenderer) {
+          return customRenderer(value, row.original);
+        }
         if (typeof value === "number" && isFinanceMoneyKey(key)) {
           const profitClass = /profit/i.test(key)
             ? value >= 0
@@ -224,11 +241,11 @@ export const getDynamicColumns = (
             : "";
           return (
             <span className={`${styles.moneyValue} ${profitClass}`}>
-              {formatFinanceValue(key, value)}
+              {formatFinanceValue(key, value, t)}
             </span>
           );
         }
-        return formatValue(key, value);
+        return formatValue(key, value, t);
       },
     });
   });

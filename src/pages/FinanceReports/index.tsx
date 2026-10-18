@@ -14,6 +14,7 @@ import {
   Store,
   HandCoins,
   Boxes,
+  ArrowLeftRight,
   ArrowRight,
 } from "lucide-react";
 
@@ -66,8 +67,13 @@ const useFinanceReportSections = (): FinanceReportSection[] => {
       items: [
         {
           path: "/profit-summary",
-          label: t("financeReports.navigation.profitSummary"),
+          label: t("financeReports.navigation.shopProfitSummary"),
           icon: ChartColumnBig,
+        },
+        {
+          path: "/warehouse-profit",
+          label: t("financeReports.navigation.warehouseProfit"),
+          icon: ArrowLeftRight,
         },
         {
           path: "/profit-detailed",

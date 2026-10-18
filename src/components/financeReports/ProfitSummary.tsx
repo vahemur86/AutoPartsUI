@@ -102,8 +102,8 @@ export const ProfitSummary = () => {
           "createdAt",
           "updatedAt",
         ],
-      }),
-    [rows],
+      }, t),
+    [rows, t],
   );
 
   return (

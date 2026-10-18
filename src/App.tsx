@@ -92,6 +92,7 @@ import { AgentProfitabilityReport } from "@/components/reports/AgentProfitabilit
 
 // Finance Reports components
 import { ProfitSummary } from "@/components/financeReports/ProfitSummary";
+import { WarehouseProfitSummary } from "@/components/financeReports/WarehouseProfitSummary";
 import { ProfitDetailed } from "@/components/financeReports/ProfitDetailed";
 import { SaleProfitLookup } from "@/components/financeReports/SaleProfitLookup";
 import { WarehouseInventoryStatus } from "@/components/financeReports/WarehouseInventoryStatus";
@@ -316,6 +317,7 @@ export const App = () => {
                     <Route path="warehouse-reports" element={<WarehouseReports />} />
                     <Route path="sales-reports" element={<SalesReports />} />
                     <Route path="profit-summary" element={<ProfitSummary />} />
+                    <Route path="warehouse-profit" element={<WarehouseProfitSummary />} />
                     <Route path="profit-detailed" element={<ProfitDetailed />} />
                     <Route path="sale-profit" element={<SaleProfitLookup />} />
                     <Route

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { createColumnHelper, type ColumnDef, type Row } from "@tanstack/react-table";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 // ui-kit
-import { Select, TextField } from "@/ui-kit";
+import { IconButton, Select, TextField } from "@/ui-kit";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -14,13 +16,24 @@ import { getShopInventoryStatus } from "@/services/financeReports";
 
 // utils
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
-import { FinanceReportResult } from "./FinanceReportResult";
+import type { ShopInventoryStatusItem } from "@/types/financeReports";
+import { FinanceDataTable } from "./FinanceDataTable";
+import { FinanceReportState } from "./FinanceReportState";
 import { FinanceReportLoadButton } from "./FinanceReportLoadButton";
 
 // local
-import { getDynamicColumns, toDynamicRows } from "./tableUtils";
 import styles from "./FinanceReports.module.css";
 import { FinanceFilterHeading } from "./FinanceFilterHeading";
+
+const columnHelper = createColumnHelper<ShopInventoryStatusItem>();
+
+const formatMoney = (value: number) =>
+  `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} AMD`;
+
+const formatDateTime = (value: string) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+};
 
 export const ShopInventoryStatus = () => {
   const { t } = useTranslation();
@@ -30,7 +43,7 @@ export const ShopInventoryStatus = () => {
   const [shopId, setShopId] = useState<number>(0);
   const [productId, setProductId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<unknown>(null);
+  const [data, setData] = useState<ShopInventoryStatusItem[] | null>(null);
 
   const cashRegisterId = useMemo(() => getCashRegisterId(0), []);
 
@@ -70,26 +83,99 @@ export const ShopInventoryStatus = () => {
     }
   }, [shopId, productId, cashRegisterId, t]);
 
-  const rows = useMemo(() => toDynamicRows(data), [data]);
-  const columns = useMemo(
-    () =>
-      getDynamicColumns(rows, {
-        preferredKeys: [
-          "id",
-          "shopId",
-          "productId",
-          "productCode",
-          "quantity",
-          "originalPrice",
-          "salePrice",
-          "costPrice",
-          "profit",
-          "profitPercentage",
-          "createdAt",
-          "updatedAt",
-        ],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns = useMemo<ColumnDef<ShopInventoryStatusItem, any>[]>(
+    () => [
+      columnHelper.display({
+        id: "product",
+        header: t("financeReports.shopReports.columns.productCode"),
+        cell: ({ row }) => (
+          <div className={styles.shopInventoryProduct}>
+            <strong>{row.original.productCode || "—"}</strong>
+            <span>{row.original.productSku || "—"}</span>
+          </div>
+        ),
       }),
-    [rows],
+      columnHelper.accessor("totalQuantity", {
+        header: t("financeReports.shopReports.columns.quantity"),
+        cell: ({ getValue }) => getValue().toLocaleString(),
+      }),
+      columnHelper.accessor("currentSalePrice", {
+        header: t("financeReports.shopReports.columns.salePrice"),
+        cell: ({ getValue }) => <span className={styles.moneyValue}>{formatMoney(getValue())}</span>,
+      }),
+      columnHelper.accessor("weightedAverageCost", {
+        header: t("financeReports.shopReports.columns.avgCostPrice"),
+        cell: ({ getValue }) => formatMoney(getValue()),
+      }),
+      columnHelper.accessor("potentialProfit", {
+        header: t("financeReports.shopReports.columns.profit"),
+        cell: ({ getValue }) => (
+          <span className={`${styles.moneyValue} ${getValue() < 0 ? styles.negativeValue : styles.positiveValue}`}>
+            {formatMoney(getValue())}
+          </span>
+        ),
+      }),
+      columnHelper.display({
+        id: "batches",
+        header: t("common.details"),
+        cell: ({ row }) => (
+          <IconButton
+            variant="secondary"
+            size="small"
+            icon={row.getIsExpanded() ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+            ariaLabel={`${t(row.getIsExpanded() ? "common.hide" : "common.details")} ${row.original.productCode}`}
+            title={t(row.getIsExpanded() ? "common.hide" : "common.details")}
+            aria-expanded={row.getIsExpanded()}
+            onClick={row.getToggleExpandedHandler()}
+          />
+        ),
+      }),
+    ],
+    [t],
+  );
+
+  const renderBatchDetails = useCallback(
+    ({ row }: { row: Row<ShopInventoryStatusItem> }) => {
+      const batches = row.original.batches ?? [];
+      if (batches.length === 0) {
+        return <div className={styles.shopInventoryEmptyBatches}>{t("financeReports.shopInventory.emptyBatches")}</div>;
+      }
+
+      return (
+        <section className={styles.shopInventoryBatchDetails}>
+          <h4>
+            {t("financeReports.shopInventory.batchesTitle")}
+            <span>{batches.length}</span>
+          </h4>
+          <div className={styles.shopInventoryBatchGrid}>
+            {batches.map((batch, index) => (
+              <article className={styles.shopInventoryBatch} key={`${batch.transferredDate}-${index}`}>
+                <div className={styles.shopInventoryBatchDate}>
+                  <span>{t("financeReports.shopInventory.batchLabel", { number: index + 1 })}</span>
+                  <time>{formatDateTime(batch.transferredDate)}</time>
+                </div>
+                <div className={styles.shopInventoryBatchMetrics}>
+                  <div>
+                    <span>{t("financeReports.shopInventory.remainingQuantity")}</span>
+                    <strong>{batch.quantityRemaining.toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    <span>{t("financeReports.shopInventory.costPrice")}</span>
+                    <strong>{formatMoney(batch.costPrice)}</strong>
+                  </div>
+                  <div>
+                    <span>{t("financeReports.shopInventory.salePrice")}</span>
+                    <strong>{formatMoney(batch.salePrice)}</strong>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      );
+    },
+    [t],
   );
 
   return (
@@ -121,17 +207,25 @@ export const ShopInventoryStatus = () => {
         <FinanceReportLoadButton loading={isLoading} label={t("financeReports.actions.load")} onClick={handleLoad} />
       </div>
 
-      <div className={styles.result}>
-        <FinanceReportResult
-          rows={rows}
-          columns={columns}
-          loading={isLoading}
-          loadingLabel={t("common.loading")}
-          hasData={data !== null}
-          emptyLabel={t("financeReports.empty")}
-          noRowsLabel={t("common.noData")}
-        />
-      </div>
+      {isLoading ? (
+        <FinanceReportState loading label={t("common.loading")} />
+      ) : data === null ? (
+        <FinanceReportState loading={false} label={t("financeReports.empty")} />
+      ) : data.length === 0 ? (
+        <FinanceReportState loading={false} label={t("common.noData")} />
+      ) : (
+        <div className={`${styles.result} ${styles.shopInventoryTable}`}>
+          <FinanceDataTable
+            data={data}
+            columns={columns}
+            pageSize={10}
+            fitContainer
+            renderSubComponent={renderBatchDetails}
+            noResultsText={t("common.noData")}
+            loadingText={t("common.loading")}
+          />
+        </div>
+      )}
     </div>
   );
 };

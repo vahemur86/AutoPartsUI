@@ -83,8 +83,8 @@ const formatDateTime = (value?: string): string => {
 };
 
 const movementTypeLabel = (value: number, t: (key: string) => string): string => {
-  if (value === 1) return t("financeReports.warehouseReports.movementTypes.in");
-  if (value === 2) return t("financeReports.warehouseReports.movementTypes.out");
+  if (value === 0) return t("financeReports.warehouseReports.movementTypes.in");
+  if (value === 1) return t("financeReports.warehouseReports.movementTypes.out");
   return `${t("financeReports.warehouseReports.movementTypes.unknown")} (${value})`;
 };
 

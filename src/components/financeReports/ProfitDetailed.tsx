@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { formatFinanceValue, toFinanceHeader } from "./tableUtils";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -90,21 +91,59 @@ export const ProfitDetailed = () => {
         preferredKeys: [
           "id",
           "saleId",
-          "shopId",
-          "productId",
-          "productCode",
-          "quantity",
-          "salePrice",
-          "costPrice",
-          "totalSales",
+          "saleDateTime",
+          "totalRevenue",
           "totalCost",
-          "profit",
-          "profitPercentage",
-          "createdAt",
-          "updatedAt",
+          "grossProfit",
+          "profitMargin",
+          "items",
         ],
-      }),
-    [rows],
+        cellRenderers: {
+          items: (value) => {
+            if (!Array.isArray(value) || value.length === 0) {
+              return <span>{t("common.noData")}</span>;
+            }
+
+            return (
+              <div className={styles.profitDetailedItems}>
+                {value.map((item, index) => {
+                  if (!item || typeof item !== "object") return null;
+                  const detail = item as Record<string, unknown>;
+                  const itemKey = `${String(detail.productId ?? "item")}-${index}`;
+                  const fields = [
+                    "quantity",
+                    "unitSalePrice",
+                    "unitCostPrice",
+                    "revenue",
+                    "cost",
+                    "profit",
+                  ];
+
+                  return (
+                    <div className={styles.profitDetailedItem} key={itemKey}>
+                      <div className={styles.profitDetailedItemHeading}>
+                        <strong>{String(detail.productSku || "-")}</strong>
+                        <span>#{String(detail.productId ?? "-")}</span>
+                      </div>
+                      <div className={styles.profitDetailedItemFields}>
+                        {fields.map((field) => (
+                          <div className={styles.profitDetailedItemField} key={field}>
+                            <span>{toFinanceHeader(field, t)}</span>
+                            <strong>
+                              {formatFinanceValue(field, detail[field], t)}
+                            </strong>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          },
+        },
+      }, t),
+    [rows, t],
   );
 
   return (
