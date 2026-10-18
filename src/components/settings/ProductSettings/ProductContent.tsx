@@ -1,30 +1,31 @@
 import { useState, type Dispatch, type FC, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
+import type { LucideIcon } from "lucide-react";
 import type { ExistingItem } from "@/types/settings";
 
-import { InteractiveField } from "@/ui-kit";
-import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { IconButton, InteractiveField, TextField } from "@/ui-kit";
+import { Check, Pencil, Plus, Tags, Trash2, X } from "lucide-react";
 import styles from "./ProductSettings.module.css";
 
 interface ProductContentProps {
   newFieldValue: string;
   setNewFieldValue: Dispatch<SetStateAction<string>>;
-  setIsExistingExpanded: Dispatch<SetStateAction<boolean>>;
-  isExistingExpanded: boolean;
   handleEdit: (id: string, newName: string) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
   existingItems: ExistingItem[];
+  itemLabel: string;
+  itemIcon: LucideIcon;
   isLoading?: boolean;
 }
 
 export const ProductContent: FC<ProductContentProps> = ({
   newFieldValue,
   setNewFieldValue,
-  setIsExistingExpanded,
-  isExistingExpanded,
   handleEdit,
   handleDelete,
   existingItems,
+  itemLabel,
+  itemIcon: ItemIcon,
   isLoading = false,
 }) => {
   const { t } = useTranslation();
@@ -74,11 +75,19 @@ export const ProductContent: FC<ProductContentProps> = ({
   return (
     <div className={styles.scrollableContent}>
       {/* Create new section */}
-      <div className={styles.createNewSection}>
+      <section className={styles.createNewSection} aria-labelledby="product-setting-create-title">
         <div className={styles.createNewHeader}>
-          <h3 className={styles.createNewTitle}>
-            {t("productSettings.createNew")}
-          </h3>
+          <div className={styles.settingSectionTitle}>
+            <span className={styles.settingSectionIcon} aria-hidden="true">
+              <Plus size={16} />
+            </span>
+            <div>
+              <h3 id="product-setting-create-title" className={styles.createNewTitle}>
+                {t("productSettings.createNew")}
+              </h3>
+              <span className={styles.createNewHint}>{itemLabel}</span>
+            </div>
+          </div>
         </div>
 
         <div className={styles.interactiveFieldsContainer}>
@@ -92,85 +101,110 @@ export const ProductContent: FC<ProductContentProps> = ({
             }}
           />
         </div>
-      </div>
+      </section>
 
       {/* Existing section */}
       <div className={styles.existingSection}>
-        <button
-          className={styles.existingHeader}
-          onClick={() => setIsExistingExpanded(!isExistingExpanded)}
-          disabled={isLoading}
-        >
-          {isExistingExpanded ? (
-            <ChevronDown size={16} color="#ffffff" />
-          ) : (
-            <ChevronRight size={16} color="#ffffff" />
-          )}
-          <span className={styles.existingTitle}>
-            {t("productSettings.existing")}{" "}
-            <span className={styles.existingCount}>
-              ({existingItems.length})
+        <header className={styles.existingHeader}>
+          <div className={styles.settingSectionTitle}>
+            <span className={styles.settingSectionIcon} aria-hidden="true">
+              <Tags size={16} />
             </span>
-          </span>
-        </button>
+            <h3 className={styles.existingTitle}>{t("productSettings.existing")}</h3>
+          </div>
+          <span className={styles.existingCount}>{existingItems.length}</span>
+        </header>
 
-        {isExistingExpanded && (
-          <div className={styles.existingItems}>
-            {isLoading && existingItems.length === 0 ? (
-              <div className={styles.loadingState}>
-                {t("productSettings.loading")}
-              </div>
-            ) : existingItems.length === 0 ? (
-              <div className={styles.emptyState}>
-                {t("productSettings.noItems")}
-              </div>
-            ) : (
-              existingItems.map((item) => (
-                <div key={item.id} className={styles.existingItem}>
-                  {editingId === item.id ? (
-                    <InteractiveField
-                      variant="editable"
-                      size="medium"
-                      textInput={{
-                        value: editValue,
-                        onChange: setEditValue,
-                        placeholder: t("productSettings.keyHere"),
-                      }}
-                      actions={{
-                        edit: {
-                          icon: <span>✓</span>,
-                          onClick: () => saveEdit(item.id),
-                          ariaLabel: t("common.save"),
-                        },
-                        delete: {
-                          icon: <span>✕</span>,
-                          onClick: cancelEdit,
-                          ariaLabel: t("common.cancel"),
-                        },
-                      }}
-                    />
-                  ) : (
-                    <InteractiveField
-                      variant="display"
-                      size="medium"
-                      displayText={item.name}
-                      actions={{
-                        edit: {
-                          icon: <Pencil size={14} color="#ffffff" />,
-                          onClick: () => startEdit(item),
-                          ariaLabel: t("common.edit"),
-                        },
-                        delete: {
-                          icon: <Trash2 size={14} color="#ffffff" />,
-                          onClick: () => handleDeleteItem(item.id),
-                          ariaLabel: t("common.delete"),
-                        },
-                      }}
-                    />
-                  )}
+        {isLoading && existingItems.length === 0 ? (
+          <div className={styles.entityCardGrid} aria-busy="true" aria-live="polite">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className={styles.entityCardSkeleton}>
+                <div className={styles.entityCardIdentity}>
+                  <div className={styles.entityCardIconSkeleton} />
+                  <div className={styles.entityCardTextSkeleton} />
                 </div>
-              ))
-            )}
+                <div className={styles.entityCardFooterSkeleton} />
+              </div>
+            ))}
+          </div>
+        ) : existingItems.length === 0 ? (
+          <div className={styles.emptyState}>
+            <ItemIcon size={22} aria-hidden="true" />
+            {t("productSettings.noItems")}
+          </div>
+        ) : (
+          <div className={styles.entityCardGrid}>
+            {existingItems.map((item) => (
+              <article key={item.id} className={styles.entityCard}>
+                <div className={styles.entityCardIdentity}>
+                  <span className={styles.entityCardIcon} aria-hidden="true">
+                    <ItemIcon size={18} />
+                  </span>
+                  <div className={styles.entityCardCopy}>
+                    <span className={styles.entityCardEyebrow}>{itemLabel}</span>
+                    {editingId === item.id ? (
+                      <TextField
+                        label={t("productSettings.keyHere")}
+                        value={editValue}
+                        onChange={(event) => setEditValue(event.target.value)}
+                        autoFocus
+                      />
+                    ) : (
+                      <h4>{item.name}</h4>
+                    )}
+                  </div>
+                </div>
+
+                <footer className={styles.entityCardFooter}>
+                  <span className={styles.entityIdBadge}>
+                    {t("columns.id")} #{item.id}
+                  </span>
+                  <div className={styles.entityCardActions}>
+                    {editingId === item.id ? (
+                      <>
+                        <IconButton
+                          variant="primary"
+                          size="small"
+                          icon={<Check size={14} />}
+                          ariaLabel={t("common.save")}
+                          title={t("common.save")}
+                          onClick={() => void saveEdit(item.id)}
+                          disabled={!editValue.trim()}
+                        />
+                        <IconButton
+                          variant="secondary"
+                          size="small"
+                          icon={<X size={14} />}
+                          ariaLabel={t("common.cancel")}
+                          title={t("common.cancel")}
+                          onClick={cancelEdit}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <IconButton
+                          variant="secondary"
+                          size="small"
+                          icon={<Pencil size={14} />}
+                          ariaLabel={`${t("common.edit")} ${item.name}`}
+                          title={t("common.edit")}
+                          onClick={() => startEdit(item)}
+                        />
+                        <IconButton
+                          variant="secondary"
+                          size="small"
+                          className={styles.entityDeleteAction}
+                          icon={<Trash2 size={14} />}
+                          ariaLabel={`${t("common.delete")} ${item.name}`}
+                          title={t("common.delete")}
+                          onClick={() => void handleDeleteItem(item.id)}
+                        />
+                      </>
+                    )}
+                  </div>
+                </footer>
+              </article>
+            ))}
           </div>
         )}
       </div>

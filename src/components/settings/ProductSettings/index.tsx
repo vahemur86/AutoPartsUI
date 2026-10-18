@@ -28,7 +28,6 @@ export const ProductSettings = () => {
   const [activeTabId, setActiveTabId] = useState<TabId>(
     PRODUCT_SETTINGS_TABS[0].id as TabId,
   );
-  const [isExistingExpanded, setIsExistingExpanded] = useState(false);
   const [newFieldValue, setNewFieldValue] = useState("");
   const fetchingRef = useRef<Set<string>>(new Set());
 
@@ -206,10 +205,10 @@ export const ProductSettings = () => {
           <CategoryContent />
         ) : (
           <ProductContent
+            itemLabel={activeTab?.label ?? ""}
+            itemIcon={TAB_ICONS[activeTabId]}
             newFieldValue={newFieldValue}
             setNewFieldValue={setNewFieldValue}
-            setIsExistingExpanded={setIsExistingExpanded}
-            isExistingExpanded={isExistingExpanded}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             existingItems={existingItems}
