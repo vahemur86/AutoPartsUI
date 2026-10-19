@@ -242,6 +242,13 @@
   font-size: 14px;
 }
 
+.calculationSummaryRow small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+}
+
 .calculationSummaryTotals {
   display: flex;
   justify-content: space-between;

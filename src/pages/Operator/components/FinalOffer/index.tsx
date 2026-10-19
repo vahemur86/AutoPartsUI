@@ -44,11 +44,15 @@ export const FinalOffer: FC<{
   isCatalyst?: boolean;
   isIronPurchase?: boolean;
   ironItems?: Array<{
+    dictBrandId?: number;
+    brandName?: string;
     ironTypeId: number;
     name: string;
     pricePerKg: number;
     weightKg: number;
     totalAmount: number;
+    recalculationStep?: number | null;
+    appliedRecalculationStep?: number | null;
   }>;
   ironTotals?: {
     weightKgTotal: number;
@@ -66,6 +70,9 @@ export const FinalOffer: FC<{
       weightKg: number;
       pricePerKg: number | null;
       totalAmount: number;
+      dictBrandId?: number;
+      recalculationStep?: number | null;
+      appliedRecalculationStep?: number | null;
     }>;
   } | null;
   onReset?: () => void;
@@ -170,13 +177,18 @@ export const FinalOffer: FC<{
 
   const isAnyActionLoading = isOffering || isInternalRecalculating || isLoading;
 
-  const lineItems = recalculationResult?.items?.map((item) => ({
-    ...item,
-    name:
-      ironItems?.find((ironItem) => ironItem.ironTypeId === item.ironTypeId)
-        ?.name ??
-      `#${item.ironTypeId}`,
-  })) ?? ironItems;
+  const lineItems = recalculationResult?.items?.map((item) => {
+    const source = ironItems?.find((ironItem) =>
+      ironItem.dictBrandId === item.dictBrandId &&
+      ironItem.ironTypeId === item.ironTypeId &&
+      (ironItem.recalculationStep ?? null) === (item.recalculationStep ?? null),
+    );
+    return {
+      ...item,
+      brandName: source?.brandName,
+      name: source?.name ?? `#${item.ironTypeId}`,
+    };
+  }) ?? ironItems;
   const totalWeight = recalculationResult?.totalWeight ?? ironTotals?.weightKgTotal;
   const totalAmount = recalculationResult?.totalAmount ?? ironTotals?.totalAmountTotal;
   const stepLabel = recalculationResult?.appliedStep != null && recalculationResult.appliedStep > 0
@@ -193,7 +205,9 @@ export const FinalOffer: FC<{
     ? newPropose.offeredAmountAmd
     : offerPrice;
 
-  const isTransactionReady = onAccept ? offerPrice > 0 : !!intake;
+  const isTransactionReady = onAccept
+    ? offerPrice > 0 && (!isIronPurchase || recalculationResult != null)
+    : !!intake;
 
   return (
     <div className={`${styles.finalOfferCard} ${isIronPurchase ? styles.ironPurchaseCard : ""}`}>
@@ -269,11 +283,16 @@ export const FinalOffer: FC<{
           <div className={styles.calculationSummary}>
             <div className={styles.calculationSummaryList}>
               {lineItems.map((item) => (
-                <div key={item.ironTypeId} className={styles.calculationSummaryRow}>
-                  <span>{item.name}</span>
+                <div key={`${item.dictBrandId ?? 0}-${item.ironTypeId}-${item.recalculationStep ?? 0}`} className={styles.calculationSummaryRow}>
+                  <span>
+                    {item.brandName ? `${item.brandName} · ` : ""}{item.name}
+                    {(item.appliedRecalculationStep ?? item.recalculationStep) != null && (
+                      <small>{t("operatorPage.ironCarShop.stepLabel", { step: item.appliedRecalculationStep ?? item.recalculationStep })}</small>
+                    )}
+                  </span>
                   <span>
                     {t("operatorPage.ironCarShop.lineFormat", {
-                      name: item.name,
+                      name: `${item.brandName ? `${item.brandName} · ` : ""}${item.name}`,
                       weight: item.weightKg,
                         price: item.pricePerKg?.toLocaleString() ?? t("operatorPage.ironCarShop.priceNotConfigured"),
                       total: item.totalAmount.toLocaleString(),

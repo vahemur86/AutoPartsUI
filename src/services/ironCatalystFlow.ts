@@ -11,6 +11,7 @@ import type {
   IronPowderSaleResponse,
   PhysicalIronSaleRequest,
   PhysicalIronSaleResponse,
+  AvailableIronPurchasesSummary,
 } from "@/types/ironCatalystFlow";
 
 const IRON_SHOP = "/admin/iron-shop";
@@ -18,15 +19,33 @@ const IRON_SHOP = "/admin/iron-shop";
 const asArray = <T>(data: T[] | { results?: T[] } | null | undefined): T[] =>
   Array.isArray(data) ? data : data?.results ?? [];
 
-export const getAvailableIronPurchases = async (cashRegisterId: number) => {
+export const getAvailableIronPurchases = async (
+  cashRegisterId: number,
+  params: { ironTypeId?: number; categoryId?: number } = {},
+) => {
   try {
     const response = await api.get<AvailableIronPurchase[] | { results?: AvailableIronPurchase[] }>(
       `${IRON_SHOP}/purchases/available-for-transfer`,
-      { headers: getHeaders(cashRegisterId) },
+      { params, headers: getHeaders(cashRegisterId) },
     );
     return asArray(response.data).filter((purchase) => purchase.remainingWeightKg > 0);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to load iron purchases."));
+  }
+};
+
+export const getAvailableIronPurchasesSummary = async (
+  cashRegisterId: number,
+  params: { ironTypeId?: number; categoryId?: number } = {},
+): Promise<AvailableIronPurchasesSummary> => {
+  try {
+    const response = await api.get<AvailableIronPurchasesSummary>(
+      `${IRON_SHOP}/purchases/available-for-transfer/summary`,
+      { params, headers: getHeaders(cashRegisterId) },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to load iron purchase summary."));
   }
 };
 

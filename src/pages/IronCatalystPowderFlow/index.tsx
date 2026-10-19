@@ -44,6 +44,7 @@ import {
   getIronPowderStock,
   getIronPowderProfitReport,
   getIronWarehouseTransfers,
+  getAvailableIronPurchasesSummary,
   createIronPowderSale,
   createPhysicalIronSale,
   processIronToPowder,
@@ -63,6 +64,7 @@ import type {
   IronPowderProfitReport,
   IronPowderStockLot,
   IronWarehouseTransfer,
+  AvailableIronPurchasesSummary,
   ProcessIronToPowderRequest,
 } from "@/types/ironCatalystFlow";
 import styles from "./IronCatalystPowderFlow.module.css";
@@ -123,6 +125,8 @@ export const IronCatalystPowderFlow = () => {
   const [ironCategories, setIronCategories] = useState<IronCategory[]>([]);
   const [warehouseId, setWarehouseId] = useState("");
   const [purchases, setPurchases] = useState<AvailableIronPurchase[]>([]);
+  const [purchaseSummary, setPurchaseSummary] = useState<AvailableIronPurchasesSummary | null>(null);
+  const [purchaseFilters, setPurchaseFilters] = useState({ ironTypeId: "", categoryId: "" });
   const [transfers, setTransfers] = useState<IronWarehouseTransfer[]>([]);
   const [processingBatches, setProcessingBatches] = useState<IronProcessingBatch[]>([]);
   const [catalystInventory, setCatalystInventory] = useState<IronPowderStockLot[]>([]);
@@ -188,6 +192,19 @@ export const IronCatalystPowderFlow = () => {
   const [reportFilters, setReportFilters] = useState({ dateFrom: "", dateTo: "" });
 
   const chosenWarehouseId = Number(warehouseId) || undefined;
+  const purchaseFilterParams = useMemo(() => ({
+    ironTypeId: Number(purchaseFilters.ironTypeId) || undefined,
+    categoryId: Number(purchaseFilters.categoryId) || undefined,
+  }), [purchaseFilters]);
+
+  const loadPurchaseData = useCallback(async () => {
+    const [purchaseRows, summary] = await Promise.all([
+      getAvailableIronPurchases(cashRegisterId, purchaseFilterParams),
+      getAvailableIronPurchasesSummary(cashRegisterId, purchaseFilterParams),
+    ]);
+    setPurchases(purchaseRows);
+    setPurchaseSummary(summary);
+  }, [cashRegisterId, purchaseFilterParams]);
 
   const loadSection = useCallback(async () => {
     setIsLoading(true);
@@ -195,7 +212,7 @@ export const IronCatalystPowderFlow = () => {
     try {
       switch (activeTab) {
         case "purchases":
-          setPurchases(await getAvailableIronPurchases(cashRegisterId));
+          await loadPurchaseData();
           break;
         case "transfers":
           setTransfers(await getIronWarehouseTransfers(
@@ -265,6 +282,8 @@ export const IronCatalystPowderFlow = () => {
     activeTab,
     cashRegisterId,
     chosenWarehouseId,
+    loadPurchaseData,
+    purchaseFilters,
     saleStatusFilter,
     salesDateFilters,
     containsIronFilter,
@@ -389,8 +408,11 @@ export const IronCatalystPowderFlow = () => {
       setTransferTarget(null);
       setTransferForm({ warehouseId: "", weightKg: "" });
       setActiveTab("purchases");
-      setPurchases(await getAvailableIronPurchases(cashRegisterId));
-      setTransfers(await getIronWarehouseTransfers({ warehouseId: selectedWarehouse }, cashRegisterId));
+      const [transferRows] = await Promise.all([
+        getIronWarehouseTransfers({ warehouseId: selectedWarehouse }, cashRegisterId),
+        loadPurchaseData(),
+      ]);
+      setTransfers(transferRows);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("ironCatalystFlow.errors.transferFailed")));
     } finally {
@@ -648,25 +670,95 @@ export const IronCatalystPowderFlow = () => {
     <PaginatedTable headers={headers} rows={rows} />
   );
 
-  const renderPurchases = () => renderTable(
-    ["purchaseId", "customerId", "brand", "ironType", "customerType", "purchasedWeight", "purchaseCost", "transferredWeight", "remainingWeight", "purchaseDate", ""].map(column),
-    purchases.filter((purchase) => purchase.remainingWeightKg > 0).map((purchase) => [
-      `#${purchase.purchaseId}`,
-      `#${purchase.customerId}`,
-      purchase.brandName || `#${purchase.dictBrandId}`,
-      purchase.ironTypeName || `#${purchase.ironTypeId}`,
-      purchase.customerTypeName || `#${purchase.customerTypeId}`,
-      `${formatNumber(purchase.purchasedWeightKg)} kg`,
-        formatAmd(purchase.totalPurchaseCost),
-      `${formatNumber(purchase.transferredWeightKg)} kg`,
-      <strong key="remaining" className={styles.remaining}>{formatNumber(purchase.remainingWeightKg)} kg</strong>,
-        formatDate(purchase.purchasedAt),
-      <Button key="transfer" size="small" onClick={() => {
-        setTransferTarget(purchase);
-                setTransferAttempted(false);
-        setTransferForm({ warehouseId: warehouseId || "", weightKg: String(purchase.remainingWeightKg) });
-      }}><ArrowLeftRight size={14} />{t("ironCatalystFlow.actions.transfer")}</Button>,
-    ]),
+  const renderPurchaseBreakdown = (
+    title: string,
+    items: AvailableIronPurchasesSummary["byIronType"],
+  ) => (
+    <section className={styles.purchaseBreakdown}>
+      <h3>{title}</h3>
+      {items.length > 0 ? (
+        <div className={styles.purchaseBreakdownList}>
+          {items.map((item) => (
+            <div className={styles.purchaseBreakdownRow} key={item.id}>
+              <strong>{item.name || `#${item.id}`}</strong>
+              <div className={styles.purchaseBreakdownValues}>
+                <span>{t("ironCatalystFlow.purchaseSummary.purchased")}: <b>{formatNumber(item.purchasedWeightKg)} kg</b></span>
+                <span>{t("ironCatalystFlow.purchaseSummary.transferred")}: <b>{formatNumber(item.transferredWeightKg)} kg</b></span>
+                <span>{t("ironCatalystFlow.purchaseSummary.remaining")}: <b>{formatNumber(item.remainingWeightKg)} kg</b></span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.purchaseBreakdownEmpty}>{t("ironCatalystFlow.purchaseSummary.noGroups")}</div>
+      )}
+    </section>
+  );
+
+  const renderPurchases = () => (
+    <div className={styles.purchaseSection}>
+      <div className={styles.filterRow}>
+        <Select
+          label={t("ironCatalystFlow.filters.ironType")}
+          value={purchaseFilters.ironTypeId}
+          onChange={(event) => setPurchaseFilters((filters) => ({ ...filters, ironTypeId: event.target.value }))}
+        >
+          <option value="">{t("common.all")}</option>
+          {ironTypes.map((ironType) => (
+            <option key={ironType.id} value={ironType.id}>{ironType.name || ironType.code}</option>
+          ))}
+        </Select>
+        <Select
+          label={t("ironCatalystFlow.filters.category")}
+          value={purchaseFilters.categoryId}
+          onChange={(event) => setPurchaseFilters((filters) => ({ ...filters, categoryId: event.target.value }))}
+        >
+          <option value="">{t("common.all")}</option>
+          {ironCategories.map((category) => (
+            <option key={category.id} value={category.id}>{category.name || category.code}</option>
+          ))}
+        </Select>
+      </div>
+
+      {purchaseSummary && (
+        <section className={styles.purchaseSummary}>
+          <div className={styles.metricGrid}>
+            <Metric label={t("ironCatalystFlow.purchaseSummary.totalPurchasedWeight")} value={`${formatNumber(purchaseSummary.totalPurchasedWeightKg)} kg`} />
+            <Metric label={t("ironCatalystFlow.purchaseSummary.totalTransferredWeight")} value={`${formatNumber(purchaseSummary.totalTransferredWeightKg)} kg`} />
+            <Metric label={t("ironCatalystFlow.purchaseSummary.totalRemainingWeight")} value={`${formatNumber(purchaseSummary.totalRemainingWeightKg)} kg`} accent />
+          </div>
+          <div className={styles.purchaseBreakdowns}>
+            {renderPurchaseBreakdown(t("ironCatalystFlow.purchaseSummary.byIronType"), purchaseSummary.byIronType)}
+            {renderPurchaseBreakdown(t("ironCatalystFlow.purchaseSummary.byCategory"), purchaseSummary.byCategory)}
+          </div>
+        </section>
+      )}
+
+      {renderTable(
+        ["purchaseId", "customerId", "brand", "category", "ironType", "customerType", "purchasedWeight", "purchaseCost", "transferredWeight", "remainingWeight", "recalculationStep", "purchaseDate", ""].map(column),
+        purchases.filter((purchase) => purchase.remainingWeightKg > 0).map((purchase) => [
+          `#${purchase.purchaseId}`,
+          `#${purchase.customerId}`,
+          purchase.brandName || `#${purchase.dictBrandId}`,
+          purchase.categoryName || "—",
+          purchase.ironTypeName || `#${purchase.ironTypeId}`,
+          purchase.customerTypeName || `#${purchase.customerTypeId}`,
+          `${formatNumber(purchase.purchasedWeightKg)} kg`,
+          formatAmd(purchase.totalPurchaseCost),
+          `${formatNumber(purchase.transferredWeightKg)} kg`,
+          <strong key="remaining" className={styles.remaining}>{formatNumber(purchase.remainingWeightKg)} kg</strong>,
+          purchase.recalculationStep == null
+            ? t("ironCatalystFlow.purchaseSummary.regularPrice")
+            : t("ironCatalystFlow.purchaseSummary.recalculationStep", { step: purchase.recalculationStep }),
+          formatDate(purchase.purchasedAt),
+          <Button key="transfer" size="small" onClick={() => {
+            setTransferTarget(purchase);
+            setTransferAttempted(false);
+            setTransferForm({ warehouseId: warehouseId || "", weightKg: String(purchase.remainingWeightKg) });
+          }}><ArrowLeftRight size={14} />{t("ironCatalystFlow.actions.transfer")}</Button>,
+        ]),
+      )}
+    </div>
   );
 
   const renderTransfers = () => (

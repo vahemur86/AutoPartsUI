@@ -8,6 +8,9 @@ export interface AvailableIronPurchase {
   brandName?: string;
   ironType?: string;
   ironTypeName?: string;
+  categoryId?: number | null;
+  categoryName?: string | null;
+  recalculationStep?: number | null;
   customerType?: string;
   customerTypeName?: string;
   purchasedWeightKg: number;
@@ -15,6 +18,26 @@ export interface AvailableIronPurchase {
   transferredWeightKg: number;
   remainingWeightKg: number;
   purchasedAt: string;
+}
+
+export interface AvailableIronPurchasesSummary {
+  totalPurchasedWeightKg: number;
+  totalTransferredWeightKg: number;
+  totalRemainingWeightKg: number;
+  byIronType: Array<{
+    id: number;
+    name: string;
+    purchasedWeightKg: number;
+    transferredWeightKg: number;
+    remainingWeightKg: number;
+  }>;
+  byCategory: Array<{
+    id: number;
+    name: string;
+    purchasedWeightKg: number;
+    transferredWeightKg: number;
+    remainingWeightKg: number;
+  }>;
 }
 
 export interface IronWarehouseTransfer {

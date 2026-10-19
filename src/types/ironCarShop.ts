@@ -11,6 +11,8 @@ export interface IronType {
 }
 
 export interface IronTypePrice {
+  dictBrandId?: number;
+  brandName?: string;
   ironTypeId: number;
   name: string;
   pricePerKg: number;
@@ -190,10 +192,13 @@ export interface RecalculateResponse {
   totalWeight: number;
   totalAmount: number;
   items: Array<{
+    dictBrandId?: number;
     ironTypeId: number;
     weightKg: number;
     pricePerKg: number | null;
     totalAmount: number;
+    recalculationStep?: number | null;
+    appliedRecalculationStep?: number | null;
   }>;
 }
 
@@ -233,6 +238,8 @@ export interface IronCategoryPricePayload {
 
 export interface OperatorBrandIronType {
   ironTypeId: number;
+  dictBrandId?: number;
+  dictBrandName?: string;
   ironTypeCode?: string;
   ironTypeName?: string;
   name?: string;

@@ -239,7 +239,14 @@
 
 .ironLayout {
   grid-template-columns: 1fr 1fr 1.1fr;
-  align-items: stretch;
+  align-items: start;
+  flex: 0 0 auto;
+  min-height: max-content;
+}
+
+.ironLayout .centerColumn,
+.ironLayout .rightColumn {
+  min-height: max-content;
 }
 
 .leftColumn,

@@ -807,47 +807,51 @@ export const useOperator = () => {
   const handleBulkPurchase = async () => {
     const customer =
       selectors.operator.intake?.customer || selectors.customers.items[0];
-    const brandId = selectors.ironCarShop.selectedBrandId;
-    if (!customer || selectors.ironCarShop.ironPrices.length === 0 || !brandId) {
+    if (!customer || selectors.ironCarShop.ironPrices.length === 0) {
       const error = new Error(t("operatorPage.ironCarShop.purchaseFailed"));
       toast.error(error.message);
       throw error;
     }
 
     const recalculationResult = selectors.ironCarShop.recalculationResult;
-    const purchaseItems =
-      recalculationResult?.items ?? selectors.ironCarShop.ironPrices;
-
-    if (
-      purchaseItems.length === 0 ||
-      purchaseItems.some(
-        (item) => item.pricePerKg == null || !Number.isFinite(item.pricePerKg) || item.pricePerKg <= 0,
-      )
-    ) {
+    const selectedItems = selectors.ironCarShop.ironPrices;
+    const recalculatedItems = recalculationResult?.items ?? [];
+    const invalidPrice = selectedItems.some((selectedItem) => {
+      const recalculated = recalculatedItems.find((item) =>
+        item.dictBrandId === selectedItem.dictBrandId &&
+        item.ironTypeId === selectedItem.ironTypeId &&
+        item.recalculationStep === (selectedItem.recalculationStep ?? null),
+      );
+      const pricePerKg = recalculated?.pricePerKg ?? selectedItem.pricePerKg;
+      return !selectedItem.dictBrandId || pricePerKg == null || !Number.isFinite(pricePerKg) || pricePerKg <= 0;
+    });
+    if (selectedItems.length === 0 || invalidPrice) {
       const error = new Error(t("operatorPage.ironCarShop.priceNotConfigured"));
       toast.error(error.message);
       throw error;
     }
 
-    const purchases = purchaseItems.map((item) => {
-      const selectedItem = selectors.ironCarShop.ironPrices.find(
-        (ironItem) => ironItem.ironTypeId === item.ironTypeId,
-      );
-      const customerTypeId = selectedItem?.customerTypeId ?? customer.customerTypeId;
+    const purchases = selectedItems.map((selectedItem) => {
+      const customerTypeId = selectedItem.customerTypeId ?? customer.customerTypeId;
       const recalculationStepAllowed =
-        selectedItem?.categoryId == null && selectedItem?.hasRecalculateSteps === true;
-      const recalculationStep = recalculationResult?.appliedStep ?? selectedItem?.recalculationStep ?? null;
+        selectedItem.categoryId == null && selectedItem.hasRecalculateSteps === true;
+      const recalculatedItem = recalculatedItems.find((item) =>
+        item.dictBrandId === selectedItem.dictBrandId &&
+        item.ironTypeId === selectedItem.ironTypeId &&
+        item.recalculationStep === (selectedItem.recalculationStep ?? null),
+      );
+      const recalculationStep = recalculatedItem?.appliedRecalculationStep ?? selectedItem.recalculationStep;
 
       return {
-        dictBrandId: brandId,
-        ironTypeId: item.ironTypeId,
+        dictBrandId: selectedItem.dictBrandId!,
+        ironTypeId: selectedItem.ironTypeId,
         customerPhone: customer.phone || "",
         customerTypeId,
-        weightKg: item.weightKg,
+        weightKg: selectedItem.weightKg,
         ...(recalculationStepAllowed && recalculationStep != null
           ? { recalculationStep }
           : {}),
-        notes: selectedItem?.notes ?? "",
+        notes: selectedItem.notes ?? "",
       };
     });
 

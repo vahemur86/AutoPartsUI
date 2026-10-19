@@ -405,6 +405,12 @@ const ironCarShopSlice = createSlice({
       state.recalculationResult = null;
       state.selectedBrandId = null;
     },
+    clearRecalculation: (state) => {
+      state.recalculationResult = null;
+    },
+    setRecalculationResult: (state, action: PayloadAction<RecalculateResponse>) => {
+      state.recalculationResult = action.payload;
+    },
     setLocalCalculation: (
       state,
       action: PayloadAction<{
@@ -547,6 +553,8 @@ export const {
   clearShopError,
   resetShopState,
   clearCalculation,
+  clearRecalculation,
+  setRecalculationResult,
   setLocalCalculation,
   clearPrices,
   clearIronPriceList,
