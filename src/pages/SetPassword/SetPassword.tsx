@@ -10,6 +10,7 @@ import { TextField, Button } from "@/ui-kit";
 import {
   Check,
   ChevronDown,
+  CircleAlert,
   Eye,
   EyeOff,
   KeyRound,
@@ -46,6 +47,7 @@ export const SetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [languageOptions, setLanguageOptions] = useState(FALLBACK_LANGUAGES);
   const [selectedLanguageCode, setSelectedLanguageCode] = useState(() =>
     mapApiCodeToI18nCode(i18n.resolvedLanguage || i18n.language),
@@ -104,7 +106,7 @@ export const SetPassword = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      setFormError(error);
       dispatch(clearAuthError());
     }
   }, [error, dispatch]);
@@ -118,9 +120,10 @@ export const SetPassword = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setHasTriedSubmit(true);
+    setFormError(null);
 
     if (!token) {
-      toast.error(t("auth.setPassword.invalidLink"));
+      setFormError(t("auth.setPassword.invalidLink"));
       return;
     }
 
@@ -235,6 +238,13 @@ export const SetPassword = () => {
             </p>
           </div>
 
+          {formError && (
+            <div className={styles.loginError} role="alert" aria-live="assertive">
+              <CircleAlert size={19} aria-hidden="true" />
+              <span>{formError}</span>
+            </div>
+          )}
+
           <div className={styles.fieldWrapper}>
             <div className={styles.fieldWithLeftIcon}>
               <div className={styles.leftIcon}>
@@ -245,7 +255,10 @@ export const SetPassword = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder={t("auth.setPassword.passwordPlaceholder")}
                 value={password}
-                onChange={(e) => setPasswordState(e.target.value)}
+                onChange={(e) => {
+                  setPasswordState(e.target.value);
+                  setFormError(null);
+                }}
                 error={hasTriedSubmit && !isPasswordValid}
                 helperText={
                   hasTriedSubmit && !isPasswordValid
@@ -278,7 +291,10 @@ export const SetPassword = () => {
                 type={showRepeatPassword ? "text" : "password"}
                 placeholder={t("auth.setPassword.repeatPasswordPlaceholder")}
                 value={repeatPassword}
-                onChange={(e) => setRepeatPassword(e.target.value)}
+                onChange={(e) => {
+                  setRepeatPassword(e.target.value);
+                  setFormError(null);
+                }}
                 error={hasTriedSubmit && (!isRepeatValid || !isMatch)}
                 helperText={
                   hasTriedSubmit && !isMatch

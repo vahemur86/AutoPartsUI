@@ -34,6 +34,14 @@ export interface DailyProfitReportItem {
 
 export interface InventoryLot {
   id: number;
+  warehouseId?: number;
+  sourceType?: string;
+  processingBatchId?: number | null;
+  sourceIronPurchaseId?: number | null;
+  unitCostAmd?: number | null;
+  ptPerKg?: number;
+  pdPerKg?: number;
+  rhPerKg?: number;
   powderBatchId: number;
   remainingPowderKg: number;
   remainingCostAmd: number;

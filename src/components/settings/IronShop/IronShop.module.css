@@ -100,9 +100,10 @@
 
 .workflowTabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
-  width: min(100%, 560px);
+  width: 100%;
+  max-width: 920px;
   padding: 5px;
   border: 1px solid rgba(var(--iron-accent), 0.15);
   border-radius: 8px;
@@ -840,6 +841,8 @@
 
   .workflowTabs {
     width: 100%;
+    max-width: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .filterToolbar {
@@ -899,6 +902,10 @@
 
   .workflowStep {
     display: none;
+  }
+
+  .workflowTabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .formActions {

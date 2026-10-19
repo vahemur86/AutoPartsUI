@@ -23,10 +23,100 @@ import type {
   RecalculatePayload,
   RecalculateResponse,
   UpdateIronTypePricesPayload,
+  IronCategory,
+  IronCategoryPayload,
+  IronCategoryPricePayload,
+  OperatorBrandIronType,
 } from "@/types/ironCarShop";
 import type { IronPurchaseResponse } from "@/types/adminProducts";
 
 const BASE_URL = "/admin/iron-shop";
+
+export const getIronCategories = async (
+  cashRegisterId: number,
+): Promise<IronCategory[]> => {
+  try {
+    const response = await api.get(`${BASE_URL}/categories`, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch iron categories."));
+  }
+};
+
+export const createIronCategory = async (
+  payload: IronCategoryPayload,
+  cashRegisterId: number,
+): Promise<IronCategory> => {
+  try {
+    const response = await api.post(`${BASE_URL}/categories`, payload, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to create iron category."));
+  }
+};
+
+export const updateIronCategory = async (
+  categoryId: number,
+  payload: IronCategoryPayload & { isActive: boolean },
+  cashRegisterId: number,
+): Promise<IronCategory> => {
+  try {
+    const response = await api.put(`${BASE_URL}/categories/${categoryId}`, payload, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to update iron category."));
+  }
+};
+
+export const deleteIronCategory = async (
+  categoryId: number,
+  cashRegisterId: number,
+): Promise<void> => {
+  try {
+    await api.delete(`${BASE_URL}/categories/${categoryId}`, {
+      headers: getHeaders(cashRegisterId),
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete iron category."));
+  }
+};
+
+export const addIronCategoryPrice = async (
+  categoryId: number,
+  payload: IronCategoryPricePayload,
+  cashRegisterId: number,
+): Promise<IronCategoryPricePayload & { id: number }> => {
+  try {
+    const response = await api.post(
+      `${BASE_URL}/categories/${categoryId}/prices`,
+      payload,
+      { headers: getHeaders(cashRegisterId) },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to add category price."));
+  }
+};
+
+export const deleteIronCategoryPrice = async (
+  categoryId: number,
+  priceId: number,
+  cashRegisterId: number,
+): Promise<void> => {
+  try {
+    await api.delete(`${BASE_URL}/categories/${categoryId}/prices/${priceId}`, {
+      headers: getHeaders(cashRegisterId),
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to delete category price."));
+  }
+};
 
 const formatLang = (lang: string) => mapI18nCodeToApiCode(lang);
 
@@ -40,17 +130,35 @@ export const getCarModels = async (
       headers: getHeaders(cashRegisterId),
     });
 
-    const items = Array.isArray(response.data) ? response.data : [];
+    const items: Array<{
+      id: number;
+      name?: string;
+      code?: string;
+      translations?: Record<string, string>;
+    }> = Array.isArray(response.data) ? response.data : [];
     const translationKey = mapI18nCodeToApiCode(lang);
 
     // Normalize items to ensure a `name` field is available for the UI
-    return items.map((it: any) => ({
+    return items.map((it) => ({
       id: it.id,
       name:
         it.name || (it.translations && it.translations[translationKey]) || it.code || "",
     }));
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch car models."));
+  }
+};
+
+export const getIronTypeCatalog = async (
+  cashRegisterId: number,
+): Promise<IronType[]> => {
+  try {
+    const response = await api.get(`${BASE_URL}/iron-types`, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch iron types."));
   }
 };
 
@@ -96,7 +204,7 @@ export const getAvailableIronTypes = async (
   customerTypeId: number,
   cashRegisterId: number,
   lang: string = "en",
-): Promise<any[]> => {
+): Promise<OperatorBrandIronType[]> => {
   try {
     const response = await api.get(`${BASE_URL}/available-types`, {
       params: { 
@@ -109,6 +217,77 @@ export const getAvailableIronTypes = async (
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch available iron types."));
+  }
+};
+
+export const getBrandIronTypes = async (
+  brandId: number,
+  customerTypeId: number,
+  cashRegisterId: number,
+  lang = "en",
+): Promise<OperatorBrandIronType[]> => {
+  try {
+    const response = await api.get(
+      `${BASE_URL}/operator/brand/${brandId}/iron-types`,
+      {
+        params: { customerTypeId, lang: formatLang(lang) },
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    const responseData: unknown = response.data;
+    const data = Array.isArray(responseData)
+      ? responseData
+      : responseData &&
+          typeof responseData === "object" &&
+          "items" in responseData &&
+          Array.isArray(responseData.items)
+        ? responseData.items
+        : [];
+
+    return data.flatMap((rawItem): OperatorBrandIronType[] => {
+      if (!rawItem || typeof rawItem !== "object") return [];
+      const item = rawItem as {
+        ironTypeId?: number;
+        id?: number;
+        ironTypeCode?: string;
+        ironTypeName?: string;
+        name?: string;
+        code?: string;
+        pricePerKg?: number | null;
+        isPriceConfigured?: boolean;
+        hasRecalculateSteps?: boolean;
+        recalculateStepCount?: number;
+        categoryId?: number | null;
+        categoryName?: string | null;
+        prices?: Array<{
+          customerTypeId: number;
+          pricePerKg: number | null;
+        }>;
+      };
+      const ironTypeId = Number(item.ironTypeId ?? item.id);
+      if (!Number.isInteger(ironTypeId) || ironTypeId <= 0) return [];
+      const matchingPrice = Array.isArray(item.prices)
+        ? item.prices.find((price) => price.customerTypeId === customerTypeId)
+            ?.pricePerKg
+        : undefined;
+
+      return [
+        {
+          ...item,
+          ironTypeId,
+          ironTypeCode: item.ironTypeCode ?? item.code,
+          ironTypeName: item.ironTypeName ?? item.name,
+          pricePerKg:
+            item.isPriceConfigured === false
+              ? null
+              : item.pricePerKg ?? matchingPrice ?? null,
+        },
+      ];
+    });
+  } catch (error) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to fetch effective iron prices."),
+    );
   }
 };
 

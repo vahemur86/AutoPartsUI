@@ -1,144 +1,271 @@
 .buyIronCard {
-  --color-primary-300: #d2bf8a;
-  --color-primary-400: #9a7e25;
-  --color-primary-500: #a38930;
-
-  background-color: var(--color-black-1);
-  border-radius: 8px;
-  padding: 24px;
+  --iron-gold: #d4bc7b;
+  --iron-muted: rgba(235, 235, 225, 0.58);
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+  padding: 20px;
+  color: #efeee8;
+  background:
+    linear-gradient(145deg, rgba(212, 188, 123, 0.065), transparent 45%),
+    #171a1b;
+  border: 1px solid rgba(212, 188, 123, 0.2);
+  border-radius: 8px;
   max-height: 100%;
+}
+
+.purchaseHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.purchaseHeaderMain {
+  min-width: 0;
+}
+
+.purchaseEyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--iron-gold);
+  font-size: 10px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.purchaseHeader p {
+  margin: 4px 0 0;
+  color: var(--iron-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.purchaseHeaderIcon,
+.selectedIronIcon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--iron-gold);
+  border: 1px solid rgba(212, 188, 123, 0.23);
+  background: rgba(212, 188, 123, 0.08);
+}
+
+.purchaseHeaderIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
+}
+
+.customerContext {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  color: var(--iron-muted);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.customerContext svg {
+  flex: 0 0 auto;
+  color: #9ec5a3;
+}
+
+.purchaseFields,
+.entryGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .wideSelect {
   width: 100%;
 }
 
-.modelSelectWrapper {
-  flex-shrink: 0;
+.selectedIronPanel {
+  display: grid;
+  gap: 13px;
+  padding: 13px;
+  border: 1px solid rgba(212, 188, 123, 0.2);
+  border-radius: 7px;
+  background: linear-gradient(110deg, rgba(212, 188, 123, 0.075), rgba(255, 255, 255, 0.018));
 }
 
-.ironList {
+.selectedIronHeading {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-  overflow-y: auto;
-  max-height: 400px;
-  padding-right: 8px;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
 }
 
-.ironList::-webkit-scrollbar {
-  width: 6px;
-}
-.ironList::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-}
-.ironList::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+.selectedIronIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
 }
 
-.ironRow {
+.selectedIronHeading > div:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.selectedIronHeading span {
+  color: var(--iron-muted);
+  font-size: 10px;
+}
+
+.selectedIronHeading strong {
+  overflow: hidden;
+  color: #f1ebd8;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectedIronMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.metaCell {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.metaCell span {
+  color: var(--iron-muted);
+  font-size: 10px;
+}
+
+.metaCell strong {
+  overflow-wrap: anywhere;
+  color: #efeee8;
+  font-size: 12px;
+}
+
+.metaCell .configuredPrice {
+  color: var(--iron-gold);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.metaCell .unconfiguredPrice {
+  color: #e2a59c;
+}
+
+.weightField {
+  min-width: 0;
+}
+
+.loadingLine,
+.warningState {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--iron-muted);
+  font-size: 11px;
+}
+
+.loadingLine {
+  grid-column: 1 / -1;
+}
+
+.loadingLine svg {
+  color: var(--iron-gold);
+  animation: ironPurchaseSpin 900ms linear infinite;
+}
+
+.warningState {
+  padding: 10px 11px;
+  color: #efc4bc;
+  border: 1px solid rgba(212, 127, 112, 0.21);
+  border-radius: 6px;
+  background: rgba(133, 55, 47, 0.1);
+}
+
+.warningState svg {
+  flex: 0 0 auto;
+}
+
+.totalPreview {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  gap: 20px;
-  flex-shrink: 0;
+  gap: 12px;
+  padding: 12px 13px;
+  border: 1px solid rgba(117, 176, 131, 0.25);
+  border-radius: 7px;
+  background: rgba(77, 136, 92, 0.09);
 }
 
-.activeRow {
-  background-color: rgba(255, 255, 255, 0.07);
-  border-color: var(--color-primary-500);
-}
-
-.checkGroup {
-  display: flex;
+.totalPreview > span {
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
-  flex: 1;
-}
-
-.typeName {
-  font-size: 16px;
-  color: var(--color-white);
-  font-weight: 500;
-}
-
-.priceDisplay {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 120px;
-  flex: 1;
-}
-
-.priceLabel {
+  gap: 7px;
+  color: rgba(232, 239, 230, 0.78);
   font-size: 11px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
 }
 
-.priceValue {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-primary-500);
-  transition: color 0.3s ease;
+.totalPreview > span svg {
+  color: #9ec5a3;
 }
 
-.inputGroup {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  justify-content: flex-end;
-}
-
-.weightInput {
-  width: 140px;
-}
-
-.weightInput > div {
-  height: 32px;
-  padding-block: 0;
+.totalPreview strong {
+  color: #d5ebd4;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
 }
 
 .footerActions {
+  display: grid;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-@media (max-width: 1400px) {
-  .ironRow {
-    gap: 12px;
-  }
-  .weightInput {
-    width: 100px;
-  }
+.footerActions button {
+  justify-content: center;
+  gap: 8px;
 }
 
-@media (max-width: 600px) {
-  .ironRow {
-    flex-wrap: wrap;
+.footerActions p {
+  margin: 0;
+  color: var(--iron-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@keyframes ironPurchaseSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 520px) {
+  .buyIronCard {
+    padding: 15px;
   }
-  .priceDisplay {
-    order: 3;
-    min-width: 100%;
-    margin-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 8px;
+
+  .purchaseFields,
+  .entryGrid,
+  .selectedIronMeta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .totalPreview {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

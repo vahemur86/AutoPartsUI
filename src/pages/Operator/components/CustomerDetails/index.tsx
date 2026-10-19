@@ -227,8 +227,13 @@ export const CustomerDetails = ({
   const appliedPercent = intake?.appliedPercent ?? null;
 
   return (
-    <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""}`}>
-      <div className={styles.customerHeader}>
+    <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""} ${isIronTab ? styles.ironCustomerCard : ""}`}>
+      <div className={`${styles.customerHeader} ${isIronTab ? styles.ironCustomerHeader : ""}`}>
+        {isIronTab && (
+          <span className={styles.customerHeaderIcon} aria-hidden="true">
+            <UserRound size={16} />
+          </span>
+        )}
         <h2 className={sharedStyles.cardTitle}>{t("customerDetails.title")}</h2>
       </div>
       <div className={sharedStyles.divider} />

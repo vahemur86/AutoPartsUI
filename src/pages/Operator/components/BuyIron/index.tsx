@@ -1,17 +1,26 @@
-import { useState, useEffect, useMemo, type FC } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // ui-kit
-import { Select, TextField, Button, Checkbox } from "@/ui-kit";
+import { Select, TextField, Button } from "@/ui-kit";
 
 // icons
-import { Calculator } from "lucide-react";
+import {
+  BadgeCheck,
+  Calculator,
+  CircleAlert,
+  LoaderCircle,
+  Package,
+  Scale,
+  ShieldCheck,
+} from "lucide-react";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   fetchCarModels,
+  recalculatePrices,
   setLocalCalculation,
   clearCalculation,
 } from "@/store/slices/ironCarShopSlice";
@@ -20,17 +29,11 @@ import {
 import type { IronTypePrice } from "@/types/ironCarShop";
 
 // services
-import { getAvailableIronTypes } from "@/services/ironCarShop";
+import { getBrandIronTypes } from "@/services/ironCarShop";
 
 // styles
 import styles from "./BuyIron.module.css";
 import sharedStyles from "../../OperatorPage.module.css";
-
-interface IronRowState {
-  weight: string;
-  isSelected: boolean;
-  price: number;
-}
 
 interface BuyIronProps {
   cashRegisterId: number;
@@ -47,43 +50,124 @@ export const BuyIron: FC<BuyIronProps> = ({
   const { carModels, ironPrices } = useAppSelector(
     (state) => state.ironCarShop,
   );
+  const recalculationResult = useAppSelector(
+    (state) => state.ironCarShop.recalculationResult,
+  );
   const { items: searchedCustomers } = useAppSelector(
     (state) => state.customers,
   );
   const { intake } = useAppSelector((state) => state.operator);
 
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
+  const [selectedIronTypeId, setSelectedIronTypeId] = useState("");
+  const [weight, setWeight] = useState("");
+  const [recalculationStep, setRecalculationStep] = useState("");
+  const [notes, setNotes] = useState("");
   const [availableIronTypes, setAvailableIronTypes] = useState<
-    Awaited<ReturnType<typeof getAvailableIronTypes>>
+    Awaited<ReturnType<typeof getBrandIronTypes>>
   >([]);
   const [isLoadingIronTypes, setIsLoadingIronTypes] = useState(false);
-  const [ironRows, setIronRows] = useState<Record<number, IronRowState>>({});
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [hasPreviewed, setHasPreviewed] = useState(false);
+  const [wasSubmitted, setWasSubmitted] = useState(false);
+  const brandTypesRequestId = useRef(0);
 
   const isCustomerFound = useMemo(
-    () => searchedCustomers.length > 0,
-    [searchedCustomers],
+    () => searchedCustomers.length > 0 || Boolean(intake?.customer?.phone),
+    [searchedCustomers, intake?.customer?.phone],
   );
 
-  const customerTypeId = useMemo(() => {
-    if (intake?.customer?.customerTypeId) return intake.customer.customerTypeId;
-    if (searchedCustomers.length > 0)
-      return searchedCustomers[0].customerTypeId;
-    return 0;
-  }, [intake, searchedCustomers]);
+  const profileCustomerTypeId =
+    intake?.customer?.customerTypeId ??
+    intake?.customer?.customerType?.id ??
+    searchedCustomers[0]?.customerTypeId;
+  const customerPhone =
+    intake?.customer?.phone ?? searchedCustomers[0]?.phone ?? "";
+  const customerId = intake?.customer?.id ?? searchedCustomers[0]?.id;
+  const currentCustomerTypeId = Number(profileCustomerTypeId) || 0;
+  const selectedIronType = availableIronTypes.find(
+    (type) => type.ironTypeId === Number(selectedIronTypeId),
+  );
+  const isPriceConfigured = Boolean(
+    selectedIronType?.isPriceConfigured ??
+      (selectedIronType?.pricePerKg != null && selectedIronType.pricePerKg > 0),
+  ) && selectedIronType?.pricePerKg != null && selectedIronType.pricePerKg > 0;
+  const canRecalculate = Boolean(
+    selectedIronType?.hasRecalculateSteps &&
+      (selectedIronType.recalculateStepCount ?? 0) > 0 &&
+      selectedIronType.categoryId == null,
+  );
+  const recalculateItem = recalculationResult?.items.find(
+    (item) => item.ironTypeId === selectedIronType?.ironTypeId,
+  );
+  const displayedPrice = hasPreviewed && recalculationResult
+    ? recalculateItem?.pricePerKg ?? null
+    : selectedIronType?.pricePerKg ?? null;
+  const weightValue = Number(weight);
+  const isWeightValid = Number.isFinite(weightValue) && weightValue > 0;
+  const hasConfiguredPrice = isPriceConfigured && selectedIronType?.pricePerKg != null;
+  const isPreviewDisabled = Boolean(
+    isPreviewing ||
+    isLoadingIronTypes ||
+    !selectedBrandId ||
+    !currentCustomerTypeId ||
+    !selectedIronType ||
+    !hasConfiguredPrice ||
+    (recalculationStep && !canRecalculate),
+  );
 
-  const isCalculateDisabled = useMemo(() => {
-    const selectedEntries = Object.values(ironRows).filter(
-      (row) => row.isSelected,
-    );
+  const clearPreview = useCallback(() => {
+    setHasPreviewed(false);
+    dispatch(clearCalculation());
+  }, [dispatch]);
 
-    if (isLoadingIronTypes || !selectedBrandId || selectedEntries.length === 0) {
-      return true;
-    }
+  useEffect(() => {
+    if (isCustomerFound) return;
+    brandTypesRequestId.current += 1;
+    setSelectedBrandId("");
+    setSelectedIronTypeId("");
+    setWeight("");
+    setRecalculationStep("");
+    setNotes("");
+    setAvailableIronTypes([]);
+    setIsLoadingIronTypes(false);
+    setWasSubmitted(false);
+    clearPreview();
+  }, [clearPreview, isCustomerFound]);
 
-    return selectedEntries.some(
-      (row) => !row.weight || row.weight === "." || parseFloat(row.weight) <= 0,
-    );
-  }, [ironRows, selectedBrandId, isLoadingIronTypes]);
+  const loadBrandTypes = useCallback(
+    async (brandId: number, customerTypeId: number) => {
+      const requestId = ++brandTypesRequestId.current;
+      setIsLoadingIronTypes(true);
+      try {
+        const types = await getBrandIronTypes(
+          brandId,
+          customerTypeId,
+          cashRegisterId,
+          i18n.language,
+        );
+        if (requestId === brandTypesRequestId.current) {
+          setAvailableIronTypes(types);
+          setSelectedIronTypeId("");
+          setRecalculationStep("");
+        }
+      } catch (error) {
+        if (requestId === brandTypesRequestId.current) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : t("operatorPage.ironCarShop.failedToLoadIronTypes", "Failed to load iron types"),
+          );
+          setAvailableIronTypes([]);
+        }
+      } finally {
+        if (requestId === brandTypesRequestId.current) {
+          setIsLoadingIronTypes(false);
+        }
+      }
+    },
+    [cashRegisterId, i18n.language, t],
+  );
 
   useEffect(() => {
     if (cashRegisterId) {
@@ -97,216 +181,289 @@ export const BuyIron: FC<BuyIronProps> = ({
   }, [dispatch, cashRegisterId, i18n.language]);
 
   useEffect(() => {
-    if (ironPrices.length === 0) {
-      setSelectedBrandId("");
-      setIronRows({});
-    }
-  }, [ironPrices.length]);
-
-  // Load available iron types when brand and customer type are selected
-  const handleBrandChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const brandId = e.target.value;
-    setSelectedBrandId(brandId);
-    
-    if (brandId && customerTypeId) {
-      setIsLoadingIronTypes(true);
-      try {
-        const types = await getAvailableIronTypes(
-          Number(brandId),
-          customerTypeId,
-          cashRegisterId,
-          i18n.language,
-        );
-            setAvailableIronTypes(types);
-        dispatch(clearCalculation());
-        const initialRows: Record<number, IronRowState> = {};
-        types.forEach((type) => {
-          const price = type.prices?.[0]?.pricePerKg || 0;
-          initialRows[type.ironTypeId] = {
-            weight: "",
-            isSelected: false,
-            price,
-          };
-        });
-      } catch {
-        toast.error(t("operatorPage.ironCarShop.failedToLoadIronTypes", "Failed to load iron types"));
-        setAvailableIronTypes([]);
-        setIronRows({});
-      } finally {
-        setIsLoadingIronTypes(false);
-      }
+    if (selectedBrandId && currentCustomerTypeId && isCustomerFound) {
+      void loadBrandTypes(Number(selectedBrandId), currentCustomerTypeId);
     } else {
+      brandTypesRequestId.current += 1;
       setAvailableIronTypes([]);
-      setIronRows({});
+      setIsLoadingIronTypes(false);
     }
+  }, [
+    currentCustomerTypeId,
+    isCustomerFound,
+    loadBrandTypes,
+    selectedBrandId,
+  ]);
+
+  const handleBrandChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedBrandId(event.target.value);
+    setSelectedIronTypeId("");
+    setWeight("");
+    setRecalculationStep("");
+    setNotes("");
+    setWasSubmitted(false);
+    clearPreview();
   };
 
-            
-
-  useEffect(() => {
-    const initialRows: Record<number, IronRowState> = {};
-    availableIronTypes.forEach((type) => {
-      const price = type.prices?.[0]?.pricePerKg || 0;
-      initialRows[type.ironTypeId] = { weight: "", isSelected: false, price };
-    });
-    setIronRows(initialRows);
-  }, [availableIronTypes]);
-
-  const updateRow = (id: number, updates: Partial<IronRowState>) => {
-    setIronRows((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], ...updates },
-    }));
+  const handleWeightChange = (value: string) => {
+    if (value !== "" && !/^\d*\.?\d{0,3}$/.test(value)) return;
+    setWeight(value);
+    setWasSubmitted(false);
+    clearPreview();
   };
 
-  const handleWeightChange = (id: number, val: string) => {
-    if (val !== "" && !/^\d*\.?\d{0,4}$/.test(val)) return;
-    if (val.length > 1 && val.startsWith("0") && val[1] !== ".") {
-      val = val.replace(/^0+/, "") || "0";
-    }
-    if (val === ".") val = "0.";
-
-    updateRow(id, { weight: val });
-  };
-
-  const handleGlobalCalculate = () => {
-    if (isCalculateDisabled) return;
-
+  const handlePreview = async () => {
+    setWasSubmitted(true);
+    onCalculateAttempt();
     if (!isCustomerFound) {
       toast.error(t("operatorPage.ironCarShop.selectCustomerToCalculate"));
       return;
     }
+    if (!customerPhone) {
+      toast.error(t("operatorPage.ironCarShop.customerPhoneRequired"));
+      return;
+    }
+    if (!selectedBrandId || !currentCustomerTypeId || !selectedIronType) return;
+    if (!hasConfiguredPrice || selectedIronType.pricePerKg == null) {
+      toast.error(t("operatorPage.ironCarShop.priceNotConfigured"));
+      return;
+    }
+    if (!isWeightValid) return;
 
-    onCalculateAttempt();
+    const parsedStep = Number(recalculationStep) || 0;
+    if (parsedStep > 0 && !canRecalculate) {
+      toast.error(t("operatorPage.ironCarShop.recalculationNotAvailable"));
+      return;
+    }
 
-    const selectedEntries = Object.entries(ironRows).filter(([, data]) =>
-      data.isSelected,
-    );
+    const initialTotal = Number((selectedIronType.pricePerKg * weightValue).toFixed(2));
+    const item: IronTypePrice = {
+      ironTypeId: selectedIronType.ironTypeId,
+      name: selectedIronType.ironTypeName || selectedIronType.name || selectedIronType.code || "",
+      pricePerKg: selectedIronType.pricePerKg,
+      weightKg: weightValue,
+      totalAmount: initialTotal,
+      customerTypeId: currentCustomerTypeId,
+      categoryId: selectedIronType.categoryId,
+      categoryName: selectedIronType.categoryName,
+      isPriceConfigured: hasConfiguredPrice,
+      hasRecalculateSteps: canRecalculate,
+      recalculateStepCount: selectedIronType.recalculateStepCount ?? 0,
+      recalculationStep: parsedStep || null,
+      notes: notes.trim(),
+    };
 
-    const items: IronTypePrice[] = [];
-    let weightKgTotal = 0;
-    let totalAmountTotal = 0;
+    dispatch(setLocalCalculation({
+      selectedBrandId: Number(selectedBrandId),
+      items: [item],
+      ironTotals: { weightKgTotal: weightValue, totalAmountTotal: initialTotal },
+    }));
 
-    selectedEntries.forEach(([idStr, data]) => {
-      const id = Number(idStr);
-      const weight = parseFloat(data.weight || "0");
-      const pricePerKg = data.price || 0;
-      const totalAmount = +(weight * pricePerKg).toFixed(2);
-      const type = availableIronTypes.find((t) => t.ironTypeId === id);
+    if (parsedStep > 0) {
+      if (!customerId) {
+        dispatch(clearCalculation());
+        toast.error(t("operatorPage.ironCarShop.customerRequiredForRecalculation"));
+        return;
+      }
+      setIsPreviewing(true);
+      try {
+        const result = await dispatch(recalculatePrices({
+          cashRegisterId,
+          payload: {
+            dictBrandId: Number(selectedBrandId),
+            customerId,
+            customerTypeId: currentCustomerTypeId,
+            currentStep: parsedStep - 1,
+            items: { [selectedIronType.ironTypeId]: weightValue },
+          },
+        })).unwrap();
+        const resultItem = result.items.find(
+          (resultEntry) => resultEntry.ironTypeId === selectedIronType.ironTypeId,
+        );
+        if (!resultItem || resultItem.pricePerKg == null || resultItem.pricePerKg <= 0) {
+          dispatch(clearCalculation());
+          toast.error(t("operatorPage.ironCarShop.priceNotConfigured"));
+          return;
+        }
+      } catch (error) {
+        dispatch(clearCalculation());
+        toast.error(
+          typeof error === "string"
+            ? error
+            : error instanceof Error
+              ? error.message
+              : t("operatorPage.ironCarShop.recalculationFailed"),
+        );
+        return;
+      } finally {
+        setIsPreviewing(false);
+      }
+    }
 
-      items.push({
-        ironTypeId: id,
-        name: type?.name || "",
-        pricePerKg,
-        weightKg: weight,
-        totalAmount,
-      });
-
-      weightKgTotal += weight;
-      totalAmountTotal += totalAmount;
-    });
-
-    dispatch(
-      setLocalCalculation({
-        selectedBrandId: Number(selectedBrandId),
-        items,
-        ironTotals: {
-          weightKgTotal,
-          totalAmountTotal,
-        },
-      }),
-    );
+    setHasPreviewed(true);
   };
 
   return (
     <div className={styles.buyIronCard}>
-      <div className={styles.headerSection}>
-        <h2 className={sharedStyles.cardTitle}>{t("operatorPage.buyIron")}</h2>
-        <div className={sharedStyles.divider} />
-
-        <div className={styles.modelSelectWrapper}>
-          <Select
-            searchable
-            label={t("operatorPage.ironCarShop.brand")}
-            value={selectedBrandId}
-            onChange={handleBrandChange}
-            placeholder={t("common.select")}
-            disabled={!isCustomerFound || isLoadingIronTypes}
-            containerClassName={styles.wideSelect}
-          >
-            {carModels.map((brand) => (
-              <option key={brand.id} value={brand.id}>
-                {brand.name}
-              </option>
-            ))}
-          </Select>
+      <header className={styles.purchaseHeader}>
+        <div className={styles.purchaseHeaderMain}>
+          <span className={styles.purchaseEyebrow}>{t("operatorPage.ironCarShop.purchaseEyebrow")}</span>
+          <h2 className={sharedStyles.cardTitle}>{t("operatorPage.buyIron")}</h2>
+          <p>{t("operatorPage.ironCarShop.purchaseHint")}</p>
         </div>
+        <span className={styles.purchaseHeaderIcon} aria-hidden="true"><Package size={21} /></span>
+      </header>
+
+      <div className={styles.customerContext}>
+        <ShieldCheck size={15} aria-hidden="true" />
+        <span>{isCustomerFound ? customerPhone : t("operatorPage.ironCarShop.customerRequired")}</span>
       </div>
 
-      <div className={styles.ironList}>
-        {selectedBrandId &&
-          availableIronTypes.map((type) => {
-            const row = ironRows[type.ironTypeId] || {
-              weight: "",
-              isSelected: false,
-              price: type.prices?.[0]?.pricePerKg || 0,
-            };
+      <div className={styles.purchaseFields}>
+        <Select
+          searchable
+          label={t("operatorPage.ironCarShop.brand")}
+          value={selectedBrandId}
+          onChange={handleBrandChange}
+          placeholder={t("common.select")}
+          disabled={!isCustomerFound || isLoadingIronTypes}
+          containerClassName={styles.wideSelect}
+        >
+          {carModels.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}
+        </Select>
+
+        <Select
+          label={t("operatorPage.ironCarShop.ironType")}
+          value={selectedIronTypeId}
+          onChange={(event) => {
+            setSelectedIronTypeId(event.target.value);
+            setWeight("");
+            setRecalculationStep("");
+            setWasSubmitted(false);
+            clearPreview();
+          }}
+          disabled={!selectedBrandId || !currentCustomerTypeId || isLoadingIronTypes}
+          containerClassName={styles.wideSelect}
+        >
+          <option value="">{t("operatorPage.ironCarShop.selectIronType")}</option>
+          {availableIronTypes.map((type) => {
+            const configured = Boolean(
+              type.isPriceConfigured ?? (type.pricePerKg != null && type.pricePerKg > 0),
+            ) && type.pricePerKg != null && type.pricePerKg > 0;
+            const typeName = type.ironTypeName || type.name || type.code || `#${type.ironTypeId}`;
             return (
-              <div
-                key={type.ironTypeId}
-                className={`${styles.ironRow} ${row.isSelected ? styles.activeRow : ""}`}
-              >
-                <div className={styles.checkGroup}>
-                  <Checkbox
-                    checked={row.isSelected}
-                    onChange={(e) =>
-                      updateRow(type.ironTypeId, {
-                        isSelected: e.currentTarget.checked,
-                      })
-                    }
-                  />
-                  <span className={styles.typeName}>{type.name}</span>
-                </div>
-
-                <div className={styles.priceDisplay}>
-                  <span className={styles.priceLabel}>
-                    {t("operatorPage.ironCarShop.price")}
-                  </span>
-                  <span className={styles.priceValue}>
-                    {row.price.toLocaleString()} AMD
-                  </span>
-                </div>
-
-                <div className={styles.inputGroup}>
-                  <TextField
-                    placeholder="0.00"
-                    value={row.weight}
-                    onChange={(e) =>
-                      handleWeightChange(type.ironTypeId, e.target.value)
-                    }
-                    disabled={!row.isSelected}
-                    className={styles.weightInput}
-                  />
-                </div>
-              </div>
+              <option key={type.ironTypeId} value={type.ironTypeId} disabled={!configured}>
+                {configured ? typeName : `${typeName} · ${t("operatorPage.ironCarShop.priceNotConfigured")}`}
+              </option>
             );
           })}
+        </Select>
+
+        {isLoadingIronTypes && (
+          <div className={styles.loadingLine} role="status">
+            <LoaderCircle size={15} aria-hidden="true" />
+            {t("common.loading")}
+          </div>
+        )}
       </div>
 
-      {selectedBrandId && availableIronTypes.length > 0 && (
-        <div className={styles.footerActions}>
-          <Button
-            fullWidth
-            variant="primary"
-            className={sharedStyles.catalystPrimaryAction}
-            onClick={handleGlobalCalculate}
-            disabled={isCalculateDisabled}
+      {selectedIronType && (
+        <section className={styles.selectedIronPanel} aria-live="polite">
+          <div className={styles.selectedIronHeading}>
+            <div className={styles.selectedIronIcon}><BadgeCheck size={17} aria-hidden="true" /></div>
+            <div>
+              <span>{t("operatorPage.ironCarShop.selectedIron")}</span>
+              <strong>{selectedIronType.ironTypeName || selectedIronType.name || selectedIronType.code}</strong>
+            </div>
+          </div>
+          <div className={styles.selectedIronMeta}>
+            <div className={styles.metaCell}>
+              <span>{t("operatorPage.ironCarShop.category")}</span>
+              <strong>{selectedIronType.categoryName || t("operatorPage.ironCarShop.notConfigured")}</strong>
+            </div>
+            <div className={styles.metaCell}>
+              <span>{t("operatorPage.ironCarShop.price")}</span>
+              <strong className={isPriceConfigured ? styles.configuredPrice : styles.unconfiguredPrice}>
+                {isPriceConfigured && displayedPrice != null
+                  ? `${displayedPrice.toLocaleString()} AMD / kg`
+                  : t("operatorPage.ironCarShop.priceNotConfigured")}
+              </strong>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <div className={styles.entryGrid}>
+        <TextField
+          type="number"
+          min="0"
+          step="0.001"
+          label={t("operatorPage.ironCarShop.weight")}
+          placeholder="0.000"
+          value={weight}
+          onChange={(event) => handleWeightChange(event.target.value)}
+          disabled={!selectedIronType || !isPriceConfigured}
+          error={wasSubmitted && !isWeightValid}
+          helperText={wasSubmitted && !isWeightValid ? t("operatorPage.ironCarShop.weightMustBePositive") : undefined}
+          className={styles.weightField}
+        />
+        {canRecalculate && (
+          <Select
+            label={t("operatorPage.ironCarShop.recalculationStep")}
+            value={recalculationStep}
+            onChange={(event) => {
+              setRecalculationStep(event.target.value);
+              setWasSubmitted(false);
+              clearPreview();
+            }}
+            disabled={!selectedIronType || !isPriceConfigured}
           >
-            <Calculator size={18} style={{ marginRight: "8px" }} />
-            {t("operatorPage.ironCarShop.calculate")}
-          </Button>
+            <option value="">{t("operatorPage.ironCarShop.noRecalculation")}</option>
+            {Array.from({ length: selectedIronType?.recalculateStepCount ?? 0 }, (_, index) => index + 1).map((step) => (
+              <option key={step} value={step}>{t("operatorPage.ironCarShop.stepLabel", { step })}</option>
+            ))}
+          </Select>
+        )}
+      </div>
+
+      <TextField
+        label={t("operatorPage.ironCarShop.notes")}
+        value={notes}
+        onChange={(event) => {
+          setNotes(event.target.value);
+          setWasSubmitted(false);
+          clearPreview();
+        }}
+        placeholder={t("operatorPage.ironCarShop.notesPlaceholder")}
+      />
+
+      {hasPreviewed && (
+        <div className={styles.totalPreview} role="status">
+          <span><Scale size={16} aria-hidden="true" />{t("operatorPage.ironCarShop.totalAmount")}</span>
+          <strong>{(recalculationResult?.totalAmount ?? ironPrices[0]?.totalAmount ?? 0).toLocaleString()} AMD</strong>
         </div>
       )}
+
+      {selectedIronType && !isPriceConfigured && (
+        <div className={styles.warningState} role="alert">
+          <CircleAlert size={16} aria-hidden="true" />
+          {t("operatorPage.ironCarShop.priceNotConfigured")}
+        </div>
+      )}
+
+      <div className={styles.footerActions}>
+        <Button
+          fullWidth
+          variant="primary"
+          className={sharedStyles.catalystPrimaryAction}
+          onClick={() => void handlePreview()}
+          disabled={isPreviewDisabled}
+        >
+          {isPreviewing ? <LoaderCircle size={17} /> : <Calculator size={17} />}
+          {t("operatorPage.ironCarShop.previewTotal")}
+        </Button>
+        <p>{t("operatorPage.ironCarShop.acceptHint")}</p>
+      </div>
     </div>
   );
 };

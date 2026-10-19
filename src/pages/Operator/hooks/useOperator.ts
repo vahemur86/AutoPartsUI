@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { CircleAlert } from "lucide-react";
 import { handleUnauthorizedResponse } from "@/services";
 
 import {
@@ -40,6 +41,7 @@ import { clearExchangeRatesState } from "@/store/slices/exchangeRatesSlice";
 import { clearCustomersState } from "@/store/slices/customersSlice";
 import { fetchIronDropdown } from "@/store/slices/adminProductsSlice";
 import { fetchVehicleServiceTemplates } from "@/store/slices/vehicleServicePricingSlice";
+import { setUserLanguagePreference } from "@/services/userLanguage";
 import {
   submitBulkPurchase,
   clearPrices,
@@ -48,7 +50,10 @@ import {
 } from "@/store/slices/ironCarShopSlice";
 
 // utils
-import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+import {
+  mapApiCodeToI18nCode,
+  mapI18nCodeToApiCode,
+} from "@/utils/languageMapping";
 
 // services
 import { createServiceOrder } from "@/services/operator";
@@ -82,6 +87,15 @@ const handleSignalRAuthError = (error: unknown) => {
     handleUnauthorizedResponse(error);
   }
 };
+
+const showSessionErrorToast = (message: string, toastId?: string) =>
+  toast.error(message, {
+    toastId,
+    className: "operator-session-toast",
+    autoClose: 9000,
+    closeOnClick: false,
+    icon: () => createElement(CircleAlert, { size: 20, strokeWidth: 2.2 }),
+  });
 
 export type TabType = "catalyst" | "iron";
 
@@ -532,7 +546,11 @@ export const useOperator = () => {
     errors.forEach(({ msg }) => {
       if (msg) {
         const translatedMessage = translateOperatorError(msg);
-        toast.error(translatedMessage, { toastId: msg });
+        if (/^No open cashbox session for operator\.?$/i.test(msg.trim())) {
+          showSessionErrorToast(translatedMessage ?? msg, msg);
+        } else if (translatedMessage) {
+          toast.error(translatedMessage, { toastId: msg });
+        }
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -663,7 +681,7 @@ export const useOperator = () => {
     setUiState((p) => ({ ...p, hasTriedSubmit: true }));
 
     if (!selectors.cashSessions.hasOpenSession) {
-      toast.error(t("operatorPage.notifications.sessionNotOpen"));
+      showSessionErrorToast(t("operatorPage.notifications.sessionNotOpen"));
       return;
     }
 
@@ -790,26 +808,54 @@ export const useOperator = () => {
     const customer =
       selectors.operator.intake?.customer || selectors.customers.items[0];
     const brandId = selectors.ironCarShop.selectedBrandId;
-    if (!customer || selectors.ironCarShop.ironPrices.length === 0 || !brandId) return;
+    if (!customer || selectors.ironCarShop.ironPrices.length === 0 || !brandId) {
+      const error = new Error(t("operatorPage.ironCarShop.purchaseFailed"));
+      toast.error(error.message);
+      throw error;
+    }
 
     const recalculationResult = selectors.ironCarShop.recalculationResult;
-    const isStandardCustomer = customer.customerTypeId === 1;
     const purchaseItems =
-      isStandardCustomer && recalculationResult
-        ? recalculationResult.items
-        : selectors.ironCarShop.ironPrices;
+      recalculationResult?.items ?? selectors.ironCarShop.ironPrices;
 
-    const purchases = purchaseItems.map((item) => ({
-      dictBrandId: brandId,
-      ironTypeId: item.ironTypeId,
-      customerPhone: customer.phone || "",
-      customerTypeId: customer.customerTypeId,
-      weightKg: item.weightKg,
-      ...(isStandardCustomer && recalculationResult
-        ? { recalculationStep: recalculationResult.appliedStep }
-        : {}),
-      notes: "",
-    }));
+    if (
+      purchaseItems.length === 0 ||
+      purchaseItems.some(
+        (item) => item.pricePerKg == null || !Number.isFinite(item.pricePerKg) || item.pricePerKg <= 0,
+      )
+    ) {
+      const error = new Error(t("operatorPage.ironCarShop.priceNotConfigured"));
+      toast.error(error.message);
+      throw error;
+    }
+
+    const purchases = purchaseItems.map((item) => {
+      const selectedItem = selectors.ironCarShop.ironPrices.find(
+        (ironItem) => ironItem.ironTypeId === item.ironTypeId,
+      );
+      const customerTypeId = selectedItem?.customerTypeId ?? customer.customerTypeId;
+      const recalculationStepAllowed =
+        selectedItem?.categoryId == null && selectedItem?.hasRecalculateSteps === true;
+      const recalculationStep = recalculationResult?.appliedStep ?? selectedItem?.recalculationStep ?? null;
+
+      return {
+        dictBrandId: brandId,
+        ironTypeId: item.ironTypeId,
+        customerPhone: customer.phone || "",
+        customerTypeId,
+        weightKg: item.weightKg,
+        ...(recalculationStepAllowed && recalculationStep != null
+          ? { recalculationStep }
+          : {}),
+        notes: selectedItem?.notes ?? "",
+      };
+    });
+
+    if (purchases.some((purchase) => !purchase.customerPhone || !purchase.customerTypeId)) {
+      const error = new Error(t("operatorPage.ironCarShop.customerPhoneRequired"));
+      toast.error(error.message);
+      throw error;
+    }
 
     try {
       await dispatch(
@@ -823,6 +869,13 @@ export const useOperator = () => {
       handleResetForm();
     } catch (e) {
       console.error(e);
+      const message = typeof e === "string"
+        ? e
+        : e instanceof Error
+          ? e.message
+          : t("operatorPage.ironCarShop.purchaseFailed");
+      toast.error(message);
+      throw e;
     }
   };
 
@@ -869,7 +922,7 @@ export const useOperator = () => {
           }
 
           if (!isOpened) {
-            toast.error(t("operatorPage.notifications.sessionNotOpen"));
+            showSessionErrorToast(t("operatorPage.notifications.sessionNotOpen"));
             return;
           }
 
@@ -883,7 +936,7 @@ export const useOperator = () => {
             sessionId = sessionStatus.sessionId;
 
             if (!sessionStatus.hasOpenSession || !sessionId) {
-              toast.error(t("operatorPage.notifications.sessionNotOpen"));
+              showSessionErrorToast(t("operatorPage.notifications.sessionNotOpen"));
               return;
             }
           }
@@ -925,12 +978,23 @@ export const useOperator = () => {
   };
 
   const handleLanguageChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const code = mapApiCodeToI18nCode(e.target.value);
-      i18n.changeLanguage(code); // Using instance from useTranslation
-      localStorage.setItem("i18nextLng", code);
+
+      try {
+        const apiCode = mapI18nCodeToApiCode(code);
+        const response = await setUserLanguagePreference(apiCode);
+        const preferredCode = mapApiCodeToI18nCode(response.language || apiCode);
+
+        if (!i18n.hasResourceBundle(preferredCode, "translation")) return;
+
+        await i18n.changeLanguage(preferredCode);
+        localStorage.setItem("i18nextLng", preferredCode);
+      } catch (error) {
+        console.error("Failed to save operator language preference:", error);
+      }
     },
-    [i18n], // Depend on i18n instance
+    [i18n],
   );
 
   return {

@@ -64,20 +64,25 @@
 }
 
 .searchBtn {
-  background-color: #ecf15e !important;
-  color: #000 !important;
+  background: linear-gradient(135deg, #deddd5, #b9b9b1) !important;
+  border: 1px solid rgba(231, 230, 222, 0.72) !important;
+  color: #171a1c !important;
   font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 5px 14px rgba(0, 0, 0, 0.2);
 }
 
 .searchBtn:hover:not(:disabled) {
-  background-color: #f0f47e !important;
+  background: linear-gradient(135deg, #efeee8, #d4d3cb) !important;
+  border-color: rgba(245, 244, 237, 0.88) !important;
 }
 
 .searchBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(214, 214, 207, 0.12) !important;
+  border-color: rgba(214, 214, 207, 0.12) !important;
+  color: rgba(235, 235, 229, 0.42) !important;
+  box-shadow: none;
 }
 
 .resetBtn {

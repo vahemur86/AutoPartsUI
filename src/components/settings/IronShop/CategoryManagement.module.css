@@ -1,0 +1,519 @@
+.categoryWorkspace {
+  --category-accent: 196, 169, 106;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  color: #ecebe3;
+}
+
+.categoryHeader,
+.categoryHeading,
+.categoryListHeader,
+.categoryPanelTitle,
+.categoryCardTop,
+.categoryCardActions,
+.categoryFormActions,
+.categoryPriceRow,
+.categoryPriceIdentity {
+  display: flex;
+  align-items: center;
+}
+
+.categoryHeader {
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(var(--category-accent), 0.18);
+  border-radius: 8px;
+  background: linear-gradient(110deg, rgba(var(--category-accent), 0.06), rgba(15, 20, 16, 0.8));
+}
+
+.categoryHeading {
+  min-width: 0;
+  gap: 11px;
+}
+
+.categoryHeaderIcon,
+.categoryPanelIcon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(var(--category-accent), 0.24);
+  background: rgba(var(--category-accent), 0.08);
+}
+
+.categoryHeaderIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+}
+
+.categoryHeading h3,
+.categoryPanelTitle h4,
+.categoryListHeader h4 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.categoryHeading p,
+.categoryPanelTitle p {
+  margin: 3px 0 0;
+  color: rgba(230, 236, 230, 0.56);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.categoryCount {
+  display: grid;
+  min-width: 34px;
+  height: 28px;
+  place-items: center;
+  padding: 0 8px;
+  border: 1px solid rgba(var(--category-accent), 0.2);
+  border-radius: 7px;
+  color: #e3d4aa;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.categoryLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1.45fr);
+  align-items: start;
+  gap: 14px;
+}
+
+.categoryListPanel,
+.categoryFormPanel,
+.categoryPricePanel {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(var(--category-accent), 0.15);
+  border-radius: 8px;
+  background: linear-gradient(155deg, rgba(20, 26, 21, 0.95), rgba(12, 16, 13, 0.96));
+}
+
+.categoryFallbackPanel {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(var(--category-accent), 0.15);
+  border-radius: 8px;
+  background: linear-gradient(155deg, rgba(20, 26, 21, 0.95), rgba(12, 16, 13, 0.96));
+}
+
+.pricingModes {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(var(--category-accent), 0.17);
+  border-radius: 8px;
+  background: rgba(8, 11, 9, 0.58);
+}
+
+.pricingMode {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(230, 236, 230, 0.63);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.pricingMode svg {
+  flex: 0 0 auto;
+  color: #c5b37f;
+}
+
+.pricingModeActive {
+  border-color: rgba(var(--category-accent), 0.25);
+  background: rgba(var(--category-accent), 0.1);
+  color: #f0e7cb;
+}
+
+.selectedCategoryHint {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 13px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--category-accent), 0.13);
+  border-radius: 6px;
+  background: rgba(var(--category-accent), 0.045);
+}
+
+.selectedCategoryHint strong {
+  color: #eee9db;
+  font-size: 12px;
+}
+
+.selectedCategoryHint span {
+  color: rgba(230, 236, 230, 0.55);
+  font-size: 10px;
+}
+
+.categoryFallbackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.categoryFallbackSelectors,
+.categoryFallbackCustomerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.categoryFallbackCustomerPrices,
+.categoryFallbackList {
+  margin-top: 16px;
+}
+
+.categoryFallbackCustomerPrices h5,
+.categoryFallbackList h5 {
+  margin: 0 0 10px;
+  color: #eee9db;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.categoryFallbackActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.categoryFallbackList {
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.categoryListPanel {
+  container-name: category-list;
+  container-type: inline-size;
+}
+
+.categoryListHeader {
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 11px;
+}
+
+.categoryListHeader h4 {
+  font-size: 12px;
+}
+
+.categoryList {
+  display: grid;
+  gap: 7px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.categoryCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px 8px;
+  padding: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.025);
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.categoryCardSelected {
+  border-color: rgba(var(--category-accent), 0.42);
+  background: linear-gradient(110deg, rgba(var(--category-accent), 0.09), rgba(255, 255, 255, 0.025));
+}
+
+.categoryCardSelect {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.categoryCardSelect > strong {
+  overflow: hidden;
+  color: #eee9db;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryCardTop {
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.categoryCode {
+  color: #d2bf8a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.categoryStatus {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.statusActive {
+  color: #8ed4a0;
+}
+
+.statusInactive {
+  color: #c4a7a7;
+}
+
+.categoryBrands {
+  overflow: hidden;
+  color: rgba(230, 236, 230, 0.56);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryCardActions {
+  gap: 3px;
+}
+
+.categoryDelete {
+  color: #e58b8b;
+}
+
+.categoryDetailsColumn {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.categoryPanelTitle {
+  min-width: 0;
+  gap: 9px;
+  margin-bottom: 13px;
+}
+
+.categoryPanelIcon {
+  width: 31px;
+  height: 31px;
+  border-radius: 6px;
+}
+
+.categoryPanelTitle h4 {
+  font-size: 12px;
+}
+
+.categoryFormGrid,
+.categoryPriceForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 11px;
+}
+
+.brandMultiSelect {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.categoryFormActions {
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.categoryPriceForm {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.categoryPriceForm > button {
+  justify-self: start;
+}
+
+.categoryPriceList {
+  display: grid;
+  gap: 2px;
+  margin-top: 7px;
+}
+
+.categoryPriceRow {
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 45px;
+  padding: 5px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.categoryPriceIdentity {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.categoryPriceIdentity strong {
+  color: rgba(239, 239, 230, 0.9);
+  font-size: 11px;
+}
+
+.categoryPriceIdentity small {
+  color: rgba(230, 236, 230, 0.48);
+  font-size: 10px;
+}
+
+.categoryPriceValue {
+  flex: 0 0 auto;
+  color: #e8ddbd;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.categoryPriceValue small {
+  color: rgba(230, 236, 230, 0.48);
+  font-size: 9px;
+}
+
+.categoryEmpty,
+.categoryLoadError,
+.categoryPriceEmpty,
+.categoryLoading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 25px 12px;
+  border: 1px dashed rgba(var(--category-accent), 0.16);
+  border-radius: 7px;
+  color: rgba(230, 236, 230, 0.58);
+  font-size: 11px;
+  text-align: center;
+}
+
+.categoryEmpty svg,
+.categoryLoading svg {
+  color: #d2bf8a;
+}
+
+.categoryEmpty strong {
+  color: #e8e4d8;
+  font-size: 12px;
+}
+
+.categoryPriceEmpty {
+  display: block;
+  padding: 15px 10px;
+}
+
+.categoryLoadError {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-color: rgba(222, 126, 112, 0.26);
+  color: #f0c1b8;
+}
+
+.categoryLoading {
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+}
+
+.categoryLoading svg {
+  animation: categorySpin 1s linear infinite;
+}
+
+@container category-list (max-width: 340px) {
+  .categoryListHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .categoryListHeader > button {
+    align-self: flex-start;
+  }
+}
+
+@keyframes categorySpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .categoryLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .categoryList {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 560px) {
+  .pricingModes {
+    width: 100%;
+  }
+
+  .pricingMode {
+    flex: 1 1 0;
+    padding-inline: 7px;
+    font-size: 10px;
+  }
+
+  .categoryFallbackSelectors,
+  .categoryFallbackCustomerGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .categoryHeader {
+    align-items: flex-start;
+  }
+
+  .categoryFormGrid,
+  .categoryPriceForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .brandMultiSelect {
+    grid-column: auto;
+  }
+
+  .categoryCard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .categoryCardActions {
+    justify-content: flex-end;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+}

@@ -10,8 +10,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
 import {
   CircleCheck,
-  CircleX,
   CircleDollarSign,
+  CircleX,
   Filter,
   Layers3,
   LoaderCircle,
@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./IronShop.module.css";
+import { CategoryManagement, type BrandIronPriceItem } from "./CategoryManagement";
 
 const IRON_SHOP_BASE_PATH = "/admin/iron-shop";
 
@@ -40,29 +41,10 @@ interface BrandItem {
   code: string;
 }
 
-interface BrandIronPriceItem {
-  id: number;
-  dictBrandId: number;
-  dictBrandCode: string;
-  ironTypeId: number;
-  ironTypeName: string;
-  customerTypeId: number;
-  customerTypeName: string;
-  pricePerKg: number;
-  recalculateSteps?: Array<{ stepNumber: number; pricePerKg: number }>;
-  recalculateStepCount?: number;
-}
-
 const initialIronTypeForm = {
   code: "",
   translations: { en: "", hy: "", ru: "" },
   isActive: true,
-};
-
-const initialPriceForm = {
-  autoBrandId: "",
-  ironTypeId: "",
-  prices: {} as Record<number, string>, // customerTypeId -> price
 };
 
 const initialRecalculationStepForm = {
@@ -90,11 +72,10 @@ export const IronShopSettings = () => {
     id: number;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [priceForm, setPriceForm] = useState(initialPriceForm);
   const [recalculationStepForm, setRecalculationStepForm] = useState(initialRecalculationStepForm);
   const [activeTab, setActiveTab] = useState<
-    "iron-types" | "prices" | "recalculation"
-  >("iron-types");
+    "categories" | "iron-types" | "prices" | "recalculation"
+  >("categories");
   const activeIronTypeCount = useMemo(
     () => ironTypes.filter((item) => item.isActive).length,
     [ironTypes],
@@ -127,10 +108,6 @@ export const IronShopSettings = () => {
   const closeTypeDrawer = () => {
     setTypeDrawerOpen(false);
     resetIronTypeForm();
-  };
-
-  const resetPriceForm = () => {
-    setPriceForm(initialPriceForm);
   };
 
   const resetRecalculationStepForm = () => {
@@ -182,7 +159,7 @@ export const IronShopSettings = () => {
   };
 
   useEffect(() => {
-    if (activeTab !== "prices") {
+    if (activeTab !== "prices" && activeTab !== "recalculation") {
       return;
     }
 
@@ -273,62 +250,32 @@ export const IronShopSettings = () => {
     setPendingDelete({ kind: "ironType", id });
   };
 
-  const submitPrice = async () => {
-    const autoBrandId = Number(priceForm.autoBrandId);
-    if (!autoBrandId) {
-      toast.error(t("ironManagement.form.selectBrand", "Select brand"));
-      return;
-    }
-
-    const ironTypeId = Number(priceForm.ironTypeId);
-    if (!ironTypeId) {
-      toast.error(t("ironManagement.error.selectIronType"));
-      return;
-    }
-
-    // Collect prices for all customer types
-    const prices: Array<{ CustomerTypeId: number; PricePerKg: number }> = [];
-    for (const customerType of customerTypes) {
-      const priceStr = priceForm.prices[customerType.id];
-      if (priceStr && priceStr.trim()) {
-        const price = Number(priceStr);
-        if (Number.isNaN(price) || price <= 0) {
-          toast.error(
-            t(
-              "ironManagement.error.pricePerKgGreaterThanZero",
-              "Price per kg must be greater than zero",
-            ),
-          );
-          return;
-        }
-        prices.push({
-          CustomerTypeId: customerType.id,
-          PricePerKg: price,
-        });
-      }
-    }
-
-    if (prices.length === 0) {
-      toast.error(t("ironManagement.error.selectAtLeastOnePrice", "Please enter price for at least one customer type"));
-      return;
-    }
-
+  const createBrandPrice = async ({
+    brandId,
+    ironTypeId,
+    prices: customerPrices,
+  }: {
+    brandId: number;
+    ironTypeId: number;
+    prices: Array<{ customerTypeId: number; pricePerKg: number }>;
+  }) => {
     try {
       const lang = getApiLang();
-      const payload = {
-        AutoBrandId: autoBrandId,
-        IronTypeId: ironTypeId,
-        Prices: prices,
-      };
-
       await api.post(
         `${IRON_SHOP_BASE_PATH}/brand-iron-prices`,
-        payload,
+        {
+          AutoBrandId: brandId,
+          IronTypeId: ironTypeId,
+          Prices: customerPrices.map((price) => ({
+            CustomerTypeId: price.customerTypeId,
+            PricePerKg: price.pricePerKg,
+          })),
+        },
         { params: { lang }, headers: { ...getHeaders(cashRegisterId) } },
       );
       toast.success(t("ironManagement.success.basePriceCreated", "Base prices created successfully"));
-      resetPriceForm();
-      void loadPrices(Number(selectedBrandId || 0) || undefined, Number(selectedIronTypeId || 0) || undefined);
+      await loadPrices(Number(selectedBrandId || 0) || undefined, Number(selectedIronTypeId || 0) || undefined);
+      return true;
     } catch (error) {
       const axiosError = error as { response?: { status?: number } };
       if (axiosError?.response?.status === 409) {
@@ -336,6 +283,7 @@ export const IronShopSettings = () => {
       } else {
         toast.error(getApiErrorMessage(error, t("ironManagement.error.failedToCreateIronPrice")));
       }
+      return false;
     }
   };
 
@@ -448,6 +396,17 @@ export const IronShopSettings = () => {
 
     return Array.from(groups.entries()).map(([key, group]) => ({ key, ...group }));
   }, [prices]);
+  const groupedRecalculationSteps = useMemo(
+    () => groupedPriceRules
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          (item.recalculateSteps?.length ?? 0) > 0 || (item.recalculateStepCount ?? 0) > 0,
+        ),
+      }))
+      .filter((group) => group.items.length > 0),
+    [groupedPriceRules],
+  );
 
   return (
     <div className={styles.ironShop}>
@@ -458,7 +417,7 @@ export const IronShopSettings = () => {
           </span>
           <div>
             <span className={styles.workspaceEyebrow}>
-              {t("ironManagement.section.ironTypes")} · {t("ironManagement.section.priceRules")}
+              {t("ironManagement.workflowSummary")}
             </span>
             <h2>{t("ironManagement.title", "Iron Shop Settings")}</h2>
             <p>{t("ironManagement.workspaceHint", "Define iron types first, then configure their pricing rules.")}</p>
@@ -481,6 +440,18 @@ export const IronShopSettings = () => {
         <button
           type="button"
           role="tab"
+          aria-selected={activeTab === "categories"}
+          aria-controls="iron-categories-panel"
+          className={`${styles.workflowTab} ${activeTab === "categories" ? styles.workflowTabActive : ""}`}
+          onClick={() => setActiveTab("categories")}
+        >
+          <Tags size={17} aria-hidden="true" />
+          <span>{t("ironManagement.categories.tab")}</span>
+          <span className={styles.workflowStep}>01</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
           aria-selected={activeTab === "iron-types"}
           aria-controls="iron-types-panel"
           className={`${styles.workflowTab} ${activeTab === "iron-types" ? styles.workflowTabActive : ""}`}
@@ -488,19 +459,19 @@ export const IronShopSettings = () => {
         >
           <Layers3 size={17} aria-hidden="true" />
           <span>{t("ironManagement.tabs.ironTypes", "Iron Types")}</span>
-          <span className={styles.workflowStep}>01</span>
+          <span className={styles.workflowStep}>02</span>
         </button>
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === "prices"}
-          aria-controls="price-rules-panel"
+          aria-controls="iron-prices-panel"
           className={`${styles.workflowTab} ${activeTab === "prices" ? styles.workflowTabActive : ""}`}
           onClick={() => setActiveTab("prices")}
         >
-          <Tags size={17} aria-hidden="true" />
-          <span>{t("ironManagement.tabs.priceRules", "Price Rules")}</span>
-          <span className={styles.workflowStep}>02</span>
+          <CircleDollarSign size={17} aria-hidden="true" />
+          <span>{t("ironManagement.pricing.tab")}</span>
+          <span className={styles.workflowStep}>03</span>
         </button>
         <button
           type="button"
@@ -512,7 +483,7 @@ export const IronShopSettings = () => {
         >
           <Wrench size={17} aria-hidden="true" />
           <span>{t("ironManagement.tabs.recalculationSteps", "Recalculation Steps")}</span>
-          <span className={styles.workflowStep}>03</span>
+          <span className={styles.workflowStep}>04</span>
         </button>
       </div>
 
@@ -523,7 +494,20 @@ export const IronShopSettings = () => {
         </div>
       )}
 
-      {activeTab === "iron-types" ? (
+      {activeTab === "categories" || activeTab === "prices" ? (
+        <div id={activeTab === "categories" ? "iron-categories-panel" : "iron-prices-panel"} role="tabpanel">
+          <CategoryManagement
+            mode={activeTab}
+            brands={brands}
+            ironTypes={ironTypes}
+            customerTypes={customerTypes}
+            brandPrices={prices}
+            cashRegisterId={cashRegisterId}
+            onCreateBrandPrice={createBrandPrice}
+            onDeleteBrandPrice={deletePrice}
+          />
+        </div>
+      ) : activeTab === "iron-types" ? (
         <section id="iron-types-panel" role="tabpanel" className={styles.workspacePanel}>
           <header className={styles.panelHeader}>
             <div className={styles.panelTitleGroup}>
@@ -587,7 +571,7 @@ export const IronShopSettings = () => {
         </section>
       ) : (
         <div
-          id={activeTab === "recalculation" ? "recalculation-panel" : "price-rules-panel"}
+          id="recalculation-panel"
           role="tabpanel"
           className={styles.priceWorkspace}
         >
@@ -596,11 +580,13 @@ export const IronShopSettings = () => {
               <div className={styles.panelTitleGroup}>
                 <span className={styles.panelIcon} aria-hidden="true"><Filter size={17} /></span>
                 <div>
-                  <h3>{t("ironManagement.section.priceRules", "Price Rules")}</h3>
-                  <p>{t("ironManagement.priceRulesHint", "Filter by brand and iron type to review configured prices.")}</p>
+                  <h3>{t("ironManagement.section.recalculationSteps", "Recalculation Steps")}</h3>
+                  <p>{t("ironManagement.recalculationStepsHint", "Review configured recalculation steps by brand and iron type.")}</p>
                 </div>
               </div>
-              <span className={styles.ruleCount}>{prices.length}</span>
+              <span className={styles.ruleCount}>
+                {groupedRecalculationSteps.reduce((count, group) => count + group.items.length, 0)}
+              </span>
             </header>
             <div className={styles.filterToolbar}>
               <Select
@@ -637,9 +623,9 @@ export const IronShopSettings = () => {
                 {t("common.reset")}
               </Button>
             </div>
-            {groupedPriceRules.length ? (
+            {groupedRecalculationSteps.length ? (
               <div className={styles.priceRuleGrid}>
-                {groupedPriceRules.map((group) => (
+                {groupedRecalculationSteps.map((group) => (
                   <article key={group.key} className={styles.priceRuleCard}>
                     <header className={styles.priceRuleHeader}>
                       <div>
@@ -678,16 +664,6 @@ export const IronShopSettings = () => {
                                 </span>
                               )}
                             </div>
-                            <Button
-                              variant="danger"
-                              size="small"
-                              className={styles.deleteRuleButton}
-                              aria-label={`${t("common.delete")}: ${group.brandCode} / ${group.ironTypeName} / ${getCustomerTypeLabel(item)}`}
-                              title={t("common.delete")}
-                              onClick={() => void deletePrice(item.id)}
-                            >
-                              <Trash2 size={14} aria-hidden="true" />
-                            </Button>
                           </div>
                         );
                       })}
@@ -698,79 +674,12 @@ export const IronShopSettings = () => {
             ) : (
               <div className={styles.emptyPriceRules}>
                 <Tags size={21} aria-hidden="true" />
-                <span>{t("ironManagement.noPricesYet", "No prices yet. Add a pricing rule below.")}</span>
+                <span>{t("ironManagement.noRecalculationSteps", "No recalculation steps configured yet.")}</span>
               </div>
             )}
           </section>
 
           <div className={styles.priceFormWorkspace}>
-            {activeTab === "prices" ? (
-            <section id="iron-base-price-panel" role="tabpanel" className={styles.ruleFormCard}>
-              <header className={styles.formCardHeader}>
-                <span className={styles.formIcon} aria-hidden="true"><CircleDollarSign size={18} /></span>
-                <div>
-                  <h3>{t("ironManagement.addPrice", "Create Base Price")}</h3>
-                  <p>{t("ironManagement.note.basePriceHint", "Select brand and iron type, then input prices for all customer types")}</p>
-                </div>
-              </header>
-              <div className={styles.formFields}>
-                <Select
-                  label={t("ironManagement.columns.brand")}
-                  value={priceForm.autoBrandId}
-                  searchable
-                  searchPlaceholder={t("common.search")}
-                  onChange={(e) => setPriceForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}
-                >
-                  <option value="">{t("ironManagement.form.selectBrand", "Select brand")}</option>
-                  {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.code}</option>)}
-                </Select>
-                <Select
-                  label={t("ironManagement.columns.ironType")}
-                  value={priceForm.ironTypeId}
-                  searchable
-                  searchPlaceholder={t("common.search")}
-                  onChange={(e) => setPriceForm((prev) => ({ ...prev, ironTypeId: e.target.value }))}
-                >
-                  <option value="">{t("ironManagement.form.selectIronType", "Select iron type")}</option>
-                  {ironTypes.map((ironType) => <option key={ironType.id} value={ironType.id}>{ironType.name || ironType.code}</option>)}
-                </Select>
-              </div>
-
-              <div className={styles.customerPrices}>
-                <h4>{t("ironManagement.pricesByCustomerType", "Prices by Customer Type")}</h4>
-                {customerTypes.length > 0 ? (
-                  <div className={styles.customerPriceGrid}>
-                    {customerTypes.map((customerType) => (
-                      <TextField
-                        key={customerType.id}
-                        type="number"
-                        label={`${customerType.code} · ${t("ironManagement.form.pricePerKg", "Price Per Kg")}`}
-                        placeholder="0.00"
-                        value={priceForm.prices[customerType.id] || ""}
-                        onChange={(e) => setPriceForm((prev) => ({
-                          ...prev,
-                          prices: { ...prev.prices, [customerType.id]: e.target.value },
-                        }))}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <span className={styles.mutedState}>{t("common.loading", "Loading...")}</span>
-                )}
-              </div>
-
-              <footer className={styles.formActions}>
-                <Button variant="secondary" size="medium" onClick={resetPriceForm}>
-                  <RotateCcw size={15} aria-hidden="true" />
-                  {t("common.reset")}
-                </Button>
-                <Button variant="primary" size="medium" onClick={() => void submitPrice()}>
-                  <Plus size={16} aria-hidden="true" />
-                  {t("ironManagement.addPrice", "Create Base Price")}
-                </Button>
-              </footer>
-            </section>
-            ) : (
             <section id="iron-recalculation-panel" role="tabpanel" className={styles.ruleFormCard}>
               <header className={styles.formCardHeader}>
                 <span className={styles.formIcon} aria-hidden="true"><Wrench size={18} /></span>
@@ -819,7 +728,6 @@ export const IronShopSettings = () => {
                 </Button>
               </footer>
             </section>
-            )}
           </div>
         </div>
       )}

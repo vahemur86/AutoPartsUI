@@ -131,6 +131,7 @@ import { CatalystPricings } from "./components/settings/CatalystPricing";
 import { AdjustedSales } from "./components/warehouses/AdjustedSales/AdjustedSales";
 import { NewCalculator } from "./pages/Calculator";
 import { SetPassword } from "./pages/SetPassword/SetPassword";
+import { IronCatalystPowderFlow } from "./pages/IronCatalystPowderFlow";
 import { CarCatalystPage } from "./pages/CarCatalyst/CarCatalyst";
 import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
 import { CatalyticConverters } from "./pages/CatalyticConverters";
@@ -287,6 +288,10 @@ export const App = () => {
                     element={<ProgrammingPricingAdmin />}
                   />
                   <Route path="iron-management" element={<IronShopSettings />} />
+                  <Route
+                    path="iron-catalyst-powder-flow"
+                    element={<IronCatalystPowderFlow />}
+                  />
                 </Route>
 
                 <Route path="service-tasks" element={<ServiceTasks />} />

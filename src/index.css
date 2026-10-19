@@ -327,6 +327,35 @@ body:has([data-radix-dialog-overlay]) {
   border-left: 4px solid #ff2d55;
 }
 
+.operator-session-toast {
+  min-width: 360px;
+  max-width: 480px;
+  min-height: 82px;
+  padding: 16px 18px;
+  border: 1px solid rgba(229, 184, 87, 0.36);
+  border-left: 4px solid #e5b857;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(74, 55, 20, 0.98), rgba(20, 22, 20, 0.98));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.46), 0 0 0 1px rgba(229, 184, 87, 0.08);
+}
+
+.operator-session-toast .Toastify__toast-body {
+  color: #fff3d1;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.operator-session-toast .Toastify__toast-icon {
+  width: 32px;
+  margin-right: 12px;
+  color: #f0c76f;
+}
+
+.operator-session-toast .Toastify__close-button {
+  color: #f0c76f;
+}
+
 .Toastify__toast-body {
   font-family:
     "Manrope",
@@ -360,4 +389,11 @@ body:has([data-radix-dialog-overlay]) {
 }
 .workshop-confirm-toast .Toastify__toast-body {
   font-size: 16px;
+}
+
+@media (max-width: 480px) {
+  .operator-session-toast {
+    min-width: 0;
+    max-width: calc(100vw - 24px);
+  }
 }

@@ -18,6 +18,7 @@ import {
   ArrowDownCircle,
   Wallet,
   TrendingDown,
+  CircleDollarSign,
 } from "lucide-react";
 
 // ui-kit
@@ -41,6 +42,7 @@ export const FinalOffer: FC<{
   isRecalculationsLimitReached?: boolean;
   withRecalculate?: boolean;
   isCatalyst?: boolean;
+  isIronPurchase?: boolean;
   ironItems?: Array<{
     ironTypeId: number;
     name: string;
@@ -62,12 +64,13 @@ export const FinalOffer: FC<{
     items: Array<{
       ironTypeId: number;
       weightKg: number;
-      pricePerKg: number;
+      pricePerKg: number | null;
       totalAmount: number;
     }>;
   } | null;
   onReset?: () => void;
   onAccept?: () => Promise<void>;
+  acceptLabel?: string;
   onRecalculate?: () => Promise<void>;
   isLoading?: boolean;
   setRecalculationsAmount?: Dispatch<SetStateAction<number>>;
@@ -75,6 +78,7 @@ export const FinalOffer: FC<{
   isRecalculationsLimitReached = false,
   withRecalculate = false,
   isCatalyst = false,
+  isIronPurchase = false,
   offerPrice = 0,
   agentPayment,
   currencyCode = "AMD",
@@ -84,6 +88,7 @@ export const FinalOffer: FC<{
   recalculationResult,
   onReset,
   onAccept,
+  acceptLabel,
   onRecalculate,
   isLoading = false,
   setRecalculationsAmount,
@@ -104,8 +109,15 @@ export const FinalOffer: FC<{
     if (offerConfirmed || isOffering) return;
 
     if (onAccept) {
-      setOfferConfirmed(true);
-      await onAccept();
+      setIsOffering(true);
+      try {
+        await onAccept();
+        setOfferConfirmed(true);
+      } catch {
+        setOfferConfirmed(false);
+      } finally {
+        setIsOffering(false);
+      }
       return;
     }
 
@@ -167,7 +179,7 @@ export const FinalOffer: FC<{
   })) ?? ironItems;
   const totalWeight = recalculationResult?.totalWeight ?? ironTotals?.weightKgTotal;
   const totalAmount = recalculationResult?.totalAmount ?? ironTotals?.totalAmountTotal;
-  const stepLabel = recalculationResult?.appliedStep != null
+  const stepLabel = recalculationResult?.appliedStep != null && recalculationResult.appliedStep > 0
     ? t("operatorPage.ironCarShop.stepLabel", {
         step: recalculationResult.appliedStep,
       })
@@ -184,10 +196,15 @@ export const FinalOffer: FC<{
   const isTransactionReady = onAccept ? offerPrice > 0 : !!intake;
 
   return (
-    <div className={styles.finalOfferCard}>
+    <div className={`${styles.finalOfferCard} ${isIronPurchase ? styles.ironPurchaseCard : ""}`}>
       <div className={styles.finalOfferContent}>
-        <div className={styles.finalOfferLabel}>
-          {isAgent ? t("finalOffer.agentAccounting.powderValue") : t("finalOffer.title")}
+        <div className={`${styles.finalOfferLabel} ${isIronPurchase ? styles.ironFinalOfferLabel : ""}`}>
+          {isIronPurchase && (
+            <span className={styles.finalOfferTitleIcon} aria-hidden="true">
+              <CircleDollarSign size={16} />
+            </span>
+          )}
+          <span>{isAgent ? t("finalOffer.agentAccounting.powderValue") : t("finalOffer.title")}</span>
         </div>
         <div className={styles.priceContainer}>
           {hasNewCatalystOffer && (
@@ -258,7 +275,7 @@ export const FinalOffer: FC<{
                     {t("operatorPage.ironCarShop.lineFormat", {
                       name: item.name,
                       weight: item.weightKg,
-                      price: item.pricePerKg.toLocaleString(),
+                        price: item.pricePerKg?.toLocaleString() ?? t("operatorPage.ironCarShop.priceNotConfigured"),
                       total: item.totalAmount.toLocaleString(),
                     })}
                   </span>
@@ -281,12 +298,12 @@ export const FinalOffer: FC<{
             variant="primary"
             size="small"
             fullWidth
-            className={isCatalyst ? sharedStyles.catalystPrimaryAction : undefined}
+            className={isIronPurchase ? styles.ironPurchaseAction : isCatalyst ? sharedStyles.catalystPrimaryAction : undefined}
             onClick={handleOffer}
             disabled={offerConfirmed || isAnyActionLoading || !isTransactionReady}
           >
             <Check size={20} />
-            {t("finalOffer.offerButton")}
+            {acceptLabel ?? t("finalOffer.offerButton")}
           </Button>
 
           {withRecalculate && !isAgent && (

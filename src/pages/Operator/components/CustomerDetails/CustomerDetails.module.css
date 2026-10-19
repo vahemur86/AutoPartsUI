@@ -9,10 +9,50 @@
   gap: 16px;
 }
 
+.ironCustomerCard {
+  background:
+    linear-gradient(145deg, rgba(212, 188, 123, 0.055), transparent 56%),
+    #171a1b;
+  border: 1px solid rgba(212, 188, 123, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.ironCustomerCard .phoneSection .phoneLabel {
+  color: rgba(235, 230, 211, 0.82);
+}
+
+.ironCustomerCard .customerProfile {
+  background: rgba(212, 188, 123, 0.045);
+  border-color: rgba(212, 188, 123, 0.13);
+}
+
+.ironCustomerCard .metricIconWrap {
+  background: rgba(212, 188, 123, 0.08);
+  color: #d4bc7b;
+}
+
 .customerHeader {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.ironCustomerHeader {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.customerHeaderIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d4bc7b;
+  border: 1px solid rgba(212, 188, 123, 0.25);
+  border-radius: 6px;
+  background: rgba(212, 188, 123, 0.08);
 }
 
 .customerContent {

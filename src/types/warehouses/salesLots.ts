@@ -13,6 +13,7 @@ export interface BaseLot {
   soldAt: string | null;
   /** True when the lot contains items from special-customer (prevent-merge) lots. */
   hasSpecialItems?: boolean;
+  containsIronPowder?: boolean;
 }
 
 export interface LotItem {
@@ -24,6 +25,8 @@ export interface LotItem {
   pd_g: number;
   rh_g: number;
   fromSpecialCustomerLot?: boolean;
+  sourceType?: "Catalyst Powder" | "Iron-derived Powder";
+  processingBatchId?: number | null;
   specialCustomerId?: number | null;
   specialCustomerName?: string | null;
 }
@@ -31,6 +34,9 @@ export interface LotItem {
 export interface GetSalesLotsParams {
   warehouseId?: number;
   status?: number;
+  fromDate?: string;
+  toDate?: string;
+  containsIronPowder?: boolean;
   page?: number;
   pageSize?: number;
   cashRegisterId: number;
@@ -124,6 +130,8 @@ export interface SalesLotPreviewItem {
   pdPerKg_g: number;
   rhPerKg_g: number;
   fromSpecialCustomerLot?: boolean;
+  sourceType?: "Catalyst Powder" | "Iron-derived Powder";
+  processingBatchId?: number | null;
   specialCustomerId?: number | null;
   specialCustomerName?: string | null;
 }

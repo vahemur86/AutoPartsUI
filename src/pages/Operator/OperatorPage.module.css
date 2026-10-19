@@ -76,6 +76,11 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(196, 169, 106, 0.12);
 }
 
+.luxuryTab,
+.luxurySubTab {
+  --color-primary-500: #d9d7cf;
+}
+
 .luxuryTab :global(.tabText) {
   font-size: 13px;
   font-weight: 700;
@@ -157,6 +162,14 @@
   padding: 24px;
   min-height: 0;
   overflow-y: auto;
+}
+
+.ironContentArea {
+  background:
+    linear-gradient(135deg, rgba(212, 188, 123, 0.045), transparent 38%),
+    rgba(15, 18, 20, 0.84);
+  border: 1px solid rgba(212, 188, 123, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
 .calculationOverlay {

@@ -244,7 +244,7 @@ export const OperatorPage = () => {
             />
           </div>
 
-          <div className={styles.contentArea}>
+          <div className={`${styles.contentArea} ${isIron ? styles.ironContentArea : ""}`}>
             <div
               className={
                 !isIron ? styles.topRow : styles.ironLayout
@@ -341,7 +341,7 @@ export const OperatorPage = () => {
                   </div>
                   <div className={styles.centerColumn}>
                     <FinalOffer
-                      withRecalculate={!isNonStandardCustomer}
+                      isIronPurchase
                       offerPrice={
                         selectors.ironCarShop.recalculationResult
                           ?.totalAmount ??
@@ -363,7 +363,7 @@ export const OperatorPage = () => {
                         }))
                       }
                       onAccept={actions.handleBulkPurchase}
-                      onRecalculate={actions.handleIronRecalculate}
+                      acceptLabel={t("operatorPage.ironCarShop.acceptPurchase")}
                       isLoading={selectors.ironCarShop.isLoading}
                     />
                   </div>

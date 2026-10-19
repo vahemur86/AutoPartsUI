@@ -40,6 +40,7 @@ import {
   PackageSearch,
   Truck,
   PiggyBank,
+  Workflow,
 } from "lucide-react";
 
 // hooks
@@ -115,6 +116,7 @@ export const Header: FC = () => {
     isActive("/products") ||
     isActive("/customers") ||
     isActive("/users") ||
+    isActive("/settings/iron-catalyst-powder-flow") ||
     isActive("/settings");
 
   // Close dropdown when clicking outside
@@ -619,6 +621,17 @@ export const Header: FC = () => {
               >
                 <User className={styles.menuItemIcon} size={16} />
                 {t("header.users")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/settings/iron-catalyst-powder-flow") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/settings/iron-catalyst-powder-flow");
+                  setOpenDropdown(null);
+                }}
+              >
+                <Workflow className={styles.menuItemIcon} size={16} />
+                {t("ironCatalystFlow.title")}
               </button>
               <button
                 type="button"

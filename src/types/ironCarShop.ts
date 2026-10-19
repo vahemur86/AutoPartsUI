@@ -16,6 +16,14 @@ export interface IronTypePrice {
   pricePerKg: number;
   weightKg: number;
   totalAmount: number;
+  customerTypeId?: number;
+  categoryId?: number | null;
+  categoryName?: string | null;
+  isPriceConfigured?: boolean;
+  hasRecalculateSteps?: boolean;
+  recalculateStepCount?: number;
+  recalculationStep?: number | null;
+  notes?: string;
 }
 
 export interface IronPricesResponse {
@@ -184,7 +192,59 @@ export interface RecalculateResponse {
   items: Array<{
     ironTypeId: number;
     weightKg: number;
-    pricePerKg: number;
+    pricePerKg: number | null;
     totalAmount: number;
+  }>;
+}
+
+export interface IronCategoryBrand {
+  dictBrandId: number;
+  dictBrandCode: string;
+}
+
+export interface IronCategoryPrice {
+  id: number;
+  ironTypeId: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}
+
+export interface IronCategory {
+  id: number;
+  code: string;
+  name: string;
+  isActive: boolean;
+  brands: IronCategoryBrand[];
+  prices: IronCategoryPrice[];
+}
+
+export interface IronCategoryPayload {
+  code: string;
+  name: string;
+  isActive?: boolean;
+  dictBrandIds: number[];
+}
+
+export interface IronCategoryPricePayload {
+  ironTypeId: number;
+  customerTypeId: number;
+  pricePerKg: number;
+}
+
+export interface OperatorBrandIronType {
+  ironTypeId: number;
+  ironTypeCode?: string;
+  ironTypeName?: string;
+  name?: string;
+  code?: string;
+  pricePerKg?: number | null;
+  isPriceConfigured?: boolean;
+  hasRecalculateSteps?: boolean;
+  recalculateStepCount?: number;
+  categoryId?: number | null;
+  categoryName?: string | null;
+  prices?: Array<{
+    customerTypeId: number;
+    pricePerKg: number | null;
   }>;
 }
