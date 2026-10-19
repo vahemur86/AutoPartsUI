@@ -1674,6 +1674,7 @@
       "activated": "Категория активирована.",
       "deactivated": "Категория деактивирована.",
       "priceCreated": "Цена категории добавлена.",
+      "pricesUpdated": "Цены категории обновлены.",
       "priceDeleted": "Цена категории удалена.",
       "activate": "Активировать",
       "deactivate": "Деактивировать",
@@ -2713,6 +2714,7 @@
       "failedToLoadIronTypes": "Не удалось загрузить типы металла",
       "calculationResult": "Результат расчёта",
       "lineFormat": "{{name}} {{weight}} кг × {{price}} AMD = {{total}} AMD",
+      "weightEstimate": "{{price}} AMD/кг × {{weight}} кг = {{total}} AMD",
       "total": "Итого",
       "recalculate": "Пересчитать",
       "stepLabel": "Шаг {{step}}"

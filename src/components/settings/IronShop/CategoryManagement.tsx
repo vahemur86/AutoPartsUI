@@ -10,6 +10,7 @@ import {
   Pencil,
   Plus,
   RotateCcw,
+  Save,
   Tags,
   Trash2,
 } from "lucide-react";
@@ -34,6 +35,7 @@ import {
   deleteIronCategoryPrice,
   getIronCategories,
   updateIronCategory,
+  updateIronCategoryPrices,
 } from "@/services/ironCarShop";
 import { getApiErrorMessage } from "@/utils";
 import styles from "./CategoryManagement.module.css";
@@ -113,6 +115,8 @@ export const CategoryManagement = ({
     customerTypeId: "",
     pricePerKg: "",
   });
+  const [categoryPriceDrafts, setCategoryPriceDrafts] = useState<Record<number, string>>({});
+  const [isEditingCategoryPrices, setIsEditingCategoryPrices] = useState(false);
   const [brandPriceForm, setBrandPriceForm] = useState({
     brandId: "",
     ironTypeId: "",
@@ -156,6 +160,14 @@ export const CategoryManagement = ({
     () => visibleCategories.find((item) => item.id === selectedCategoryId) ?? visibleCategories[0] ?? null,
     [visibleCategories, selectedCategoryId],
   );
+
+  useEffect(() => {
+    if (!selectedCategory) return;
+    setIsEditingCategoryPrices(false);
+    setCategoryPriceDrafts(Object.fromEntries(
+      selectedCategory.prices.map((price) => [price.id, String(price.pricePerKg)]),
+    ));
+  }, [selectedCategory]);
 
   const brandOptions = useMemo(
     () => brands.map((brand) => ({ value: String(brand.id), label: brand.code })),
@@ -256,6 +268,38 @@ export const CategoryManagement = ({
     } finally {
       setIsMutatingPrice(false);
     }
+  };
+
+  const handleUpdateCategoryPrices = async () => {
+    if (!selectedCategory) return;
+    const prices = selectedCategory.prices.map((price) => ({
+      priceId: price.id,
+      pricePerKg: Number(categoryPriceDrafts[price.id]),
+    }));
+    if (prices.some((price) => !Number.isFinite(price.pricePerKg) || price.pricePerKg <= 0)) {
+      toast.error(t("ironManagement.categories.priceRequired"));
+      return;
+    }
+
+    setIsMutatingPrice(true);
+    try {
+      await updateIronCategoryPrices(selectedCategory.id, { prices }, cashRegisterId);
+      toast.success(t("ironManagement.categories.pricesUpdated"));
+      setIsEditingCategoryPrices(false);
+      await loadCategories();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t("ironManagement.categories.saveFailed")));
+    } finally {
+      setIsMutatingPrice(false);
+    }
+  };
+
+  const cancelCategoryPriceEdit = () => {
+    if (!selectedCategory) return;
+    setCategoryPriceDrafts(Object.fromEntries(
+      selectedCategory.prices.map((price) => [price.id, String(price.pricePerKg)]),
+    ));
+    setIsEditingCategoryPrices(false);
   };
 
   const handleSaveBrandPrice = async () => {
@@ -602,23 +646,72 @@ export const CategoryManagement = ({
                               <strong>{ironType?.name || ironType?.code || `#${price.ironTypeId}`}</strong>
                               <small>{customerType?.code || `#${price.customerTypeId}`}</small>
                             </span>
-                            <strong className={styles.categoryPriceValue}>
-                              {price.pricePerKg.toLocaleString()} <small>AMD/kg</small>
-                            </strong>
-                            <IconButton
-                              size="small"
-                              variant="secondary"
-                              className={styles.categoryDelete}
-                              icon={<Trash2 size={14} />}
-                              ariaLabel={`${t("common.delete")}: ${ironType?.name || ironType?.code || price.ironTypeId} / ${customerType?.code || price.customerTypeId}`}
-                              title={t("common.delete")}
-                              onClick={() => setPendingAction({ kind: "delete-price", category: selectedCategory, priceId: price.id })}
-                              disabled={isMutatingPrice}
-                            />
+                            {isEditingCategoryPrices ? (
+                              <div className={styles.categoryPriceEditor}>
+                                <TextField
+                                  type="number"
+                                  min="0"
+                                  aria-label={`${ironType?.name || ironType?.code || price.ironTypeId} / ${customerType?.code || price.customerTypeId} ${t("ironManagement.form.pricePerKg")}`}
+                                  value={categoryPriceDrafts[price.id] ?? String(price.pricePerKg)}
+                                  onChange={(event) => setCategoryPriceDrafts((current) => ({
+                                    ...current,
+                                    [price.id]: event.target.value,
+                                  }))}
+                                  className={styles.categoryPriceInput}
+                                  disabled={isMutatingPrice || !selectedCategory.isActive}
+                                />
+                                <small>AMD/kg</small>
+                              </div>
+                            ) : (
+                              <strong className={styles.categoryPriceValue}>
+                                {price.pricePerKg.toLocaleString()} <small>AMD/kg</small>
+                              </strong>
+                            )}
+                            {isEditingCategoryPrices && (
+                              <IconButton
+                                size="small"
+                                variant="secondary"
+                                className={styles.categoryDelete}
+                                icon={<Trash2 size={14} />}
+                                ariaLabel={`${t("common.delete")}: ${ironType?.name || ironType?.code || price.ironTypeId} / ${customerType?.code || price.customerTypeId}`}
+                                title={t("common.delete")}
+                                onClick={() => setPendingAction({ kind: "delete-price", category: selectedCategory, priceId: price.id })}
+                                disabled={isMutatingPrice}
+                              />
+                            )}
                           </div>
                         );
                       })}
                     </div>
+                  )}
+                  {selectedCategory.prices.length > 0 && (
+                    <footer className={styles.categoryPriceActions}>
+                      {isEditingCategoryPrices ? (
+                        <>
+                          <Button variant="secondary" size="medium" onClick={cancelCategoryPriceEdit} disabled={isMutatingPrice}>
+                            <RotateCcw size={15} />{t("common.cancel")}
+                          </Button>
+                          <Button
+                            variant="primary"
+                            size="medium"
+                            onClick={() => void handleUpdateCategoryPrices()}
+                            disabled={isMutatingPrice || !selectedCategory.isActive}
+                          >
+                            {isMutatingPrice ? <LoaderCircle size={15} /> : <Save size={15} />}
+                            {t("common.save")}
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="secondary"
+                          size="medium"
+                          onClick={() => setIsEditingCategoryPrices(true)}
+                          disabled={!selectedCategory.isActive}
+                        >
+                          <Pencil size={15} />{t("common.edit")}
+                        </Button>
+                      )}
+                    </footer>
                   )}
                 </>
               )}

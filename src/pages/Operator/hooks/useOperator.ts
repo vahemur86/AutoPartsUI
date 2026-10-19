@@ -818,12 +818,14 @@ export const useOperator = () => {
     const recalculatedItems = recalculationResult?.items ?? [];
     const invalidPrice = selectedItems.some((selectedItem) => {
       const recalculated = recalculatedItems.find((item) =>
-        item.dictBrandId === selectedItem.dictBrandId &&
+        (selectedItem.categoryId != null
+          ? item.categoryId === selectedItem.categoryId
+          : item.dictBrandId === selectedItem.dictBrandId) &&
         item.ironTypeId === selectedItem.ironTypeId &&
         item.recalculationStep === (selectedItem.recalculationStep ?? null),
       );
       const pricePerKg = recalculated?.pricePerKg ?? selectedItem.pricePerKg;
-      return !selectedItem.dictBrandId || pricePerKg == null || !Number.isFinite(pricePerKg) || pricePerKg <= 0;
+      return (!selectedItem.dictBrandId && selectedItem.categoryId == null) || pricePerKg == null || !Number.isFinite(pricePerKg) || pricePerKg <= 0;
     });
     if (selectedItems.length === 0 || invalidPrice) {
       const error = new Error(t("operatorPage.ironCarShop.priceNotConfigured"));
@@ -833,17 +835,20 @@ export const useOperator = () => {
 
     const purchases = selectedItems.map((selectedItem) => {
       const customerTypeId = selectedItem.customerTypeId ?? customer.customerTypeId;
-      const recalculationStepAllowed =
-        selectedItem.categoryId == null && selectedItem.hasRecalculateSteps === true;
+      const recalculationStepAllowed = selectedItem.hasRecalculateSteps === true;
       const recalculatedItem = recalculatedItems.find((item) =>
-        item.dictBrandId === selectedItem.dictBrandId &&
+        (selectedItem.categoryId != null
+          ? item.categoryId === selectedItem.categoryId
+          : item.dictBrandId === selectedItem.dictBrandId) &&
         item.ironTypeId === selectedItem.ironTypeId &&
         item.recalculationStep === (selectedItem.recalculationStep ?? null),
       );
       const recalculationStep = recalculatedItem?.appliedRecalculationStep ?? selectedItem.recalculationStep;
 
       return {
-        dictBrandId: selectedItem.dictBrandId!,
+        ...(selectedItem.categoryId != null
+          ? { categoryId: selectedItem.categoryId }
+          : { dictBrandId: selectedItem.dictBrandId! }),
         ironTypeId: selectedItem.ironTypeId,
         customerPhone: customer.phone || "",
         customerTypeId,

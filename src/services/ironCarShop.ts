@@ -26,6 +26,7 @@ import type {
   IronCategory,
   IronCategoryPayload,
   IronCategoryPricePayload,
+  UpdateIronCategoryPricesPayload,
   OperatorBrandIronType,
 } from "@/types/ironCarShop";
 import type { IronPurchaseResponse } from "@/types/adminProducts";
@@ -86,6 +87,20 @@ export const addIronCategoryPrice = async (
     return response.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to add category price."));
+  }
+};
+
+export const updateIronCategoryPrices = async (
+  categoryId: number,
+  payload: UpdateIronCategoryPricesPayload,
+  cashRegisterId: number,
+): Promise<void> => {
+  try {
+    await api.put(`${BASE_URL}/categories/${categoryId}/prices`, payload, {
+      headers: getHeaders(cashRegisterId),
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to update category prices."));
   }
 };
 

@@ -40,7 +40,8 @@ export interface BulkPurchaseItem {
 }
 
 export interface PurchaseIronApiPayload {
-  dictBrandId: number;
+  dictBrandId?: number;
+  categoryId?: number;
   ironTypeId: number;
   customerPhone: string;
   customerTypeId: number;
@@ -177,7 +178,8 @@ export interface RecalculateStepPayload {
 }
 
 export interface RecalculatePayload {
-  dictBrandId: number;
+  dictBrandId?: number;
+  categoryId?: number;
   customerId: number;
   customerTypeId: number;
   currentStep: number;
@@ -193,6 +195,7 @@ export interface RecalculateResponse {
   totalAmount: number;
   items: Array<{
     dictBrandId?: number;
+    categoryId?: number;
     ironTypeId: number;
     weightKg: number;
     pricePerKg: number | null;
@@ -234,6 +237,13 @@ export interface IronCategoryPricePayload {
   ironTypeId: number;
   customerTypeId: number;
   pricePerKg: number;
+}
+
+export interface UpdateIronCategoryPricesPayload {
+  prices: Array<{
+    priceId: number;
+    pricePerKg: number;
+  }>;
 }
 
 export interface OperatorBrandIronType {

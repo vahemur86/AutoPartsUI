@@ -1624,6 +1624,7 @@
       "activated": "Կատեգորիան ակտիվացվեց։",
       "deactivated": "Կատեգորիան ապաակտիվացվեց։",
       "priceCreated": "Կատեգորիայի գինը ավելացվեց։",
+      "pricesUpdated": "Կատեգորիայի գները թարմացվեցին։",
       "priceDeleted": "Կատեգորիայի գինը ջնջվեց։",
       "activate": "Ակտիվացնել",
       "deactivate": "Ապաակտիվացնել",
@@ -2895,6 +2896,7 @@
       "failedToLoadIronTypes": "Չհաջողվեց բեռնել երկաթի տեսակները",
       "calculationResult": "Հաշվարկի արդյունք",
       "lineFormat": "{{name}} {{weight}} կգ × {{price}} AMD = {{total}} AMD",
+      "weightEstimate": "{{price}} AMD/կգ × {{weight}} կգ = {{total}} AMD",
       "total": "Ընդհանուր",
       "recalculate": "Վերախմբել",
       "stepLabel": "Քայլ {{step}}"

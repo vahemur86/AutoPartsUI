@@ -45,6 +45,8 @@ export const FinalOffer: FC<{
   isIronPurchase?: boolean;
   ironItems?: Array<{
     dictBrandId?: number;
+    categoryId?: number | null;
+    categoryName?: string | null;
     brandName?: string;
     ironTypeId: number;
     name: string;
@@ -71,6 +73,7 @@ export const FinalOffer: FC<{
       pricePerKg: number | null;
       totalAmount: number;
       dictBrandId?: number;
+      categoryId?: number;
       recalculationStep?: number | null;
       appliedRecalculationStep?: number | null;
     }>;
@@ -179,13 +182,15 @@ export const FinalOffer: FC<{
 
   const lineItems = recalculationResult?.items?.map((item) => {
     const source = ironItems?.find((ironItem) =>
-      ironItem.dictBrandId === item.dictBrandId &&
+      (item.categoryId != null
+        ? ironItem.categoryId === item.categoryId
+        : ironItem.dictBrandId === item.dictBrandId) &&
       ironItem.ironTypeId === item.ironTypeId &&
       (ironItem.recalculationStep ?? null) === (item.recalculationStep ?? null),
     );
     return {
       ...item,
-      brandName: source?.brandName,
+      brandName: source?.brandName ?? source?.categoryName ?? undefined,
       name: source?.name ?? `#${item.ironTypeId}`,
     };
   }) ?? ironItems;
@@ -283,7 +288,7 @@ export const FinalOffer: FC<{
           <div className={styles.calculationSummary}>
             <div className={styles.calculationSummaryList}>
               {lineItems.map((item) => (
-                <div key={`${item.dictBrandId ?? 0}-${item.ironTypeId}-${item.recalculationStep ?? 0}`} className={styles.calculationSummaryRow}>
+                <div key={`${item.dictBrandId ?? item.categoryId ?? 0}-${item.ironTypeId}-${item.recalculationStep ?? 0}`} className={styles.calculationSummaryRow}>
                   <span>
                     {item.brandName ? `${item.brandName} · ` : ""}{item.name}
                     {(item.appliedRecalculationStep ?? item.recalculationStep) != null && (

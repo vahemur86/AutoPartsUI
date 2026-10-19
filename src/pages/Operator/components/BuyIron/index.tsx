@@ -46,6 +46,12 @@ interface BuyIronProps {
 }
 
 type IronFilterMode = "brand" | "category";
+type IronPriceSource = { dictBrandId?: number; categoryId?: number | null };
+
+const sameIronPriceSource = (left: IronPriceSource, right: IronPriceSource) =>
+  left.categoryId != null || right.categoryId != null
+    ? left.categoryId === right.categoryId
+    : left.dictBrandId === right.dictBrandId;
 
 export const BuyIron: FC<BuyIronProps> = ({
   cashRegisterId,
@@ -69,9 +75,9 @@ export const BuyIron: FC<BuyIronProps> = ({
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [filterMode, setFilterMode] = useState<IronFilterMode>("brand");
   const [categories, setCategories] = useState<IronCategory[]>([]);
-  const [entryWeights, setEntryWeights] = useState<Record<number, string>>({});
-  const [entrySteps, setEntrySteps] = useState<Record<number, string>>({});
-  const [visibleEntrySteps, setVisibleEntrySteps] = useState<Record<number, boolean>>({});
+  const [entryWeights, setEntryWeights] = useState<Record<string, string>>({});
+  const [entrySteps, setEntrySteps] = useState<Record<string, string>>({});
+  const [visibleEntrySteps, setVisibleEntrySteps] = useState<Record<string, boolean>>({});
   const [cartItems, setCartItems] = useState<IronTypePrice[]>([]);
   const [notes, setNotes] = useState("");
   const [availableIronTypes, setAvailableIronTypes] = useState<
@@ -104,6 +110,12 @@ export const BuyIron: FC<BuyIronProps> = ({
   const selectedBrandName =
     carModels.find((brand) => brand.id === Number(selectedBrandId))?.name ??
     selectedCategory?.brands.find((brand) => brand.dictBrandId === Number(selectedBrandId))?.dictBrandCode;
+  const availableTypeRows = availableIronTypes.map((type) => ({
+    key: String(type.ironTypeId),
+    brandId: filterMode === "brand" ? Number(selectedBrandId) : undefined,
+    brandName: selectedBrandName ?? type.dictBrandName ?? "",
+    type,
+  }));
 
   const clearPreview = useCallback(() => {
     setHasPreviewed(false);
@@ -239,9 +251,8 @@ export const BuyIron: FC<BuyIronProps> = ({
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const categoryId = event.target.value;
-    const category = categories.find((item) => String(item.id) === categoryId);
     setSelectedCategoryId(categoryId);
-    setSelectedBrandId(category?.brands.length === 1 ? String(category.brands[0].dictBrandId) : "");
+    setSelectedBrandId("");
     setEntryWeights({});
     setEntrySteps({});
     setVisibleEntrySteps({});
@@ -258,38 +269,36 @@ export const BuyIron: FC<BuyIronProps> = ({
     setWasSubmitted(false);
   };
 
-  const handleWeightChange = (ironTypeId: number, value: string) => {
+  const handleWeightChange = (entryKey: string, value: string) => {
     if (value !== "" && !/^\d*\.?\d{0,3}$/.test(value)) return;
-    setEntryWeights((weights) => ({ ...weights, [ironTypeId]: value }));
+    setEntryWeights((weights) => ({ ...weights, [entryKey]: value }));
     setWasSubmitted(false);
   };
 
   const addToCart = () => {
     setWasSubmitted(true);
-    const brandId = Number(selectedBrandId);
-    if (!brandId || !currentCustomerTypeId) return;
+    if (!currentCustomerTypeId) return;
     if (!customerPhone) {
       toast.error(t("operatorPage.ironCarShop.customerPhoneRequired"));
       return;
     }
-    const brandName = selectedBrandName ?? `#${brandId}`;
-    const additions = availableIronTypes.flatMap((type): IronTypePrice[] => {
-      const weightKg = Number(entryWeights[type.ironTypeId]);
+    const additions = availableTypeRows.flatMap(({ type, brandId, brandName, key }): IronTypePrice[] => {
+      const weightKg = Number(entryWeights[key]);
       const configured = Boolean(type.isPriceConfigured ?? (type.pricePerKg != null && type.pricePerKg > 0));
       if (!configured || !Number.isFinite(weightKg) || weightKg <= 0 || type.pricePerKg == null || type.pricePerKg <= 0) return [];
-      const recalculationStep = Number(entrySteps[type.ironTypeId]) || null;
-      const canRecalculate = Boolean(type.hasRecalculateSteps && (type.recalculateStepCount ?? 0) > 0);
+      const recalculationStep = Number(entrySteps[key]) || null;
+      const canRecalculate = Boolean((type.recalculateStepCount ?? 0) > 0 && type.hasRecalculateSteps !== false);
       if (recalculationStep && !canRecalculate) return [];
       return [{
-        dictBrandId: brandId,
-        brandName,
+        ...(brandId && { dictBrandId: brandId }),
+        ...(brandName && { brandName }),
         ironTypeId: type.ironTypeId,
         name: type.ironTypeName || type.name || type.code || `#${type.ironTypeId}`,
         pricePerKg: type.pricePerKg,
         weightKg,
         totalAmount: Number((type.pricePerKg * weightKg).toFixed(2)),
         customerTypeId: currentCustomerTypeId,
-        categoryId: type.categoryId ?? (Number(selectedCategoryId) || null),
+           categoryId: type.categoryId ?? (filterMode === "category" ? Number(selectedCategoryId) || undefined : undefined),
         categoryName: type.categoryName ?? selectedCategory?.name,
         isPriceConfigured: true,
         hasRecalculateSteps: canRecalculate,
@@ -305,7 +314,7 @@ export const BuyIron: FC<BuyIronProps> = ({
     const nextCartItems = [...cartItems];
     additions.forEach((item) => {
       const existingIndex = nextCartItems.findIndex((existing) =>
-        existing.dictBrandId === item.dictBrandId &&
+        sameIronPriceSource(existing, item) &&
         existing.ironTypeId === item.ironTypeId &&
         existing.recalculationStep === item.recalculationStep &&
         existing.notes === item.notes,
@@ -339,9 +348,10 @@ export const BuyIron: FC<BuyIronProps> = ({
     toast.success(t("operatorPage.ironCarShop.itemsAdded"));
   };
 
-  const removeFromCart = (brandId: number | undefined, ironTypeId: number, step: number | null | undefined, itemNotes?: string) => {
+  const removeFromCart = (brandId: number | undefined, categoryId: number | null | undefined, ironTypeId: number, step: number | null | undefined, itemNotes?: string) => {
     const next = cartItems.filter((item) => !(
       item.dictBrandId === brandId &&
+      item.categoryId === categoryId &&
       item.ironTypeId === ironTypeId &&
       item.recalculationStep === step &&
       item.notes === itemNotes
@@ -373,14 +383,17 @@ export const BuyIron: FC<BuyIronProps> = ({
       toast.error(t("operatorPage.ironCarShop.enterAtLeastOneWeight"));
       return;
     }
-    if (cartItems.some((item) => !item.dictBrandId || !item.customerTypeId || item.pricePerKg <= 0)) {
+    if (cartItems.some((item) => (!item.dictBrandId && item.categoryId == null) || !item.customerTypeId || item.pricePerKg <= 0)) {
       toast.error(t("operatorPage.ironCarShop.priceNotConfigured"));
       return;
     }
 
     const groups = new Map<string, IronTypePrice[]>();
     cartItems.filter((item) => item.recalculationStep != null).forEach((item) => {
-      const key = `${item.dictBrandId}:${item.recalculationStep}`;
+      const sourceKey = item.categoryId != null
+        ? `category:${item.categoryId}`
+        : `brand:${item.dictBrandId}`;
+      const key = `${sourceKey}:${item.recalculationStep}`;
       groups.set(key, [...(groups.get(key) ?? []), item]);
     });
     if (groups.size > 0 && !customerId) {
@@ -404,7 +417,9 @@ export const BuyIron: FC<BuyIronProps> = ({
         return dispatch(recalculatePrices({
           cashRegisterId,
           payload: {
-            dictBrandId: firstItem.dictBrandId!,
+            ...(firstItem.categoryId != null
+              ? { categoryId: firstItem.categoryId }
+              : { dictBrandId: firstItem.dictBrandId! }),
             customerId: customerId!,
             customerTypeId: firstItem.customerTypeId ?? currentCustomerTypeId,
             currentStep: (firstItem.recalculationStep ?? 1) - 1,
@@ -417,13 +432,14 @@ export const BuyIron: FC<BuyIronProps> = ({
         group.items.map((item) => ({
           ...item,
           dictBrandId: groupEntries[index][1][0].dictBrandId,
+          categoryId: groupEntries[index][1][0].categoryId,
           recalculationStep: groupEntries[index][1][0].recalculationStep,
           appliedRecalculationStep: group.appliedStep,
         })),
       );
       const hasMissingRecalculatedItem = cartItems.some((item) =>
         item.recalculationStep != null && !recalculatedItems.some((result) =>
-          result.dictBrandId === item.dictBrandId &&
+          sameIronPriceSource(result, item) &&
           result.ironTypeId === item.ironTypeId &&
           result.recalculationStep === item.recalculationStep,
         ),
@@ -439,7 +455,7 @@ export const BuyIron: FC<BuyIronProps> = ({
         totalWeight: cartItems.reduce((sum, item) => sum + item.weightKg, 0),
         totalAmount: cartItems.reduce((sum, item) => {
           const recalculated = recalculatedItems.find((candidate) =>
-            candidate.dictBrandId === item.dictBrandId &&
+            sameIronPriceSource(candidate, item) &&
             candidate.ironTypeId === item.ironTypeId &&
             candidate.recalculationStep === item.recalculationStep,
           );
@@ -447,19 +463,21 @@ export const BuyIron: FC<BuyIronProps> = ({
         }, 0),
         items: cartItems.map((item) => {
           const recalculated = recalculatedItems.find((candidate) =>
-            candidate.dictBrandId === item.dictBrandId &&
+            sameIronPriceSource(candidate, item) &&
             candidate.ironTypeId === item.ironTypeId &&
             candidate.recalculationStep === item.recalculationStep,
           );
           if (recalculated) {
             return {
               ...recalculated,
+              categoryId: recalculated.categoryId ?? undefined,
               weightKg: item.weightKg,
               totalAmount: Number(((recalculated.pricePerKg ?? 0) * item.weightKg).toFixed(2)),
             };
           }
           return {
             dictBrandId: item.dictBrandId,
+            categoryId: item.categoryId ?? undefined,
             ironTypeId: item.ironTypeId,
             weightKg: item.weightKg,
             pricePerKg: item.pricePerKg,
@@ -539,14 +557,14 @@ export const BuyIron: FC<BuyIronProps> = ({
               <option key={category.id} value={category.id}>{category.name}</option>
             ))}
           </Select>
-        )}
+          )}
         {isLoadingIronTypes && (
           <div className={styles.loadingLine} role="status">
             <LoaderCircle size={15} aria-hidden="true" />
             {t("common.loading")}
           </div>
         )}
-        {filterMode === "brand" ? (
+        {filterMode === "brand" && (
           <Select
             searchable
             label={t("operatorPage.ironCarShop.brand")}
@@ -558,20 +576,6 @@ export const BuyIron: FC<BuyIronProps> = ({
           >
             {carModels.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}
           </Select>
-        ) : (
-          <Select
-            searchable
-            label={t("operatorPage.ironCarShop.brand")}
-            value={selectedBrandId}
-            onChange={handleBrandChange}
-            placeholder={t("common.select")}
-            disabled={!selectedCategory || isLoadingIronTypes}
-            containerClassName={styles.wideSelect}
-          >
-            {(selectedCategory?.brands ?? []).map((brand) => (
-              <option key={brand.dictBrandId} value={brand.dictBrandId}>{brand.dictBrandCode}</option>
-            ))}
-          </Select>
         )}
       </div>
 
@@ -579,15 +583,19 @@ export const BuyIron: FC<BuyIronProps> = ({
         <section className={styles.availableTypes}>
           <h3>{t("operatorPage.ironCarShop.availableTypes")}</h3>
           <div className={styles.availableTypesList}>
-            {availableIronTypes.length === 0 ? (
+            {availableTypeRows.length === 0 ? (
               <p className={styles.emptyTypes}>{t("operatorPage.ironCarShop.noIronTypes")}</p>
-            ) : availableIronTypes.map((type) => {
+            ) : availableTypeRows.map(({ type, key }) => {
             const configured = Boolean(type.isPriceConfigured ?? (type.pricePerKg != null && type.pricePerKg > 0)) &&
               type.pricePerKg != null && type.pricePerKg > 0;
-            const canRecalculate = Boolean(type.hasRecalculateSteps && (type.recalculateStepCount ?? 0) > 0);
+            const canRecalculate = Boolean((type.recalculateStepCount ?? 0) > 0 && type.hasRecalculateSteps !== false);
             const typeName = type.ironTypeName || type.name || type.code || `#${type.ironTypeId}`;
+            const weightKg = Number(entryWeights[key]);
+            const lineTotal = configured && Number.isFinite(weightKg) && weightKg > 0
+              ? Number((type.pricePerKg! * weightKg).toFixed(2))
+              : null;
             return (
-              <div className={styles.availableTypeRow} key={type.ironTypeId}>
+              <div className={styles.availableTypeRow} key={key}>
                 <div className={styles.availableTypeInfo}>
                   <strong>{typeName}</strong>
                   <span>{type.categoryName || t("operatorPage.ironCarShop.notConfigured")}</span>
@@ -602,20 +610,29 @@ export const BuyIron: FC<BuyIronProps> = ({
                     step="0.001"
                     label={t("operatorPage.ironCarShop.weight")}
                     placeholder="0.000"
-                    value={entryWeights[type.ironTypeId] ?? ""}
-                    onChange={(event) => handleWeightChange(type.ironTypeId, event.target.value)}
-                    disabled={!configured || !selectedBrandId}
-                    error={wasSubmitted && entryWeights[type.ironTypeId] !== undefined && Number(entryWeights[type.ironTypeId]) <= 0}
+                    value={entryWeights[key] ?? ""}
+                    onChange={(event) => handleWeightChange(key, event.target.value)}
+                    disabled={!configured}
+                    error={wasSubmitted && entryWeights[key] !== undefined && Number(entryWeights[key]) <= 0}
                     className={styles.weightField}
                   />
+                  {lineTotal != null && (
+                    <span className={styles.weightEstimate}>
+                      {t("operatorPage.ironCarShop.weightEstimate", {
+                        weight: weightKg,
+                        price: type.pricePerKg!.toLocaleString(),
+                        total: lineTotal.toLocaleString(),
+                      })}
+                    </span>
+                  )}
                   {canRecalculate && (
                     <div className={styles.recalculationControl}>
-                      {visibleEntrySteps[type.ironTypeId] && (
+                      {visibleEntrySteps[key] && (
                         <div className={styles.recalculationSelect}>
                           <Select
                             label={t("operatorPage.ironCarShop.recalculationStep")}
-                            value={entrySteps[type.ironTypeId] ?? ""}
-                            onChange={(event) => setEntrySteps((steps) => ({ ...steps, [type.ironTypeId]: event.target.value }))}
+                            value={entrySteps[key] ?? ""}
+                            onChange={(event) => setEntrySteps((steps) => ({ ...steps, [key]: event.target.value }))}
                           >
                             <option value="">{t("operatorPage.ironCarShop.noRecalculation")}</option>
                             {Array.from({ length: type.recalculateStepCount ?? 0 }, (_, index) => index + 1).map((step) => (
@@ -627,14 +644,19 @@ export const BuyIron: FC<BuyIronProps> = ({
                       <button
                         type="button"
                         className={styles.recalculationVisibilityToggle}
-                        onClick={() => setVisibleEntrySteps((visible) => ({ ...visible, [type.ironTypeId]: !visible[type.ironTypeId] }))}
-                        title={t(visibleEntrySteps[type.ironTypeId] ? "operatorPage.ironCarShop.hideRecalculationStep" : "operatorPage.ironCarShop.showRecalculationStep")}
-                        aria-label={t(visibleEntrySteps[type.ironTypeId] ? "operatorPage.ironCarShop.hideRecalculationStep" : "operatorPage.ironCarShop.showRecalculationStep")}
-                        aria-expanded={Boolean(visibleEntrySteps[type.ironTypeId])}
+                        onClick={() => setVisibleEntrySteps((visible) => ({ ...visible, [key]: !visible[key] }))}
+                        title={t(visibleEntrySteps[key] ? "operatorPage.ironCarShop.hideRecalculationStep" : "operatorPage.ironCarShop.showRecalculationStep")}
+                        aria-label={t(visibleEntrySteps[key] ? "operatorPage.ironCarShop.hideRecalculationStep" : "operatorPage.ironCarShop.showRecalculationStep")}
+                        aria-expanded={Boolean(visibleEntrySteps[key])}
                       >
-                        {visibleEntrySteps[type.ironTypeId] ? <EyeOff size={17} /> : <Eye size={17} />}
+                        {visibleEntrySteps[key] ? <EyeOff size={17} /> : <Eye size={17} />}
                       </button>
                     </div>
+                  )}
+                  {!canRecalculate && (
+                    <span className={styles.noRecalculationHint}>
+                      {t("operatorPage.ironCarShop.recalculationNotAvailable")}
+                    </span>
                   )}
                 </div>
               </div>
@@ -651,7 +673,7 @@ export const BuyIron: FC<BuyIronProps> = ({
             <Button
               variant="secondary"
               onClick={addToCart}
-              disabled={!selectedBrandId || !availableIronTypes.some((type) => Number(entryWeights[type.ironTypeId]) > 0)}
+              disabled={!availableTypeRows.some(({ key }) => Number(entryWeights[key]) > 0)}
             >
               <Package size={16} />{t("operatorPage.ironCarShop.addItems")}
             </Button>
@@ -664,17 +686,17 @@ export const BuyIron: FC<BuyIronProps> = ({
           <h3>{t("operatorPage.ironCarShop.purchaseList")}</h3>
           <div className={styles.cartList}>
             {cartItems.map((item) => (
-              <div className={styles.cartItem} key={`${item.dictBrandId}-${item.ironTypeId}-${item.recalculationStep ?? 0}-${item.notes ?? ""}`}>
+              <div className={styles.cartItem} key={`${item.dictBrandId ?? item.categoryId}-${item.ironTypeId}-${item.recalculationStep ?? 0}-${item.notes ?? ""}`}>
                 <div className={styles.cartItemInfo}>
                   <strong>{item.name}</strong>
-                  <span>{item.brandName} · {item.weightKg} kg · {item.pricePerKg.toLocaleString()} AMD/kg</span>
+                  <span>{item.brandName ?? item.categoryName} · {item.weightKg} kg · {item.pricePerKg.toLocaleString()} AMD/kg</span>
                   {item.recalculationStep != null && <small>{t("operatorPage.ironCarShop.stepLabel", { step: item.recalculationStep })}</small>}
                 </div>
                 <strong>{item.totalAmount.toLocaleString()} AMD</strong>
                 <button
                   type="button"
                   className={styles.removeCartItem}
-                  onClick={() => removeFromCart(item.dictBrandId, item.ironTypeId, item.recalculationStep, item.notes)}
+                  onClick={() => removeFromCart(item.dictBrandId, item.categoryId, item.ironTypeId, item.recalculationStep, item.notes)}
                   aria-label={t("operatorPage.ironCarShop.removeItem", { name: item.name })}
                   title={t("operatorPage.ironCarShop.removeItem", { name: item.name })}
                 >

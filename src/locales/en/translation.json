@@ -1675,6 +1675,7 @@
       "activated": "Category activated.",
       "deactivated": "Category deactivated.",
       "priceCreated": "Category price added.",
+      "pricesUpdated": "Category prices updated.",
       "priceDeleted": "Category price deleted.",
       "activate": "Activate",
       "deactivate": "Deactivate",
@@ -2710,6 +2711,7 @@
       "failedToLoadIronTypes": "Failed to load iron types",
       "calculationResult": "Calculation result",
       "lineFormat": "{{name}} {{weight}} kg × {{price}} AMD = {{total}} AMD",
+      "weightEstimate": "{{price}} AMD/kg × {{weight}} kg = {{total}} AMD",
       "total": "Total",
       "recalculate": "Recalculate",
       "stepLabel": "Step {{step}}"
