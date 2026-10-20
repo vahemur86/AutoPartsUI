@@ -33,6 +33,7 @@ import {
   createIronCategory,
   deleteIronCategory,
   deleteIronCategoryPrice,
+  getIronCategory,
   getIronCategories,
   updateIronCategory,
   updateIronCategoryPrices,
@@ -126,17 +127,28 @@ export const CategoryManagement = ({
   const [pricingMode, setPricingMode] = useState<"category" | "individual">("category");
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
+  const loadCategoryDetails = async (categoryId: number) => {
+    const details = await getIronCategory(categoryId, cashRegisterId);
+    setCategories((current) => current.map((category) => category.id === categoryId
+      ? { ...category, ...details, brands: details.brands ?? category.brands }
+      : category,
+    ));
+    return details;
+  };
+
   const loadCategories = async () => {
     setIsLoading(true);
     setLoadError(null);
     try {
       const result = await getIronCategories(cashRegisterId);
       setCategories(result);
-      setSelectedCategoryId((current) =>
-        current != null && result.some((item) => item.id === current)
-          ? current
-          : result[0]?.id ?? null,
-      );
+      const nextSelectedId = selectedCategoryId != null && result.some((item) => item.id === selectedCategoryId)
+        ? selectedCategoryId
+        : result[0]?.id ?? null;
+      setSelectedCategoryId(nextSelectedId);
+      if (mode === "prices" && nextSelectedId != null) {
+        await loadCategoryDetails(nextSelectedId);
+      }
     } catch (error) {
       const message = getApiErrorMessage(error, t("ironManagement.categories.loadFailed"));
       setLoadError(message);
@@ -477,7 +489,14 @@ export const CategoryManagement = ({
                     <button
                       type="button"
                       className={styles.categoryCardSelect}
-                      onClick={() => setSelectedCategoryId(category.id)}
+                      onClick={() => {
+                        setSelectedCategoryId(category.id);
+                        if (mode === "prices") {
+                          void loadCategoryDetails(category.id).catch((error) => {
+                            toast.error(getApiErrorMessage(error, t("ironManagement.categories.loadFailed")));
+                          });
+                        }
+                      }}
                     >
                       <span className={styles.categoryCardTop}>
                         <span className={styles.categoryCode}>{category.code}</span>
@@ -698,7 +717,7 @@ export const CategoryManagement = ({
                             disabled={isMutatingPrice || !selectedCategory.isActive}
                           >
                             {isMutatingPrice ? <LoaderCircle size={15} /> : <Save size={15} />}
-                            {t("common.save")}
+                            {t("ironManagement.categories.saveAllPrices", "Save all prices")}
                           </Button>
                         </>
                       ) : (

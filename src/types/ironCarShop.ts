@@ -50,6 +50,20 @@ export interface PurchaseIronApiPayload {
   notes: string;
 }
 
+export interface BulkIronPurchaseItem {
+  categoryId: number;
+  ironTypeId: number;
+  weightKg: number;
+  recalculationStep: number | null;
+}
+
+export interface BulkIronPurchaseRequest {
+  customerPhone: string;
+  customerTypeId: number;
+  notes: string;
+  items: BulkIronPurchaseItem[];
+}
+
 export interface PurchaseIronPayload {
   customerId: number;
   ironTypeId: number;
@@ -66,13 +80,24 @@ export interface BulkPurchasePayload {
 export interface PurchaseIronResponse {
   purchaseId?: number;
   id?: number;
-  customerId: number;
+  customerId?: number;
   customerPhone?: string;
-  ironTypeId: number;
-  ironTypeName: string;
-  customerTypeId: number;
+  categoryId?: number;
+  dictBrandId?: number;
+  ironTypeId?: number;
+  ironTypeName?: string;
+  customerTypeId?: number;
   weightKg: number;
   pricePerKg: number;
+  totalAmount: number;
+  recalculationStep?: number | null;
+  cashSessionId?: number;
+  purchasedAt: string;
+}
+
+export interface BulkIronPurchaseResponse {
+  purchases: PurchaseIronResponse[];
+  totalWeightKg: number;
   totalAmount: number;
   purchasedAt: string;
 }
@@ -172,6 +197,8 @@ export interface IronPurchasesReportResponse {
 }
 
 export interface RecalculateStepPayload {
+  dictBrandId?: number;
+  categoryId?: number;
   ironTypeId: number;
   customerTypeId: number;
   pricePerKg: number;
@@ -215,6 +242,8 @@ export interface IronCategoryPrice {
   ironTypeId: number;
   customerTypeId: number;
   pricePerKg: number;
+  recalculateSteps?: Array<{ stepNumber: number; pricePerKg: number }>;
+  recalculateStepCount?: number;
 }
 
 export interface IronCategory {

@@ -6,8 +6,10 @@ import { Button, ConfirmationModal, IconButton, TextField, Select } from "@/ui-k
 import { getApiErrorMessage, getCashRegisterId, getHeaders, mapI18nCodeToApiCode } from "@/utils";
 import i18n from "i18next";
 import api from "@/services";
+import { getIronCategories, recalculateStep } from "@/services/ironCarShop";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCustomerTypes } from "@/store/slices/customerTypesSlice";
+import type { IronCategory, RecalculateStepPayload } from "@/types/ironCarShop";
 import {
   CircleCheck,
   CircleDollarSign,
@@ -41,6 +43,20 @@ interface BrandItem {
   code: string;
 }
 
+interface RecalculationPriceTarget {
+  key: string;
+  sourceType: "brand" | "category";
+  sourceId: number;
+  sourceName: string;
+  ironTypeId: number;
+  ironTypeName: string;
+  customerTypeId: number;
+  customerTypeName: string;
+  pricePerKg: number;
+  recalculateSteps?: Array<{ stepNumber: number; pricePerKg: number }>;
+  recalculateStepCount?: number;
+}
+
 const initialIronTypeForm = {
   code: "",
   translations: { en: "", hy: "", ru: "" },
@@ -48,8 +64,7 @@ const initialIronTypeForm = {
 };
 
 const initialRecalculationStepForm = {
-  autoBrandId: "",
-  ironTypeId: "",
+  priceTargetKey: "",
   pricePerKg: "",
 };
 
@@ -60,9 +75,11 @@ export const IronShopSettings = () => {
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
   const [ironTypes, setIronTypes] = useState<IronTypeItem[]>([]);
   const [brands, setBrands] = useState<BrandItem[]>([]);
+  const [categories, setCategories] = useState<IronCategory[]>([]);
   const [prices, setPrices] = useState<BrandIronPriceItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
+  const [selectedRecalculationCategoryId, setSelectedRecalculationCategoryId] = useState<string>("");
   const [selectedIronTypeId, setSelectedIronTypeId] = useState<string>("");
   const [form, setForm] = useState(initialIronTypeForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -127,12 +144,14 @@ export const IronShopSettings = () => {
     setLoading(true);
     try {
       const lang = getApiLang();
-      const [ironTypesRes, brandsRes] = await Promise.all([
+      const [ironTypesRes, brandsRes, categoryData] = await Promise.all([
         api.get(`${IRON_SHOP_BASE_PATH}/iron-types`, { params: { lang }, headers: { ...getHeaders(cashRegisterId) } }),
         api.get(`${IRON_SHOP_BASE_PATH}/brands`, { params: { lang }, headers: { ...getHeaders(cashRegisterId) } }),
+        getIronCategories(cashRegisterId),
       ]);
       setIronTypes(Array.isArray(ironTypesRes.data) ? ironTypesRes.data : []);
       setBrands(Array.isArray(brandsRes.data) ? brandsRes.data : []);
+      setCategories(categoryData);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("common.error")));
     } finally {
@@ -163,8 +182,12 @@ export const IronShopSettings = () => {
       return;
     }
 
-    const brandFilter = Number(selectedBrandId || 0) || undefined;
-    const ironTypeFilter = Number(selectedIronTypeId || 0) || undefined;
+    const brandFilter = activeTab === "prices"
+      ? Number(selectedBrandId || 0) || undefined
+      : undefined;
+    const ironTypeFilter = activeTab === "prices"
+      ? Number(selectedIronTypeId || 0) || undefined
+      : undefined;
     void loadPrices(brandFilter, ironTypeFilter);
   }, [activeTab, selectedBrandId, selectedIronTypeId]);
 
@@ -288,15 +311,11 @@ export const IronShopSettings = () => {
   };
 
   const submitRecalculationStep = async () => {
-    const autoBrandId = Number(recalculationStepForm.autoBrandId);
-    if (!autoBrandId) {
-      toast.error(t("ironManagement.form.selectBrand", "Select brand"));
-      return;
-    }
-
-    const ironTypeId = Number(recalculationStepForm.ironTypeId);
-    if (!ironTypeId) {
-      toast.error(t("ironManagement.error.selectIronType"));
+    const target = recalculationPriceTargets.find(
+      (item) => item.key === recalculationStepForm.priceTargetKey,
+    );
+    if (!target) {
+      toast.error(t("ironManagement.form.selectConfiguredPrice", "Select an existing configured price"));
       return;
     }
 
@@ -313,22 +332,20 @@ export const IronShopSettings = () => {
 
     try {
       const lang = getApiLang();
-      await api.post(
-        `${IRON_SHOP_BASE_PATH}/admin/recalculate-step`,
-        {
-          dictBrandId: autoBrandId,
-          ironTypeId,
-          customerTypeId: 1, // Standard customer only
-          pricePerKg,
-        },
-        {
-          params: { lang },
-          headers: { ...getHeaders(cashRegisterId) },
-        },
-      );
+      const payload: RecalculateStepPayload = {
+        ...(target.sourceType === "category"
+          ? { categoryId: target.sourceId }
+          : { dictBrandId: target.sourceId }),
+        ironTypeId: target.ironTypeId,
+        customerTypeId: target.customerTypeId,
+        pricePerKg,
+      };
+      await recalculateStep(payload, cashRegisterId, lang);
       toast.success(t("ironManagement.success.recalculationStepAdded", "Recalculation step added successfully"));
       resetRecalculationStepForm();
-      void loadPrices(Number(selectedBrandId || 0) || undefined, Number(selectedIronTypeId || 0) || undefined);
+      const categoryData = await getIronCategories(cashRegisterId);
+      setCategories(categoryData);
+      await loadPrices();
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("ironManagement.error.failedToCreateRecalculationStep", "Failed to add recalculation step")));
     }
@@ -363,50 +380,102 @@ export const IronShopSettings = () => {
     }
   };
 
-  const getCustomerTypeLabel = (item: BrandIronPriceItem) => {
-    const backendName = item.customerTypeName?.trim();
-    if (backendName && !/^\d+$/.test(backendName)) {
-      return backendName;
-    }
+  const recalculationPriceTargets = useMemo(() => {
+    const activeCategories = categories.filter((category) => category.isActive);
+    const categorizedBrandIds = new Set(
+      activeCategories.flatMap((category) => category.brands.map((brand) => brand.dictBrandId)),
+    );
 
-    const code = customerTypeMap[item.customerTypeId];
-    if (code && !/^\d+$/.test(code)) {
-      return code;
-    }
+    const categoryTargets = activeCategories
+      .flatMap((category): RecalculationPriceTarget[] => category.prices
+        .filter((price) => price.pricePerKg > 0)
+        .map((price) => ({
+          key: `category:${category.id}:${price.id}`,
+          sourceType: "category",
+          sourceId: category.id,
+          sourceName: category.name,
+          ironTypeId: price.ironTypeId,
+          ironTypeName: ironTypes.find((ironType) => ironType.id === price.ironTypeId)?.name ||
+            ironTypes.find((ironType) => ironType.id === price.ironTypeId)?.code || `#${price.ironTypeId}`,
+          customerTypeId: price.customerTypeId,
+          customerTypeName: customerTypeMap[price.customerTypeId] || `#${price.customerTypeId}`,
+          pricePerKg: price.pricePerKg,
+          recalculateSteps: price.recalculateSteps,
+          recalculateStepCount: price.recalculateStepCount,
+        })),
+      );
 
-    return t("ironManagement.unknownCustomerType", "Unknown customer type");
-  };
+    const brandTargets = prices
+      .filter((price) =>
+        price.pricePerKg > 0 &&
+        !categorizedBrandIds.has(price.dictBrandId),
+      )
+      .map((price): RecalculationPriceTarget => ({
+        key: `brand:${price.id}`,
+        sourceType: "brand",
+        sourceId: price.dictBrandId,
+        sourceName: price.dictBrandCode,
+        ironTypeId: price.ironTypeId,
+        ironTypeName: price.ironTypeName || `#${price.ironTypeId}`,
+        customerTypeId: price.customerTypeId,
+        customerTypeName: price.customerTypeName?.trim() && !/^\d+$/.test(price.customerTypeName)
+          ? price.customerTypeName.trim()
+          : customerTypeMap[price.customerTypeId] && !/^\d+$/.test(customerTypeMap[price.customerTypeId])
+            ? customerTypeMap[price.customerTypeId]
+            : t("ironManagement.unknownCustomerType", "Unknown customer type"),
+        pricePerKg: price.pricePerKg,
+        recalculateSteps: price.recalculateSteps,
+        recalculateStepCount: price.recalculateStepCount,
+      }));
 
-  const groupedPriceRules = useMemo(() => {
-    const groups = new Map<
-      string,
-      { brandCode: string; ironTypeName: string; items: BrandIronPriceItem[] }
-    >();
+    return [...categoryTargets, ...brandTargets];
+  }, [categories, customerTypeMap, ironTypes, prices, t]);
 
-    prices.forEach((item) => {
-      const key = `${item.dictBrandId}-${item.ironTypeId}`;
-      const group = groups.get(key) ?? {
-        brandCode: item.dictBrandCode,
-        ironTypeName: item.ironTypeName,
-        items: [],
-      };
-      group.items.push(item);
-      groups.set(key, group);
+  const filteredRecalculationPriceTargets = useMemo(() => {
+    const brandFilter = Number(selectedBrandId || 0) || undefined;
+    const categoryFilter = Number(selectedRecalculationCategoryId || 0) || undefined;
+    const ironTypeFilter = Number(selectedIronTypeId || 0) || undefined;
+
+    return recalculationPriceTargets.filter((target) => {
+      if (ironTypeFilter && target.ironTypeId !== ironTypeFilter) return false;
+      if (categoryFilter && (target.sourceType !== "category" || target.sourceId !== categoryFilter)) return false;
+      if (!brandFilter) return true;
+      if (target.sourceType === "brand") return target.sourceId === brandFilter;
+      const category = categories.find((item) => item.id === target.sourceId);
+      return category?.brands.some((brand) => brand.dictBrandId === brandFilter) ?? false;
     });
+  }, [categories, recalculationPriceTargets, selectedBrandId, selectedIronTypeId, selectedRecalculationCategoryId]);
 
-    return Array.from(groups.entries()).map(([key, group]) => ({ key, ...group }));
-  }, [prices]);
-  const groupedRecalculationSteps = useMemo(
-    () => groupedPriceRules
-      .map((group) => ({
-        ...group,
-        items: group.items.filter((item) =>
-          (item.recalculateSteps?.length ?? 0) > 0 || (item.recalculateStepCount ?? 0) > 0,
-        ),
-      }))
-      .filter((group) => group.items.length > 0),
-    [groupedPriceRules],
+  const selectedRecalculationTarget = recalculationPriceTargets.find(
+    (target) => target.key === recalculationStepForm.priceTargetKey,
   );
+
+  const groupedRecalculationSteps = useMemo(() => {
+    const groups = new Map<string, {
+      key: string;
+      sourceType: RecalculationPriceTarget["sourceType"];
+      sourceName: string;
+      ironTypeName: string;
+      items: RecalculationPriceTarget[];
+    }>();
+
+    filteredRecalculationPriceTargets
+      .filter((item) => (item.recalculateSteps?.length ?? 0) > 0 || (item.recalculateStepCount ?? 0) > 0)
+      .forEach((item) => {
+        const key = `${item.sourceType}:${item.sourceId}:${item.ironTypeId}`;
+        const group = groups.get(key) ?? {
+          key,
+          sourceType: item.sourceType,
+          sourceName: item.sourceName,
+          ironTypeName: item.ironTypeName,
+          items: [],
+        };
+        group.items.push(item);
+        groups.set(key, group);
+      });
+
+    return Array.from(groups.values());
+  }, [filteredRecalculationPriceTargets]);
 
   return (
     <div className={styles.ironShop}>
@@ -590,6 +659,18 @@ export const IronShopSettings = () => {
             </header>
             <div className={styles.filterToolbar}>
               <Select
+                label={t("ironManagement.recalculationCategoryFilter", "Category")}
+                value={selectedRecalculationCategoryId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(event) => setSelectedRecalculationCategoryId(event.target.value)}
+              >
+                <option value="">{t("common.all", "All categories")}</option>
+                {categories.filter((category) => category.isActive).map((category) => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </Select>
+              <Select
                 label={t("ironManagement.columns.brand")}
                 value={selectedBrandId}
                 searchable
@@ -617,7 +698,11 @@ export const IronShopSettings = () => {
                 variant="secondary"
                 size="medium"
                 className={styles.resetFilters}
-                onClick={() => { setSelectedBrandId(""); setSelectedIronTypeId(""); }}
+                onClick={() => {
+                  setSelectedRecalculationCategoryId("");
+                  setSelectedBrandId("");
+                  setSelectedIronTypeId("");
+                }}
               >
                 <RotateCcw size={15} aria-hidden="true" />
                 {t("common.reset")}
@@ -629,7 +714,11 @@ export const IronShopSettings = () => {
                   <article key={group.key} className={styles.priceRuleCard}>
                     <header className={styles.priceRuleHeader}>
                       <div>
-                        <span>{group.brandCode || "—"}</span>
+                        <span>
+                          {group.sourceType === "category"
+                            ? t("ironManagement.categories.pricesTitle", "Category prices")
+                            : t("ironManagement.columns.brand")} · {group.sourceName || "—"}
+                        </span>
                         <strong>{group.ironTypeName || "—"}</strong>
                       </div>
                       <span className={styles.customerCount}>{group.items.length}</span>
@@ -640,9 +729,9 @@ export const IronShopSettings = () => {
                         const stepCount = item.recalculateStepCount ?? steps.length;
 
                         return (
-                          <div key={item.id} className={styles.priceRuleRow}>
+                          <div key={item.key} className={styles.priceRuleRow}>
                             <span className={styles.customerTypeTag}>
-                              {getCustomerTypeLabel(item)}
+                              {item.customerTypeName}
                             </span>
                             <strong className={styles.rulePrice}>
                               {item.pricePerKg.toLocaleString()}
@@ -685,36 +774,49 @@ export const IronShopSettings = () => {
                 <span className={styles.formIcon} aria-hidden="true"><Wrench size={18} /></span>
                 <div>
                   <h3>{t("ironManagement.addRecalculationStep", "Add Recalculation Step")}</h3>
-                  <p>{t("ironManagement.note.recalculationStepHint", "Select brand and iron type, then add step prices for Standard customers (Step 1, Step 2, etc.)")}</p>
+                  <p>{t("ironManagement.note.recalculationStepHint", "Choose an existing category or brand price, then add its next recalculation step.")}</p>
                 </div>
               </header>
               <div className={styles.formFields}>
                 <Select
-                  label={t("ironManagement.columns.brand")}
-                  value={recalculationStepForm.autoBrandId}
+                  label={t("ironManagement.form.configuredPrice", "Configured price")}
+                  value={recalculationStepForm.priceTargetKey}
                   searchable
                   searchPlaceholder={t("common.search")}
-                  onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, autoBrandId: e.target.value }))}
+                  onChange={(event) => setRecalculationStepForm((current) => ({
+                    ...current,
+                    priceTargetKey: event.target.value,
+                  }))}
                 >
-                  <option value="">{t("ironManagement.form.selectBrand", "Select brand")}</option>
-                  {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.code}</option>)}
+                  <option value="">{t("ironManagement.form.selectConfiguredPrice", "Select a configured price")}</option>
+                  {recalculationPriceTargets.map((target) => (
+                    <option key={target.key} value={target.key}>
+                      {target.sourceName} · {target.ironTypeName} · {target.customerTypeName} · {target.pricePerKg.toLocaleString()} AMD/kg
+                    </option>
+                  ))}
                 </Select>
-                <Select
-                  label={t("ironManagement.columns.ironType")}
-                  value={recalculationStepForm.ironTypeId}
-                  searchable
-                  searchPlaceholder={t("common.search")}
-                  onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, ironTypeId: e.target.value }))}
-                >
-                  <option value="">{t("ironManagement.form.selectIronType", "Select iron type")}</option>
-                  {ironTypes.map((ironType) => <option key={ironType.id} value={ironType.id}>{ironType.name || ironType.code}</option>)}
-                </Select>
+                {selectedRecalculationTarget ? (
+                  <div className={styles.recalculationTargetSummary}>
+                    <span>{selectedRecalculationTarget.sourceType === "category"
+                      ? t("ironManagement.categories.pricesTitle", "Category prices")
+                      : t("ironManagement.columns.brand")}</span>
+                    <strong>{selectedRecalculationTarget.sourceName} · {selectedRecalculationTarget.ironTypeName}</strong>
+                    <small>
+                      {selectedRecalculationTarget.customerTypeName} · {selectedRecalculationTarget.pricePerKg.toLocaleString()} AMD/kg
+                    </small>
+                  </div>
+                ) : (
+                  <div className={styles.mutedState}>
+                    {t("ironManagement.recalculationChooseConfiguredPrice", "Only existing prices can have recalculation steps.")}
+                  </div>
+                )}
                 <TextField
                   type="number"
                   label={t("ironManagement.form.pricePerKg", "Price Per Kg")}
                   placeholder="0.00"
                   value={recalculationStepForm.pricePerKg}
                   onChange={(e) => setRecalculationStepForm((prev) => ({ ...prev, pricePerKg: e.target.value }))}
+                  disabled={!selectedRecalculationTarget}
                 />
               </div>
               <footer className={styles.formActions}>
@@ -722,7 +824,12 @@ export const IronShopSettings = () => {
                   <RotateCcw size={15} aria-hidden="true" />
                   {t("common.reset")}
                 </Button>
-                <Button variant="primary" size="medium" onClick={() => void submitRecalculationStep()}>
+                <Button
+                  variant="primary"
+                  size="medium"
+                  onClick={() => void submitRecalculationStep()}
+                  disabled={!selectedRecalculationTarget || !recalculationStepForm.pricePerKg}
+                >
                   <Plus size={16} aria-hidden="true" />
                   {t("ironManagement.addRecalculationStep", "Add Step")}
                 </Button>

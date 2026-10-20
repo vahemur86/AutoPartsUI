@@ -10,7 +10,7 @@ import {
   getIronTypesByModel,
   getIronTypesByCar,
   getIronTypesPrices,
-  purchaseIron,
+  purchaseIronBulk,
   addCarModel,
   addIronType,
   addIronPrice,
@@ -34,8 +34,8 @@ import type {
   IronTypeByCar,
   IronTypePrice,
   IronPricesResponse,
-  PurchaseIronResponse,
-  PurchaseIronApiPayload,
+  BulkIronPurchaseRequest,
+  BulkIronPurchaseResponse,
   IronPrice,
   CarModelPayload,
   AddIronPricePayload,
@@ -57,7 +57,7 @@ interface IronCarShopState {
     totalAmountTotal: number;
   } | null;
   recalculationResult: RecalculateResponse | null; // New state field
-  lastPurchase: PurchaseIronResponse[] | null;
+  lastPurchase: BulkIronPurchaseResponse | null;
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;
@@ -162,19 +162,14 @@ export const recalculatePrices = createAsyncThunk<
 );
 
 export const submitBulkPurchase = createAsyncThunk<
-  PurchaseIronResponse[],
-  { payload: PurchaseIronApiPayload[]; cashRegisterId: number },
+  BulkIronPurchaseResponse,
+  { payload: BulkIronPurchaseRequest; cashRegisterId: number },
   { rejectValue: string }
 >(
   "ironCarShop/submitBulkPurchase",
   async ({ payload, cashRegisterId }, { rejectWithValue }) => {
     try {
-      const results: PurchaseIronResponse[] = [];
-      for (const purchase of payload) {
-        const response = await purchaseIron(purchase, cashRegisterId);
-        results.push(response);
-      }
-      return results;
+      return await purchaseIronBulk(payload, cashRegisterId);
     } catch (error) {
       return rejectWithValue(getApiErrorMessage(error, "Bulk purchase failed"));
     }

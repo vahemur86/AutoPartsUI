@@ -825,7 +825,7 @@ export const useOperator = () => {
         item.recalculationStep === (selectedItem.recalculationStep ?? null),
       );
       const pricePerKg = recalculated?.pricePerKg ?? selectedItem.pricePerKg;
-      return (!selectedItem.dictBrandId && selectedItem.categoryId == null) || pricePerKg == null || !Number.isFinite(pricePerKg) || pricePerKg <= 0;
+      return selectedItem.categoryId == null || pricePerKg == null || !Number.isFinite(pricePerKg) || pricePerKg <= 0;
     });
     if (selectedItems.length === 0 || invalidPrice) {
       const error = new Error(t("operatorPage.ironCarShop.priceNotConfigured"));
@@ -833,8 +833,14 @@ export const useOperator = () => {
       throw error;
     }
 
-    const purchases = selectedItems.map((selectedItem) => {
-      const customerTypeId = selectedItem.customerTypeId ?? customer.customerTypeId;
+    const customerTypeIds = new Set(selectedItems.map((item) => item.customerTypeId ?? customer.customerTypeId));
+    if (customerTypeIds.size !== 1) {
+      const error = new Error(t("operatorPage.ironCarShop.mixedCustomerTypesNotSupported", "A bulk purchase must use one customer type."));
+      toast.error(error.message);
+      throw error;
+    }
+
+    const items = selectedItems.map((selectedItem) => {
       const recalculationStepAllowed = selectedItem.hasRecalculateSteps === true;
       const recalculatedItem = recalculatedItems.find((item) =>
         (selectedItem.categoryId != null
@@ -846,34 +852,57 @@ export const useOperator = () => {
       const recalculationStep = recalculatedItem?.appliedRecalculationStep ?? selectedItem.recalculationStep;
 
       return {
-        ...(selectedItem.categoryId != null
-          ? { categoryId: selectedItem.categoryId }
-          : { dictBrandId: selectedItem.dictBrandId! }),
+        categoryId: selectedItem.categoryId!,
         ironTypeId: selectedItem.ironTypeId,
-        customerPhone: customer.phone || "",
-        customerTypeId,
         weightKg: selectedItem.weightKg,
-        ...(recalculationStepAllowed && recalculationStep != null
-          ? { recalculationStep }
-          : {}),
-        notes: selectedItem.notes ?? "",
+        recalculationStep: recalculationStepAllowed && recalculationStep != null
+          ? recalculationStep
+          : null,
       };
     });
 
-    if (purchases.some((purchase) => !purchase.customerPhone || !purchase.customerTypeId)) {
+    const customerTypeId = Array.from(customerTypeIds)[0];
+    if (!customer.phone || !customerTypeId) {
       const error = new Error(t("operatorPage.ironCarShop.customerPhoneRequired"));
       toast.error(error.message);
       throw error;
     }
 
+    const notes = Array.from(new Set(selectedItems.map((item) => item.notes?.trim()).filter(Boolean))).join("; ");
+
     try {
-      await dispatch(
+      const result = await dispatch(
         submitBulkPurchase({
-          payload: purchases,
+          payload: {
+            customerPhone: customer.phone,
+            customerTypeId,
+            notes,
+            items,
+          },
           cashRegisterId: userData?.cashRegisterId as number,
         }),
       ).unwrap();
-      toast.success(t("operatorPage.success.purchaseCompleted"));
+      toast.success(createElement(
+        "div",
+        { style: { display: "grid", gap: "6px" } },
+        createElement("strong", {}, t("operatorPage.success.purchaseCompleted")),
+        ...result.purchases.map((purchase, index) => {
+          const item = selectedItems[index];
+          const stepLabel = purchase.recalculationStep == null
+            ? t("operatorPage.ironCarShop.regularPrice", "Regular price")
+            : t("operatorPage.ironCarShop.stepLabel", { step: purchase.recalculationStep });
+          return createElement(
+            "span",
+            { key: purchase.purchaseId ?? `${purchase.ironTypeId}-${index}` },
+            `${item?.name ?? purchase.ironTypeName}: ${stepLabel} · ${purchase.pricePerKg.toLocaleString()} AMD/kg × ${purchase.weightKg} kg = ${purchase.totalAmount.toLocaleString()} AMD`,
+          );
+        }),
+        createElement(
+          "strong",
+          {},
+          `${t("operatorPage.ironCarShop.totalAmount")}: ${result.totalAmount.toLocaleString()} AMD`,
+        ),
+      ));
       refreshBalance();
       handleResetForm();
     } catch (e) {

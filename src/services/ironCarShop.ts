@@ -27,6 +27,8 @@ import type {
   IronCategoryPayload,
   IronCategoryPricePayload,
   UpdateIronCategoryPricesPayload,
+  BulkIronPurchaseRequest,
+  BulkIronPurchaseResponse,
   OperatorBrandIronType,
 } from "@/types/ironCarShop";
 import type { IronPurchaseResponse } from "@/types/adminProducts";
@@ -39,6 +41,20 @@ export const getIronCategories = async (cashRegisterId: number): Promise<IronCat
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to fetch iron categories."));
+  }
+};
+
+export const getIronCategory = async (
+  categoryId: number,
+  cashRegisterId: number,
+): Promise<IronCategory> => {
+  try {
+    const response = await api.get(`${BASE_URL}/categories/${categoryId}`, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch iron category details."));
   }
 };
 
@@ -396,6 +412,20 @@ export const purchaseIron = async (
   }
 };
 
+export const purchaseIronBulk = async (
+  payload: BulkIronPurchaseRequest,
+  cashRegisterId: number,
+): Promise<BulkIronPurchaseResponse> => {
+  try {
+    const response = await api.post(`${BASE_URL}/purchase/bulk`, payload, {
+      headers: getHeaders(cashRegisterId),
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to submit bulk iron purchase."));
+  }
+};
+
 export const getIronSales = async (
   params: GetIronSalesParams,
   cashRegisterId: number,
@@ -481,9 +511,15 @@ export const addIronPrice = async (
 export const recalculateStep = async (
   payload: RecalculateStepPayload,
   cashRegisterId: number,
+  lang?: string,
 ): Promise<void> => {
+  if (Boolean(payload.dictBrandId) === Boolean(payload.categoryId)) {
+    throw new Error("Select exactly one brand or category for recalculation.");
+  }
+
   try {
     await api.post(`${BASE_URL}/admin/recalculate-step`, payload, {
+      ...(lang && { params: { lang: formatLang(lang) } }),
       headers: getHeaders(cashRegisterId),
     });
   } catch (error) {

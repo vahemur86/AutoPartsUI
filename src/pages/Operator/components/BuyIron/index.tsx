@@ -285,7 +285,8 @@ export const BuyIron: FC<BuyIronProps> = ({
     const additions = availableTypeRows.flatMap(({ type, brandId, brandName, key }): IronTypePrice[] => {
       const weightKg = Number(entryWeights[key]);
       const configured = Boolean(type.isPriceConfigured ?? (type.pricePerKg != null && type.pricePerKg > 0));
-      if (!configured || !Number.isFinite(weightKg) || weightKg <= 0 || type.pricePerKg == null || type.pricePerKg <= 0) return [];
+      const categoryId = type.categoryId ?? (filterMode === "category" ? Number(selectedCategoryId) || null : null);
+      if (!configured || categoryId == null || !Number.isFinite(weightKg) || weightKg <= 0 || type.pricePerKg == null || type.pricePerKg <= 0) return [];
       const recalculationStep = Number(entrySteps[key]) || null;
       const canRecalculate = Boolean((type.recalculateStepCount ?? 0) > 0 && type.hasRecalculateSteps !== false);
       if (recalculationStep && !canRecalculate) return [];
@@ -298,7 +299,7 @@ export const BuyIron: FC<BuyIronProps> = ({
         weightKg,
         totalAmount: Number((type.pricePerKg * weightKg).toFixed(2)),
         customerTypeId: currentCustomerTypeId,
-           categoryId: type.categoryId ?? (filterMode === "category" ? Number(selectedCategoryId) || undefined : undefined),
+          categoryId,
         categoryName: type.categoryName ?? selectedCategory?.name,
         isPriceConfigured: true,
         hasRecalculateSteps: canRecalculate,
@@ -602,6 +603,11 @@ export const BuyIron: FC<BuyIronProps> = ({
                   <b className={configured ? styles.configuredPrice : styles.unconfiguredPrice}>
                     {configured ? `${type.pricePerKg!.toLocaleString()} AMD / kg` : t("operatorPage.ironCarShop.priceNotConfigured")}
                   </b>
+                  {configured && type.categoryId == null && filterMode === "brand" && (
+                    <small className={styles.unconfiguredPrice}>
+                      {t("operatorPage.ironCarShop.categoryRequiredForBulk", "Assign this price to a category before purchasing.")}
+                    </small>
+                  )}
                 </div>
                 <div className={`${styles.availableTypeActions} ${canRecalculate ? styles.withRecalculation : ""}`}>
                   <TextField
@@ -612,7 +618,7 @@ export const BuyIron: FC<BuyIronProps> = ({
                     placeholder="0.000"
                     value={entryWeights[key] ?? ""}
                     onChange={(event) => handleWeightChange(key, event.target.value)}
-                    disabled={!configured}
+                    disabled={!configured || (filterMode === "brand" && type.categoryId == null)}
                     error={wasSubmitted && entryWeights[key] !== undefined && Number(entryWeights[key]) <= 0}
                     className={styles.weightField}
                   />
@@ -690,7 +696,11 @@ export const BuyIron: FC<BuyIronProps> = ({
                 <div className={styles.cartItemInfo}>
                   <strong>{item.name}</strong>
                   <span>{item.brandName ?? item.categoryName} · {item.weightKg} kg · {item.pricePerKg.toLocaleString()} AMD/kg</span>
-                  {item.recalculationStep != null && <small>{t("operatorPage.ironCarShop.stepLabel", { step: item.recalculationStep })}</small>}
+                  <small>
+                    {item.recalculationStep == null
+                      ? t("operatorPage.ironCarShop.regularPrice", "Regular price")
+                      : t("operatorPage.ironCarShop.stepLabel", { step: item.recalculationStep })}
+                  </small>
                 </div>
                 <strong>{item.totalAmount.toLocaleString()} AMD</strong>
                 <button

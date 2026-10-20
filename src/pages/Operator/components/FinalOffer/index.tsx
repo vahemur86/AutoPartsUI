@@ -291,9 +291,11 @@ export const FinalOffer: FC<{
                 <div key={`${item.dictBrandId ?? item.categoryId ?? 0}-${item.ironTypeId}-${item.recalculationStep ?? 0}`} className={styles.calculationSummaryRow}>
                   <span>
                     {item.brandName ? `${item.brandName} · ` : ""}{item.name}
-                    {(item.appliedRecalculationStep ?? item.recalculationStep) != null && (
-                      <small>{t("operatorPage.ironCarShop.stepLabel", { step: item.appliedRecalculationStep ?? item.recalculationStep })}</small>
-                    )}
+                    <small>
+                      {(item.appliedRecalculationStep ?? item.recalculationStep) == null
+                        ? t("operatorPage.ironCarShop.regularPrice", "Regular price")
+                        : t("operatorPage.ironCarShop.stepLabel", { step: item.appliedRecalculationStep ?? item.recalculationStep })}
+                    </small>
                   </span>
                   <span>
                     {t("operatorPage.ironCarShop.lineFormat", {
