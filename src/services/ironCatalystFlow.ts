@@ -6,11 +6,16 @@ import type {
   IronPowderProfitReport,
   IronWarehouseTransfer,
   ProcessIronToPowderRequest,
+  BulkProcessIronToPowderRequest,
+  BulkProcessIronToPowderResponse,
   IronPowderStockLot,
   IronPowderSaleRequest,
   IronPowderSaleResponse,
   PhysicalIronSaleRequest,
   PhysicalIronSaleResponse,
+  BulkPhysicalIronSaleRequest,
+  BulkPhysicalIronSaleResponse,
+  PhysicalIronSaleReportItem,
   AvailableIronPurchasesSummary,
 } from "@/types/ironCatalystFlow";
 
@@ -99,6 +104,22 @@ export const processIronToPowder = async (
   }
 };
 
+export const processBulkIronToPowder = async (
+  payload: BulkProcessIronToPowderRequest,
+  cashRegisterId: number,
+): Promise<BulkProcessIronToPowderResponse> => {
+  try {
+    const response = await api.post<BulkProcessIronToPowderResponse>(
+      `${IRON_SHOP}/processing/to-powder/bulk`,
+      payload,
+      { headers: getHeaders(cashRegisterId) },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to process iron into powder."));
+  }
+};
+
 export const getIronProcessingBatches = async (
   warehouseId: number | undefined,
   cashRegisterId: number,
@@ -157,6 +178,37 @@ export const createPhysicalIronSale = async (
     return response.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to sell physical iron."));
+  }
+};
+
+export const createBulkPhysicalIronSale = async (
+  payload: BulkPhysicalIronSaleRequest,
+  cashRegisterId: number,
+): Promise<BulkPhysicalIronSaleResponse> => {
+  try {
+    const response = await api.post<BulkPhysicalIronSaleResponse>(
+      `${IRON_SHOP}/physical-sales/bulk`,
+      payload,
+      { headers: getHeaders(cashRegisterId) },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to sell physical iron."));
+  }
+};
+
+export const getPhysicalIronSalesReport = async (
+  params: { warehouseId?: number; fromUtc?: string; toUtc?: string },
+  cashRegisterId: number,
+): Promise<PhysicalIronSaleReportItem[]> => {
+  try {
+    const response = await api.get<PhysicalIronSaleReportItem[] | { results?: PhysicalIronSaleReportItem[] }>(
+      `${IRON_SHOP}/physical-sales/report`,
+      { params, headers: getHeaders(cashRegisterId) },
+    );
+    return asArray(response.data);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to load physical iron sales report."));
   }
 };
 

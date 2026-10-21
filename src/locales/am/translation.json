@@ -1768,7 +1768,7 @@
     "empty": "Տվյալներ չկան։",
     "tabs": {
       "purchases": "Երկաթի գնումներ",
-      "transfers": "Փոխանցումներ",
+      "transfers": "Երկաթի պահեստ",
       "processing": "Վերամշակում",
       "inventory": "Փոշու պաշար",
       "salesLots": "Վաճառքի խմբեր",
@@ -1776,7 +1776,7 @@
     },
     "sectionDescriptions": {
       "purchases": "Գնված երկաթը փոխանցեք պահեստ։",
-      "transfers": "Դիտեք պահեստ կատարված երկաթի փոխանցումները։",
+      "transfers": "Ընտրեք պահեստում առկա երկաթը՝ այն վաճառելու կամ փոշու վերամշակելու համար։",
       "processing": "Երկաթը վերածեք կատալիզատորային փոշու։",
       "inventory": "Ընտրեք առկա փոշին վաճառքի խումբ կազմելու համար։",
       "sales-lots": "Կառավարեք փոշու վաճառքի խմբերը և դրանց վաճառքը։",
@@ -1793,12 +1793,14 @@
       "confirmSale": "Հաստատել վաճառքը",
       "previewSale": "Նախադիտել վաճառքը",
       "sellIron": "Վաճառել երկաթը",
+      "sellSelectedIron": "Վաճառել ընտրված երկաթը",
+      "processSelectedIron": "Վերամշակել ընտրվածը",
       "sellPowder": "Վաճառել փոշին"
     },
     "source": { "catalyst": "Կատալիզատորային փոշի", "iron": "Երկաթից ստացված փոշի" },
     "filters": { "status": "Կարգավիճակ", "containsIron": "Պարունակում է երկաթի փոշի", "saleType": "Վաճառքի տեսակ", "purchaseId": "Գնման ID", "ironType": "Երկաթի տեսակ", "category": "Կատեգորիա", "fromDate": "Սկսած", "toDate": "Մինչև", "powderSource": "Փոշու աղբյուր", "availableQuantity": "Առկա քանակ" },
     "columns": { "purchaseId": "Գնման ID", "customerId": "Հաճախորդ", "brand": "Բրենդ", "category": "Կատեգորիա", "recalculationStep": "Վերահաշվարկի քայլ", "ironType": "Երկաթի տեսակ", "customerType": "Հաճախորդի տեսակ", "purchasedWeight": "Գնված քաշ", "purchaseCost": "Գնման արժեք", "transferredWeight": "Փոխանցված քաշ", "remainingWeight": "Մնացորդ", "purchaseDate": "Գնման ամսաթիվ", "transferId": "Փոխանցման ID", "warehouse": "Պահեստ", "weight": "Քաշ", "unitCost": "Միավորի արժեք", "totalCost": "Ընդհանուր արժեք", "transferredAt": "Փոխանցման ամսաթիվ", "transferredBy": "Փոխանցող", "batchId": "Խմբաքանակ", "sourceWeight": "Մուտքային քաշ", "powderWeight": "Փոշու քաշ", "remainingPowder": "Փոշու մնացորդ", "ptPerKg": "Pt/կգ", "pdPerKg": "Pd/կգ", "rhPerKg": "Rh/կգ", "allocatedPurchaseCost": "Բաշխված գնման արժեք", "processingExpenses": "Վերամշակման ծախս", "createdAt": "Ստեղծվել է", "select": "Ընտրել", "source": "Աղբյուր", "inventoryLotId": "Պաշարի ID", "processingBatchId": "Վերամշակման ID", "ironPurchaseId": "Երկաթի գնման ID", "available": "Առկա է", "remainingCost": "Մնացորդի արժեք", "status": "Կարգավիճակ", "salesLotId": "Վաճառքի խմբի ID", "totalPowder": "Ընդհանուր փոշի", "averagePt": "Միջին Pt", "averagePd": "Միջին Pd", "averageRh": "Միջին Rh", "containsIron": "Երկաթի փոշի", "soldAt": "Վաճառվել է", "profit": "Շահույթ", "sourceType": "Աղբյուրի տեսակ", "powderKg": "Փոշի, կգ", "costPart": "Ինքնարժեքի մաս", "ptGrams": "Pt, գ", "pdGrams": "Pd, գ", "rhGrams": "Rh, գ" },
-    "purchaseSummary": { "totalPurchasedWeight": "Ընդհանուր գնված քաշ", "totalTransferredWeight": "Ընդհանուր փոխանցված քաշ", "totalRemainingWeight": "Ընդհանուր մնացորդ", "byIronType": "Ըստ երկաթի տեսակի", "byCategory": "Ըստ կատեգորիայի", "purchased": "Գնված", "transferred": "Փոխանցված", "remaining": "Մնացորդ", "regularPrice": "Սովորական գին", "recalculationStep": "Քայլ {{step}}", "noGroups": "Խմբավորված տվյալներ չկան։" },
+    "purchaseSummary": { "totalPurchasedWeight": "Ընդհանուր գնված քաշ", "totalTransferredWeight": "Ընդհանուր փոխանցված քաշ", "totalRemainingWeight": "Ընդհանուր մնացորդ", "byIronType": "Ըստ երկաթի տեսակի", "byCategory": "Ըստ կատեգորիայի", "purchased": "Գնված", "transferred": "Փոխանցված", "remaining": "Մնացորդ", "dayPurchaseCount": "Գնումներ՝ {{count}}", "regularPrice": "Սովորական գին", "recalculationStep": "Քայլ {{step}}", "noGroups": "Խմբավորված տվյալներ չկան։" },
     "statuses": { "open": "Բաց", "sold": "Վաճառված", "cancelled": "Չեղարկված", "available": "Առկա", "unavailable": "Սպառված" },
     "badges": { "ironDerived": "Երկաթից ստացված", "ironIncluded": "Ներառում է երկաթի փոշի" },
     "saleTypes": { "physicalIron": "Ֆիզիկական երկաթ", "ironPowder": "Երկաթի փոշի", "mixed": "Խառը վաճառքի խումբ" },
@@ -1809,20 +1811,20 @@
     },
     "transfer": { "title": "Փոխանցել գնումը #{{id}}", "remaining": "Մնացորդ՝ {{weight}} կգ", "weight": "Փոխանցման քաշ, կգ" },
     "processing": {
-      "formTitle": "Երկաթը վերածել փոշու", "purchase": "Երկաթի գնում", "selectPurchase": "Ընտրեք գնման գրառումը", "sourceWeight": "Երկաթի քաշ, կգ", "powderWeight": "Ստացված փոշի, կգ",
-      "ptPerKg": "Pt՝ մեկ կգ-ում", "pdPerKg": "Pd՝ մեկ կգ-ում", "rhPerKg": "Rh՝ մեկ կգ-ում", "expenses": "Վերամշակման ծախսեր, AMD", "availableWeight": "Առկա է {{weight}} կգ", "history": "Վերամշակման խմբաքանակներ",
-      "confirmTitle": "Հաստատե՞լ վերամշակումը", "confirmDescription": "{{source}} կգ երկաթից կստացվի {{powder}} կգ փոշի։", "completed": "Խմբաքանակ #{{id}} ստեղծվեց։"
+      "sourceWeight": "Երկաթի քաշ, կգ", "powderWeight": "Ստացված փոշի, կգ",
+      "ptPerKg": "Pt՝ մեկ կգ-ում", "pdPerKg": "Pd՝ մեկ կգ-ում", "rhPerKg": "Rh՝ մեկ կգ-ում", "expenses": "Վերամշակման ծախսեր, AMD", "history": "Վերամշակման խմբաքանակներ",
+      "bulkTitle": "Միավորված վերամշակում", "bulkAvailable": "Ընտրվել է {{count}} աղբյուր։ Նշեք յուրաքանչյուրից վերցվող քաշը։", "totalSourceWeight": "Ընդհանուր մուտքային քաշ՝ {{weight}} կգ"
     },
     "inventory": { "selectSources": "Ընտրել փոշու աղբյուրները", "selectHint": "Ընտրեք մեկ կամ մի քանի հասանելի խմբաքանակ և նշեք օգտագործվող քաշը։", "selectLot": "Ընտրել խմբաքանակը", "selectedWeight": "Ընտրված քաշը, կգ", "available": "Առկա է", "unavailable": "Սպառված", "availableOnly": "Միայն առկա քանակով", "depletedOnly": "Միայն սպառված" },
     "salesLotDetails": "Վաճառքի խումբ #{{id}}", "detailHint": "Խմբի բաղադրությունը և աղբյուրների ինքնարժեքը։",
     "salesLotPreview": { "title": "Հաստատել վաճառքի խմբի ստեղծումը", "description": "Ստուգեք բաղադրությունը, ընդհանուր քաշն ու ինքնարժեքը։" },
     "sell": { "title": "Վաճառել խումբ #{{id}}", "description": "Սկզբում նախադիտեք վաճառքի արդյունքը, հետո հաստատեք։", "currency": "Արժույթ", "exchangeRate": "Փոխարժեք", "revenue": "Եկամուտ", "ptPrice": "Pt-ի գին", "pdPrice": "Pd-ի գին", "rhPrice": "Rh-ի գին", "powderWeight": "Վաճառվող քաշ, կգ", "ptComposition": "Pt բաղադրություն, գ", "pdComposition": "Pd բաղադրություն, գ", "rhComposition": "Rh բաղադրություն, գ" },
-    "physicalIronSale": { "title": "Վաճառել երկաթը՝ գնում #{{id}}", "available": "Այս փոխանցմամբ հասանելի է մինչև {{weight}} կգ։", "category": "Կատեգորիա", "selectCategory": "Ընտրեք կատեգորիան", "weight": "Վաճառվող քաշ, կգ", "unitSalePrice": "Վաճառքի գին մեկ կգ-ի համար", "extraExpenses": "Լրացուցիչ ծախսեր" },
+    "physicalIronSale": { "title": "Վաճառել երկաթը՝ գնում #{{id}}", "available": "Այս փոխանցմամբ հասանելի է մինչև {{weight}} կգ։", "bulkTitle": "Միավորված երկաթի վաճառք", "bulkAvailable": "Ընտրվել է {{count}} գնում։ Յուրաքանչյուրից նշեք վաճառվող քաշը։", "selectedSources": "Ընտրված աղբյուրներ՝ {{count}}", "selectSource": "Ընտրել գնում #{{id}} վաճառքի համար", "purchaseWeight": "Գնում #{{id}} · Առկա՝ {{weight}} կգ", "totalWeight": "Ընդհանուր վաճառվող քաշ՝ {{weight}} կգ", "reportTitle": "Ֆիզիկական երկաթի վաճառքներ", "saleId": "Վաճառքի ID", "allocationCosts": "Վաճառք #{{id}}՝ աղբյուրների ինքնարժեք", "category": "Կատեգորիա", "selectCategory": "Ընտրեք կատեգորիան", "weight": "Վաճառվող քաշ, կգ", "unitSalePrice": "Վաճառքի գին մեկ կգ-ի համար", "extraExpenses": "Լրացուցիչ ծախսեր" },
     "powderSale": { "title": "Առանձին վաճառել փոշին՝ խմբաքանակ #{{id}}", "available": "Առկա է {{weight}} կգ փոշի։", "weight": "Վաճառվող փոշի, կգ", "unitSalePrice": "Վաճառքի գին մեկ կգ-ի համար", "extraExpenses": "Լրացուցիչ ծախսեր" },
     "saleResult": { "title": "Վաճառքն ավարտված է", "description": "Վաճառքի խումբ #{{id}} փակվեց։" },
     "success": { "transferred": "Երկաթը փոխանցվեց պահեստ։", "processed": "Երկաթը վերամշակվեց։", "salesLotCreated": "Վաճառքի խումբը ստեղծվեց։", "saleCompleted": "Վաճառքը հաջողությամբ կատարվեց։", "physicalIronSold": "Երկաթի վաճառքն ավարտվեց։ Շահույթ՝", "powderSold": "Փոշու վաճառքն ավարտվեց։ Շահույթ՝" },
     "errors": {
-      "loadFailed": "Չհաջողվեց բեռնել տվյալները։", "loadWarehouses": "Չհաջողվեց բեռնել պահեստները։", "invalidTransfer": "Ընտրեք պահեստ և նշեք մնացորդից ոչ մեծ դրական քաշ։", "transferFailed": "Չհաջողվեց փոխանցել երկաթը։", "invalidProcessing": "Ստուգեք պարտադիր դաշտերը, քաշերը և ոչ բացասական արժեքները։", "invalidPhysicalSale": "Ստուգեք քաշը և վաճառքի գինը։", "purchaseDetailsMissing": "Չհաջողվեց գտնել գնման երկաթի տեսակի կամ կատեգորիայի տվյալները։ Թարմացրեք էջը և կրկին փորձեք։", "invalidPowderSale": "Ստուգեք փոշու քաշը, գինը և ծախսերը։", "processingFailed": "Չհաջողվեց վերամշակել երկաթը։", "selectSource": "Ընտրեք առնվազն մեկ փոշու աղբյուր։", "invalidSourceQuantity": "Ստուգեք քաշը և համոզվեք, որ բոլոր աղբյուրները նույն պահեստից են։", "previewFailed": "Չհաջողվեց նախադիտել վաճառքի խումբը։", "createLotFailed": "Չհաջողվեց ստեղծել վաճառքի խումբը։", "loadSaleFormFailed": "Չհաջողվեց բեռնել վաճառքի տվյալները։", "salePreviewFailed": "Չհաջողվեց նախադիտել վաճառքը։", "saleFailed": "Չհաջողվեց վաճառել խումբը։", "loadDetailFailed": "Չհաջողվեց բեռնել խմբի մանրամասները։"
+      "loadFailed": "Չհաջողվեց բեռնել տվյալները։", "loadWarehouses": "Չհաջողվեց բեռնել պահեստները։", "invalidTransfer": "Ընտրեք պահեստ և նշեք մնացորդից ոչ մեծ դրական քաշ։", "transferFailed": "Չհաջողվեց փոխանցել երկաթը։", "invalidProcessing": "Ստուգեք պարտադիր դաշտերը, քաշերը և ոչ բացասական արժեքները։", "invalidPhysicalSale": "Ստուգեք քաշը և վաճառքի գինը։", "invalidPowderSale": "Ստուգեք փոշու քաշը, գինը և ծախսերը։", "processingFailed": "Չհաջողվեց վերամշակել երկաթը։", "selectSource": "Ընտրեք առնվազն մեկ փոշու աղբյուր։", "invalidSourceQuantity": "Ստուգեք քաշը և համոզվեք, որ բոլոր աղբյուրները նույն պահեստից են։", "previewFailed": "Չհաջողվեց նախադիտել վաճառքի խումբը։", "createLotFailed": "Չհաջողվեց ստեղծել վաճառքի խումբը։", "loadSaleFormFailed": "Չհաջողվեց բեռնել վաճառքի տվյալները։", "salePreviewFailed": "Չհաջողվեց նախադիտել վաճառքը։", "saleFailed": "Չհաջողվեց վաճառել խումբը։", "loadDetailFailed": "Չհաջողվեց բեռնել խմբի մանրամասները։"
     }
   },
   "cashRegisters": {

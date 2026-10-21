@@ -63,6 +63,21 @@ export interface ProcessIronToPowderRequest {
   processingExpenses: number;
 }
 
+export interface BulkIronProcessingAllocation {
+  ironPurchaseId: number;
+  sourceWeightKg: number;
+}
+
+export interface BulkProcessIronToPowderRequest {
+  warehouseId: number;
+  allocations: BulkIronProcessingAllocation[];
+  powderWeightKg: number;
+  ptPerKg: number;
+  pdPerKg: number;
+  rhPerKg: number;
+  processingExpenses: number;
+}
+
 export interface IronProcessingBatch {
   id: number;
   warehouseId: number;
@@ -77,6 +92,18 @@ export interface IronProcessingBatch {
   processingExpenses: number;
   totalCost: number;
   createdAt: string;
+  allocations?: Array<BulkIronProcessingAllocation & {
+    unitCost: number;
+    allocatedPurchaseCost: number;
+  }>;
+}
+
+export interface BulkProcessIronToPowderResponse {
+  batch: IronProcessingBatch;
+  allocations: Array<BulkIronProcessingAllocation & {
+    unitCost: number;
+    allocatedPurchaseCost: number;
+  }>;
 }
 
 export interface IronPowderStockLot {
@@ -118,8 +145,6 @@ export interface IronPowderProfitReport {
 export interface PhysicalIronSaleRequest {
   warehouseId: number;
   ironPurchaseId: number;
-  ironTypeId: number;
-  categoryId: number;
   weightKg: number;
   unitSalePrice: number;
   extraExpenses: number;
@@ -127,11 +152,49 @@ export interface PhysicalIronSaleRequest {
 
 export interface PhysicalIronSaleResponse extends PhysicalIronSaleRequest {
   id: number;
+  ironTypeId: number;
+  categoryId: number;
   unitCost: number;
   totalCost: number;
   totalRevenue: number;
   profit: number;
   soldAt: string;
+}
+
+export interface BulkPhysicalIronSaleAllocation {
+  ironPurchaseId: number;
+  weightKg: number;
+}
+
+export interface BulkPhysicalIronSaleRequest {
+  warehouseId: number;
+  allocations: BulkPhysicalIronSaleAllocation[];
+  unitSalePrice: number;
+  extraExpenses: number;
+}
+
+export interface BulkPhysicalIronSaleResponse {
+  id: number;
+  warehouseId: number;
+  ironTypeId: number;
+  categoryId: number;
+  weightKg: number;
+  unitCost: number;
+  extraExpenses: number;
+  totalCost: number;
+  unitSalePrice: number;
+  totalRevenue: number;
+  profit: number;
+  soldAt: string;
+  allocations: Array<BulkPhysicalIronSaleAllocation & {
+    unitCost: number;
+    allocatedCost: number;
+    allocatedExpenses?: number;
+  }>;
+}
+
+export interface PhysicalIronSaleReportItem extends Omit<BulkPhysicalIronSaleResponse, "allocations"> {
+  allocations: BulkPhysicalIronSaleResponse["allocations"];
 }
 
 export interface IronPowderSaleRequest {
