@@ -127,6 +127,7 @@ export const IronCatalystPowderFlow = () => {
   const [purchases, setPurchases] = useState<AvailableIronPurchase[]>([]);
   const [purchaseSummary, setPurchaseSummary] = useState<AvailableIronPurchasesSummary | null>(null);
   const [purchaseFilters, setPurchaseFilters] = useState({ ironTypeId: "", categoryId: "" });
+  const [purchaseDateFilters, setPurchaseDateFilters] = useState({ fromDate: "", toDate: "" });
   const [transfers, setTransfers] = useState<IronWarehouseTransfer[]>([]);
   const [processingBatches, setProcessingBatches] = useState<IronProcessingBatch[]>([]);
   const [catalystInventory, setCatalystInventory] = useState<IronPowderStockLot[]>([]);
@@ -151,6 +152,13 @@ export const IronCatalystPowderFlow = () => {
     pdPerKg: 0,
     rhPerKg: 0,
     processingExpenses: 0,
+  });
+  const [processingDecimalInputs, setProcessingDecimalInputs] = useState({
+    sourceWeightKg: "",
+    powderWeightKg: "",
+    ptPerKg: "",
+    pdPerKg: "",
+    rhPerKg: "",
   });
   const [pendingProcessing, setPendingProcessing] = useState(false);
   const [processingAttempted, setProcessingAttempted] = useState(false);
@@ -353,6 +361,12 @@ export const IronCatalystPowderFlow = () => {
     () => powderSources.filter((source) => isAvailableSource(source.status) && source.availableKg > 0),
     [powderSources],
   );
+  const filteredPurchases = useMemo(() => purchases.filter((purchase) => {
+    const purchasedDate = purchase.purchasedAt.slice(0, 10);
+    if (purchaseDateFilters.fromDate && purchasedDate < purchaseDateFilters.fromDate) return false;
+    if (purchaseDateFilters.toDate && purchasedDate > purchaseDateFilters.toDate) return false;
+    return true;
+  }), [purchases, purchaseDateFilters]);
   const filteredPowderSources = useMemo(() => powderSources.filter((source) => {
     if (inventoryFilters.source && source.sourceType !== inventoryFilters.source) return false;
     if (inventoryFilters.status === "available" && !isAvailableSource(source.status)) return false;
@@ -514,6 +528,17 @@ export const IronCatalystPowderFlow = () => {
     } finally {
       setMutating(false);
     }
+  };
+
+  const updateProcessingDecimal = (
+    field: keyof typeof processingDecimalInputs,
+    value: string,
+  ) => {
+    setProcessingDecimalInputs((inputs) => ({ ...inputs, [field]: value }));
+    setProcessForm((form) => ({
+      ...form,
+      [field]: Number(value.replace(",", ".")),
+    }));
   };
 
   const isProcessingFormValid = Boolean(
@@ -714,10 +739,24 @@ export const IronCatalystPowderFlow = () => {
           onChange={(event) => setPurchaseFilters((filters) => ({ ...filters, categoryId: event.target.value }))}
         >
           <option value="">{t("common.all")}</option>
-          {ironCategories.map((category) => (
+          {ironCategories.filter((category) => category.isActive).map((category) => (
             <option key={category.id} value={category.id}>{category.name || category.code}</option>
           ))}
         </Select>
+        <TextField
+          type="date"
+          label={t("ironCatalystFlow.filters.fromDate")}
+          value={purchaseDateFilters.fromDate}
+          max={purchaseDateFilters.toDate || undefined}
+          onChange={(event) => setPurchaseDateFilters((filters) => ({ ...filters, fromDate: event.target.value }))}
+        />
+        <TextField
+          type="date"
+          label={t("ironCatalystFlow.filters.toDate")}
+          value={purchaseDateFilters.toDate}
+          min={purchaseDateFilters.fromDate || undefined}
+          onChange={(event) => setPurchaseDateFilters((filters) => ({ ...filters, toDate: event.target.value }))}
+        />
       </div>
 
       {purchaseSummary && (
@@ -736,7 +775,7 @@ export const IronCatalystPowderFlow = () => {
 
       {renderTable(
         ["purchaseId", "customerId", "brand", "category", "ironType", "customerType", "purchasedWeight", "purchaseCost", "transferredWeight", "remainingWeight", "recalculationStep", "purchaseDate", ""].map(column),
-        purchases.filter((purchase) => purchase.remainingWeightKg > 0).map((purchase) => [
+        filteredPurchases.filter((purchase) => purchase.remainingWeightKg > 0).map((purchase) => [
           `#${purchase.purchaseId}`,
           `#${purchase.customerId}`,
           purchase.brandName || `#${purchase.dictBrandId}`,
@@ -1033,11 +1072,17 @@ export const IronCatalystPowderFlow = () => {
                       <option value="">{t("ironCatalystFlow.processing.selectPurchase")}</option>
                       {Array.from(new Set(transfers.filter((item) => item.warehouseId === processForm.warehouseId).map((item) => item.ironPurchaseId))).map((id) => <option key={id} value={id}>#{id}</option>)}
                     </Select>
-                    <TextField type="number" min="0" label={t("ironCatalystFlow.processing.sourceWeight")} value={processForm.sourceWeightKg || ""} error={processingAttempted && (processForm.sourceWeightKg <= 0 || processForm.sourceWeightKg > remainingProcessableWeight)} helperText={processingAttempted && (processForm.sourceWeightKg <= 0 || processForm.sourceWeightKg > remainingProcessableWeight) ? t("ironCatalystFlow.errors.invalidProcessing") : t("ironCatalystFlow.processing.availableWeight", { weight: formatNumber(remainingProcessableWeight) })} onChange={(event) => setProcessForm((form) => ({ ...form, sourceWeightKg: Number(event.target.value) }))} />
-                    <TextField type="number" min="0" label={t("ironCatalystFlow.processing.powderWeight")} value={processForm.powderWeightKg || ""} error={processingAttempted && processForm.powderWeightKg <= 0} helperText={processingAttempted && processForm.powderWeightKg <= 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => setProcessForm((form) => ({ ...form, powderWeightKg: Number(event.target.value) }))} />
-                    <TextField type="number" min="0" label={t("ironCatalystFlow.processing.ptPerKg")} value={processForm.ptPerKg || ""} error={processingAttempted && processForm.ptPerKg < 0} helperText={processingAttempted && processForm.ptPerKg < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => setProcessForm((form) => ({ ...form, ptPerKg: Number(event.target.value) }))} />
-                    <TextField type="number" min="0" label={t("ironCatalystFlow.processing.pdPerKg")} value={processForm.pdPerKg || ""} error={processingAttempted && processForm.pdPerKg < 0} helperText={processingAttempted && processForm.pdPerKg < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => setProcessForm((form) => ({ ...form, pdPerKg: Number(event.target.value) }))} />
-                    <TextField type="number" min="0" label={t("ironCatalystFlow.processing.rhPerKg")} value={processForm.rhPerKg || ""} error={processingAttempted && processForm.rhPerKg < 0} helperText={processingAttempted && processForm.rhPerKg < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => setProcessForm((form) => ({ ...form, rhPerKg: Number(event.target.value) }))} />
+                    <div className={styles.processingWeightField}>
+                      <div className={styles.processingWeightLabel}>
+                        <label htmlFor="processing-source-weight">{t("ironCatalystFlow.processing.sourceWeight")}</label>
+                        <span>{t("ironCatalystFlow.processing.availableWeight", { weight: formatNumber(remainingProcessableWeight) })}</span>
+                      </div>
+                      <TextField id="processing-source-weight" type="text" inputMode="decimal" value={processingDecimalInputs.sourceWeightKg} error={processingAttempted && (processForm.sourceWeightKg <= 0 || processForm.sourceWeightKg > remainingProcessableWeight)} helperText={processingAttempted && (processForm.sourceWeightKg <= 0 || processForm.sourceWeightKg > remainingProcessableWeight) ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => updateProcessingDecimal("sourceWeightKg", event.target.value)} />
+                    </div>
+                    <TextField type="text" inputMode="decimal" label={t("ironCatalystFlow.processing.powderWeight")} value={processingDecimalInputs.powderWeightKg} error={processingAttempted && processForm.powderWeightKg <= 0} helperText={processingAttempted && processForm.powderWeightKg <= 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => updateProcessingDecimal("powderWeightKg", event.target.value)} />
+                    <TextField type="text" inputMode="decimal" label={t("ironCatalystFlow.processing.ptPerKg")} value={processingDecimalInputs.ptPerKg} error={processingAttempted && processForm.ptPerKg < 0} helperText={processingAttempted && processForm.ptPerKg < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => updateProcessingDecimal("ptPerKg", event.target.value)} />
+                    <TextField type="text" inputMode="decimal" label={t("ironCatalystFlow.processing.pdPerKg")} value={processingDecimalInputs.pdPerKg} error={processingAttempted && processForm.pdPerKg < 0} helperText={processingAttempted && processForm.pdPerKg < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => updateProcessingDecimal("pdPerKg", event.target.value)} />
+                    <TextField type="text" inputMode="decimal" label={t("ironCatalystFlow.processing.rhPerKg")} value={processingDecimalInputs.rhPerKg} error={processingAttempted && processForm.rhPerKg < 0} helperText={processingAttempted && processForm.rhPerKg < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => updateProcessingDecimal("rhPerKg", event.target.value)} />
                     <TextField type="number" min="0" label={t("ironCatalystFlow.processing.expenses")} value={processForm.processingExpenses || ""} error={processingAttempted && processForm.processingExpenses < 0} helperText={processingAttempted && processForm.processingExpenses < 0 ? t("ironCatalystFlow.errors.invalidProcessing") : undefined} onChange={(event) => setProcessForm((form) => ({ ...form, processingExpenses: Number(event.target.value) }))} />
                   </div>
                   <Button onClick={() => { setProcessingAttempted(true); if (isProcessingFormValid) setPendingProcessing(true); }} disabled={mutating}>

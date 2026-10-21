@@ -129,7 +129,8 @@
 
 .loading svg { color: #a4d1b2; animation: flowSpin 1s linear infinite; }
 .errorState { flex-wrap: wrap; border-color: rgba(219, 128, 114, 0.26); color: #f0beb5; }
-.filterRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: end; gap: 11px; }
+.filterRow { display: flex; align-items: flex-start; gap: 11px; }
+.filterRow > * { flex: 1 1 0; min-width: 0; }
 .purchaseSection { display: grid; min-width: 0; gap: 14px; }
 .purchaseSummary { display: grid; gap: 12px; }
 .purchaseBreakdowns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -146,7 +147,11 @@
 .formPanel, .historyPanel, .detailPanel { display: grid; gap: 13px; min-width: 0; padding: 14px; border: 1px solid rgba(var(--flow-accent), 0.14); border-radius: 7px; background: rgba(5, 9, 6, 0.24); }
 .formPanel h3, .historyPanel h3, .sourcePicker h3 { display: flex; align-items: center; gap: 8px; margin: 0; color: #e7eee8; font-size: 12px; }
 .formPanel h3 svg, .sourcePicker h3 svg { color: #9dc9a9; }
-.formGrid, .saleForm { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end; gap: 11px; }
+.formGrid, .saleForm { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 11px; }
+.processingWeightField { display: grid; gap: 8px; min-width: 0; }
+.processingWeightLabel { display: flex; align-items: baseline; justify-content: space-between; gap: 5px; min-width: 0; }
+.processingWeightLabel label { overflow: hidden; color: var(--color-white); font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.processingWeightLabel span { flex: 0 0 auto; color: rgba(220, 232, 222, 0.54); font-size: 9px; white-space: nowrap; }
 .processingLayout > .formPanel > button { justify-self: start; }
 .successResult { gap: 11px; padding: 12px 14px; border: 1px solid rgba(109, 184, 131, 0.24); border-radius: 7px; background: rgba(42, 116, 67, 0.12); }
 .successResult > svg { color: #9bd6a8; }
@@ -192,6 +197,8 @@
   .contentPanel { padding: 12px; }
   .purchaseBreakdowns { grid-template-columns: minmax(0, 1fr); }
   .saleForm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filterRow { flex-wrap: wrap; }
+  .filterRow > * { flex: 1 1 170px; }
   .previewGrid { min-width: 0; }
 }
 
