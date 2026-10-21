@@ -222,47 +222,103 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 0;
+  gap: 10px;
+  padding: 12px 0;
 }
 
 .calculationSummaryList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  gap: 8px;
   width: 100%;
 }
 
 .calculationSummaryRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
   width: 100%;
   color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
 }
 
-.calculationSummaryRow small {
-  display: block;
-  margin-top: 3px;
+.calculationSummaryIdentity {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.calculationSummaryIdentity strong {
+  overflow-wrap: anywhere;
+  color: #f0eee6;
+  font-size: 13px;
+}
+
+.calculationSummaryIdentity span {
   color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+}
+
+.calculationSummaryStep {
+  justify-self: end;
+  padding: 4px 7px;
+  border: 1px solid rgba(212, 188, 123, 0.18);
+  border-radius: 4px;
+  background: rgba(212, 188, 123, 0.07);
+  color: #d8c995;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.calculationSummaryFormula {
+  grid-column: 1 / -1;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.16);
+  color: rgba(239, 238, 230, 0.78);
   font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
 }
 
 .calculationSummaryTotals {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  border: 1px solid rgba(110, 177, 126, 0.22);
+  border-radius: 6px;
+  background: rgba(70, 130, 85, 0.075);
   color: rgba(255, 255, 255, 0.95);
   font-weight: 600;
 }
 
-.calculationStepLabel {
+.calculationSummaryTotals > span:first-child {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  text-align: center;
+  font-size: 12px;
+}
+
+.calculationSummaryTotalValues {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.calculationSummaryTotalValues small {
+  color: rgba(235, 238, 228, 0.64);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.calculationSummaryTotalValues strong {
+  color: #cce8ce;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
 }
 
 @keyframes slideInDown {

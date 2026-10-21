@@ -196,12 +196,6 @@ export const FinalOffer: FC<{
   }) ?? ironItems;
   const totalWeight = recalculationResult?.totalWeight ?? ironTotals?.weightKgTotal;
   const totalAmount = recalculationResult?.totalAmount ?? ironTotals?.totalAmountTotal;
-  const stepLabel = recalculationResult?.appliedStep != null && recalculationResult.appliedStep > 0
-    ? t("operatorPage.ironCarShop.stepLabel", {
-        step: recalculationResult.appliedStep,
-      })
-    : undefined;
-
   const isAgent = agentPayment?.isAgent === true;
   const hasNewCatalystOffer = !isAgent && !!newPropose;
   const displayPrice = isAgent
@@ -289,19 +283,19 @@ export const FinalOffer: FC<{
             <div className={styles.calculationSummaryList}>
               {lineItems.map((item) => (
                 <div key={`${item.dictBrandId ?? item.categoryId ?? 0}-${item.ironTypeId}-${item.recalculationStep ?? 0}`} className={styles.calculationSummaryRow}>
-                  <span>
-                    {item.brandName ? `${item.brandName} · ` : ""}{item.name}
-                    <small>
-                      {(item.appliedRecalculationStep ?? item.recalculationStep) == null
-                        ? t("operatorPage.ironCarShop.regularPrice", "Regular price")
-                        : t("operatorPage.ironCarShop.stepLabel", { step: item.appliedRecalculationStep ?? item.recalculationStep })}
-                    </small>
+                  <div className={styles.calculationSummaryIdentity}>
+                    <strong>{item.name}</strong>
+                    {item.brandName && <span>{item.brandName}</span>}
+                  </div>
+                  <span className={styles.calculationSummaryStep}>
+                    {(item.appliedRecalculationStep ?? item.recalculationStep) == null
+                      ? t("operatorPage.ironCarShop.regularPrice", "Regular price")
+                      : t("operatorPage.ironCarShop.stepLabel", { step: item.appliedRecalculationStep ?? item.recalculationStep })}
                   </span>
-                  <span>
-                    {t("operatorPage.ironCarShop.lineFormat", {
-                      name: `${item.brandName ? `${item.brandName} · ` : ""}${item.name}`,
+                  <span className={styles.calculationSummaryFormula}>
+                    {t("operatorPage.ironCarShop.weightEstimate", {
                       weight: item.weightKg,
-                        price: item.pricePerKg?.toLocaleString() ?? t("operatorPage.ironCarShop.priceNotConfigured"),
+                      price: item.pricePerKg?.toLocaleString() ?? t("operatorPage.ironCarShop.priceNotConfigured"),
                       total: item.totalAmount.toLocaleString(),
                     })}
                   </span>
@@ -309,14 +303,12 @@ export const FinalOffer: FC<{
               ))}
             </div>
             <div className={styles.calculationSummaryTotals}>
-              <strong>{t("operatorPage.ironCarShop.total")}: </strong>
-              <span>
-                {totalWeight ?? 0} kg — {totalAmount?.toLocaleString() ?? 0} AMD
+              <span>{t("operatorPage.ironCarShop.total")}</span>
+              <span className={styles.calculationSummaryTotalValues}>
+                <small>{totalWeight ?? 0} kg</small>
+                <strong>{totalAmount?.toLocaleString() ?? 0} AMD</strong>
               </span>
             </div>
-            {stepLabel && (
-              <div className={styles.calculationStepLabel}>{stepLabel}</div>
-            )}
           </div>
         )}
         <div className={styles.finalOfferActions}>
