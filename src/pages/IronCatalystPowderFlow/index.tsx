@@ -93,6 +93,8 @@ interface PowderSource {
   createdAt: string;
 }
 
+type PhysicalSalePurchase = AvailableIronPurchase & { categoryId: number };
+
 const PAGE_SIZE = 10;
 const tabs: Array<{ id: FlowTab; label: string; icon: typeof Archive }> = [
   { id: "purchases", label: "ironCatalystFlow.tabs.purchases", icon: ShoppingCart },
@@ -182,10 +184,10 @@ export const IronCatalystPowderFlow = () => {
   const [saleExchangeRate, setSaleExchangeRate] = useState(0);
   const [saleAttempted, setSaleAttempted] = useState(false);
   const [saleResult, setSaleResult] = useState<SellSalesLotResponse | null>(null);
-  const [physicalIronTarget, setPhysicalIronTarget] = useState<IronWarehouseTransfer | null>(null);
+  const [physicalIronTarget, setPhysicalIronTarget] = useState<
+    (IronWarehouseTransfer & { purchase: PhysicalSalePurchase }) | null
+  >(null);
   const [physicalIronForm, setPhysicalIronForm] = useState({
-    ironTypeId: "",
-    categoryId: "",
     weightKg: "",
     unitSalePrice: "",
     extraExpenses: "0",
@@ -434,15 +436,39 @@ export const IronCatalystPowderFlow = () => {
     }
   };
 
+  const openPhysicalIronSale = async (transfer: IronWarehouseTransfer) => {
+    let purchase = purchases.find((row) => row.purchaseId === transfer.ironPurchaseId);
+    if (!purchase?.categoryId) {
+      try {
+        purchase = (await getAvailableIronPurchases(cashRegisterId))
+          .find((row) => row.purchaseId === transfer.ironPurchaseId);
+      } catch (error) {
+        toast.error(getApiErrorMessage(error, t("ironCatalystFlow.errors.loadFailed")));
+        return;
+      }
+    }
+    if (!purchase?.ironTypeId || typeof purchase.categoryId !== "number" || purchase.categoryId <= 0) {
+      toast.error(t("ironCatalystFlow.errors.purchaseDetailsMissing"));
+      return;
+    }
+    setPhysicalIronTarget({
+      ...transfer,
+      purchase: { ...purchase, categoryId: purchase.categoryId },
+    });
+    setPhysicalIronForm({
+      weightKg: String(transfer.weightKg),
+      unitSalePrice: "",
+      extraExpenses: "0",
+    });
+  };
+
   const submitPhysicalIronSale = async () => {
     if (!physicalIronTarget) return;
-    const ironTypeId = Number(physicalIronForm.ironTypeId);
-    const categoryId = Number(physicalIronForm.categoryId);
     const weightKg = Number(physicalIronForm.weightKg);
     const unitSalePrice = Number(physicalIronForm.unitSalePrice);
     const extraExpenses = Number(physicalIronForm.extraExpenses);
     const saleNumbers = [weightKg, unitSalePrice, extraExpenses];
-    if (!ironTypeId || !categoryId || saleNumbers.some((value) => !Number.isFinite(value)) || weightKg <= 0 || weightKg > physicalIronTarget.weightKg || unitSalePrice < 0 || extraExpenses < 0) {
+    if (saleNumbers.some((value) => !Number.isFinite(value)) || weightKg <= 0 || weightKg > physicalIronTarget.weightKg || unitSalePrice < 0 || extraExpenses < 0) {
       toast.error(t("ironCatalystFlow.errors.invalidPhysicalSale"));
       return;
     }
@@ -451,8 +477,8 @@ export const IronCatalystPowderFlow = () => {
       const response = await createPhysicalIronSale({
         warehouseId: physicalIronTarget.warehouseId,
         ironPurchaseId: physicalIronTarget.ironPurchaseId,
-        ironTypeId,
-        categoryId,
+        ironTypeId: physicalIronTarget.purchase.ironTypeId,
+        categoryId: physicalIronTarget.purchase.categoryId,
         weightKg,
         unitSalePrice,
         extraExpenses,
@@ -825,15 +851,7 @@ export const IronCatalystPowderFlow = () => {
           formatDate(item.transferredAt),
           "—",
           <Button key="physical-sale" size="small" variant="secondary" onClick={() => {
-            const purchase = purchases.find((row) => row.purchaseId === item.ironPurchaseId);
-            setPhysicalIronTarget(item);
-            setPhysicalIronForm({
-              ironTypeId: purchase ? String(purchase.ironTypeId) : "",
-              categoryId: "",
-              weightKg: String(item.weightKg),
-              unitSalePrice: "",
-              extraExpenses: "0",
-            });
+            void openPhysicalIronSale(item);
           }}>{t("ironCatalystFlow.actions.sellIron")}</Button>,
         ]),
       )}
@@ -1112,14 +1130,10 @@ export const IronCatalystPowderFlow = () => {
           onConfirm={() => void submitPhysicalIronSale()}
         >
           <div className={styles.saleForm}>
-            <Select label={t("ironCatalystFlow.columns.ironType")} value={physicalIronForm.ironTypeId} onChange={(event) => setPhysicalIronForm((form) => ({ ...form, ironTypeId: event.target.value }))}>
-              <option value="">{t("ironCatalystFlow.processing.selectPurchase")}</option>
-              {ironTypes.map((item) => <option key={item.id} value={item.id}>{item.name || item.code || `#${item.id}`}</option>)}
-            </Select>
-            <Select label={t("ironCatalystFlow.physicalIronSale.category")} value={physicalIronForm.categoryId} onChange={(event) => setPhysicalIronForm((form) => ({ ...form, categoryId: event.target.value }))}>
-              <option value="">{t("ironCatalystFlow.physicalIronSale.selectCategory")}</option>
-              {ironCategories.filter((item) => item.isActive).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-            </Select>
+            <div className={styles.physicalSaleSource}>
+              <span>{t("ironCatalystFlow.columns.ironType")}: <strong>{physicalIronTarget.purchase.ironTypeName || physicalIronTarget.purchase.ironType || ironTypes.find((item) => item.id === physicalIronTarget.purchase.ironTypeId)?.name || `#${physicalIronTarget.purchase.ironTypeId}`}</strong></span>
+              <span>{t("ironCatalystFlow.physicalIronSale.category")}: <strong>{physicalIronTarget.purchase.categoryName || ironCategories.find((item) => item.id === physicalIronTarget.purchase.categoryId)?.name || `#${physicalIronTarget.purchase.categoryId}`}</strong></span>
+            </div>
             <TextField type="number" min="0" max={physicalIronTarget.weightKg} step="0.001" label={t("ironCatalystFlow.physicalIronSale.weight")} value={physicalIronForm.weightKg} onChange={(event) => setPhysicalIronForm((form) => ({ ...form, weightKg: event.target.value }))} />
             <TextField type="number" min="0" label={t("ironCatalystFlow.physicalIronSale.unitSalePrice")} value={physicalIronForm.unitSalePrice} onChange={(event) => setPhysicalIronForm((form) => ({ ...form, unitSalePrice: event.target.value }))} />
             <TextField type="number" min="0" label={t("ironCatalystFlow.physicalIronSale.extraExpenses")} value={physicalIronForm.extraExpenses} onChange={(event) => setPhysicalIronForm((form) => ({ ...form, extraExpenses: event.target.value }))} />

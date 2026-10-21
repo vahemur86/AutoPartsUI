@@ -148,6 +148,8 @@
 .formPanel h3, .historyPanel h3, .sourcePicker h3 { display: flex; align-items: center; gap: 8px; margin: 0; color: #e7eee8; font-size: 12px; }
 .formPanel h3 svg, .sourcePicker h3 svg { color: #9dc9a9; }
 .formGrid, .saleForm { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 11px; }
+.physicalSaleSource { display: flex; grid-column: 1 / -1; flex-wrap: wrap; gap: 6px 18px; padding: 9px 11px; border: 1px solid rgba(var(--flow-accent), 0.15); border-radius: 6px; background: rgba(var(--flow-accent), 0.045); color: rgba(220, 232, 222, 0.58); font-size: 11px; }
+.physicalSaleSource strong { color: #e3eee5; font-weight: 650; }
 .processingWeightField { display: grid; gap: 8px; min-width: 0; }
 .processingWeightLabel { display: flex; align-items: baseline; justify-content: space-between; gap: 5px; min-width: 0; }
 .processingWeightLabel label { overflow: hidden; color: var(--color-white); font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
