@@ -23,6 +23,24 @@ export const createCarCatalyst = async (
   }
 };
 
+export const updateCarCatalyst = async (
+  id: number,
+  data: CreateCarCatalyst,
+  cashRegisterId?: number,
+) => {
+  try {
+    const response = await api.put(`/car-catalyst/${id}`, data, {
+      headers: getHeaders(cashRegisterId),
+    });
+
+    return response.data as CarCatalyst;
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to update car catalyst."),
+    );
+  }
+};
+
 export const getCarCatalystById = async (
   id: number,
   cashRegisterId?: number,

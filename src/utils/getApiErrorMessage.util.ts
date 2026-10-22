@@ -2,6 +2,10 @@ import type { AxiosError } from "axios";
 
 type ApiErrorResponse = {
   error?: string;
+  message?: string;
+  detail?: string;
+  title?: string;
+  errors?: Record<string, string | string[]>;
 };
 
 export const getApiErrorMessage = (
@@ -12,11 +16,17 @@ export const getApiErrorMessage = (
     const axiosError = error as AxiosError<ApiErrorResponse | string>;
 
     // 1. Check if response data is an object with an 'error' property
-    if (
-      typeof axiosError.response?.data === "object" &&
-      axiosError.response?.data?.error
-    ) {
-      return axiosError.response.data.error;
+    const responseData = axiosError.response?.data;
+    if (responseData && typeof responseData === "object") {
+      const validationMessages = Object.values(responseData.errors ?? {})
+        .flatMap((value) => (Array.isArray(value) ? value : [value]))
+        .filter((value): value is string => typeof value === "string");
+
+      if (responseData.error) return responseData.error;
+      if (responseData.message) return responseData.message;
+      if (responseData.detail) return responseData.detail;
+      if (validationMessages.length) return validationMessages.join("\n");
+      if (responseData.title) return responseData.title;
     }
 
     // 2. Check if response data is just a plain string (Your current issue)

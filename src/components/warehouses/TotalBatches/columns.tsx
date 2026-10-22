@@ -63,6 +63,25 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => {
   }),
 
   columnHelper.display({
+    id: "sourceType",
+    header: i18next.t("warehouses.totalBatches.columns.sourceType"),
+    cell: ({ row }) => {
+      const sourceType = row.original.sourceType;
+      if (sourceType !== "IronDerived" && sourceType !== "Catalyst") {
+        return <span className={styles.mutedText}>—</span>;
+      }
+      const isIronDerived = sourceType === "IronDerived";
+      return (
+        <span className={`${styles.badge} ${isIronDerived ? styles.badgeWarning : styles.badgeInfo}`}>
+          {isIronDerived
+            ? i18next.t("warehouses.totalBatches.sourceType.ironDerived")
+            : i18next.t("warehouses.totalBatches.sourceType.catalyst")}
+        </span>
+      );
+    },
+  }),
+
+  columnHelper.display({
     id: "specialCustomer",
     header: i18next.t("warehouses.totalBatches.columns.specialCustomer"),
     cell: ({ row }) => {

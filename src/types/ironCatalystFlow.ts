@@ -68,6 +68,11 @@ export interface BulkIronProcessingAllocation {
   sourceWeightKg: number;
 }
 
+export interface IronProcessingAllocation extends BulkIronProcessingAllocation {
+  unitCost: number;
+  allocatedPurchaseCost: number;
+}
+
 export interface BulkProcessIronToPowderRequest {
   warehouseId: number;
   allocations: BulkIronProcessingAllocation[];
@@ -92,40 +97,44 @@ export interface IronProcessingBatch {
   processingExpenses: number;
   totalCost: number;
   createdAt: string;
-  allocations?: Array<BulkIronProcessingAllocation & {
-    unitCost: number;
-    allocatedPurchaseCost: number;
-  }>;
+  allocations?: IronProcessingAllocation[];
 }
 
 export interface BulkProcessIronToPowderResponse {
   batch: IronProcessingBatch;
-  allocations: Array<BulkIronProcessingAllocation & {
-    unitCost: number;
-    allocatedPurchaseCost: number;
-  }>;
+  allocations: IronProcessingAllocation[];
 }
 
 export interface IronPowderStockLot {
   id: number;
   warehouseId?: number;
-  powderBatchId: number;
+  powderBatchId?: number;
   remainingPowderKg: number;
-  remainingCostAmd: number;
-  initialPowderKg: number;
-  initialCostAmd: number;
-  remainingPt_g: number;
-  remainingPd_g: number;
-  remainingRh_g: number;
-  status: number;
+  remainingCostAmd?: number;
+  initialPowderKg?: number;
+  initialCostAmd?: number;
+  remainingPt_g?: number;
+  remainingPd_g?: number;
+  remainingRh_g?: number;
+  ptPerKg?: number;
+  pdPerKg?: number;
+  rhPerKg?: number;
+  totalCost?: number;
+  ironPurchaseId?: number;
+  allocations?: IronProcessingAllocation[];
+  sourceWeightKg?: number;
+  powderWeightKg?: number;
+  allocatedPurchaseCost?: number;
+  processingExpenses?: number;
+  status?: number;
   createdAt: string;
-  updatedAt: string;
-  isSpecialCustomerLot: boolean;
-  specialCustomerId: number | null;
-  specialCustomerName: string | null;
-  sourceType: "IronDerived" | "Catalyst" | string;
-  processingBatchId: number | null;
-  containsIronPowder: boolean;
+  updatedAt?: string;
+  isSpecialCustomerLot?: boolean;
+  specialCustomerId?: number | null;
+  specialCustomerName?: string | null;
+  sourceType?: "IronDerived" | "Catalyst" | string;
+  processingBatchId?: number | null;
+  containsIronPowder?: boolean;
 }
 
 export interface IronPowderProfitReport {

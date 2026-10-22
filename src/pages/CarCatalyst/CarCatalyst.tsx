@@ -13,26 +13,36 @@ import { fetchTags } from "@/store/slices/tagsSlice";
 import type {
   CarCatalystBucket,
   CreateCarCatalyst,
+  CarCatalyst,
   VehicleDefinition,
 } from "@/types/settings";
 
 import styles from "./CarCatalyst.module.css";
-import { addCarCatalyst } from "@/store/slices/carCatalystSlice";
+import {
+  addCarCatalyst,
+  editCarCatalyst,
+} from "@/store/slices/carCatalystSlice";
+import { getCarCatalystById } from "@/services/settings/carCatalyst";
 import {
   ArrowDown,
   ArrowUp,
   CarFront,
   ChevronDown,
-  Copy,
   ExternalLink,
+  Info,
   Layers3,
+  MoveDown,
+  MoveUp,
+  Package,
+  PackagePlus,
   Plus,
   Save,
   Trash,
 } from "lucide-react";
 import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getYearOptions } from "./yearOptions";
+import { getCashRegisterId } from "@/utils";
 
 type UICompositionType = 0 | 1 | 2 | 3;
 
@@ -49,6 +59,8 @@ interface UIComposition {
 
 type UIBucket = Omit<CarCatalystBucket, "compositions"> & {
   clientKey: string;
+  positionIndex: number;
+  quantity: number;
   compositions: UIComposition[];
 };
 
@@ -65,9 +77,11 @@ const emptyComposition = (): UIComposition => ({
   rh_g: "",
 });
 
-const emptyBucket = (side: number): UIBucket => ({
+const emptyBucket = (side: number, positionIndex: number): UIBucket => ({
   clientKey: createCompositionId(),
   side,
+  positionIndex,
+  quantity: 1,
   code: "",
   compositions: [emptyComposition()],
 });
@@ -94,8 +108,8 @@ export const CarCatalystPage = () => {
     null,
   );
 
-  const [brands, setBrands] = useState<any[]>([]);
-  const [models, setModels] = useState<any[]>([]);
+  const [brands, setBrands] = useState<VehicleDefinition["brands"]>([]);
+  const [models, setModels] = useState<VehicleDefinition["models"]>([]);
   const [isModelsLoading, setIsModelsLoading] = useState(false);
   const modelRequestId = useRef(0);
 
@@ -103,18 +117,44 @@ export const CarCatalystPage = () => {
   const [birkaId, setBirkaId] = useState<number | "">("");
   const [modelId, setModelId] = useState<number | "">("");
   const [year, setYear] = useState<number | "">("");
+  const [yearFrom, setYearFrom] = useState<number | "">("");
+  const [yearTo, setYearTo] = useState<number | "">("");
   const [country, setCountry] = useState<number | "">("");
   const [engineId, setEngineId] = useState<number | "">("");
+  const [fuelTypeId, setFuelTypeId] = useState<number | "">("");
+  const [driveTypeId, setDriveTypeId] = useState<number | "">("");
+  const [trimName, setTrimName] = useState("");
+  const [engineVolume, setEngineVolume] = useState("");
+  const [serverError, setServerError] = useState("");
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const editId = Number(searchParams.get("editId")) || undefined;
+  const isEditing = Boolean(editId);
 
   const { tags } = useAppSelector((state) => state.tags);
+  const isSaving = useAppSelector((state) => state.carCatalyst.isLoading);
 
   const [frontBuckets, setFrontBuckets] = useState<UIBucket[]>([]);
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
   const [activeSide, setActiveSide] = useState<"front" | "back">("front");
   const [expandedBucketKey, setExpandedBucketKey] = useState<string | null>(null);
   const yearOptions = getYearOptions();
-  const isVehicleComplete = Boolean(brandId && modelId && year && country && engineId);
+  const unitCount = [...frontBuckets, ...backBuckets].reduce(
+    (total, bucket) => total + bucket.quantity,
+    0,
+  );
+  const isVehicleComplete = Boolean(
+    brandId &&
+      modelId &&
+      year &&
+      yearFrom &&
+      yearTo &&
+      country &&
+      engineId &&
+      fuelTypeId &&
+      driveTypeId &&
+      trimName.trim(),
+  );
 
   useEffect(() => {
     const load = async () => {
@@ -128,6 +168,84 @@ export const CarCatalystPage = () => {
     };
     load();
   }, [t]);
+
+  useEffect(() => {
+    if (!editId || !definitions) return;
+
+    let cancelled = false;
+    const loadForEdit = async () => {
+      try {
+        const cashRegisterId = getCashRegisterId();
+        const catalyst: CarCatalyst = await getCarCatalystById(
+          editId,
+          cashRegisterId,
+        );
+        if (cancelled) return;
+        const modelsForBrand = await getVehicleModels(catalyst.brandId);
+        if (cancelled) return;
+        setBrandId(catalyst.brandId);
+        setModels(modelsForBrand || []);
+        setModelId(catalyst.modelId);
+        setBirkaId(catalyst.birkaId ?? "");
+        setYear(catalyst.year || "");
+        setYearFrom(catalyst.yearFrom ?? catalyst.year ?? "");
+        setYearTo(catalyst.yearTo ?? catalyst.year ?? "");
+        setCountry(catalyst.country || "");
+        setEngineId(catalyst.engineId ?? "");
+        setFuelTypeId(catalyst.fuelTypeId ?? "");
+        setDriveTypeId(catalyst.driveTypeId ?? "");
+        setTrimName(catalyst.trimName ?? "");
+        setEngineVolume(
+          catalyst.engineVolume != null ? String(catalyst.engineVolume) : "",
+        );
+        const buckets = (catalyst.buckets ?? []).map((bucket) => ({
+          ...bucket,
+          clientKey: createCompositionId(),
+          positionIndex: bucket.positionIndex ?? 1,
+          quantity: bucket.quantity ?? 1,
+          compositions: (bucket.compositions ?? []).map((composition) => ({
+            id: createCompositionId(),
+            code: composition.code ?? "",
+            type: composition.type as UICompositionType,
+            weightKg:
+              composition.weightKg == null ? "" : String(composition.weightKg),
+            pricePerKg:
+              composition.pricePerKg == null
+                ? ""
+                : String(composition.pricePerKg),
+            pt_g: composition.pt_g == null ? "" : String(composition.pt_g),
+            pd_g: composition.pd_g == null ? "" : String(composition.pd_g),
+            rh_g: composition.rh_g == null ? "" : String(composition.rh_g),
+          })),
+        }));
+        setFrontBuckets(
+          buckets
+            .filter((bucket) => bucket.side === 1)
+            .sort(
+              (a, b) =>
+                (a.positionIndex ?? 1) - (b.positionIndex ?? 1),
+            )
+            .map((bucket, index) => ({ ...bucket, positionIndex: index + 1 })),
+        );
+        setBackBuckets(
+          buckets
+            .filter((bucket) => bucket.side === 2)
+            .sort(
+              (a, b) =>
+                (a.positionIndex ?? 1) - (b.positionIndex ?? 1),
+            )
+            .map((bucket, index) => ({ ...bucket, positionIndex: index + 1 })),
+        );
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : t("carCatalyst.errors.loading"));
+      }
+    };
+
+    void loadForEdit();
+    return () => {
+      cancelled = true;
+    };
+  }, [definitions, editId, t]);
 
   useEffect(() => {
     if (tags.length > 0) return;
@@ -167,8 +285,15 @@ export const CarCatalystPage = () => {
     setBirkaId("");
     setModelId("");
     setYear("");
+    setYearFrom("");
+    setYearTo("");
     setCountry("");
     setEngineId("");
+    setFuelTypeId("");
+    setDriveTypeId("");
+    setTrimName("");
+    setEngineVolume("");
+    setServerError("");
     setFrontBuckets([]);
     setBackBuckets([]);
     setModels([]);
@@ -179,7 +304,9 @@ export const CarCatalystPage = () => {
   const addBucket = (side: "front" | "back") => {
     const setter = side === "front" ? setFrontBuckets : setBackBuckets;
     const sideValue = side === "front" ? 1 : 2;
-    const bucket = emptyBucket(sideValue);
+    const buckets = side === "front" ? frontBuckets : backBuckets;
+    const nextPosition = buckets.length + 1;
+    const bucket = emptyBucket(sideValue, nextPosition);
     setActiveSide(side);
     setExpandedBucketKey(bucket.clientKey);
     setter((prev) => [...prev, bucket]);
@@ -191,32 +318,66 @@ export const CarCatalystPage = () => {
     if (buckets[index]?.clientKey === expandedBucketKey) {
       setExpandedBucketKey(null);
     }
-    setter((prev) => prev.filter((_, i) => i !== index));
+    setter((prev) =>
+      prev
+        .filter((_, i) => i !== index)
+        .map((bucket, bucketIndex) => ({
+          ...bucket,
+          positionIndex: bucketIndex + 1,
+        })),
+    );
+  };
+
+  const moveBucket = (
+    side: "front" | "back",
+    index: number,
+    direction: -1 | 1,
+  ) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+    setter((prev) => {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+
+      const reordered = [...prev];
+      [reordered[index], reordered[targetIndex]] = [
+        reordered[targetIndex],
+        reordered[index],
+      ];
+      return reordered.map((bucket, bucketIndex) => ({
+        ...bucket,
+        positionIndex: bucketIndex + 1,
+      }));
+    });
   };
 
   const duplicateBucket = (side: "front" | "back", index: number) => {
     const setter = side === "front" ? setFrontBuckets : setBackBuckets;
-    const duplicateKey = createCompositionId();
-    setExpandedBucketKey(duplicateKey);
-
     setter((prev) => {
-      const item = prev[index];
-
-      if (!item) return prev;
-
-      return [
-        ...prev,
-        {
-          ...item,
-          id: undefined,
-          clientKey: duplicateKey,
-          compositions: item.compositions.map((composition) => ({
-            ...composition,
-            id: createCompositionId(),
-          })),
-        },
-      ];
+      if (!prev[index] || unitCount >= 4) return prev;
+      return prev.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, quantity: item.quantity + 1 } : item,
+      );
     });
+  };
+
+  const updateBucketQuantity = (side: "front" | "back", index: number, value: number) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+    const currentBuckets = side === "front" ? frontBuckets : backBuckets;
+    const currentQuantity = currentBuckets[index]?.quantity ?? 1;
+    const maxQuantity = Math.max(1, currentQuantity + (4 - unitCount));
+    setter((prev) =>
+      prev.map((bucket, bucketIndex) =>
+        bucketIndex === index
+          ? {
+              ...bucket,
+              quantity: Math.min(
+                maxQuantity,
+                Math.max(1, Math.trunc(value) || 1),
+              ),
+            }
+          : bucket,
+      ),
+    );
   };
 
   const updateBucket = (
@@ -300,7 +461,25 @@ export const CarCatalystPage = () => {
       return false;
     }
 
+    const physicalUnitCount = buckets.reduce(
+      (total, bucket) => total + bucket.quantity,
+      0,
+    );
+    if (physicalUnitCount > 4) {
+      toast.error(t("carCatalyst.errors.maxUnits"));
+      return false;
+    }
+
     for (const bucket of buckets) {
+      if (
+        !Number.isInteger(bucket.quantity) ||
+        bucket.quantity < 1 ||
+        !Number.isInteger(bucket.positionIndex) ||
+        bucket.positionIndex < 1
+      ) {
+        toast.error(t("carCatalyst.errors.invalidBucket"));
+        return false;
+      }
       if (!bucket.code.trim()) {
         toast.error(t("carCatalyst.errors.required"));
         return false;
@@ -317,19 +496,22 @@ export const CarCatalystPage = () => {
           return false;
         }
 
+        const weight = Number(composition.weightKg);
+        if (!composition.weightKg || !Number.isFinite(weight) || weight <= 0) {
+          toast.error(t("carCatalyst.errors.weightRequired"));
+          return false;
+        }
+
         if (composition.type === 1) {
-          if (!composition.weightKg || composition.pricePerKg === "") {
+          const price = Number(composition.pricePerKg);
+          if (
+            composition.pricePerKg === "" ||
+            !Number.isFinite(price) ||
+            price < 0
+          ) {
             toast.error(t("carCatalyst.errors.required"));
             return false;
           }
-        } else if (
-          !composition.weightKg ||
-          !composition.pt_g ||
-          !composition.pd_g ||
-          !composition.rh_g
-        ) {
-          toast.error(t("carCatalyst.errors.required"));
-          return false;
         }
       }
     }
@@ -338,12 +520,38 @@ export const CarCatalystPage = () => {
   };
 
   const handleSave = async () => {
-    if (!brandId || !modelId || !year || !country || !engineId) {
+    if (yearFrom && yearTo && yearFrom > yearTo) {
+      toast.error(t("carCatalyst.errors.invalidYearRange"));
+      return;
+    }
+    if (
+      !brandId ||
+      !modelId ||
+      !year ||
+      !yearFrom ||
+      !yearTo ||
+      yearFrom > yearTo ||
+      !country ||
+      !engineId ||
+      !fuelTypeId ||
+      !driveTypeId ||
+      !trimName.trim() ||
+      !engineVolume
+    ) {
       toast.error(t("carCatalyst.errors.required"));
       return;
     }
 
-    const buckets = [...frontBuckets, ...backBuckets];
+    const buckets = [
+      ...frontBuckets.map((bucket, index) => ({
+        ...bucket,
+        positionIndex: index + 1,
+      })),
+      ...backBuckets.map((bucket, index) => ({
+        ...bucket,
+        positionIndex: index + 1,
+      })),
+    ];
 
     if (!validateBuckets(buckets)) {
       return;
@@ -351,37 +559,91 @@ export const CarCatalystPage = () => {
 
     const normalize = (bucket: UIBucket): CarCatalystBucket => ({
       side: bucket.side,
+      positionIndex: bucket.positionIndex,
+      quantity: bucket.quantity,
       code: bucket.code.trim(),
       compositions: bucket.compositions.map((composition) => ({
         code: composition.code.trim(),
         type: Number(composition.type),
-        weightKg: Number(composition.weightKg || 0),
-        pt_g: composition.type === 1 ? 0 : Number(composition.pt_g || 0),
-        pd_g: composition.type === 1 ? 0 : Number(composition.pd_g || 0),
-        rh_g: composition.type === 1 ? 0 : Number(composition.rh_g || 0),
-        ...(composition.type === 1
-          ? { pricePerKg: Number(composition.pricePerKg || 0) }
-          : {}),
+        weightKg: Number(composition.weightKg),
+        pt_g:
+          composition.type === 1 || composition.pt_g === ""
+            ? null
+            : Number(composition.pt_g),
+        pd_g:
+          composition.type === 1 || composition.pd_g === ""
+            ? null
+            : Number(composition.pd_g),
+        rh_g:
+          composition.type === 1 || composition.rh_g === ""
+            ? null
+            : Number(composition.rh_g),
+        pricePerKg:
+          composition.type === 1 ? Number(composition.pricePerKg) : null,
       })),
     });
+
+    const normalizedBuckets = buckets.map(normalize);
+    const uniqueBuckets: CarCatalystBucket[] = [];
+    for (const bucket of normalizedBuckets) {
+      const identical = uniqueBuckets.find(
+        (candidate) =>
+          candidate.side === bucket.side &&
+          candidate.code.trim() === bucket.code.trim() &&
+          JSON.stringify(candidate.compositions) ===
+            JSON.stringify(bucket.compositions),
+      );
+      if (identical) {
+        identical.quantity =
+          (identical.quantity ?? 1) + (bucket.quantity ?? 1);
+      } else {
+        uniqueBuckets.push(bucket);
+      }
+    }
 
     const payload: CreateCarCatalyst = {
       birkaId: typeof birkaId === "number" ? birkaId : undefined,
       brandId: Number(brandId),
       modelId: Number(modelId),
       year: Number(year),
+      yearFrom: Number(yearFrom),
+      yearTo: Number(yearTo),
       country: Number(country),
-      engineVolume: Number(engineId),
+      engineVolume: Number(engineVolume),
+      engineId: Number(engineId),
+      fuelTypeId: Number(fuelTypeId),
+      driveTypeId: Number(driveTypeId),
+      trimName: trimName.trim(),
       side: 0,
-      buckets: buckets.map(normalize),
+      buckets: uniqueBuckets,
     };
 
     try {
-      await dispatch(addCarCatalyst(payload)).unwrap();
-      toast.success(t("carCatalyst.errors.success"));
+      if (editId) {
+        await dispatch(
+          editCarCatalyst({
+            id: editId,
+            payload,
+            cashRegisterId: getCashRegisterId(),
+          }),
+        ).unwrap();
+      } else {
+        await dispatch(addCarCatalyst(payload)).unwrap();
+      }
+      toast.success(
+        t(isEditing ? "carCatalyst.errors.updated" : "carCatalyst.errors.success"),
+      );
       resetForm();
-    } catch {
-      toast.error(t("common.error"));
+      if (editId) setSearchParams({});
+    } catch (error) {
+      const message =
+        typeof error === "string"
+          ? error
+          : error instanceof Error
+            ? error.message
+            : t("common.error");
+      setServerError(message);
+      toast.error(message);
     }
   };
 
@@ -402,26 +664,33 @@ export const CarCatalystPage = () => {
   ) => (
     <div className={styles.bucketSection}>
       <div className={styles.sectionHeader}>
-        <h3
-          className={`${styles.sectionTitle} ${
-            side === "front" ? styles.frontTitle : styles.backTitle
-          }`}
-        >
-          {side === "front" ? (
-            <ArrowUp size={15} aria-hidden="true" />
-          ) : (
-            <ArrowDown size={15} aria-hidden="true" />
-          )}
-          {title}
-        </h3>
+        <div>
+          <h3
+            className={`${styles.sectionTitle} ${
+              side === "front" ? styles.frontTitle : styles.backTitle
+            }`}
+          >
+            {side === "front" ? (
+              <ArrowUp size={17} aria-hidden="true" />
+            ) : (
+              <ArrowDown size={17} aria-hidden="true" />
+            )}
+            {title}
+          </h3>
+          <p className={styles.sectionHint}>
+            <Info size={14} aria-hidden="true" />
+            {t("carCatalyst.sections.positionHelp")}
+          </p>
+        </div>
 
         <Button
           size="medium"
           className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
           onClick={() => addBucket(side)}
+          disabled={unitCount >= 4}
         >
           <Plus size={15} aria-hidden="true" />
-          {t("common.add")}
+          {t("carCatalyst.actions.addBucket")}
         </Button>
       </div>
 
@@ -440,6 +709,9 @@ export const CarCatalystPage = () => {
                   size={17}
                   aria-hidden="true"
                 />
+                <span className={styles.orderNumber} aria-hidden="true">
+                  {bucketIndex + 1}
+                </span>
                 <span className={styles.bucketToggleCode}>
                   {bucket.code || t("carCatalyst.table.bucketCode")}
                 </span>
@@ -449,9 +721,35 @@ export const CarCatalystPage = () => {
                     count: bucket.compositions.length,
                   })}
                 </span>
+                <span className={`${styles.countBadge} ${styles.unitBadge}`}>
+                  <Package size={12} aria-hidden="true" />
+                  {t("carCatalyst.table.unitsCount", {
+                    count: bucket.quantity,
+                  })}
+                </span>
               </button>
 
               <div className={styles.bucketActions}>
+                <button
+                  type="button"
+                  className={styles.iconAction}
+                  onClick={() => moveBucket(side, bucketIndex, -1)}
+                  disabled={bucketIndex === 0}
+                  aria-label={t("carCatalyst.actions.moveBucketUp")}
+                  title={t("carCatalyst.actions.moveBucketUp")}
+                >
+                  <MoveUp size={15} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className={styles.iconAction}
+                  onClick={() => moveBucket(side, bucketIndex, 1)}
+                  disabled={bucketIndex === data.length - 1}
+                  aria-label={t("carCatalyst.actions.moveBucketDown")}
+                  title={t("carCatalyst.actions.moveBucketDown")}
+                >
+                  <MoveDown size={15} aria-hidden="true" />
+                </button>
                 <Button
                   size="small"
                   variant="secondary"
@@ -466,15 +764,16 @@ export const CarCatalystPage = () => {
                   {t("carCatalyst.table.addComposition")}
                 </Button>
 
-                <button
-                  type="button"
-                  className={styles.iconAction}
+                <Button
+                  size="small"
+                  variant="secondary"
+                  className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
                   onClick={() => duplicateBucket(side, bucketIndex)}
-                  aria-label={t("carCatalyst.actions.duplicateBucket")}
-                  title={t("carCatalyst.actions.duplicateBucket")}
+                  disabled={unitCount >= 4}
                 >
-                  <Copy size={16} aria-hidden="true" />
-                </button>
+                  <PackagePlus size={15} aria-hidden="true" />
+                  {t("carCatalyst.actions.addIdenticalUnit")}
+                </Button>
 
                 <button
                   type="button"
@@ -490,14 +789,49 @@ export const CarCatalystPage = () => {
 
             {expandedBucketKey === bucket.clientKey && (
               <>
-                <TextField
-                  label={t("carCatalyst.table.bucketCode")}
-                  value={bucket.code}
-                  onChange={(e) =>
-                    updateBucket(side, bucketIndex, "code", e.target.value)
-                  }
-                />
+                <div className={styles.orderGuide}>
+                  <span className={side === "front" ? styles.frontOrder : styles.rearOrder}>
+                    {side === "front" ? (
+                      <ArrowUp size={15} aria-hidden="true" />
+                    ) : (
+                      <ArrowDown size={15} aria-hidden="true" />
+                    )}
+                    {t(
+                      side === "front"
+                        ? "carCatalyst.sections.frontPosition"
+                        : "carCatalyst.sections.rearPosition",
+                      { position: bucketIndex + 1 },
+                    )}
+                  </span>
+                </div>
+                <div className={styles.bucketFields}>
+                  <TextField
+                    label={t("carCatalyst.table.bucketCode")}
+                    value={bucket.code}
+                    onChange={(e) =>
+                      updateBucket(side, bucketIndex, "code", e.target.value)
+                    }
+                  />
+                  <TextField
+                    label={t("carCatalyst.table.identicalUnits")}
+                    type="number"
+                    min="1"
+                    max={bucket.quantity + (4 - unitCount)}
+                    step="1"
+                    value={bucket.quantity}
+                    onChange={(e) =>
+                      updateBucketQuantity(
+                        side,
+                        bucketIndex,
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
                 <div className={styles.compositionsList}>
+              <p className={styles.unitValueHint}>
+                {t("carCatalyst.table.unitValueHint")}
+              </p>
               {bucket.compositions.map((composition, compositionIndex) => (
                 <div key={composition.id} className={styles.compositionCard}>
                   <div className={styles.compositionGrid}>
@@ -661,6 +995,41 @@ export const CarCatalystPage = () => {
                       </div>
                     )}
                   </div>
+                  <div className={styles.compositionTotals}>
+                    <strong>{t("carCatalyst.table.unitTotals")}</strong>
+                    <span>
+                      {t("carCatalyst.table.weight")}:{" "}
+                      {(
+                        Number(composition.weightKg || 0) * bucket.quantity
+                      ).toFixed(3)}{" "}
+                      kg
+                    </span>
+                    {composition.type !== 1 && (
+                      <>
+                        <span>
+                          Pt:{" "}
+                          {(
+                            Number(composition.pt_g || 0) * bucket.quantity
+                          ).toFixed(2)}{" "}
+                          g
+                        </span>
+                        <span>
+                          Pd:{" "}
+                          {(
+                            Number(composition.pd_g || 0) * bucket.quantity
+                          ).toFixed(2)}{" "}
+                          g
+                        </span>
+                        <span>
+                          Rh:{" "}
+                          {(
+                            Number(composition.rh_g || 0) * bucket.quantity
+                          ).toFixed(2)}{" "}
+                          g
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
                 </div>
@@ -680,7 +1049,11 @@ export const CarCatalystPage = () => {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <div className={styles.titleRow}>
-          <h2 className={styles.title}>{t("carCatalyst.title")}</h2>
+          <h2 className={styles.title}>
+            {isEditing
+              ? t("carCatalyst.actions.editTitle")
+              : t("carCatalyst.title")}
+          </h2>
 
           <button
             type="button"
@@ -711,6 +1084,12 @@ export const CarCatalystPage = () => {
               {t("carCatalyst.sections.vehicleReady")}
             </span>
           )}
+          <span className={styles.unitCountBadge}>
+            {t("carCatalyst.sections.physicalUnits", {
+              count: unitCount,
+              max: 4,
+            })}
+          </span>
         </div>
 
       <div className={`${styles.formGrid} ${styles.vehicleFormGrid}`}>
@@ -769,9 +1148,14 @@ export const CarCatalystPage = () => {
           value={year}
           searchable
           searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setYear(e.target.value === "" ? "" : Number(e.target.value))
-          }
+          onChange={(e) => {
+            const value = e.target.value === "" ? "" : Number(e.target.value);
+            setYear(value);
+            if (value !== "") {
+              setYearFrom((current) => current || value);
+              setYearTo((current) => current || value);
+            }
+          }}
         >
           <option value="">{t("carCatalyst.fields.selectYear")}</option>
           {yearOptions.map((optionYear) => (
@@ -799,7 +1183,7 @@ export const CarCatalystPage = () => {
         </Select>
 
         <Select
-          label={t("carCatalyst.fields.engine")}
+          label={t("carCatalyst.fields.engineVariant")}
           value={engineId}
           searchable
           searchPlaceholder={t("common.search")}
@@ -814,14 +1198,88 @@ export const CarCatalystPage = () => {
             </option>
           ))}
         </Select>
+        <Select
+          label={t("carCatalyst.fields.fuelType")}
+          value={fuelTypeId}
+          searchable
+          searchPlaceholder={t("common.search")}
+          onChange={(e) =>
+            setFuelTypeId(e.target.value === "" ? "" : Number(e.target.value))
+          }
+        >
+          <option value="">{t("carCatalyst.fields.selectFuelType")}</option>
+          {definitions?.fuelTypes?.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </Select>
+        <Select
+          label={t("carCatalyst.fields.driveType")}
+          value={driveTypeId}
+          searchable
+          searchPlaceholder={t("common.search")}
+          onChange={(e) =>
+            setDriveTypeId(e.target.value === "" ? "" : Number(e.target.value))
+          }
+        >
+          <option value="">{t("carCatalyst.fields.selectDriveType")}</option>
+          {definitions?.driveTypes?.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </Select>
+        <TextField
+          label={t("carCatalyst.fields.trimName")}
+          value={trimName}
+          placeholder={t("carCatalyst.fields.trimPlaceholder")}
+          onChange={(e) => setTrimName(e.target.value)}
+        />
+        <Select
+          label={t("carCatalyst.fields.yearFrom")}
+          value={yearFrom}
+          searchable
+          searchPlaceholder={t("common.search")}
+          onChange={(e) =>
+            setYearFrom(e.target.value ? Number(e.target.value) : "")
+          }
+        >
+          <option value="">{t("carCatalyst.fields.yearFrom")}</option>
+          {yearOptions.map((optionYear) => (
+            <option key={optionYear} value={optionYear}>{optionYear}</option>
+          ))}
+        </Select>
+        <Select
+          label={t("carCatalyst.fields.yearTo")}
+          value={yearTo}
+          searchable
+          searchPlaceholder={t("common.search")}
+          onChange={(e) =>
+            setYearTo(e.target.value ? Number(e.target.value) : "")
+          }
+        >
+          <option value="">{t("carCatalyst.fields.yearTo")}</option>
+          {yearOptions.map((optionYear) => (
+            <option key={optionYear} value={optionYear}>{optionYear}</option>
+          ))}
+        </Select>
+        <TextField
+          label={t("carCatalyst.fields.engineVolume")}
+          type="number"
+          min="0"
+          step="any"
+          value={engineVolume}
+          onChange={(e) => setEngineVolume(handleNumericChange(e.target.value))}
+        />
       </div>
       </section>
 
       <div className={styles.sideWorkspace}>
         <div className={styles.sideSwitcher} role="tablist" aria-label={t("carCatalyst.sections.bucketSides")}>
           {([
-            { key: "front", side: "front", title: t("carCatalyst.sections.frontBuckets"), count: frontBuckets.length },
-            { key: "back", side: "back", title: t("carCatalyst.sections.backBuckets"), count: backBuckets.length },
+            { key: "front", side: "front", title: t("carCatalyst.sections.frontBuckets"), count: frontBuckets.reduce((sum, bucket) => sum + bucket.quantity, 0) },
+            { key: "back", side: "back", title: t("carCatalyst.sections.backBuckets"), count: backBuckets.reduce((sum, bucket) => sum + bucket.quantity, 0) },
           ] as const).map((item) => (
             <button
               key={item.key}
@@ -873,13 +1331,19 @@ export const CarCatalystPage = () => {
       </div>
 
       <div className={styles.footerActionBar}>
+        {serverError && (
+          <div className={styles.serverError} role="alert">
+            {serverError}
+          </div>
+        )}
         <Button
           size="medium"
           className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
           onClick={handleSave}
+          disabled={isSaving}
         >
           <Save size={15} aria-hidden="true" />
-          {t("carCatalyst.actions.save")}
+          {isEditing ? t("carCatalyst.actions.update") : t("carCatalyst.actions.save")}
         </Button>
       </div>
     </div>

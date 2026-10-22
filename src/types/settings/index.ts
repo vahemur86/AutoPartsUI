@@ -835,6 +835,8 @@ export interface CarCatalystComposition {
 export interface CarCatalystBucket {
   id?: number;
   side: number;
+  positionIndex?: number;
+  quantity?: number;
   code: string;
   compositions?: CarCatalystComposition[];
   weightKg?: number;
@@ -848,8 +850,14 @@ export interface CreateCarCatalyst {
   brandId: number;
   modelId: number;
   year: number;
+  yearFrom?: number;
+  yearTo?: number;
   country: number;
   engineVolume: number;
+  engineId?: number;
+  fuelTypeId?: number;
+  driveTypeId?: number;
+  trimName?: string;
   side: number;
   buckets: CarCatalystBucket[];
 }
@@ -861,11 +869,20 @@ export interface CarCatalyst {
   brandId: number;
   modelId: number;
   year: number;
+  yearFrom?: number;
+  yearTo?: number;
   country: number;
   engineVolume: number;
+  engineId?: number;
+  fuelTypeId?: number;
+  driveTypeId?: number;
+  trimName?: string | null;
   side: number;
   buckets: CarCatalystBucket[];
   totalWeightKg?: number;
+  totalPt_g?: number;
+  totalPd_g?: number;
+  totalRh_g?: number;
   averagePt_g?: number;
   averagePd_g?: number;
   averageRh_g?: number;
@@ -878,6 +895,12 @@ export interface CarCatalystSearchParams {
   code?: string;
   brandId?: number;
   modelId?: number;
-  year?: number;
+  fromYear?: number;
+  toYear?: number;
   countryId?: number;
+  birkaId?: number;
+  engineId?: number;
+  fuelTypeId?: number;
+  driveTypeId?: number;
+  trimName?: string;
 }

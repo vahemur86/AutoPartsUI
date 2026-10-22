@@ -41,6 +41,7 @@ import {
   Truck,
   PiggyBank,
   Workflow,
+  CarFront,
 } from "lucide-react";
 
 // hooks
@@ -101,6 +102,8 @@ export const Header: FC = () => {
     isActive("/referral-persons") ||
     isActive("/commissions") ||
     isActive("/service-tasks") ||
+    isActive("/admin/vehicle-definitions") ||
+    isActive("/admin/vehicle-dictionaries") ||
     isActive("/car-catalyst") ||
     isActive("/agents") ||
     isActive("/agent-types") ||
@@ -419,6 +422,17 @@ export const Header: FC = () => {
               >
                 <Wrench className={styles.menuItemIcon} size={16} />
                 {t("settings.navigation.serviceTasks")}
+              </button>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${isActive("/admin/vehicle-definitions") || isActive("/admin/vehicle-dictionaries") ? styles.menuItemActive : ""}`}
+                onClick={() => {
+                  navigate("/admin/vehicle-definitions");
+                  setOpenDropdown(null);
+                }}
+              >
+                <CarFront className={styles.menuItemIcon} size={16} />
+                {t("vehicleAdmin.menuTitle")}
               </button>
               <button
                 type="button"

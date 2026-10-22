@@ -1204,7 +1204,12 @@
         "selectedKg": "Selected kg",
         "totalPowderKg": "Total",
         "lotType": "Type",
+        "sourceType": "Source",
         "specialCustomer": "Customer"
+      },
+      "sourceType": {
+        "catalyst": "Catalyst intake",
+        "ironDerived": "Iron processing"
       },
       "lotType": {
         "special": "Special Customer Lot",
@@ -3792,6 +3797,143 @@
       "deleteDescription": "Are you sure you want to delete {{name}}?"
     }
   },
+  "vehicleAdmin": {
+    "menuTitle": "Vehicle database",
+    "eyebrow": "Vehicle master data",
+    "title": "Vehicle Management",
+    "subtitle": "Build clean vehicle dictionaries, then add one vehicle or create many variants in one step.",
+    "adminOnly": "Admin workspace",
+    "workflow": {
+      "title": "Vehicle setup workflow",
+      "hint": "Complete dictionaries first, then create vehicle combinations.",
+      "definitions": "Vehicle definitions",
+      "nextModels": "Next: add models"
+    },
+    "dictionary": {
+      "brands": "Brands",
+      "models": "Models",
+      "engines": "Engines",
+      "fuelTypes": "Fuel types",
+      "driveTypes": "Drive types",
+      "markets": "Markets",
+      "trims": "Trims",
+      "manageTitle": "Manage {{name}}",
+      "manageHint": "Search, add, update or remove dictionary values.",
+      "itemCount": "{{count}} items",
+      "addItem": "Add a value",
+      "editItem": "Update value",
+      "codeUniqueHint": "Codes are trimmed and checked for duplicates before saving.",
+      "caseInsensitive": "Duplicate codes are checked without case sensitivity.",
+      "listTitle": "{{name}} in your database",
+      "listHint": "Select edit to update a code, or delete an unused value.",
+      "bulkDisabled": "Bulk entry is not available for this dictionary",
+      "bulkDisabledHint": "The API currently defines single-item save endpoints here."
+    },
+    "models": {
+      "chooseBrand": "Choose the parent brand",
+      "brandDependency": "Models belong to a brand. Choose one before entering codes.",
+      "bulkTitle": "Add multiple models",
+      "bulkHint": "Enter one model code per line. Existing values will be skipped.",
+      "codesLabel": "Model codes",
+      "uniqueModels": "unique model codes",
+      "duplicatesRemoved": "Blank lines and repeated codes are removed automatically.",
+      "saveAll": "Save all models",
+      "existingModels": "Existing models",
+      "existingHint": "Only models for the selected brand are shown."
+    },
+    "fields": {
+      "brand": "Brand",
+      "model": "Model",
+      "code": "Code",
+      "codePlaceholder": "e.g. BMW",
+      "year": "Year",
+      "hpMin": "Horsepower min",
+      "hpMax": "Horsepower max",
+      "trim": "Trim",
+      "trimName": "Trim",
+      "trims": "Trims",
+      "fuelType": "Fuel type",
+      "fuelTypes": "Fuel types",
+      "engine": "Engine",
+      "engines": "Engines",
+      "market": "Market",
+      "markets": "Markets",
+      "driveType": "Drive type",
+      "driveTypes": "Drive types",
+      "horsePower": "Horsepower"
+    },
+    "actions": {
+      "select": "Select a value",
+      "saving": "Saving...",
+      "update": "Save changes",
+      "add": "Add value",
+      "searchCode": "Search by code",
+      "applyFilters": "Apply filters",
+      "reset": "Reset",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "confirmDelete": "Delete {{code}}? This cannot be undone."
+    },
+    "empty": {
+      "noValues": "No values available",
+      "addBrandFirst": "Add a brand first",
+      "chooseBrand": "Choose a brand to view its models.",
+      "noModels": "No models for this brand yet. Add the first model.",
+      "addModel": "Add a model for this brand",
+      "noEntries": "No dictionary values found.",
+      "noVehicles": "No vehicle definitions match these filters."
+    },
+    "errors": {
+      "lookupLoad": "Could not load vehicle dictionaries.",
+      "listLoad": "Could not load dictionary values.",
+      "vehicleLoad": "Could not load vehicle definitions.",
+      "modelsLoad": "Could not load models for this brand.",
+      "previewLoad": "Could not check existing vehicle combinations.",
+      "codeRequired": "Enter at least one non-empty code.",
+      "duplicateCode": "This code already exists in the selected dictionary.",
+      "brandRequired": "Choose a brand first.",
+      "saveFailed": "Could not save the changes.",
+      "deleteFailed": "Could not delete this value.",
+      "completeVehicle": "Complete all vehicle fields. Horsepower must be between 1 and 3000.",
+      "completeBulk": "Choose a brand, model and at least one value in each group. Enter valid year and horsepower.",
+      "unknown": "Unknown error"
+    },
+    "success": {
+      "created": "Dictionary value added.",
+      "updated": "Dictionary value updated.",
+      "deleted": "Dictionary value deleted.",
+      "modelsCreated": "Created {{count}} models.",
+      "vehicleCreated": "Vehicle definition created.",
+      "bulkFinished": "Bulk complete: {{created}} created, {{skipped}} skipped."
+    },
+    "skipped": {
+      "alreadyExists": "Already exists"
+    },
+    "results": {
+      "created": "Created: {{count}}",
+      "skipped": "Skipped: {{count}}",
+      "combination": "{{trim}} · {{fuel}} · {{engine}}"
+    },
+    "definitions": {
+      "title": "Vehicle definitions",
+      "subtitle": "Find existing configurations or quickly build new variants from your dictionaries.",
+      "count": "{{count}} vehicles",
+      "filters": "Find vehicles",
+      "addTitle": "Add vehicle configurations",
+      "bulkMode": "Bulk combinations",
+      "singleMode": "One vehicle",
+      "createCombinations": "Create {{count}} combinations",
+      "createSingle": "Create vehicle",
+      "listTitle": "Vehicle database",
+      "listHint": "Results include vehicle variant fields from the selected dictionaries.",
+      "page": "Page {{page}} of {{pages}}"
+    },
+    "preview": {
+      "selected": "Selected combinations",
+      "existing": "Already existing",
+      "willCreate": "Will be created"
+    }
+  },
   "carCatalyst": {
     "title": "Car Catalyst Buckets",
 
@@ -3802,20 +3944,37 @@
       "year": "Year",
       "fromYear": "From Year",
       "toYear": "To Year",
+      "yearFrom": "Model year from",
+      "yearTo": "Model year to",
       "country": "Country",
       "engine": "Engine",
+      "engineVariant": "Engine variant",
+      "engineVolume": "Engine volume (legacy)",
+      "fuelType": "Fuel type",
+      "driveType": "Drive type",
+      "trimName": "Trim",
+      "trimPlaceholder": "Enter trim or Unknown/Other",
       "birka": "Birka",
       "selectBrand": "Select brand",
       "selectModel": "Select model",
       "selectBirka": "Select Birka",
       "selectCountry": "Select country",
       "selectEngine": "Select engine",
+      "selectFuelType": "Select fuel type",
+      "selectDriveType": "Select drive type",
       "selectYear": "Select year"
     },
 
     "actions": {
       "save": "Save",
-      "duplicateBucket": "Duplicate bucket",
+      "update": "Update catalyst",
+      "edit": "Edit",
+      "editTitle": "Edit car catalyst",
+      "addBucket": "Add bucket",
+      "addIdenticalUnit": "Add same unit",
+      "duplicateBucket": "Add one identical unit",
+      "moveBucketUp": "Move bucket up",
+      "moveBucketDown": "Move bucket down",
       "deleteBucket": "Delete bucket",
       "deleteComposition": "Delete composition"
     },
@@ -3827,6 +3986,10 @@
       "bucketSides": "Bucket position",
       "selectVehiclePrompt": "Complete the vehicle details to start adding buckets.",
       "componentCount": "{{count}} components",
+      "physicalUnits": "Physical units: {{count}} / {{max}}",
+      "frontPosition": "Front · position {{position}}",
+      "rearPosition": "Rear · position {{position}}",
+      "positionHelp": "The numbered badge shows this bucket's order on its side. Use the arrows to reorder.",
       "frontBuckets": "Front casing",
       "backBuckets": "Rear casing"
     },
@@ -3842,6 +4005,12 @@
       "addComposition": "Add composition",
       "compositionCode": "Composition code",
       "compositionType": "Type",
+      "positionIndex": "Position order",
+      "quantity": "Identical units",
+      "identicalUnits": "How many identical units?",
+      "unitsCount": "Qty: {{count}}",
+      "unitTotals": "Calculated totals for quantity",
+      "unitValueHint": "Composition values below are per physical unit.",
       "compositionTypes": {
         "ceramic": "Ceramic",
         "iron": "Iron",
@@ -3853,12 +4022,18 @@
     "errors": {
       "loading": "Failed to load data",
       "required": "Please fill in all required fields",
+      "maxUnits": "The total number of physical catalyst units cannot exceed four.",
+      "invalidBucket": "Quantity and position order must be positive whole numbers.",
+      "weightRequired": "Weight must be greater than zero.",
+      "invalidYearRange": "The start year must not be later than the end year.",
       "success": "Buckets added successfully",
+      "updated": "Catalyst updated successfully",
       "emptyBuckets": "No buckets added yet"
     },
     "details": {
       "title": "Catalytic Converter Search",
       "subtitle": "Search by converter code or by vehicle details",
+      "variantSelectionHint": "Several variants may match. Select the exact vehicle configuration to view details.",
       "searchModes": "Search modes",
 
       "tabs": {
@@ -3899,9 +4074,9 @@
         "emptyHint": "Enter a converter code or search by vehicle details.",
         "emptyBuckets": "No buckets found",
         "totalWeight": "Total Weight",
-        "totalPt": "Average Pt",
-        "totalPd": "Average Pd",
-        "totalRh": "Average Rh",
+        "totalPt": "Total Pt",
+        "totalPd": "Total Pd",
+        "totalRh": "Total Rh",
         "totalPrice": "Total price",
         "ceramicPrice": "Ceramic price",
         "ironPrice": "Iron price",
@@ -3930,7 +4105,8 @@
         "brand": "Brand #{{id}}",
         "model": "Model #{{id}}",
         "country": "Country #{{id}}",
-        "birka": "Birka #{{id}}"
+        "birka": "Birka #{{id}}",
+        "unknown": "Unknown / legacy"
       }
     }
   },

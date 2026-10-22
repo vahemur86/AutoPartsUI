@@ -183,6 +183,46 @@
   color: rgba(255, 255, 255, 0.52);
 }
 
+.variantHint,
+.detailActions > span {
+  margin: 6px 0 0;
+  color: #d9c991;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.detailActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.bucketPlacement {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.bucketPlacement > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 999px;
+  background: rgba(196, 169, 106, 0.07);
+  color: #dfd1a7;
+  font-size: 11px;
+}
+
+.bucketPlacement svg {
+  color: #b2c5b6;
+}
+
 .resultsSummaryChip {
   display: flex;
   flex-wrap: wrap;

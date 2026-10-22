@@ -8,8 +8,11 @@ import {
   ChevronDown,
   Hash,
   LoaderCircle,
+  MapPin,
+  Package,
   Search,
   X,
+  Pencil,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -34,7 +37,11 @@ import {
 
 import { getCashRegisterId } from "@/utils";
 
-import type { CarCatalyst, VehicleDefinition } from "@/types/settings";
+import type {
+  CarCatalyst,
+  CarCatalystSearchParams,
+  VehicleDefinition,
+} from "@/types/settings";
 import type {
   SalesLotsCalculatorRequest,
   SalesLotsCalculatorResponse,
@@ -71,10 +78,12 @@ const getBucketCompositionTotals = (bucket: CatalystBucket) => {
   if (compositions.length > 0) {
     return compositions.reduce(
       (acc, composition) => ({
-        weight: acc.weight + getSafeNumber(composition.weightKg),
-        pt: acc.pt + getSafeNumber(composition.pt_g),
-        pd: acc.pd + getSafeNumber(composition.pd_g),
-        rh: acc.rh + getSafeNumber(composition.rh_g),
+        weight:
+          acc.weight +
+          getSafeNumber(composition.weightKg) * (bucket.quantity ?? 1),
+        pt: acc.pt + getSafeNumber(composition.pt_g) * (bucket.quantity ?? 1),
+        pd: acc.pd + getSafeNumber(composition.pd_g) * (bucket.quantity ?? 1),
+        rh: acc.rh + getSafeNumber(composition.rh_g) * (bucket.quantity ?? 1),
       }),
       {
         weight: 0,
@@ -130,36 +139,6 @@ const getCustomerOfferAmd = (
   return null;
 };
 
-const getOfferCurrency = (offer?: CalculatorResultLike | null) => {
-  if (!offer || typeof offer !== "object") return "AMD";
-
-  const currency =
-    getOfferField(offer, "currencyCode") ?? getOfferField(offer, "currency");
-
-  if (currency) return String(currency);
-
-  if (
-    getOfferField(offer, "customerOfferAmd") !== undefined ||
-    getOfferField(offer, "finalBaseAmd") !== undefined ||
-    getOfferField(offer, "kitcoAmd") !== undefined ||
-    getOfferField(offer, "profitAmd") !== undefined
-  ) {
-    return "AMD";
-  }
-
-  const nestedKeys = ["data", "calculation", "calculatorResult", "offerResult"];
-
-  for (const key of nestedKeys) {
-    const nestedValue = getOfferField(offer, key);
-
-    if (nestedValue && typeof nestedValue === "object") {
-      return getOfferCurrency(nestedValue as CalculatorResultLike);
-    }
-  }
-
-  return "AMD";
-};
-
 export const CarCatalystDetails = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -181,14 +160,14 @@ export const CarCatalystDetails = () => {
   );
 
   const { tags } = useAppSelector((state) => state.tags);
-  const [brands, setBrands] = useState<any[]>([]);
-  const [models, setModels] = useState<any[]>([]);
+  const [brands, setBrands] = useState<VehicleDefinition["brands"]>([]);
+  const [models, setModels] = useState<VehicleDefinition["models"]>([]);
 
-  const [modelsByBrandId, setModelsByBrandId] = useState<Record<number, any[]>>(
-    {},
-  );
+  const [modelsByBrandId, setModelsByBrandId] = useState<
+    Record<number, VehicleDefinition["models"]>
+  >({});
 
-  const modelsByBrandIdRef = useRef<Record<number, any[]>>({});
+  const modelsByBrandIdRef = useRef<Record<number, VehicleDefinition["models"]>>({});
 
   const [code, setCode] = useState("");
 
@@ -197,6 +176,11 @@ export const CarCatalystDetails = () => {
  const [fromYear, setFromYear] = useState<number | "">("");
 const [toYear, setToYear] = useState<number | "">("");
   const [countryId, setCountryId] = useState<number | "">("");
+  const [engineId, setEngineId] = useState<number | "">("");
+  const [fuelTypeId, setFuelTypeId] = useState<number | "">("");
+  const [driveTypeId, setDriveTypeId] = useState<number | "">("");
+  const [birkaId, setBirkaId] = useState<number | "">("");
+  const [trimName, setTrimName] = useState("");
 
   const currentYear = new Date().getFullYear();
 
@@ -423,9 +407,9 @@ const years = useMemo(
 
       return {
         weight: getSafeNumber(item?.totalWeightKg),
-        pt: getSafeNumber(item?.averagePt_g),
-        pd: getSafeNumber(item?.averagePd_g),
-        rh: getSafeNumber(item?.averageRh_g),
+        pt: getSafeNumber(item?.totalPt_g ?? item?.averagePt_g),
+        pd: getSafeNumber(item?.totalPd_g ?? item?.averagePd_g),
+        rh: getSafeNumber(item?.totalRh_g ?? item?.averageRh_g),
         ceramicPrice,
         filterPrice,
         ironPrice,
@@ -484,6 +468,11 @@ const years = useMemo(
     setFromYear("");
     setToYear("");
     setCountryId("");
+    setEngineId("");
+    setFuelTypeId("");
+    setDriveTypeId("");
+    setBirkaId("");
+    setTrimName("");
     setModels([]);
     setExpandedItemId(null);
     setBucketOffers({});
@@ -524,6 +513,11 @@ const searchByVehicle = async () => {
     (typeof brandId === "number" && brandId > 0) ||
     (typeof modelId === "number" && modelId > 0) ||
     (typeof countryId === "number" && countryId > 0) ||
+    (typeof engineId === "number" && engineId > 0) ||
+    (typeof fuelTypeId === "number" && fuelTypeId > 0) ||
+    (typeof driveTypeId === "number" && driveTypeId > 0) ||
+    (typeof birkaId === "number" && birkaId > 0) ||
+    trimName.trim() !== "" ||
     fromYear !== "" ||
     toYear !== "";
 
@@ -532,15 +526,15 @@ const searchByVehicle = async () => {
     return;
   }
 
-  let from = typeof fromYear === "number" ? fromYear : undefined;
-  let to = typeof toYear === "number" ? toYear : undefined;
+  const from = typeof fromYear === "number" ? fromYear : undefined;
+  const to = typeof toYear === "number" ? toYear : undefined;
 
-  // auto swap if wrong order
   if (from && to && from > to) {
-    [from, to] = [to, from];
+    toast.error(t("carCatalyst.errors.invalidYearRange"));
+    return;
   }
 
-  const params: Record<string, number> = {};
+  const params: CarCatalystSearchParams = {};
 
   if (from) params.fromYear = from;
   if (to) params.toYear = to;
@@ -556,6 +550,19 @@ const searchByVehicle = async () => {
   if (typeof countryId === "number" && countryId > 0) {
     params.countryId = countryId;
   }
+  if (typeof engineId === "number" && engineId > 0) {
+    params.engineId = engineId;
+  }
+  if (typeof fuelTypeId === "number" && fuelTypeId > 0) {
+    params.fuelTypeId = fuelTypeId;
+  }
+  if (typeof driveTypeId === "number" && driveTypeId > 0) {
+    params.driveTypeId = driveTypeId;
+  }
+  if (typeof birkaId === "number" && birkaId > 0) {
+    params.birkaId = birkaId;
+  }
+  if (trimName.trim()) params.trimName = trimName.trim();
 
   setExpandedItemId(null);
   setBucketOffers({});
@@ -633,6 +640,17 @@ const searchByVehicle = async () => {
     );
   };
 
+  const getLookupName = (
+    items: Array<{ id: number; name: string }> | undefined,
+    id: number | undefined,
+  ) => {
+    if (!id) return t("carCatalyst.details.fallback.unknown");
+    return (
+      items?.find((item) => item.id === id)?.name ??
+      t("carCatalyst.details.fallback.unknown")
+    );
+  };
+
   useEffect(() => {
     if (!selected || expandedItemId !== selected.id) return;
 
@@ -659,6 +677,18 @@ const searchByVehicle = async () => {
 
     return (
       <div className={styles.dropdownContent}>
+        <div className={styles.detailActions}>
+          <Button
+            size="small"
+            variant="secondary"
+            className={`${actionStyles.referralButton} ${actionStyles.referralNeutral}`}
+            onClick={() => navigate(`/car-catalyst?editId=${selected.id}`)}
+          >
+            <Pencil size={14} aria-hidden="true" />
+            {t("carCatalyst.actions.edit")}
+          </Button>
+          <span>{t("carCatalyst.details.variantSelectionHint")}</span>
+        </div>
         <div className={styles.totalBox}>
           <div>
             <span>{t("carCatalyst.details.summary.totalWeight")}</span>
@@ -726,10 +756,22 @@ const searchByVehicle = async () => {
                     {bucket.code}
                   </strong>
 
-                  <span>
-                    {bucket.side === 1
-                      ? t("carCatalyst.details.sides.front")
-                      : t("carCatalyst.details.sides.rear")}
+                  <span className={styles.bucketPlacement}>
+                    <span>
+                      <MapPin size={13} aria-hidden="true" />
+                      {t(
+                        bucket.side === 1
+                          ? "carCatalyst.sections.frontPosition"
+                          : "carCatalyst.sections.rearPosition",
+                        { position: bucket.positionIndex ?? 1 },
+                      )}
+                    </span>
+                    <span>
+                      <Package size={13} aria-hidden="true" />
+                      {t("carCatalyst.table.unitsCount", {
+                        count: bucket.quantity ?? 1,
+                      })}
+                    </span>
                   </span>
                 </div>
 
@@ -1031,6 +1073,72 @@ const searchByVehicle = async () => {
                 ))}
               </Select>
 
+              <Select
+                label={t("carCatalyst.fields.engineVariant")}
+                value={engineId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(e) =>
+                  setEngineId(e.target.value ? Number(e.target.value) : "")
+                }
+              >
+                <option value="">{t("carCatalyst.fields.selectEngine")}</option>
+                {definitions?.engines?.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </Select>
+
+              <Select
+                label={t("carCatalyst.fields.fuelType")}
+                value={fuelTypeId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(e) =>
+                  setFuelTypeId(e.target.value ? Number(e.target.value) : "")
+                }
+              >
+                <option value="">{t("carCatalyst.fields.selectFuelType")}</option>
+                {definitions?.fuelTypes?.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </Select>
+
+              <Select
+                label={t("carCatalyst.fields.driveType")}
+                value={driveTypeId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(e) =>
+                  setDriveTypeId(e.target.value ? Number(e.target.value) : "")
+                }
+              >
+                <option value="">{t("carCatalyst.fields.selectDriveType")}</option>
+                {definitions?.driveTypes?.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </Select>
+
+              <Select
+                label={t("carCatalyst.fields.birka")}
+                value={birkaId}
+                searchable
+                searchPlaceholder={t("common.search")}
+                onChange={(e) =>
+                  setBirkaId(e.target.value ? Number(e.target.value) : "")
+                }
+              >
+                <option value="">{t("carCatalyst.fields.selectBirka")}</option>
+                {tags.map((tag) => (
+                  <option key={tag.id} value={tag.id}>{tag.name}</option>
+                ))}
+              </Select>
+
+              <TextField
+                label={t("carCatalyst.fields.trimName")}
+                value={trimName}
+                onChange={(e) => setTrimName(e.target.value)}
+              />
+
               <div className={styles.searchActions}>
                 <Button
                   variant="primary"
@@ -1072,6 +1180,11 @@ const searchByVehicle = async () => {
                   count: displayedList.length,
                 })}
               </p>
+              {displayedList.length > 1 && (
+                <p className={styles.variantHint}>
+                  {t("carCatalyst.details.variantSelectionHint")}
+                </p>
+              )}
             </div>
 
             <div className={styles.resultsSummaryChip}>
@@ -1096,6 +1209,11 @@ const searchByVehicle = async () => {
               const isExpanded = expandedItemId === item.id;
               const birkaLabel =
                 item.birkaName || getBirkaName(item.birkaId);
+              const engineLabel = item.engineId
+                ? getLookupName(definitions?.engines, item.engineId)
+                : item.engineVolume
+                  ? `${item.engineVolume} L · ${t("carCatalyst.details.fallback.unknown")}`
+                  : t("carCatalyst.details.fallback.unknown");
 
               const bucketCount =
                 selected?.id === item.id
@@ -1161,9 +1279,24 @@ const searchByVehicle = async () => {
                       )}
 
                       <p>
-                        {item.year} • {getCountryName(item.country)} •{" "}
-                        {t("carCatalyst.details.results.engine")}{" "}
-                        {item.engineVolume}
+                        {t("carCatalyst.fields.yearFrom")}:{" "}
+                        {item.yearFrom ?? item.year ?? t("carCatalyst.details.fallback.unknown")}
+                        {" – "}
+                        {item.yearTo ?? item.year ?? t("carCatalyst.details.fallback.unknown")}
+                        {" • "}
+                        {getCountryName(item.country)}
+                        {" • "}
+                        {t("carCatalyst.fields.engineVariant")}:{" "}
+                        {engineLabel}
+                        {" • "}
+                        {t("carCatalyst.fields.fuelType")}:{" "}
+                        {getLookupName(definitions?.fuelTypes, item.fuelTypeId)}
+                        {" • "}
+                        {t("carCatalyst.fields.driveType")}:{" "}
+                        {getLookupName(definitions?.driveTypes, item.driveTypeId)}
+                        {" • "}
+                        {t("carCatalyst.fields.trimName")}:{" "}
+                        {item.trimName || t("carCatalyst.details.fallback.unknown")}
                       </p>
 
                       <span className={styles.bucketCount}>

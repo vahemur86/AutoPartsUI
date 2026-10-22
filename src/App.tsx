@@ -134,6 +134,7 @@ import { SetPassword } from "./pages/SetPassword/SetPassword";
 import { IronCatalystPowderFlow } from "./pages/IronCatalystPowderFlow";
 import { CarCatalystPage } from "./pages/CarCatalyst/CarCatalyst";
 import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
+import { VehicleAdminPage } from "./pages/VehicleAdmin";
 import { CatalyticConverters } from "./pages/CatalyticConverters";
 import { CatalyticConverterDetails } from "./pages/CatalyticConverters/CatalyticConverterDetails";
 import { CatalyticSuppliers } from "./pages/CatalyticSuppliers";
@@ -294,6 +295,18 @@ export const App = () => {
                   />
                 </Route>
 
+                <Route
+                  path="admin/vehicle-dictionaries"
+                  element={<VehicleAdminPage />}
+                />
+                <Route
+                  path="admin/vehicle-dictionaries/:dictionary"
+                  element={<VehicleAdminPage />}
+                />
+                <Route
+                  path="admin/vehicle-definitions"
+                  element={<VehicleAdminPage />}
+                />
                 <Route path="service-tasks" element={<ServiceTasks />} />
                 <Route path="car-catalyst" element={<CarCatalystPage />} />
                 <Route path="car-catalyst/details" element={<CarCatalystDetails />} />

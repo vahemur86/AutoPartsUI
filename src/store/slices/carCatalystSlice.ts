@@ -13,6 +13,7 @@ import type {
 
 import {
   createCarCatalyst,
+  updateCarCatalyst,
   getCarCatalystById,
   deleteCarCatalyst,
   searchCarCatalysts,
@@ -45,6 +46,23 @@ export const addCarCatalyst = createAsyncThunk<
     );
   }
 });
+
+export const editCarCatalyst = createAsyncThunk<
+  CarCatalyst,
+  { id: number; payload: CreateCarCatalyst; cashRegisterId?: number },
+  { rejectValue: string }
+>(
+  "carCatalyst/update",
+  async ({ id, payload, cashRegisterId }, { rejectWithValue }) => {
+    try {
+      return await updateCarCatalyst(id, payload, cashRegisterId);
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to update car catalyst."),
+      );
+    }
+  },
+);
 
 export const fetchCarCatalystById = createAsyncThunk<
   CarCatalyst,
@@ -130,6 +148,23 @@ const carCatalystSlice = createSlice({
       .addCase(addCarCatalyst.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Failed to create car catalyst";
+      });
+
+    builder
+      .addCase(editCarCatalyst.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(editCarCatalyst.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.list = state.list.map((item) =>
+          item.id === action.payload.id ? action.payload : item,
+        );
+        state.selected = action.payload;
+      })
+      .addCase(editCarCatalyst.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Failed to update car catalyst";
       });
 
     builder

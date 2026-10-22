@@ -80,14 +80,14 @@ interface PowderSource {
   inventoryLotId: number;
   sourceType: "catalyst" | "iron";
   processingBatchId?: number;
-  sourceIronPurchaseId?: number;
+  sourcePurchaseDisplay: string;
   warehouseId: number;
   availableKg: number;
   remainingCostAmd: number;
   unitCostAmd: number;
-  ptPerKg: number;
-  pdPerKg: number;
-  rhPerKg: number;
+  ptPerKg?: number;
+  pdPerKg?: number;
+  rhPerKg?: number;
   status: number | string;
   createdAt: string;
 }
@@ -120,6 +120,8 @@ const formatNumber = (value?: number | null, decimals = 3) =>
   });
 
 const formatAmd = (value?: number | null) => `${formatNumber(value, 0)} AMD`;
+const formatOptionalNumber = (value?: number | null) =>
+  typeof value === "number" && Number.isFinite(value) ? formatNumber(value) : "—";
 const formatDate = (value?: string | null) =>
   value ? new Date(value).toLocaleString() : "—";
 const formatDay = (value: string, locale?: string) => {
@@ -136,20 +138,29 @@ const formatDay = (value: string, locale?: string) => {
     day: "numeric",
   });
 };
+const getPerKgValue = (
+  directValue: number | undefined,
+  remainingGrams: number | undefined,
+  weightKg: number,
+) => {
+  if (typeof directValue === "number" && Number.isFinite(directValue)) return directValue;
+  if (typeof remainingGrams === "number" && Number.isFinite(remainingGrams) && weightKg > 0) {
+    return remainingGrams / weightKg;
+  }
+  return undefined;
+};
 const parseDecimalInput = (value: string) => Number(value.replace(",", "."));
 const isAvailableSource = (status: number | string) =>
   status === 1 || String(status).toLowerCase() === "available";
 const physicalIronSourceKey = (source: Pick<PhysicalIronSaleSource, "warehouseId" | "ironPurchaseId">) =>
   `${source.warehouseId}:${source.ironPurchaseId}`;
-const preserveBatchAllocations = (
-  loaded: IronProcessingBatch[],
-  previous: IronProcessingBatch[],
-) => loaded.map((batch) => {
-  const previousBatch = previous.find((item) => item.id === batch.id);
-  return batch.allocations?.length || !previousBatch?.allocations?.length
-    ? batch
-    : { ...batch, allocations: previousBatch.allocations };
-});
+const formatPurchaseAllocations = (
+  allocations: Array<{ ironPurchaseId: number; sourceWeightKg: number }> | undefined,
+) => allocations?.length
+  ? allocations.map((allocation) =>
+    `#${allocation.ironPurchaseId} (${formatNumber(allocation.sourceWeightKg)} kg)`,
+  ).join(", ")
+  : "—";
 
 export const IronCatalystPowderFlow = () => {
   const { t, i18n } = useTranslation();
@@ -248,7 +259,7 @@ export const IronCatalystPowderFlow = () => {
             getPhysicalIronSalesReport({ warehouseId: chosenWarehouseId }, cashRegisterId),
           ]);
           setTransfers(transferRows);
-          setProcessingBatches((previous) => preserveBatchAllocations(batchRows, previous));
+          setProcessingBatches(batchRows);
           setTransferPhysicalSales(saleRows);
           break;
         }
@@ -258,7 +269,7 @@ export const IronCatalystPowderFlow = () => {
             getIronWarehouseTransfers({ warehouseId: chosenWarehouseId }, cashRegisterId),
             getPhysicalIronSalesReport({ warehouseId: chosenWarehouseId }, cashRegisterId),
           ]);
-          setProcessingBatches((previous) => preserveBatchAllocations(batchRows, previous));
+          setProcessingBatches(batchRows);
           setTransfers(transferRows);
           setTransferPhysicalSales(saleRows);
           break;
@@ -274,7 +285,7 @@ export const IronCatalystPowderFlow = () => {
             getIronProcessingBatches(chosenWarehouseId, cashRegisterId),
           ]);
           setCatalystInventory(inventoryRows);
-          setProcessingBatches((previous) => preserveBatchAllocations(batchRows, previous));
+          setProcessingBatches(batchRows);
           break;
         }
         case "sales-lots": {
@@ -362,24 +373,45 @@ export const IronCatalystPowderFlow = () => {
   }, [saleForm]);
 
   const powderSources = useMemo<PowderSource[]>(() => catalystInventory.map((lot) => {
-    const isIron = lot.sourceType === "IronDerived" || lot.containsIronPowder;
+    const isProcessingBatch = typeof lot.ptPerKg === "number" ||
+      typeof lot.pdPerKg === "number" ||
+      typeof lot.rhPerKg === "number" ||
+      typeof lot.sourceWeightKg === "number" ||
+      typeof lot.ironPurchaseId === "number" ||
+      Boolean(lot.allocations?.length);
+    const isIron = lot.sourceType === "IronDerived"
+      ? true
+      : lot.sourceType === "Catalyst"
+        ? false
+        : Boolean(lot.containsIronPowder) || isProcessingBatch;
     const weight = lot.remainingPowderKg;
-    const processingBatch = lot.processingBatchId == null
+    const processingBatchId = lot.processingBatchId ?? lot.powderBatchId ??
+      (isProcessingBatch ? lot.id : null);
+    const processingBatch = processingBatchId == null
       ? undefined
-      : processingBatches.find((batch) => batch.id === lot.processingBatchId);
+      : processingBatches.find((batch) => batch.id === processingBatchId);
+    const sourceAllocations = lot.allocations?.length ? lot.allocations : processingBatch?.allocations;
+    const sourcePurchaseDisplay = sourceAllocations?.length
+      ? formatPurchaseAllocations(sourceAllocations)
+      : typeof lot.ironPurchaseId === "number" && lot.ironPurchaseId > 0
+        ? `#${lot.ironPurchaseId}`
+        : typeof processingBatch?.ironPurchaseId === "number" && processingBatch.ironPurchaseId > 0
+          ? `#${processingBatch.ironPurchaseId}`
+          : "—";
+    const remainingCostAmd = lot.remainingCostAmd ?? lot.totalCost ?? lot.initialCostAmd ?? 0;
     return {
       inventoryLotId: lot.id,
       sourceType: isIron ? "iron" : "catalyst",
-      processingBatchId: lot.processingBatchId ?? undefined,
-      sourceIronPurchaseId: processingBatch?.ironPurchaseId,
-      warehouseId: chosenWarehouseId ?? 0,
+      processingBatchId: processingBatchId ?? undefined,
+      sourcePurchaseDisplay,
+      warehouseId: lot.warehouseId ?? chosenWarehouseId ?? 0,
       availableKg: weight,
-      remainingCostAmd: lot.remainingCostAmd,
-      unitCostAmd: lot.remainingCostAmd / Math.max(weight, 0.000001),
-      ptPerKg: lot.remainingPt_g / Math.max(weight, 0.000001),
-      pdPerKg: lot.remainingPd_g / Math.max(weight, 0.000001),
-      rhPerKg: lot.remainingRh_g / Math.max(weight, 0.000001),
-      status: lot.status,
+      remainingCostAmd,
+      unitCostAmd: remainingCostAmd / Math.max(weight, 0.000001),
+      ptPerKg: getPerKgValue(lot.ptPerKg, lot.remainingPt_g, weight),
+      pdPerKg: getPerKgValue(lot.pdPerKg, lot.remainingPd_g, weight),
+      rhPerKg: getPerKgValue(lot.rhPerKg, lot.remainingRh_g, weight),
+      status: lot.status ?? (weight > 0 ? 1 : 0),
       createdAt: lot.createdAt,
     };
   }), [catalystInventory, chosenWarehouseId, processingBatches]);
@@ -663,7 +695,7 @@ export const IronCatalystPowderFlow = () => {
         ]);
         setTransfers(transferRows);
         setTransferPhysicalSales(saleRows);
-        setProcessingBatches((previous) => preserveBatchAllocations(batchRows, previous));
+        setProcessingBatches(batchRows);
       } catch (refreshError) {
         toast.error(getApiErrorMessage(refreshError, t("ironCatalystFlow.errors.loadFailed")));
       }
@@ -1156,9 +1188,9 @@ export const IronCatalystPowderFlow = () => {
     ["batchId", "purchaseId", "sourceWeight", "powderWeight", "remainingPowder", "ptPerKg", "pdPerKg", "rhPerKg", "allocatedPurchaseCost", "processingExpenses", "totalCost", "createdAt"].map(column),
           processingBatches.map((batch) => [
       `#${batch.id}`,
-        batch.allocations?.length
-          ? batch.allocations.map((allocation) => `#${allocation.ironPurchaseId} (${formatNumber(allocation.sourceWeightKg)} kg)`).join(", ")
-          : batch.ironPurchaseId > 0 ? `#${batch.ironPurchaseId}` : "—",
+      batch.allocations?.length
+        ? formatPurchaseAllocations(batch.allocations)
+        : batch.ironPurchaseId > 0 ? `#${batch.ironPurchaseId}` : "—",
       `${formatNumber(batch.sourceWeightKg)} kg`,
       `${formatNumber(batch.powderWeightKg)} kg`,
       `${formatNumber(batch.remainingPowderKg)} kg`,
@@ -1208,14 +1240,14 @@ export const IronCatalystPowderFlow = () => {
       item.sourceType === "iron" ? <span key="iron" className={styles.ironBadge}><Sparkles size={12} />{t("ironCatalystFlow.badges.ironDerived")}</span> : t("ironCatalystFlow.source.catalyst"),
       `#${item.inventoryLotId}`,
       item.processingBatchId ? `#${item.processingBatchId}` : "—",
-      item.sourceIronPurchaseId ? `#${item.sourceIronPurchaseId}` : "—",
+      item.sourcePurchaseDisplay,
       warehouses.find((warehouse) => warehouse.id === item.warehouseId)?.code || `#${item.warehouseId}`,
       <div key="quantity" className={styles.quantityField}><span>{formatNumber(item.availableKg)} kg</span>{item.inventoryLotId in selectedSourceQuantities && <input type="number" min="0" max={item.availableKg} step="0.001" value={selectedSourceQuantities[item.inventoryLotId]} onChange={(event) => setSelectedSourceQuantities((current) => ({ ...current, [item.inventoryLotId]: event.target.value }))} aria-label={t("ironCatalystFlow.inventory.selectedWeight")} />}</div>,
       formatAmd(item.remainingCostAmd),
       formatAmd(item.unitCostAmd),
-      formatNumber(item.ptPerKg),
-      formatNumber(item.pdPerKg),
-      formatNumber(item.rhPerKg),
+      formatOptionalNumber(item.ptPerKg),
+      formatOptionalNumber(item.pdPerKg),
+      formatOptionalNumber(item.rhPerKg),
       item.status === 1 ? t("ironCatalystFlow.statuses.available") : t("ironCatalystFlow.statuses.unavailable"),
       formatDate(item.createdAt),
       item.sourceType === "iron" && item.processingBatchId ? (
