@@ -1,0 +1,32 @@
+{
+  "id": "/calculator",
+  "name": "PRP",
+  "short_name": "PRP",
+  "description": "PRP Calculator",
+  "start_url": "/calculator",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "background_color": "#0e0f11",
+  "theme_color": "#0e0f11",
+  "icons": [
+    {
+      "src": "/prp-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/prp-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/prp-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

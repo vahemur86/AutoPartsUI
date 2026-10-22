@@ -33,6 +33,7 @@ import i18n from "@/i18n/config";
 import { getLanguages } from "@/services/settings/languages";
 import type { Language } from "@/types/settings";
 import { mapApiCodeToI18nCode } from "@/utils/languageMapping";
+import { useIsMobile } from "@/hooks/isMobile";
 
 // images
 import platformScene from "@/assets/images/catalyst-platform-scene.svg";
@@ -46,21 +47,19 @@ const FALLBACK_LANGUAGES = [
   { code: "am", name: "Հայերեն" },
 ];
 
-const getLoginRedirectPath = (role: string) => {
+const getLoginRedirectPath = (role: string, isMobile: boolean) => {
   const userRole = role.toLowerCase();
-  return userRole === "operator"
-    ? "/operator"
-    : userRole === "cashier"
-      ? "/shop-operator"
-      : userRole === "programmer"
-        ? "/programmer"
-        : "/finance-reports/dashboard";
+  if (userRole === "operator") return "/operator";
+  if (userRole === "cashier") return "/shop-operator";
+  if (userRole === "programmer") return "/programmer";
+  return isMobile ? "/calculator" : "/finance-reports/dashboard";
 };
 
 export const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isMobile } = useIsMobile();
 
   const { isLoading, error, isAuthenticated, user } = useAppSelector(
     (state) => state.auth,
@@ -150,9 +149,9 @@ export const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated && user && !loginRedirectPending.current) {
-      navigate(getLoginRedirectPath(user.role), { replace: true });
+      navigate(getLoginRedirectPath(user.role, isMobile), { replace: true });
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, isMobile, navigate]);
 
   useEffect(() => {
     if (error) {
@@ -203,7 +202,10 @@ export const Login = () => {
       await initializeDefaultLanguage();
       toast.success(t("auth.login.welcomeBack"));
       await new Promise<void>((resolve) => window.setTimeout(resolve, 5000));
-      navigate(getLoginRedirectPath(resultAction.payload.role), { replace: true });
+      navigate(
+        getLoginRedirectPath(resultAction.payload.role, isMobile),
+        { replace: true },
+      );
     } else {
       loginRedirectPending.current = false;
     }
