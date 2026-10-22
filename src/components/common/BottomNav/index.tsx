@@ -66,6 +66,7 @@ export const BottomNav: FC = () => {
       path: "/calculator",
       icon: Calculator,
       label: "Calculator",
+      available: true,
     },
     {
       path: "/carCatalyst",
@@ -84,12 +85,17 @@ export const BottomNav: FC = () => {
       {navItems.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.path);
+        const available = "available" in item && item.available;
         return (
           <button
             key={item.path}
-            className={`${styles.navItem} ${active ? styles.active : ""}`}
-            onClick={() => navigate(item.path)}
+            type="button"
+            className={`${styles.navItem} ${active ? styles.active : ""} ${!available ? styles.unavailable : ""}`}
+            onClick={available ? () => navigate(item.path) : undefined}
+            disabled={!available}
             aria-label={item.label}
+            aria-disabled={!available}
+            title={available ? item.label : `${item.label} (Unavailable)`}
           >
             <Icon
               size={24}

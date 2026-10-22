@@ -35,6 +35,12 @@
   color: var(--color-primary-500);
 }
 
+.navItem.unavailable,
+.navItem.unavailable:hover {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 .icon {
   transition: color 0.2s;
 }
@@ -60,9 +66,21 @@
 
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 
     gap: 12px;
 
     backdrop-filter: blur(600px);
+  }
+
+  .bottomNav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .navItem {
+    min-width: 48px;
+    min-height: 44px;
+    flex: 0 0 auto;
+    padding: 8px 12px;
   }
 }

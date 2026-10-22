@@ -210,8 +210,11 @@ export const NewCalculator: FC = () => {
   return (
     <div className={styles.wrapper}>
       {/* Tabs */}
-      <div className={styles.tabs}>
+      <div className={styles.tabs} role="tablist" aria-label={t("calculator.title")}>
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "catalyst"}
           className={`${styles.tab} ${activeTab === "catalyst" ? styles.activeTab : ""}`}
           onClick={() => setActiveTab("catalyst")}
         >
@@ -219,6 +222,9 @@ export const NewCalculator: FC = () => {
           {t("calculator.tabs.catalyst")}
         </button>
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "dollar"}
           className={`${styles.tab} ${activeTab === "dollar" ? styles.activeTab : ""}`}
           onClick={() => setActiveTab("dollar")}
         >
@@ -260,6 +266,7 @@ export const NewCalculator: FC = () => {
             <Weight size={14} /> {t("calculator.form.powderKg")}
           </label>
           <TextField
+            aria-label={t("calculator.form.powderKg")}
             placeholder={t("calculator.placeholder.powderKg")}
             type="number"
             value={displayValue("powderKg")}
@@ -270,6 +277,7 @@ export const NewCalculator: FC = () => {
             <Scale size={14} /> {t("calculator.form.pt_g")}
           </label>
           <TextField
+            aria-label={t("calculator.form.pt_g")}
             placeholder={t("calculator.placeholder.pt_g")}
             type="number"
             value={displayValue("pt_g")}
@@ -280,6 +288,7 @@ export const NewCalculator: FC = () => {
             <Scale size={14} /> {t("calculator.form.pd_g")}
           </label>
           <TextField
+            aria-label={t("calculator.form.pd_g")}
             placeholder={t("calculator.placeholder.pd_g")}
             type="number"
             value={displayValue("pd_g")}
@@ -290,6 +299,7 @@ export const NewCalculator: FC = () => {
             <Scale size={14} /> {t("calculator.form.rh_g")}
           </label>
           <TextField
+            aria-label={t("calculator.form.rh_g")}
             placeholder={t("calculator.placeholder.rh_g")}
             type="number"
             value={displayValue("rh_g")}
@@ -366,6 +376,7 @@ export const NewCalculator: FC = () => {
             {t("calculator.form.ptPrice")}
           </label>
           <TextField
+            aria-label={t("calculator.form.ptPrice")}
             className={isManualMode ? styles.autoField : ""}
             placeholder={t("calculator.placeholder.ptPrice")}
             type="number"
@@ -378,6 +389,7 @@ export const NewCalculator: FC = () => {
             <DollarSign size={14} /> {t("calculator.form.pdPrice")}
           </label>
           <TextField
+            aria-label={t("calculator.form.pdPrice")}
             placeholder={t("calculator.placeholder.pdPrice")}
             type="number"
             disabled={!isManualMode}
@@ -389,6 +401,7 @@ export const NewCalculator: FC = () => {
             <DollarSign size={14} /> {t("calculator.form.rhPrice")}
           </label>
           <TextField
+            aria-label={t("calculator.form.rhPrice")}
             placeholder={t("calculator.placeholder.rhPrice")}
             type="number"
             disabled={!isManualMode}
@@ -400,6 +413,7 @@ export const NewCalculator: FC = () => {
             <DollarSign size={14} /> {t("calculator.form.exchange")}
           </label>
           <TextField
+            aria-label={t("calculator.form.exchange")}
             placeholder={t("calculator.placeholder.exchange")}
             type="number"
             disabled={!isManualMode}
@@ -411,6 +425,7 @@ export const NewCalculator: FC = () => {
             <CoinsIcon size={14} /> {t("calculator.form.customerBonus")}
           </label>
           <TextField
+            aria-label={t("calculator.form.customerBonus")}
             placeholder={t("calculator.placeholder.customerBonus")}
             type="number"
             disabled={!isManualMode}
@@ -424,6 +439,7 @@ export const NewCalculator: FC = () => {
             <CoinsIcon size={14} /> {t("calculator.form.minProfit")}
           </label>
           <TextField
+            aria-label={t("calculator.form.minProfit")}
             placeholder={t("calculator.placeholder.minProfit")}
             type="number"
             disabled={!isManualMode}
@@ -537,6 +553,7 @@ export const NewCalculator: FC = () => {
                 <Weight size={14} /> {t("dollarCalculator.form.powderKg")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.powderKg")}
                 placeholder={t("dollarCalculator.placeholder.powderKg")}
                 type="number"
                 value={dollarDisplayValue("powderKg")}
@@ -547,6 +564,7 @@ export const NewCalculator: FC = () => {
                 <Scale size={14} /> {t("dollarCalculator.form.pt_g")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.pt_g")}
                 placeholder={t("dollarCalculator.placeholder.pt_g")}
                 type="number"
                 value={dollarDisplayValue("pt_g")}
@@ -557,6 +575,7 @@ export const NewCalculator: FC = () => {
                 <Scale size={14} /> {t("dollarCalculator.form.pd_g")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.pd_g")}
                 placeholder={t("dollarCalculator.placeholder.pd_g")}
                 type="number"
                 value={dollarDisplayValue("pd_g")}
@@ -567,6 +586,7 @@ export const NewCalculator: FC = () => {
                 <Scale size={14} /> {t("dollarCalculator.form.rh_g")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.rh_g")}
                 placeholder={t("dollarCalculator.placeholder.rh_g")}
                 type="number"
                 value={dollarDisplayValue("rh_g")}
@@ -577,6 +597,7 @@ export const NewCalculator: FC = () => {
                 <DollarSign size={14} /> {t("dollarCalculator.form.ptPrice")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.ptPrice")}
                 placeholder={t("dollarCalculator.placeholder.ptPrice")}
                 type="number"
                 value={dollarDisplayValue("ptPrice")}
@@ -587,6 +608,7 @@ export const NewCalculator: FC = () => {
                 <DollarSign size={14} /> {t("dollarCalculator.form.pdPrice")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.pdPrice")}
                 placeholder={t("dollarCalculator.placeholder.pdPrice")}
                 type="number"
                 value={dollarDisplayValue("pdPrice")}
@@ -597,6 +619,7 @@ export const NewCalculator: FC = () => {
                 <DollarSign size={14} /> {t("dollarCalculator.form.rhPrice")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.rhPrice")}
                 placeholder={t("dollarCalculator.placeholder.rhPrice")}
                 type="number"
                 value={dollarDisplayValue("rhPrice")}
@@ -615,6 +638,7 @@ export const NewCalculator: FC = () => {
                 <Scale size={14} /> {t("dollarCalculator.form.ptReduce")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.ptReduce")}
                 placeholder={t("dollarCalculator.placeholder.percent")}
                 type="number"
                 value={dollarDisplayValue("ptReducePercent")}
@@ -625,6 +649,7 @@ export const NewCalculator: FC = () => {
                 <Scale size={14} /> {t("dollarCalculator.form.pdReduce")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.pdReduce")}
                 placeholder={t("dollarCalculator.placeholder.percent")}
                 type="number"
                 value={dollarDisplayValue("pdReducePercent")}
@@ -635,6 +660,7 @@ export const NewCalculator: FC = () => {
                 <Scale size={14} /> {t("dollarCalculator.form.rhReduce")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.rhReduce")}
                 placeholder={t("dollarCalculator.placeholder.percent")}
                 type="number"
                 value={dollarDisplayValue("rhReducePercent")}
@@ -645,6 +671,7 @@ export const NewCalculator: FC = () => {
                 <CoinsIcon size={14} /> {t("dollarCalculator.form.salePercent")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.salePercent")}
                 placeholder={t("dollarCalculator.placeholder.percent")}
                 type="number"
                 value={dollarDisplayValue("salePercent")}
@@ -655,6 +682,7 @@ export const NewCalculator: FC = () => {
                 <Weight size={14} /> {t("dollarCalculator.form.moisture")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.moisture")}
                 placeholder={t("dollarCalculator.placeholder.percent")}
                 type="number"
                 value={dollarDisplayValue("moisturePercent")}
@@ -665,6 +693,7 @@ export const NewCalculator: FC = () => {
                 <DollarSign size={14} /> {t("dollarCalculator.form.dollarCost")}
               </label>
               <TextField
+                aria-label={t("dollarCalculator.form.dollarCost")}
                 placeholder={t("dollarCalculator.placeholder.dollarCost")}
                 type="number"
                 value={dollarDisplayValue("dollarCostPerKg")}

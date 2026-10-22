@@ -8,21 +8,32 @@
   --color-secondary-300: #e3e5de;
   --color-secondary-400: #b7beb6;
   min-height: 0;
-  padding: 0 0 24px;
+  min-width: 0;
+  padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px));
   background: transparent;
   color: var(--color-secondary-300);
   font-family: inherit;
+  overflow-wrap: anywhere;
 }
 
 .tabs {
   display: flex;
+  min-width: 0;
   gap: 4px;
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(196, 169, 106, 0.18);
   padding-bottom: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
+  min-height: 44px;
+  flex: 0 0 auto;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -62,6 +73,7 @@
 }
 
 .calculatorContent {
+  min-width: 0;
   animation: fadeIn 0.3s ease;
 }
 
@@ -110,10 +122,12 @@
 .cardsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
   gap: 14px;
 }
 
 .card {
+  min-width: 0;
   background: linear-gradient(145deg, rgba(25, 32, 26, 0.96), rgba(15, 19, 16, 0.98));
   border: 1px solid rgba(196, 169, 106, 0.18);
   border-radius: 8px;
@@ -163,10 +177,33 @@
   margin-top: 4px;
 }
 
+.card :global(input) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 16px;
+  scroll-margin-block: 24px;
+}
+
+.wrapper :global(button:focus-visible),
+.wrapper :global(input:focus-visible),
+.wrapper :global([role="switch"]:focus-visible) {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 2px;
+}
+
 .actions {
   display: flex;
+  min-width: 0;
   gap: 10px;
   margin-top: 10px;
+}
+
+.actions > * {
+  min-width: 0;
+  min-height: 44px;
+  flex: 1 1 0;
 }
 
 .resultGrid {
@@ -177,7 +214,10 @@
 
 .resultGrid div {
   display: flex;
+  min-width: 0;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
   padding: 10px 12px;
   border-radius: 7px;
   background: var(--color-black-1);
@@ -185,6 +225,7 @@
 }
 
 .resultGrid span {
+  min-width: 0;
   font-size: 12px;
   opacity: 0.7;
   text-transform: none;
@@ -192,8 +233,11 @@
 }
 
 .resultGrid b {
+  min-width: 0;
   font-size: 14px;
   transition: 0.2s;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .profit {
@@ -220,12 +264,21 @@
   display: block;
   margin-top: 4px;
   color: #a8c3a2;
-  font-size: 24px;
+  font-size: clamp(20px, 6vw, 24px);
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 1100px) {
   .cardsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cardsGrid > .card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .resultRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -250,11 +303,12 @@
 
 .totalsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
 .totalCard {
+  min-width: 0;
   background: var(--color-black-1);
   border: 1px solid var(--color-black-3);
   border-radius: 7px;
@@ -519,7 +573,7 @@
 
 .resultRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   padding: 12px 14px;
   border-radius: 7px;
@@ -542,6 +596,7 @@
 }
 
 .resultRow > div {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -556,6 +611,7 @@
 }
 
 .resultRow b {
+  overflow-wrap: anywhere;
   font-size: 18px;
   color: var(--color-primary-300);
   font-weight: 700;
@@ -637,12 +693,171 @@
 
 /* Responsive adjustments */
 @media (max-width: 1100px) {
+  .resultActions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0 -4px 14px;
+    padding: 0 4px 6px;
+    overflow: visible;
+    border-bottom: 1px solid rgba(196, 169, 106, 0.18);
+  }
+
+  .tab {
+    justify-content: center;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 8px;
+    white-space: normal;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .title {
+    margin: 0 0 6px;
+    font-size: clamp(18px, 5vw, 20px);
+  }
+
+  .modeInline {
+    justify-content: center;
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 6px 12px;
+  }
+
+  .cardsGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .cardsGrid > .card:last-child {
+    grid-column: auto;
+  }
+
+  .card {
+    padding: 14px;
+    gap: 9px;
+    border-radius: 10px;
+  }
+
+  .cardTitle {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    flex-wrap: wrap;
+  }
+
+  .autoBadge {
+    margin-left: auto;
+  }
+
+  .wrapper label {
+    min-height: 24px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .card :global(input) {
+    min-height: 48px;
+    padding-block: 10px;
+    font-size: 16px;
+  }
+
+  .actions > * {
+    min-height: 48px;
+  }
+
+  .totalsWrapper {
+    padding: 10px;
+  }
+
+  .totalsGrid {
+    gap: 6px;
+  }
+
+  .totalCard {
+    padding: 10px 5px;
+  }
+
+  .totalCard b {
+    font-size: clamp(15px, 5vw, 18px);
+    overflow-wrap: anywhere;
+  }
+
   .resultRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .resultRow b {
+    text-align: right;
+    overflow-wrap: anywhere;
   }
 
   .resultActions {
-    justify-content: flex-start;
+    justify-content: stretch;
+  }
+
+  .resultActions :global(button) {
+    min-height: 44px;
+  }
+
+  .toggleButton {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 380px) {
+  .card {
+    padding: 12px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions > * {
+    flex: auto;
+    width: 100%;
+  }
+
+  .totalsGrid {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+@media (display-mode: standalone) {
+  .wrapper {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
 
