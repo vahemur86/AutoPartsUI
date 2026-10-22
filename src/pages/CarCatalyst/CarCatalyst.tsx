@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -6,8 +6,8 @@ import { Button, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   getVehicleDefinitions,
-  getVehicleModels,
 } from "@/services/settings/vehicles";
+import { getAllVehicleDefinitions } from "@/services/vehicleAdmin";
 import { fetchTags } from "@/store/slices/tagsSlice";
 
 import type {
@@ -16,6 +16,7 @@ import type {
   CarCatalyst,
   VehicleDefinition,
 } from "@/types/settings";
+import type { VehicleDefinitionFilters, VehicleDefinitionRecord } from "@/types/vehicleAdmin";
 
 import styles from "./CarCatalyst.module.css";
 import {
@@ -41,7 +42,6 @@ import {
 } from "lucide-react";
 import actionStyles from "@/pages/ReferralPersons/ReferralActions.module.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getYearOptions } from "./yearOptions";
 import { getCashRegisterId } from "@/utils";
 
 type UICompositionType = 0 | 1 | 2 | 3;
@@ -99,6 +99,10 @@ const handleNumericChange = (value: string): string => {
 };
 
 const shouldShowMetalFields = (type: number) => type !== 1;
+const engineVolumeFromCode = (code?: string) => {
+  const match = code?.match(/^\s*(\d+(?:\.\d+)?)/);
+  return match?.[1] ?? "";
+};
 
 export const CarCatalystPage = () => {
   const { t } = useTranslation();
@@ -109,9 +113,11 @@ export const CarCatalystPage = () => {
   );
 
   const [brands, setBrands] = useState<VehicleDefinition["brands"]>([]);
-  const [models, setModels] = useState<VehicleDefinition["models"]>([]);
-  const [isModelsLoading, setIsModelsLoading] = useState(false);
-  const modelRequestId = useRef(0);
+  const [vehicleMatches, setVehicleMatches] = useState<VehicleDefinitionRecord[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleDefinitionRecord | null>(null);
+  const [isVehicleSearchLoading, setIsVehicleSearchLoading] = useState(false);
+  const vehicleSearchRequestId = useRef(0);
+  const [isLegacyEdit, setIsLegacyEdit] = useState(false);
 
   const [brandId, setBrandId] = useState<number | "">("");
   const [birkaId, setBirkaId] = useState<number | "">("");
@@ -138,23 +144,62 @@ export const CarCatalystPage = () => {
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
   const [activeSide, setActiveSide] = useState<"front" | "back">("front");
   const [expandedBucketKey, setExpandedBucketKey] = useState<string | null>(null);
-  const yearOptions = getYearOptions();
   const unitCount = [...frontBuckets, ...backBuckets].reduce(
     (total, bucket) => total + bucket.quantity,
     0,
   );
   const isVehicleComplete = Boolean(
-    brandId &&
-      modelId &&
-      year &&
-      yearFrom &&
-      yearTo &&
-      country &&
-      engineId &&
-      fuelTypeId &&
-      driveTypeId &&
-      trimName.trim(),
+    selectedVehicle?.id || isLegacyEdit,
   );
+
+  const applySelectedVehicle = useCallback((vehicle: VehicleDefinitionRecord) => {
+    setSelectedVehicle(vehicle);
+    setBrandId(vehicle.brandId);
+    setModelId(vehicle.modelId);
+    setYear(vehicle.year);
+    setYearFrom(vehicle.year);
+    setYearTo(vehicle.year);
+    setEngineId(vehicle.engineId);
+    setFuelTypeId(vehicle.fuelTypeId);
+    setDriveTypeId(vehicle.driveTypeId);
+    setCountry(vehicle.marketId ?? vehicle.market?.id ?? "");
+    const engineCode =
+      vehicle.engine?.code ||
+      vehicle.engineName ||
+      definitions?.engines.find((item) => item.id === vehicle.engineId)?.code;
+    setEngineVolume(engineVolumeFromCode(engineCode));
+    setTrimName(
+      vehicle.trimName?.code ||
+        vehicle.trimNameCode ||
+        "",
+    );
+    setIsLegacyEdit(false);
+  }, [definitions]);
+
+  const searchVehicleDefinitions = async (
+    filters: Omit<VehicleDefinitionFilters, "page" | "pageSize">,
+  ) => {
+    const requestId = ++vehicleSearchRequestId.current;
+    setIsVehicleSearchLoading(true);
+    setSelectedVehicle(null);
+    try {
+      const results = await getAllVehicleDefinitions(filters);
+      if (requestId !== vehicleSearchRequestId.current) return;
+      setVehicleMatches(results);
+      if (results.length === 1) applySelectedVehicle(results[0]);
+    } catch (error) {
+      if (requestId === vehicleSearchRequestId.current) {
+        setVehicleMatches([]);
+        toast.error(
+          error instanceof Error ? error.message : t("carCatalyst.errors.loading"),
+        );
+      }
+    } finally {
+      if (requestId === vehicleSearchRequestId.current) {
+        setIsVehicleSearchLoading(false);
+      }
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -181,10 +226,7 @@ export const CarCatalystPage = () => {
           cashRegisterId,
         );
         if (cancelled) return;
-        const modelsForBrand = await getVehicleModels(catalyst.brandId);
-        if (cancelled) return;
         setBrandId(catalyst.brandId);
-        setModels(modelsForBrand || []);
         setModelId(catalyst.modelId);
         setBirkaId(catalyst.birkaId ?? "");
         setYear(catalyst.year || "");
@@ -198,6 +240,7 @@ export const CarCatalystPage = () => {
         setEngineVolume(
           catalyst.engineVolume != null ? String(catalyst.engineVolume) : "",
         );
+        setIsLegacyEdit(true);
         const buckets = (catalyst.buckets ?? []).map((bucket) => ({
           ...bucket,
           clientKey: createCompositionId(),
@@ -236,6 +279,35 @@ export const CarCatalystPage = () => {
             )
             .map((bucket, index) => ({ ...bucket, positionIndex: index + 1 })),
         );
+        try {
+          const candidates = await getAllVehicleDefinitions({
+            brandId: catalyst.brandId,
+            modelId: catalyst.modelId,
+          });
+          if (cancelled) return;
+          setVehicleMatches(candidates);
+          const matchingDefinitions = candidates.filter((vehicle) =>
+            catalyst.vehicleDefinitionId
+              ? vehicle.id === catalyst.vehicleDefinitionId
+              : vehicle.year === catalyst.year &&
+                vehicle.engineId === catalyst.engineId &&
+                vehicle.fuelTypeId === catalyst.fuelTypeId &&
+                vehicle.driveTypeId === catalyst.driveTypeId &&
+                (vehicle.trimName?.code || vehicle.trimNameCode || "") ===
+                  (catalyst.trimName ?? ""),
+          );
+          if (matchingDefinitions.length === 1) {
+            applySelectedVehicle(matchingDefinitions[0]);
+          }
+        } catch (error) {
+          if (!cancelled) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : t("carCatalyst.errors.loading"),
+            );
+          }
+        }
       } catch (error) {
         toast.error(error instanceof Error ? error.message : t("carCatalyst.errors.loading"));
       }
@@ -245,42 +317,164 @@ export const CarCatalystPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [definitions, editId, t]);
+  }, [applySelectedVehicle, definitions, editId, t]);
 
   useEffect(() => {
     if (tags.length > 0) return;
     dispatch(fetchTags());
   }, [dispatch, tags.length]);
 
+  const confirmVehicleChange = () => {
+    if (!unitCount) return true;
+    if (!window.confirm(t("carCatalyst.sections.changeVehicleConfirm"))) {
+      return false;
+    }
+    setFrontBuckets([]);
+    setBackBuckets([]);
+    setExpandedBucketKey(null);
+    setServerError("");
+    return true;
+  };
+
   const handleBrandChange = async (value: string) => {
     const id = value === "" ? "" : Number(value);
-    const requestId = ++modelRequestId.current;
-
+    if (id === brandId || !confirmVehicleChange()) return;
+    setVehicleMatches([]);
+    setSelectedVehicle(null);
+    setIsLegacyEdit(false);
     setBrandId(id);
     setModelId("");
-    setModels([]);
-
-    if (!id) {
-      setIsModelsLoading(false);
-      return;
-    }
-
-    setIsModelsLoading(true);
-    try {
-      const data = await getVehicleModels(id);
-      if (requestId === modelRequestId.current) setModels(data || []);
-    } catch {
-      if (requestId === modelRequestId.current) {
-        toast.error(t("carCatalyst.errors.loading"));
-      }
-    } finally {
-      if (requestId === modelRequestId.current) setIsModelsLoading(false);
+    setEngineId("");
+    setFuelTypeId("");
+    setDriveTypeId("");
+    setCountry("");
+    setYear("");
+    setYearFrom("");
+    setYearTo("");
+    setTrimName("");
+    setEngineVolume("");
+    if (id) {
+      await searchVehicleDefinitions({ brandId: id });
+    } else {
+      vehicleSearchRequestId.current += 1;
+      setIsVehicleSearchLoading(false);
     }
   };
 
+  const handleModelChange = async (value: string) => {
+    const id = value ? Number(value) : "";
+    if (id === modelId || !confirmVehicleChange()) return;
+    setModelId(id);
+    setSelectedVehicle(null);
+    setIsLegacyEdit(false);
+    setEngineId("");
+    setFuelTypeId("");
+    setDriveTypeId("");
+    setCountry("");
+    setYear("");
+    setYearFrom("");
+    setYearTo("");
+    setTrimName("");
+    setEngineVolume("");
+    if (brandId && id) {
+      await searchVehicleDefinitions({ brandId, modelId: id });
+    } else {
+      vehicleSearchRequestId.current += 1;
+      setIsVehicleSearchLoading(false);
+      setVehicleMatches([]);
+    }
+  };
+
+  const handleVariantFilterChange = async (
+    field: "engineId" | "fuelTypeId" | "driveTypeId" | "marketId" | "year",
+    value: string,
+  ) => {
+    const numericValue = value ? Number(value) : "";
+    const currentValue = {
+      engineId,
+      fuelTypeId,
+      driveTypeId,
+      marketId: country,
+      year,
+    }[field];
+    if (numericValue === currentValue || !confirmVehicleChange()) return;
+    const nextEngineId = field === "engineId" ? numericValue : engineId;
+    const nextFuelTypeId =
+      field === "engineId"
+        ? ""
+        : field === "fuelTypeId"
+          ? numericValue
+          : fuelTypeId;
+    const nextDriveTypeId =
+      field === "engineId" || field === "fuelTypeId"
+        ? ""
+        : field === "driveTypeId"
+          ? numericValue
+          : driveTypeId;
+    const nextMarketId =
+      field === "engineId" || field === "fuelTypeId" || field === "driveTypeId"
+        ? ""
+        : field === "marketId"
+          ? numericValue
+          : country;
+    const nextYear =
+      field === "year"
+        ? numericValue
+        : field === "engineId" ||
+            field === "fuelTypeId" ||
+            field === "driveTypeId" ||
+            field === "marketId"
+          ? ""
+          : year;
+    setSelectedVehicle(null);
+    setIsLegacyEdit(false);
+    setEngineId(nextEngineId);
+    setFuelTypeId(nextFuelTypeId);
+    setDriveTypeId(nextDriveTypeId);
+    setCountry(nextMarketId);
+    setYear(nextYear);
+    setYearFrom("");
+    setYearTo("");
+    setTrimName("");
+    setEngineVolume("");
+
+    if (!brandId || !modelId) return;
+    const filters: Omit<VehicleDefinitionFilters, "page" | "pageSize"> = {
+      brandId,
+      modelId,
+      ...(nextEngineId ? { engineId: nextEngineId } : {}),
+      ...(nextFuelTypeId ? { fuelTypeId: nextFuelTypeId } : {}),
+      ...(nextDriveTypeId ? { driveTypeId: nextDriveTypeId } : {}),
+      ...(nextMarketId ? { marketId: nextMarketId } : {}),
+      ...(nextYear ? { year: nextYear } : {}),
+    };
+    await searchVehicleDefinitions(filters);
+  };
+
+  const optionsForIds = (
+    lookupItems: Array<{ id: number; code: string; name: string }>,
+    field: "modelId" | "engineId" | "fuelTypeId" | "driveTypeId" | "marketId",
+  ) => {
+    const matchingIds = new Set(
+      vehicleMatches.map((vehicle) =>
+        field === "marketId"
+          ? vehicle.marketId ?? vehicle.market?.id
+          : vehicle[field],
+      ),
+    );
+    return lookupItems.filter((item) => matchingIds.has(item.id));
+  };
+
+  const availableYears = Array.from(
+    new Set(vehicleMatches.map((vehicle) => vehicle.year)),
+  ).sort((a, b) => a - b);
+
   const resetForm = () => {
-    modelRequestId.current += 1;
-    setIsModelsLoading(false);
+    vehicleSearchRequestId.current += 1;
+    setIsVehicleSearchLoading(false);
+    setVehicleMatches([]);
+    setSelectedVehicle(null);
+    setIsLegacyEdit(false);
     setBrandId("");
     setBirkaId("");
     setModelId("");
@@ -296,7 +490,6 @@ export const CarCatalystPage = () => {
     setServerError("");
     setFrontBuckets([]);
     setBackBuckets([]);
-    setModels([]);
     setActiveSide("front");
     setExpandedBucketKey(null);
   };
@@ -520,24 +713,15 @@ export const CarCatalystPage = () => {
   };
 
   const handleSave = async () => {
-    if (yearFrom && yearTo && yearFrom > yearTo) {
+    if (isLegacyEdit && yearFrom && yearTo && yearFrom > yearTo) {
       toast.error(t("carCatalyst.errors.invalidYearRange"));
       return;
     }
-    if (
-      !brandId ||
-      !modelId ||
-      !year ||
-      !yearFrom ||
-      !yearTo ||
-      yearFrom > yearTo ||
-      !country ||
-      !engineId ||
-      !fuelTypeId ||
-      !driveTypeId ||
-      !trimName.trim() ||
-      !engineVolume
-    ) {
+    if (!selectedVehicle?.id && !isLegacyEdit) {
+      toast.error(t("carCatalyst.errors.selectVehicle"));
+      return;
+    }
+    if (isLegacyEdit && (!brandId || !modelId || !year || !country)) {
       toast.error(t("carCatalyst.errors.required"));
       return;
     }
@@ -602,18 +786,40 @@ export const CarCatalystPage = () => {
     }
 
     const payload: CreateCarCatalyst = {
+      ...(selectedVehicle?.id
+        ? { vehicleDefinitionId: selectedVehicle.id }
+        : {}),
       birkaId: typeof birkaId === "number" ? birkaId : undefined,
-      brandId: Number(brandId),
-      modelId: Number(modelId),
-      year: Number(year),
-      yearFrom: Number(yearFrom),
-      yearTo: Number(yearTo),
-      country: Number(country),
-      engineVolume: Number(engineVolume),
-      engineId: Number(engineId),
-      fuelTypeId: Number(fuelTypeId),
-      driveTypeId: Number(driveTypeId),
-      trimName: trimName.trim(),
+      ...(isLegacyEdit
+        ? {
+            brandId: Number(brandId),
+            modelId: Number(modelId),
+            year: Number(year),
+            yearFrom: yearFrom ? Number(yearFrom) : undefined,
+            yearTo: yearTo ? Number(yearTo) : undefined,
+            country: Number(country),
+            engineVolume: Number(engineVolume || 0),
+            engineId: engineId ? Number(engineId) : undefined,
+            fuelTypeId: fuelTypeId ? Number(fuelTypeId) : undefined,
+            driveTypeId: driveTypeId ? Number(driveTypeId) : undefined,
+            trimName: trimName.trim(),
+          }
+        : {
+            country: Number(
+              selectedVehicle?.marketId ?? selectedVehicle?.market?.id ?? 0,
+            ),
+            engineVolume: Number(
+              engineVolume ||
+                engineVolumeFromCode(
+                  selectedVehicle?.engine?.code ||
+                    selectedVehicle?.engineName ||
+                    definitions?.engines.find(
+                      (item) => item.id === selectedVehicle?.engineId,
+                    )?.code,
+                ) ||
+                0,
+            ),
+          }),
       side: 0,
       buckets: uniqueBuckets,
     };
@@ -1098,12 +1304,12 @@ export const CarCatalystPage = () => {
           value={brandId}
           searchable
           searchPlaceholder={t("common.search")}
-          onChange={(e) => handleBrandChange(e.target.value)}
+          onChange={(e) => void handleBrandChange(e.target.value)}
         >
           <option value="">{t("carCatalyst.fields.selectBrand")}</option>
-          {brands.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.name || b.code}
+          {brands.map((brand) => (
+            <option key={brand.id} value={brand.id}>
+              {brand.name || brand.code}
             </option>
           ))}
         </Select>
@@ -1113,15 +1319,97 @@ export const CarCatalystPage = () => {
           value={modelId}
           searchable
           searchPlaceholder={t("common.search")}
-          disabled={!brandId || isModelsLoading}
-          onChange={(e) =>
-            setModelId(e.target.value === "" ? "" : Number(e.target.value))
-          }
+          disabled={!brandId || isVehicleSearchLoading}
+          onChange={(e) => void handleModelChange(e.target.value)}
         >
           <option value="">{t("carCatalyst.fields.selectModel")}</option>
-          {models.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name || m.code}
+          {optionsForIds(definitions?.models ?? [], "modelId").map((model) => (
+            <option key={model.id} value={model.id}>
+              {model.name || model.code}
+            </option>
+          ))}
+        </Select>
+
+        <Select
+          label={t("carCatalyst.fields.engineVariant")}
+          value={engineId}
+          searchable
+          searchPlaceholder={t("common.search")}
+          disabled={!modelId || isVehicleSearchLoading}
+          onChange={(e) => void handleVariantFilterChange("engineId", e.target.value)}
+        >
+          <option value="">{t("carCatalyst.fields.selectEngine")}</option>
+          {optionsForIds(definitions?.engines ?? [], "engineId").map((engine) => (
+            <option key={engine.id} value={engine.id}>
+              {engine.name || engine.code}
+            </option>
+          ))}
+        </Select>
+
+        <Select
+          label={t("carCatalyst.fields.fuelType")}
+          value={fuelTypeId}
+          searchable
+          searchPlaceholder={t("common.search")}
+          disabled={!modelId || isVehicleSearchLoading}
+          onChange={(e) => void handleVariantFilterChange("fuelTypeId", e.target.value)}
+        >
+          <option value="">{t("carCatalyst.fields.selectFuelType")}</option>
+          {optionsForIds(definitions?.fuelTypes ?? [], "fuelTypeId").map((fuel) => (
+            <option key={fuel.id} value={fuel.id}>
+              {fuel.name || fuel.code}
+            </option>
+          ))}
+        </Select>
+
+        <Select
+          label={t("carCatalyst.fields.driveType")}
+          value={driveTypeId}
+          searchable
+          searchPlaceholder={t("common.search")}
+          disabled={!modelId || isVehicleSearchLoading}
+          onChange={(e) => void handleVariantFilterChange("driveTypeId", e.target.value)}
+        >
+          <option value="">{t("carCatalyst.fields.selectDriveType")}</option>
+          {optionsForIds(definitions?.driveTypes ?? [], "driveTypeId").map((drive) => (
+            <option key={drive.id} value={drive.id}>
+              {drive.name || drive.code}
+            </option>
+          ))}
+        </Select>
+
+        <Select
+          label={t("carCatalyst.fields.market")}
+          value={country}
+          searchable
+          searchPlaceholder={t("common.search")}
+          disabled={!modelId || isVehicleSearchLoading}
+          onChange={(e) => void handleVariantFilterChange("marketId", e.target.value)}
+        >
+          <option value="">{t("carCatalyst.fields.selectMarket")}</option>
+          {(definitions?.markets ?? []).filter((market) =>
+            optionsForIds(definitions?.markets ?? [], "marketId").some(
+              (option) => option.id === market.id,
+            ),
+          ).map((market) => (
+            <option key={market.id} value={market.id}>
+              {market.name || market.code}
+            </option>
+          ))}
+        </Select>
+
+        <Select
+          label={t("carCatalyst.fields.year")}
+          value={year}
+          searchable
+          searchPlaceholder={t("common.search")}
+          disabled={!modelId || isVehicleSearchLoading}
+          onChange={(e) => void handleVariantFilterChange("year", e.target.value)}
+        >
+          <option value="">{t("carCatalyst.fields.selectYear")}</option>
+          {availableYears.map((optionYear) => (
+            <option key={optionYear} value={optionYear}>
+              {optionYear}
             </option>
           ))}
         </Select>
@@ -1143,136 +1431,110 @@ export const CarCatalystPage = () => {
           ))}
         </Select>
 
-        <Select
-          label={t("carCatalyst.fields.year")}
-          value={year}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) => {
-            const value = e.target.value === "" ? "" : Number(e.target.value);
-            setYear(value);
-            if (value !== "") {
-              setYearFrom((current) => current || value);
-              setYearTo((current) => current || value);
-            }
-          }}
-        >
-          <option value="">{t("carCatalyst.fields.selectYear")}</option>
-          {yearOptions.map((optionYear) => (
-            <option key={optionYear} value={optionYear}>
-              {optionYear}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.country")}
-          value={country}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setCountry(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        >
-          <option value="">{t("carCatalyst.fields.selectCountry")}</option>
-          {definitions?.markets?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.engineVariant")}
-          value={engineId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setEngineId(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        >
-          <option value="">{t("carCatalyst.fields.selectEngine")}</option>
-          {definitions?.engines?.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          label={t("carCatalyst.fields.fuelType")}
-          value={fuelTypeId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setFuelTypeId(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        >
-          <option value="">{t("carCatalyst.fields.selectFuelType")}</option>
-          {definitions?.fuelTypes?.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          label={t("carCatalyst.fields.driveType")}
-          value={driveTypeId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setDriveTypeId(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        >
-          <option value="">{t("carCatalyst.fields.selectDriveType")}</option>
-          {definitions?.driveTypes?.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </Select>
-        <TextField
-          label={t("carCatalyst.fields.trimName")}
-          value={trimName}
-          placeholder={t("carCatalyst.fields.trimPlaceholder")}
-          onChange={(e) => setTrimName(e.target.value)}
-        />
-        <Select
-          label={t("carCatalyst.fields.yearFrom")}
-          value={yearFrom}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setYearFrom(e.target.value ? Number(e.target.value) : "")
-          }
-        >
-          <option value="">{t("carCatalyst.fields.yearFrom")}</option>
-          {yearOptions.map((optionYear) => (
-            <option key={optionYear} value={optionYear}>{optionYear}</option>
-          ))}
-        </Select>
-        <Select
-          label={t("carCatalyst.fields.yearTo")}
-          value={yearTo}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setYearTo(e.target.value ? Number(e.target.value) : "")
-          }
-        >
-          <option value="">{t("carCatalyst.fields.yearTo")}</option>
-          {yearOptions.map((optionYear) => (
-            <option key={optionYear} value={optionYear}>{optionYear}</option>
-          ))}
-        </Select>
-        <TextField
-          label={t("carCatalyst.fields.engineVolume")}
-          type="number"
-          min="0"
-          step="any"
-          value={engineVolume}
-          onChange={(e) => setEngineVolume(handleNumericChange(e.target.value))}
-        />
+        {vehicleMatches.length > 1 && (
+          <Select
+            label={t("carCatalyst.fields.exactVehicle")}
+            value={selectedVehicle?.id ?? ""}
+            searchable
+            searchPlaceholder={t("common.search")}
+            disabled={isVehicleSearchLoading}
+            onChange={(e) => {
+              const vehicleId = Number(e.target.value);
+              if (
+                vehicleId === selectedVehicle?.id ||
+                !confirmVehicleChange()
+              ) {
+                return;
+              }
+              setIsLegacyEdit(false);
+              const vehicle = vehicleMatches.find((item) => item.id === vehicleId);
+              if (vehicle) applySelectedVehicle(vehicle);
+              else setSelectedVehicle(null);
+            }}
+          >
+            <option value="">{t("carCatalyst.fields.selectExactVehicle")}</option>
+            {vehicleMatches.map((vehicle) => {
+              const brandName =
+                vehicle.brand?.name ||
+                definitions?.brands.find((item) => item.id === vehicle.brandId)?.name ||
+                vehicle.brand?.code ||
+                "";
+              const modelName =
+                vehicle.model?.name ||
+                definitions?.models.find((item) => item.id === vehicle.modelId)?.name ||
+                vehicle.model?.code ||
+                "";
+              const engineName =
+                vehicle.engine?.name ||
+                vehicle.engineName ||
+                definitions?.engines.find((item) => item.id === vehicle.engineId)?.name ||
+                vehicle.engine?.code ||
+                "";
+              const fuelName =
+                vehicle.fuelType?.name ||
+                vehicle.fuelTypeName ||
+                definitions?.fuelTypes.find((item) => item.id === vehicle.fuelTypeId)?.name ||
+                "";
+              const driveName =
+                vehicle.driveType?.name ||
+                vehicle.driveTypeName ||
+                definitions?.driveTypes?.find((item) => item.id === vehicle.driveTypeId)?.name ||
+                "";
+              const trim = vehicle.trimName?.name || vehicle.trimName?.code || vehicle.trimNameCode || "";
+              return (
+                <option key={vehicle.id} value={vehicle.id}>
+                  {[brandName, modelName, vehicle.year, engineName, fuelName, driveName, trim]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </option>
+              );
+            })}
+          </Select>
+        )}
       </div>
+      {isVehicleSearchLoading && (
+        <p className={styles.vehicleSearchStatus}>{t("carCatalyst.sections.searchingVehicles")}</p>
+      )}
+      {!isVehicleSearchLoading && brandId && vehicleMatches.length === 0 && !isLegacyEdit && (
+        <p className={styles.vehicleSearchStatus}>{t("carCatalyst.sections.noVehicleMatches")}</p>
+      )}
+      {isLegacyEdit && !selectedVehicle && (
+        <p className={styles.vehicleSearchStatus}>{t("carCatalyst.sections.legacyVehicle")}</p>
+      )}
+      {selectedVehicle && (
+        <div className={styles.selectedVehicleSummary}>
+          <CarFront size={16} aria-hidden="true" />
+          <strong>
+            {selectedVehicle.brand?.name ||
+              definitions?.brands.find((item) => item.id === selectedVehicle.brandId)?.name ||
+              selectedVehicle.brand?.code}
+            {" · "}
+            {selectedVehicle.model?.name ||
+              definitions?.models.find((item) => item.id === selectedVehicle.modelId)?.name ||
+              selectedVehicle.model?.code}
+            {" · "}
+            {selectedVehicle.year}
+          </strong>
+          <span>
+            {selectedVehicle.engine?.name ||
+              selectedVehicle.engineName ||
+              definitions?.engines.find((item) => item.id === selectedVehicle.engineId)?.name ||
+              selectedVehicle.engine?.code}
+            {" · "}
+            {selectedVehicle.fuelType?.name ||
+              selectedVehicle.fuelTypeName ||
+              definitions?.fuelTypes.find((item) => item.id === selectedVehicle.fuelTypeId)?.name ||
+              selectedVehicle.fuelType?.code}
+            {" · "}
+            {selectedVehicle.driveType?.name ||
+              selectedVehicle.driveTypeName ||
+              definitions?.driveTypes?.find((item) => item.id === selectedVehicle.driveTypeId)?.name ||
+              selectedVehicle.driveType?.code}
+            {" · "}
+            {selectedVehicle.trimName?.name || selectedVehicle.trimName?.code || selectedVehicle.trimNameCode || "—"}
+          </span>
+        </div>
+      )}
       </section>
 
       <div className={styles.sideWorkspace}>
@@ -1340,7 +1602,7 @@ export const CarCatalystPage = () => {
           size="medium"
           className={`${actionStyles.referralButton} ${actionStyles.referralPrimary}`}
           onClick={handleSave}
-          disabled={isSaving}
+          disabled={isSaving || !isVehicleComplete}
         >
           <Save size={15} aria-hidden="true" />
           {isEditing ? t("carCatalyst.actions.update") : t("carCatalyst.actions.save")}

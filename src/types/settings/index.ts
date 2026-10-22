@@ -846,10 +846,11 @@ export interface CarCatalystBucket {
 }
 
 export interface CreateCarCatalyst {
+  vehicleDefinitionId?: number;
   birkaId?: number;
-  brandId: number;
-  modelId: number;
-  year: number;
+  brandId?: number;
+  modelId?: number;
+  year?: number;
   yearFrom?: number;
   yearTo?: number;
   country: number;
@@ -864,6 +865,7 @@ export interface CreateCarCatalyst {
 
 export interface CarCatalyst {
   id: number;
+  vehicleDefinitionId?: number | null;
   birkaId?: number;
   birkaName?: string;
   brandId: number;

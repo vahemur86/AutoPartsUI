@@ -122,6 +122,28 @@ export const getVehicleDefinitionsPage = (filters: VehicleDefinitionFilters) =>
     "Failed to load vehicle definitions.",
   );
 
+export const getAllVehicleDefinitions = async (
+  filters: Omit<VehicleDefinitionFilters, "page" | "pageSize">,
+) => {
+  const pageSize = 100;
+  const firstPage = normalizeVehiclePage(
+    await getVehicleDefinitionsPage({ ...filters, page: 1, pageSize }),
+  );
+  const results = [...firstPage.results];
+  const totalItems = firstPage.totalItems;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const nextPage = normalizeVehiclePage(
+      await getVehicleDefinitionsPage({ ...filters, page, pageSize }),
+    );
+    if (!nextPage.results.length) break;
+    results.push(...nextPage.results);
+  }
+
+  return results;
+};
+
 export const createVehicleDefinition = (payload: VehicleDefinitionPayload) =>
   request(
     () => api.post<VehicleDefinitionRecord>("/vehicle-definitions", payload),

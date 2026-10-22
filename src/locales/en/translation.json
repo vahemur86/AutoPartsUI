@@ -3947,6 +3947,7 @@
       "yearFrom": "Model year from",
       "yearTo": "Model year to",
       "country": "Country",
+      "market": "Vehicle market",
       "engine": "Engine",
       "engineVariant": "Engine variant",
       "engineVolume": "Engine volume (legacy)",
@@ -3959,10 +3960,13 @@
       "selectModel": "Select model",
       "selectBirka": "Select Birka",
       "selectCountry": "Select country",
+      "selectMarket": "Select market",
       "selectEngine": "Select engine",
       "selectFuelType": "Select fuel type",
       "selectDriveType": "Select drive type",
-      "selectYear": "Select year"
+      "selectYear": "Select year",
+      "exactVehicle": "Exact vehicle variant",
+      "selectExactVehicle": "Select a vehicle variant"
     },
 
     "actions": {
@@ -3983,6 +3987,10 @@
       "vehicleTitle": "Vehicle details",
       "vehicleHint": "Select the vehicle whose catalytic converter buckets you are entering.",
       "vehicleReady": "Vehicle selected",
+      "searchingVehicles": "Searching saved vehicle definitions...",
+      "noVehicleMatches": "No vehicle matches these choices. Check the vehicle database.",
+      "legacyVehicle": "This is a legacy record not linked to a VehicleDefinition yet.",
+      "changeVehicleConfirm": "Changing the vehicle will clear the entered catalyst buckets. Continue?",
       "bucketSides": "Bucket position",
       "selectVehiclePrompt": "Complete the vehicle details to start adding buckets.",
       "componentCount": "{{count}} components",
@@ -4022,6 +4030,7 @@
     "errors": {
       "loading": "Failed to load data",
       "required": "Please fill in all required fields",
+      "selectVehicle": "Select the exact vehicle variant.",
       "maxUnits": "The total number of physical catalyst units cannot exceed four.",
       "invalidBucket": "Quantity and position order must be positive whole numbers.",
       "weightRequired": "Weight must be greater than zero.",
