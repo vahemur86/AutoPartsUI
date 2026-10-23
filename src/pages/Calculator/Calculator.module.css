@@ -187,10 +187,13 @@
 }
 
 .wrapper :global(button:focus-visible),
-.wrapper :global(input:focus-visible),
 .wrapper :global([role="switch"]:focus-visible) {
   outline: 2px solid #d2bf8a;
   outline-offset: 2px;
+}
+
+.wrapper :global(input:focus-visible) {
+  outline: none;
 }
 
 .actions {
@@ -244,6 +247,116 @@
   color: #a8c3a2;
   font-weight: 700;
   font-size: 16px;
+}
+
+.profitUsd {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-secondary-400);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.costBreakdown {
+  min-width: 0;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(196, 169, 106, 0.07), transparent 65%),
+    var(--color-black-1);
+}
+
+.costBreakdownToggle {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: #e7dcc0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.costBreakdownToggle span {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.costBreakdownToggle b {
+  margin-left: auto;
+  color: #b9d0b3;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.costBreakdownToggle svg {
+  flex: 0 0 auto;
+  transition: transform 160ms ease;
+}
+
+.costBreakdownToggle .costBreakdownExpanded {
+  transform: rotate(180deg);
+}
+
+.costBreakdownExpenses {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px 12px;
+}
+
+.costBreakdownRow {
+  display: flex;
+  min-width: 0;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.1);
+  font-size: 12px;
+}
+
+.costBreakdownRow span {
+  min-width: 0;
+  color: var(--color-secondary-400);
+  overflow-wrap: anywhere;
+}
+
+.costBreakdownRow b {
+  flex: 0 0 auto;
+  color: var(--color-secondary-300);
+  text-align: right;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.costBreakdownRow .costDeduction {
+  color: #d2bf8a;
+}
+
+.costBreakdownRow.costTotal {
+  align-items: center;
+  margin-top: 4px;
+  padding: 12px 10px;
+  border: 1px solid rgba(143, 168, 139, 0.26);
+  border-radius: 6px;
+  background: rgba(143, 168, 139, 0.09);
+}
+
+.costBreakdownRow.costTotal span,
+.costBreakdownRow.costTotal b {
+  color: #b9d0b3;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .dollarFinalTotal {

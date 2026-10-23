@@ -253,10 +253,15 @@ export interface SalesLotsCalculatorRequest {
 export interface SalesLotsCalculatorResponse {
   kitcoAmd: number;
   finalBaseAmd: number;
+  sale?: number;
+  tr1?: number;
+  commission?: number;
+  tr2?: number;
   customerOfferAmd: number;
   customerPercent: number;
   maxCustomerPercent: number;
   profitAmd: number;
+  profitUsd?: number;
   profitPercent: number;
   totalpt_g: number;
   totalpd_g: number;

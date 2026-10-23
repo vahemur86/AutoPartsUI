@@ -3561,6 +3561,11 @@
 
       "kitko": "Kitco (AMD)",
       "finalBase": "Cost",
+      "costBreakdown": "Cost breakdown",
+      "sale": "Sale deduction",
+      "tr1": "Transport cost 1",
+      "commission": "Commission",
+      "tr2": "Transport cost 2",
       "offer": "Offer",
       "profit": "Profit",
       "profitPercent": "Profit percentage",

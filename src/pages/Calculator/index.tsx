@@ -68,6 +68,7 @@ export const NewCalculator: FC = () => {
   );
   const [loading, setLoading] = useState(false);
   const [showHiddenItems, setShowHiddenItems] = useState(false);
+  const [showCostExpenses, setShowCostExpenses] = useState(false);
   const [inputValues, setInputValues] = useState<
     Record<keyof SalesLotsCalculatorRequest, string>
   >({} as Record<keyof SalesLotsCalculatorRequest, string>);
@@ -81,7 +82,12 @@ export const NewCalculator: FC = () => {
   >({} as Record<keyof DollarCalculatorRequest, string>);
 
   const isManualMode = form.priceMode === 1;
-
+  const hasCostBreakdown =
+    result !== null &&
+    typeof result.sale === "number" &&
+    typeof result.tr1 === "number" &&
+    typeof result.commission === "number" &&
+    typeof result.tr2 === "number";
   const displayValue = (key: keyof SalesLotsCalculatorRequest) => {
     const rawValue = inputValues[key];
 
@@ -428,7 +434,6 @@ export const NewCalculator: FC = () => {
             aria-label={t("calculator.form.customerBonus")}
             placeholder={t("calculator.placeholder.customerBonus")}
             type="number"
-            disabled={!isManualMode}
             value={displayValue("customerBonusPercent")}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               update("customerBonusPercent", e.target.value)
@@ -442,7 +447,6 @@ export const NewCalculator: FC = () => {
             aria-label={t("calculator.form.minProfit")}
             placeholder={t("calculator.placeholder.minProfit")}
             type="number"
-            disabled={!isManualMode}
             value={displayValue("minProfitMarginPercent")}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               update("minProfitMarginPercent", e.target.value)
@@ -492,29 +496,88 @@ export const NewCalculator: FC = () => {
               </div>
 
               {showHiddenItems && (
-                <div className={styles.resultGrid}>
-                  <div>
-                    <span>{t("calculator.form.kitko")}</span>
-                    <b>{result.kitcoAmd.toFixed(2)}</b>
-                  </div>
+                <>
+                  {hasCostBreakdown ? (
+                    <div className={styles.costBreakdown}>
+                      <button
+                        type="button"
+                        className={styles.costBreakdownToggle}
+                        aria-expanded={showCostExpenses}
+                        onClick={() => setShowCostExpenses((isOpen) => !isOpen)}
+                      >
+                        <span>{t("calculator.form.finalBase")}</span>
+                        <b>{result.finalBaseAmd.toFixed(2)} AMD</b>
+                        <ChevronDown
+                          size={18}
+                          className={showCostExpenses ? styles.costBreakdownExpanded : ""}
+                        />
+                      </button>
+                      {showCostExpenses && (
+                        <div className={styles.costBreakdownExpenses}>
+                          <div className={styles.costBreakdownRow}>
+                            <span>{t("calculator.form.kitko")}</span>
+                            <b>{result.kitcoAmd.toFixed(2)} AMD</b>
+                          </div>
+                          <div className={styles.costBreakdownRow}>
+                            <span>{t("calculator.form.sale")}</span>
+                            <b className={styles.costDeduction}>
+                              −{(result.sale ?? 0).toFixed(2)} AMD
+                            </b>
+                          </div>
+                          <div className={styles.costBreakdownRow}>
+                            <span>{t("calculator.form.tr1")}</span>
+                            <b className={styles.costDeduction}>
+                              −{(result.tr1 ?? 0).toFixed(2)} AMD
+                            </b>
+                          </div>
+                          <div className={styles.costBreakdownRow}>
+                            <span>{t("calculator.form.commission")}</span>
+                            <b className={styles.costDeduction}>
+                              −{(result.commission ?? 0).toFixed(2)} AMD
+                            </b>
+                          </div>
+                          <div className={styles.costBreakdownRow}>
+                            <span>{t("calculator.form.tr2")}</span>
+                            <b className={styles.costDeduction}>
+                              −{(result.tr2 ?? 0).toFixed(2)} AMD
+                            </b>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className={styles.resultGrid}>
+                      <div>
+                        <span>{t("calculator.form.kitko")}</span>
+                        <b>{result.kitcoAmd.toFixed(2)}</b>
+                      </div>
+                      <div>
+                        <span>{t("calculator.form.finalBase")}</span>
+                        <b>{result.finalBaseAmd.toFixed(2)}</b>
+                      </div>
+                    </div>
+                  )}
 
-                  <div>
-                    <span>{t("calculator.form.finalBase")}</span>
-                    <b>{result.finalBaseAmd.toFixed(2)}</b>
+                  <div className={styles.resultGrid}>
+                    <div>
+                      <span>{t("calculator.form.profit")}</span>
+                      <b className={styles.profit}>
+                        {result.profitAmd.toFixed(2)} AMD
+                        {typeof result.profitUsd === "number" && (
+                          <small className={styles.profitUsd}>
+                            {result.profitUsd.toFixed(2)} USD
+                          </small>
+                        )}
+                      </b>
+                    </div>
+                    <div>
+                      <span>{t("calculator.form.profitPercent")}</span>
+                      <b className={styles.profit}>
+                        {result.profitPercent.toFixed(2)}%
+                      </b>
+                    </div>
                   </div>
-
-                  <div>
-                    <span>{t("calculator.form.profit")}</span>
-                    <b className={styles.profit}>{result.profitAmd.toFixed(2)}</b>
-                  </div>
-
-                  <div>
-                    <span>{t("calculator.form.profitPercent")}</span>
-                    <b className={styles.profit}>
-                      {result.profitPercent.toFixed(2)}%
-                    </b>
-                  </div>
-                </div>
+                </>
               )}
 
               <button
