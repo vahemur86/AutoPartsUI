@@ -1057,7 +1057,13 @@ export const IronCatalystPowderFlow = () => {
                         </div>
                         <div className={styles.purchaseCardIdentity}>
                           <strong>{purchase.brandName || (purchase.dictBrandId ? `#${purchase.dictBrandId}` : "—")}</strong>
-                          <span>{t("ironCatalystFlow.columns.customerId")} #{purchase.customerId}</span>
+                          <span>
+                            {t("ironCatalystFlow.columns.customerName")}: {purchase.customerName || `#${purchase.customerId}`}
+                            {purchase.customerName && ` (#${purchase.customerId})`}
+                          </span>
+                          {purchase.customerPhone && (
+                            <span>{t("ironCatalystFlow.columns.customerPhone")}: {purchase.customerPhone}</span>
+                          )}
                         </div>
                         <div className={styles.purchaseCardDetails}>
                           <span>{t("ironCatalystFlow.columns.ironType")}<strong>{purchase.ironTypeName || `#${purchase.ironTypeId}`}</strong></span>

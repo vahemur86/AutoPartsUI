@@ -1,6 +1,8 @@
 export interface AvailableIronPurchase {
   purchaseId: number;
   customerId: number;
+  customerName?: string | null;
+  customerPhone?: string | null;
   dictBrandId: number;
   ironTypeId: number;
   customerTypeId: number;
