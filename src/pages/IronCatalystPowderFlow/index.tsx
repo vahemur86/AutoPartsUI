@@ -3,12 +3,14 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
   Archive,
+  Atom,
   ArrowLeftRight,
   Boxes,
   ChartNoAxesCombined,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
+  Coins,
   Factory,
   LoaderCircle,
   Plus,
@@ -38,10 +40,12 @@ import {
 } from "@/services/warehouses/salesLots";
 import {
   getAvailableIronPurchases,
+  getAvailableIronPurchasesSummary,
   getIronProcessingBatches,
   getIronPowderStock,
   getIronPowderProfitReport,
   getIronWarehouseTransfers,
+  getIronWarehouseStock,
   createIronPowderSale,
   createBulkPhysicalIronSale,
   getPhysicalIronSalesReport,
@@ -58,6 +62,8 @@ import type {
 } from "@/types/warehouses/salesLots";
 import type {
   AvailableIronPurchase,
+  AvailableIronPurchasesSummary,
+  IronWarehouseStock,
   IronProcessingBatch,
   IronPowderProfitReport,
   IronPowderStockLot,
@@ -94,6 +100,7 @@ interface PowderSource {
 
 interface PhysicalIronSaleSource {
   ironPurchaseId: number;
+  ironTypeName?: string;
   warehouseId: number;
   transferIds: number[];
   weightKg: number;
@@ -172,12 +179,13 @@ export const IronCatalystPowderFlow = () => {
   const [ironCategories, setIronCategories] = useState<IronCategory[]>([]);
   const [warehouseId, setWarehouseId] = useState("");
   const [purchases, setPurchases] = useState<AvailableIronPurchase[]>([]);
+  const [purchaseSummary, setPurchaseSummary] = useState<AvailableIronPurchasesSummary | null>(null);
   const [purchaseFilters, setPurchaseFilters] = useState({ ironTypeId: "", categoryId: "" });
   const [purchaseDateFilters, setPurchaseDateFilters] = useState({ fromDate: "", toDate: "" });
   const [purchasePage, setPurchasePage] = useState(1);
   const [transfers, setTransfers] = useState<IronWarehouseTransfer[]>([]);
+  const [ironWarehouseStock, setIronWarehouseStock] = useState<IronWarehouseStock[]>([]);
   const [processingBatches, setProcessingBatches] = useState<IronProcessingBatch[]>([]);
-  const [transferPhysicalSales, setTransferPhysicalSales] = useState<PhysicalIronSaleReportItem[]>([]);
   const [catalystInventory, setCatalystInventory] = useState<IronPowderStockLot[]>([]);
   const [salesLots, setSalesLots] = useState<BaseLot[]>([]);
   const [salesLotTotal, setSalesLotTotal] = useState(0);
@@ -234,14 +242,22 @@ export const IronCatalystPowderFlow = () => {
   const [reportFilters, setReportFilters] = useState({ dateFrom: "", dateTo: "" });
 
   const chosenWarehouseId = Number(warehouseId) || undefined;
+  const apiLanguage = (i18n.resolvedLanguage || i18n.language).toLowerCase().split("-")[0] === "am"
+    ? "hy"
+    : (i18n.resolvedLanguage || i18n.language).toLowerCase().split("-")[0];
   const purchaseFilterParams = useMemo(() => ({
     ironTypeId: Number(purchaseFilters.ironTypeId) || undefined,
     categoryId: Number(purchaseFilters.categoryId) || undefined,
-  }), [purchaseFilters]);
+    lang: apiLanguage,
+  }), [apiLanguage, purchaseFilters]);
 
   const loadPurchaseData = useCallback(async () => {
-    const purchaseRows = await getAvailableIronPurchases(cashRegisterId, purchaseFilterParams);
+    const [purchaseRows, summary] = await Promise.all([
+      getAvailableIronPurchases(cashRegisterId, purchaseFilterParams),
+      getAvailableIronPurchasesSummary(cashRegisterId, purchaseFilterParams),
+    ]);
     setPurchases(purchaseRows);
+    setPurchaseSummary(summary);
   }, [cashRegisterId, purchaseFilterParams]);
 
   const loadSection = useCallback(async () => {
@@ -253,25 +269,19 @@ export const IronCatalystPowderFlow = () => {
           await loadPurchaseData();
           break;
         case "transfers": {
-          const [transferRows, batchRows, saleRows] = await Promise.all([
-            getIronWarehouseTransfers({ warehouseId: chosenWarehouseId }, cashRegisterId),
-            getIronProcessingBatches(chosenWarehouseId, cashRegisterId),
-            getPhysicalIronSalesReport({ warehouseId: chosenWarehouseId }, cashRegisterId),
+          const [transferRows, stockRows] = await Promise.all([
+            getIronWarehouseTransfers({ warehouseId: chosenWarehouseId, lang: apiLanguage }, cashRegisterId),
+            chosenWarehouseId
+              ? getIronWarehouseStock(chosenWarehouseId, apiLanguage, cashRegisterId)
+              : Promise.resolve([]),
           ]);
           setTransfers(transferRows);
-          setProcessingBatches(batchRows);
-          setTransferPhysicalSales(saleRows);
+          setIronWarehouseStock(stockRows);
           break;
         }
         case "processing": {
-          const [batchRows, transferRows, saleRows] = await Promise.all([
-            getIronProcessingBatches(chosenWarehouseId, cashRegisterId),
-            getIronWarehouseTransfers({ warehouseId: chosenWarehouseId }, cashRegisterId),
-            getPhysicalIronSalesReport({ warehouseId: chosenWarehouseId }, cashRegisterId),
-          ]);
+          const batchRows = await getIronProcessingBatches(chosenWarehouseId, cashRegisterId);
           setProcessingBatches(batchRows);
-          setTransfers(transferRows);
-          setTransferPhysicalSales(saleRows);
           break;
         }
         case "inventory": {
@@ -334,8 +344,8 @@ export const IronCatalystPowderFlow = () => {
     activeTab,
     cashRegisterId,
     chosenWarehouseId,
+    apiLanguage,
     loadPurchaseData,
-    purchaseFilters,
     saleStatusFilter,
     salesDateFilters,
     containsIronFilter,
@@ -426,47 +436,6 @@ export const IronCatalystPowderFlow = () => {
     if (purchaseDateFilters.toDate && purchasedDate > purchaseDateFilters.toDate) return false;
     return true;
   }), [purchases, purchaseDateFilters]);
-  const purchaseSummary = useMemo(() => {
-    const summarize = (
-      getGroup: (purchase: AvailableIronPurchase) => { id: number; name: string },
-    ) => {
-      const groups = new Map<number, {
-        id: number;
-        name: string;
-        purchasedWeightKg: number;
-        transferredWeightKg: number;
-        remainingWeightKg: number;
-      }>();
-      for (const purchase of filteredPurchases) {
-        const group = getGroup(purchase);
-        const current = groups.get(group.id) ?? {
-          ...group,
-          purchasedWeightKg: 0,
-          transferredWeightKg: 0,
-          remainingWeightKg: 0,
-        };
-        current.purchasedWeightKg += purchase.purchasedWeightKg;
-        current.transferredWeightKg += purchase.transferredWeightKg;
-        current.remainingWeightKg += purchase.remainingWeightKg;
-        groups.set(group.id, current);
-      }
-      return [...groups.values()].sort((first, second) => first.name.localeCompare(second.name));
-    };
-
-    return {
-      totalPurchasedWeightKg: filteredPurchases.reduce((total, purchase) => total + purchase.purchasedWeightKg, 0),
-      totalTransferredWeightKg: filteredPurchases.reduce((total, purchase) => total + purchase.transferredWeightKg, 0),
-      totalRemainingWeightKg: filteredPurchases.reduce((total, purchase) => total + purchase.remainingWeightKg, 0),
-      byIronType: summarize((purchase) => ({
-        id: purchase.ironTypeId,
-        name: purchase.ironTypeName || `#${purchase.ironTypeId}`,
-      })),
-      byCategory: summarize((purchase) => ({
-        id: purchase.categoryId ?? 0,
-        name: purchase.categoryName || "—",
-      })),
-    };
-  }, [filteredPurchases]);
   const purchasesByDay = useMemo(() => {
     const days = new Map<string, AvailableIronPurchase[]>();
     for (const purchase of filteredPurchases) {
@@ -505,6 +474,7 @@ export const IronCatalystPowderFlow = () => {
       const key = `${transfer.warehouseId}:${transfer.ironPurchaseId}`;
       const source = sources.get(key);
       if (source) {
+        source.ironTypeName = source.ironTypeName || transfer.ironTypeName || undefined;
         source.transferIds.push(transfer.id);
         source.weightKg += transfer.weightKg;
         source.totalCost += transfer.totalCost;
@@ -513,6 +483,7 @@ export const IronCatalystPowderFlow = () => {
       } else {
         sources.set(key, {
           ironPurchaseId: transfer.ironPurchaseId,
+          ironTypeName: transfer.ironTypeName || undefined,
           warehouseId: transfer.warehouseId,
           transferIds: [transfer.id],
           weightKg: transfer.weightKg,
@@ -523,36 +494,16 @@ export const IronCatalystPowderFlow = () => {
         });
       }
     }
-    const soldByPurchase = new Map<string, number>();
-    for (const sale of transferPhysicalSales) {
-      for (const allocation of sale.allocations ?? []) {
-        const key = `${sale.warehouseId}:${allocation.ironPurchaseId}`;
-        soldByPurchase.set(key, (soldByPurchase.get(key) ?? 0) + allocation.weightKg);
-      }
+    const remainingByPurchase = new Map<number, number>();
+    for (const stock of ironWarehouseStock) {
+      const purchaseId = stock.purchaseId ?? stock.ironPurchaseId;
+      if (purchaseId != null) remainingByPurchase.set(purchaseId, stock.remainingWeightKg);
     }
-    const processedByPurchase = new Map<string, number>();
-    for (const batch of processingBatches) {
-      const allocations = batch.allocations?.length
-        ? batch.allocations
-        : batch.ironPurchaseId > 0
-          ? [{ ironPurchaseId: batch.ironPurchaseId, sourceWeightKg: batch.sourceWeightKg }]
-          : [];
-      for (const allocation of allocations) {
-        const key = `${batch.warehouseId}:${allocation.ironPurchaseId}`;
-        processedByPurchase.set(
-          key,
-          (processedByPurchase.get(key) ?? 0) + allocation.sourceWeightKg,
-        );
-      }
-    }
-    for (const [key, source] of sources) {
-      source.availableWeightKg = Math.max(
-        0,
-        source.weightKg - (soldByPurchase.get(key) ?? 0) - (processedByPurchase.get(key) ?? 0),
-      );
+    for (const source of sources.values()) {
+      source.availableWeightKg = remainingByPurchase.get(source.ironPurchaseId) ?? 0;
     }
     return [...sources.values()];
-  }, [transfers, transferPhysicalSales, processingBatches]);
+  }, [transfers, ironWarehouseStock]);
   const selectedBulkPhysicalSources = physicalIronSaleSources.filter(
     (source) => selectedBulkIronPurchases[physicalIronSourceKey(source)],
   );
@@ -609,7 +560,7 @@ export const IronCatalystPowderFlow = () => {
       setTransferForm({ warehouseId: "", weightKg: "" });
       setActiveTab("purchases");
       const [transferRows] = await Promise.all([
-        getIronWarehouseTransfers({ warehouseId: selectedWarehouse }, cashRegisterId),
+        getIronWarehouseTransfers({ warehouseId: selectedWarehouse, lang: apiLanguage }, cashRegisterId),
         loadPurchaseData(),
       ]);
       setTransfers(transferRows);
@@ -688,14 +639,12 @@ export const IronCatalystPowderFlow = () => {
       setBulkProcessingWeights({});
       setBulkPhysicalSaleForm({ unitSalePrice: "", extraExpenses: "0" });
       try {
-        const [transferRows, saleRows, batchRows] = await Promise.all([
-          getIronWarehouseTransfers({ warehouseId: saleWarehouseId }, cashRegisterId),
-          getPhysicalIronSalesReport({ warehouseId: saleWarehouseId }, cashRegisterId),
-          getIronProcessingBatches(saleWarehouseId, cashRegisterId),
+        const [transferRows, stockRows] = await Promise.all([
+          getIronWarehouseTransfers({ warehouseId: saleWarehouseId, lang: apiLanguage }, cashRegisterId),
+          getIronWarehouseStock(saleWarehouseId, apiLanguage, cashRegisterId),
         ]);
         setTransfers(transferRows);
-        setTransferPhysicalSales(saleRows);
-        setProcessingBatches(batchRows);
+        setIronWarehouseStock(stockRows);
       } catch (refreshError) {
         toast.error(getApiErrorMessage(refreshError, t("ironCatalystFlow.errors.loadFailed")));
       }
@@ -1119,6 +1068,27 @@ export const IronCatalystPowderFlow = () => {
 
   const renderTransfers = () => (
     <>
+      <section className={styles.ironStockPanel}>
+        <h3>{t("ironCatalystFlow.warehouseStock.title")}</h3>
+        {ironWarehouseStock.length > 0 ? (
+          renderTable(
+            ["purchaseId", "ironType", "purchasedWeight", "transferredWeight", "physicalSoldWeight", "processingWeight", "remainingWeight"].map(column),
+            ironWarehouseStock.map((stock) => [
+              (stock.purchaseId ?? stock.ironPurchaseId) != null
+                ? `#${stock.purchaseId ?? stock.ironPurchaseId}`
+                : "—",
+              stock.ironTypeName || "—",
+              `${formatNumber(stock.purchasedWeightKg)} kg`,
+              `${formatNumber(stock.transferredWeightKg)} kg`,
+              `${formatNumber(stock.physicalSoldWeightKg)} kg`,
+              `${formatNumber(stock.processingWeightKg)} kg`,
+              `${formatNumber(stock.remainingWeightKg)} kg`,
+            ]),
+          )
+        ) : (
+          <div className={styles.purchaseBreakdownEmpty}>{t("ironCatalystFlow.empty")}</div>
+        )}
+      </section>
       <div className={styles.filterRow}>
         <TextField type="number" label={t("ironCatalystFlow.filters.purchaseId")} value={transferFilters.purchaseId} onChange={(event) => setTransferFilters((filters) => ({ ...filters, purchaseId: event.target.value }))} />
         <TextField type="date" label={t("ironCatalystFlow.filters.fromDate")} value={transferFilters.fromDate} onChange={(event) => setTransferFilters((filters) => ({ ...filters, fromDate: event.target.value }))} />
@@ -1127,7 +1097,7 @@ export const IronCatalystPowderFlow = () => {
       <div className={styles.bulkSaleActions}>
         <span>{t("ironCatalystFlow.physicalIronSale.selectedSources", { count: selectedBulkPhysicalSources.length })}</span>
         <Button
-          variant="secondary"
+          variant="primary"
           disabled={selectedBulkPhysicalSources.length < 1 || mutating}
           onClick={() => {
             setBulkPhysicalSaleWeights(Object.fromEntries(
@@ -1139,10 +1109,11 @@ export const IronCatalystPowderFlow = () => {
             setBulkPhysicalSaleOpen(true);
           }}
         >
+          <Coins size={17} aria-hidden="true" />
           {t("ironCatalystFlow.actions.sellSelectedIron")}
         </Button>
         <Button
-          variant="secondary"
+          variant="primary"
           disabled={selectedBulkPhysicalSources.length < 1 || mutating}
           onClick={() => {
             setBulkProcessingWeights(Object.fromEntries(
@@ -1154,11 +1125,12 @@ export const IronCatalystPowderFlow = () => {
             setBulkProcessingOpen(true);
           }}
         >
+          <Factory size={17} aria-hidden="true" />
           {t("ironCatalystFlow.actions.processSelectedIron")}
         </Button>
       </div>
       {renderTable(
-        ["select", "transferId", "purchaseId", "warehouse", "weight", "unitCost", "totalCost", "transferredAt"].map(column),
+        ["select", "transferId", "purchaseId", "ironType", "warehouse", "weight", "unitCost", "totalCost", "transferredAt"].map(column),
         physicalIronSaleSources.filter((item) => {
           if (transferFilters.purchaseId && item.ironPurchaseId !== Number(transferFilters.purchaseId)) return false;
           const date = item.transferredAt.slice(0, 10);
@@ -1180,6 +1152,7 @@ export const IronCatalystPowderFlow = () => {
           />,
           item.transferIds.map((id) => `#${id}`).join(", "),
           `#${item.ironPurchaseId}`,
+          item.ironTypeName || "—",
           warehouses.find((warehouse) => warehouse.id === item.warehouseId)?.code || `#${item.warehouseId}`,
           `${formatNumber(item.availableWeightKg)} kg`,
           formatAmd(item.unitCost),
@@ -1415,7 +1388,14 @@ export const IronCatalystPowderFlow = () => {
           <div><span className={styles.eyebrow}>{t("ironCatalystFlow.eyebrow")}</span><h1>{t("ironCatalystFlow.title")}</h1><p>{t("ironCatalystFlow.description")}</p></div>
         </div>
         <div className={styles.warehouseControl}>
-          <Select label={t("ironCatalystFlow.warehouse")} value={warehouseId} onChange={(event) => { setWarehouseId(event.target.value); setSelectedLot(null); }}>
+          <Select label={t("ironCatalystFlow.warehouse")} value={warehouseId} onChange={(event) => {
+            setWarehouseId(event.target.value);
+            setSelectedLot(null);
+            setSelectedSourceQuantities({});
+            setSelectedBulkIronPurchases({});
+            setBulkPhysicalSaleWeights({});
+            setBulkProcessingWeights({});
+          }}>
             <option value="">{t("ironCatalystFlow.selectWarehouse")}</option>
             {warehouses.map((warehouse) => <option key={warehouse.id} value={warehouse.id}>{warehouse.code}</option>)}
           </Select>
@@ -1462,6 +1442,8 @@ export const IronCatalystPowderFlow = () => {
             count: selectedBulkPhysicalSources.length,
           })}
           confirmText={t("ironCatalystFlow.actions.sellSelectedIron")}
+          confirmVariant="primary"
+          confirmIcon={<Coins size={16} aria-hidden="true" />}
           confirmLoading={mutating}
           onConfirm={() => void submitBulkPhysicalIronSale()}
           confirmDisabled={selectedBulkPhysicalSources.length < 1}
@@ -1528,25 +1510,37 @@ export const IronCatalystPowderFlow = () => {
             count: selectedBulkPhysicalSources.length,
           })}
           confirmText={t("ironCatalystFlow.actions.processSelectedIron")}
+          confirmVariant="primary"
+          confirmIcon={<Factory size={16} aria-hidden="true" />}
           confirmLoading={mutating}
           onConfirm={() => void submitBulkIronProcessing()}
           confirmDisabled={selectedBulkPhysicalSources.length < 1}
         >
-          <div className={styles.bulkPhysicalSaleForm}>
+          <div className={`${styles.bulkPhysicalSaleForm} ${styles.bulkProcessingForm}`}>
             <div className={styles.bulkAllocationList}>
               {selectedBulkPhysicalSources.map((source) => (
                 <div className={styles.bulkAllocation} key={physicalIronSourceKey(source)}>
-                  <span>
+                  <div className={styles.bulkAllocationInfo}>
+                    <div className={styles.bulkAllocationHeading}>
+                      <span className={styles.bulkAllocationIcon}><Factory size={17} /></span>
+                      <strong>{source.ironTypeName || t("ironCatalystFlow.columns.ironType")}</strong>
+                      <span className={styles.bulkAllocationId}>#{source.ironPurchaseId}</span>
+                    </div>
+                    <span className={styles.bulkAllocationAvailable}>
+                      <Boxes size={14} />
                     {t("ironCatalystFlow.physicalIronSale.purchaseWeight", {
                       id: source.ironPurchaseId,
                       weight: formatNumber(source.availableWeightKg),
                     })}
-                  </span>
+                    </span>
+                  </div>
                   <TextField
                     type="text"
                     inputMode="decimal"
                     label={t("ironCatalystFlow.processing.sourceWeight")}
+                    suffix="kg"
                     value={bulkProcessingWeights[physicalIronSourceKey(source)] ?? ""}
+                    icon={<Scale size={15} />}
                     onChange={(event) => setBulkProcessingWeights((weights) => ({
                       ...weights,
                       [physicalIronSourceKey(source)]: event.target.value,
@@ -1555,17 +1549,20 @@ export const IronCatalystPowderFlow = () => {
                 </div>
               ))}
             </div>
-            <strong className={styles.bulkSaleTotal}>
-              {t("ironCatalystFlow.processing.totalSourceWeight", {
+            <div className={styles.bulkSaleTotal}>
+              <Scale size={17} />
+              <strong>{t("ironCatalystFlow.processing.totalSourceWeight", {
                 weight: formatNumber(bulkProcessingTotalWeight),
-              })}
-            </strong>
+              })}</strong>
+            </div>
             <div className={styles.bulkProcessingFields}>
               <TextField
                 type="text"
                 inputMode="decimal"
                 label={t("ironCatalystFlow.processing.powderWeight")}
+                suffix="kg"
                 value={bulkProcessingForm.powderWeightKg}
+                icon={<Boxes size={15} />}
                 onChange={(event) => setBulkProcessingForm((form) => ({
                   ...form,
                   powderWeightKg: event.target.value,
@@ -1575,7 +1572,9 @@ export const IronCatalystPowderFlow = () => {
                 type="text"
                 inputMode="decimal"
                 label={t("ironCatalystFlow.processing.ptPerKg")}
+                suffix="g/kg"
                 value={bulkProcessingForm.ptPerKg}
+                icon={<Atom size={15} />}
                 onChange={(event) => setBulkProcessingForm((form) => ({
                   ...form,
                   ptPerKg: event.target.value,
@@ -1585,7 +1584,9 @@ export const IronCatalystPowderFlow = () => {
                 type="text"
                 inputMode="decimal"
                 label={t("ironCatalystFlow.processing.pdPerKg")}
+                suffix="g/kg"
                 value={bulkProcessingForm.pdPerKg}
+                icon={<Atom size={15} />}
                 onChange={(event) => setBulkProcessingForm((form) => ({
                   ...form,
                   pdPerKg: event.target.value,
@@ -1595,7 +1596,9 @@ export const IronCatalystPowderFlow = () => {
                 type="text"
                 inputMode="decimal"
                 label={t("ironCatalystFlow.processing.rhPerKg")}
+                suffix="g/kg"
                 value={bulkProcessingForm.rhPerKg}
+                icon={<Atom size={15} />}
                 onChange={(event) => setBulkProcessingForm((form) => ({
                   ...form,
                   rhPerKg: event.target.value,
@@ -1605,7 +1608,9 @@ export const IronCatalystPowderFlow = () => {
                 type="text"
                 inputMode="decimal"
                 label={t("ironCatalystFlow.processing.expenses")}
+                suffix="AMD"
                 value={bulkProcessingForm.processingExpenses}
+                icon={<Coins size={15} />}
                 onChange={(event) => setBulkProcessingForm((form) => ({
                   ...form,
                   processingExpenses: event.target.value,

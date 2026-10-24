@@ -17,6 +17,7 @@ import type {
   BulkPhysicalIronSaleResponse,
   PhysicalIronSaleReportItem,
   AvailableIronPurchasesSummary,
+  IronWarehouseStock,
 } from "@/types/ironCatalystFlow";
 
 const IRON_SHOP = "/admin/iron-shop";
@@ -26,7 +27,7 @@ const asArray = <T>(data: T[] | { results?: T[] } | null | undefined): T[] =>
 
 export const getAvailableIronPurchases = async (
   cashRegisterId: number,
-  params: { ironTypeId?: number; categoryId?: number } = {},
+  params: { ironTypeId?: number; categoryId?: number; lang?: string } = {},
 ) => {
   try {
     const response = await api.get<AvailableIronPurchase[] | { results?: AvailableIronPurchase[] }>(
@@ -41,7 +42,7 @@ export const getAvailableIronPurchases = async (
 
 export const getAvailableIronPurchasesSummary = async (
   cashRegisterId: number,
-  params: { ironTypeId?: number; categoryId?: number } = {},
+  params: { ironTypeId?: number; categoryId?: number; lang?: string } = {},
 ): Promise<AvailableIronPurchasesSummary> => {
   try {
     const response = await api.get<AvailableIronPurchasesSummary>(
@@ -72,9 +73,8 @@ export const transferIronPurchaseToWarehouse = async (
   }
 };
 
-// The history read route is not included in the supplied API contract.
 export const getIronWarehouseTransfers = async (
-  params: { warehouseId?: number },
+  params: { warehouseId?: number; lang?: string },
   cashRegisterId: number,
 ) => {
   try {
@@ -85,6 +85,22 @@ export const getIronWarehouseTransfers = async (
     return asArray(response.data);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to load warehouse transfers."));
+  }
+};
+
+export const getIronWarehouseStock = async (
+  warehouseId: number,
+  lang: string,
+  cashRegisterId: number,
+): Promise<IronWarehouseStock[]> => {
+  try {
+    const response = await api.get<IronWarehouseStock[] | { results?: IronWarehouseStock[] }>(
+      `${IRON_SHOP}/warehouses/${warehouseId}/iron-stock`,
+      { params: { lang }, headers: getHeaders(cashRegisterId) },
+    );
+    return asArray(response.data);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Failed to load warehouse iron stock."));
   }
 };
 
@@ -142,7 +158,7 @@ export const getIronPowderStock = async (
   try {
     const response = await api.get<IronPowderStockLot[] | { results?: IronPowderStockLot[] }>(
       `${IRON_SHOP}/powder-stock`,
-      { params: { warehouseId, status: 1 }, headers: getHeaders(cashRegisterId) },
+      { params: { warehouseId }, headers: getHeaders(cashRegisterId) },
     );
     return asArray(response.data);
   } catch (error) {

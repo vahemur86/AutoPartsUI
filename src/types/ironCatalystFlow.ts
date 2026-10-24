@@ -45,6 +45,8 @@ export interface AvailableIronPurchasesSummary {
 export interface IronWarehouseTransfer {
   id: number;
   ironPurchaseId: number;
+  ironTypeId?: number;
+  ironTypeName?: string | null;
   warehouseId: number;
   warehouse?: string;
   warehouseName?: string;
@@ -52,6 +54,17 @@ export interface IronWarehouseTransfer {
   unitCost: number;
   totalCost: number;
   transferredAt: string;
+}
+
+export interface IronWarehouseStock {
+  purchaseId?: number;
+  ironPurchaseId?: number;
+  ironTypeName: string;
+  purchasedWeightKg: number;
+  transferredWeightKg: number;
+  physicalSoldWeightKg: number;
+  processingWeightKg: number;
+  remainingWeightKg: number;
 }
 
 export interface ProcessIronToPowderRequest {

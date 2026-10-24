@@ -142,6 +142,8 @@
 .purchaseBreakdownValues span { display: grid; gap: 2px; color: rgba(221, 232, 223, 0.52); font-size: 9px; }
 .purchaseBreakdownValues b { color: rgba(235, 241, 235, 0.85); font-size: 10px; font-variant-numeric: tabular-nums; }
 .purchaseBreakdownEmpty { padding: 10px; color: rgba(224, 233, 225, 0.48); font-size: 10px; }
+.ironStockPanel { display: grid; gap: 12px; padding: 14px; border: 1px solid rgba(var(--flow-accent), 0.14); border-radius: 7px; background: rgba(5, 9, 6, 0.24); }
+.ironStockPanel > h3 { margin: 0; color: #e7eee8; font-size: 12px; }
 .purchaseDays { display: grid; gap: 16px; }
 .purchaseDay { display: grid; gap: 11px; }
 .purchaseDayHeader { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 13px; border: 1px solid rgba(var(--flow-accent), 0.18); border-radius: 7px; background: linear-gradient(110deg, rgba(var(--flow-accent), 0.09), rgba(5, 9, 6, 0.2)); }
@@ -184,11 +186,22 @@
 .quantityField input { width: 90px; padding: 5px 7px; border: 1px solid rgba(var(--flow-accent), 0.3); border-radius: 5px; background: rgba(0, 0, 0, 0.25); color: #edf4ee; font: inherit; }
 .bulkSaleActions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; color: rgba(220, 232, 222, 0.58); font-size: 11px; }
 .bulkPhysicalSaleForm { display: grid; gap: 12px; min-width: 0; }
+.bulkProcessingForm { gap: 15px; }
 .bulkProcessingFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.bulkProcessingForm .bulkProcessingFields > div { box-sizing: border-box; min-width: 0; padding: 10px; border: 1px solid rgba(var(--flow-accent), 0.12); border-radius: 7px; background: rgba(255, 255, 255, 0.025); }
 .bulkAllocationList { display: grid; gap: 10px; max-height: min(40vh, 320px); overflow: auto; }
-.bulkAllocation { display: grid; grid-template-columns: minmax(0, 1fr) minmax(140px, 0.8fr); align-items: end; gap: 10px; padding: 9px; border: 1px solid rgba(var(--flow-accent), 0.14); border-radius: 6px; background: rgba(5, 9, 6, 0.22); }
-.bulkAllocation > span { padding-bottom: 12px; color: rgba(220, 232, 222, 0.7); font-size: 11px; }
-.bulkSaleTotal { color: #a9dfb7; font-size: 13px; }
+.bulkAllocation { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 0.7fr); align-items: center; gap: 12px; min-width: 0; padding: 12px; border: 1px solid rgba(var(--flow-accent), 0.18); border-radius: 8px; background: linear-gradient(120deg, rgba(var(--flow-accent), 0.055), rgba(5, 9, 6, 0.3)); }
+.bulkAllocationInfo { display: grid; min-width: 0; gap: 8px; }
+.bulkAllocationHeading { display: flex; align-items: center; min-width: 0; gap: 8px; }
+.bulkAllocationIcon { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(var(--flow-accent), 0.22); border-radius: 7px; background: rgba(var(--flow-accent), 0.09); color: #a9dfb7; }
+.bulkAllocationHeading strong { overflow: hidden; color: #e8f0e9; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.bulkAllocationId { flex: 0 0 auto; padding: 3px 6px; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 5px; color: rgba(220, 232, 222, 0.6); font-size: 10px; font-variant-numeric: tabular-nums; }
+.bulkAllocationAvailable { display: flex; align-items: center; gap: 6px; color: rgba(220, 232, 222, 0.58); font-size: 10px; }
+.bulkAllocationAvailable svg { flex: 0 0 auto; color: #a9dfb7; }
+.bulkAllocation > div:last-child { min-width: 0; }
+.bulkSaleTotal { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid rgba(var(--flow-accent), 0.2); border-radius: 7px; background: rgba(var(--flow-accent), 0.06); color: #a9dfb7; font-size: 12px; }
+.bulkSaleTotal svg { flex: 0 0 auto; }
+.bulkSaleTotal strong { font-weight: 700; }
 .metricGrid, .previewGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
 .metric { display: grid; min-width: 0; gap: 7px; padding: 11px 12px; border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 6px; background: rgba(255, 255, 255, 0.025); }
 .metric span { color: rgba(221, 232, 223, 0.52); font-size: 9px; }
@@ -223,6 +236,7 @@
   .purchaseDayMetrics { justify-content: flex-start; }
   .saleForm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bulkProcessingFields { grid-template-columns: minmax(0, 1fr); }
+  .bulkAllocation { grid-template-columns: minmax(0, 1fr); }
   .filterRow { flex-wrap: wrap; }
   .filterRow > * { flex: 1 1 170px; }
   .bulkSaleActions { align-items: flex-start; flex-direction: column; }
