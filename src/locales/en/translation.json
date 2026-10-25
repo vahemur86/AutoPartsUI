@@ -3961,6 +3961,10 @@
       "driveType": "Drive type",
       "trimName": "Trim",
       "trimPlaceholder": "Enter trim or Unknown/Other",
+      "hpMin": "Minimum horsepower",
+      "hpMax": "Maximum horsepower",
+      "horsePower": "Horsepower",
+      "horsePowerUnit": "hp",
       "birka": "Birka",
       "selectBrand": "Select brand",
       "selectModel": "Select model",
@@ -3971,6 +3975,7 @@
       "selectFuelType": "Select fuel type",
       "selectDriveType": "Select drive type",
       "selectYear": "Select year",
+      "selectTrim": "Select trim",
       "exactVehicle": "Exact vehicle variant",
       "selectExactVehicle": "Select a vehicle variant"
     },
@@ -3986,7 +3991,8 @@
       "moveBucketUp": "Move bucket up",
       "moveBucketDown": "Move bucket down",
       "deleteBucket": "Delete bucket",
-      "deleteComposition": "Delete composition"
+      "deleteComposition": "Delete composition",
+      "applyVehicleFilters": "Apply horsepower filter"
     },
 
     "sections": {
@@ -4041,6 +4047,7 @@
       "invalidBucket": "Quantity and position order must be positive whole numbers.",
       "weightRequired": "Weight must be greater than zero.",
       "invalidYearRange": "The start year must not be later than the end year.",
+      "invalidHorsePowerRange": "Minimum horsepower cannot be greater than maximum horsepower.",
       "success": "Buckets added successfully",
       "updated": "Catalyst updated successfully",
       "emptyBuckets": "No buckets added yet"

@@ -88,6 +88,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       const options: {
         value: string;
         label: string;
+        title?: string;
         originalChildren: ReactNode;
         disabled: boolean;
       }[] = [];
@@ -108,6 +109,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             options.push({
               value: normalizedValue,
               label: getTextFromChildren(opt.props.children),
+              title: opt.props.title,
               originalChildren: opt.props.children,
               disabled: !!opt.props.disabled,
             });
@@ -229,6 +231,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             type="button"
             className={`${styles.trigger} ${!currentValue ? styles.placeholder : ""}`}
             disabled={disabled}
+            title={
+              allOptions.find((opt) => String(opt.value) === String(currentValue))
+                ?.title
+            }
             onClick={() => !disabled && setOpen((v) => !v)}
           >
             <span className={styles.valueText}>{displayText}</span>
@@ -267,6 +273,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                       key={opt.value}
                       type="button"
                       className={`${styles.option} ${String(currentValue) === opt.value ? styles.optionSelected : ""} ${opt.disabled ? styles.optionDisabled : ""}`}
+                      title={opt.title}
                       onClick={() => !opt.disabled && handleSelect(opt.value)}
                       disabled={opt.disabled}
                     >

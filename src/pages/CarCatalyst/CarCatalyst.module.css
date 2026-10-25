@@ -61,10 +61,52 @@
   align-items: center;
 }
 
+.vehiclePanelToggle {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vehiclePanelToggle:focus-visible {
+  outline: 2px solid rgba(196, 169, 106, 0.8);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
 .vehiclePanelHeader {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.vehiclePanelStatus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.vehiclePanelChevron {
+  flex: 0 0 auto;
+  color: rgba(223, 231, 223, 0.7);
+  transition: transform 0.2s ease;
+}
+
+.vehiclePanelChevronExpanded {
+  transform: rotate(180deg);
+}
+
+.vehiclePanelContent {
+  display: grid;
+  gap: 12px;
+}
+
+.vehiclePanelContent[hidden] {
+  display: none;
 }
 
 .vehiclePanelTitle {
@@ -138,6 +180,45 @@
   padding: 0 4px;
   color: rgba(232, 238, 232, 0.68);
   font-size: 12px;
+}
+
+.vehicleLoadingField {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vehicleLoadingLabel {
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.vehicleLoadingIndicator {
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid rgba(196, 169, 106, 0.28);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.08);
+  color: rgba(232, 238, 232, 0.82);
+  font-size: 13px;
+}
+
+.vehicleLoadingIcon {
+  flex: 0 0 auto;
+  color: #d9c48e;
+  animation: vehicleLoadingSpin 1s linear infinite;
+}
+
+@keyframes vehicleLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .selectedVehicleSummary {

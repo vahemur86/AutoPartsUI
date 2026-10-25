@@ -5,18 +5,21 @@ import { toast } from "react-toastify";
 import { Button, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  getVehicleDefinitions,
-} from "@/services/settings/vehicles";
-import { getAllVehicleDefinitions } from "@/services/vehicleAdmin";
+  getAllVehicleDefinitions,
+  getVehicleAdminLookups,
+} from "@/services/vehicleAdmin";
 import { fetchTags } from "@/store/slices/tagsSlice";
 
 import type {
   CarCatalystBucket,
   CreateCarCatalyst,
   CarCatalyst,
-  VehicleDefinition,
 } from "@/types/settings";
-import type { VehicleDefinitionFilters, VehicleDefinitionRecord } from "@/types/vehicleAdmin";
+import type {
+  VehicleAdminLookups,
+  VehicleDefinitionFilters,
+  VehicleDefinitionRecord,
+} from "@/types/vehicleAdmin";
 
 import styles from "./CarCatalyst.module.css";
 import {
@@ -32,6 +35,7 @@ import {
   ExternalLink,
   Info,
   Layers3,
+  LoaderCircle,
   MoveDown,
   MoveUp,
   Package,
@@ -105,16 +109,15 @@ const engineVolumeFromCode = (code?: string) => {
 };
 
 export const CarCatalystPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const [definitions, setDefinitions] = useState<VehicleDefinition | null>(
-    null,
-  );
+  const [definitions, setDefinitions] = useState<VehicleAdminLookups | null>(null);
 
-  const [brands, setBrands] = useState<VehicleDefinition["brands"]>([]);
+  const [brands, setBrands] = useState<VehicleAdminLookups["brands"]>([]);
   const [vehicleMatches, setVehicleMatches] = useState<VehicleDefinitionRecord[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleDefinitionRecord | null>(null);
+  const [isVehiclePanelExpanded, setIsVehiclePanelExpanded] = useState(true);
   const [isVehicleSearchLoading, setIsVehicleSearchLoading] = useState(false);
   const vehicleSearchRequestId = useRef(0);
   const [isLegacyEdit, setIsLegacyEdit] = useState(false);
@@ -204,15 +207,17 @@ export const CarCatalystPage = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await getVehicleDefinitions();
+        const data = await getVehicleAdminLookups(
+          i18n.resolvedLanguage || i18n.language,
+        );
         setDefinitions(data);
         setBrands(data.brands || []);
       } catch {
         toast.error(t("carCatalyst.errors.loading"));
       }
     };
-    load();
-  }, [t]);
+    void load();
+  }, [i18n.language, i18n.resolvedLanguage, t]);
 
   useEffect(() => {
     if (!editId || !definitions) return;
@@ -360,114 +365,6 @@ export const CarCatalystPage = () => {
       setIsVehicleSearchLoading(false);
     }
   };
-
-  const handleModelChange = async (value: string) => {
-    const id = value ? Number(value) : "";
-    if (id === modelId || !confirmVehicleChange()) return;
-    setModelId(id);
-    setSelectedVehicle(null);
-    setIsLegacyEdit(false);
-    setEngineId("");
-    setFuelTypeId("");
-    setDriveTypeId("");
-    setCountry("");
-    setYear("");
-    setYearFrom("");
-    setYearTo("");
-    setTrimName("");
-    setEngineVolume("");
-    if (brandId && id) {
-      await searchVehicleDefinitions({ brandId, modelId: id });
-    } else {
-      vehicleSearchRequestId.current += 1;
-      setIsVehicleSearchLoading(false);
-      setVehicleMatches([]);
-    }
-  };
-
-  const handleVariantFilterChange = async (
-    field: "engineId" | "fuelTypeId" | "driveTypeId" | "marketId" | "year",
-    value: string,
-  ) => {
-    const numericValue = value ? Number(value) : "";
-    const currentValue = {
-      engineId,
-      fuelTypeId,
-      driveTypeId,
-      marketId: country,
-      year,
-    }[field];
-    if (numericValue === currentValue || !confirmVehicleChange()) return;
-    const nextEngineId = field === "engineId" ? numericValue : engineId;
-    const nextFuelTypeId =
-      field === "engineId"
-        ? ""
-        : field === "fuelTypeId"
-          ? numericValue
-          : fuelTypeId;
-    const nextDriveTypeId =
-      field === "engineId" || field === "fuelTypeId"
-        ? ""
-        : field === "driveTypeId"
-          ? numericValue
-          : driveTypeId;
-    const nextMarketId =
-      field === "engineId" || field === "fuelTypeId" || field === "driveTypeId"
-        ? ""
-        : field === "marketId"
-          ? numericValue
-          : country;
-    const nextYear =
-      field === "year"
-        ? numericValue
-        : field === "engineId" ||
-            field === "fuelTypeId" ||
-            field === "driveTypeId" ||
-            field === "marketId"
-          ? ""
-          : year;
-    setSelectedVehicle(null);
-    setIsLegacyEdit(false);
-    setEngineId(nextEngineId);
-    setFuelTypeId(nextFuelTypeId);
-    setDriveTypeId(nextDriveTypeId);
-    setCountry(nextMarketId);
-    setYear(nextYear);
-    setYearFrom("");
-    setYearTo("");
-    setTrimName("");
-    setEngineVolume("");
-
-    if (!brandId || !modelId) return;
-    const filters: Omit<VehicleDefinitionFilters, "page" | "pageSize"> = {
-      brandId,
-      modelId,
-      ...(nextEngineId ? { engineId: nextEngineId } : {}),
-      ...(nextFuelTypeId ? { fuelTypeId: nextFuelTypeId } : {}),
-      ...(nextDriveTypeId ? { driveTypeId: nextDriveTypeId } : {}),
-      ...(nextMarketId ? { marketId: nextMarketId } : {}),
-      ...(nextYear ? { year: nextYear } : {}),
-    };
-    await searchVehicleDefinitions(filters);
-  };
-
-  const optionsForIds = (
-    lookupItems: Array<{ id: number; code: string; name: string }>,
-    field: "modelId" | "engineId" | "fuelTypeId" | "driveTypeId" | "marketId",
-  ) => {
-    const matchingIds = new Set(
-      vehicleMatches.map((vehicle) =>
-        field === "marketId"
-          ? vehicle.marketId ?? vehicle.market?.id
-          : vehicle[field],
-      ),
-    );
-    return lookupItems.filter((item) => matchingIds.has(item.id));
-  };
-
-  const availableYears = Array.from(
-    new Set(vehicleMatches.map((vehicle) => vehicle.year)),
-  ).sort((a, b) => a - b);
 
   const resetForm = () => {
     vehicleSearchRequestId.current += 1;
@@ -1275,29 +1172,49 @@ export const CarCatalystPage = () => {
       </div>
 
       <section className={styles.vehiclePanel}>
-        <div className={styles.vehiclePanelHeader}>
-          <div className={styles.vehiclePanelTitle}>
-            <span className={styles.vehicleIconBadge}>
-              <CarFront size={19} aria-hidden="true" />
-            </span>
-            <div>
-              <h3>{t("carCatalyst.sections.vehicleTitle")}</h3>
-              <p>{t("carCatalyst.sections.vehicleHint")}</p>
+        <button
+          type="button"
+          className={styles.vehiclePanelToggle}
+          aria-expanded={isVehiclePanelExpanded}
+          aria-controls="car-catalyst-vehicle-panel-content"
+          onClick={() => setIsVehiclePanelExpanded((expanded) => !expanded)}
+        >
+          <div className={styles.vehiclePanelHeader}>
+            <div className={styles.vehiclePanelTitle}>
+              <span className={styles.vehicleIconBadge}>
+                <CarFront size={19} aria-hidden="true" />
+              </span>
+              <div>
+                <h3>{t("carCatalyst.sections.vehicleTitle")}</h3>
+                <p>{t("carCatalyst.sections.vehicleHint")}</p>
+              </div>
             </div>
-          </div>
-          {isVehicleComplete && (
-            <span className={styles.vehicleReadyBadge}>
-              {t("carCatalyst.sections.vehicleReady")}
+            <span className={styles.vehiclePanelStatus}>
+              {isVehicleComplete && (
+                <span className={styles.vehicleReadyBadge}>
+                  {t("carCatalyst.sections.vehicleReady")}
+                </span>
+              )}
+              <span className={styles.unitCountBadge}>
+                {t("carCatalyst.sections.physicalUnits", {
+                  count: unitCount,
+                  max: 4,
+                })}
+              </span>
+              <ChevronDown
+                size={18}
+                className={`${styles.vehiclePanelChevron} ${isVehiclePanelExpanded ? styles.vehiclePanelChevronExpanded : ""}`}
+                aria-hidden="true"
+              />
             </span>
-          )}
-          <span className={styles.unitCountBadge}>
-            {t("carCatalyst.sections.physicalUnits", {
-              count: unitCount,
-              max: 4,
-            })}
-          </span>
-        </div>
+          </div>
+        </button>
 
+        <div
+          id="car-catalyst-vehicle-panel-content"
+          className={styles.vehiclePanelContent}
+          hidden={!isVehiclePanelExpanded}
+        >
       <div className={`${styles.formGrid} ${styles.vehicleFormGrid}`}>
         <Select
           label={t("carCatalyst.fields.brand")}
@@ -1314,124 +1231,21 @@ export const CarCatalystPage = () => {
           ))}
         </Select>
 
-        <Select
-          label={t("carCatalyst.fields.model")}
-          value={modelId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          disabled={!brandId || isVehicleSearchLoading}
-          onChange={(e) => void handleModelChange(e.target.value)}
-        >
-          <option value="">{t("carCatalyst.fields.selectModel")}</option>
-          {optionsForIds(definitions?.models ?? [], "modelId").map((model) => (
-            <option key={model.id} value={model.id}>
-              {model.name || model.code}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.engineVariant")}
-          value={engineId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          disabled={!modelId || isVehicleSearchLoading}
-          onChange={(e) => void handleVariantFilterChange("engineId", e.target.value)}
-        >
-          <option value="">{t("carCatalyst.fields.selectEngine")}</option>
-          {optionsForIds(definitions?.engines ?? [], "engineId").map((engine) => (
-            <option key={engine.id} value={engine.id}>
-              {engine.name || engine.code}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.fuelType")}
-          value={fuelTypeId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          disabled={!modelId || isVehicleSearchLoading}
-          onChange={(e) => void handleVariantFilterChange("fuelTypeId", e.target.value)}
-        >
-          <option value="">{t("carCatalyst.fields.selectFuelType")}</option>
-          {optionsForIds(definitions?.fuelTypes ?? [], "fuelTypeId").map((fuel) => (
-            <option key={fuel.id} value={fuel.id}>
-              {fuel.name || fuel.code}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.driveType")}
-          value={driveTypeId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          disabled={!modelId || isVehicleSearchLoading}
-          onChange={(e) => void handleVariantFilterChange("driveTypeId", e.target.value)}
-        >
-          <option value="">{t("carCatalyst.fields.selectDriveType")}</option>
-          {optionsForIds(definitions?.driveTypes ?? [], "driveTypeId").map((drive) => (
-            <option key={drive.id} value={drive.id}>
-              {drive.name || drive.code}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.market")}
-          value={country}
-          searchable
-          searchPlaceholder={t("common.search")}
-          disabled={!modelId || isVehicleSearchLoading}
-          onChange={(e) => void handleVariantFilterChange("marketId", e.target.value)}
-        >
-          <option value="">{t("carCatalyst.fields.selectMarket")}</option>
-          {(definitions?.markets ?? []).filter((market) =>
-            optionsForIds(definitions?.markets ?? [], "marketId").some(
-              (option) => option.id === market.id,
-            ),
-          ).map((market) => (
-            <option key={market.id} value={market.id}>
-              {market.name || market.code}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.year")}
-          value={year}
-          searchable
-          searchPlaceholder={t("common.search")}
-          disabled={!modelId || isVehicleSearchLoading}
-          onChange={(e) => void handleVariantFilterChange("year", e.target.value)}
-        >
-          <option value="">{t("carCatalyst.fields.selectYear")}</option>
-          {availableYears.map((optionYear) => (
-            <option key={optionYear} value={optionYear}>
-              {optionYear}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          label={t("carCatalyst.fields.birka")}
-          value={birkaId}
-          searchable
-          searchPlaceholder={t("common.search")}
-          onChange={(e) =>
-            setBirkaId(e.target.value === "" ? "" : Number(e.target.value))
-          }
-        >
-          <option value="">{t("carCatalyst.fields.selectBirka")}</option>
-          {tags.map((tag) => (
-            <option key={tag.id} value={tag.id}>
-              {tag.name}
-            </option>
-          ))}
-        </Select>
-
-        {vehicleMatches.length > 1 && (
+        {isVehicleSearchLoading ? (
+          <div className={styles.vehicleLoadingField}>
+            <span className={styles.vehicleLoadingLabel}>
+              {t("carCatalyst.fields.exactVehicle")}
+            </span>
+            <div className={styles.vehicleLoadingIndicator} role="status" aria-live="polite">
+              <LoaderCircle
+                size={17}
+                className={styles.vehicleLoadingIcon}
+                aria-hidden="true"
+              />
+              <span>{t("carCatalyst.sections.searchingVehicles")}</span>
+            </div>
+          </div>
+        ) : vehicleMatches.length > 1 && (
           <Select
             label={t("carCatalyst.fields.exactVehicle")}
             value={selectedVehicle?.id ?? ""}
@@ -1480,27 +1294,79 @@ export const CarCatalystPage = () => {
                 vehicle.driveTypeName ||
                 definitions?.driveTypes?.find((item) => item.id === vehicle.driveTypeId)?.name ||
                 "";
-              const trim = vehicle.trimName?.name || vehicle.trimName?.code || vehicle.trimNameCode || "";
+              const marketName =
+                vehicle.market?.name ||
+                vehicle.marketName ||
+                definitions?.markets.find((item) => item.id === vehicle.marketId)?.name ||
+                "";
+              const trim =
+                vehicle.trimName?.name ||
+                vehicle.trimName?.code ||
+                vehicle.trimNameCode ||
+                definitions?.trimNames.find((item) => item.id === vehicle.trimNameId)?.name ||
+                "";
+              const vehicleDetails = [
+                brandName && `${t("carCatalyst.fields.brand")}: ${brandName}`,
+                modelName && `${t("carCatalyst.fields.model")}: ${modelName}`,
+                vehicle.year && `${t("carCatalyst.fields.year")}: ${vehicle.year}`,
+                engineName && `${t("carCatalyst.fields.engineVariant")}: ${engineName}`,
+                fuelName && `${t("carCatalyst.fields.fuelType")}: ${fuelName}`,
+                driveName && `${t("carCatalyst.fields.driveType")}: ${driveName}`,
+                marketName && `${t("carCatalyst.fields.market")}: ${marketName}`,
+                trim && `${t("carCatalyst.fields.trimName")}: ${trim}`,
+                vehicle.horsePower != null &&
+                  `${t("carCatalyst.fields.horsePower")}: ${vehicle.horsePower} ${t("carCatalyst.fields.horsePowerUnit")}`,
+              ].filter(Boolean);
+              const vehicleLabel = [
+                brandName,
+                modelName,
+                vehicle.year,
+                engineName,
+                fuelName,
+                driveName,
+                marketName,
+                trim,
+                vehicle.horsePower != null
+                  ? `${vehicle.horsePower} ${t("carCatalyst.fields.horsePowerUnit")}`
+                  : "",
+              ].filter(Boolean).join(" · ");
               return (
-                <option key={vehicle.id} value={vehicle.id}>
-                  {[brandName, modelName, vehicle.year, engineName, fuelName, driveName, trim]
-                    .filter(Boolean)
-                    .join(" · ")}
+                <option
+                  key={vehicle.id}
+                  value={vehicle.id}
+                  title={vehicleDetails.join("\n")}
+                >
+                  {vehicleLabel}
                 </option>
               );
             })}
           </Select>
         )}
+
+        <Select
+          label={t("carCatalyst.fields.birka")}
+          value={birkaId}
+          searchable
+          searchPlaceholder={t("common.search")}
+          onChange={(e) =>
+            setBirkaId(e.target.value === "" ? "" : Number(e.target.value))
+          }
+        >
+          <option value="">{t("carCatalyst.fields.selectBirka")}</option>
+          {tags.map((tag) => (
+            <option key={tag.id} value={tag.id}>
+              {tag.name}
+            </option>
+          ))}
+        </Select>
       </div>
-      {isVehicleSearchLoading && (
-        <p className={styles.vehicleSearchStatus}>{t("carCatalyst.sections.searchingVehicles")}</p>
-      )}
       {!isVehicleSearchLoading && brandId && vehicleMatches.length === 0 && !isLegacyEdit && (
         <p className={styles.vehicleSearchStatus}>{t("carCatalyst.sections.noVehicleMatches")}</p>
       )}
       {isLegacyEdit && !selectedVehicle && (
         <p className={styles.vehicleSearchStatus}>{t("carCatalyst.sections.legacyVehicle")}</p>
       )}
+        </div>
       {selectedVehicle && (
         <div className={styles.selectedVehicleSummary}>
           <CarFront size={16} aria-hidden="true" />
@@ -1531,7 +1397,18 @@ export const CarCatalystPage = () => {
               definitions?.driveTypes?.find((item) => item.id === selectedVehicle.driveTypeId)?.name ||
               selectedVehicle.driveType?.code}
             {" · "}
-            {selectedVehicle.trimName?.name || selectedVehicle.trimName?.code || selectedVehicle.trimNameCode || "—"}
+            {selectedVehicle.market?.name ||
+              selectedVehicle.marketName ||
+              definitions?.markets.find((item) => item.id === selectedVehicle.marketId)?.name ||
+              "—"}
+            {" · "}
+            {selectedVehicle.trimName?.name ||
+              selectedVehicle.trimName?.code ||
+              selectedVehicle.trimNameCode ||
+              definitions?.trimNames.find((item) => item.id === selectedVehicle.trimNameId)?.name ||
+              "—"}
+            {" · "}
+            {selectedVehicle.horsePower} {t("carCatalyst.fields.horsePowerUnit")}
           </span>
         </div>
       )}

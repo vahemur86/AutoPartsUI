@@ -3675,6 +3675,10 @@
       "driveType": "Քարշակի տեսակ",
       "trimName": "Կոմպլեկտացիա",
       "trimPlaceholder": "Մուտքագրեք կոմպլեկտացիան կամ Unknown/Other",
+      "hpMin": "Նվազագույն ձիաուժ",
+      "hpMax": "Առավելագույն ձիաուժ",
+      "horsePower": "Ձիաուժ",
+      "horsePowerUnit": "ձ.ուժ",
       "birka": "Բիրկա",
       "selectBrand": "Ընտրեք բրենդ",
       "selectModel": "Ընտրեք մոդելը",
@@ -3685,6 +3689,7 @@
       "selectFuelType": "Ընտրեք վառելիքի տեսակը",
       "selectDriveType": "Ընտրեք քարշակի տեսակը",
       "selectYear": "Ընտրեք տարի",
+      "selectTrim": "Ընտրեք կոմպլեկտացիան",
       "exactVehicle": "Ընտրեք մեքենայի ճշգրիտ տարբերակը",
       "selectExactVehicle": "Ընտրեք տարբերակը"
     },
@@ -3700,7 +3705,8 @@
       "moveBucketUp": "Բաքը տեղափոխել վերև",
       "moveBucketDown": "Բաքը տեղափոխել ներքև",
       "deleteBucket": "Հեռացնել բաքը",
-      "deleteComposition": "Հեռացնել բաղադրիչը"
+      "deleteComposition": "Հեռացնել բաղադրիչը",
+      "applyVehicleFilters": "Կիրառել ձիաուժի ֆիլտրը"
     },
 
     "sections": {
@@ -3755,6 +3761,7 @@
       "invalidBucket": "Քանակը և դիրքի հերթականությունը պետք է լինեն դրական ամբողջ թվեր։",
       "weightRequired": "Քաշը պետք է մեծ լինի զրոյից։",
       "invalidYearRange": "Սկզբնական տարին չի կարող ուշ լինել ավարտական տարուց։",
+      "invalidHorsePowerRange": "Նվազագույն ձիաուժը չի կարող գերազանցել առավելագույնը։",
       "success": "Բաժինները հաջողությամբ ավելացվեցին",
       "updated": "Կատալիզատորը հաջողությամբ թարմացվեց",
       "emptyBuckets": "Դեռևս բաքեր չկան"
