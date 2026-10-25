@@ -172,6 +172,8 @@
 }
 
 .reportResult {
+  display: grid;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -179,6 +181,12 @@
   display: grid;
   gap: 12px;
   min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 10px;
+  background:
+    radial-gradient(ellipse at top right, rgba(196, 169, 106, 0.07), transparent 44%),
+    linear-gradient(145deg, rgba(25, 31, 26, 0.96), rgba(14, 19, 15, 0.97));
 }
 
 .summaryHeader {
@@ -233,6 +241,217 @@
 .period strong {
   color: #e3e5de;
   font-weight: 600;
+}
+
+.reportViewFilter {
+  display: inline-flex;
+  justify-self: start;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 9px;
+  background: rgba(16, 21, 17, 0.86);
+}
+
+.reportViewButton {
+  min-height: 34px;
+  padding: 0 13px;
+  color: #aeb5aa;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+.reportViewButton:hover {
+  color: #f0e8d2;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.reportViewButtonActive {
+  color: #f1e3bd;
+  border-color: rgba(196, 169, 106, 0.3);
+  background: linear-gradient(135deg, rgba(196, 169, 106, 0.18), rgba(196, 169, 106, 0.08));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.totalReceivedSummary {
+  display: grid;
+  gap: 15px;
+  padding: 17px 18px;
+  border: 1px solid rgba(126, 181, 148, 0.25);
+  border-radius: 10px;
+  background:
+    radial-gradient(ellipse at top right, rgba(52, 141, 97, 0.13), transparent 45%),
+    linear-gradient(145deg, rgba(20, 34, 27, 0.96), rgba(13, 22, 18, 0.96));
+}
+
+.totalReceivedHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.totalReceivedIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #b8e4c8;
+  border: 1px solid rgba(126, 181, 148, 0.28);
+  border-radius: 7px;
+  background: rgba(52, 141, 97, 0.12);
+}
+
+.totalReceivedHeader h2 {
+  margin: 0;
+  color: #e4f0e8;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.totalReceivedHeader p {
+  margin: 4px 0 0;
+  color: #a7b7ac;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.totalReceivedFormula {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1.15fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.totalReceivedSource {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 9px;
+  row-gap: 7px;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.sourceIcon {
+  display: grid;
+  grid-row: span 2;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid;
+  border-radius: 6px;
+}
+
+.cashSourceIcon {
+  color: #a8d29e;
+  border-color: rgba(168, 210, 158, 0.2);
+  background: rgba(168, 210, 158, 0.07);
+}
+
+.nonCashSourceIcon {
+  color: #9bc9f0;
+  border-color: rgba(96, 165, 250, 0.2);
+  background: rgba(59, 130, 246, 0.07);
+}
+
+.totalSourceIcon {
+  color: #b8e4c8;
+  border-color: rgba(126, 181, 148, 0.25);
+  background: rgba(52, 141, 97, 0.12);
+}
+
+.totalReceivedLabel {
+  min-width: 0;
+  color: #aeb8b1;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.totalReceivedSource strong {
+  grid-column: 2;
+  overflow-wrap: anywhere;
+  color: #e3ece6;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.totalReceivedSource:first-child strong {
+  color: #b8dcae;
+}
+
+.totalReceivedSource:nth-of-type(2) strong {
+  color: #b3d9f5;
+}
+
+.totalReceivedResult {
+  border-color: rgba(126, 181, 148, 0.25);
+  background: linear-gradient(135deg, rgba(42, 91, 64, 0.28), rgba(24, 43, 32, 0.58));
+}
+
+.totalReceivedResult strong {
+  color: #c5efd2;
+  font-size: 17px;
+}
+
+.totalReceivedOperator {
+  color: #809388;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sectionHeader,
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  color: #eee9db;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sectionHeader p {
+  margin: 4px 0 0;
+  color: #a8aa9f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.sectionIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid;
+  border-radius: 7px;
+}
+
+.cashSectionIcon {
+  color: #a8d29e;
+  border-color: rgba(168, 210, 158, 0.22);
+  background: rgba(168, 210, 158, 0.08);
+}
+
+.nonCashSectionIcon {
+  color: #9bc9f0;
+  border-color: rgba(96, 165, 250, 0.22);
+  background: rgba(59, 130, 246, 0.08);
 }
 
 .balanceFlow {
@@ -313,6 +532,161 @@
   border-radius: 0 5px 5px 0;
   background: rgba(196, 169, 106, 0.055);
   font-size: 12px;
+  line-height: 1.5;
+}
+
+.nonCashSection {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(91, 160, 207, 0.2);
+  border-radius: 10px;
+  background:
+    radial-gradient(ellipse at top right, rgba(59, 130, 246, 0.08), transparent 42%),
+    linear-gradient(145deg, rgba(19, 25, 31, 0.94), rgba(13, 18, 23, 0.96));
+}
+
+.nonCashHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nonCashHeader h2 {
+  margin: 0;
+  color: #e8edf2;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.nonCashHeader p {
+  margin: 5px 0 0;
+  color: #9ba8b5;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.transactionCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  color: #b9d9f3;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.08);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.receiptsSummary {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px);
+}
+
+.receiptsMetric {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.receiptsMetric .metricIcon {
+  color: #a9c7dd;
+  border-color: rgba(122, 170, 205, 0.2);
+  background: rgba(122, 170, 205, 0.07);
+}
+
+.receiptsMetric .metricLabel {
+  color: #aeb8c1;
+}
+
+.receiptsMetric strong {
+  overflow-wrap: anywhere;
+  color: #e6edf3;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.nonCashMetric strong {
+  color: #c2e4fb;
+}
+
+.nonCashTableWrap {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 8px;
+}
+
+.nonCashTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.nonCashTable th,
+.nonCashTable td {
+  padding: 11px 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.065);
+  font-size: 12px;
+}
+
+.nonCashTable th {
+  color: #aeb8c1;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nonCashTable td {
+  color: #d5dce2;
+}
+
+.nonCashTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.nonCashTable tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.transactionAmount {
+  color: #b9dcf6 !important;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.referenceText {
+  display: block;
+  max-width: 640px;
+  color: #e0e6eb;
+  overflow-wrap: anywhere;
+}
+
+.noTransactions {
+  padding: 22px !important;
+  color: #97a3ad !important;
+  text-align: center;
+}
+
+.nonCashNote {
+  margin: 0;
+  padding: 10px 12px;
+  color: #9db4c5;
+  border-left: 2px solid #659bc2;
+  border-radius: 0 5px 5px 0;
+  background: rgba(74, 129, 168, 0.07);
+  font-size: 11px;
   line-height: 1.5;
 }
 
@@ -447,6 +821,36 @@
   .balanceMetric {
     min-height: 120px;
     padding: 12px;
+  }
+
+  .nonCashSection {
+    padding: 13px;
+  }
+
+  .nonCashHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reportViewFilter {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .reportViewButton {
+    padding: 0 7px;
+  }
+
+  .totalReceivedFormula {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .totalReceivedOperator {
+    justify-self: center;
+    line-height: 1;
   }
 
   .balanceMetric strong {

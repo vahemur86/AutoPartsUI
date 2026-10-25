@@ -13,6 +13,7 @@ import {
   getZReports,
   getZReport,
   getCashboxReport,
+  getCombinedCashboxReport,
   closeCashRegisterSession,
 } from "@/services/settings/cash/cashboxSessions";
 
@@ -27,6 +28,7 @@ import type {
   ZReportResponse,
   PaginatedResponse,
   CashboxReport,
+  CombinedCashboxReport,
 } from "@/types/cash";
 
 // utils
@@ -46,6 +48,7 @@ interface CashReportsState {
   zReports: PaginatedResponse<ZReport> | null;
   selectedZReport: ZReport | null;
   cashboxReport: CashboxReport | null;
+  combinedCashboxReport: CombinedCashboxReport | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -59,6 +62,7 @@ const initialState: CashReportsState = {
   zReports: null,
   selectedZReport: null,
   cashboxReport: null,
+  combinedCashboxReport: null,
   isLoading: false,
   error: null,
 };
@@ -175,6 +179,23 @@ export const fetchCashboxReport = createAsyncThunk<
   }
 });
 
+export const fetchCombinedCashboxReport = createAsyncThunk<
+  CombinedCashboxReport,
+  Parameters<typeof getCombinedCashboxReport>[0],
+  { rejectValue: string }
+>(
+  "cashReports/fetchCombinedCashboxReport",
+  async (params, { rejectWithValue }) => {
+    try {
+      return await getCombinedCashboxReport(params);
+    } catch (error) {
+      return rejectWithValue(
+        getApiErrorMessage(error, "Failed to fetch combined cashbox report"),
+      );
+    }
+  },
+);
+
 // --- Slice ---
 
 const cashReportsSlice = createSlice({
@@ -187,6 +208,7 @@ const cashReportsSlice = createSlice({
       state.sessionBatches = null;
       state.selectedZReport = null;
       state.cashboxReport = null;
+      state.combinedCashboxReport = null;
     },
     resetReportsState: () => initialState,
   },
@@ -224,6 +246,10 @@ const cashReportsSlice = createSlice({
       .addCase(fetchCashboxReport.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cashboxReport = action.payload;
+      })
+      .addCase(fetchCombinedCashboxReport.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.combinedCashboxReport = action.payload;
       })
 
       // Global Matchers for Loading and Error states

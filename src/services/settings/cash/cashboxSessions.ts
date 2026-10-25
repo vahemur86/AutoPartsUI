@@ -14,6 +14,7 @@ import type {
   ZReport,
   ZReportResponse,
   CashboxReport,
+  CombinedCashboxReport,
 } from "@/types/cash";
 import { ROUTE_PAGE_KEYS } from "@/constants/pageKeys";
 
@@ -192,5 +193,30 @@ export const getCashboxReport = async ({
     return data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "Failed to get cashbox report."));
+  }
+};
+
+export const getCombinedCashboxReport = async ({
+  cashRegisterId,
+  dateFrom,
+  dateTo,
+}: {
+  cashRegisterId: number;
+  dateFrom?: string;
+  dateTo?: string;
+}): Promise<CombinedCashboxReport> => {
+  try {
+    const { data } = await api.get<CombinedCashboxReport>(
+      `/cashbox-sessions/${cashRegisterId}/reports/combined`,
+      {
+        params: { datefrom: dateFrom, dateto: dateTo },
+        headers: getHeaders(cashRegisterId),
+      },
+    );
+    return data;
+  } catch (error) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to get combined cashbox report."),
+    );
   }
 };

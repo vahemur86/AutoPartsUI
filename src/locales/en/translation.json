@@ -2143,6 +2143,25 @@
       "emptyTitle": "Report not calculated yet",
       "emptyPrompt": "Select a shop and cash register, then load the report to calculate the balance.",
       "balanceEquation": "Opening balance + cash in - cash out = expected closing balance",
+      "viewFilterLabel": "Report type",
+      "views": {
+        "all": "All",
+        "cash": "Cash",
+        "nonCash": "Non-cash"
+      },
+      "cashTitle": "Cash report",
+      "cashDescription": "Cash register inflows and balance calculation.",
+      "nonCashTitle": "Non-cash transactions",
+      "nonCashDescription": "Non-cash payments are reported separately and do not change the cash balance.",
+      "nonCashTotal": "Non-cash received",
+      "totalReceipts": "Total cash and non-cash received",
+      "totalReceiptsDescription": "Combined incoming payments, separate from the cash balance calculation.",
+      "totalCashReceived": "Cash received",
+      "transactionCount": "{{count}} transactions",
+      "transactionDate": "Date and time",
+      "paymentReference": "Payment reference",
+      "noNonCashTransactions": "There are no non-cash transactions for the selected period.",
+      "nonCashBalanceNote": "Non-cash payments are not included in the cash register balance calculation.",
       "validation": {
         "shopRequired": "Shop is required",
         "registerRequired": "Cash register is required"
@@ -2153,7 +2172,8 @@
         "openingBalance": "Opening Balance",
         "cashIn": "Cash In",
         "cashOut": "Cash Out",
-        "expectedClosingBalance": "Expected Closing Balance"
+        "expectedClosingBalance": "Expected Closing Balance",
+        "amount": "Amount"
       }
     },
     "errors": {

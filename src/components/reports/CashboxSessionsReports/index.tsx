@@ -6,7 +6,9 @@ import {
   ArrowRight,
   ArrowUpRight,
   BarChart3,
+  Banknote,
   CalendarDays,
+  CreditCard,
   RotateCcw,
   Store,
   Wallet,
@@ -18,7 +20,7 @@ import { Select, Button, DatePicker } from "@/ui-kit";
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  fetchCashboxReport,
+  fetchCombinedCashboxReport,
   clearSelection,
 } from "@/store/slices/cash/cashboxSessionsSlice";
 import { fetchShops } from "@/store/slices/shopsSlice";
@@ -30,13 +32,17 @@ import { getApiErrorMessage } from "@/utils";
 // styles
 import styles from "./CashboxReport.module.css";
 
+type ReportView = "all" | "cash" | "nonCash";
+
 export const CashboxSessionsReports: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { cashboxReport, isLoading } = useAppSelector(
+  const { combinedCashboxReport, isLoading } = useAppSelector(
     (state) => state.cashboxSessions,
   );
+  const cashboxReport = combinedCashboxReport?.cash;
+  const nonCashReport = combinedCashboxReport?.nonCash;
   const { shops } = useAppSelector((state) => state.shops);
   const { cashRegisters } = useAppSelector((state) => state.cashRegisters);
 
@@ -46,6 +52,7 @@ export const CashboxSessionsReports: FC = () => {
   const [selectedDateTo, setSelectedDateTo] = useState<Date | null>(null);
   const [shopError, setShopError] = useState(false);
   const [registerError, setRegisterError] = useState(false);
+  const [reportView, setReportView] = useState<ReportView>("all");
 
   useEffect(() => {
     if (!shops.length) {
@@ -147,7 +154,7 @@ export const CashboxSessionsReports: FC = () => {
     const dateToParam = formatDate(selectedDateTo);
 
     dispatch(
-      fetchCashboxReport({
+      fetchCombinedCashboxReport({
         cashRegisterId: selectedRegisterId as number,
         dateFrom: dateFromParam,
         dateTo: dateToParam,
@@ -174,12 +181,20 @@ export const CashboxSessionsReports: FC = () => {
       month: "short",
       day: "numeric",
     });
+  const formatApiDate = (value?: string) => {
+    if (!value || value.startsWith("0001-01-01")) return null;
+    const date = new Date(`${value.slice(0, 10)}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? null : formatDateLabel(date);
+  };
   const reportPeriod = selectedDateFrom || selectedDateTo
     ? `${selectedDateFrom ? formatDateLabel(selectedDateFrom) : t("common.notSpecified")} - ${selectedDateTo ? formatDateLabel(selectedDateTo) : t("common.notSpecified")}`
-    : cashboxReport?.date && cashboxReport.date !== "0001-01-01"
-      ? formatDateLabel(new Date(`${cashboxReport.date}T00:00:00`))
-      : t("cashbox.cashboxReport.allDates");
+    : nonCashReport
+      ? `${formatApiDate(nonCashReport.dateFrom) ?? t("common.notSpecified")} - ${formatApiDate(nonCashReport.dateTo) ?? t("common.notSpecified")}`
+      : formatApiDate(cashboxReport?.date) ?? t("cashbox.cashboxReport.allDates");
   const formatAmd = (value: number) => `${value.toLocaleString()} AMD`;
+  const cashReceivedAmd = cashboxReport?.cashInAmd ?? 0;
+  const nonCashReceivedAmd = nonCashReport?.totalNonCashAmd ?? 0;
+  const totalReceivedAmd = cashReceivedAmd + nonCashReceivedAmd;
 
   return (
     <div className={styles.cashboxReportWrapper}>
@@ -313,8 +328,8 @@ export const CashboxSessionsReports: FC = () => {
       </section>
 
       <div className={styles.reportResult}>
-        {cashboxReport ? (
-          <section className={styles.reportSummary} aria-label={t("cashbox.cashboxReport.title")}>
+        {combinedCashboxReport ? (
+          <>
             <header className={styles.summaryHeader}>
               <div className={styles.selectedCashbox}>
                 <span>
@@ -336,6 +351,89 @@ export const CashboxSessionsReports: FC = () => {
               </div>
             </header>
 
+            <nav
+              className={styles.reportViewFilter}
+              aria-label={t("cashbox.cashboxReport.viewFilterLabel")}
+            >
+              {(["all", "cash", "nonCash"] as const).map((view) => (
+                <button
+                  key={view}
+                  type="button"
+                  className={`${styles.reportViewButton} ${
+                    reportView === view ? styles.reportViewButtonActive : ""
+                  }`}
+                  aria-pressed={reportView === view}
+                  onClick={() => setReportView(view)}
+                >
+                  {t(`cashbox.cashboxReport.views.${view}`)}
+                </button>
+              ))}
+            </nav>
+
+            {reportView === "all" && cashboxReport && nonCashReport && (
+              <section
+                className={styles.totalReceivedSummary}
+                aria-label={t("cashbox.cashboxReport.totalReceipts")}
+              >
+                <header className={styles.totalReceivedHeader}>
+                  <span className={styles.totalReceivedIcon} aria-hidden="true">
+                    <Wallet size={18} />
+                  </span>
+                  <div>
+                    <h2>{t("cashbox.cashboxReport.totalReceipts")}</h2>
+                    <p>{t("cashbox.cashboxReport.totalReceiptsDescription")}</p>
+                  </div>
+                </header>
+                <div className={styles.totalReceivedFormula}>
+                  <div className={styles.totalReceivedSource}>
+                    <span className={`${styles.sourceIcon} ${styles.cashSourceIcon}`} aria-hidden="true">
+                      <Banknote size={16} />
+                    </span>
+                    <span className={styles.totalReceivedLabel}>
+                      {t("cashbox.cashboxReport.totalCashReceived")}
+                    </span>
+                    <strong>{formatAmd(cashReceivedAmd)}</strong>
+                  </div>
+                  <span className={styles.totalReceivedOperator} aria-hidden="true">+</span>
+                  <div className={styles.totalReceivedSource}>
+                    <span className={`${styles.sourceIcon} ${styles.nonCashSourceIcon}`} aria-hidden="true">
+                      <CreditCard size={16} />
+                    </span>
+                    <span className={styles.totalReceivedLabel}>
+                      {t("cashbox.cashboxReport.nonCashTotal")}
+                    </span>
+                    <strong>{formatAmd(nonCashReceivedAmd)}</strong>
+                  </div>
+                  <span className={styles.totalReceivedOperator} aria-hidden="true">=</span>
+                  <div className={`${styles.totalReceivedSource} ${styles.totalReceivedResult}`}>
+                    <span className={`${styles.sourceIcon} ${styles.totalSourceIcon}`} aria-hidden="true">
+                      <Wallet size={16} />
+                    </span>
+                    <span className={styles.totalReceivedLabel}>
+                      {t("cashbox.cashboxReport.totalReceipts")}
+                    </span>
+                    <strong>{formatAmd(totalReceivedAmd)}</strong>
+                  </div>
+                </div>
+              </section>
+            )}
+          </>
+        ) : null}
+
+        {cashboxReport && (reportView === "all" || reportView === "cash") ? (
+          <section
+            className={styles.reportSummary}
+            aria-label={t("cashbox.cashboxReport.cashTitle")}
+          >
+            <header className={styles.sectionHeader}>
+              <span className={`${styles.sectionIcon} ${styles.cashSectionIcon}`} aria-hidden="true">
+                <Banknote size={17} aria-hidden="true" />
+              </span>
+              <div>
+                <h2>{t("cashbox.cashboxReport.cashTitle")}</h2>
+                <p>{t("cashbox.cashboxReport.cashDescription")}</p>
+              </div>
+            </header>
             <div className={styles.balanceFlow}>
               <article className={styles.balanceMetric}>
                 <span className={styles.metricIcon}>
@@ -379,7 +477,95 @@ export const CashboxSessionsReports: FC = () => {
               {t("cashbox.cashboxReport.balanceEquation")}
             </p>
           </section>
-        ) : selectedShopId === "" || selectedRegisterId === "" || !isLoading ? (
+        ) : null}
+
+        {nonCashReport && (reportView === "all" || reportView === "nonCash") ? (
+          <section
+            className={styles.nonCashSection}
+            aria-label={t("cashbox.cashboxReport.nonCashTitle")}
+          >
+            <header className={styles.nonCashHeader}>
+              <div className={styles.sectionTitle}>
+                <span className={`${styles.sectionIcon} ${styles.nonCashSectionIcon}`}>
+                  <CreditCard size={17} aria-hidden="true" />
+                </span>
+                <div>
+                  <h2>{t("cashbox.cashboxReport.nonCashTitle")}</h2>
+                  <p>{t("cashbox.cashboxReport.nonCashDescription")}</p>
+                </div>
+              </div>
+              <span className={styles.transactionCount}>
+                <CreditCard size={15} aria-hidden="true" />
+                {t("cashbox.cashboxReport.transactionCount", {
+                  count: nonCashReport.transactions.length,
+                })}
+              </span>
+            </header>
+
+            <div className={styles.receiptsSummary}>
+              <article className={`${styles.receiptsMetric} ${styles.nonCashMetric}`}>
+                <span className={styles.metricIcon}>
+                  <CreditCard size={17} aria-hidden="true" />
+                </span>
+                <span className={styles.metricLabel}>
+                  {t("cashbox.cashboxReport.nonCashTotal")}
+                </span>
+                <strong>{formatAmd(nonCashReport.totalNonCashAmd)}</strong>
+              </article>
+            </div>
+
+            <div className={styles.nonCashTableWrap}>
+              <table className={styles.nonCashTable}>
+                <thead>
+                  <tr>
+                    <th scope="col">{t("cashbox.cashboxReport.transactionDate")}</th>
+                    <th scope="col">{t("cashbox.cashboxReport.columns.amount")}</th>
+                    <th scope="col">{t("cashbox.cashboxReport.paymentReference")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nonCashReport.transactions.length ? (
+                    nonCashReport.transactions.map((transaction) => {
+                      const createdAt = new Date(transaction.createdAt);
+                      const transactionDate = Number.isNaN(createdAt.getTime())
+                        ? transaction.createdAt
+                        : createdAt.toLocaleString();
+
+                      return (
+                        <tr key={transaction.id}>
+                          <td>{transactionDate}</td>
+                          <td className={styles.transactionAmount}>
+                            {formatAmd(transaction.amountAmd)}
+                          </td>
+                          <td>
+                            <span
+                              className={styles.referenceText}
+                              title={transaction.comment || transaction.reference}
+                            >
+                              {transaction.reference}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td className={styles.noTransactions} colSpan={3}>
+                        {t("cashbox.cashboxReport.noNonCashTransactions")}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <p className={styles.nonCashNote}>
+              {t("cashbox.cashboxReport.nonCashBalanceNote")}
+            </p>
+          </section>
+        ) : null}
+
+        {!combinedCashboxReport &&
+        (selectedShopId === "" || selectedRegisterId === "" || !isLoading) ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon} aria-hidden="true">
               <Wallet size={24} />
@@ -387,7 +573,7 @@ export const CashboxSessionsReports: FC = () => {
             <strong>{t("cashbox.cashboxReport.emptyTitle")}</strong>
             <span>{t("cashbox.cashboxReport.emptyPrompt")}</span>
           </div>
-        ) : (
+        ) : !combinedCashboxReport ? (
           <div className={styles.reportSkeleton} aria-busy="true" aria-live="polite">
             <div className={styles.skeletonContext}>
               <div className={`${styles.skeletonLine} ${styles.skeletonLineWide}`} />
@@ -402,7 +588,7 @@ export const CashboxSessionsReports: FC = () => {
               ))}
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

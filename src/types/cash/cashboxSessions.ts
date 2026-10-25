@@ -119,6 +119,28 @@ export interface CashboxReport {
   expectedClosingBalanceAmd: number;
 }
 
+export interface NonCashTransaction {
+  id: number;
+  sessionId: number;
+  amountAmd: number;
+  reference: string;
+  comment: string;
+  createdAt: string;
+}
+
+export interface NonCashReport {
+  cashBoxId: number;
+  dateFrom: string;
+  dateTo: string;
+  totalNonCashAmd: number;
+  transactions: NonCashTransaction[];
+}
+
+export interface CombinedCashboxReport {
+  cash: CashboxReport;
+  nonCash: NonCashReport;
+}
+
 export interface BatchResponse extends PaginatedResponse<Batch> {
   /**
    * Optional aggregate totals returned by the server
