@@ -15,18 +15,54 @@
   justify-content: space-between;
 }
 
+.marketPricesTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d4bc7b;
+  border: 1px solid rgba(212, 188, 123, 0.25);
+  border-radius: 6px;
+  background: rgba(212, 188, 123, 0.08);
+}
+
 .liveIndicator {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  border-radius: 999px;
+  background: rgba(74, 222, 128, 0.07);
 }
 
-.liveIndicator .liveDot {
+.liveIndicator .liveDot,
+.marketPricesFooter .liveDot {
+  position: relative;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: var(--color-success);
   flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.65);
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+.liveIndicator .liveDot::after,
+.marketPricesFooter .liveDot::after {
+  position: absolute;
+  inset: -4px;
+  border: 1px solid rgba(74, 222, 128, 0.55);
+  border-radius: inherit;
+  content: "";
+  animation: liveRing 2s ease-out infinite;
 }
 
 .liveIndicator .liveText {
@@ -35,6 +71,39 @@
   color: var(--color-success);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.25);
+}
+
+.marketPricesFooter .liveText {
+  color: var(--color-success);
+}
+
+@keyframes livePulse {
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.9);
+  }
+}
+
+@keyframes liveRing {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.65);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liveIndicator .liveDot,
+  .marketPricesFooter .liveDot,
+  .liveIndicator .liveDot::after,
+  .marketPricesFooter .liveDot::after {
+    animation: none;
+  }
 }
 
 .metalsList {

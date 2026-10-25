@@ -69,6 +69,7 @@ export const CustomerDetails = ({
   const dispatch = useAppDispatch();
 
   const isIronTab = activeTab === "iron";
+  const isCatalystTab = activeTab === "catalyst";
 
   const { intake, isLoading: isIntakeLoading } = useAppSelector(
     (state) => state.operator,
@@ -182,7 +183,7 @@ export const CustomerDetails = ({
       ).unwrap();
 
       toast.success(t("customers.success.customerCreated"));
-      handleSearch();
+      await handleSearch();
     } catch (error) {
       console.error("Failed to create customer:", error);
     }
@@ -228,10 +229,10 @@ export const CustomerDetails = ({
 
   return (
     <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""} ${isIronTab ? styles.ironCustomerCard : ""}`}>
-      <div className={`${styles.customerHeader} ${isIronTab ? styles.ironCustomerHeader : ""}`}>
-        {isIronTab && (
+      <div className={`${styles.customerHeader} ${isIronTab ? styles.ironCustomerHeader : ""} ${isCatalystTab ? styles.catalystCustomerHeader : ""}`}>
+        {(isIronTab || isCatalystTab) && (
           <span className={styles.customerHeaderIcon} aria-hidden="true">
-            <UserRound size={16} />
+            <UserRound size={17} />
           </span>
         )}
         <h2 className={sharedStyles.cardTitle}>{t("customerDetails.title")}</h2>
@@ -359,7 +360,7 @@ export const CustomerDetails = ({
         )}
 
         <div className={styles.customerActions}>
-          {isIronTab && (
+          {(isIronTab || activeTab === "catalyst") && (
             <Button
               variant="primary"
               size="small"
@@ -380,7 +381,10 @@ export const CustomerDetails = ({
               className={sharedStyles.catalystPrimaryAction}
               onClick={handleAccept}
               disabled={
-                isGlobalLoading || (!intake && !isIronTab) || !hasSearched
+                isGlobalLoading ||
+                (!intake && !isIronTab) ||
+                !hasSearched ||
+                (!isIronTab && !activeCustomer)
               }
             >
               <Check size={20} style={{ marginRight: "8px" }} />

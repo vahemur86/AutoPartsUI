@@ -201,7 +201,7 @@ export const Login = () => {
       setIsRedirecting(true);
       await initializeDefaultLanguage();
       toast.success(t("auth.login.welcomeBack"));
-      await new Promise<void>((resolve) => window.setTimeout(resolve, 5000));
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 2500));
       navigate(
         getLoginRedirectPath(resultAction.payload.role, isMobile),
         { replace: true },

@@ -83,6 +83,7 @@ export const FinalOffer: FC<{
   acceptLabel?: string;
   onRecalculate?: () => Promise<void>;
   isLoading?: boolean;
+  isDisabled?: boolean;
   setRecalculationsAmount?: Dispatch<SetStateAction<number>>;
 }> = ({
   isRecalculationsLimitReached = false,
@@ -101,6 +102,7 @@ export const FinalOffer: FC<{
   acceptLabel,
   onRecalculate,
   isLoading = false,
+  isDisabled = false,
   setRecalculationsAmount,
 }) => {
   const { t } = useTranslation();
@@ -116,7 +118,7 @@ export const FinalOffer: FC<{
   }, [intake?.id]);
 
   const handleOffer = useCallback(async () => {
-    if (offerConfirmed || isOffering) return;
+    if (isDisabled || offerConfirmed || isOffering) return;
 
     if (onAccept) {
       setIsOffering(true);
@@ -145,10 +147,19 @@ export const FinalOffer: FC<{
     } finally {
       setIsOffering(false);
     }
-  }, [dispatch, intake, t, userData?.cashRegisterId, onAccept, offerConfirmed, isOffering]);
+  }, [
+    dispatch,
+    intake,
+    t,
+    userData?.cashRegisterId,
+    onAccept,
+    offerConfirmed,
+    isOffering,
+    isDisabled,
+  ]);
 
   const handleRecalculateAction = useCallback(async () => {
-    if (agentPayment?.isAgent) return;
+    if (isDisabled || agentPayment?.isAgent) return;
     if (onRecalculate) {
       await onRecalculate();
       return;
@@ -176,6 +187,7 @@ export const FinalOffer: FC<{
     setRecalculationsAmount,
     onRecalculate,
     agentPayment?.isAgent,
+    isDisabled,
   ]);
 
   const isAnyActionLoading = isOffering || isInternalRecalculating || isLoading;
@@ -318,7 +330,7 @@ export const FinalOffer: FC<{
             fullWidth
             className={isIronPurchase ? styles.ironPurchaseAction : isCatalyst ? sharedStyles.catalystPrimaryAction : undefined}
             onClick={handleOffer}
-            disabled={offerConfirmed || isAnyActionLoading || !isTransactionReady}
+            disabled={isDisabled || offerConfirmed || isAnyActionLoading || !isTransactionReady}
           >
             <Check size={20} />
             {acceptLabel ?? t("finalOffer.offerButton")}
@@ -332,6 +344,7 @@ export const FinalOffer: FC<{
               onClick={handleRecalculateAction}
               disabled={
                 isRecalculationsLimitReached ||
+                isDisabled ||
                 isAnyActionLoading ||
                 !isTransactionReady
               }
@@ -346,7 +359,7 @@ export const FinalOffer: FC<{
             size="small"
             fullWidth
             onClick={onReset}
-            disabled={isAnyActionLoading || !isTransactionReady}
+            disabled={isDisabled || isAnyActionLoading || !isTransactionReady}
           >
             <X size={20} />
             {t("finalOffer.rejectButton")}

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { FlaskConical } from "lucide-react";
 
 // ui-kit
 import { TextField } from "@/ui-kit";
@@ -11,12 +12,14 @@ interface PowderExtractionProps {
   weight: string;
   onWeightChange: (val: string) => void;
   error?: boolean;
+  isDisabled?: boolean;
 }
 
 export const PowderExtraction = ({
   weight,
   onWeightChange,
   error,
+  isDisabled = false,
 }: PowderExtractionProps) => {
   const { t } = useTranslation();
 
@@ -34,6 +37,9 @@ export const PowderExtraction = ({
   return (
     <div className={styles.powderCard}>
       <div className={styles.powderHeader}>
+        <span className={styles.headerIcon} aria-hidden="true">
+          <FlaskConical size={17} />
+        </span>
         <h2 className={sharedStyles.cardTitle}>
           {t("powderExtraction.title")}
         </h2>
@@ -48,6 +54,7 @@ export const PowderExtraction = ({
           value={weight}
           onChange={handleWeightChange}
           error={error}
+          disabled={isDisabled}
         />
       </div>
     </div>

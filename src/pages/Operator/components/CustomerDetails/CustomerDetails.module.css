@@ -43,6 +43,12 @@
   gap: 10px;
 }
 
+.catalystCustomerHeader {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
 .customerHeaderIcon {
   display: grid;
   width: 30px;

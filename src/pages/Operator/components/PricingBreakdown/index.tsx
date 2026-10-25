@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { TextField, Button } from "@/ui-kit";
-import { Send } from "lucide-react";
+import { Calculator, Send } from "lucide-react";
 
 import styles from "./PricingBreakdown.module.css";
 import sharedStyles from "../../OperatorPage.module.css";
@@ -10,6 +10,7 @@ interface PricingRowProps {
   priceValue: string;
   onPriceChange: (val: string) => void;
   error?: boolean;
+  isDisabled?: boolean;
 }
 
 const PricingRow = ({
@@ -17,6 +18,7 @@ const PricingRow = ({
   priceValue,
   onPriceChange,
   error,
+  isDisabled = false,
 }: PricingRowProps) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
@@ -48,6 +50,7 @@ const PricingRow = ({
           onChange={handleInputChange}
           placeholder="0.00"
           error={error}
+          disabled={isDisabled}
         />
       </div>
     </div>
@@ -80,7 +83,12 @@ export const PricingBreakdown = ({
 
   return (
     <div className={styles.pricingCard}>
-      <h2 className={sharedStyles.cardTitle}>{t("pricingBreakdown.title")}</h2>
+      <div className={styles.pricingHeader}>
+        <span className={styles.headerIcon} aria-hidden="true">
+          <Calculator size={17} />
+        </span>
+        <h2 className={sharedStyles.cardTitle}>{t("pricingBreakdown.title")}</h2>
+      </div>
       <div className={sharedStyles.divider} />
       <div className={styles.pricingContent}>
         <PricingRow
@@ -88,18 +96,21 @@ export const PricingBreakdown = ({
           priceValue={formData.platinumPrice}
           onPriceChange={(val) => onPriceChange("platinumPrice", val)}
           error={hasTriedSubmit && isInvalid(formData.platinumPrice)}
+          isDisabled={isDisabled}
         />
         <PricingRow
           weightLabel={t("pricingBreakdown.palladiumWeight")}
           priceValue={formData.palladiumPrice}
           onPriceChange={(val) => onPriceChange("palladiumPrice", val)}
           error={hasTriedSubmit && isInvalid(formData.palladiumPrice)}
+          isDisabled={isDisabled}
         />
         <PricingRow
           weightLabel={t("pricingBreakdown.rhodiumWeight")}
           priceValue={formData.rhodiumPrice}
           onPriceChange={(val) => onPriceChange("rhodiumPrice", val)}
           error={hasTriedSubmit && isInvalid(formData.rhodiumPrice)}
+          isDisabled={isDisabled}
         />
         <div className={sharedStyles.divider} />
         <div style={{ marginTop: "8px" }}>

@@ -12,7 +12,19 @@
 .powderHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
+}
+
+.headerIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d4bc7b;
+  border: 1px solid rgba(212, 188, 123, 0.25);
+  border-radius: 6px;
+  background: rgba(212, 188, 123, 0.08);
 }
 
 .powderContent {

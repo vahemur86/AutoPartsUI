@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 // ui-kit
-import { Coins } from "lucide-react";
+import { Coins, TrendingUp } from "lucide-react";
 
 // styles
 import styles from "./LiveMarketPrices.module.css";
@@ -71,9 +71,14 @@ export const LiveMarketPrices = ({
   return (
     <div className={styles.marketPricesCard}>
       <div className={styles.marketPricesHeader}>
-        <h2 className={sharedStyles.cardTitle}>
-          {t("liveMarketPrices.title")}
-        </h2>
+        <div className={styles.marketPricesTitle}>
+          <span className={styles.headerIcon} aria-hidden="true">
+            <TrendingUp size={17} />
+          </span>
+          <h2 className={sharedStyles.cardTitle}>
+            {t("liveMarketPrices.title")}
+          </h2>
+        </div>
         <div className={styles.liveIndicator}>
           <span className={styles.liveDot} />
           <span className={styles.liveText}>{t("liveMarketPrices.live")}</span>

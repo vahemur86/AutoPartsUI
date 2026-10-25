@@ -280,6 +280,7 @@ export const useOperator = () => {
       linkedCustomerTypeCode || searchedCustomerTypeCode;
 
     return (
+      resolvedCustomerTypeId != null &&
       Number(resolvedCustomerTypeId) !== 1 &&
       resolvedCustomerTypeCode !== "standard"
     );
@@ -1053,6 +1054,7 @@ export const useOperator = () => {
     languages,
     currentLanguageCode,
     usdAmdRate,
+    shouldShowExchangeRate,
     isNonStandardCustomer,
     isFormDirty,
     selectors,

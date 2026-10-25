@@ -89,6 +89,7 @@ export const OperatorPage = () => {
     languages,
     currentLanguageCode,
     usdAmdRate,
+    shouldShowExchangeRate,
     isNonStandardCustomer,
     isFormDirty,
     selectors,
@@ -96,6 +97,16 @@ export const OperatorPage = () => {
   } = useOperator();
 
   const isIron = activeTab === "iron";
+  const currentCustomerPhone = formData.customer.phone.replace(/\D/g, "");
+  const isCatalystCustomerReady =
+    activeTab === "catalyst" &&
+    currentCustomerPhone.length > 0 &&
+    (selectors.customers.items.some(
+      (customer) =>
+        customer.phone?.replace(/\D/g, "") === currentCustomerPhone,
+    ) ||
+      selectors.operator.intake?.customer?.phone?.replace(/\D/g, "") ===
+        currentCustomerPhone);
   const calculationLoaderStartedAtRef = useRef<number | null>(null);
   const [calculationLoaderVisible, setCalculationLoaderVisible] = useState(false);
 
@@ -258,6 +269,7 @@ export const OperatorPage = () => {
                       onWeightChange={(v) =>
                         setFormData((p) => ({ ...p, powderWeight: v }))
                       }
+                      isDisabled={!isCatalystCustomerReady}
                       error={
                         uiState.hasTriedSubmit &&
                         isNaN(Number(formData.powderWeight))
@@ -285,7 +297,9 @@ export const OperatorPage = () => {
                       updatedAt={
                         selectors.metalRates.activeMetalRate?.effectiveFrom
                       }
-                      usdAmdRate={usdAmdRate}
+                      usdAmdRate={
+                        shouldShowExchangeRate ? usdAmdRate : undefined
+                      }
                       isMarketData={isNonStandardCustomer}
                     />
                   </div>
@@ -299,12 +313,16 @@ export const OperatorPage = () => {
                       isLoading={uiState.isSubmitting}
                       hasTriedSubmit={uiState.hasTriedSubmit}
                       isDisabled={
-                        !!selectors.operator.intake?.id &&
-                        (initialOfferPrice ?? selectors.operator.intake?.offerPrice ?? 0) > 0
+                        !isCatalystCustomerReady ||
+                        (!!selectors.operator.intake?.id &&
+                          (initialOfferPrice ??
+                            selectors.operator.intake?.offerPrice ??
+                            0) > 0)
                       }
                     />
                     <FinalOffer
                       isCatalyst
+                      isDisabled={!isCatalystCustomerReady}
                       withRecalculate={
                         !isNonStandardCustomer &&
                         !selectors.operator.intake?.agentPayment?.isAgent
