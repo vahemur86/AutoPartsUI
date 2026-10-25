@@ -45,7 +45,7 @@ export const SoldBatchesDetailsPreview: FC<Props> = ({
     setRequestError("");
     setSnapshot(null);
 
-    dispatch(fetchSalesLotsPreviewById({ id: lot.salesLotId, cashRegisterId }))
+    dispatch(fetchSalesLotsPreviewById({ id: lot.id, cashRegisterId }))
       .unwrap()
       .then((result) => {
         if (!isCurrentRequest) return;
@@ -66,7 +66,7 @@ export const SoldBatchesDetailsPreview: FC<Props> = ({
     return () => {
       isCurrentRequest = false;
     };
-  }, [dispatch, lot.salesLotId, cashRegisterId]);
+  }, [dispatch, lot.id, cashRegisterId]);
 
   const data = snapshot;
   const fieldKeys: Record<string, string> = {
