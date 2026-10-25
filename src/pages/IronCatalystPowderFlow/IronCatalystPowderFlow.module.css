@@ -12,9 +12,6 @@
 .sectionHeader,
 .sectionHeader > div,
 .tab,
-.inventorySummary,
-.sourcePicker,
-.rowActions,
 .pagination {
   display: flex;
   align-items: center;
@@ -53,7 +50,7 @@
 
 .tabRail {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
   padding: 5px;
   border: 1px solid rgba(var(--flow-accent), 0.14);
@@ -109,8 +106,6 @@
 .table td strong { color: #d8efdf; }
 .emptyCell { padding: 35px 16px !important; color: rgba(224, 233, 225, 0.5) !important; text-align: center; }
 .remaining { color: #e7c985 !important; }
-.rowActions { gap: 5px; }
-
 .loading,
 .errorState,
 .emptyState {
@@ -170,20 +165,9 @@
 .purchaseCardWeights strong { color: #e5eee6; font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .purchaseCardWeights > span:last-child strong { color: #a9dfb7; }
 .purchaseCard > button { justify-self: start; }
-.historyPanel, .detailPanel { display: grid; gap: 13px; min-width: 0; padding: 14px; border: 1px solid rgba(var(--flow-accent), 0.14); border-radius: 7px; background: rgba(5, 9, 6, 0.24); }
-.historyPanel h3, .sourcePicker h3 { display: flex; align-items: center; gap: 8px; margin: 0; color: #e7eee8; font-size: 12px; }
-.sourcePicker h3 svg { color: #9dc9a9; }
-.saleForm { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 11px; }
-.inventorySection { display: grid; gap: 15px; }
-.inventorySummary { flex-wrap: wrap; gap: 9px; }
-.inventorySummary > div { display: grid; min-width: 130px; gap: 5px; padding: 10px 12px; border: 1px solid rgba(var(--flow-accent), 0.15); border-radius: 6px; background: rgba(var(--flow-accent), 0.045); }
-.inventorySummary span { color: rgba(220, 232, 222, 0.54); font-size: 10px; }
-.inventorySummary strong { color: #e3eee5; font-size: 15px; font-variant-numeric: tabular-nums; }
-.sourcePicker { justify-content: space-between; gap: 12px; }
-.sourcePicker p { margin: 4px 0 0; color: rgba(220, 232, 222, 0.5); font-size: 10px; }
+.historyPanel { display: grid; gap: 13px; min-width: 0; padding: 14px; border: 1px solid rgba(var(--flow-accent), 0.14); border-radius: 7px; background: rgba(5, 9, 6, 0.24); }
+.historyPanel h3 { display: flex; align-items: center; gap: 8px; margin: 0; color: #e7eee8; font-size: 12px; }
 .ironBadge { display: inline-flex; width: fit-content; align-items: center; gap: 5px; padding: 4px 7px; border: 1px solid rgba(210, 169, 93, 0.34); border-radius: 5px; background: rgba(147, 105, 39, 0.13); color: #e9c880; font-size: 9px; font-weight: 750; letter-spacing: 0.025em; }
-.quantityField { display: grid; gap: 5px; }
-.quantityField input { width: 90px; padding: 5px 7px; border: 1px solid rgba(var(--flow-accent), 0.3); border-radius: 5px; background: rgba(0, 0, 0, 0.25); color: #edf4ee; font: inherit; }
 .bulkSaleActions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; color: rgba(220, 232, 222, 0.58); font-size: 11px; }
 .bulkPhysicalSaleForm { display: grid; gap: 12px; min-width: 0; }
 .bulkProcessingForm { gap: 15px; }
@@ -202,7 +186,7 @@
 .bulkSaleTotal { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid rgba(var(--flow-accent), 0.2); border-radius: 7px; background: rgba(var(--flow-accent), 0.06); color: #a9dfb7; font-size: 12px; }
 .bulkSaleTotal svg { flex: 0 0 auto; }
 .bulkSaleTotal strong { font-weight: 700; }
-.metricGrid, .previewGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
+.metricGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
 .metric { display: grid; min-width: 0; gap: 7px; padding: 11px 12px; border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 6px; background: rgba(255, 255, 255, 0.025); }
 .metric span { color: rgba(221, 232, 223, 0.52); font-size: 9px; }
 .metric strong { overflow-wrap: anywhere; color: #e8eee8; font-size: 13px; font-variant-numeric: tabular-nums; }
@@ -211,14 +195,8 @@
 .reportSubheading { margin: 8px 0 0; color: #e7eee8; font-size: 12px; }
 .physicalSaleAllocations { display: grid; gap: 5px; padding: 10px 12px; border: 1px solid rgba(var(--flow-accent), 0.12); border-radius: 6px; background: rgba(5, 9, 6, 0.2); color: rgba(220, 232, 222, 0.65); font-size: 10px; }
 .physicalSaleAllocations strong { color: #e3eee5; }
-.detailPanel > .ironBadge { margin-bottom: 1px; }
 .pagination { justify-content: center; gap: 14px; color: rgba(221, 232, 223, 0.63); font-size: 11px; }
-.saleForm { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.salePreview { display: grid; grid-column: 1 / -1; gap: 7px; padding: 11px 12px; border: 1px solid rgba(var(--flow-accent), 0.24); border-radius: 6px; background: rgba(var(--flow-accent), 0.06); color: #dceee0; font-size: 11px; }
-.salePreview b { color: #a9dfb7; }
 .modalFields { display: grid; gap: 12px; }
-.previewGrid { min-width: 450px; }
-.previewSourceSummary { display: flex; flex-wrap: wrap; gap: 16px; color: rgba(221, 232, 223, 0.7); font-size: 11px; }
 
 @keyframes flowSpin { to { transform: rotate(360deg); } }
 
@@ -234,18 +212,16 @@
   .purchaseBreakdowns { grid-template-columns: minmax(0, 1fr); }
   .purchaseDayHeader { align-items: flex-start; flex-direction: column; }
   .purchaseDayMetrics { justify-content: flex-start; }
-  .saleForm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bulkProcessingFields { grid-template-columns: minmax(0, 1fr); }
   .bulkAllocation { grid-template-columns: minmax(0, 1fr); }
   .filterRow { flex-wrap: wrap; }
   .filterRow > * { flex: 1 1 170px; }
   .bulkSaleActions { align-items: flex-start; flex-direction: column; }
-  .previewGrid { min-width: 0; }
 }
 
 @media (max-width: 480px) {
   .tab small { display: none; }
   .tab { gap: 6px; padding: 8px 6px; font-size: 10px; }
-  .saleForm { grid-template-columns: minmax(0, 1fr); }
+
   .sectionHeader { align-items: flex-start; flex-direction: column; }
 }
