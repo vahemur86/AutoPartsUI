@@ -136,7 +136,7 @@ export const OperatorPage = () => {
       return;
     }
 
-    const remaining = 7000 - (Date.now() - startedAt);
+    const remaining = 2500 - (Date.now() - startedAt);
     if (remaining <= 0) {
       setCalculationLoaderVisible(false);
       return;
@@ -322,6 +322,7 @@ export const OperatorPage = () => {
                     />
                     <FinalOffer
                       isCatalyst
+                      hidePrice={calculationLoaderVisible}
                       isDisabled={!isCatalystCustomerReady}
                       withRecalculate={
                         !isNonStandardCustomer &&

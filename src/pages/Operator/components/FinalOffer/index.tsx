@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
   type FC,
   type Dispatch,
@@ -40,6 +41,7 @@ export const FinalOffer: FC<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userData: any;
   isRecalculationsLimitReached?: boolean;
+  hidePrice?: boolean;
   withRecalculate?: boolean;
   isCatalyst?: boolean;
   isIronPurchase?: boolean;
@@ -87,6 +89,7 @@ export const FinalOffer: FC<{
   setRecalculationsAmount?: Dispatch<SetStateAction<number>>;
 }> = ({
   isRecalculationsLimitReached = false,
+  hidePrice = false,
   withRecalculate = false,
   isCatalyst = false,
   isIronPurchase = false,
@@ -215,6 +218,15 @@ export const FinalOffer: FC<{
     : hasNewCatalystOffer
     ? newPropose.offeredAmountAmd
     : offerPrice;
+  const previousDisplayPrice = useRef(displayPrice);
+  const [priceAnimationKey, setPriceAnimationKey] = useState(0);
+
+  useEffect(() => {
+    if (previousDisplayPrice.current === displayPrice) return;
+
+    previousDisplayPrice.current = displayPrice;
+    setPriceAnimationKey((key) => key + 1);
+  }, [displayPrice]);
 
   const isTransactionReady = onAccept
     ? offerPrice > 0 && (!isIronPurchase || recalculationResult != null)
@@ -231,20 +243,25 @@ export const FinalOffer: FC<{
           )}
           <span>{isAgent ? t("finalOffer.agentAccounting.powderValue") : t("finalOffer.title")}</span>
         </div>
-        <div className={styles.priceContainer}>
-          {hasNewCatalystOffer && (
-            <div className={styles.oldPriceStruck}>
-              {offerPrice.toLocaleString()} {currencyCode}
+        {!hidePrice && (
+          <div className={styles.priceContainer}>
+            {hasNewCatalystOffer && (
+              <div className={styles.oldPriceStruck}>
+                {offerPrice.toLocaleString()} {currencyCode}
+              </div>
+            )}
+            <div
+              key={priceAnimationKey}
+              className={`${styles.finalOfferAmount} ${
+                priceAnimationKey > 0 ? styles.priceUpdated : ""
+              } ${
+                hasNewCatalystOffer ? styles.newPriceHighlight : ""
+              }`}
+            >
+              {displayPrice.toLocaleString()} {currencyCode}
             </div>
-          )}
-          <div
-            className={`${styles.finalOfferAmount} ${
-              hasNewCatalystOffer ? styles.newPriceHighlight : ""
-            }`}
-          >
-            {displayPrice.toLocaleString()} {currencyCode}
           </div>
-        </div>
+        )}
         <div className={sharedStyles.divider} />
         {isAgent && (
           <div className={styles.agentPaymentSummary}>
