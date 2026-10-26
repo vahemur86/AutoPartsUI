@@ -235,7 +235,7 @@
 
 .metricsGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
   gap: 8px;
   padding: 12px;
 }
@@ -285,6 +285,68 @@
 .metric .cashOut,
 .metric .negative {
   color: #e6aaa0;
+}
+
+.intakeMetric > span svg {
+  color: #c2b9a1;
+}
+
+.purchaseMetric > span svg {
+  color: #d3b66c;
+}
+
+.differenceMetric > span svg {
+  color: #c2b9a1;
+}
+
+.cashInMetric {
+  border-color: rgba(105, 190, 128, 0.28);
+  background: linear-gradient(145deg, rgba(42, 111, 65, 0.16), rgba(255, 255, 255, 0.02));
+}
+
+.cashInMetric > span,
+.cashInMetric > span svg,
+.cashInMetric > strong {
+  color: #a8d9ae;
+}
+
+.cashOutMetric {
+  border-color: rgba(212, 127, 116, 0.28);
+  background: linear-gradient(145deg, rgba(124, 51, 47, 0.16), rgba(255, 255, 255, 0.02));
+}
+
+.cashOutMetric > span,
+.cashOutMetric > span svg,
+.cashOutMetric > strong {
+  color: #e6aaa0;
+}
+
+.nonCashInMetric {
+  border-color: rgba(91, 177, 188, 0.3);
+  background: linear-gradient(145deg, rgba(35, 105, 115, 0.18), rgba(255, 255, 255, 0.02));
+}
+
+.nonCashInMetric > span,
+.nonCashInMetric > span svg,
+.nonCashInMetric > strong {
+  color: #a3dce0;
+}
+
+.nonCashOutMetric {
+  border-color: rgba(117, 160, 198, 0.3);
+  background: linear-gradient(145deg, rgba(45, 79, 113, 0.18), rgba(255, 255, 255, 0.02));
+}
+
+.nonCashOutMetric > span,
+.nonCashOutMetric > span svg,
+.nonCashOutMetric > strong {
+  color: #b4cce2;
+}
+
+.metric > .nonCashMetricLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-transform: none;
 }
 
 .cashOutBreakdown {

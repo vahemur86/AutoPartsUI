@@ -1936,6 +1936,8 @@
         "totalPurchases": "Total Purchases",
         "cashIn": "Cash In",
         "cashOut": "Cash Out",
+        "nonCashIn": "Non-cash In",
+        "nonCashOut": "Non-cash Out",
         "difference": "Difference"
       },
       "details": {

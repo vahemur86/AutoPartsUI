@@ -105,6 +105,10 @@ export interface ZReport {
   totalPurchasesAmd: number;
   totalCashInAmd: number;
   totalCashOutAmd: number;
+  totalNonCashInAmd?: number | null;
+  totalNonCashOutAmd?: number | null;
+  totalNonCashIn?: number | null;
+  totalNonCashOut?: number | null;
   catalystCashOutAmd: number;
   ironCashOutAmd: number;
   diffPurchasesVsCashOutAmd: number;

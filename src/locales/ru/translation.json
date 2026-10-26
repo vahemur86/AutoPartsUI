@@ -1936,6 +1936,8 @@
         "totalPurchases": "Всего покупок",
         "cashIn": "Наличные вх.",
         "cashOut": "Наличные исх.",
+        "nonCashIn": "Безналичный приход",
+        "nonCashOut": "Безналичный расход",
         "difference": "Разница"
       },
       "details": {

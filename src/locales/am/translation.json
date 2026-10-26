@@ -1910,6 +1910,8 @@
         "totalPurchases": "Ընդհանուր գնումներ",
         "cashIn": "Կանխիկ մուտք",
         "cashOut": "Կանխիկ ելք",
+        "nonCashIn": "Անկանխիկ մուտք",
+        "nonCashOut": "Անկանխիկ ելք",
         "difference": "Տարբերություն"
       },
       "details": {
@@ -2127,6 +2129,8 @@
         "totalPurchases": "Ընդհանուր գնումներ",
         "cashIn": "Կանխիկ մուտք",
         "cashOut": "Կանխիկ ելք",
+        "nonCashIn": "Անկանխիկ մուտք",
+        "nonCashOut": "Անկանխիկ ելք",
         "difference": "Տարբերություն"
       },
       "details": {

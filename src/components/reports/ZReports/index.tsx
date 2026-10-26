@@ -4,11 +4,16 @@ import { toast } from "react-toastify";
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  Banknote,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
   Clock3,
   FileCheck2,
+  Landmark,
+  Scale,
+  ShoppingCart,
   UserRound,
 } from "lucide-react";
 
@@ -194,6 +199,8 @@ export const ZReports: FC = () => {
 
 const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
   const { t } = useTranslation();
+  const totalNonCashIn = report.totalNonCashInAmd ?? report.totalNonCashIn ?? 0;
+  const totalNonCashOut = report.totalNonCashOutAmd ?? report.totalNonCashOut ?? 0;
   const differenceClass = report.diffPurchasesVsCashOutAmd < 0
     ? styles.negative
     : report.diffPurchasesVsCashOutAmd > 0
@@ -254,16 +261,23 @@ const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
       </div>
 
       <div className={styles.metricsGrid}>
-        <div className={styles.metric}>
-          <span>{t("cashbox.zReports.columns.intakeCount")}</span>
+        <div className={`${styles.metric} ${styles.intakeMetric}`}>
+          <span>
+            <ClipboardList size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.intakeCount")}
+          </span>
           <strong>{report.intakeCount.toLocaleString()}</strong>
         </div>
-        <div className={styles.metric}>
-          <span>{t("cashbox.zReports.columns.totalPurchases")}</span>
+        <div className={`${styles.metric} ${styles.purchaseMetric}`}>
+          <span>
+            <ShoppingCart size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.totalPurchases")}
+          </span>
           <strong>{formatAmd(report.totalPurchasesAmd)}</strong>
         </div>
         <div className={`${styles.metric} ${styles.cashInMetric}`}>
           <span>
+            <Banknote size={13} aria-hidden="true" />
             <ArrowDownLeft size={13} aria-hidden="true" />
             {t("cashbox.zReports.columns.cashIn")}
           </span>
@@ -274,6 +288,7 @@ const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
         </div>
         <div className={`${styles.metric} ${styles.cashOutMetric}`}>
           <span>
+            <Banknote size={13} aria-hidden="true" />
             <ArrowUpRight size={13} aria-hidden="true" />
             {t("cashbox.zReports.columns.cashOut")}
           </span>
@@ -282,8 +297,33 @@ const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
             {formatAmd(report.totalCashOutAmd)}
           </strong>
         </div>
+        <div className={`${styles.metric} ${styles.nonCashInMetric}`}>
+          <span className={styles.nonCashMetricLabel}>
+            <Landmark size={13} aria-hidden="true" />
+            <ArrowDownLeft size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.nonCashIn")}
+          </span>
+          <strong>
+            {totalNonCashIn > 0 ? "+" : ""}
+            {formatAmd(totalNonCashIn)}
+          </strong>
+        </div>
+        <div className={`${styles.metric} ${styles.nonCashOutMetric}`}>
+          <span className={styles.nonCashMetricLabel}>
+            <Landmark size={13} aria-hidden="true" />
+            <ArrowUpRight size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.nonCashOut")}
+          </span>
+          <strong>
+            {totalNonCashOut > 0 ? "-" : ""}
+            {formatAmd(totalNonCashOut)}
+          </strong>
+        </div>
         <div className={`${styles.metric} ${styles.differenceMetric}`}>
-          <span>{t("cashbox.zReports.columns.difference")}</span>
+          <span>
+            <Scale size={13} aria-hidden="true" />
+            {t("cashbox.zReports.columns.difference")}
+          </span>
           <strong className={differenceClass}>
             {formatAmd(report.diffPurchasesVsCashOutAmd)}
           </strong>
