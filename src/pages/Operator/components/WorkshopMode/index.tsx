@@ -7,11 +7,14 @@ import {
   CarFront,
   CheckCheck,
   Plus,
+  Package,
   Printer,
   Trash2,
   Wrench,
+  CheckCircle2,
+  ClipboardCheck,
 } from "lucide-react";
-import { Button, Checkbox, Select, TextField, Textarea } from "@/ui-kit";
+import { Button, Checkbox, ConfirmationModal, Select, TextField, Textarea } from "@/ui-kit";
 import { useTranslation } from "react-i18next";
 import { CountryPhoneInput } from "@/components/common/CountryPhoneInput";
 import type { CountryCode } from "libphonenumber-js";
@@ -165,6 +168,7 @@ export const WorkshopMode = ({
     id: number;
     estimateNumber: string;
   } | null>(null);
+  const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -1035,26 +1039,26 @@ export const WorkshopMode = ({
 
   const workshopSteps = [
     { key: "vehicle", label: t("operatorPage.workshop.workflow.vehicle") },
+    { key: "order", label: t("operatorPage.workshop.workflow.orderDetails") },
     { key: "referral", label: t("operatorPage.workshop.workflow.referral") },
     { key: "services", label: t("operatorPage.workshop.workflow.services") },
     { key: "products", label: t("operatorPage.workshop.workflow.products") },
-    { key: "order", label: t("operatorPage.workshop.workflow.orderDetails") },
   ] as const;
 
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   const stepCompletion = {
     1: Boolean(brandId && modelId && fuelTypeId && engineId && location && year),
-    2: true,
-    3: Boolean(selectedTemplate && selectedServiceLines.length > 0),
-    4: true,
-    5: Boolean(
+    2: Boolean(
       vinCode.trim() &&
         mileageKm.trim() &&
         Number(mileageKm) > 0 &&
         customerPhone.trim() &&
         orderComment.trim(),
     ),
+    3: true,
+    4: Boolean(selectedTemplate && selectedServiceLines.length > 0),
+    5: true,
   } as const;
 
   const gotoStep = (step: number) => {
@@ -1072,7 +1076,7 @@ export const WorkshopMode = ({
       return;
     }
 
-    if (currentStep === 3 && !stepCompletion[3]) {
+    if (currentStep === 4 && !stepCompletion[4]) {
       toast.error(t("operatorPage.workshop.error.selectAtLeastOneService"));
       return;
     }
@@ -1245,7 +1249,7 @@ export const WorkshopMode = ({
     const estimate = await createEstimate();
     if (estimate?.estimateNumber) {
       setCreatedEstimate(estimate);
-      // success toast is shown by the shared order creation hook
+      setIsOrderSuccessOpen(true);
     }
   };
 
@@ -1469,7 +1473,7 @@ export const WorkshopMode = ({
             </section>
           )}
 
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
               <div className={styles.workshopStepHeader}>
                 <span className={styles.workshopStepNumber}>02</span>
@@ -1501,19 +1505,19 @@ export const WorkshopMode = ({
             </section>
           )}
 
-          {(currentStep === 3 || currentStep === 4) && (
+          {(currentStep === 4 || currentStep === 5) && (
             <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
               <div className={styles.workshopStepHeader}>
-                <span className={styles.workshopStepNumber}>{currentStep === 3 ? "03" : "04"}</span>
+                <span className={styles.workshopStepNumber}>{currentStep === 4 ? "04" : "05"}</span>
                 <h3>
                   {t(
-                    currentStep === 3
+                    currentStep === 4
                       ? "operatorPage.workshop.workflow.services"
                       : "operatorPage.workshop.workflow.products",
                   )}
                 </h3>
               </div>
-              {currentStep === 3 && selectedTemplate && (renderedServiceLines.length > 0 || isProgrammingServicesLoading) && (
+              {currentStep === 4 && selectedTemplate && (renderedServiceLines.length > 0 || isProgrammingServicesLoading) && (
                 <div className={styles.servicesSelector}>
                   <div className={styles.orderInfoTitle}>{t("operatorPage.workshop.fields.services")}</div>
                   {isSelectedTemplateProgramming && isProgrammingServicesLoading && (
@@ -1573,13 +1577,13 @@ export const WorkshopMode = ({
                   </div>
                 </div>
               )}
-              {currentStep === 3 && !selectedTemplate && (
+              {currentStep === 4 && !selectedTemplate && (
                 <div className={styles.workshopEmptyState}>
                   {t("operatorPage.workshop.states.selectVehicleBeforeServices")}
                 </div>
               )}
 
-              {currentStep === 4 && <div className={styles.workshopProductSection}>
+              {currentStep === 5 && <div className={styles.workshopProductSection}>
                 <div className={styles.workshopSubsectionHeader}>
                   <h4>{t("operatorPage.workshop.workflow.products")}</h4>
                   <span>{t("operatorPage.workshop.productCount", { count: productLines.length })}</span>
@@ -1693,10 +1697,10 @@ export const WorkshopMode = ({
             </section>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 2 && (
             <section className={`${styles.fieldBlock} ${styles.workshopStep}`}>
               <div className={styles.workshopStepHeader}>
-                <span className={styles.workshopStepNumber}>05</span>
+                <span className={styles.workshopStepNumber}>02</span>
                 <h3>{t("operatorPage.workshop.workflow.orderDetails")}</h3>
               </div>
               <div className={styles.orderInfoBlock}>
@@ -1781,7 +1785,7 @@ export const WorkshopMode = ({
           </div>
           <div className={styles.summaryVehicle}>
             <span>{t("operatorPage.workshop.workflow.vehicle")}</span>
-            <strong>
+            <strong className={selectedTemplate ? styles.summaryVehicleName : styles.summaryVehicleEmpty}>
               {selectedTemplate
                 ? `${selectedTemplate.brandName} ${selectedTemplate.modelName}`
                 : t("operatorPage.workshop.workflow.vehicleNotSelected")}
@@ -1791,13 +1795,19 @@ export const WorkshopMode = ({
             )}
           </div>
           <div className={styles.summaryCounts}>
-            <div>
-              <span>{t("operatorPage.workshop.workflow.selectedServices", { count: selectedServiceLines.length })}</span>
-              <strong>{servicesPrice.toLocaleString()} AMD</strong>
+            <div className={styles.summaryCountRow}>
+              <span className={`${styles.summaryCountIcon} ${styles.summaryServiceIcon}`} aria-hidden="true">
+                <Wrench size={15} />
+              </span>
+              <span className={styles.summaryCountLabel}>{t("operatorPage.workshop.workflow.selectedServices", { count: selectedServiceLines.length })}</span>
+              <strong className={styles.summaryCountValue}>{servicesPrice.toLocaleString()} AMD</strong>
             </div>
-            <div>
-              <span>{t("operatorPage.workshop.workflow.selectedProducts", { count: productLines.length })}</span>
-              <strong>{productsPrice.toLocaleString()} AMD</strong>
+            <div className={styles.summaryCountRow}>
+              <span className={`${styles.summaryCountIcon} ${styles.summaryProductIcon}`} aria-hidden="true">
+                <Package size={15} />
+              </span>
+              <span className={styles.summaryCountLabel}>{t("operatorPage.workshop.workflow.selectedProducts", { count: productLines.length })}</span>
+              <strong className={styles.summaryCountValue}>{productsPrice.toLocaleString()} AMD</strong>
             </div>
           </div>
           {selectedServiceLines.length > 0 && (
@@ -1822,6 +1832,7 @@ export const WorkshopMode = ({
           <div className={styles.summaryActions}>
             <Button
               variant="secondary"
+              className={styles.summaryCalculateButton}
               onClick={handleCalculate}
               disabled={vehicleTemplatesLoading || isSubmitting}
             >
@@ -1834,7 +1845,7 @@ export const WorkshopMode = ({
               variant="primary"
               onClick={handleCreateOrder}
               disabled={!hasCalculated || isSubmitting}
-              className={`${styles.submitButton} ${styles.actionPrimary}`}
+              className={`${styles.submitButton} ${styles.actionPrimary} ${styles.summaryCreateButton}`}
             >
               <span className={styles.buttonContent}>
                 {isSubmitting ? (
@@ -1847,6 +1858,7 @@ export const WorkshopMode = ({
             </Button>
             <Button
               variant="secondary"
+              className={styles.summaryPrintButton}
               onClick={handlePrintCheck}
               disabled={!createdEstimate?.estimateNumber}
             >
@@ -1990,6 +2002,35 @@ export const WorkshopMode = ({
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        open={isOrderSuccessOpen}
+        onOpenChange={setIsOrderSuccessOpen}
+        title={t("operatorPage.workshop.success.orderCreated")}
+        confirmText={t("operatorPage.success.continue")}
+        cancelText={t("common.close")}
+        confirmVariant="primary"
+        confirmClassName={styles.orderSuccessButton}
+        cancelClassName={styles.orderSuccessCloseButton}
+        confirmIcon={<ClipboardCheck size={17} aria-hidden="true" />}
+        onConfirm={() => setIsOrderSuccessOpen(false)}
+        onCancel={() => setIsOrderSuccessOpen(false)}
+        className={styles.orderSuccessModal}
+      >
+        <div className={styles.orderSuccessContent}>
+          <div className={styles.orderSuccessIcon} aria-hidden="true">
+            <CheckCircle2 size={40} strokeWidth={1.8} />
+          </div>
+          <div className={styles.orderSuccessDetail}>
+            <span>{t("operatorPage.workshop.receipt.estimateNumber")}</span>
+            <strong>{createdEstimate?.estimateNumber}</strong>
+          </div>
+          <div className={`${styles.orderSuccessDetail} ${styles.orderSuccessTotal}`}>
+            <span>{t("operatorPage.workshop.totalAmount")}</span>
+            <strong>{totalPrice.toLocaleString()} AMD</strong>
+          </div>
+        </div>
+      </ConfirmationModal>
     </div>
   );
 };

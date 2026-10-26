@@ -142,6 +142,15 @@
   grid-column: 1 / -1;
 }
 
+.buyIronCard .purchaseFields .categorySelectContainer:hover {
+  border-color: rgba(126, 184, 165, 0.52);
+}
+
+.buyIronCard .purchaseFields .categorySelectContainer:focus-within {
+  border-color: #7eb8a5;
+  box-shadow: 0 0 0 3px rgba(126, 184, 165, 0.16);
+}
+
 .availableTypes,
 .cartSection {
   flex: 0 1 auto;
@@ -361,6 +370,21 @@
 
 .weightField {
   min-width: 0;
+}
+
+.buyIronCard .availableTypes .availableTypeActions .weightInputContainer:hover {
+  border-color: rgba(126, 184, 165, 0.52);
+}
+
+.buyIronCard .availableTypes .availableTypeActions .weightInputContainer:focus-within {
+  border-color: #7eb8a5;
+  box-shadow: 0 0 0 3px rgba(126, 184, 165, 0.16);
+}
+
+.buyIronCard .availableTypes .availableTypeActions .weightInputError:hover,
+.buyIronCard .availableTypes .availableTypeActions .weightInputError:focus-within {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
 }
 
 .weightEstimate {

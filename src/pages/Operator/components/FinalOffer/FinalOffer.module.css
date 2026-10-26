@@ -10,6 +10,120 @@
   justify-content: center;
 }
 
+.purchaseSuccessModal {
+  position: relative;
+  overflow: hidden !important;
+  border: 1px solid rgba(105, 217, 145, 0.38) !important;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(50, 170, 100, 0.2), transparent 58%),
+    linear-gradient(155deg, #17251c, #101713 72%) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  animation: purchaseModalEnter 480ms cubic-bezier(0.18, 0.85, 0.28, 1.15) both;
+}
+
+.purchaseSuccessContent {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+.purchaseSuccessIcon {
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  border: 1px solid rgba(134, 239, 172, 0.5);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.22), transparent 55%),
+    linear-gradient(145deg, #2d9a5d, #17613b);
+  color: #effff3;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -7px 12px rgba(0, 48, 24, 0.25),
+    0 8px 0 #104529,
+    0 16px 28px rgba(23, 139, 72, 0.3);
+  animation: purchaseIconPop 520ms cubic-bezier(0.18, 0.85, 0.28, 1.25) both;
+}
+
+.purchaseSuccessMessage {
+  color: #b8f2c8;
+  font-size: 17px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.purchaseSuccessAmount {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid rgba(105, 217, 145, 0.24);
+  border-radius: 8px;
+  background: rgba(28, 115, 62, 0.13);
+  color: rgba(231, 240, 234, 0.68);
+  font-size: 12px;
+}
+
+.purchaseSuccessAmount strong {
+  color: #a7f3bd;
+  font-size: 16px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.purchaseSuccessButton {
+  border-color: rgba(116, 203, 151, 0.62) !important;
+  background: linear-gradient(135deg, #23734c, #155b3a) !important;
+  color: #f1fff5 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 12px rgba(17, 103, 58, 0.22) !important;
+}
+
+.purchaseSuccessCloseButton {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: #d7e3da !important;
+}
+
+@keyframes purchaseModalEnter {
+  0% {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-10deg) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) scale(1);
+  }
+}
+
+@keyframes purchaseIconPop {
+  0% {
+    opacity: 0;
+    transform: perspective(500px) rotateX(-28deg) rotateY(18deg) scale(0.7);
+  }
+
+  70% {
+    opacity: 1;
+    transform: perspective(500px) rotateX(7deg) rotateY(-4deg) scale(1.06);
+  }
+
+  100% {
+    transform: perspective(500px) rotateX(0) rotateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .purchaseSuccessModal,
+  .purchaseSuccessIcon {
+    animation: none;
+  }
+}
+
 .ironPurchaseCard {
   background:
     linear-gradient(145deg, rgba(212, 188, 123, 0.075), transparent 58%),

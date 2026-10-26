@@ -23,6 +23,8 @@ interface CountryPhoneInputProps {
   onSearch?: () => void;
   error?: boolean;
   disabled?: boolean;
+  containerClassName?: string;
+  accentedCountrySelect?: boolean;
 }
 
 const getFlagEmoji = (countryCode: string) =>
@@ -38,6 +40,8 @@ export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
   onSearch,
   error,
   disabled,
+  containerClassName,
+  accentedCountrySelect = false,
 }) => {
   const { t, i18n } = useTranslation();
 
@@ -91,6 +95,7 @@ export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
           value={selectedCountry}
           onChange={(e) => onCountryChange(e.target.value as CountryCode)}
           disabled={disabled}
+          containerClassName={accentedCountrySelect ? styles.accentedCountrySelectContainer : ""}
         >
           {allCountryOptions.map((c) => (
             <option key={c.code} value={c.code}>
@@ -107,6 +112,7 @@ export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
           value={displayPhone}
           onChange={handleInputChange}
           onKeyDown={(e) => e.key === "Enter" && onSearch?.()}
+          containerClassName={containerClassName}
           error={error}
           disabled={disabled}
           icon={

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
 import { Button, ConfirmationModal, Select, TextField } from "@/ui-kit";
-import { ArrowLeftRight, BadgeCheck, BadgeDollarSign, Banknote, Check, CircleDollarSign, CreditCard, FileText, ScanLine, Search, ShoppingBag, Trash2, Wallet } from "lucide-react";
+import { ArrowLeftRight, BadgeCheck, BadgeDollarSign, Banknote, Check, CheckCircle2, CircleAlert, CircleDollarSign, CreditCard, FileText, ScanLine, Search, ShoppingBag, Trash2, Wallet } from "lucide-react";
 import { CountryPhoneInput } from "@/components/common";
 
 // store
@@ -59,6 +59,7 @@ type CartItem = {
   productCode: string;
   unitPrice: number;
   quantity: number;
+  availableQuantity: number;
 };
 
 export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
@@ -89,8 +90,12 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("cash");
   const [cashPaid, setCashPaid] = useState("0");
   const [nonCashPaid, setNonCashPaid] = useState("0");
-  const [nonCashReference, setNonCashReference] = useState("");
   const [isSaleLoading, setIsSaleLoading] = useState(false);
+  const [saleError, setSaleError] = useState("");
+  const [saleSuccess, setSaleSuccess] = useState<{
+    amount: number;
+    saleNumber: string | number;
+  } | null>(null);
   const [searchSku, setSearchSku] = useState("");
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
   const [searchMessageType, setSearchMessageType] = useState<"success" | "error" | null>(null);
@@ -258,6 +263,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
             productCode: product.productCode,
             unitPrice: product.salePrice,
             quantity: 1,
+            availableQuantity: product.quantity,
           },
         ];
       });
@@ -352,7 +358,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     setCartItems([]);
     setCashPaid("0");
     setNonCashPaid("0");
-    setNonCashReference("");
     setPaymentMode("cash");
     setSaleType("normal");
     setCustomerPhone("");
@@ -571,23 +576,23 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
 
   const handleSubmitSale = useCallback(async () => {
     if (cartItems.length === 0 || !currentShopId) return;
+    setSaleError("");
 
     const crId = resolvedCashRegisterId;
     if (!crId) {
-      toast.error(t("operatorPage.cashier.missingCashRegisterHeader"));
+      setSaleError(t("operatorPage.cashier.missingCashRegisterHeader"));
       return;
     }
 
     if (isAgentCreditSale) {
       if (!identifiedAgent || !identifiedContract || !isAgentCreditReady) {
-        toast.error(t("operatorPage.cashier.customerLookup.noActiveContract"));
+        setSaleError(t("operatorPage.cashier.customerLookup.noActiveContract"));
         return;
       }
-    } else if (paymentMode === "mixed" && !nonCashReference.trim()) {
-      toast.error(t("operatorPage.cashier.nonCashReferenceRequired"));
-      return;
-    } else if (paymentMode === "non-cash" && !nonCashReference.trim()) {
-      toast.error(t("operatorPage.cashier.nonCashReferenceRequired"));
+    }
+
+    if (cartItems.some((item) => item.quantity > item.availableQuantity)) {
+      setSaleError(t("operatorPage.cashier.insufficientStock"));
       return;
     }
 
@@ -606,9 +611,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
             : {}),
           cashPaid: isAgentCreditSale ? 0 : resolvedCashPaid,
           nonCashPaid: isAgentCreditSale ? 0 : resolvedNonCashPaid,
-          ...(!isAgentCreditSale && nonCashReference.trim()
-            ? { nonCashPaymentReference: nonCashReference.trim() }
-            : {}),
           items: cartItems.map((item) => ({
             productId: item.productId,
             shopStockId: item.shopStockId,
@@ -618,15 +620,10 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         },
         crId,
       );
-      toast.success(
-        isAgentCreditSale
-          ? t("operatorPage.cashier.customerLookup.creditSaleSuccess", {
-              saleNumber: saleResponse.saleNumber || saleResponse.id,
-              agentName: identifiedAgent?.customer?.fullName || identifiedAgent?.phone || identifiedAgent?.code,
-              amount: Number(saleResponse.totalAmount).toLocaleString(),
-            })
-          : t("operatorPage.cashier.saleCompleted"),
-      );
+      setSaleSuccess({
+        amount: Number(saleResponse.totalAmount),
+        saleNumber: saleResponse.saleNumber || saleResponse.id,
+      });
       if (isAgentCreditSale && identifiedAgent?.id) {
         window.dispatchEvent(new CustomEvent("agent-product-credit-activity-changed", {
           detail: { agentId: identifiedAgent.id },
@@ -640,8 +637,14 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       );
       resetCheckoutState();
     } catch (error) {
-      const msg = error instanceof Error ? error.message : t("operatorPage.cashier.saleError");
-      toast.error(msg);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error ?? "");
+      const isInsufficientStock =
+        /(?:insufficient|not enough|exceed|greater than|остат|колич|ապրանք|քանակ|մնացորդ).*(?:stock|quantity|available|inventory|остат|колич|ապրանք|քանակ|մնացորդ)|(?:stock|quantity|available|inventory|остат|колич|ապրանք|քանակ|մնացորդ).*(?:insufficient|not enough|exceed|greater than|остат|колич|ապրանք|քանակ|մնացորդ)/i.test(errorMessage);
+      const msg = isInsufficientStock
+        ? t("operatorPage.cashier.insufficientStock")
+        : errorMessage || t("operatorPage.cashier.saleError");
+      setSaleError(msg);
     } finally {
       setIsSaleLoading(false);
     }
@@ -649,8 +652,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     cartItems,
     currentShopId,
     resolvedCashRegisterId,
-    paymentMode,
-    nonCashReference,
     resolvedCashPaid,
     resolvedNonCashPaid,
     isAgentCreditSale,
@@ -670,6 +671,10 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
     void handleSubmitSale();
   }, [handleSubmitSale, isAgentCreditSale]);
 
+  const handleDismissSaleSuccess = useCallback(() => {
+    setSaleSuccess(null);
+  }, []);
+
   const handleFindEstimate = useCallback(async () => {
     const estimateNumber = estimateNumberInput.trim();
     if (!estimateNumber) {
@@ -687,7 +692,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       setPaymentMode("cash");
       setCashPaid("0");
       setNonCashPaid("0");
-      setNonCashReference("");
       toast.success(t("operatorPage.cashier.estimate.found"));
     } catch (error) {
       const msg =
@@ -1083,6 +1087,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
         <TextField
           ref={skuInputRef}
           className={styles.searchTextField}
+          containerClassName={styles.skuInputContainer}
           label={t("operatorPage.cashier.scanOrEnterSku")}
           value={searchSku}
           onChange={(event) => {
@@ -1116,8 +1121,17 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               ? styles.successMessage
               : styles.errorMessage
           }`}
+          role="status"
+          aria-live="polite"
         >
-          {searchMessage}
+          <span className={styles.searchMessageIcon} aria-hidden="true">
+            {searchMessageType === "success" ? (
+              <CheckCircle2 size={17} />
+            ) : (
+              <CircleAlert size={17} />
+            )}
+          </span>
+          <span>{searchMessage}</span>
         </div>
       ) : null}
 
@@ -1159,11 +1173,12 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                         inputMode="numeric"
                       />
                       <Button
-                        variant="danger"
+                        variant="secondary"
                         size="small"
+                        className={styles.cartRemoveButton}
                         onClick={() => handleRemoveFromCart(item.productId)}
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={14} aria-hidden="true" />
                         {t("operatorPage.cashier.remove")}
                       </Button>
                     </div>
@@ -1275,19 +1290,17 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                 />
               )}
 
-              {!isAgentCreditSale && !isEstimateMode && (paymentMode === "non-cash" || paymentMode === "mixed") && (
-                <TextField
-                  label={t("operatorPage.cashier.nonCashReference")}
-                  placeholder={t("operatorPage.cashier.nonCashReferencePlaceholder")}
-                  value={nonCashReference}
-                  onChange={(e) => setNonCashReference(e.target.value)}
-                />
-              )}
-
               <div className={styles.actions}>
                 <Button
+                  variant="secondary"
                   fullWidth
-                  className={isAgentCreditSale ? styles.agentCreditSubmit : undefined}
+                  className={
+                    isEstimateMode
+                      ? styles.estimateSubmit
+                      : isAgentCreditSale
+                        ? styles.agentCreditSubmit
+                        : styles.completeSaleButton
+                  }
                   disabled={
                     activeTotalAmount === 0 ||
                     isSaleLoading ||
@@ -1298,7 +1311,15 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                   }
                   onClick={isEstimateMode ? handleConvertEstimate : handleCompleteSale}
                 >
-                  {isAgentCreditSale && !isSaleLoading && <BadgeCheck size={18} aria-hidden="true" />}
+                  {!isSaleLoading && !isEstimateConverting && (
+                    isEstimateMode ? (
+                      <FileText size={18} aria-hidden="true" />
+                    ) : isAgentCreditSale ? (
+                      <BadgeCheck size={18} aria-hidden="true" />
+                    ) : (
+                      <CheckCircle2 size={18} aria-hidden="true" />
+                    )
+                  )}
                   {isSaleLoading || isEstimateConverting
                     ? t("operatorPage.cashier.processing")
                     : isEstimateMode
@@ -1308,7 +1329,6 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
                         : t("operatorPage.cashier.completeSale")}
                 </Button>
               </div>
-
               <div className={styles.paymentInfo}>
                 {(!isAgentCreditSale && (paymentMode === "cash" || paymentMode === "mixed")) && (
                   <div className={styles.paymentInfoRow}>
@@ -1366,6 +1386,64 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
             ))}
           </ul>
         </div>
+      </ConfirmationModal>
+
+      <ConfirmationModal
+        open={!!saleError}
+        onOpenChange={(open) => {
+          if (!open) setSaleError("");
+        }}
+        title={t("operatorPage.cashier.saleErrorTitle")}
+        description={saleError}
+        confirmText={t("common.close")}
+        cancelText={t("operatorPage.cashier.returnToSale")}
+        confirmVariant="secondary"
+        confirmClassName={styles.saleErrorButton}
+        cancelClassName={styles.saleErrorReturnButton}
+        onConfirm={() => setSaleError("")}
+        onCancel={() => setSaleError("")}
+        className={styles.saleErrorModal}
+      >
+        <div className={styles.saleErrorContent} aria-hidden="true">
+          <CircleAlert size={34} strokeWidth={1.8} />
+        </div>
+      </ConfirmationModal>
+
+      <ConfirmationModal
+        open={saleSuccess !== null}
+        onOpenChange={(open) => {
+          if (!open) handleDismissSaleSuccess();
+        }}
+        title={t("operatorPage.cashier.saleSuccessTitle")}
+        description={t("operatorPage.cashier.saleSuccessDescription")}
+        confirmText={t("operatorPage.cashier.newSale")}
+        cancelText={t("common.close")}
+        confirmVariant="primary"
+        confirmClassName={styles.saleSuccessButton}
+        cancelClassName={styles.saleSuccessCloseButton}
+        confirmIcon={<ShoppingBag size={17} aria-hidden="true" />}
+        onConfirm={handleDismissSaleSuccess}
+        onCancel={handleDismissSaleSuccess}
+        className={styles.saleSuccessModal}
+      >
+        {saleSuccess && (
+          <div className={styles.saleSuccessContent}>
+            <div className={styles.saleSuccessIcon} aria-hidden="true">
+              <CheckCircle2 size={40} strokeWidth={1.8} />
+            </div>
+            <strong className={styles.saleSuccessMessage}>
+              {t("operatorPage.cashier.saleAccepted")}
+            </strong>
+            <div className={styles.saleSuccessDetails}>
+              <span>{t("operatorPage.cashier.saleNumber")}</span>
+              <strong>{saleSuccess.saleNumber}</strong>
+            </div>
+            <div className={`${styles.saleSuccessDetails} ${styles.saleSuccessAmount}`}>
+              <span>{t("operatorPage.cashier.amountPaid")}</span>
+              <strong>{saleSuccess.amount.toLocaleString()} AMD</strong>
+            </div>
+          </div>
+        )}
       </ConfirmationModal>
     </div>
   );

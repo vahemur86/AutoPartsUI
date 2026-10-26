@@ -217,26 +217,63 @@
   min-width: 0;
 }
 
+.searchRow .searchTextField .skuInputContainer {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.searchRow .searchTextField .skuInputContainer:hover {
+  border-color: rgba(126, 184, 165, 0.52);
+}
+
+.searchRow .searchTextField .skuInputContainer:focus-within {
+  border-color: #7eb8a5;
+  box-shadow: 0 0 0 3px rgba(126, 184, 165, 0.16);
+}
+
 .searchMessage {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
+  min-height: 44px;
   font-size: 13px;
   margin-top: 6px;
   padding: 10px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.searchMessageIcon {
+  display: grid;
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 7px;
 }
 
 .successMessage {
-  color: #f8f32b;
-  background: rgba(250, 204, 21, 0.14);
-  border-color: rgba(250, 204, 21, 0.28);
+  color: #c7f2d4;
+  background: linear-gradient(100deg, rgba(35, 115, 76, 0.2), rgba(36, 106, 97, 0.1));
+  border: 1px solid rgba(116, 203, 151, 0.28);
+}
+
+.successMessage .searchMessageIcon {
+  color: #a8e8bb;
+  background: rgba(66, 160, 102, 0.18);
 }
 
 .errorMessage {
   color: #ffb3b3;
   background: rgba(248, 113, 113, 0.14);
-  border-color: rgba(248, 113, 113, 0.28);
+  border: 1px solid rgba(248, 113, 113, 0.28);
+}
+
+.errorMessage .searchMessageIcon {
+  color: #ffaaa4;
+  background: rgba(248, 113, 113, 0.12);
 }
 
 .productsSection,
@@ -353,6 +390,34 @@
 
 .quantityField {
   width: 100%;
+}
+
+.cartRemoveButton {
+  min-height: 32px !important;
+  padding: 6px 10px !important;
+  gap: 7px !important;
+  border: 1px solid rgba(224, 136, 128, 0.2) !important;
+  border-radius: 7px !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: #d7e0da !important;
+  font-size: 12px !important;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease !important;
+}
+
+.cartRemoveButton svg {
+  flex: 0 0 auto;
+  color: #df968d;
+}
+
+.cartRemoveButton:hover:not(:disabled) {
+  border-color: rgba(224, 136, 128, 0.42) !important;
+  background: rgba(148, 48, 48, 0.16) !important;
+  color: #fff !important;
+}
+
+.cartRemoveButton:focus-visible {
+  outline: 2px solid rgba(224, 136, 128, 0.62);
+  outline-offset: 2px;
 }
 
 @media (max-width: 780px) {
@@ -678,6 +743,70 @@
 .actions {
   display: flex;
   justify-content: flex-end;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.completeSaleButton,
+.estimateSubmit,
+.agentCreditSubmit {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px !important;
+  padding: 0 18px !important;
+  border: 1px solid rgba(116, 203, 151, 0.62) !important;
+  border-radius: 10px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 46%),
+    linear-gradient(135deg, #23734c, #155b3a) !important;
+  color: #f1fff5 !important;
+  font-size: 14px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 5px 0 #0d4229,
+    0 8px 18px rgba(17, 103, 58, 0.25) !important;
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease !important;
+}
+
+.completeSaleButton:hover:not(:disabled),
+.estimateSubmit:hover:not(:disabled),
+.agentCreditSubmit:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 6px 0 #0d4229,
+    0 11px 22px rgba(17, 103, 58, 0.34) !important;
+}
+
+.completeSaleButton:active:not(:disabled),
+.estimateSubmit:active:not(:disabled),
+.agentCreditSubmit:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 0 #0d4229,
+    0 4px 10px rgba(17, 103, 58, 0.2) !important;
+}
+
+.completeSaleButton:disabled,
+.estimateSubmit:disabled,
+.agentCreditSubmit:disabled {
+  border-color: rgba(116, 203, 151, 0.24) !important;
+  background: linear-gradient(135deg, rgba(35, 115, 76, 0.48), rgba(21, 91, 58, 0.45)) !important;
+  color: rgba(241, 255, 245, 0.55) !important;
+  box-shadow: none !important;
+}
+
+.completeSaleButton svg,
+.estimateSubmit svg,
+.agentCreditSubmit svg {
+  flex: 0 0 auto;
 }
 
 .paymentInfo {
@@ -732,21 +861,6 @@
   color: #99c5c9;
 }
 
-.agentCreditSubmit {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  min-height: 44px !important;
-  border-radius: 9px !important;
-  font-weight: 700 !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
-}
-
-.agentCreditSubmit svg {
-  flex: 0 0 auto;
-}
-
 .paymentInfo strong {
   color: #ffffff;
 }
@@ -773,6 +887,170 @@
 .shopSelector {
   width: 100%;
   min-width: 220px;
+}
+
+.saleSuccessModal {
+  position: relative;
+  overflow: hidden !important;
+  animation: saleModalEnter 480ms cubic-bezier(0.18, 0.85, 0.28, 1.15) both;
+  border: 1px solid rgba(105, 217, 145, 0.38) !important;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(50, 170, 100, 0.2), transparent 58%),
+    linear-gradient(155deg, #17251c, #101713 72%) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.saleErrorModal {
+  border: 1px solid rgba(248, 113, 113, 0.38) !important;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(160, 48, 48, 0.16), transparent 58%),
+    linear-gradient(155deg, #251919, #171111 72%) !important;
+}
+
+.saleErrorContent {
+  display: grid;
+  justify-items: center;
+  padding: 2px 0 4px;
+  color: #ffaaa4;
+}
+
+.saleErrorContent svg {
+  filter: drop-shadow(0 5px 8px rgba(160, 48, 48, 0.32));
+}
+
+.saleErrorButton {
+  border-color: rgba(116, 203, 151, 0.48) !important;
+  background: linear-gradient(135deg, #23734c, #155b3a) !important;
+  color: #f1fff5 !important;
+}
+
+.saleErrorReturnButton {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: #e5e7eb !important;
+}
+
+.saleSuccessContent {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+.saleSuccessIcon {
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  border: 1px solid rgba(134, 239, 172, 0.5);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.22), transparent 55%),
+    linear-gradient(145deg, #2d9a5d, #17613b);
+  color: #effff3;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -7px 12px rgba(0, 48, 24, 0.25),
+    0 8px 0 #104529,
+    0 16px 28px rgba(23, 139, 72, 0.3);
+  animation: successPop 520ms cubic-bezier(0.18, 0.85, 0.28, 1.25) both;
+}
+
+.saleSuccessMessage {
+  color: #b8f2c8;
+  font-size: 17px;
+  font-weight: 750;
+  text-align: center;
+  text-shadow: 0 0 18px rgba(74, 222, 128, 0.18);
+}
+
+.saleSuccessDetails {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(231, 240, 234, 0.68);
+  font-size: 12px;
+}
+
+.saleSuccessDetails strong {
+  color: #f0fff3;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.saleSuccessAmount {
+  border-color: rgba(105, 217, 145, 0.24);
+  background: rgba(28, 115, 62, 0.13);
+}
+
+.saleSuccessAmount strong {
+  color: #a7f3bd;
+  font-size: 16px;
+}
+
+.saleSuccessButton {
+  border-color: rgba(116, 203, 151, 0.62) !important;
+  background: linear-gradient(135deg, #23734c, #155b3a) !important;
+  color: #f1fff5 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 12px rgba(17, 103, 58, 0.22) !important;
+}
+
+.saleSuccessCloseButton {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: #d7e3da !important;
+}
+
+@keyframes successPop {
+  0% {
+    opacity: 0;
+    transform: perspective(500px) rotateX(-28deg) rotateY(18deg) scale(0.7);
+  }
+
+  70% {
+    opacity: 1;
+    transform: perspective(500px) rotateX(7deg) rotateY(-4deg) scale(1.06);
+  }
+
+  100% {
+    transform: perspective(500px) rotateX(0) rotateY(0) scale(1);
+  }
+}
+
+@keyframes saleModalEnter {
+  0% {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-10deg) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saleSuccessIcon {
+    animation: none;
+  }
+
+  .saleSuccessModal {
+    animation: none;
+  }
+
+  .completeSaleButton,
+  .estimateSubmit,
+  .agentCreditSubmit {
+    transition: none !important;
+  }
 }
 
 @media (max-width: 1064px) {

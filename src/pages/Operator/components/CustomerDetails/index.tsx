@@ -15,10 +15,12 @@ import {
   UserRound,
   ShieldCheck,
   BadgePercent,
+  CheckCircle2,
+  ShoppingBag,
 } from "lucide-react";
 
 // ui-kit
-import { TextField, Button } from "@/ui-kit";
+import { TextField, Button, ConfirmationModal } from "@/ui-kit";
 
 // components
 import { CountryPhoneInput, GenderSelect } from "@/components/common";
@@ -84,6 +86,7 @@ export const CustomerDetails = ({
   const [isAccepting, setIsAccepting] = useState(false);
   const [localHasTriedAccept, setLocalHasTriedAccept] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [purchaseSuccessOpen, setPurchaseSuccessOpen] = useState(false);
 
   useEffect(() => {
     if (!customerData.phone) {
@@ -107,6 +110,7 @@ export const CustomerDetails = ({
     );
     return phoneNumber?.isValid() ?? false;
   }, [customerData.phone, selectedCountry]);
+  const hasPhoneError = phoneError || (localHasTriedAccept && !isPhoneValid);
 
   const handleSearch = useCallback(async () => {
     if (!customerData.phone?.trim()) {
@@ -205,7 +209,7 @@ export const CustomerDetails = ({
           cashRegisterId: userData.cashRegisterId,
         }),
       ).unwrap();
-      toast.success(t("customerDetails.success.customerAccepted"));
+      setPurchaseSuccessOpen(true);
       dispatch(fetchBalance(userData.cashRegisterId));
       onSuccess?.();
       setLocalHasTriedAccept(false);
@@ -257,7 +261,9 @@ export const CustomerDetails = ({
               setHasSearched(false);
             }}
             onSearch={handleSearch}
-            error={phoneError || (localHasTriedAccept && !isPhoneValid)}
+            containerClassName={`${styles.customerPhoneInputContainer} ${hasPhoneError ? styles.customerPhoneInputError : ""}`}
+            accentedCountrySelect
+            error={hasPhoneError}
             disabled={isGlobalLoading || isOfferCalculated}
           />
         </div>
@@ -393,6 +399,30 @@ export const CustomerDetails = ({
           )}
         </div>
       </div>
+      <ConfirmationModal
+        open={purchaseSuccessOpen}
+        onOpenChange={setPurchaseSuccessOpen}
+        title={t("operatorPage.success.purchaseCompleted")}
+        description={t("operatorPage.success.transactionConfirmed")}
+        confirmText={t("operatorPage.success.continue")}
+        cancelText={t("common.close")}
+        confirmVariant="primary"
+        confirmClassName={styles.purchaseSuccessButton}
+        cancelClassName={styles.purchaseSuccessCloseButton}
+        confirmIcon={<ShoppingBag size={17} aria-hidden="true" />}
+        onConfirm={() => setPurchaseSuccessOpen(false)}
+        onCancel={() => setPurchaseSuccessOpen(false)}
+        className={styles.purchaseSuccessModal}
+      >
+        <div className={styles.purchaseSuccessContent}>
+          <div className={styles.purchaseSuccessIcon} aria-hidden="true">
+            <CheckCircle2 size={40} strokeWidth={1.8} />
+          </div>
+          <strong className={styles.purchaseSuccessMessage}>
+            {t("operatorPage.success.purchaseCompleted")}
+          </strong>
+        </div>
+      </ConfirmationModal>
     </div>
   );
 };

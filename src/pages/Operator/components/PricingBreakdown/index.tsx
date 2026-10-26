@@ -49,6 +49,7 @@ const PricingRow = ({
           value={priceValue}
           onChange={handleInputChange}
           placeholder="0.00"
+          containerClassName={styles.weightInputContainer}
           error={error}
           disabled={isDisabled}
         />

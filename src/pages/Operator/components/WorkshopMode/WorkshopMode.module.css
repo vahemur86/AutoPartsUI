@@ -6,6 +6,151 @@
   color: #e9e8e2;
 }
 
+.workshopWorkspace :global([class*="selectContainer"]:hover:not([class*="disabled"])),
+.workshopWorkspace :global([class*="textFieldContainer"]:hover:not([class*="disabled"])),
+.workshopWorkspace :global([class*="textareaContainer"]:hover:not([class*="disabled"])) {
+  border-color: rgba(126, 184, 165, 0.52);
+}
+
+.workshopWorkspace :global([class*="selectContainer"]:focus-within:not([class*="disabled"])),
+.workshopWorkspace :global([class*="textFieldContainer"]:focus-within:not([class*="disabled"])),
+.workshopWorkspace :global([class*="textareaContainer"]:focus-within:not([class*="disabled"])) {
+  border-color: #7eb8a5;
+  box-shadow: 0 0 0 3px rgba(126, 184, 165, 0.16);
+}
+
+.workshopWorkspace :global([class*="selectContainer"][class*="error"]:hover),
+.workshopWorkspace :global([class*="selectContainer"][class*="error"]:focus-within),
+.workshopWorkspace :global([class*="textFieldContainer"][class*="error"]:hover),
+.workshopWorkspace :global([class*="textFieldContainer"][class*="error"]:focus-within),
+.workshopWorkspace :global([class*="textareaContainer"][class*="error"]:hover),
+.workshopWorkspace :global([class*="textareaContainer"][class*="error"]:focus-within) {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
+}
+
+.workshopWorkspace :global([class*="checkboxBox"][class*="square"][class*="checked"]),
+.workshopWorkspace :global([class*="checkboxBox"][class*="circle"][class*="checked"]) {
+  border-color: #7eb8a5;
+  background-color: #7eb8a5;
+}
+
+.orderSuccessModal {
+  position: relative;
+  overflow: hidden !important;
+  border: 1px solid rgba(105, 217, 145, 0.38) !important;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(50, 170, 100, 0.2), transparent 58%),
+    linear-gradient(155deg, #17251c, #101713 72%) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  animation: orderModalEnter 480ms cubic-bezier(0.18, 0.85, 0.28, 1.15) both;
+}
+
+.orderSuccessContent {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+.orderSuccessIcon {
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  border: 1px solid rgba(134, 239, 172, 0.5);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.22), transparent 55%),
+    linear-gradient(145deg, #2d9a5d, #17613b);
+  color: #effff3;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -7px 12px rgba(0, 48, 24, 0.25),
+    0 8px 0 #104529,
+    0 16px 28px rgba(23, 139, 72, 0.3);
+  animation: orderIconPop 520ms cubic-bezier(0.18, 0.85, 0.28, 1.25) both;
+}
+
+.orderSuccessDetail {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(231, 240, 234, 0.68);
+  font-size: 12px;
+}
+
+.orderSuccessDetail strong {
+  color: #f0fff3;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.orderSuccessTotal {
+  border-color: rgba(105, 217, 145, 0.24);
+  background: rgba(28, 115, 62, 0.13);
+}
+
+.orderSuccessTotal strong {
+  color: #a7f3bd;
+  font-size: 16px;
+}
+
+.orderSuccessButton {
+  border-color: rgba(116, 203, 151, 0.62) !important;
+  background: linear-gradient(135deg, #23734c, #155b3a) !important;
+  color: #f1fff5 !important;
+}
+
+.orderSuccessCloseButton {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: #d7e3da !important;
+}
+
+@keyframes orderModalEnter {
+  0% {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-10deg) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) scale(1);
+  }
+}
+
+@keyframes orderIconPop {
+  0% {
+    opacity: 0;
+    transform: perspective(500px) rotateX(-28deg) rotateY(18deg) scale(0.7);
+  }
+
+  70% {
+    opacity: 1;
+    transform: perspective(500px) rotateX(7deg) rotateY(-4deg) scale(1.06);
+  }
+
+  100% {
+    transform: perspective(500px) rotateX(0) rotateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orderSuccessModal,
+  .orderSuccessIcon {
+    animation: none;
+  }
+}
+
 .workshopHeading {
   display: flex;
   align-items: center;
@@ -145,8 +290,13 @@
 }
 
 .stepPill:hover {
-  border-color: rgba(217, 198, 123, 0.2);
-  color: #f3eedb;
+  border-color: rgba(126, 184, 165, 0.38);
+  color: #e7f3ed;
+}
+
+.stepPill:focus-visible {
+  outline: 2px solid rgba(126, 184, 165, 0.72);
+  outline-offset: 2px;
 }
 
 .stepPill:disabled,
@@ -156,9 +306,9 @@
 }
 
 .activeStep {
-  border-color: rgba(217, 198, 123, 0.34);
-  background: linear-gradient(135deg, rgba(217, 198, 123, 0.12), rgba(255, 255, 255, 0.03));
-  color: #f7f2e5;
+  border-color: rgba(126, 184, 165, 0.44);
+  background: linear-gradient(135deg, rgba(126, 184, 165, 0.15), rgba(255, 255, 255, 0.03));
+  color: #edf8f2;
 }
 
 .doneStep {
@@ -172,8 +322,8 @@
   width: 22px;
   height: 22px;
   border-radius: 8px;
-  background: rgba(217, 198, 123, 0.1);
-  color: #d9c67b;
+  background: rgba(126, 184, 165, 0.12);
+  color: #9bcdbb;
   font-size: 10px;
   font-weight: 800;
 }
@@ -282,12 +432,14 @@
   top: 12px;
   display: grid;
   min-width: 0;
-  gap: 14px;
-  padding: 18px;
-  border: 1px solid rgba(196, 169, 106, 0.2);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(20, 23, 18, 0.98), rgba(12, 15, 13, 0.98));
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.18);
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(126, 184, 165, 0.2);
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(58, 116, 101, 0.12), transparent 42%),
+    linear-gradient(160deg, #171d1a, #101513 78%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 18px 32px rgba(0, 0, 0, 0.2);
 }
 
 .summaryHeading {
@@ -295,8 +447,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: #eee9db;
-  font-size: 14px;
+  color: #f1f5f1;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -307,54 +459,106 @@
 }
 
 .summaryTitleIcon {
-  color: #d9c67b;
+  color: #8ec5b2;
 }
 
 .summaryHeading strong {
-  color: #d2bf8a;
-  font-size: 11px;
+  max-width: 130px;
+  overflow: hidden;
+  padding: 5px 8px;
+  border: 1px solid rgba(126, 184, 165, 0.2);
+  border-radius: 6px;
+  background: rgba(126, 184, 165, 0.08);
+  color: #b7d9cc;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .summaryVehicle {
   display: grid;
-  gap: 4px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid rgba(126, 184, 165, 0.14);
+  border-radius: 8px;
+  background: rgba(126, 184, 165, 0.045);
 }
 
 .summaryVehicle > span {
-  color: #9ca49b;
-  font-size: 10px;
+  color: #aebdb5;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .summaryVehicle > strong {
-  color: #eee9db;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.summaryVehicleName {
+  color: #f0f7f2;
+}
+
+.summaryVehicleEmpty {
+  color: #9da9a2;
 }
 
 .summaryVehicle > small {
-  color: #aab2a9;
-  font-size: 10px;
+  color: #a8b9b0;
+  font-size: 11px;
 }
 
 .summaryCounts {
   display: grid;
-  gap: 8px;
+  gap: 7px;
 }
 
 .summaryCounts > div {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: #aab2a9;
-  font-size: 11px;
+  gap: 9px;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.025);
 }
 
-.summaryCounts strong {
-  color: #eee9db;
+.summaryCountIcon {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 6px;
+}
+
+.summaryServiceIcon {
+  background: rgba(126, 184, 165, 0.1);
+  color: #8ec5b2;
+}
+
+.summaryProductIcon {
+  background: rgba(145, 169, 198, 0.11);
+  color: #a8bfd9;
+}
+
+.summaryCountLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #b7c1bb;
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.summaryCountValue {
+  flex: 0 0 auto;
+  color: #edf5ef;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .summaryGrid {
@@ -387,35 +591,82 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(196, 169, 106, 0.26);
+  padding: 12px;
+  border: 1px solid rgba(91, 183, 128, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(120deg, rgba(35, 115, 76, 0.15), rgba(36, 106, 97, 0.08));
 }
 
 .summaryTotal span {
-  color: #e4dec9;
+  color: #c0d9ca;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .summaryTotal strong {
-  color: #e9d59b;
-  font-size: 18px;
+  color: #a8e8bb;
+  font-size: 20px;
+  font-weight: 750;
   font-variant-numeric: tabular-nums;
 }
 
 .summaryActions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 7px;
 }
 
 .summaryActions > button {
   width: 100%;
   min-width: 0;
+  min-height: 40px;
   white-space: normal;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-radius: 7px !important;
+  font-size: 12px;
+}
+
+.summaryCalculateButton {
+  border: 1px solid rgba(126, 184, 165, 0.36) !important;
+  background: linear-gradient(135deg, #355c57, #294640) !important;
+  color: #e8f6f0 !important;
+}
+
+.summaryCalculateButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #426e67, #31574f) !important;
+}
+
+.summaryCreateButton {
+  border: 1px solid rgba(116, 203, 151, 0.62) !important;
+  background: linear-gradient(135deg, #23734c, #155b3a) !important;
+  color: #f1fff5 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 12px rgba(17, 103, 58, 0.22) !important;
+}
+
+.summaryCreateButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2d8c5d, #1b7047) !important;
+}
+
+.summaryCreateButton:disabled {
+  border-color: rgba(116, 203, 151, 0.2) !important;
+  background: linear-gradient(135deg, rgba(35, 115, 76, 0.32), rgba(21, 91, 58, 0.3)) !important;
+  color: rgba(241, 255, 245, 0.52) !important;
+  box-shadow: none !important;
+}
+
+.summaryPrintButton {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: #d6e0d9 !important;
+}
+
+.summaryPrintButton:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.summaryPrintButton:disabled {
+  color: rgba(214, 224, 217, 0.4) !important;
 }
 
 .buttonContent {

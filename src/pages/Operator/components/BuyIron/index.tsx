@@ -552,7 +552,7 @@ export const BuyIron: FC<BuyIronProps> = ({
             onChange={handleCategoryChange}
             placeholder={t("common.select")}
             disabled={!isCustomerFound || isLoadingIronTypes}
-            containerClassName={styles.wideSelect}
+            containerClassName={`${styles.wideSelect} ${styles.categorySelectContainer}`}
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>{category.name}</option>
@@ -591,6 +591,7 @@ export const BuyIron: FC<BuyIronProps> = ({
               type.pricePerKg != null && type.pricePerKg > 0;
             const canRecalculate = Boolean((type.recalculateStepCount ?? 0) > 0 && type.hasRecalculateSteps !== false);
             const typeName = type.ironTypeName || type.name || type.code || `#${type.ironTypeId}`;
+            const hasWeightError = wasSubmitted && entryWeights[key] !== undefined && Number(entryWeights[key]) <= 0;
             const weightKg = Number(entryWeights[key]);
             const lineTotal = configured && Number.isFinite(weightKg) && weightKg > 0
               ? Number((type.pricePerKg! * weightKg).toFixed(2))
@@ -619,7 +620,8 @@ export const BuyIron: FC<BuyIronProps> = ({
                     value={entryWeights[key] ?? ""}
                     onChange={(event) => handleWeightChange(key, event.target.value)}
                     disabled={!configured || (filterMode === "brand" && type.categoryId == null)}
-                    error={wasSubmitted && entryWeights[key] !== undefined && Number(entryWeights[key]) <= 0}
+                    error={hasWeightError}
+                    containerClassName={`${styles.weightInputContainer} ${hasWeightError ? styles.weightInputError : ""}`}
                     className={styles.weightField}
                   />
                   {lineTotal != null && (

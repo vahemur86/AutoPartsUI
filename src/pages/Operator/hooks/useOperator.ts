@@ -739,11 +739,6 @@ export const useOperator = () => {
         cashRegisterId: userData.cashRegisterId,
       });
 
-      const createdText = `${t("operatorPage.workshop.success.orderCreated")}\n${t("operatorPage.workshop.success.moveToCashDesk")}`;
-      toast.success(createdText, {
-        className: "workshop-confirm-toast",
-        autoClose: 7000,
-      });
       return estimate;
     } catch (error) {
       console.error("Workshop order failed:", error);
@@ -872,7 +867,7 @@ export const useOperator = () => {
     const notes = Array.from(new Set(selectedItems.map((item) => item.notes?.trim()).filter(Boolean))).join("; ");
 
     try {
-      const result = await dispatch(
+      await dispatch(
         submitBulkPurchase({
           payload: {
             customerPhone: customer.phone,
@@ -883,27 +878,6 @@ export const useOperator = () => {
           cashRegisterId: userData?.cashRegisterId as number,
         }),
       ).unwrap();
-      toast.success(createElement(
-        "div",
-        { style: { display: "grid", gap: "6px" } },
-        createElement("strong", {}, t("operatorPage.success.purchaseCompleted")),
-        ...result.purchases.map((purchase, index) => {
-          const item = selectedItems[index];
-          const stepLabel = purchase.recalculationStep == null
-            ? t("operatorPage.ironCarShop.regularPrice", "Regular price")
-            : t("operatorPage.ironCarShop.stepLabel", { step: purchase.recalculationStep });
-          return createElement(
-            "span",
-            { key: purchase.purchaseId ?? `${purchase.ironTypeId}-${index}` },
-            `${item?.name ?? purchase.ironTypeName}: ${stepLabel} · ${purchase.pricePerKg.toLocaleString()} AMD/kg × ${purchase.weightKg} kg = ${purchase.totalAmount.toLocaleString()} AMD`,
-          );
-        }),
-        createElement(
-          "strong",
-          {},
-          `${t("operatorPage.ironCarShop.totalAmount")}: ${result.totalAmount.toLocaleString()} AMD`,
-        ),
-      ));
       refreshBalance();
       handleResetForm();
     } catch (e) {

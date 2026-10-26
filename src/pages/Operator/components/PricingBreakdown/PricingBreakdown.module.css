@@ -33,6 +33,15 @@
   gap: 12px;
 }
 
+.pricingContent .pricingCalculation .weightInputContainer:hover {
+  border-color: rgba(126, 184, 165, 0.52);
+}
+
+.pricingContent .pricingCalculation .weightInputContainer:focus-within {
+  border-color: #7eb8a5;
+  box-shadow: 0 0 0 3px rgba(126, 184, 165, 0.16);
+}
+
 .pricingRow {
   display: flex;
   flex-direction: row;

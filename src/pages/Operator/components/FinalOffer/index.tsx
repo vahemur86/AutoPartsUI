@@ -20,10 +20,12 @@ import {
   Wallet,
   TrendingDown,
   CircleDollarSign,
+  CheckCircle2,
+  ShoppingBag,
 } from "lucide-react";
 
 // ui-kit
-import { Button } from "@/ui-kit";
+import { Button, ConfirmationModal } from "@/ui-kit";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -115,6 +117,7 @@ export const FinalOffer: FC<{
   const [isOffering, setIsOffering] = useState(false);
   const [isInternalRecalculating, setIsInternalRecalculating] = useState(false);
   const [offerConfirmed, setOfferConfirmed] = useState(false);
+  const [purchaseSuccessAmount, setPurchaseSuccessAmount] = useState<number | null>(null);
 
   useEffect(() => {
     setOfferConfirmed(false);
@@ -128,6 +131,7 @@ export const FinalOffer: FC<{
       try {
         await onAccept();
         setOfferConfirmed(true);
+        setPurchaseSuccessAmount(Number(offerPrice));
       } catch {
         setOfferConfirmed(false);
       } finally {
@@ -156,6 +160,9 @@ export const FinalOffer: FC<{
     t,
     userData?.cashRegisterId,
     onAccept,
+    offerPrice,
+    agentPayment,
+    newPropose,
     offerConfirmed,
     isOffering,
     isDisabled,
@@ -233,6 +240,7 @@ export const FinalOffer: FC<{
     : !!intake;
 
   return (
+    <>
     <div className={`${styles.finalOfferCard} ${isIronPurchase ? styles.ironPurchaseCard : ""}`}>
       <div className={styles.finalOfferContent}>
         <div className={`${styles.finalOfferLabel} ${isIronPurchase ? styles.ironFinalOfferLabel : ""}`}>
@@ -384,5 +392,38 @@ export const FinalOffer: FC<{
         </div>
       </div>
     </div>
+    <ConfirmationModal
+      open={purchaseSuccessAmount !== null}
+      onOpenChange={(open) => {
+        if (!open) setPurchaseSuccessAmount(null);
+      }}
+      title={t("operatorPage.success.purchaseCompleted")}
+      description={t("operatorPage.success.transactionConfirmed")}
+      confirmText={t("operatorPage.success.continue")}
+      cancelText={t("common.close")}
+      confirmVariant="primary"
+      confirmClassName={styles.purchaseSuccessButton}
+      cancelClassName={styles.purchaseSuccessCloseButton}
+      confirmIcon={<ShoppingBag size={17} aria-hidden="true" />}
+      onConfirm={() => setPurchaseSuccessAmount(null)}
+      onCancel={() => setPurchaseSuccessAmount(null)}
+      className={styles.purchaseSuccessModal}
+    >
+      {purchaseSuccessAmount !== null && (
+        <div className={styles.purchaseSuccessContent}>
+          <div className={styles.purchaseSuccessIcon} aria-hidden="true">
+            <CheckCircle2 size={40} strokeWidth={1.8} />
+          </div>
+          <strong className={styles.purchaseSuccessMessage}>
+            {t("operatorPage.success.purchaseCompleted")}
+          </strong>
+          <div className={styles.purchaseSuccessAmount}>
+            <span>{t("operatorPage.ironCarShop.totalAmount")}</span>
+            <strong>{purchaseSuccessAmount.toLocaleString()} AMD</strong>
+          </div>
+        </div>
+      )}
+    </ConfirmationModal>
+    </>
   );
 };

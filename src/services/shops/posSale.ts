@@ -17,7 +17,6 @@ export interface POSSaleRequest {
   discountAmount?: number;
   cashPaid: number;
   nonCashPaid: number;
-  nonCashPaymentReference?: string;
   items: POSSaleItem[];
 }
 

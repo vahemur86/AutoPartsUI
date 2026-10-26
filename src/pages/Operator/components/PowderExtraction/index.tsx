@@ -53,6 +53,7 @@ export const PowderExtraction = ({
           inputMode="decimal"
           value={weight}
           onChange={handleWeightChange}
+          containerClassName={styles.weightInputContainer}
           error={error}
           disabled={isDisabled}
         />
