@@ -6,7 +6,9 @@ import { Button, Select, TextField } from "@/ui-kit";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   getAllVehicleDefinitions,
+  getVehicleDefinitionsPage,
   getVehicleAdminLookups,
+  normalizeVehiclePage,
 } from "@/services/vehicleAdmin";
 import { fetchTags } from "@/store/slices/tagsSlice";
 
@@ -26,12 +28,13 @@ import {
   addCarCatalyst,
   editCarCatalyst,
 } from "@/store/slices/carCatalystSlice";
-import { getCarCatalystById } from "@/services/settings/carCatalyst";
+import { getCarCatalystById, searchCarCatalysts } from "@/services/settings/carCatalyst";
 import {
   ArrowDown,
   ArrowUp,
   CarFront,
   ChevronDown,
+  Copy,
   ExternalLink,
   Info,
   Layers3,
@@ -52,7 +55,6 @@ type UICompositionType = 0 | 1 | 2 | 3;
 
 interface UIComposition {
   id: string;
-  code: string;
   type: UICompositionType;
   weightKg: string;
   pricePerKg: string;
@@ -72,7 +74,6 @@ const createCompositionId = () => `${Date.now()}-${Math.random().toString(36).sl
 
 const emptyComposition = (): UIComposition => ({
   id: createCompositionId(),
-  code: "",
   type: 0,
   weightKg: "",
   pricePerKg: "",
@@ -90,6 +91,14 @@ const emptyBucket = (side: number, positionIndex: number): UIBucket => ({
   compositions: [emptyComposition()],
 });
 
+const toPositiveNumber = (...values: unknown[]): number => {
+  for (const value of values) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+  }
+  return 0;
+};
+
 const handleNumericChange = (value: string): string => {
   // Keep only digits and one dot
   let val = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
@@ -104,7 +113,7 @@ const handleNumericChange = (value: string): string => {
 
 const shouldShowMetalFields = (type: number) => type !== 1;
 const engineVolumeFromCode = (code?: string) => {
-  const match = code?.match(/^\s*(\d+(?:\.\d+)?)/);
+  const match = code?.match(/(?:^|[^\d.])(\d+(?:\.\d+)?)(?=\s*(?:l|литр|լիտր)?(?:\s|$))/i);
   return match?.[1] ?? "";
 };
 
@@ -116,23 +125,27 @@ export const CarCatalystPage = () => {
 
   const [brands, setBrands] = useState<VehicleAdminLookups["brands"]>([]);
   const [vehicleMatches, setVehicleMatches] = useState<VehicleDefinitionRecord[]>([]);
+  const [vehicleMatchCount, setVehicleMatchCount] = useState(0);
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleDefinitionRecord | null>(null);
+  const [vehicleDefinitionId, setVehicleDefinitionId] = useState<number | "">("");
   const [isVehiclePanelExpanded, setIsVehiclePanelExpanded] = useState(true);
   const [isVehicleSearchLoading, setIsVehicleSearchLoading] = useState(false);
+  const [isLoadingMoreVehicleMatches, setIsLoadingMoreVehicleMatches] = useState(false);
   const vehicleSearchRequestId = useRef(0);
+  const existingCatalystSearchRequestId = useRef(0);
   const [isLegacyEdit, setIsLegacyEdit] = useState(false);
 
   const [brandId, setBrandId] = useState<number | "">("");
   const [birkaId, setBirkaId] = useState<number | "">("");
   const [modelId, setModelId] = useState<number | "">("");
-  const [year, setYear] = useState<number | "">("");
+  const [, setYear] = useState<number | "">("");
   const [yearFrom, setYearFrom] = useState<number | "">("");
   const [yearTo, setYearTo] = useState<number | "">("");
   const [country, setCountry] = useState<number | "">("");
-  const [engineId, setEngineId] = useState<number | "">("");
-  const [fuelTypeId, setFuelTypeId] = useState<number | "">("");
-  const [driveTypeId, setDriveTypeId] = useState<number | "">("");
-  const [trimName, setTrimName] = useState("");
+  const [, setEngineId] = useState<number | "">("");
+  const [, setFuelTypeId] = useState<number | "">("");
+  const [, setDriveTypeId] = useState<number | "">("");
+  const [, setTrimName] = useState("");
   const [engineVolume, setEngineVolume] = useState("");
   const [serverError, setServerError] = useState("");
   const navigate = useNavigate();
@@ -147,6 +160,8 @@ export const CarCatalystPage = () => {
   const [backBuckets, setBackBuckets] = useState<UIBucket[]>([]);
   const [activeSide, setActiveSide] = useState<"front" | "back">("front");
   const [expandedBucketKey, setExpandedBucketKey] = useState<string | null>(null);
+  const [existingVehicleCatalysts, setExistingVehicleCatalysts] = useState<CarCatalyst[]>([]);
+  const [isLoadingExistingCatalysts, setIsLoadingExistingCatalysts] = useState(false);
   const unitCount = [...frontBuckets, ...backBuckets].reduce(
     (total, bucket) => total + bucket.quantity,
     0,
@@ -157,8 +172,9 @@ export const CarCatalystPage = () => {
 
   const applySelectedVehicle = useCallback((vehicle: VehicleDefinitionRecord) => {
     setSelectedVehicle(vehicle);
-    setBrandId(vehicle.brandId);
-    setModelId(vehicle.modelId);
+    setVehicleDefinitionId(vehicle.id);
+    setBrandId(toPositiveNumber(vehicle.brandId, vehicle.brand?.id, brandId));
+    setModelId(toPositiveNumber(vehicle.modelId, vehicle.model?.id, modelId));
     setYear(vehicle.year);
     setYearFrom(vehicle.year);
     setYearTo(vehicle.year);
@@ -167,8 +183,10 @@ export const CarCatalystPage = () => {
     setDriveTypeId(vehicle.driveTypeId);
     setCountry(vehicle.marketId ?? vehicle.market?.id ?? "");
     const engineCode =
+      vehicle.engine?.name ||
       vehicle.engine?.code ||
       vehicle.engineName ||
+      definitions?.engines.find((item) => item.id === vehicle.engineId)?.name ||
       definitions?.engines.find((item) => item.id === vehicle.engineId)?.code;
     setEngineVolume(engineVolumeFromCode(engineCode));
     setTrimName(
@@ -177,22 +195,205 @@ export const CarCatalystPage = () => {
         "",
     );
     setIsLegacyEdit(false);
-  }, [definitions]);
+  }, [brandId, definitions, modelId]);
+
+  useEffect(() => {
+    if (!selectedVehicle?.id) {
+      setExistingVehicleCatalysts([]);
+      setIsLoadingExistingCatalysts(false);
+      return;
+    }
+
+    let cancelled = false;
+    const requestId = ++existingCatalystSearchRequestId.current;
+    const requestedVehicleDefinitionId = selectedVehicle.id;
+    setExistingVehicleCatalysts([]);
+    setIsLoadingExistingCatalysts(true);
+
+    void searchCarCatalysts(
+      {
+        vehicleDefinitionId: selectedVehicle.id,
+      },
+      getCashRegisterId(),
+    )
+      .then((catalysts) => {
+        if (
+          cancelled ||
+          requestId !== existingCatalystSearchRequestId.current ||
+          requestedVehicleDefinitionId !== selectedVehicle.id
+        ) {
+          return;
+        }
+        const exactMatches = catalysts.filter((catalyst) =>
+          catalyst.vehicleDefinitionId == null ||
+          Number(catalyst.vehicleDefinitionId) === requestedVehicleDefinitionId,
+        );
+        setExistingVehicleCatalysts(exactMatches);
+        if (!editId && exactMatches.length === 1) {
+          applyCatalystConfiguration(exactMatches[0]);
+          setSearchParams({ editId: String(exactMatches[0].id) });
+        }
+      })
+      .catch(() => {
+        if (!cancelled && requestId === existingCatalystSearchRequestId.current) {
+          setExistingVehicleCatalysts([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled && requestId === existingCatalystSearchRequestId.current) {
+          setIsLoadingExistingCatalysts(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedVehicle?.id, selectedVehicle?.brandId, selectedVehicle?.modelId, selectedVehicle?.year, selectedVehicle?.marketId, selectedVehicle?.market?.id, selectedVehicle?.engineId, selectedVehicle?.fuelTypeId, selectedVehicle?.driveTypeId, selectedVehicle?.trimName?.code, selectedVehicle?.trimNameCode]);
+
+  const findExistingCode = (value: string) => {
+    const normalizedCode = value.trim().toLocaleLowerCase();
+    if (!normalizedCode) return null;
+
+    const matches = existingVehicleCatalysts.filter((catalyst) =>
+      catalyst.id !== editId && (catalyst.buckets ?? []).some((bucket) =>
+        bucket.code.trim().toLocaleLowerCase() === normalizedCode,
+      ),
+    );
+    return matches.find((catalyst) => catalyst.year !== selectedVehicle?.year) ?? matches[0] ?? null;
+  };
+
+  const isSiblingYearCatalyst = (catalyst: CarCatalyst) =>
+    selectedVehicle != null && catalyst.year !== selectedVehicle.year;
+
+  const applyCatalystConfiguration = (catalyst: CarCatalyst) => {
+    const importedBuckets: UIBucket[] = (catalyst.buckets ?? []).map((bucket) => ({
+      ...bucket,
+      clientKey: createCompositionId(),
+      positionIndex: bucket.positionIndex ?? 1,
+      quantity: bucket.quantity ?? 1,
+      compositions: (bucket.compositions ?? []).map((composition) => ({
+        id: createCompositionId(),
+        type: composition.type as UICompositionType,
+        weightKg:
+          composition.weightKg == null
+            ? ""
+            : String(Number(composition.weightKg) * (bucket.quantity ?? 1)),
+        pricePerKg: composition.pricePerKg == null ? "" : String(composition.pricePerKg),
+        pt_g: composition.pt_g == null ? "" : String(composition.pt_g),
+        pd_g: composition.pd_g == null ? "" : String(composition.pd_g),
+        rh_g: composition.rh_g == null ? "" : String(composition.rh_g),
+      })),
+    }));
+
+    const front = importedBuckets
+      .filter((bucket) => bucket.side === 1)
+      .sort((a, b) => a.positionIndex - b.positionIndex)
+      .map((bucket, index) => ({ ...bucket, positionIndex: index + 1 }));
+    const back = importedBuckets
+      .filter((bucket) => bucket.side === 2)
+      .sort((a, b) => a.positionIndex - b.positionIndex)
+      .map((bucket, index) => ({ ...bucket, positionIndex: index + 1 }));
+
+    setFrontBuckets(front);
+    setBackBuckets(back);
+    setActiveSide(back.length > 0 && front.length === 0 ? "back" : "front");
+    setExpandedBucketKey(front[0]?.clientKey ?? back[0]?.clientKey ?? null);
+    setVehicleDefinitionId(catalyst.vehicleDefinitionId ?? "");
+    setBrandId(catalyst.brandId);
+    setModelId(catalyst.modelId);
+    setBirkaId(catalyst.birkaId && catalyst.birkaId > 0 ? catalyst.birkaId : "");
+    setCountry(catalyst.country);
+    setEngineVolume(String(catalyst.engineVolume ?? 0));
+    setServerError("");
+    setIsLegacyEdit(true);
+  };
+
+  const renderExistingCodeNotice = (
+    catalyst: CarCatalyst | null,
+    kind: "bucket" | "composition",
+  ) => catalyst && (
+    <div className={styles.existingCodeNotice} role="status">
+      <span className={styles.existingCodeMessage}>
+        <Info size={14} aria-hidden="true" />
+        {t(kind === "bucket"
+          ? "carCatalyst.sections.bucketCodeAlreadyExists"
+          : "carCatalyst.sections.codeCanBeReused")}
+      </span>
+      <Button
+        type="button"
+        size="small"
+        variant="secondary"
+        className={styles.editExistingCodeButton}
+        onClick={() => navigate(`/car-catalyst?editId=${catalyst.id}`)}
+      >
+        <ExternalLink size={13} aria-hidden="true" />
+        {t("carCatalyst.actions.editExisting")}
+      </Button>
+      {isSiblingYearCatalyst(catalyst) && (
+        <Button
+          type="button"
+          size="small"
+          variant="secondary"
+          className={styles.useCatalystTemplateButton}
+          onClick={() => {
+          if (
+            unitCount > 0 &&
+            !window.confirm(t("carCatalyst.sections.replaceBucketsConfirm"))
+          ) {
+            return;
+          }
+          applyCatalystConfiguration(catalyst);
+        }}
+        >
+          <Copy size={13} aria-hidden="true" />
+          {t("carCatalyst.actions.useExistingConfiguration", { year: catalyst.year })}
+        </Button>
+      )}
+    </div>
+  );
 
   const searchVehicleDefinitions = async (
     filters: Omit<VehicleDefinitionFilters, "page" | "pageSize">,
   ) => {
     const requestId = ++vehicleSearchRequestId.current;
     setIsVehicleSearchLoading(true);
+    setIsLoadingMoreVehicleMatches(false);
     setSelectedVehicle(null);
     try {
-      const results = await getAllVehicleDefinitions(filters);
+      const firstPage = normalizeVehiclePage(await getVehicleDefinitionsPage({
+        ...filters,
+        page: 1,
+        pageSize: 100,
+      }));
       if (requestId !== vehicleSearchRequestId.current) return;
+      let results = firstPage.results;
       setVehicleMatches(results);
-      if (results.length === 1) applySelectedVehicle(results[0]);
+      setVehicleMatchCount(firstPage.totalItems);
+      if (firstPage.totalItems === 1 && results[0]) {
+        applySelectedVehicle(results[0]);
+      }
+      setIsVehicleSearchLoading(false);
+
+      const pageSize = firstPage.pageSize || 100;
+      const totalPages = Math.ceil(firstPage.totalItems / pageSize);
+      if (totalPages <= 1) return;
+
+      setIsLoadingMoreVehicleMatches(true);
+      for (let page = 2; page <= totalPages; page += 1) {
+        const nextPage = normalizeVehiclePage(await getVehicleDefinitionsPage({
+          ...filters,
+          page,
+          pageSize: 100,
+        }));
+        if (requestId !== vehicleSearchRequestId.current) return;
+        if (!nextPage.results.length) break;
+        results = [...results, ...nextPage.results];
+        setVehicleMatches(results);
+      }
     } catch (error) {
       if (requestId === vehicleSearchRequestId.current) {
         setVehicleMatches([]);
+        setVehicleMatchCount(0);
         toast.error(
           error instanceof Error ? error.message : t("carCatalyst.errors.loading"),
         );
@@ -200,6 +401,7 @@ export const CarCatalystPage = () => {
     } finally {
       if (requestId === vehicleSearchRequestId.current) {
         setIsVehicleSearchLoading(false);
+        setIsLoadingMoreVehicleMatches(false);
       }
     }
   };
@@ -233,6 +435,7 @@ export const CarCatalystPage = () => {
         if (cancelled) return;
         setBrandId(catalyst.brandId);
         setModelId(catalyst.modelId);
+        setVehicleDefinitionId(catalyst.vehicleDefinitionId ?? "");
         setBirkaId(catalyst.birkaId ?? "");
         setYear(catalyst.year || "");
         setYearFrom(catalyst.yearFrom ?? catalyst.year ?? "");
@@ -253,7 +456,6 @@ export const CarCatalystPage = () => {
           quantity: bucket.quantity ?? 1,
           compositions: (bucket.compositions ?? []).map((composition) => ({
             id: createCompositionId(),
-            code: composition.code ?? "",
             type: composition.type as UICompositionType,
             weightKg:
               composition.weightKg == null ? "" : String(composition.weightKg),
@@ -291,6 +493,7 @@ export const CarCatalystPage = () => {
           });
           if (cancelled) return;
           setVehicleMatches(candidates);
+          setVehicleMatchCount(candidates.length);
           const matchingDefinitions = candidates.filter((vehicle) =>
             catalyst.vehicleDefinitionId
               ? vehicle.id === catalyst.vehicleDefinitionId
@@ -330,22 +533,23 @@ export const CarCatalystPage = () => {
   }, [dispatch, tags.length]);
 
   const confirmVehicleChange = () => {
-    if (!unitCount) return true;
-    if (!window.confirm(t("carCatalyst.sections.changeVehicleConfirm"))) {
-      return false;
+    if (unitCount) {
+      setFrontBuckets([]);
+      setBackBuckets([]);
+      setExpandedBucketKey(null);
+      setServerError("");
     }
-    setFrontBuckets([]);
-    setBackBuckets([]);
-    setExpandedBucketKey(null);
-    setServerError("");
     return true;
   };
 
   const handleBrandChange = async (value: string) => {
     const id = value === "" ? "" : Number(value);
     if (id === brandId || !confirmVehicleChange()) return;
+    if (editId) setSearchParams({});
     setVehicleMatches([]);
+    setVehicleMatchCount(0);
     setSelectedVehicle(null);
+    setVehicleDefinitionId("");
     setIsLegacyEdit(false);
     setBrandId(id);
     setModelId("");
@@ -363,6 +567,7 @@ export const CarCatalystPage = () => {
     } else {
       vehicleSearchRequestId.current += 1;
       setIsVehicleSearchLoading(false);
+      setIsLoadingMoreVehicleMatches(false);
     }
   };
 
@@ -371,6 +576,7 @@ export const CarCatalystPage = () => {
     setIsVehicleSearchLoading(false);
     setVehicleMatches([]);
     setSelectedVehicle(null);
+    setVehicleDefinitionId("");
     setIsLegacyEdit(false);
     setBrandId("");
     setBirkaId("");
@@ -499,6 +705,29 @@ export const CarCatalystPage = () => {
     );
   };
 
+  const addCompositionVariant = (
+    side: "front" | "back",
+    bucketIndex: number,
+    compositionIndex: number,
+  ) => {
+    const setter = side === "front" ? setFrontBuckets : setBackBuckets;
+    setter((prev) => prev.map((bucket, index) => {
+      if (index !== bucketIndex) return bucket;
+      const source = bucket.compositions[compositionIndex];
+      if (!source) return bucket;
+      const variant: UIComposition = {
+        ...source,
+        id: createCompositionId(),
+        pt_g: "",
+        pd_g: "",
+        rh_g: "",
+      };
+      const compositions = [...bucket.compositions];
+      compositions.splice(compositionIndex + 1, 0, variant);
+      return { ...bucket, compositions };
+    }));
+  };
+
   const deleteComposition = (
     side: "front" | "back",
     bucketIndex: number,
@@ -574,18 +803,12 @@ export const CarCatalystPage = () => {
         toast.error(t("carCatalyst.errors.required"));
         return false;
       }
-
       if (!bucket.compositions.length) {
         toast.error(t("carCatalyst.errors.required"));
         return false;
       }
 
       for (const composition of bucket.compositions) {
-        if (!composition.code.trim()) {
-          toast.error(t("carCatalyst.errors.required"));
-          return false;
-        }
-
         const weight = Number(composition.weightKg);
         if (!composition.weightKg || !Number.isFinite(weight) || weight <= 0) {
           toast.error(t("carCatalyst.errors.weightRequired"));
@@ -618,11 +841,6 @@ export const CarCatalystPage = () => {
       toast.error(t("carCatalyst.errors.selectVehicle"));
       return;
     }
-    if (isLegacyEdit && (!brandId || !modelId || !year || !country)) {
-      toast.error(t("carCatalyst.errors.required"));
-      return;
-    }
-
     const buckets = [
       ...frontBuckets.map((bucket, index) => ({
         ...bucket,
@@ -644,9 +862,8 @@ export const CarCatalystPage = () => {
       quantity: bucket.quantity,
       code: bucket.code.trim(),
       compositions: bucket.compositions.map((composition) => ({
-        code: composition.code.trim(),
         type: Number(composition.type),
-        weightKg: Number(composition.weightKg),
+        weightKg: Number(composition.weightKg) / bucket.quantity,
         pt_g:
           composition.type === 1 || composition.pt_g === ""
             ? null
@@ -682,42 +899,51 @@ export const CarCatalystPage = () => {
       }
     }
 
+    const vehicleCountry = toPositiveNumber(
+      selectedVehicle?.marketId,
+      selectedVehicle?.market?.id,
+      country,
+    );
+    const resolvedVehicleDefinitionId = toPositiveNumber(
+      selectedVehicle?.id,
+      vehicleDefinitionId,
+    );
+
+    if (!resolvedVehicleDefinitionId) {
+      toast.error(t("carCatalyst.errors.vehicleDefinitionRequired"));
+      return;
+    }
+    if (!vehicleCountry) {
+      toast.error(t("carCatalyst.errors.countryRequired"));
+      return;
+    }
+
+    const resolvedEngineVolume = Number(
+      engineVolume ||
+        engineVolumeFromCode(
+          selectedVehicle?.engine?.name ||
+            selectedVehicle?.engine?.code ||
+            selectedVehicle?.engineName ||
+            definitions?.engines.find(
+              (item) => item.id === selectedVehicle?.engineId,
+            )?.name ||
+            definitions?.engines.find(
+              (item) => item.id === selectedVehicle?.engineId,
+            )?.code,
+        ) ||
+        0,
+    );
+
+    if (!resolvedEngineVolume) {
+      toast.error(t("carCatalyst.errors.engineVolumeRequired"));
+      return;
+    }
+
     const payload: CreateCarCatalyst = {
-      ...(selectedVehicle?.id
-        ? { vehicleDefinitionId: selectedVehicle.id }
-        : {}),
+      vehicleDefinitionId: resolvedVehicleDefinitionId,
       birkaId: typeof birkaId === "number" ? birkaId : undefined,
-      ...(isLegacyEdit
-        ? {
-            brandId: Number(brandId),
-            modelId: Number(modelId),
-            year: Number(year),
-            yearFrom: yearFrom ? Number(yearFrom) : undefined,
-            yearTo: yearTo ? Number(yearTo) : undefined,
-            country: Number(country),
-            engineVolume: Number(engineVolume || 0),
-            engineId: engineId ? Number(engineId) : undefined,
-            fuelTypeId: fuelTypeId ? Number(fuelTypeId) : undefined,
-            driveTypeId: driveTypeId ? Number(driveTypeId) : undefined,
-            trimName: trimName.trim(),
-          }
-        : {
-            country: Number(
-              selectedVehicle?.marketId ?? selectedVehicle?.market?.id ?? 0,
-            ),
-            engineVolume: Number(
-              engineVolume ||
-                engineVolumeFromCode(
-                  selectedVehicle?.engine?.code ||
-                    selectedVehicle?.engineName ||
-                    definitions?.engines.find(
-                      (item) => item.id === selectedVehicle?.engineId,
-                    )?.code,
-                ) ||
-                0,
-            ),
-          }),
-      side: 0,
+      country: vehicleCountry,
+      engineVolume: resolvedEngineVolume,
       buckets: uniqueBuckets,
     };
 
@@ -915,6 +1141,7 @@ export const CarCatalystPage = () => {
                       updateBucket(side, bucketIndex, "code", e.target.value)
                     }
                   />
+                  {renderExistingCodeNotice(findExistingCode(bucket.code), "bucket")}
                   <TextField
                     label={t("carCatalyst.table.identicalUnits")}
                     type="number"
@@ -937,21 +1164,19 @@ export const CarCatalystPage = () => {
               </p>
               {bucket.compositions.map((composition, compositionIndex) => (
                 <div key={composition.id} className={styles.compositionCard}>
+                  <div className={styles.compositionVariantToolbar}>
+                    <Button
+                      type="button"
+                      size="small"
+                      variant="secondary"
+                      className={styles.addCodeVariantButton}
+                      onClick={() => addCompositionVariant(side, bucketIndex, compositionIndex)}
+                    >
+                      <Plus size={13} aria-hidden="true" />
+                      {t("carCatalyst.actions.addSameCodeVariant")}
+                    </Button>
+                  </div>
                   <div className={styles.compositionGrid}>
-                    <TextField
-                      label={t("carCatalyst.table.compositionCode")}
-                      value={composition.code}
-                      onChange={(e) =>
-                        updateComposition(
-                          side,
-                          bucketIndex,
-                          compositionIndex,
-                          "code",
-                          e.target.value,
-                        )
-                      }
-                    />
-
                     <Select
                       label={t("carCatalyst.table.compositionType")}
                       value={composition.type}
@@ -1103,7 +1328,8 @@ export const CarCatalystPage = () => {
                     <span>
                       {t("carCatalyst.table.weight")}:{" "}
                       {(
-                        Number(composition.weightKg || 0) * bucket.quantity
+                        Number(composition.weightKg || 0) /
+                        bucket.quantity
                       ).toFixed(3)}{" "}
                       kg
                     </span>
@@ -1111,23 +1337,17 @@ export const CarCatalystPage = () => {
                       <>
                         <span>
                           Pt:{" "}
-                          {(
-                            Number(composition.pt_g || 0) * bucket.quantity
-                          ).toFixed(2)}{" "}
+                          {Number(composition.pt_g || 0).toFixed(2)}{" "}
                           g
                         </span>
                         <span>
                           Pd:{" "}
-                          {(
-                            Number(composition.pd_g || 0) * bucket.quantity
-                          ).toFixed(2)}{" "}
+                          {Number(composition.pd_g || 0).toFixed(2)}{" "}
                           g
                         </span>
                         <span>
                           Rh:{" "}
-                          {(
-                            Number(composition.rh_g || 0) * bucket.quantity
-                          ).toFixed(2)}{" "}
+                          {Number(composition.rh_g || 0).toFixed(2)}{" "}
                           g
                         </span>
                       </>
@@ -1245,7 +1465,7 @@ export const CarCatalystPage = () => {
               <span>{t("carCatalyst.sections.searchingVehicles")}</span>
             </div>
           </div>
-        ) : vehicleMatches.length > 1 && (
+        ) : vehicleMatchCount > 1 && vehicleMatches.length > 0 && (
           <Select
             label={t("carCatalyst.fields.exactVehicle")}
             value={selectedVehicle?.id ?? ""}
@@ -1260,6 +1480,7 @@ export const CarCatalystPage = () => {
               ) {
                 return;
               }
+              if (editId) setSearchParams({});
               setIsLegacyEdit(false);
               const vehicle = vehicleMatches.find((item) => item.id === vehicleId);
               if (vehicle) applySelectedVehicle(vehicle);
@@ -1343,6 +1564,13 @@ export const CarCatalystPage = () => {
           </Select>
         )}
 
+        {isLoadingMoreVehicleMatches && (
+          <div className={styles.vehicleLoadingMore} role="status" aria-live="polite">
+            <LoaderCircle size={14} className={styles.vehicleLoadingIcon} aria-hidden="true" />
+            <span>{t("carCatalyst.sections.loadingMoreVehicles")}</span>
+          </div>
+        )}
+
         <Select
           label={t("carCatalyst.fields.birka")}
           value={birkaId}
@@ -1410,6 +1638,12 @@ export const CarCatalystPage = () => {
             {" · "}
             {selectedVehicle.horsePower} {t("carCatalyst.fields.horsePowerUnit")}
           </span>
+        </div>
+      )}
+      {selectedVehicle && isLoadingExistingCatalysts && (
+        <div className={styles.existingCodesLoading} role="status" aria-live="polite">
+          <LoaderCircle size={14} aria-hidden="true" />
+          {t("carCatalyst.sections.checkingExistingCodes")}
         </div>
       )}
       </section>

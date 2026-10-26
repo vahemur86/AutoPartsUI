@@ -18,32 +18,250 @@
 }
 
 .filtersSection {
-  background: linear-gradient(115deg, rgba(23, 29, 24, 0.84), rgba(15, 19, 16, 0.78));
-  border: 1px solid rgba(196, 169, 106, 0.16);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(62, 120, 103, 0.1), transparent 42%),
+    linear-gradient(150deg, rgba(23, 29, 25, 0.96), rgba(15, 19, 17, 0.96));
+  border: 1px solid rgba(126, 184, 165, 0.18);
   border-radius: 8px;
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
+}
+
+.filtersHeading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.filterTitleIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(126, 184, 165, 0.24);
+  border-radius: 7px;
+  background: rgba(126, 184, 165, 0.09);
+  color: #9bcdbb;
+}
+
+.filterHeadingCopy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.filterHeadingCopy h2 {
+  margin: 0;
+  color: #eef4ef;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.filterHeadingCopy > span {
+  color: #9eaca3;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.activeFilterBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 5px 8px;
+  border: 1px solid rgba(105, 190, 128, 0.22);
+  border-radius: 6px;
+  background: rgba(42, 111, 65, 0.12);
+  color: #b6dfbd;
+  font-size: 10px;
+  font-weight: 650;
+  white-space: nowrap;
 }
 
 .filtersGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
   gap: 12px;
+}
+
+.vehicleLoading,
+.vehicleEmpty,
+.selectedVehicleFilter {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid rgba(126, 184, 165, 0.18);
+  border-radius: 7px;
+  background: rgba(126, 184, 165, 0.045);
+  color: #aebeb5;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.vehicleLoading svg,
+.selectedVehicleFilter > svg:first-child {
+  flex: 0 0 auto;
+  color: #8ec5b2;
+}
+
+.vehicleLoading svg {
+  animation: vehicleFilterSpin 900ms linear infinite;
+}
+
+.vehicleEmpty {
+  border-color: rgba(224, 169, 145, 0.2);
+  background: rgba(133, 72, 54, 0.08);
+  color: #ddb6a8;
+}
+
+.selectedVehicleFilter {
+  border-color: rgba(105, 190, 128, 0.24);
+  background: rgba(42, 111, 65, 0.09);
+  color: #d2e8d6;
+}
+
+.selectedVehicleFilter > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.selectedVehicleFilter button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  margin-left: auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #bfd3c6;
+  cursor: pointer;
+}
+
+.selectedVehicleFilter button:hover {
+  border-color: rgba(224, 169, 145, 0.32);
+  background: rgba(133, 72, 54, 0.14);
+  color: #f0c5b4;
+}
+
+.selectedVehicleFilter button:focus-visible {
+  outline: 2px solid rgba(126, 184, 165, 0.72);
+  outline-offset: 2px;
+}
+
+@keyframes vehicleFilterSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .filtersActions {
   display: flex;
+  align-items: center;
   gap: 12px;
-  justify-content: flex-end;
+  justify-content: space-between;
+  min-height: 32px;
+}
+
+.workflowSteps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+}
+
+.workflowStep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 70px;
+  padding: 11px 13px;
+  border: 1px solid rgba(126, 184, 165, 0.15);
+  border-radius: 8px;
+  background: linear-gradient(140deg, rgba(22, 29, 25, 0.95), rgba(13, 18, 15, 0.92));
+}
+
+.workflowStepActive {
+  border-color: rgba(126, 184, 165, 0.28);
+  background: linear-gradient(120deg, rgba(39, 86, 69, 0.22), rgba(17, 25, 21, 0.94));
+}
+
+.workflowStepNumber {
+  align-self: flex-start;
+  color: #74877d;
+  font-size: 10px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.workflowStepIcon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(126, 184, 165, 0.23);
+  border-radius: 7px;
+  background: rgba(126, 184, 165, 0.09);
+  color: #9bcdbb;
+}
+
+.workflowPurchaseIcon {
+  border-color: rgba(135, 171, 200, 0.22);
+  background: rgba(92, 130, 160, 0.1);
+  color: #a8c4dd;
+}
+
+.workflowStepCopy {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 4px;
+}
+
+.workflowStepCopy strong {
+  color: #e9f1eb;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.workflowStepCopy > span {
+  color: #9da9a2;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.workflowStep > button {
+  flex: 0 0 auto;
+}
+
+.workflowConnector {
+  justify-self: center;
+  color: #71877b;
+}
+
+.filterResultHint {
+  color: #9da9a2;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
 .tableSection {
   min-width: 0;
-  overflow: hidden;
-  background: linear-gradient(160deg, rgba(22, 28, 23, 0.98), rgba(13, 17, 14, 0.98));
-  border: 1px solid rgba(196, 169, 106, 0.22);
+  overflow: visible;
+  background: linear-gradient(160deg, rgba(22, 28, 24, 0.98), rgba(13, 17, 15, 0.98));
+  border: 1px solid rgba(126, 184, 165, 0.16);
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -51,8 +269,18 @@
   gap: 12px;
 }
 
+.tableScroll {
+  width: 100%;
+  min-width: 0;
+  min-height: 300px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(126, 184, 165, 0.35) transparent;
+}
+
 .tableSection :global(table) {
-  min-width: 880px;
+  min-width: 980px;
   border-spacing: 0;
   background: transparent;
 }
@@ -60,12 +288,33 @@
 .tableSection :global(th) {
   height: 44px;
   padding: 10px 14px;
-  color: #d2bf8a;
-  border-bottom: 1px solid rgba(196, 169, 106, 0.2);
-  background: rgba(196, 169, 106, 0.07) !important;
+  color: #a8cbbb;
+  border-bottom: 1px solid rgba(126, 184, 165, 0.2);
+  background: rgba(126, 184, 165, 0.07) !important;
   font-size: 10px;
   font-weight: 700;
   white-space: nowrap;
+}
+
+.codeBadge {
+  display: inline-flex;
+  max-width: 180px;
+  padding: 4px 7px;
+  overflow: hidden;
+  border: 1px solid rgba(126, 184, 165, 0.2);
+  border-radius: 5px;
+  background: rgba(126, 184, 165, 0.065);
+  color: #c4e0d3;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sellingPriceValue {
+  color: #a8e8bb;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
 }
 
 .tableSection :global(td) {
@@ -78,13 +327,13 @@
 }
 
 .tableSection :global(tbody tr:hover) {
-  background: rgba(196, 169, 106, 0.055) !important;
+  background: rgba(126, 184, 165, 0.055) !important;
 }
 
 .tableSection :global([class*="tableFooter"]) {
   padding: 12px 14px;
   color: #aab1a9;
-  border-top: 1px solid rgba(196, 169, 106, 0.14);
+  border-top: 1px solid rgba(126, 184, 165, 0.14);
   background: rgba(9, 13, 10, 0.45);
   font-size: 12px;
 }
@@ -93,13 +342,40 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+}
+
+.tableHeadingCopy {
+  display: grid;
+  gap: 3px;
 }
 
 .tableTitle {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-white);
   margin: 0;
+  color: #edf3ee;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tableHeadingCopy > span {
+  color: #9da9a2;
+  font-size: 11px;
+}
+
+.tableCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid rgba(126, 184, 165, 0.2);
+  border-radius: 6px;
+  background: rgba(126, 184, 165, 0.07);
+  color: #b8d5c8;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
 }
 
 .badge {
@@ -132,23 +408,58 @@
   place-items: center;
   box-sizing: border-box;
   padding: 0;
-  color: #c7b57e;
-  border: 1px solid rgba(196, 169, 106, 0.2);
+  color: #9bcdbb;
+  border: 1px solid rgba(126, 184, 165, 0.2);
   border-radius: 5px;
-  background: rgba(196, 169, 106, 0.045);
+  background: rgba(126, 184, 165, 0.045);
   cursor: pointer;
   transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
 }
 
 .rowAction:hover {
-  color: #f1dfaa;
-  border-color: rgba(196, 169, 106, 0.52);
-  background: rgba(196, 169, 106, 0.13);
+  color: #e2f2e9;
+  border-color: rgba(126, 184, 165, 0.52);
+  background: rgba(126, 184, 165, 0.13);
 }
 
 .rowAction:focus-visible {
-  outline: 2px solid #e5d29a;
+  outline: 2px solid #8ec5b2;
   outline-offset: 2px;
+}
+
+.purchaseRowAction {
+  display: inline-flex;
+  width: auto;
+  min-height: 32px;
+  aspect-ratio: auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+  border-color: rgba(126, 184, 165, 0.24);
+  background: rgba(126, 184, 165, 0.07);
+  color: #b8d5c8;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.purchaseRowAction:hover {
+  border-color: rgba(126, 184, 165, 0.48);
+  background: rgba(126, 184, 165, 0.14);
+  color: #e2f2e9;
+}
+
+.vehicleLoadingMore {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #91aa9d;
+  font-size: 10px;
+}
+
+.vehicleLoadingMore svg {
+  flex: 0 0 auto;
+  animation: vehicleFilterSpin 900ms linear infinite;
 }
 
 .formGrid {
@@ -199,8 +510,72 @@
 
 .compatibilityFields {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: minmax(130px, 0.9fr) minmax(250px, 2fr) minmax(145px, 0.9fr);
+  align-items: end;
   gap: 10px;
+}
+
+.compatibilityFields > :global([class*="selectWrapper"]),
+.compatibilityFields > :global([class*="textFieldWrapper"]) {
+  min-width: 0;
+}
+
+.compatibilityFields :global([class*="selectLabel"]),
+.compatibilityFields :global([class*="textFieldLabel"]) {
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vehicleSelectionStatus,
+.selectedVehicleSummary {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(126, 184, 165, 0.2);
+  border-radius: 7px;
+  background: rgba(126, 184, 165, 0.06);
+  color: #b8ccc2;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.vehicleSelectionStatus svg,
+.selectedVehicleSummary svg {
+  flex: 0 0 auto;
+  color: #8ec5b2;
+}
+
+.vehicleSelectionStatus > span,
+.selectedVehicleSummary > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.vehicleLoadingIcon {
+  animation: vehicleLookupSpin 900ms linear infinite;
+}
+
+.selectedVehicleSummary {
+  border-color: rgba(105, 190, 128, 0.24);
+  background: rgba(42, 111, 65, 0.1);
+  color: #d1e9d5;
+}
+
+.selectedVehicleSummary svg:last-child {
+  margin-left: auto;
+  color: #9bd5a3;
+}
+
+@keyframes vehicleLookupSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .compatibilityHeader {
@@ -246,6 +621,34 @@
   .tableSection,
   .filtersSection {
     padding: 12px;
+  }
+
+  .filtersGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workflowSteps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workflowConnector {
+    transform: rotate(90deg);
+  }
+
+  .workflowStep {
+    flex-wrap: wrap;
+  }
+
+  .workflowStep > button {
+    width: 100%;
+  }
+
+  .filtersHeading {
+    align-items: flex-start;
+  }
+
+  .activeFilterBadge {
+    margin-left: auto;
   }
 }
 
@@ -543,6 +946,10 @@
   }
 
   .drawerBody .formGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .compatibilityFields {
     grid-template-columns: minmax(0, 1fr);
   }
 

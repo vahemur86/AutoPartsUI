@@ -3680,6 +3680,7 @@
   "catalyticConverters": {
     "title": "Catalytic converters",
     "list": "Catalytic converters list",
+    "listDescription": "Stock availability, pricing, and purchase batches",
     "emptyState": "No catalytic converters found",
     "columns": {
       "code": "Code",
@@ -3690,7 +3691,15 @@
       "priceRange": "Price range"
     },
     "filters": {
+      "title": "Search by vehicle",
+      "vehicleHint": "Choose a brand, then select an exact vehicle variant",
       "brand": "Brand",
+      "exactVehicle": "Exact vehicle",
+      "selectExactVehicle": "Select a vehicle from the database",
+      "active": "Filter active",
+      "clearVehicle": "Clear vehicle selection",
+      "resultCount": "Results: {{from}}–{{to}} of {{total}}",
+      "loadingMoreVehicles": "Loading the remaining vehicles in the background...",
       "model": "Model",
       "engine": "Engine",
       "fuelType": "Fuel type",
@@ -3701,7 +3710,14 @@
       "createProduct": "Create product",
       "viewDetails": "View details",
       "createPurchase": "Create purchase",
+      "purchaseFromSupplier": "Purchase from supplier",
       "addCompatibility": "Add compatibility"
+    },
+    "workflow": {
+      "createTitle": "Create product record",
+      "createHint": "Add a catalytic converter and link it to a vehicle",
+      "purchaseTitle": "Supplier purchase",
+      "purchaseHint": "Choose a product below and record a supplier purchase"
     },
     "create": {
       "title": "Create catalytic converter"
@@ -3714,8 +3730,10 @@
       "description": "Description",
       "sellingPrice": "Selling price",
       "compatibilities": "Vehicle compatibilities",
-      "compatibilitiesHint": "Add the vehicle compatibility rows below. Years are selected from the lists to keep the data consistent.",
+      "compatibilitiesHint": "Select vehicles from the database by brand. Each compatibility is linked to a specific vehicle record.",
       "compatibilityItem": "Compatibility",
+      "exactVehicle": "Vehicle variant",
+      "selectVehicle": "Select a vehicle from the database",
       "engineDisplacement": "Engine displacement",
       "enginePowerHp": "Power (HP)",
       "yearFrom": "Year from",
@@ -3725,7 +3743,8 @@
     "validation": {
       "codeRequired": "Code is required",
       "codeExists": "Code already exists",
-      "invalidSellingPrice": "Selling price must be >= 0"
+      "invalidSellingPrice": "Selling price must be >= 0",
+      "selectVehicle": "Select an exact vehicle variant for every compatibility row."
     },
     "success": {
       "created": "Catalytic converter created successfully",
@@ -4020,7 +4039,10 @@
       "moveBucketDown": "Move bucket down",
       "deleteBucket": "Delete bucket",
       "deleteComposition": "Delete composition",
-      "applyVehicleFilters": "Apply horsepower filter"
+      "applyVehicleFilters": "Apply horsepower filter",
+      "editExisting": "Open and edit",
+      "addSameCodeVariant": "Add same-code variant",
+      "useExistingConfiguration": "Use {{year}} configuration"
     },
 
     "sections": {
@@ -4028,6 +4050,7 @@
       "vehicleHint": "Select the vehicle whose catalytic converter buckets you are entering.",
       "vehicleReady": "Vehicle selected",
       "searchingVehicles": "Searching saved vehicle definitions...",
+      "loadingMoreVehicles": "Loading the remaining vehicles in the background...",
       "noVehicleMatches": "No vehicle matches these choices. Check the vehicle database.",
       "legacyVehicle": "This is a legacy record not linked to a VehicleDefinition yet.",
       "changeVehicleConfirm": "Changing the vehicle will clear the entered catalyst buckets. Continue?",
@@ -4039,7 +4062,11 @@
       "rearPosition": "Rear · position {{position}}",
       "positionHelp": "The numbered badge shows this bucket's order on its side. Use the arrows to reorder.",
       "frontBuckets": "Front casing",
-      "backBuckets": "Rear casing"
+      "backBuckets": "Rear casing",
+      "checkingExistingCodes": "Checking codes already registered for this vehicle...",
+      "bucketCodeAlreadyExists": "A bucket with this code already exists for this vehicle.",
+      "codeCanBeReused": "This component code is already used in this vehicle family. Reuse its weight and change only the metal values.",
+      "replaceBucketsConfirm": "Current bucket data will be replaced with the selected vehicle's configuration. Continue?"
     },
 
     "table": {
@@ -4070,6 +4097,9 @@
     "errors": {
       "loading": "Failed to load data",
       "required": "Please fill in all required fields",
+      "vehicleDefinitionRequired": "Select the exact vehicle variant.",
+      "countryRequired": "Enter the vehicle country.",
+      "engineVolumeRequired": "Enter the engine volume.",
       "selectVehicle": "Select the exact vehicle variant.",
       "maxUnits": "The total number of physical catalyst units cannot exceed four.",
       "invalidBucket": "Quantity and position order must be positive whole numbers.",

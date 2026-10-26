@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { BadgeCheck, Plus, Trash, Wrench, X } from "lucide-react";
+import { BadgeCheck, CarFront, LoaderCircle, Plus, Trash, Wrench, X } from "lucide-react";
 
 // ui-kit
 import { Button, Select, TextField } from "@/ui-kit";
@@ -16,10 +16,11 @@ import {
 } from "@/store/slices/catalyticConvertersSlice";
 
 // services
-import { getVehicleModels } from "@/services/settings/vehicles";
+import { getAllVehicleDefinitions } from "@/services/vehicleAdmin";
 
 // types
 import type { VehicleDefinition } from "@/types/settings";
+import type { VehicleDefinitionRecord } from "@/types/vehicleAdmin";
 import type {
   CatalyticConverterCompatibility,
   CreateCatalyticConverterRequest,
@@ -27,7 +28,6 @@ import type {
 
 // utils
 import { getApiErrorMessage } from "@/utils";
-import { getYearOptions } from "@/pages/CarCatalyst/yearOptions";
 
 // styles
 import styles from "../CatalyticConverters.module.css";
@@ -41,6 +41,7 @@ const createRowId = () =>
 
 const emptyRow = (): CompatibilityRow => ({
   rowId: createRowId(),
+  vehicleDefinitionId: null,
   brandId: null,
   modelId: null,
   engineId: null,
@@ -50,6 +51,40 @@ const emptyRow = (): CompatibilityRow => ({
   yearTo: null,
   maxMileageKm: null,
 });
+
+const applyVehicleToRow = (
+  row: CompatibilityRow,
+  vehicle: VehicleDefinitionRecord,
+): CompatibilityRow => ({
+  ...row,
+  vehicleDefinitionId: vehicle.id,
+  brandId: vehicle.brandId,
+  modelId: vehicle.modelId,
+  engineId: vehicle.engineId,
+  fuelTypeId: vehicle.fuelTypeId,
+  enginePowerHp: vehicle.horsePower,
+  yearFrom: vehicle.year,
+  yearTo: vehicle.year,
+});
+
+const findMatchingVehicle = (
+  row: CompatibilityRow,
+  candidates: VehicleDefinitionRecord[],
+) => {
+  if (row.vehicleDefinitionId != null) {
+    return candidates.find((vehicle) => vehicle.id === row.vehicleDefinitionId) ?? null;
+  }
+
+  const matches = candidates.filter((vehicle) =>
+    (!row.engineId || vehicle.engineId === row.engineId) &&
+    (!row.fuelTypeId || vehicle.fuelTypeId === row.fuelTypeId) &&
+    (!row.enginePowerHp || vehicle.horsePower === row.enginePowerHp) &&
+    (row.yearFrom == null || vehicle.year >= row.yearFrom) &&
+    (row.yearTo == null || vehicle.year <= row.yearTo),
+  );
+
+  return matches.length === 1 ? matches[0] : null;
+};
 
 interface CreateCatalyticConverterModalProps {
   open: boolean;
@@ -81,13 +116,15 @@ export const CreateCatalyticConverterModal: FC<
   const [description, setDescription] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [rows, setRows] = useState<CompatibilityRow[]>([]);
-  const [modelsByRow, setModelsByRow] = useState<
-    Record<string, VehicleDefinition["models"]>
+  const [vehiclesByRow, setVehiclesByRow] = useState<
+    Record<string, VehicleDefinitionRecord[]>
   >({});
+  const [loadingVehiclesByRow, setLoadingVehiclesByRow] = useState<
+    Record<string, boolean>
+  >({});
+  const vehicleSearchRequestIds = useRef<Record<string, number>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [codeError, setCodeError] = useState(false);
-
-  const yearOptions = useMemo(() => getYearOptions(1970), []);
 
   useEffect(() => {
     if (!open) return;
@@ -97,9 +134,9 @@ export const CreateCatalyticConverterModal: FC<
     setSellingPrice(
       initialData?.sellingPrice != null ? String(initialData.sellingPrice) : "",
     );
-    setRows(
-      (initialData?.compatibilities ?? []).map((item) => ({
+    const initialRows: CompatibilityRow[] = (initialData?.compatibilities ?? []).map((item) => ({
         rowId: createRowId(),
+        vehicleDefinitionId: item.vehicleDefinitionId ?? null,
         brandId: item.brandId ?? null,
         modelId: item.modelId ?? null,
         engineId: item.engineId ?? null,
@@ -108,46 +145,49 @@ export const CreateCatalyticConverterModal: FC<
         yearFrom: item.yearFrom ?? null,
         yearTo: item.yearTo ?? null,
         maxMileageKm: item.maxMileageKm ?? null,
-      })),
-    );
-    setModelsByRow({});
+      }));
+    setRows(initialRows);
+    setVehiclesByRow({});
+    setLoadingVehiclesByRow({});
     setCodeError(false);
-  }, [initialData, open]);
 
-  useEffect(() => {
-    if (!open || rows.length === 0) return;
-
-    const rowsWithBrand = rows.filter(
+    let cancelled = false;
+    const rowsWithBrand = initialRows.filter(
       (row): row is CompatibilityRow & { brandId: number } => row.brandId != null,
     );
 
-    if (rowsWithBrand.length === 0) return;
-
-    const loadModels = async () => {
-      const entries = await Promise.all(
-        rowsWithBrand.map(async (row) => {
-          const data = await getVehicleModels(row.brandId);
-          return [
-            row.rowId,
-            (data || []).map((model) => ({
-              id: model.id,
-              code: model.code,
-              name: model.name,
-            })),
-          ] as const;
-        }),
-      );
-
-      setModelsByRow((prev) => ({
-        ...prev,
-        ...Object.fromEntries(entries),
+    void Promise.all(rowsWithBrand.map(async (row) => {
+      try {
+        const vehicles = await getAllVehicleDefinitions({
+          brandId: row.brandId,
+          ...(row.modelId != null ? { modelId: row.modelId } : {}),
+        });
+        return [row.rowId, vehicles] as const;
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : t("catalyticConverters.errors.loadingLookups"),
+        );
+        return [row.rowId, []] as const;
+      }
+    })).then((entries) => {
+      if (cancelled) return;
+      const matches = Object.fromEntries(entries);
+      setVehiclesByRow(matches);
+      setRows((currentRows) => currentRows.map((row) => {
+        const vehicle = findMatchingVehicle(row, matches[row.rowId] ?? []);
+        if (vehicle) return applyVehicleToRow(row, vehicle);
+        return row.vehicleDefinitionId != null
+          ? { ...row, vehicleDefinitionId: null }
+          : row;
       }));
-    };
-
-    loadModels().catch(() => {
-      toast.error(t("catalyticConverters.errors.loadingLookups"));
     });
-  }, [open, rows, t]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialData, open, t]);
 
   useEffect(() => {
     if (!open) return;
@@ -170,7 +210,18 @@ export const CreateCatalyticConverterModal: FC<
   };
 
   const removeRow = (rowId: string) => {
+    vehicleSearchRequestIds.current[rowId] = (vehicleSearchRequestIds.current[rowId] ?? 0) + 1;
     setRows((prev) => prev.filter((row) => row.rowId !== rowId));
+    setVehiclesByRow((prev) => {
+      const next = { ...prev };
+      delete next[rowId];
+      return next;
+    });
+    setLoadingVehiclesByRow((prev) => {
+      const next = { ...prev };
+      delete next[rowId];
+      return next;
+    });
   };
 
   const updateRow = (
@@ -191,27 +242,83 @@ export const CreateCatalyticConverterModal: FC<
   };
 
   const handleBrandChange = async (rowId: string, brandIdValue: string) => {
-    updateRow(rowId, "brandId", brandIdValue);
-    updateRow(rowId, "modelId", "");
+    const nextBrandId = brandIdValue ? Number(brandIdValue) : null;
+    const previousRow = rows.find((row) => row.rowId === rowId);
+    const requestId = (vehicleSearchRequestIds.current[rowId] ?? 0) + 1;
+    vehicleSearchRequestIds.current[rowId] = requestId;
 
-    if (!brandIdValue) {
-      setModelsByRow((prev) => ({ ...prev, [rowId]: [] }));
+    setRows((prev) => prev.map((row) => row.rowId === rowId
+      ? { ...emptyRow(), rowId, brandId: nextBrandId, maxMileageKm: row.maxMileageKm }
+      : row));
+    setVehiclesByRow((prev) => ({ ...prev, [rowId]: [] }));
+
+    if (nextBrandId == null) {
+      setLoadingVehiclesByRow((prev) => ({ ...prev, [rowId]: false }));
       return;
     }
 
+    setLoadingVehiclesByRow((prev) => ({ ...prev, [rowId]: true }));
     try {
-      const data = await getVehicleModels(Number(brandIdValue));
-      setModelsByRow((prev) => ({
-        ...prev,
-        [rowId]: (data || []).map((model) => ({
-          id: model.id,
-          code: model.code,
-          name: model.name,
-        })),
-      }));
-    } catch {
-      toast.error(t("catalyticConverters.errors.loadingLookups"));
+      const vehicles = await getAllVehicleDefinitions({ brandId: nextBrandId });
+      if (vehicleSearchRequestIds.current[rowId] !== requestId) return;
+      setVehiclesByRow((prev) => ({ ...prev, [rowId]: vehicles }));
+      const updatedRow = {
+        ...(previousRow ?? emptyRow()),
+        rowId,
+        brandId: nextBrandId,
+        vehicleDefinitionId: null,
+        modelId: null,
+        engineId: null,
+        fuelTypeId: null,
+        enginePowerHp: null,
+        yearFrom: null,
+        yearTo: null,
+      };
+      const matchingVehicle = findMatchingVehicle(updatedRow, vehicles);
+      if (matchingVehicle) {
+        setRows((prev) => prev.map((row) => row.rowId === rowId
+          ? applyVehicleToRow(row, matchingVehicle)
+          : row));
+      }
+    } catch (error) {
+      if (vehicleSearchRequestIds.current[rowId] === requestId) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : t("catalyticConverters.errors.loadingLookups"),
+        );
+        setVehiclesByRow((prev) => ({ ...prev, [rowId]: [] }));
+      }
+    } finally {
+      if (vehicleSearchRequestIds.current[rowId] === requestId) {
+        setLoadingVehiclesByRow((prev) => ({ ...prev, [rowId]: false }));
+      }
     }
+  };
+
+  const handleVehicleChange = (rowId: string, vehicleIdValue: string) => {
+    const vehicle = (vehiclesByRow[rowId] ?? []).find(
+      (item) => item.id === Number(vehicleIdValue),
+    );
+    if (!vehicle) {
+      setRows((prev) => prev.map((row) => row.rowId === rowId
+        ? {
+            ...row,
+            vehicleDefinitionId: null,
+            modelId: null,
+            engineId: null,
+            fuelTypeId: null,
+            enginePowerHp: null,
+            yearFrom: null,
+            yearTo: null,
+          }
+        : row));
+      return;
+    }
+
+    setRows((prev) => prev.map((row) => row.rowId === rowId
+      ? applyVehicleToRow(row, vehicle)
+      : row));
   };
 
   const handleSave = async () => {
@@ -223,6 +330,11 @@ export const CreateCatalyticConverterModal: FC<
 
     if (sellingPrice && Number(sellingPrice) < 0) {
       toast.error(t("catalyticConverters.validation.invalidSellingPrice"));
+      return;
+    }
+
+    if (rows.some((row) => row.vehicleDefinitionId == null)) {
+      toast.error(t("catalyticConverters.validation.selectVehicle"));
       return;
     }
 
@@ -273,6 +385,30 @@ export const CreateCatalyticConverterModal: FC<
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const getVehicleOptionLabel = (vehicle?: VehicleDefinitionRecord) => {
+    if (!vehicle) return "";
+    const brandName = vehicle.brand?.name || vehicle.brandName ||
+      definitions?.brands.find((item) => item.id === vehicle.brandId)?.name ||
+      vehicle.brand?.code || "";
+    const modelName = vehicle.model?.name || vehicle.modelName ||
+      definitions?.models.find((item) => item.id === vehicle.modelId)?.name ||
+      vehicle.model?.code || "";
+    const engineName = vehicle.engine?.name || vehicle.engineName ||
+      definitions?.engines.find((item) => item.id === vehicle.engineId)?.name ||
+      vehicle.engine?.code || "";
+    const fuelName = vehicle.fuelType?.name || vehicle.fuelTypeName ||
+      definitions?.fuelTypes.find((item) => item.id === vehicle.fuelTypeId)?.name ||
+      vehicle.fuelType?.code || "";
+
+    return [
+      `${brandName} ${modelName}`.trim(),
+      vehicle.year,
+      engineName,
+      fuelName,
+      `${vehicle.horsePower} ${t("carCatalyst.fields.horsePowerUnit")}`,
+    ].filter(Boolean).join(" · ");
   };
 
   if (!open) return null;
@@ -394,6 +530,8 @@ export const CreateCatalyticConverterModal: FC<
                 label={t("catalyticConverters.filters.brand")}
                 value={row.brandId ?? ""}
                 onChange={(e) => handleBrandChange(row.rowId, e.target.value)}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
                 <option value="">{t("common.select")}</option>
                 {(definitions?.brands ?? []).map((brand) => (
@@ -404,79 +542,41 @@ export const CreateCatalyticConverterModal: FC<
               </Select>
 
               <Select
-                label={t("catalyticConverters.filters.model")}
-                value={row.modelId ?? ""}
-                onChange={(e) => updateRow(row.rowId, "modelId", e.target.value)}
-                disabled={!row.brandId}
+                label={t("carCatalyst.fields.exactVehicle")}
+                value={row.vehicleDefinitionId ?? ""}
+                onChange={(e) => handleVehicleChange(row.rowId, e.target.value)}
+                disabled={!row.brandId || Boolean(loadingVehiclesByRow[row.rowId])}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
-                {(modelsByRow[row.rowId] ?? []).map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
+                <option value="">{t("carCatalyst.fields.selectExactVehicle")}</option>
+                {(vehiclesByRow[row.rowId] ?? []).map((vehicle) => (
+                  <option key={vehicle.id} value={vehicle.id}>
+                    {getVehicleOptionLabel(vehicle)}
                   </option>
                 ))}
               </Select>
 
-              <Select
-                label={t("catalyticConverters.filters.engine")}
-                value={row.engineId ?? ""}
-                onChange={(e) => updateRow(row.rowId, "engineId", e.target.value)}
-              >
-                <option value="">{t("common.select")}</option>
-                {(definitions?.engines ?? []).map((engine) => (
-                  <option key={engine.id} value={engine.id}>
-                    {engine.name}
-                  </option>
-                ))}
-              </Select>
-
-              <Select
-                label={t("catalyticConverters.filters.fuelType")}
-                value={row.fuelTypeId ?? ""}
-                onChange={(e) => updateRow(row.rowId, "fuelTypeId", e.target.value)}
-              >
-                <option value="">{t("common.select")}</option>
-                {(definitions?.fuelTypes ?? []).map((fuel) => (
-                  <option key={fuel.id} value={fuel.id}>
-                    {fuel.name}
-                  </option>
-                ))}
-              </Select>
-
-              <TextField
-                label={t("catalyticConverters.form.enginePowerHp")}
-                type="number"
-                value={row.enginePowerHp ?? ""}
-                onChange={(e) =>
-                  updateRow(row.rowId, "enginePowerHp", e.target.value)
-                }
-              />
-
-              <Select
-                label={t("catalyticConverters.form.yearFrom")}
-                value={row.yearFrom ?? ""}
-                onChange={(e) => updateRow(row.rowId, "yearFrom", e.target.value)}
-              >
-                <option value="">{t("common.select")}</option>
-                {yearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </Select>
-
-              <Select
-                label={t("catalyticConverters.form.yearTo")}
-                value={row.yearTo ?? ""}
-                onChange={(e) => updateRow(row.rowId, "yearTo", e.target.value)}
-              >
-                <option value="">{t("common.select")}</option>
-                {yearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </Select>
+              {loadingVehiclesByRow[row.rowId] ? (
+                <div className={styles.vehicleSelectionStatus} role="status" aria-live="polite">
+                  <LoaderCircle size={15} className={styles.vehicleLoadingIcon} aria-hidden="true" />
+                  <span>{t("carCatalyst.sections.searchingVehicles")}</span>
+                </div>
+              ) : row.brandId != null && !(vehiclesByRow[row.rowId] ?? []).length ? (
+                <div className={styles.vehicleSelectionStatus} role="status">
+                  <span>{t("carCatalyst.sections.noVehicleMatches")}</span>
+                </div>
+              ) : row.vehicleDefinitionId != null ? (
+                <div className={styles.selectedVehicleSummary}>
+                  <CarFront size={15} aria-hidden="true" />
+                  <span>{getVehicleOptionLabel(
+                    (vehiclesByRow[row.rowId] ?? []).find(
+                      (vehicle) => vehicle.id === row.vehicleDefinitionId,
+                    )!,
+                  )}</span>
+                  <BadgeCheck size={15} aria-hidden="true" />
+                </div>
+              ) : null}
 
               <TextField
                 label={t("catalyticConverters.form.maxMileageKm")}

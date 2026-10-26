@@ -794,7 +794,6 @@ const searchByVehicle = async () => {
                     (bucket.compositions ?? []).map((composition, compositionIndex) => (
                       <div key={`${bucketKey}-${compositionIndex}`} className={styles.compositionItem}>
                         <div className={styles.compositionHeader}>
-                          <strong>{composition.code || t("carCatalyst.table.compositionCode")}</strong>
                           <span>
                             {composition.type === 0
                               ? t("carCatalyst.table.compositionTypes.ceramic")

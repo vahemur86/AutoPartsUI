@@ -215,6 +215,21 @@
   animation: vehicleLoadingSpin 1s linear infinite;
 }
 
+.vehicleLoadingMore {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(232, 238, 232, 0.62);
+  font-size: 11px;
+}
+
+.vehicleLoadingMore .vehicleLoadingIcon {
+  color: #8ec5b2;
+  width: 14px;
+  height: 14px;
+}
+
 @keyframes vehicleLoadingSpin {
   to {
     transform: rotate(360deg);
@@ -240,6 +255,115 @@
 
 .selectedVehicleSummary span {
   color: rgba(232, 238, 232, 0.7);
+}
+
+.existingCodesLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+  color: #a9bcb0;
+  font-size: 11px;
+}
+
+.existingCodesLoading svg {
+  color: #8ec5b2;
+  animation: vehicleLookupSpin 900ms linear infinite;
+}
+
+.existingCodeNotice {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px 10px;
+  border: 1px solid rgba(224, 169, 145, 0.28);
+  border-radius: 6px;
+  background: rgba(133, 72, 54, 0.12);
+}
+
+.compositionCard .existingCodeNotice {
+  border-color: rgba(126, 184, 165, 0.22);
+  background: rgba(49, 97, 78, 0.1);
+}
+
+.compositionCard .existingCodeMessage {
+  color: #b9d8c8;
+}
+
+.compositionCard .existingCodeMessage svg {
+  color: #8ec5b2;
+}
+
+.existingCodeMessage {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: #edc1b2;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.existingCodeMessage svg {
+  flex: 0 0 auto;
+  color: #e0a991;
+}
+
+.editExistingCodeButton {
+  flex: 0 0 auto;
+  min-height: 30px !important;
+  padding: 4px 8px !important;
+  gap: 6px !important;
+  border: 1px solid rgba(126, 184, 165, 0.25) !important;
+  border-radius: 5px !important;
+  background: rgba(126, 184, 165, 0.08) !important;
+  color: #b8d5c8 !important;
+  font-size: 10px !important;
+}
+
+.editExistingCodeButton:hover:not(:disabled) {
+  border-color: rgba(126, 184, 165, 0.5) !important;
+  background: rgba(126, 184, 165, 0.15) !important;
+  color: #e2f2e9 !important;
+}
+
+.addCodeVariantButton {
+  flex: 0 0 auto;
+  min-height: 30px !important;
+  padding: 4px 8px !important;
+  gap: 6px !important;
+  border: 1px solid rgba(126, 184, 165, 0.34) !important;
+  border-radius: 5px !important;
+  background: rgba(126, 184, 165, 0.13) !important;
+  color: #c5e0d3 !important;
+  font-size: 10px !important;
+}
+
+.addCodeVariantButton:hover:not(:disabled) {
+  border-color: rgba(126, 184, 165, 0.55) !important;
+  background: rgba(126, 184, 165, 0.2) !important;
+  color: #eef8f2 !important;
+}
+
+.useCatalystTemplateButton {
+  flex: 0 0 auto;
+  min-height: 30px !important;
+  padding: 4px 8px !important;
+  gap: 6px !important;
+  border: 1px solid rgba(133, 171, 200, 0.32) !important;
+  border-radius: 5px !important;
+  background: rgba(92, 130, 160, 0.12) !important;
+  color: #c1d7e8 !important;
+  font-size: 10px !important;
+}
+
+.useCatalystTemplateButton:hover:not(:disabled) {
+  border-color: rgba(133, 171, 200, 0.58) !important;
+  background: rgba(92, 130, 160, 0.2) !important;
+  color: #eff7fc !important;
 }
 
 .formGrid :global(select),
@@ -617,6 +741,25 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.02);
+}
+
+.compositionVariantToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+  min-width: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.compositionVariantToolbar > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #a8b9ad;
+  font-size: 11px;
+  font-weight: 650;
 }
 
 .compositionGrid {

@@ -846,20 +846,10 @@ export interface CarCatalystBucket {
 }
 
 export interface CreateCarCatalyst {
-  vehicleDefinitionId?: number;
+  vehicleDefinitionId: number;
   birkaId?: number;
-  brandId?: number;
-  modelId?: number;
-  year?: number;
-  yearFrom?: number;
-  yearTo?: number;
   country: number;
   engineVolume: number;
-  engineId?: number;
-  fuelTypeId?: number;
-  driveTypeId?: number;
-  trimName?: string;
-  side: number;
   buckets: CarCatalystBucket[];
 }
 
@@ -895,6 +885,7 @@ export interface CarCatalyst {
 }
 export interface CarCatalystSearchParams {
   code?: string;
+  vehicleDefinitionId?: number;
   brandId?: number;
   modelId?: number;
   fromYear?: number;

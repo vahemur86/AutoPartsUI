@@ -83,7 +83,9 @@ export const searchCarCatalysts = async (
       headers: getHeaders(cashRegisterId),
     });
 
-    return response.data as CarCatalyst[];
+    const data = response.data as CarCatalyst[] | { results?: CarCatalyst[]; items?: CarCatalyst[]; data?: CarCatalyst[] };
+    if (Array.isArray(data)) return data;
+    return data.results ?? data.items ?? data.data ?? [];
   } catch (error: unknown) {
     throw new Error(
       getApiErrorMessage(error, "Failed to search car catalysts."),
