@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
-import { LoaderCircle, Pencil, Plus, RefreshCw, UsersRound } from "lucide-react";
+import { KeyRound, LoaderCircle, Pencil, Plus, RefreshCw, UsersRound } from "lucide-react";
 
 // components
 import { SectionHeader } from "@/components/common";
@@ -10,10 +10,15 @@ import { FormDrawer } from "@/components/common/FormDrawer";
 import { UsersDropdown } from "./usersActions/UsersDropdown";
 
 // ui-kit
-import { Button, TextField, Select, Switch, DataTable } from "@/ui-kit";
+import { Button, Select, Switch, DataTable } from "@/ui-kit";
 
 // services
-import { createUser, getUsers, updateUser } from "@/services/users";
+import {
+  createUser,
+  getUsers,
+  sendUserPasswordReset,
+  updateUser,
+} from "@/services/users";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -59,9 +64,9 @@ export const UserManagement = () => {
   const [editUserType, setEditUserType] = useState("");
   const [editShopId, setEditShopId] = useState("");
   const [editWarehouseId, setEditWarehouseId] = useState("");
-  const [editPassword, setEditPassword] = useState("");
   const [editIsActive, setEditIsActive] = useState(true);
   const [isMutatingEdit, setIsMutatingEdit] = useState(false);
+  const [isSendingPasswordReset, setIsSendingPasswordReset] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isSuperAdmin = currentUser?.role === "SuperAdmin";
@@ -111,7 +116,6 @@ export const UserManagement = () => {
     setEditUserType(user.userType || "");
     setEditShopId(user.shopId !== null ? String(user.shopId) : "");
     setEditWarehouseId(user.warehouseId !== null ? String(user.warehouseId) : "");
-    setEditPassword("");
     setEditIsActive(user.isActive);
     setIsEditModalOpen(true);
   };
@@ -119,19 +123,18 @@ export const UserManagement = () => {
   const handleCloseEdit = () => {
     setIsEditModalOpen(false);
     setEditingUser(null);
-    setEditPassword("");
   };
 
   const handleEditOpenChange = useCallback(
     (open: boolean) => {
-      if (isMutatingEdit && !open) return;
+      if ((isMutatingEdit || isSendingPasswordReset) && !open) return;
       if (open) {
         setIsEditModalOpen(true);
       } else {
         handleCloseEdit();
       }
     },
-    [isMutatingEdit],
+    [isMutatingEdit, isSendingPasswordReset],
   );
 
   const isEditShopRequired =
@@ -178,7 +181,6 @@ export const UserManagement = () => {
         shopId: finalShopId,
         warehouseId: finalWarehouseId,
         isActive: editIsActive,
-        ...(editPassword.trim() ? { password: editPassword.trim() } : {}),
       });
 
       toast.success(t("users.success.userUpdated"));
@@ -188,6 +190,24 @@ export const UserManagement = () => {
       toast.error(getErrorMessage(error, t("users.error.failedToUpdate")));
     } finally {
       setIsMutatingEdit(false);
+    }
+  };
+
+  const handleSendPasswordReset = async () => {
+    if (!editingUser) return;
+
+    setIsSendingPasswordReset(true);
+    try {
+      await sendUserPasswordReset(editingUser.id);
+      toast.success(
+        t("users.success.passwordResetSent", { email: editingUser.email }),
+      );
+    } catch (error: unknown) {
+      toast.error(
+        getErrorMessage(error, t("users.error.failedToSendPasswordReset")),
+      );
+    } finally {
+      setIsSendingPasswordReset(false);
     }
   };
 
@@ -376,14 +396,14 @@ export const UserManagement = () => {
         title={t("users.editModal.title")}
         titleId="user-edit-title"
         closeLabel={t("common.close")}
-        closeDisabled={isMutatingEdit}
+        closeDisabled={isMutatingEdit || isSendingPasswordReset}
         icon={<Pencil size={20} />}
         footer={
           <div className={styles.editDrawerFooter}>
             <Button
               variant="secondary"
               onClick={handleCloseEdit}
-              disabled={isMutatingEdit}
+              disabled={isMutatingEdit || isSendingPasswordReset}
             >
               {t("common.cancel")}
             </Button>
@@ -391,7 +411,7 @@ export const UserManagement = () => {
               variant="primary"
               className={styles.usersEditSaveButton}
               onClick={handleSaveEdit}
-              disabled={isMutatingEdit}
+              disabled={isMutatingEdit || isSendingPasswordReset}
               aria-busy={isMutatingEdit}
             >
               {isMutatingEdit && (
@@ -483,21 +503,32 @@ export const UserManagement = () => {
 
           <div className={styles.formRow}>
             <div className={styles.formColumn}>
-              <TextField
-                label={t("users.editModal.password")}
-                placeholder={t("users.editModal.enterPassword")}
-                type="password"
-                value={editPassword}
-                onChange={(e) => setEditPassword(e.target.value)}
-                disabled={isMutatingEdit}
-              />
+              <Button
+                variant="secondary"
+                onClick={() => void handleSendPasswordReset()}
+                disabled={isMutatingEdit || isSendingPasswordReset}
+                aria-busy={isSendingPasswordReset}
+              >
+                {isSendingPasswordReset ? (
+                  <LoaderCircle
+                    className={styles.editSaveSpinner}
+                    size={15}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <KeyRound size={15} aria-hidden="true" />
+                )}
+                {isSendingPasswordReset
+                  ? t("users.actions.sendingPasswordReset")
+                  : t("users.actions.sendPasswordReset")}
+              </Button>
             </div>
             <div className={styles.formColumn}>
               <Switch
                 checked={editIsActive}
                 onCheckedChange={setEditIsActive}
                 label={t("users.editModal.active")}
-                disabled={isMutatingEdit}
+                disabled={isMutatingEdit || isSendingPasswordReset}
               />
             </div>
           </div>

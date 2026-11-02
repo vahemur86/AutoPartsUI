@@ -983,12 +983,14 @@
     },
     "success": {
       "userCreated": "User created successfully",
-      "userUpdated": "User updated successfully"
+      "userUpdated": "User updated successfully",
+      "passwordResetSent": "Password reset link sent to {{email}}."
     },
     "error": {
       "failedToCreate": "Failed to create user",
       "failedToLoad": "Failed to load users",
-      "failedToUpdate": "Failed to update user"
+      "failedToUpdate": "Failed to update user",
+      "failedToSendPasswordReset": "Failed to send password reset link"
     },
     "tabs": {
       "list": "User list",
@@ -996,7 +998,9 @@
     },
     "actions": {
       "addUser": "Add user",
-      "creatingAndSending": "Creating..."
+      "creatingAndSending": "Creating...",
+      "sendPasswordReset": "Send password reset link",
+      "sendingPasswordReset": "Sending link..."
     },
     "status": {
       "creatingAndSending": "The user is being created and the invitation email is being sent. Please wait."
@@ -1024,8 +1028,6 @@
     "loading": "Loading users...",
     "editModal": {
       "title": "Edit user",
-      "password": "Password",
-      "enterPassword": "Enter new password",
       "active": "Active"
     }
   },
@@ -3217,7 +3219,8 @@
       },
       "salaryTypes": {
         "FixedDaily": "Fixed daily salary",
-        "PercentageBased": "Percentage-based salary"
+        "PercentageBased": "Percentage-based salary",
+        "ProgrammerPricing": "Programmer-specified price"
       },
       "employeeTypes": {
         "Regular": "Regular",

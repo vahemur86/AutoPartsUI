@@ -957,12 +957,14 @@
     },
     "success": {
       "userCreated": "Օգտատերը հաջողությամբ ստեղծվեց",
-      "userUpdated": "Օգտատերը հաջողությամբ թարմացվեց"
+      "userUpdated": "Օգտատերը հաջողությամբ թարմացվեց",
+      "passwordResetSent": "Գաղտնաբառի վերակայման հղումն ուղարկվել է {{email}} հասցեին։"
     },
     "error": {
       "failedToCreate": "Չհաջողվեց ստեղծել օգտատիրոջը",
       "failedToLoad": "Չհաջողվեց բեռնել օգտատերերը",
-      "failedToUpdate": "Չհաջողվեց թարմացնել օգտատիրոջը"
+      "failedToUpdate": "Չհաջողվեց թարմացնել օգտատիրոջը",
+      "failedToSendPasswordReset": "Չհաջողվեց ուղարկել գաղտնաբառի վերակայման հղումը"
     },
     "tabs": {
       "list": "Օգտատերերի ցանկ",
@@ -970,7 +972,9 @@
     },
     "actions": {
       "addUser": "Ավելացնել օգտատեր",
-      "creatingAndSending": "Ստեղծվում է..."
+      "creatingAndSending": "Ստեղծվում է...",
+      "sendPasswordReset": "Ուղարկել գաղտնաբառի reset-ի հղում",
+      "sendingPasswordReset": "Հղումն ուղարկվում է..."
     },
     "status": {
       "creatingAndSending": "Օգտատերը ստեղծվում է, և հրավերի նամակն ուղարկվում է։ Խնդրում ենք սպասել։"
@@ -998,8 +1002,6 @@
     "loading": "Օգտատերերը բեռվում են...",
     "editModal": {
       "title": "Փոփոխել օգտատիրոջը",
-      "password": "Գաղտնաբառ",
-      "enterPassword": "Մերեք նոր գաղտնաբառը",
       "active": "Ակտիվ"
     }
   },
@@ -4212,7 +4214,8 @@
       },
       "salaryTypes": {
         "FixedDaily": "Ֆիքսված օրական աշխատավարձ",
-        "PercentageBased": "Տոկոսային աշխատավարձ"
+        "PercentageBased": "Տոկոսային աշխատավարձ",
+        "ProgrammerPricing": "Ծրագրավորողի նշած գին"
       },
       "employeeTypes": {
         "Regular": "Սովորական",

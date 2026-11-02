@@ -81,7 +81,10 @@ export interface ServiceCategoryUpdatePayload {
   displayOrder: number;
 }
 
-export type EmployeeSalaryType = "FixedDaily" | "PercentageBased";
+export type EmployeeSalaryType =
+  | "FixedDaily"
+  | "PercentageBased"
+  | "ProgrammerPricing";
 export type EmployeeType = "Regular" | "Director";
 export type EmployeeAttendanceStatus = "Present" | "Absent";
 
@@ -299,6 +302,8 @@ export interface VehicleServiceTemplateLineItem {
   id?: number;
   serviceId: number;
   serviceName?: string;
+  serviceCategoryId?: number;
+  serviceCategoryName?: string;
   internalCost?: number;
   customerPrice: number | null;
   employeeId?: number;

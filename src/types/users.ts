@@ -18,7 +18,6 @@ export interface UpdateUserRequest {
   shopId: number | null;
   warehouseId: number | null;
   isActive: boolean;
-  password?: string;
 }
 
 export interface CreateUserPayload {

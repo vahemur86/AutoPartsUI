@@ -10,6 +10,7 @@ import {
   EmployeeManagementNavigation,
   type EmployeeManagementTab,
 } from "./EmployeeManagementNavigation";
+import { isProgrammingServiceCategory } from "@/constants/serviceCategories";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -253,6 +254,11 @@ export const EmployeeManagement = () => {
   const categoryOptions = useMemo(
     () => serviceCategories.filter((item: ServiceCategoryItem) => item.isActive !== false),
     [serviceCategories],
+  );
+  const isEmployeeCategoryProgramming = isProgrammingServiceCategory(
+    serviceCategories.find(
+      (category) => category.id === employeeForm.serviceCategoryId,
+    )?.code,
   );
 
   const filteredEmployees = useMemo(() => {
@@ -689,6 +695,11 @@ export const EmployeeManagement = () => {
   };
 
   const handleEmployeeEdit = (employee: EmployeeItem) => {
+    const employeeCategoryIsProgramming = isProgrammingServiceCategory(
+      serviceCategories.find(
+        (category) => category.id === employee.serviceCategoryId,
+      )?.code,
+    );
     setEmployeeForm({
       id: employee.id,
       firstName: employee.firstName,
@@ -698,7 +709,10 @@ export const EmployeeManagement = () => {
       shopId: Number(employee.shopId || 0),
       serviceCategoryId: employee.serviceCategoryId || 0,
       hireDate: employee.hireDate ? employee.hireDate.slice(0, 10) : todayValue(),
-      salaryType: employee.salaryType || "FixedDaily",
+      salaryType:
+        employeeCategoryIsProgramming && employee.salaryType === "FixedDaily"
+          ? "PercentageBased"
+          : employee.salaryType || "FixedDaily",
       fixedDailySalary: Number(employee.fixedDailySalary || 0),
       employeeType: employee.employeeType || "Regular",
       powderBonusKgThreshold: Number(employee.powderBonusKgThreshold || 0),
@@ -1680,7 +1694,22 @@ export const EmployeeManagement = () => {
                     <option value="">{t("serviceTemplates.employeeManagement.fields.selectShop")}</option>
                     {shops.map((shop) => <option key={shop.id} value={shop.id}>{shop.code}</option>)}
                   </Select>
-                  <Select label={t("serviceTemplates.fields.serviceCategory")} value={String(employeeForm.serviceCategoryId || "")} onChange={(event) => setEmployeeForm((prev) => ({ ...prev, serviceCategoryId: Number(event.target.value) || 0 }))} placeholder={t("common.select")} disabled={isSavingEmployee}>
+                  <Select label={t("serviceTemplates.fields.serviceCategory")} value={String(employeeForm.serviceCategoryId || "")} onChange={(event) => {
+                    const serviceCategoryId = Number(event.target.value) || 0;
+                    const isProgrammingCategory = isProgrammingServiceCategory(
+                      serviceCategories.find((category) => category.id === serviceCategoryId)?.code,
+                    );
+                    setEmployeeForm((prev) => ({
+                      ...prev,
+                      serviceCategoryId,
+                      salaryType:
+                        isProgrammingCategory && prev.salaryType === "FixedDaily"
+                          ? "PercentageBased"
+                          : !isProgrammingCategory && prev.salaryType === "ProgrammerPricing"
+                            ? "FixedDaily"
+                            : prev.salaryType,
+                    }));
+                  }} placeholder={t("common.select")} disabled={isSavingEmployee}>
                     <option value="">{t("common.select")}</option>
                     {categoryOptions.map((category) => <option key={category.id} value={category.id}>{category.code}</option>)}
                   </Select>
@@ -1698,10 +1727,17 @@ export const EmployeeManagement = () => {
                     <option value="Director">{t("serviceTemplates.employeeManagement.employeeTypes.Director")}</option>
                   </Select>
                   <Select label={t("serviceTemplates.employeeManagement.fields.salaryType")} value={employeeForm.salaryType} onChange={(event) => setEmployeeForm((prev) => ({ ...prev, salaryType: event.target.value as EmployeeSalaryType }))} disabled={isSavingEmployee}>
-                    <option value="FixedDaily">{t("serviceTemplates.employeeManagement.salaryTypes.FixedDaily")}</option>
+                    {!isEmployeeCategoryProgramming && (
+                      <option value="FixedDaily">{t("serviceTemplates.employeeManagement.salaryTypes.FixedDaily")}</option>
+                    )}
                     <option value="PercentageBased">{t("serviceTemplates.employeeManagement.salaryTypes.PercentageBased")}</option>
+                    {isEmployeeCategoryProgramming && (
+                      <option value="ProgrammerPricing">{t("serviceTemplates.employeeManagement.salaryTypes.ProgrammerPricing")}</option>
+                    )}
                   </Select>
-                  <TextField label={t("serviceTemplates.employeeManagement.fields.fixedDailySalary")} type="number" min="0" value={String(employeeForm.fixedDailySalary || 0)} onChange={(event) => setEmployeeForm((prev) => ({ ...prev, fixedDailySalary: Number(event.target.value) || 0 }))} disabled={isSavingEmployee || employeeForm.salaryType !== "FixedDaily"} />
+                  {!isEmployeeCategoryProgramming && (
+                    <TextField label={t("serviceTemplates.employeeManagement.fields.fixedDailySalary")} type="number" min="0" value={String(employeeForm.fixedDailySalary || 0)} onChange={(event) => setEmployeeForm((prev) => ({ ...prev, fixedDailySalary: Number(event.target.value) || 0 }))} disabled={isSavingEmployee || employeeForm.salaryType !== "FixedDaily"} />
+                  )}
                   {employeeForm.employeeType === "Director" && (
                     <>
                       <TextField label={t("serviceTemplates.employeeManagement.fields.powderBonusKgThreshold")} type="number" min="1" value={String(employeeForm.powderBonusKgThreshold || 0)} onChange={(event) => setEmployeeForm((prev) => ({ ...prev, powderBonusKgThreshold: Number(event.target.value) || 0 }))} disabled={isSavingEmployee} />

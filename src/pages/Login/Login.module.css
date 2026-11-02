@@ -533,6 +533,16 @@
   color: #eee9db;
 }
 
+.textField :global(input:-webkit-autofill),
+.textField :global(input:-webkit-autofill:hover),
+.textField :global(input:-webkit-autofill:focus),
+.textField :global(input:autofill) {
+  -webkit-box-shadow: 0 0 0 1000px #1c261f inset;
+  box-shadow: 0 0 0 1000px #1c261f inset;
+  -webkit-text-fill-color: #eee9db;
+  caret-color: #eee9db;
+}
+
 .passwordToggle {
   display: flex;
   align-items: center;

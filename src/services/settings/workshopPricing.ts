@@ -45,17 +45,36 @@ const normalizeVehicleServiceTemplate = (
     ? (rawTemplate.categories as Array<Record<string, unknown>>)
     : [];
 
-  const normalizeLineItem = (value: unknown): VehicleServiceTemplateLineItem => {
+  const normalizeLineItem = (
+    value: unknown,
+    category?: Pick<
+      VehicleServiceTemplateCategoryItem,
+      "serviceCategoryId" | "serviceCategoryName"
+    >,
+  ): VehicleServiceTemplateLineItem => {
     const line = (value ?? {}) as Record<string, unknown>;
     const optionalNumber = (field: unknown) =>
       field == null ? undefined : Number(field);
     const nullableNumber = (field: unknown) =>
       field == null ? null : Number(field);
+    const lineServiceCategoryId = optionalNumber(line.serviceCategoryId);
+    const serviceCategoryId =
+      lineServiceCategoryId != null && lineServiceCategoryId > 0
+        ? lineServiceCategoryId
+        : category?.serviceCategoryId;
 
     return {
       id: optionalNumber(line.id),
       serviceId: Number(line.serviceId ?? 0),
       serviceName: line.serviceName == null ? undefined : String(line.serviceName),
+      serviceCategoryId:
+        serviceCategoryId != null && serviceCategoryId > 0
+          ? serviceCategoryId
+          : undefined,
+      serviceCategoryName:
+        line.serviceCategoryName == null
+          ? category?.serviceCategoryName
+          : String(line.serviceCategoryName),
       internalCost: optionalNumber(line.internalCost),
       customerPrice: nullableNumber(line.customerPrice),
       employeeId: optionalNumber(line.employeeId),
@@ -83,24 +102,37 @@ const normalizeVehicleServiceTemplate = (
         : Array.isArray(category.items)
           ? category.items
           : [];
+      const serviceCategoryId = Number(category.serviceCategoryId ?? 0);
+      const serviceCategoryName =
+        category.serviceCategoryName == null
+          ? undefined
+          : String(category.serviceCategoryName);
 
       return {
-        serviceCategoryId: Number(category.serviceCategoryId ?? 0),
-        serviceCategoryName:
-          category.serviceCategoryName == null
-            ? undefined
-            : String(category.serviceCategoryName),
+        serviceCategoryId,
+        serviceCategoryName,
         isProgrammerCategory:
           category.isProgrammerCategory == null
             ? undefined
             : Boolean(category.isProgrammerCategory),
-        services: rawServices.map(normalizeLineItem),
+        services: rawServices.map((service) =>
+          normalizeLineItem(service, { serviceCategoryId, serviceCategoryName }),
+        ),
       };
     },
   );
 
+  const categoryByServiceId = new Map(
+    categories.flatMap((category) =>
+      category.services.map((service) => [service.serviceId, category] as const),
+    ),
+  );
   const rawItems = Array.isArray(rawTemplate.items)
-    ? rawTemplate.items.map(normalizeLineItem)
+    ? rawTemplate.items.map((item) => {
+        const rawItem = (item ?? {}) as Record<string, unknown>;
+        const category = categoryByServiceId.get(Number(rawItem.serviceId ?? 0));
+        return normalizeLineItem(item, category);
+      })
     : [];
   const items = rawItems.length > 0
     ? rawItems
@@ -114,13 +146,29 @@ const normalizeVehicleServiceTemplate = (
 };
 
 const salaryTypeToApi = (salaryType: unknown): number => {
+  if (
+    salaryType === 2 ||
+    salaryType === "2" ||
+    salaryType === "ProgrammerPricing"
+  ) {
+    return 2;
+  }
   if (salaryType === 1 || salaryType === "1" || salaryType === "PercentageBased") {
     return 1;
   }
   return 0;
 };
 
-const salaryTypeFromApi = (salaryType: unknown): "FixedDaily" | "PercentageBased" => {
+const salaryTypeFromApi = (
+  salaryType: unknown,
+): "FixedDaily" | "PercentageBased" | "ProgrammerPricing" => {
+  if (
+    salaryType === 2 ||
+    salaryType === "2" ||
+    salaryType === "ProgrammerPricing"
+  ) {
+    return "ProgrammerPricing";
+  }
   if (salaryType === 1 || salaryType === "1" || salaryType === "PercentageBased") {
     return "PercentageBased";
   }

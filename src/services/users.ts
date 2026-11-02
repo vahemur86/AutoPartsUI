@@ -58,11 +58,20 @@ export const updateUser = async (payload: UpdateUserRequest) => {
       shopId: payload.shopId,
       warehouseId: payload.warehouseId,
       isActive: payload.isActive,
-      ...(payload.password ? { password: payload.password } : {}),
     });
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Failed to update user."));
+  }
+};
+
+export const sendUserPasswordReset = async (id: number): Promise<void> => {
+  try {
+    await api.post(`/Users/${id}/password-reset`);
+  } catch (error: unknown) {
+    throw new Error(
+      getApiErrorMessage(error, "Failed to send user password reset link."),
+    );
   }
 };
 

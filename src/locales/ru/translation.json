@@ -982,12 +982,14 @@
     },
     "success": {
       "userCreated": "Пользователь успешно создан",
-      "userUpdated": "Пользователь успешно обновлен"
+      "userUpdated": "Пользователь успешно обновлен",
+      "passwordResetSent": "Ссылка для сброса пароля отправлена на {{email}}."
     },
     "error": {
       "failedToCreate": "Не удалось создать пользователя",
       "failedToLoad": "Не удалось загрузить пользователей",
-      "failedToUpdate": "Не удалось обновить пользователя"
+      "failedToUpdate": "Не удалось обновить пользователя",
+      "failedToSendPasswordReset": "Не удалось отправить ссылку для сброса пароля"
     },
     "tabs": {
       "list": "Список пользователей",
@@ -995,7 +997,9 @@
     },
     "actions": {
       "addUser": "Добавить пользователя",
-      "creatingAndSending": "Создание..."
+      "creatingAndSending": "Создание...",
+      "sendPasswordReset": "Отправить ссылку для сброса пароля",
+      "sendingPasswordReset": "Отправка ссылки..."
     },
     "status": {
       "creatingAndSending": "Создается пользователь и отправляется письмо-приглашение. Пожалуйста, подождите."
@@ -1024,8 +1028,6 @@
     "loading": "Загрузка пользователей...",
     "editModal": {
       "title": "Редактировать пользователя",
-      "password": "Пароль",
-      "enterPassword": "Введите новый пароль",
       "active": "Активен"
     }
   },
@@ -3219,7 +3221,8 @@
       },
       "salaryTypes": {
         "FixedDaily": "Фиксированная дневная зарплата",
-        "PercentageBased": "Процентная зарплата"
+        "PercentageBased": "Процентная зарплата",
+        "ProgrammerPricing": "Цена, указанная программистом"
       },
       "employeeTypes": {
         "Regular": "Обычный сотрудник",
