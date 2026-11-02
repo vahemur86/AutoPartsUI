@@ -37,6 +37,34 @@ const employeeBase = "/Employee";
 const serviceBase = "/Service";
 const vehicleTemplateBase = "/VehicleServiceTemplate";
 
+export const isNoOpenCashierSessionError = (error: unknown): boolean => {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "";
+  const normalizedMessage = message.trim().toLocaleLowerCase();
+
+  return (
+    /(?:no|without|missing|not having|does not have|doesn't have).{0,40}(?:open|active).{0,20}(?:cashbox|cashier|cash register).{0,20}session/.test(
+      normalizedMessage,
+    ) ||
+    /(?:no|without|missing|not having|does not have|doesn't have).{0,40}(?:open|active).{0,20}session.{0,40}(?:cashbox|cashier|cash register)/.test(
+      normalizedMessage,
+    ) ||
+    /(?:cashbox|cashier|cash register).{0,20}session.{0,40}(?:not open|not active|does not exist|not found|missing)/.test(
+      normalizedMessage,
+    ) ||
+    /(?:բաց.{0,30}(?:դրամարկղ|կասսա).{0,20}սեսիա.{0,20}չկա|(?:դրամարկղ|կասսա).{0,20}բաց սեսիա չկա)/.test(
+      normalizedMessage,
+    ) ||
+    /(?:нет.{0,30}открытой.{0,20}кассовой.{0,20}сессии|открытая.{0,20}кассовая.{0,20}сессия.{0,20}не найдена)/.test(
+      normalizedMessage,
+    )
+  );
+};
+
 const normalizeVehicleServiceTemplate = (
   template: VehicleServiceTemplateItem,
 ): VehicleServiceTemplateItem => {

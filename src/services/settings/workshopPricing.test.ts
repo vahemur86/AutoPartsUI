@@ -9,12 +9,58 @@ import { api } from "@/services/index";
 import {
   createEmployee,
   getVehicleServiceTemplates,
+  isNoOpenCashierSessionError,
+  markEmployeeSalaryAsPaid,
+  payEmployeeUnpaidSalary,
   updateEmployee,
 } from "./workshopPricing";
 
 describe("getVehicleServiceTemplates", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  describe("cashier session payment errors", () => {
+    it("recognizes missing open cashier sessions", () => {
+      expect(
+        isNoOpenCashierSessionError(
+          new Error("No open cashbox session for operator."),
+        ),
+      ).toBe(true);
+      expect(
+        isNoOpenCashierSessionError(
+          new Error("No open cash register session found for this shop."),
+        ),
+      ).toBe(true);
+      expect(
+        isNoOpenCashierSessionError(
+          new Error("There is no open session in any cash register for this shop."),
+        ),
+      ).toBe(true);
+      expect(isNoOpenCashierSessionError(new Error("Insufficient balance."))).toBe(
+        false,
+      );
+    });
+
+    it("keeps the API error message for accumulated salary payment failures", async () => {
+      vi.mocked(api.post).mockRejectedValue({
+        response: { data: { error: "No open cashbox session for operator." } },
+      });
+
+      await expect(
+        payEmployeeUnpaidSalary(12, "2026-11-02"),
+      ).rejects.toThrow("No open cashbox session for operator.");
+    });
+
+    it("keeps the API error message for salary-record payment failures", async () => {
+      vi.mocked(api.post).mockRejectedValue({
+        response: { data: { error: "No open cashbox session for operator." } },
+      });
+
+      await expect(markEmployeeSalaryAsPaid(42)).rejects.toThrow(
+        "No open cashbox session for operator.",
+      );
+    });
   });
 
   describe("employee salary type API mapping", () => {

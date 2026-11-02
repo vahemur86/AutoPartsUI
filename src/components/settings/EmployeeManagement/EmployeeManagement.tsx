@@ -35,6 +35,7 @@ import {
   getEmployeeServicePercentages,
   getEmployeeServicePercentagesByService,
   getSalaryByDate,
+  isNoOpenCashierSessionError,
   payEmployeeUnpaidSalary,
   upsertEmployeeAttendance,
   upsertEmployeeServicePercentage,
@@ -946,9 +947,13 @@ export const EmployeeManagement = () => {
         toast.error(t("serviceTemplates.employeeManagement.messages.salaryRefreshAfterPaymentFailed"));
       }
     } catch (error) {
-      toast.error(error instanceof Error
-        ? error.message
-        : t("serviceTemplates.employeeManagement.messages.salaryMarkPaidFailed"));
+      toast.error(
+        isNoOpenCashierSessionError(error)
+          ? t("serviceTemplates.employeeManagement.messages.noOpenCashierSession")
+          : error instanceof Error
+            ? error.message
+            : t("serviceTemplates.employeeManagement.messages.salaryMarkPaidFailed"),
+      );
     } finally {
       setIsPayingUnpaidSalary(false);
     }

@@ -3352,6 +3352,7 @@
         "noSalaryHistory": "No calculated salary records for this employee in the selected period. History does not calculate missing dates.",
         "salaryMarkedPaid": "Salary marked as paid",
         "salaryMarkPaidFailed": "Failed to mark salary as paid",
+        "noOpenCashierSession": "Payment cannot be made: no open cashier session exists in any of this shop's cash registers. Please open a session and try again.",
         "salaryRefreshAfterPaymentFailed": "Payment succeeded, but the data could not be refreshed. Reload the summary.",
         "salaryRecordIdMissing": "Salary record ID is missing",
         "selectEmployeeHint": "Select an employee to view deposit and history details.",
