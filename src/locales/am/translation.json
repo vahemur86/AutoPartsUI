@@ -2616,7 +2616,7 @@
   "customerDetails": {
     "title": "Հաճախորդի տվյալներ",
     "client": "Հաճախորդ",
-    "discount": "Զեղչ",
+    "bonus": "Բոնուս",
     "phone": "Հեռախոս",
     "phonePlaceholder": "Ավելացրեք հեռախոսահամար",
     "autoModel": "Մեքենայի մոդել",

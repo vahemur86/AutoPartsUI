@@ -2429,7 +2429,7 @@
   "customerDetails": {
     "title": "Customer Details",
     "client": "Client",
-    "discount": "Discount",
+    "bonus": "Bonus",
     "phone": "Phone",
     "phonePlaceholder": "Add phone number",
     "autoModel": "Auto Model",

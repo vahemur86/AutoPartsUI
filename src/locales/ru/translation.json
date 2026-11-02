@@ -2432,7 +2432,7 @@
   "customerDetails": {
     "title": "Данные клиента",
     "client": "Клиент",
-    "discount": "Скидка",
+    "bonus": "Бонус",
     "phone": "Телефон",
     "phonePlaceholder": "Добавить номер телефона",
     "autoModel": "Модель автомобиля",

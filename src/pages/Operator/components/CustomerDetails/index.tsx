@@ -230,6 +230,10 @@ export const CustomerDetails = ({
     (!!activeCustomer && !!customerData.fullName && !isSearching);
 
   const appliedPercent = intake?.appliedPercent ?? null;
+  const activeCustomerTypeId =
+    activeCustomer?.customerTypeId ?? activeCustomer?.customerType?.id;
+  const shouldShowBonus =
+    activeCustomerTypeId != null && Number(activeCustomerTypeId) !== 1;
 
   return (
     <div className={`${styles.customerCard} ${wide ? styles.wideCard : ""} ${isIronTab ? styles.ironCustomerCard : ""}`}>
@@ -341,14 +345,14 @@ export const CustomerDetails = ({
                   </div>
                 </div>
 
-                {!isIronTab && (
+                {!isIronTab && shouldShowBonus && (
                   <div className={styles.profileMetric}>
                     <div className={styles.metricIconWrap}>
                       <BadgePercent size={14} />
                     </div>
                     <div className={styles.metricContent}>
                       <span className={styles.profileLabel}>
-                        {t("customerDetails.discount")}
+                        {t("customerDetails.bonus")}
                       </span>
                       <span className={styles.profileValue}>
                         {appliedPercent != null
