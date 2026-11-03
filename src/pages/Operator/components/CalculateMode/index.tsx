@@ -1,11 +1,33 @@
 import { useCallback } from "react";
-import { Search, Zap, Database, RotateCcw, Car } from "lucide-react";
+import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
+import {
+  Search,
+  Database,
+  RotateCcw,
+  Car,
+  SlidersHorizontal,
+  CarFront,
+  CalendarDays,
+  MapPin,
+  Cog,
+  Fuel,
+  Milestone,
+  Scale,
+  CircleDollarSign,
+  LoaderCircle,
+  SearchX,
+  ChevronDown,
+  type LucideIcon,
+} from "lucide-react";
 
 // ui-kit
 import { Button, TextField, Tab, TabGroup, Select } from "@/ui-kit";
 
 // hooks
-import { useCalculateMode } from "../../hooks";
+import {
+  getCarCatalystTotals,
+  useCalculateMode,
+} from "../../hooks";
 
 // styles
 import styles from "./CalculateMode.module.css";
@@ -23,11 +45,11 @@ export const CalculateMode = ({
     attrFilters,
     updateFilter,
     definitions,
-    definitionsByBucket,
+    attributeResults,
+    hasSearched,
+    ceramicPrices,
     isDefinitionsLoading,
     isGlobalLoading,
-    hasGridItems,
-    catalystQuoteGroup,
     handleModeChange,
     handleFullReset,
     handleBrandChange,
@@ -39,15 +61,26 @@ export const CalculateMode = ({
 
   // Helper to determine error state for UI components
   const getError = (key: string) => (hasTriedSubmit ? errors[key] : undefined);
+  const hasResults = attributeResults.length > 0;
 
-  // Labels for catalyst position
-  const getPositionLabel = (typeId: number) => {
-    if (typeId === 1) return t("common.front");
-    if (typeId === 2) return t("common.back");
-    return t("common.unknown");
-  };
+  const getDefinitionName = (
+    items: Array<{ id: number; name: string }> | undefined,
+    id: number | undefined,
+  ) => items?.find((item) => item.id === id)?.name ?? "—";
 
-  const isBrandNotSelected = !attrFilters.brandId;
+  const fieldLabel = (Icon: LucideIcon, label: string) => (
+    <span className={styles.fieldLabel}>
+      <Icon size={14} aria-hidden="true" />
+      <span>{label}</span>
+    </span>
+  );
+
+  const formatMetric = (value: number | null | undefined, fractionDigits = 2) =>
+    typeof value === "number" && Number.isFinite(value)
+      ? value.toLocaleString(undefined, {
+          maximumFractionDigits: fractionDigits,
+        })
+      : "—";
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -66,26 +99,50 @@ export const CalculateMode = ({
     <div className={styles.container}>
       {/* --- Left Panel: Search Form --- */}
       <div className={styles.formPanel}>
+        <div className={styles.formHeading}>
+          <span className={styles.formHeadingIcon}>
+            {mode === "code" ? (
+              <Database size={18} aria-hidden="true" />
+            ) : (
+              <SlidersHorizontal size={18} aria-hidden="true" />
+            )}
+          </span>
+          <div>
+            <strong>
+              {mode === "code"
+                ? t("operatorPage.calculate.mode.byCode")
+                : t("operatorPage.calculate.mode.byAttributes")}
+            </strong>
+            <span>
+              {mode === "code"
+                ? t("operatorPage.calculate.instructions.byCode")
+                : t("operatorPage.calculate.instructions.byAttributes")}
+            </span>
+          </div>
+        </div>
+
         <div className={styles.tabsContainer}>
           <TabGroup>
             <Tab
               variant="segmented"
-              active={mode === "code"}
-              text={t("operatorPage.calculate.mode.byCode")}
-              onClick={() => handleModeChange("code")}
+              active={mode === "attributes"}
+              icon={<SlidersHorizontal size={15} aria-hidden="true" />}
+              text={t("operatorPage.calculate.mode.byAttributes")}
+              onClick={() => handleModeChange("attributes")}
             />
             <Tab
               variant="segmented"
-              active={mode === "attributes"}
-              text={t("operatorPage.calculate.mode.byAttributes")}
-              onClick={() => handleModeChange("attributes")}
+              active={mode === "code"}
+              icon={<Database size={15} aria-hidden="true" />}
+              text={t("operatorPage.calculate.mode.byCode")}
+              onClick={() => handleModeChange("code")}
             />
           </TabGroup>
         </div>
 
         <div className={styles.formScrollArea}>
           {mode === "code" ? (
-            <div className={styles.inputGrid}>
+            <div className={`${styles.inputGrid} ${styles.codeInputGrid}`}>
               <TextField
                 label={t("operatorPage.calculate.label.bucketGroupCode")}
                 placeholder={t("operatorPage.calculate.placeholder.bucketGroupCode")}
@@ -94,35 +151,39 @@ export const CalculateMode = ({
                 onKeyDown={handleKeyDown}
                 error={!!getError("searchCode")}
                 disabled={isGlobalLoading}
+                containerClassName={styles.codeInputContainer}
+                inputClassName={styles.codeInput}
               />
             </div>
           ) : (
-            <div className={styles.inputGrid}>
+            <div className={`${styles.inputGrid} ${styles.vehicleInputGrid}`}>
               <Select
-                label={t("operatorPage.calculate.label.brandId")}
+                label={fieldLabel(CarFront, t("carCatalyst.fields.brand"))}
                 value={attrFilters.brandId}
                 onChange={handleBrandChange}
                 onKeyDown={handleKeyDown}
-                error={!!getError("brandId")}
                 disabled={isDefinitionsLoading}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
+                <option value="">{t("carCatalyst.fields.selectBrand")}</option>
                 {definitions?.brands?.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.code}
+                    {b.name || b.code}
                   </option>
                 ))}
               </Select>
 
               <Select
-                label={t("operatorPage.calculate.label.modelId")}
+                label={fieldLabel(Car, t("carCatalyst.fields.model"))}
                 value={attrFilters.modelId}
                 onChange={(e) => updateFilter("modelId", e.target.value)}
                 onKeyDown={handleKeyDown}
-                error={!!getError("modelId")}
-                disabled={isBrandNotSelected || isDefinitionsLoading}
+                disabled={isDefinitionsLoading}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
+                <option value="">{t("carCatalyst.fields.selectModel")}</option>
                 {definitions?.models?.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
@@ -130,316 +191,370 @@ export const CalculateMode = ({
                 ))}
               </Select>
 
-              <Select
-                label={t("operatorPage.calculate.label.fuelTypeId")}
-                value={attrFilters.fuelTypeId}
-                onChange={(e) => updateFilter("fuelTypeId", e.target.value)}
+              <TextField
+                label={fieldLabel(
+                  CalendarDays,
+                  t("carCatalyst.fields.fromYear"),
+                )}
+                type="number"
+                min={1970}
+                max={new Date().getFullYear()}
+                value={attrFilters.fromYear}
+                onChange={(e) => updateFilter("fromYear", e.target.value)}
                 onKeyDown={handleKeyDown}
-                error={!!getError("fuelTypeId")}
-                disabled={isBrandNotSelected || isDefinitionsLoading}
+              />
+
+              <TextField
+                label={fieldLabel(CalendarDays, t("carCatalyst.fields.toYear"))}
+                type="number"
+                min={1970}
+                max={new Date().getFullYear()}
+                value={attrFilters.toYear}
+                onChange={(e) => updateFilter("toYear", e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+
+              <Select
+                label={fieldLabel(MapPin, t("carCatalyst.fields.country"))}
+                value={attrFilters.countryId}
+                onChange={(e) => updateFilter("countryId", e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isDefinitionsLoading}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
-                {definitions?.fuelTypes?.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.name}
+                <option value="">{t("carCatalyst.fields.selectCountry")}</option>
+                {definitions?.markets?.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
                   </option>
                 ))}
               </Select>
 
               <Select
-                label={t("operatorPage.calculate.label.engineId")}
+                label={fieldLabel(
+                  Cog,
+                  t("carCatalyst.fields.engineVariant"),
+                )}
                 value={attrFilters.engineId}
                 onChange={(e) => updateFilter("engineId", e.target.value)}
                 onKeyDown={handleKeyDown}
-                error={!!getError("engineId")}
-                disabled={isBrandNotSelected || isDefinitionsLoading}
+                disabled={isDefinitionsLoading}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
-                {definitions?.engines?.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {e.name}
+                <option value="">{t("carCatalyst.fields.selectEngine")}</option>
+                {definitions?.engines?.map((engine) => (
+                  <option key={engine.id} value={engine.id}>
+                    {engine.name}
                   </option>
                 ))}
               </Select>
 
               <Select
-                label={t("operatorPage.calculate.label.marketId")}
-                value={attrFilters.marketId}
-                onChange={(e) => updateFilter("marketId", e.target.value)}
+                label={fieldLabel(Fuel, t("carCatalyst.fields.fuelType"))}
+                value={attrFilters.fuelTypeId}
+                onChange={(e) => updateFilter("fuelTypeId", e.target.value)}
                 onKeyDown={handleKeyDown}
-                error={!!getError("marketId")}
-                disabled={isBrandNotSelected || isDefinitionsLoading}
+                disabled={isDefinitionsLoading}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
-                {definitions?.markets?.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
+                <option value="">{t("carCatalyst.fields.selectFuelType")}</option>
+                {definitions?.fuelTypes?.map((fuel) => (
+                  <option key={fuel.id} value={fuel.id}>
+                    {fuel.name}
                   </option>
                 ))}
               </Select>
 
               <Select
-                label={t("operatorPage.calculate.label.driveTypeId")}
+                label={fieldLabel(
+                  Milestone,
+                  t("carCatalyst.fields.driveType"),
+                )}
                 value={attrFilters.driveTypeId}
                 onChange={(e) => updateFilter("driveTypeId", e.target.value)}
                 onKeyDown={handleKeyDown}
-                error={!!getError("driveTypeId")}
-                disabled={isBrandNotSelected || isDefinitionsLoading}
+                disabled={isDefinitionsLoading}
+                searchable
+                searchPlaceholder={t("common.search")}
               >
-                <option value="">{t("common.select")}</option>
-                {definitions?.driveTypes?.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
+                <option value="">{t("carCatalyst.fields.selectDriveType")}</option>
+                {definitions?.driveTypes?.map((driveType) => (
+                  <option key={driveType.id} value={driveType.id}>
+                    {driveType.name}
                   </option>
                 ))}
               </Select>
 
-              <TextField
-                label={t("operatorPage.calculate.label.year")}
-                type="number"
-                value={attrFilters.year}
-                onChange={(e) => updateFilter("year", e.target.value)}
-                onKeyDown={handleKeyDown}
-                error={!!getError("year")}
-                disabled={isBrandNotSelected}
-              />
-
-              <TextField
-                label={t("operatorPage.calculate.label.hpMin")}
-                type="number"
-                value={attrFilters.hpMin}
-                onChange={(e) => updateFilter("hpMin", e.target.value)}
-                onKeyDown={handleKeyDown}
-                error={!!getError("hpMin")}
-                disabled={isBrandNotSelected}
-              />
-
-              <TextField
-                label={t("operatorPage.calculate.label.hpMax")}
-                type="number"
-                value={attrFilters.hpMax}
-                onChange={(e) => updateFilter("hpMax", e.target.value)}
-                onKeyDown={handleKeyDown}
-                error={!!getError("hpMax")}
-                disabled={isBrandNotSelected}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className={styles.formFooter}>
-          <Button
-            onClick={
-              mode === "code" ? handleGroupSearch : handleAttributeSearch
-            }
-            disabled={isGlobalLoading}
-            className={styles.searchBtn}
-            variant="primary"
-          >
-            <Search size={18} /> {t("common.search")}
-          </Button>
-          <Button
-            onClick={handleFullReset}
-            variant="secondary"
-            className={styles.resetBtn}
-          >
-            <RotateCcw size={18} /> {t("common.reset")}
-          </Button>
-        </div>
-      </div>
-
-      {/* --- Right Panel: Results Grid --- */}
-      <div className={styles.resultsArea}>
-        <div
-          className={`${styles.resultsScrollArea} ${
-            !hasGridItems || isGlobalLoading ? styles.centered : ""
-          }`}
-        >
-          {isGlobalLoading ? (
-            <div className={styles.emptyState}>
-              <div className={styles.loaderText}>{t("common.loading")}</div>
-            </div>
-          ) : (
-            <div className={`${styles.resultsContent} ${styles.visible}`}>
-              {hasGridItems ? (
-                <div className={styles.resultsGrid}>
-                  {catalystQuoteGroup?.items.flatMap((item) => {
-                    const matchedDefs = definitionsByBucket?.results.filter(
-                      (def) => def.bucketCodes?.includes(item.code),
-                    );
-
-                    // ❗ If no cars found, still show code-only card
-                    if (!matchedDefs?.length) {
-                      return [
-                        <div key={item.id} className={styles.vehicleCard}>
-                          <div className={styles.cardHeader}>
-                            <div className={styles.iconCircle}>
-                              <Database size={20} />
-                            </div>
-
-                            <div className={styles.headerInfo}>
-                              <h3>{item.code}</h3>
-                              <div className={styles.positionBadge}>
-                                {getPositionLabel(item.catalystTypeId)}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className={styles.specTable}>
-                            <div className={styles.specItem}>
-                              <span>
-                                {t("operatorPage.calculate.specs.weight")}
-                              </span>
-                              <strong>{item.weight} kg</strong>
-                            </div>
-
-                            <div className={styles.specItem}>
-                              <span>
-                                {t("operatorPage.calculate.specs.price")}
-                              </span>
-                              <strong>
-                                {item.price.toLocaleString()}{" "}
-                                {catalystQuoteGroup.currencyCode}
-                              </strong>
-                            </div>
-                          </div>
-                        </div>,
-                      ];
-                    }
-
-                    // ✅ Create ONE CARD PER CAR
-                    return matchedDefs.map((def) => (
-                      <div
-                        key={`${item.id}-${def.id}`}
-                        className={styles.vehicleCard}
-                      >
-                        {/* --- HEADER --- */}
-                        <div className={styles.cardHeader}>
-                          <div className={styles.iconCircle}>
-                            <Database size={20} />
-                          </div>
-
-                          <div className={styles.headerInfo}>
-                            <h3>{item.code}</h3>
-                            <div className={styles.positionBadge}>
-                              {getPositionLabel(item.catalystTypeId)}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* --- PRICE / WEIGHT --- */}
-                        <div className={styles.specTable}>
-                          <div className={styles.specItem}>
-                            <span>
-                              {t("operatorPage.calculate.specs.weight")}
-                            </span>
-                            <strong>{item.weight} kg</strong>
-                          </div>
-
-                          <div className={styles.specItem}>
-                            <span>
-                              {t("operatorPage.calculate.specs.price")}
-                            </span>
-                            <strong>
-                              {item.price.toLocaleString()}{" "}
-                              {catalystQuoteGroup.currencyCode}
-                            </strong>
-                          </div>
-                        </div>
-
-                        {/* --- CAR INFO --- */}
-                        <div className={styles.carDetails}>
-                          <div className={styles.subHeader}>
-                            <Car size={16} />
-                            <span>
-                              {def.brand.name} {def.model.name}
-                            </span>
-                          </div>
-
-                          <div className={styles.specTable}>
-                            <div className={styles.specItem}>
-                              <span>
-                                {t("vehicles.vehicles.form.fuelType")}
-                              </span>
-                              <strong>{def.fuelType?.name}</strong>
-                            </div>
-
-                            <div className={styles.specItem}>
-                              <span>{t("vehicles.vehicles.form.engine")}</span>
-                              <strong>{def.engine?.name}</strong>
-                            </div>
-
-                            <div className={styles.specItem}>
-                              <span>
-                                {t("vehicles.vehicles.form.horsePower")}
-                              </span>
-                              <strong>{def.horsePower}</strong>
-                            </div>
-
-                            <div className={styles.specItem}>
-                              <span>
-                                {t("vehicles.vehicles.form.driveType")}
-                              </span>
-                              <strong>{def.driveType?.name}</strong>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ));
-                  })}
-                </div>
-              ) : (
-                <div className={styles.emptyState}>
-                  <Zap size={48} className={styles.emptyIcon} />
-                  <p>{t("operatorPage.calculate.noResults")}</p>
+              {hasTriedSubmit && (errors.attributes || errors.yearRange) && (
+                <div className={styles.validationMessage} role="alert">
+                  {errors.attributes || errors.yearRange}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* --- Summary Footer --- */}
-        {/* <div
-          className={`${styles.groupSummary} ${
-            catalystQuoteGroup && !isGlobalLoading
-              ? styles.visible
-              : styles.hidden
-          }`}
-        > */}
-        {/* {catalystQuoteGroup && (
-            <div className={styles.totalsRow}>
-              <div className={styles.totalBox}>
-                <span className={styles.currencyLabel}>
-                  {t("operatorPage.calculate.summary.totalPrice")}
-                </span>
-                <div className={styles.priceWrapper}>
-                  <span className={styles.currencyType}>
-                    {catalystQuoteGroup.currencyCode}
-                  </span>
-                  <strong className={styles.currencyValue}>
-                    {Number(
-                      catalystQuoteGroup.totalPrice || 0,
-                    ).toLocaleString()}
-                  </strong>
-                </div>
-              </div> */}
+        <div className={styles.formFooter}>
+          <Button
+            onClick={handleFullReset}
+            variant="secondary"
+            className={`${styles.actionIconButton} ${styles.resetBtn}`}
+            aria-label={t("common.reset")}
+          >
+            <RotateCcw size={23} aria-hidden="true" />
+            <span className={styles.actionTooltip} aria-hidden="true">
+              {t("common.reset")}
+            </span>
+          </Button>
+          <Button
+            onClick={
+              mode === "code" ? handleGroupSearch : handleAttributeSearch
+            }
+            disabled={isGlobalLoading}
+            className={`${styles.actionIconButton} ${styles.searchBtn}`}
+            variant="primary"
+            aria-label={t(isGlobalLoading ? "common.loading" : "common.search")}
+          >
+            {isGlobalLoading ? (
+              <LoaderCircle size={17} className={styles.loadingSpinner} aria-hidden="true" />
+            ) : (
+              <Search size={24} aria-hidden="true" />
+            )}
+            <span className={styles.actionTooltip} aria-hidden="true">
+              {t(isGlobalLoading ? "common.loading" : "common.search")}
+            </span>
+          </Button>
+        </div>
+      </div>
 
-        {/* Total Weight Section
-              <div className={styles.totalBox}>
-                <span className={styles.currencyLabel}>
-                  {t("operatorPage.calculate.summary.totalWeight")}
-                </span>
-                <div className={styles.priceWrapper}>
-                  {" "}
-                  <strong className={styles.currencyValue}>
-                    {totalWeight.toFixed(2)}
-                  </strong>
-                  <span className={styles.unitLabel}>KG</span>
+      {/* --- Right Panel: Results --- */}
+      <div className={styles.resultsArea}>
+        <div
+          className={`${styles.resultsScrollArea} ${
+            !hasResults || isGlobalLoading ? styles.centered : ""
+          }`}
+        >
+          {isGlobalLoading ? (
+            <div className={styles.searchLoadingState}>
+              <PrpServiceLoader ariaLabel={t("common.loading")} />
+              <div className={styles.loaderText}>{t("common.loading")}</div>
+            </div>
+          ) : (
+            <div className={`${styles.resultsContent} ${styles.visible}`}>
+              {attributeResults.length > 0 ? (
+                <>
+                  <div className={styles.resultsHeader}>
+                    <div>
+                      <div className={styles.resultsTitle}>
+                        <span className={styles.resultsTitleIcon}>
+                          <Search size={16} aria-hidden="true" />
+                        </span>
+                        <h3>{t("operatorPage.calculate.results.title")}</h3>
+                      </div>
+                      <p className={styles.resultCount}>
+                        <Car size={13} aria-hidden="true" />
+                        {t("operatorPage.calculate.results.foundCars", {
+                          count: attributeResults.length,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.resultsList}>
+                    {attributeResults.map((item) => {
+                      const totals = getCarCatalystTotals(item);
+                      const buckets = item.buckets ?? [];
+                      const engineName = item.engineId
+                        ? getDefinitionName(definitions?.engines, item.engineId)
+                        : item.engineVolume
+                          ? `${item.engineVolume} L`
+                          : "—";
+                      const vehicleName = `${getDefinitionName(
+                        definitions?.brands,
+                        item.brandId,
+                      )} ${getDefinitionName(definitions?.models, item.modelId)}`;
+                      const ceramicPrice = ceramicPrices[item.id] ?? 0;
+                      const ironPrice =
+                        typeof item.totalIronPrice === "number" &&
+                        item.totalIronPrice > 0
+                          ? item.totalIronPrice
+                          : 0;
+                      const totalPrice = ceramicPrice + ironPrice;
+
+                      return (
+                        <article key={item.id} className={styles.vehicleCard}>
+                          <div className={styles.vehicleResultHeader}>
+                            <span className={styles.iconCircle}>
+                              <Car size={18} aria-hidden="true" />
+                            </span>
+                            <div className={styles.vehicleIdentity}>
+                              <h3>{vehicleName}</h3>
+                              <span>
+                                {item.yearFrom ?? item.year ?? "—"}
+                                {" – "}
+                                {item.yearTo ?? item.year ?? "—"}
+                              </span>
+                            </div>
+                            <div className={styles.bucketBadges}>
+                              <span>
+                                <Database size={12} aria-hidden="true" />
+                                {t("operatorPage.calculate.results.buckets", {
+                                  count: buckets.length,
+                                })}
+                              </span>
+                              {buckets.map((bucket, index) => (
+                                <span
+                                  key={`${item.id}-${bucket.id ?? bucket.code}-${index}`}
+                                  className={styles.bucketBadge}
+                                >
+                                  <strong>{bucket.code}</strong>
+                                  <span>
+                                    <MapPin size={11} aria-hidden="true" />
+                                    {t(
+                                      bucket.side === 1
+                                        ? "carCatalyst.sections.frontPosition"
+                                        : "carCatalyst.sections.rearPosition",
+                                      {
+                                        position: bucket.positionIndex ?? 1,
+                                      },
+                                    )}
+                                  </span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className={styles.vehicleSpecs}>
+                            <div className={styles.specItem}>
+                              <span className={styles.specLabel}>
+                                <MapPin size={12} aria-hidden="true" />
+                                {t("carCatalyst.fields.country")}
+                              </span>
+                              <strong>
+                                {getDefinitionName(
+                                  definitions?.markets,
+                                  item.country,
+                                )}
+                              </strong>
+                            </div>
+                            <div className={styles.specItem}>
+                              <span className={styles.specLabel}>
+                                <Cog size={12} aria-hidden="true" />
+                                {t("carCatalyst.fields.engineVariant")}
+                              </span>
+                              <strong>{engineName}</strong>
+                            </div>
+                            <div className={styles.specItem}>
+                              <span className={styles.specLabel}>
+                                <Fuel size={12} aria-hidden="true" />
+                                {t("carCatalyst.fields.fuelType")}
+                              </span>
+                              <strong>
+                                {getDefinitionName(
+                                  definitions?.fuelTypes,
+                                  item.fuelTypeId,
+                                )}
+                              </strong>
+                            </div>
+                            <div className={styles.specItem}>
+                              <span className={styles.specLabel}>
+                                <Milestone size={12} aria-hidden="true" />
+                                {t("carCatalyst.fields.driveType")}
+                              </span>
+                              <strong>
+                                {getDefinitionName(
+                                  definitions?.driveTypes,
+                                  item.driveTypeId,
+                                )}
+                              </strong>
+                            </div>
+                          </div>
+                          <div className={styles.vehicleTotals}>
+                            <div>
+                              <Scale size={17} aria-hidden="true" />
+                              <span>
+                                {t("carCatalyst.details.summary.totalWeight")}
+                              </span>
+                              <strong>
+                                {formatMetric(totals.weight, 3)} kg
+                              </strong>
+                            </div>
+                            {ceramicPrice > 0 && (
+                              <div>
+                                <CircleDollarSign size={17} aria-hidden="true" />
+                                <span>
+                                  {t(
+                                    "carCatalyst.details.summary.ceramicPrice",
+                                  )}
+                                </span>
+                                <strong>
+                                  {formatMetric(ceramicPrice)} AMD
+                                </strong>
+                              </div>
+                            )}
+                            {ironPrice > 0 && (
+                              <div>
+                                <CircleDollarSign size={17} aria-hidden="true" />
+                                <span>
+                                  {t("carCatalyst.details.summary.ironPrice")}
+                                </span>
+                                <strong>{formatMetric(ironPrice)} AMD</strong>
+                              </div>
+                            )}
+                            {totalPrice > 0 && (
+                              <div className={styles.totalPrice}>
+                                <CircleDollarSign size={17} aria-hidden="true" />
+                                <span>
+                                  {t("carCatalyst.details.summary.totalPrice")}
+                                </span>
+                                <strong>
+                                  {formatMetric(totalPrice)} AMD
+                                </strong>
+                              </div>
+                            )}
+                          </div>
+                          <details className={styles.metalDetails}>
+                            <summary>
+                              <span>{t("operatorPage.calculate.results.metalComposition")}</span>
+                              <ChevronDown size={16} aria-hidden="true" />
+                            </summary>
+                            <div className={styles.metalTotals}>
+                              <span className={styles.ptTotal}>
+                                Pt {formatMetric(totals.pt)} g
+                              </span>
+                              <span className={styles.pdTotal}>
+                                Pd {formatMetric(totals.pd)} g
+                              </span>
+                              <span className={styles.rhTotal}>
+                                Rh {formatMetric(totals.rh)} g
+                              </span>
+                            </div>
+                          </details>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : hasSearched ? (
+                <div className={`${styles.emptyState} ${styles.noResultsState}`}>
+                  <span className={styles.emptyIconWrap}>
+                    <SearchX size={21} aria-hidden="true" />
+                  </span>
+                  <p>{t("operatorPage.calculate.noResults")}</p>
                 </div>
-              </div>
+              ) : (
+                <div className={`${styles.emptyState} ${styles.initialState}`}>
+                  <span className={styles.emptyIconWrap}>
+                    <Search size={21} aria-hidden="true" />
+                  </span>
+                  <p>{t("operatorPage.calculate.initialPrompt")}</p>
+                </div>
+              )}
             </div>
           )}
-        </div> */}
+        </div>
+
       </div>
     </div>
   );

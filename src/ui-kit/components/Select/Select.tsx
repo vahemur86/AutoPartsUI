@@ -26,7 +26,7 @@ export interface SelectProps extends Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   "size"
 > {
-  label?: string;
+  label?: ReactNode;
   error?: boolean;
   helperText?: string;
   placeholder?: string;

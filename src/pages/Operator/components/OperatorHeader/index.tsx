@@ -120,7 +120,7 @@ export const OperatorHeader = ({
         <div className={styles.sessionGroup}>
           <Button
             onClick={() => onToggleSession("open")}
-            className={hasOpenSession ? styles.sessionBtnActive : styles.sessionBtnInactive}
+            className={hasOpenSession ? styles.sessionBtnStarted : styles.sessionBtnStart}
             disabled={hasOpenSession}
           >
             <Play size={15} />

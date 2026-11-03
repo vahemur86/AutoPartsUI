@@ -375,6 +375,7 @@ export const CustomerDetails = ({
               variant="primary"
               size="small"
               fullWidth
+              className={styles.createCustomerButton}
               onClick={handleCreateNewCustomer}
               disabled={isGlobalLoading || !customerNotFound}
             >

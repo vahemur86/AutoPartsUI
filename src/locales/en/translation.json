@@ -2575,7 +2575,7 @@
     "tabs": {
       "buy": "Buy",
       "cashier": "Cashier",
-      "calculate": "Calculate",
+      "calculate": "Calculator",
       "catalyst": "Catalyst",
       "iron": "Iron",
       "workshop": "Workshop"
@@ -2794,6 +2794,14 @@
         "byCode": "By Code",
         "byAttributes": "By Attributes"
       },
+      "instructions": {
+        "byCode": "Enter a bucket group code to view its quote.",
+        "byAttributes": "Enter one or more vehicle parameters."
+      },
+      "validation": {
+        "attributesRequired": "Select or enter at least one vehicle parameter.",
+        "invalidYearRange": "Invalid year range: the start year must be less than or equal to the end year."
+      },
       "placeholder": {
         "bucketGroupCode": "e.g. newT1"
       },
@@ -2813,7 +2821,17 @@
         "engine": "Engine",
         "fuel": "Fuel",
         "weight": "Weight",
-        "price": "Price"
+        "price": "Price",
+        "platinum": "Platinum",
+        "palladium": "Palladium",
+        "rhodium": "Rhodium"
+      },
+      "results": {
+        "title": "Search results",
+        "foundCount": "{{count}} bucket(s) found",
+        "foundCars": "{{count}} vehicle(s) found",
+        "buckets": "Catalyst shells: {{count}}",
+        "metalComposition": "Metal composition"
       },
       "summary": {
         "totalPrice": "Total Price",
@@ -2821,6 +2839,7 @@
       },
       "linkedBuckets": "Linked Buckets",
       "noResults": "No results found",
+      "initialPrompt": "Enter details to start your search.",
       "group": "Group"
     },
     "workshop": {

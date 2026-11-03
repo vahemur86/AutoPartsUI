@@ -2760,7 +2760,7 @@
     "tabs": {
       "buy": "Գնել",
       "cashier": "Դրամարկղ",
-      "calculate": "Հաշվել",
+      "calculate": "Հաշվիչ",
       "catalyst": "Կատալիզատոր",
       "iron": "Երկաթ",
       "workshop": "Աշխատանոց"
@@ -2979,6 +2979,14 @@
         "byCode": "Ըստ կոդի",
         "byAttributes": "Ըստ պարամետրերի"
       },
+      "instructions": {
+        "byCode": "Մուտքագրեք զամբյուղի խմբի կոդը՝ առաջարկը դիտելու համար։",
+        "byAttributes": "Լրացրեք մեքենայի մեկ կամ մի քանի պարամետր։"
+      },
+      "validation": {
+        "attributesRequired": "Ընտրեք կամ լրացրեք մեքենայի առնվազն մեկ պարամետր։",
+        "invalidYearRange": "Տարիների միջակայքը ճիշտ չէ․ «Սկսած» տարին պետք է փոքր կամ հավասար լինի «Մինչև» տարվան։"
+      },
       "placeholder": {
         "bucketGroupCode": "օր. newT1"
       },
@@ -2998,7 +3006,17 @@
         "engine": "Շարժիչ",
         "fuel": "Վառելիք",
         "weight": "Քաշ",
-        "price": "Գին"
+        "price": "Գին",
+        "platinum": "Պլատին",
+        "palladium": "Պալադիում",
+        "rhodium": "Ռոդիում"
+      },
+      "results": {
+        "title": "Որոնման արդյունքներ",
+        "foundCount": "Գտնվել է՝ {{count}} զամբյուղ",
+        "foundCars": "Գտնվել է՝ {{count}} մեքենա",
+        "buckets": "Պատյաններ՝ {{count}}",
+        "metalComposition": "Մետաղների բաղադրությունը"
       },
       "summary": {
         "totalPrice": "Ընդհանուր արժեք",
@@ -3006,6 +3024,7 @@
       },
       "linkedBuckets": "Կապված զամբյուղներ",
       "noResults": "Արդյունքներ չեն գտնվել",
+      "initialPrompt": "Մուտքագրեք տվյալները՝ որոնումը սկսելու համար։",
       "group": "Խումբ"
     },
     "workshop": {
