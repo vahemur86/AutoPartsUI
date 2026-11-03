@@ -11,6 +11,8 @@ import type { PowderBatch } from "@/types/cash";
 import styles from "./PowderBatches.module.css";
 
 const columnHelper = createColumnHelper<PowderBatch>();
+const formatNumber = (value: number, maximumFractionDigits = 3) =>
+  value.toLocaleString(undefined, { maximumFractionDigits });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
@@ -49,45 +51,38 @@ export const getPowderBatchColumns = (): ColumnDef<PowderBatch, any>[] => [
   }),
   columnHelper.accessor("totalPowderKg", {
     header: i18next.t("cashbox.powderBatches.columns.weight"),
-    cell: (info) => `${info.getValue().toLocaleString()} kg`,
+    cell: (info) => `${formatNumber(info.getValue())} kg`,
   }),
   columnHelper.accessor("ptPerKg_g", {
     header: i18next.t("cashbox.powderBatches.columns.ptPerKg_g"),
-    cell: (info) => `${info.getValue().toLocaleString()} g`,
+    cell: (info) => `${formatNumber(info.getValue())} g`,
   }),
   columnHelper.accessor("pdPerKg_g", {
     header: i18next.t("cashbox.powderBatches.columns.pdPerKg_g"),
-    cell: (info) => `${info.getValue().toLocaleString()} g`,
+    cell: (info) => `${formatNumber(info.getValue())} g`,
   }),
   columnHelper.accessor("rhPerKg_g", {
     header: i18next.t("cashbox.powderBatches.columns.rhPerKg_g"),
-    cell: (info) => `${info.getValue().toLocaleString()} g`,
+    cell: (info) => `${formatNumber(info.getValue())} g`,
   }),
   columnHelper.accessor("avgFxRateToAmd", {
     header: i18next.t("cashbox.powderBatches.columns.avgFxRateToAmd"),
-    cell: (info) =>
-      info.getValue().toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 4,
-      }),
+    cell: (info) => formatNumber(info.getValue(), 4),
   }),
   columnHelper.accessor("avgPdPricePerKg", {
     header: i18next.t("cashbox.powderBatches.columns.avgPdPricePerKg"),
-    cell: (info) =>
-      `${info.getValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`,
+    cell: (info) => `${formatNumber(info.getValue(), 2)} USD`,
   }),
   columnHelper.accessor("avgPtPricePerKg", {
     header: i18next.t("cashbox.powderBatches.columns.avgPtPricePerKg"),
-    cell: (info) =>
-      `${info.getValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`,
+    cell: (info) => `${formatNumber(info.getValue(), 2)} USD`,
   }),
   columnHelper.accessor("avgRhPricePerKg", {
     header: i18next.t("cashbox.powderBatches.columns.avgRhPricePerKg"),
-    cell: (info) =>
-      `${info.getValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`,
+    cell: (info) => `${formatNumber(info.getValue(), 2)} USD`,
   }),
   columnHelper.accessor("avgCustomerPercent", {
     header: i18next.t("cashbox.powderBatches.columns.avgCustomerPercent"),
-    cell: (info) => `${info.getValue()}%`,
+    cell: (info) => `${formatNumber(info.getValue(), 4)}%`,
   }),
 ];

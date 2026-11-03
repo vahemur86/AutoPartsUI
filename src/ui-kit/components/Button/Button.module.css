@@ -47,60 +47,32 @@
 }
 
 /* Variants */
-/* Primary - defaults to 500 */
-.primary {
-  background-color: var(--color-primary-500);
-  color: var(--color-black-1);
-}
-
-.primary:hover:not(:disabled) {
-  background-color: var(--color-primary-400);
-}
-
-.primary:active:not(:disabled) {
-  background-color: var(--color-primary-300);
-}
-
-/* Primary 300 */
-.primary300 {
-  background-color: var(--color-primary-300);
-  color: var(--color-black-1);
-}
-
-.primary300:hover:not(:disabled) {
-  background-color: var(--color-primary-400);
-}
-
-.primary300:active:not(:disabled) {
-  background-color: var(--color-primary-500);
-}
-
-/* Primary 400 */
-.primary400 {
-  background-color: var(--color-primary-400);
-  color: var(--color-black-1);
-}
-
-.primary400:hover:not(:disabled) {
-  background-color: var(--color-primary-300);
-}
-
-.primary400:active:not(:disabled) {
-  background-color: var(--color-primary-500);
-}
-
-/* Primary 500 */
+/* Primary variants use the shared gold brand treatment. */
+.primary,
+.primary300,
+.primary400,
 .primary500 {
-  background-color: var(--color-primary-500);
-  color: var(--color-black-1);
+  color: #17170f;
+  border: 1px solid rgba(232, 210, 151, 0.72);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e5d29a, #bd9d55);
+  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.13);
 }
 
+.primary:hover:not(:disabled),
+.primary300:hover:not(:disabled),
+.primary400:hover:not(:disabled),
 .primary500:hover:not(:disabled) {
-  background-color: var(--color-primary-400);
+  border-color: #ead9a8;
+  background: linear-gradient(135deg, #ead9a8, #c9aa62);
+  box-shadow: 0 6px 18px rgba(170, 137, 65, 0.2);
 }
 
+.primary:active:not(:disabled),
+.primary300:active:not(:disabled),
+.primary400:active:not(:disabled),
 .primary500:active:not(:disabled) {
-  background-color: var(--color-primary-300);
+  background: linear-gradient(135deg, #d7c184, #b18f49);
 }
 
 /* Secondary - defaults to 500 */
@@ -226,26 +198,6 @@
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
-}
-
-:global(body.settings-theme) .primary,
-:global(body.settings-theme) .primary300,
-:global(body.settings-theme) .primary400,
-:global(body.settings-theme) .primary500 {
-  color: #17170f;
-  border: 1px solid rgba(232, 210, 151, 0.72);
-  border-radius: 6px;
-  background: linear-gradient(135deg, #e5d29a, #bd9d55);
-  box-shadow: 0 4px 14px rgba(170, 137, 65, 0.13);
-}
-
-:global(body.settings-theme) .primary:hover:not(:disabled),
-:global(body.settings-theme) .primary300:hover:not(:disabled),
-:global(body.settings-theme) .primary400:hover:not(:disabled),
-:global(body.settings-theme) .primary500:hover:not(:disabled) {
-  border-color: #ead9a8;
-  background: linear-gradient(135deg, #ead9a8, #c9aa62);
-  box-shadow: 0 6px 18px rgba(170, 137, 65, 0.2);
 }
 
 :global(body.settings-theme) .secondary,

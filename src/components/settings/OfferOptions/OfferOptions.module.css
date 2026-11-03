@@ -7,86 +7,239 @@
 
 .settingsWrapper {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--color-white);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin: 16px 0 20px;
+  gap: 14px;
+  margin: 16px 0 18px;
+}
+
+.shopSelectorSection {
+  width: 100%;
+  max-width: 260px;
+  min-width: 0;
+}
+
+.overview {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+}
+
+.countSummary {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 190px;
+  padding: 9px 11px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(120deg, rgba(196, 169, 106, 0.065), rgba(15, 19, 16, 0.42));
+}
+
+.overviewIcon,
+.optionIcon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #d8c38d;
+  border: 1px solid rgba(196, 169, 106, 0.28);
+  background: rgba(196, 169, 106, 0.09);
+}
+
+.overviewIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+}
+
+.countSummary > div {
+  display: grid;
+  gap: 2px;
+}
+
+.countSummary strong {
+  color: #eee9db;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.countSummary > div > span {
+  color: rgba(230, 236, 230, 0.56);
+  font-size: 11px;
 }
 
 .addButton {
   flex-shrink: 0;
 }
 
-.shopSelectorSection {
+.optionsList {
   width: 100%;
-  max-width: 320px;
   min-width: 0;
 }
 
-.optionsList {
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+}
+
+.optionCard {
+  --card-accent: 196, 169, 106;
+  position: relative;
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 14px;
-}
-
-.optionItem {
-  width: 100%;
-  position: relative;
-}
-
-.optionField {
-  position: relative;
-  background-color: var(--color-black-3);
-  border-radius: 8px;
-  border: none;
   overflow: hidden;
+  padding: 16px;
+  border: 1px solid rgba(var(--card-accent), 0.2);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(28, 34, 28, 0.92), rgba(13, 17, 14, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 12px 26px rgba(0, 0, 0, 0.18);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
-.optionItem.activeOption .optionField::before {
-  content: "";
+.optionCard::before {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 11px;
-  background-color: var(--color-success);
-  border-radius: 8px 0 0 8px;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(var(--card-accent), 0.05), rgba(var(--card-accent), 0.75), rgba(var(--card-accent), 0.08));
+  content: "";
 }
 
-.optionContent {
+.optionCard[data-active="true"] {
+  --card-accent: 122, 185, 127;
+  border-color: rgba(122, 185, 127, 0.5);
+  background: linear-gradient(145deg, rgba(27, 43, 31, 0.96), rgba(13, 20, 15, 0.99));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(122, 185, 127, 0.09), 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.optionCard[data-editing="true"] {
+  border-color: rgba(196, 169, 106, 0.72);
+}
+
+.optionCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--card-accent), 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 30px rgba(0, 0, 0, 0.25);
+}
+
+.optionCardHeader,
+.cardActions {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
 }
 
-.percentText {
-  font-size: 13px;
-  color: var(--color-white);
-  font-weight: 400;
-  line-height: 1.4;
+.optionCardHeader {
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.statusText {
-  font-size: 13px;
-  color: var(--color-white);
-  opacity: 0.6;
+.cardActions {
+  gap: 5px;
 }
 
-.optionField button {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  color: var(--color-secondary-500) !important;
+.optionIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
 }
 
-.optionItem.isActiveState .optionField button {
-  color: var(--color-primary-500) !important;
+.optionCard[data-active="true"] .optionIcon {
+  color: #b9d5bd;
+  border-color: rgba(122, 185, 127, 0.3);
+  background: rgba(122, 185, 127, 0.1);
+}
+
+.optionValue {
+  display: grid;
+  gap: 3px;
+}
+
+.optionValue strong {
+  color: #f0ede3;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.optionValue span {
+  color: rgba(225, 231, 224, 0.56);
+  font-size: 11px;
+}
+
+.cardStatusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.statusActive {
+  border-color: rgba(122, 185, 127, 0.28);
+  background: rgba(122, 185, 127, 0.12);
+  color: #b9d5bd;
+}
+
+.statusInactive {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(235, 235, 230, 0.62);
+}
+
+.optionState {
+  display: grid;
+  min-height: 220px;
+  justify-items: center;
+  align-content: center;
+  gap: 9px;
+  padding: 24px;
+  border: 1px dashed rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(28, 34, 28, 0.42), rgba(13, 17, 14, 0.32));
+  color: rgba(230, 236, 230, 0.58);
+  font-size: 12px;
+  text-align: center;
+}
+
+.optionState > strong {
+  color: #e9e9e1;
+  font-size: 14px;
+}
+
+.stateIcon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  margin-bottom: 2px;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 10px;
+  background: rgba(196, 169, 106, 0.08);
+  color: #d8c38d;
 }
 
 .footerActions {
@@ -97,25 +250,43 @@
   padding-bottom: 24px;
 }
 
-@media (max-width: 768px) {
-  .header {
-    margin: 12px 0 16px;
-  }
-
-  .shopSelectorSection {
-    max-width: 100%;
-  }
-
+@media (max-width: 900px) {
   .header {
     flex-wrap: wrap;
   }
 
   .shopSelectorSection {
-    flex: 1 1 100%;
+    max-width: 100%;
+    flex: 1 1 240px;
+  }
+
+  .overview {
+    flex: 1 1 190px;
   }
 
   .addButton {
     margin-left: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+    margin: 12px 0 16px;
+  }
+
+  .shopSelectorSection {
+    flex: auto;
+  }
+
+  .countSummary {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .addButton {
+    margin-left: 0;
   }
 
   .footerActions {

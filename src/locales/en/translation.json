@@ -249,6 +249,14 @@
     "increase": "Increase",
     "loading": "Loading offer options...",
     "emptyState": "No offer options found. Add your first one.",
+    "summary": {
+      "total": "Total: {{count}}",
+      "active": "Active: {{count}}"
+    },
+    "empty": {
+      "title": "No offer options",
+      "description": "Add your first offer option."
+    },
     "status": {
       "active": "Active",
       "inactive": "Inactive"
@@ -2107,6 +2115,7 @@
         "units": {
           "kg": "kg",
           "g": "g",
+          "gPerKg": "g/kg",
           "batches": "batches"
         }
       },
@@ -2317,6 +2326,14 @@
     "deleteLanguage": "Delete language",
     "loading": "Loading languages...",
     "emptyState": "No languages found. Add your first language.",
+    "summary": {
+      "total": "Total languages: {{count}}",
+      "enabled": "Enabled: {{count}}"
+    },
+    "empty": {
+      "title": "No languages yet",
+      "description": "Add a language to manage the project's language settings."
+    },
     "disabled": "Disabled",
     "editLanguage": "Edit {{name}}",
     "form": {
@@ -2347,6 +2364,18 @@
     "editSalePercentage": "Edit {{percent}}%",
     "loading": "Loading sale percentages...",
     "emptyState": "No sale percentages found. Add your first one.",
+    "summary": {
+      "total": "Total: {{count}}",
+      "active": "Active: {{count}}"
+    },
+    "empty": {
+      "title": "No sale percentages",
+      "description": "Add your first sale percentage."
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
     "form": {
       "percent": "Percent",
       "enabled": "Enabled",
@@ -3561,6 +3590,9 @@
   "calculator": {
     "title": "Calculator",
     "liveBadge": "LIVE",
+    "currency": {
+      "label": "Result currency"
+    },
     "tabs": {
       "catalyst": "Calculator",
       "dollar": "Sales Calculator"
@@ -3590,9 +3622,10 @@
       "details": "Weights Depending on the setting - in 1 Kg",
       "customerBonus": "Customer bonus (%)",
       "minProfit": "Minimum profit (%)",
+      "customerPercent": "Customer percentage",
       "maxCustomerPercent": "Customer profit",
 
-      "kitko": "Kitco (AMD)",
+      "kitko": "Kitco",
       "finalBase": "Cost",
       "costBreakdown": "Cost breakdown",
       "sale": "Sale deduction",

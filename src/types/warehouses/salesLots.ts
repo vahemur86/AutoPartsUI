@@ -258,10 +258,17 @@ export interface SalesLotsCalculatorResponse {
   commission?: number;
   tr2?: number;
   customerOfferAmd: number;
+  kitcoUsd: number;
+  finalBaseUsd: number;
+  customerOfferUsd: number;
+  saleUsd: number;
+  transport1Usd: number;
+  commissionUsd: number;
+  transport2Usd: number;
   customerPercent: number;
   maxCustomerPercent: number;
   profitAmd: number;
-  profitUsd?: number;
+  profitUsd: number;
   profitPercent: number;
   totalpt_g: number;
   totalpd_g: number;

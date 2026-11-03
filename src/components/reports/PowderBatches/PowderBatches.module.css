@@ -564,6 +564,20 @@
   white-space: nowrap;
 }
 
+.summaryMetalValues {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.summaryMetalPerKg {
+  color: #b9d5bd;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .summaryMetalUnit {
   font-size: 11px;
   font-weight: 500;

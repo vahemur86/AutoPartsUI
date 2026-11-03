@@ -56,7 +56,7 @@ export const PowderBatchesSummaryDropdown: FC<
 
   const formatValue = (val: number, decimals = 2) =>
     val.toLocaleString(undefined, {
-      minimumFractionDigits: decimals,
+      minimumFractionDigits: 0,
       maximumFractionDigits: decimals,
     });
 
@@ -96,6 +96,7 @@ export const PowderBatchesSummaryDropdown: FC<
           label: t("cashbox.powderBatches.summary.metals.pt"),
           price: summary.avgPtPricePerKg,
           total: summary.ptTotal_g,
+          perKg: summary.ptPerKg_g,
           color: "#cbd5d1",
         },
         {
@@ -103,6 +104,7 @@ export const PowderBatchesSummaryDropdown: FC<
           label: t("cashbox.powderBatches.summary.metals.pd"),
           price: summary.avgPdPricePerKg,
           total: summary.pdTotal_g,
+          perKg: summary.pdPerKg_g,
           color: "#a8d29e",
         },
         {
@@ -110,6 +112,7 @@ export const PowderBatchesSummaryDropdown: FC<
           label: t("cashbox.powderBatches.summary.metals.rh"),
           price: summary.avgRhPricePerKg,
           total: summary.rhTotal_g,
+          perKg: summary.rhPerKg_g,
           color: "#d2bf8a",
         },
       ]
@@ -246,7 +249,7 @@ export const PowderBatchesSummaryDropdown: FC<
                 {t("cashbox.powderBatches.summary.metalsTitle")}
               </h4>
               <div className={styles.summaryMetalsList}>
-                {metals.map(({ symbol, label, price, total, color }) => (
+                {metals.map(({ symbol, label, price, total, perKg, color }) => (
                   <div key={symbol} className={styles.summaryMetalRow}>
                     <div className={styles.summaryMetalInfo}>
                       <span
@@ -260,16 +263,22 @@ export const PowderBatchesSummaryDropdown: FC<
                       <div className={styles.summaryMetalMeta}>
                         <span className={styles.summaryMetalName}>{label}</span>
                         <span className={styles.summaryMetalPrice}>
-                          {formatPrice(price)} USD / kg
+                          {formatPrice(price)} USD
                         </span>
                       </div>
                     </div>
-                    <strong className={styles.summaryMetalValue}>
-                      {formatValue(total, 3)}{" "}
-                      <span className={styles.summaryMetalUnit}>
-                        {t("cashbox.powderBatches.summary.units.g")}
+                    <div className={styles.summaryMetalValues}>
+                      <strong className={styles.summaryMetalValue}>
+                        {formatValue(total, 3)}{" "}
+                        <span className={styles.summaryMetalUnit}>
+                          {t("cashbox.powderBatches.summary.units.g")}
+                        </span>
+                      </strong>
+                      <span className={styles.summaryMetalPerKg}>
+                        {formatValue(perKg, 3)}{" "}
+                        {t("cashbox.powderBatches.summary.units.gPerKg")}
                       </span>
-                    </strong>
+                    </div>
                   </div>
                 ))}
 

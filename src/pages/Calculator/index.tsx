@@ -62,6 +62,7 @@ export const NewCalculator: FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState<"catalyst" | "dollar">("catalyst");
+  const [resultCurrency, setResultCurrency] = useState<"AMD" | "USD">("AMD");
   const [form, setForm] = useState<SalesLotsCalculatorRequest>(initialState);
   const [result, setResult] = useState<SalesLotsCalculatorResponse | null>(
     null,
@@ -82,12 +83,35 @@ export const NewCalculator: FC = () => {
   >({} as Record<keyof DollarCalculatorRequest, string>);
 
   const isManualMode = form.priceMode === 1;
+  const resultAmounts = result
+    ? resultCurrency === "AMD"
+      ? {
+          kitco: result.kitcoAmd,
+          finalBase: result.finalBaseAmd,
+          customerOffer: result.customerOfferAmd,
+          profit: result.profitAmd,
+          sale: result.sale,
+          tr1: result.tr1,
+          commission: result.commission,
+          tr2: result.tr2,
+        }
+      : {
+          kitco: result.kitcoUsd,
+          finalBase: result.finalBaseUsd,
+          customerOffer: result.customerOfferUsd,
+          profit: result.profitUsd,
+          sale: result.saleUsd,
+          tr1: result.transport1Usd,
+          commission: result.commissionUsd,
+          tr2: result.transport2Usd,
+        }
+    : null;
   const hasCostBreakdown =
-    result !== null &&
-    typeof result.sale === "number" &&
-    typeof result.tr1 === "number" &&
-    typeof result.commission === "number" &&
-    typeof result.tr2 === "number";
+    resultAmounts !== null &&
+    typeof resultAmounts.sale === "number" &&
+    typeof resultAmounts.tr1 === "number" &&
+    typeof resultAmounts.commission === "number" &&
+    typeof resultAmounts.tr2 === "number";
   const displayValue = (key: keyof SalesLotsCalculatorRequest) => {
     const rawValue = inputValues[key];
 
@@ -161,6 +185,7 @@ export const NewCalculator: FC = () => {
     setInputValues({} as Record<keyof SalesLotsCalculatorRequest, string>);
     setResult(null);
     setLoading(false);
+    setResultCurrency("AMD");
   };
 
   // Dollar calculator functions
@@ -467,10 +492,31 @@ export const NewCalculator: FC = () => {
         </div>
 
         <div className={styles.card}>
-          <h3 className={styles.cardTitle}>
-            <BarChart3 size={18} />
-            {t("calculator.columns.result")}
-          </h3>
+          <div className={styles.resultCardHeader}>
+            <h3 className={styles.cardTitle}>
+              <BarChart3 size={18} />
+              {t("calculator.columns.result")}
+            </h3>
+            <div
+              className={styles.currencySelector}
+              role="group"
+              aria-label={t("calculator.currency.label")}
+            >
+              {(["AMD", "USD"] as const).map((currency) => (
+                <button
+                  key={currency}
+                  type="button"
+                  aria-pressed={resultCurrency === currency}
+                  className={
+                    resultCurrency === currency ? styles.currencyActive : ""
+                  }
+                  onClick={() => setResultCurrency(currency)}
+                >
+                  {currency}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {!result ? (
             loading ? (
@@ -486,7 +532,12 @@ export const NewCalculator: FC = () => {
               <div className={styles.resultGrid}>
                 <div>
                   <span>{t("calculator.form.offer")}</span>
-                  <b>{result.customerOfferAmd.toFixed(2)}</b>
+                  <b>{resultAmounts?.customerOffer.toFixed(2)} {resultCurrency}</b>
+                </div>
+
+                <div>
+                  <span>{t("calculator.form.customerPercent")}</span>
+                  <b>{result.customerPercent.toFixed(2)}%</b>
                 </div>
 
                 <div>
@@ -506,7 +557,7 @@ export const NewCalculator: FC = () => {
                         onClick={() => setShowCostExpenses((isOpen) => !isOpen)}
                       >
                         <span>{t("calculator.form.finalBase")}</span>
-                        <b>{result.finalBaseAmd.toFixed(2)} AMD</b>
+                        <b>{resultAmounts?.finalBase.toFixed(2)} {resultCurrency}</b>
                         <ChevronDown
                           size={18}
                           className={showCostExpenses ? styles.costBreakdownExpanded : ""}
@@ -516,30 +567,30 @@ export const NewCalculator: FC = () => {
                         <div className={styles.costBreakdownExpenses}>
                           <div className={styles.costBreakdownRow}>
                             <span>{t("calculator.form.kitko")}</span>
-                            <b>{result.kitcoAmd.toFixed(2)} AMD</b>
+                            <b>{resultAmounts?.kitco.toFixed(2)} {resultCurrency}</b>
                           </div>
                           <div className={styles.costBreakdownRow}>
                             <span>{t("calculator.form.sale")}</span>
                             <b className={styles.costDeduction}>
-                              −{(result.sale ?? 0).toFixed(2)} AMD
+                              −{resultAmounts?.sale?.toFixed(2)} {resultCurrency}
                             </b>
                           </div>
                           <div className={styles.costBreakdownRow}>
                             <span>{t("calculator.form.tr1")}</span>
                             <b className={styles.costDeduction}>
-                              −{(result.tr1 ?? 0).toFixed(2)} AMD
+                              −{resultAmounts?.tr1?.toFixed(2)} {resultCurrency}
                             </b>
                           </div>
                           <div className={styles.costBreakdownRow}>
                             <span>{t("calculator.form.commission")}</span>
                             <b className={styles.costDeduction}>
-                              −{(result.commission ?? 0).toFixed(2)} AMD
+                              −{resultAmounts?.commission?.toFixed(2)} {resultCurrency}
                             </b>
                           </div>
                           <div className={styles.costBreakdownRow}>
                             <span>{t("calculator.form.tr2")}</span>
                             <b className={styles.costDeduction}>
-                              −{(result.tr2 ?? 0).toFixed(2)} AMD
+                              −{resultAmounts?.tr2?.toFixed(2)} {resultCurrency}
                             </b>
                           </div>
                         </div>
@@ -549,11 +600,11 @@ export const NewCalculator: FC = () => {
                     <div className={styles.resultGrid}>
                       <div>
                         <span>{t("calculator.form.kitko")}</span>
-                        <b>{result.kitcoAmd.toFixed(2)}</b>
+                        <b>{resultAmounts?.kitco.toFixed(2)} {resultCurrency}</b>
                       </div>
                       <div>
                         <span>{t("calculator.form.finalBase")}</span>
-                        <b>{result.finalBaseAmd.toFixed(2)}</b>
+                        <b>{resultAmounts?.finalBase.toFixed(2)} {resultCurrency}</b>
                       </div>
                     </div>
                   )}
@@ -562,12 +613,7 @@ export const NewCalculator: FC = () => {
                     <div>
                       <span>{t("calculator.form.profit")}</span>
                       <b className={styles.profit}>
-                        {result.profitAmd.toFixed(2)} AMD
-                        {typeof result.profitUsd === "number" && (
-                          <small className={styles.profitUsd}>
-                            {result.profitUsd.toFixed(2)} USD
-                          </small>
-                        )}
+                        {resultAmounts?.profit.toFixed(2)} {resultCurrency}
                       </b>
                     </div>
                     <div>
