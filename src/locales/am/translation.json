@@ -3015,8 +3015,7 @@
         "title": "Որոնման արդյունքներ",
         "foundCount": "Գտնվել է՝ {{count}} զամբյուղ",
         "foundCars": "Գտնվել է՝ {{count}} մեքենա",
-        "buckets": "Պատյաններ՝ {{count}}",
-        "metalComposition": "Մետաղների բաղադրությունը"
+        "buckets": "Պատյաններ՝ {{count}}"
       },
       "summary": {
         "totalPrice": "Ընդհանուր արժեք",

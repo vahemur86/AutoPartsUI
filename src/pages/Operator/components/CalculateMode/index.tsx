@@ -16,7 +16,6 @@ import {
   CircleDollarSign,
   LoaderCircle,
   SearchX,
-  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 
@@ -514,23 +513,6 @@ export const CalculateMode = ({
                               </div>
                             )}
                           </div>
-                          <details className={styles.metalDetails}>
-                            <summary>
-                              <span>{t("operatorPage.calculate.results.metalComposition")}</span>
-                              <ChevronDown size={16} aria-hidden="true" />
-                            </summary>
-                            <div className={styles.metalTotals}>
-                              <span className={styles.ptTotal}>
-                                Pt {formatMetric(totals.pt)} g
-                              </span>
-                              <span className={styles.pdTotal}>
-                                Pd {formatMetric(totals.pd)} g
-                              </span>
-                              <span className={styles.rhTotal}>
-                                Rh {formatMetric(totals.rh)} g
-                              </span>
-                            </div>
-                          </details>
                         </article>
                       );
                     })}

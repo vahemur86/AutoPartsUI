@@ -2833,8 +2833,7 @@
         "title": "Результаты поиска",
         "foundCount": "Найдено корзин: {{count}}",
         "foundCars": "Найдено автомобилей: {{count}}",
-        "buckets": "Корпуса катализатора: {{count}}",
-        "metalComposition": "Состав металлов"
+        "buckets": "Корпуса катализатора: {{count}}"
       },
       "summary": {
         "totalPrice": "Общая стоимость",

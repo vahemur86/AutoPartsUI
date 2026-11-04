@@ -2830,8 +2830,7 @@
         "title": "Search results",
         "foundCount": "{{count}} bucket(s) found",
         "foundCars": "{{count}} vehicle(s) found",
-        "buckets": "Catalyst shells: {{count}}",
-        "metalComposition": "Metal composition"
+        "buckets": "Catalyst shells: {{count}}"
       },
       "summary": {
         "totalPrice": "Total Price",
