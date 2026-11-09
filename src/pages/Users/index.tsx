@@ -34,6 +34,8 @@ import { ROLES, USER_TYPES } from "@/constants/settings/users";
 
 // utils
 import { getErrorMessage } from "@/utils";
+import { agentsService } from "@/services/agents";
+import { AgentStatus, type AgentDto } from "@/types/agents";
 
 // styles
 import styles from "./Users.module.css";
@@ -44,18 +46,31 @@ const roleBadgeStyles: Record<string, string> = {
   Programmer: styles.roleProgrammer,
   Operator: styles.roleOperator,
   Cashier: styles.roleCashier,
+  Agent: styles.roleAgent,
 };
+
+const getAgentName = (agent: AgentDto) =>
+  [agent.firstName, agent.lastName].filter(Boolean).join(" ") ||
+  agent.customer?.fullName ||
+  agent.code;
+
+const getAgentLabel = (agent: AgentDto | undefined, agentId: string) =>
+  agent ? `${getAgentName(agent)} (${agent.code})` : agentId;
 
 export const UserManagement = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-    const { user: currentUser } = useAppSelector((state) => state.auth);
-  const { shops } = useAppSelector((state) => state.shops);
+  const { user: currentUser } = useAppSelector((state) => state.auth);
+  const { shops, isLoading: isLoadingShops, error: shopLoadError } = useAppSelector((state) => state.shops);
   const { warehouses } = useAppSelector((state) => state.warehouses);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const [agents, setAgents] = useState<AgentDto[]>([]);
+  const [isLoadingAgents, setIsLoadingAgents] = useState(false);
+  const [agentLoadError, setAgentLoadError] = useState("");
+  const [agentLoadRetry, setAgentLoadRetry] = useState(0);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const showTableSkeleton = useMinimumLoadingDuration(isLoadingUsers);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,6 +86,15 @@ export const UserManagement = () => {
 
   const isSuperAdmin = currentUser?.role === "SuperAdmin";
   const isAdmin = currentUser?.role === "Admin";
+  const linkedAgentIds = useMemo(
+    () => users.map((user) => user.agentId).filter((agentId): agentId is string => !!agentId),
+    [users],
+  );
+  const availableAgents = useMemo(
+    () => agents.filter((agent) => Number(agent.status) === AgentStatus.Active && !linkedAgentIds.includes(agent.id)),
+    [agents, linkedAgentIds],
+  );
+  const agentById = useMemo(() => new Map(agents.map((agent) => [agent.id, agent])), [agents]);
 
   const filteredRoles = useMemo(() => {
     if (isSuperAdmin) return ROLES;
@@ -78,9 +102,15 @@ export const UserManagement = () => {
   }, [isSuperAdmin]);
 
   const filteredEditRoles = useMemo(() => {
-    if (isSuperAdmin) return ROLES;
-    return ROLES.filter((r) => r.value !== "SuperAdmin");
+    return ROLES.filter((role) => role.value !== "Agent" && (isSuperAdmin || role.value !== "SuperAdmin"));
   }, [isSuperAdmin]);
+
+  const editRoleOptions = useMemo(
+    () => editingUser?.role === "Agent"
+      ? [...filteredEditRoles, { value: "Agent", label: t("users.roles.agent") }]
+      : filteredEditRoles,
+    [editingUser?.role, filteredEditRoles, t],
+  );
 
   useEffect(() => {
     if (shops.length === 0) dispatch(fetchShops());
@@ -88,7 +118,34 @@ export const UserManagement = () => {
   }, [dispatch, shops.length, warehouses.length]);
 
   useEffect(() => {
-    if (editRole === "Cashier") {
+    let active = true;
+    const loadAgents = async () => {
+      setIsLoadingAgents(true);
+      setAgentLoadError("");
+      try {
+        const allAgents: AgentDto[] = [];
+        let page = 1;
+        let totalItems = 0;
+        do {
+          const result = await agentsService.getAgents({ page, pageSize: 100 });
+          allAgents.push(...(result.results ?? []));
+          totalItems = result.totalItems ?? allAgents.length;
+          if (!result.results?.length) break;
+          page += 1;
+        } while (allAgents.length < totalItems);
+        if (active) setAgents(allAgents);
+      } catch (error: unknown) {
+        if (active) setAgentLoadError(getErrorMessage(error, t("users.error.failedToLoadAgents")));
+      } finally {
+        if (active) setIsLoadingAgents(false);
+      }
+    };
+    void loadAgents();
+    return () => { active = false; };
+  }, [agentLoadRetry, t]);
+
+  useEffect(() => {
+    if (editRole === "Cashier" || editRole === "Agent") {
       setEditUserType("Shop");
       setEditWarehouseId("");
     }
@@ -139,6 +196,7 @@ export const UserManagement = () => {
 
   const isEditShopRequired =
     editRole === "Cashier" ||
+    editRole === "Agent" ||
     editUserType === "Shop" ||
     (editUserType === "System" && !isSuperAdmin);
   const isEditWarehouseRequired =
@@ -244,6 +302,14 @@ export const UserManagement = () => {
         header: t("users.table.userType"),
       },
       {
+        accessorFn: (user) => user.agentId ? getAgentLabel(agentById.get(user.agentId), user.agentId) : "",
+        id: "agent",
+        header: t("users.table.agent"),
+        cell: ({ row }) => row.original.agentId
+          ? getAgentLabel(agentById.get(row.original.agentId), row.original.agentId)
+          : "-",
+      },
+      {
         accessorKey: "shopId",
         header: t("users.table.shop"),
         cell: (info) => info.getValue() || "-",
@@ -283,7 +349,7 @@ export const UserManagement = () => {
         ),
       },
     ],
-    [t],
+    [agentById, t],
   );
 
   const handleOpenCreate = () => {
@@ -298,6 +364,23 @@ export const UserManagement = () => {
     setIsSubmitting(true);
 
     try {
+      if (payload.role === "Agent") {
+        if (!payload.agentId || !payload.shopId || payload.userType !== "Shop" || payload.warehouseId !== null) {
+          toast.error(t("users.validation.agentAssignmentRequired"));
+          return;
+        }
+
+        const currentUsers = await getUsers();
+        const connectedUser = (Array.isArray(currentUsers) ? currentUsers : []).find(
+          (user: User) => user.agentId === payload.agentId,
+        );
+        if (connectedUser) {
+          setUsers(Array.isArray(currentUsers) ? currentUsers : []);
+          toast.error(t("users.error.agentAlreadyLinked"));
+          return;
+        }
+      }
+
       await createUser(
         payload.email,
         payload.role,
@@ -305,11 +388,12 @@ export const UserManagement = () => {
         payload.shopId,
         payload.warehouseId,
         payload.username,
+        payload.agentId,
       );
 
-      toast.success(t("users.success.userCreated"));
+      toast.success(payload.role === "Agent" ? t("users.success.agentUserCreated") : t("users.success.userCreated"));
       handleCloseCreate();
-      void loadUsers();
+      await loadUsers();
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, t("users.error.failedToCreate")));
     } finally {
@@ -349,7 +433,15 @@ export const UserManagement = () => {
                 userTypes={USER_TYPES}
                 roles={filteredRoles}
                 shops={shops.map((shop) => ({ id: String(shop.id), code: shop.code }))}
+                isLoadingShops={isLoadingShops}
+                shopLoadError={shopLoadError}
+                onRetryShops={() => void dispatch(fetchShops())}
                 warehouses={warehouses.map((warehouse) => ({ id: String(warehouse.id), code: warehouse.code }))}
+                agents={availableAgents}
+                linkedAgentIds={linkedAgentIds}
+                isLoadingAgents={isLoadingAgents}
+                agentLoadError={agentLoadError}
+                onRetryAgents={() => setAgentLoadRetry((current) => current + 1)}
                 isSubmitting={isSubmitting}
                 isSuperAdmin={isSuperAdmin}
                 isAdmin={isAdmin}
@@ -430,9 +522,9 @@ export const UserManagement = () => {
                 placeholder={t("users.form.selectRole")}
                 value={editRole}
                 onChange={(e) => setEditRole(e.target.value)}
-                disabled={isMutatingEdit}
+                disabled={isMutatingEdit || editingUser?.role === "Agent"}
               >
-                {filteredEditRoles.map((roleOption) => (
+                {editRoleOptions.map((roleOption) => (
                   <option key={roleOption.value} value={roleOption.value}>
                     {roleOption.label}
                   </option>
@@ -449,7 +541,7 @@ export const UserManagement = () => {
                   setEditShopId("");
                   setEditWarehouseId("");
                 }}
-                disabled={editRole === "Cashier" || isMutatingEdit}
+                disabled={editRole === "Cashier" || editRole === "Agent" || isMutatingEdit}
               >
                 {(editRole === "Cashier"
                   ? USER_TYPES.filter((type) => type.value === "Shop")

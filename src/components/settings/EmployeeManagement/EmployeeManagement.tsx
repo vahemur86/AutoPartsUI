@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Plus, Wallet, CalendarCheck2, Calculator, Percent, UserCog, Check, CircleX, Search, X, Pencil, Power, ChevronDown } from "lucide-react";
+import { Plus, Wallet, CalendarCheck2, Calculator, Percent, UserCog, Search, X, Pencil, Power, ChevronDown, Wifi, WifiOff, CircleHelp, UsersRound, Camera, ClipboardCheck, Wrench, Settings2, Clock3 } from "lucide-react";
 import { PrpServiceLoader } from "@/components/common/PrpServiceLoader";
 import { FormDrawer } from "@/components/common/FormDrawer";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
@@ -125,6 +125,17 @@ const sortPayrollRecords = (
   });
 };
 
+const AttendanceSourceIcon = ({ source }: { source: string }) => {
+  const Icon = source === "Hikvision"
+    ? Camera
+    : source === "Manual"
+      ? ClipboardCheck
+      : source === "ServiceOrder"
+        ? Wrench
+        : Settings2;
+  return <Icon size={12} aria-hidden="true" />;
+};
+
 const emptyEmployeeForm = () => ({
   id: null as number | null,
   firstName: "",
@@ -210,6 +221,7 @@ export const EmployeeManagement = () => {
   const [employeePercentages, setEmployeePercentages] = useState<EmployeeServicePercentageItem[]>([]);
   const [servicePercentagesByService, setServicePercentagesByService] = useState<EmployeeServicePercentageItem[]>([]);
   const [attendanceDate, setAttendanceDate] = useState(todayValue());
+  const [attendanceView, setAttendanceView] = useState<"daily" | "history">("daily");
   const [attendanceShopId, setAttendanceShopId] = useState(0);
   const [attendanceSearch, setAttendanceSearch] = useState("");
   const [isLoadingAttendance, setIsLoadingAttendance] = useState(false);
@@ -217,7 +229,9 @@ export const EmployeeManagement = () => {
   const [isSavingAttendance, setIsSavingAttendance] = useState(false);
   const [attendanceRefreshKey, setAttendanceRefreshKey] = useState(0);
   const [attendanceNotes, setAttendanceNotes] = useState<Record<number, string>>({});
-  const [attendanceStatus, setAttendanceStatus] = useState<Record<number, EmployeeAttendanceStatus>>({});
+  const [attendanceStatus, setAttendanceStatus] = useState<Record<number, EmployeeAttendanceStatus | undefined>>({});
+  const [attendanceDirty, setAttendanceDirty] = useState<Record<number, boolean>>({});
+  const [attendanceSources, setAttendanceSources] = useState<Record<number, string>>({});
   const [attendanceHistoryEmployeeId, setAttendanceHistoryEmployeeId] = useState(0);
   const [attendanceHistoryFromDate, setAttendanceHistoryFromDate] = useState(dateDaysAgo(29));
   const [attendanceHistoryToDate, setAttendanceHistoryToDate] = useState(todayValue());
@@ -225,6 +239,7 @@ export const EmployeeManagement = () => {
   const [attendanceHistoryLoadError, setAttendanceHistoryLoadError] = useState(false);
   const [attendanceHistoryRefreshKey, setAttendanceHistoryRefreshKey] = useState(0);
   const [payrollDate, setPayrollDate] = useState(todayValue());
+  const [payrollView, setPayrollView] = useState<"calculation" | "unpaid" | "history">("calculation");
   const [payrollShopId, setPayrollShopId] = useState(0);
   const [payrollEmployeeId, setPayrollEmployeeId] = useState(0);
   const [salaryHistoryEmployeeId, setSalaryHistoryEmployeeId] = useState(0);
@@ -487,7 +502,7 @@ export const EmployeeManagement = () => {
   }, [activeTab, depositView, allDepositsActiveOnly, allDepositsShopId, depositRefreshKey]);
 
   useEffect(() => {
-    if (activeTab !== "attendance") return;
+    if (activeTab !== "attendance" || attendanceView !== "history") return;
 
     if (!attendanceHistoryEmployeeId) {
       setAttendanceHistory([]);
@@ -527,7 +542,7 @@ export const EmployeeManagement = () => {
     return () => {
       isCurrentRequest = false;
     };
-  }, [activeTab, attendanceHistoryEmployeeId, attendanceHistoryFromDate, attendanceHistoryToDate, attendanceHistoryRefreshKey]);
+  }, [activeTab, attendanceView, attendanceHistoryEmployeeId, attendanceHistoryFromDate, attendanceHistoryToDate, attendanceHistoryRefreshKey]);
 
   useEffect(() => {
     if (activeTab !== "attendance") return;
@@ -535,6 +550,7 @@ export const EmployeeManagement = () => {
     let isCurrentRequest = true;
     setIsLoadingAttendance(true);
     setAttendanceLoadError(false);
+    setAttendanceDirty({});
     const loadAttendance = async () => {
       try {
         const data = await getAttendanceByDate(
@@ -542,25 +558,22 @@ export const EmployeeManagement = () => {
           attendanceShopId > 0 ? attendanceShopId : undefined,
         );
 
-        const nextStatus: Record<number, EmployeeAttendanceStatus> = {};
+        const nextStatus: Record<number, EmployeeAttendanceStatus | undefined> = {};
         const nextNotes: Record<number, string> = {};
+        const nextSources: Record<number, string> = {};
         data.forEach((item) => {
           nextStatus[item.employeeId] = item.status;
           nextNotes[item.employeeId] = item.notes ?? "";
+          nextSources[item.employeeId] = item.source ?? "";
         });
 
         attendanceRosterEmployees.forEach((employee) => {
-          if (!nextStatus[employee.id]) {
-            nextStatus[employee.id] = "Present";
-          }
-          if (nextNotes[employee.id] === undefined) {
-            nextNotes[employee.id] = "";
-          }
+          if (nextNotes[employee.id] === undefined) nextNotes[employee.id] = "";
         });
-
         if (isCurrentRequest) {
           setAttendanceStatus(nextStatus);
           setAttendanceNotes(nextNotes);
+          setAttendanceSources(nextSources);
         }
       } catch {
         if (isCurrentRequest) setAttendanceLoadError(true);
@@ -836,22 +849,40 @@ export const EmployeeManagement = () => {
   };
 
   const handleSaveAttendance = async () => {
+    const selectedEmployees = attendanceRosterEmployees.flatMap((employee) => {
+      const status = attendanceStatus[employee.id];
+      return attendanceDirty[employee.id] && status ? [{ employee, status }] : [];
+    });
+    if (selectedEmployees.length === 0) {
+      toast.info(t("serviceTemplates.employeeManagement.attendanceWorkspace.noSelectedAttendance"));
+      return;
+    }
     setIsSavingAttendance(true);
     try {
-      const tasks = attendanceRosterEmployees.map((employee) => {
+      const tasks = selectedEmployees.map(({ employee, status }) => {
         const payload: EmployeeAttendancePayload = {
           employeeId: employee.id,
           workDate: attendanceDate,
-          status: attendanceStatus[employee.id] ?? "Present",
+          status,
           notes: attendanceNotes[employee.id] || undefined,
         };
         return upsertEmployeeAttendance(payload);
       });
 
-      await Promise.all(tasks);
+      const saved = await Promise.all(tasks.filter((task) => task !== null));
+      setAttendanceSources((current) => ({
+        ...current,
+        ...Object.fromEntries(saved.map((item) => [item.employeeId, item.source ?? "Manual"])),
+      }));
+      setAttendanceDirty((current) => ({
+        ...current,
+        ...Object.fromEntries(saved.map((item) => [item.employeeId, false])),
+      }));
       toast.success(t("serviceTemplates.employeeManagement.messages.saved"));
-    } catch {
-      toast.error(t("serviceTemplates.employeeManagement.messages.attendanceSaveFailed"));
+    } catch (error) {
+      toast.error(error instanceof Error
+        ? error.message
+        : t("serviceTemplates.employeeManagement.messages.attendanceSaveFailed"));
     } finally {
       setIsSavingAttendance(false);
     }
@@ -861,6 +892,10 @@ export const EmployeeManagement = () => {
     setAttendanceStatus((current) => ({
       ...current,
       ...Object.fromEntries(attendanceEmployees.map((employee) => [employee.id, status])),
+    }));
+    setAttendanceDirty((current) => ({
+      ...current,
+      ...Object.fromEntries(attendanceEmployees.map((employee) => [employee.id, true])),
     }));
   };
 
@@ -960,7 +995,7 @@ export const EmployeeManagement = () => {
   };
 
   useEffect(() => {
-    if (activeTab !== "payroll") return;
+    if (activeTab !== "payroll" || payrollView !== "calculation") return;
     let isCurrent = true;
 
     const loadPayrollByDate = async () => {
@@ -1000,10 +1035,10 @@ export const EmployeeManagement = () => {
     return () => {
       isCurrent = false;
     };
-  }, [activeTab, payrollDate, payrollShopId, payrollEmployeeId, t]);
+  }, [activeTab, payrollView, payrollDate, payrollShopId, payrollEmployeeId, t]);
 
   useEffect(() => {
-    if (activeTab !== "payroll") return;
+    if (activeTab !== "payroll" || payrollView !== "unpaid") return;
     if (!salaryPaymentEmployeeId) {
       setUnpaidSalarySummary(null);
       setUnpaidSummaryError(false);
@@ -1033,10 +1068,10 @@ export const EmployeeManagement = () => {
     return () => {
       isCurrent = false;
     };
-  }, [activeTab, payrollDate, salaryPaymentEmployeeId, unpaidSummaryRefreshKey]);
+  }, [activeTab, payrollView, payrollDate, salaryPaymentEmployeeId, unpaidSummaryRefreshKey]);
 
   useEffect(() => {
-    if (activeTab !== "payroll") return;
+    if (activeTab !== "payroll" || payrollView !== "history") return;
 
     if (!salaryHistoryEmployeeId) {
       setSalaryHistory([]);
@@ -1075,6 +1110,7 @@ export const EmployeeManagement = () => {
     };
   }, [
     activeTab,
+    payrollView,
     salaryHistoryEmployeeId,
     salaryHistoryFromDate,
     salaryHistoryToDate,
@@ -1208,6 +1244,13 @@ export const EmployeeManagement = () => {
         id: "status",
         header: t("serviceTemplates.employeeManagement.columns.status"),
         cell: ({ row }) => t(`serviceTemplates.employeeManagement.attendanceStatus.${row.original.status}`),
+      }),
+      attendanceColumnHelper.display({
+        id: "source",
+        header: "Source",
+        cell: ({ row }) => row.original.source
+          ? <span className={styles.attendanceSourceBadge} data-source={row.original.source}>{row.original.source}</span>
+          : "—",
       }),
       attendanceColumnHelper.display({
         id: "notes",
@@ -1400,8 +1443,9 @@ export const EmployeeManagement = () => {
 
   const attendanceSummary = useMemo(() => {
     const present = attendanceEmployees.filter((employee) => attendanceStatus[employee.id] === "Present").length;
-    const absent = attendanceEmployees.length - present;
-    return { present, absent };
+    const absent = attendanceEmployees.filter((employee) => attendanceStatus[employee.id] === "Absent").length;
+    const unrecorded = attendanceEmployees.length - present - absent;
+    return { present, absent, unrecorded };
   }, [attendanceEmployees, attendanceStatus]);
 
   const payrollSummary = useMemo(
@@ -1630,25 +1674,28 @@ export const EmployeeManagement = () => {
                 </Button>
               </div>
             ) : (
-              <DataTable
-                data={filteredEmployees}
-                columns={employeeColumns}
-                pageSize={employeePageSize}
-                pageSizeOptions={[10, 20, 50]}
-                pageSizeLabel={t("serviceTemplates.employeeManagement.list.pageSizeLabel")}
-                pageIndex={employeePageIndex}
-                onPaginationChange={setEmployeePageIndex}
-                onPageSizeChange={(pageSize) => {
-                  setEmployeePageSize(pageSize);
-                  setEmployeePageIndex(0);
-                }}
-                paginationRangeLabel={({ from, to, total }) =>
-                  total > 0
-                    ? t("serviceTemplates.employeeManagement.list.rangeLabel", { from, to, total })
-                    : null
-                }
-                noResultsText={t("serviceTemplates.employeeManagement.list.emptyState")}
-              />
+              <div className={styles.employeeTableSkin}>
+                <DataTable
+                  data={filteredEmployees}
+                  columns={employeeColumns}
+                  pageSize={employeePageSize}
+                  pageSizeOptions={[10, 20, 50]}
+                  pageSizeLabel={t("serviceTemplates.employeeManagement.list.pageSizeLabel")}
+                  pageIndex={employeePageIndex}
+                  onPaginationChange={setEmployeePageIndex}
+                  onPageSizeChange={(pageSize) => {
+                    setEmployeePageSize(pageSize);
+                    setEmployeePageIndex(0);
+                  }}
+                  paginationRangeLabel={({ from, to, total }) =>
+                    total > 0
+                      ? t("serviceTemplates.employeeManagement.list.rangeLabel", { from, to, total })
+                      : null
+                  }
+                  noResultsText={t("serviceTemplates.employeeManagement.list.emptyState")}
+                  fitContainer
+                />
+              </div>
             )}
           </section>
 
@@ -1860,15 +1907,17 @@ export const EmployeeManagement = () => {
                   : t("serviceTemplates.employeeManagement.percentageWorkspace.noServiceRates")}
               </div>
             ) : (
-              <DataTable
-                key={percentageResultsView}
-                data={percentageResults}
-                columns={percentageColumns}
-                pageSize={10}
-                pageSizeOptions={[10, 20, 50]}
-                pageSizeLabel={t("serviceTemplates.employeeManagement.list.pageSizeLabel")}
-                noResultsText={t("common.noData")}
-              />
+              <div className={styles.employeeTableSkin}>
+                <DataTable
+                  key={percentageResultsView}
+                  data={percentageResults}
+                  columns={percentageColumns}
+                  pageSize={10}
+                  pageSizeOptions={[10, 20, 50]}
+                  pageSizeLabel={t("serviceTemplates.employeeManagement.list.pageSizeLabel")}
+                  noResultsText={t("common.noData")}
+                />
+              </div>
             )}
           </section>
 
@@ -2198,6 +2247,31 @@ export const EmployeeManagement = () => {
 
       {activeTab === "attendance" && (
         <div className={styles.stack}>
+          <nav className={styles.attendanceViews} role="tablist" aria-label={t("serviceTemplates.employeeManagement.attendanceWorkspace.viewNavigation")}>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={attendanceView === "daily"}
+              className={attendanceView === "daily" ? styles.attendanceViewActive : ""}
+              onClick={() => setAttendanceView("daily")}
+            >
+              <CalendarCheck2 size={16} aria-hidden="true" />
+              <span>{t("serviceTemplates.employeeManagement.attendanceWorkspace.dailyView")}</span>
+              <small>{t("serviceTemplates.employeeManagement.attendanceWorkspace.dailyViewDescription")}</small>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={attendanceView === "history"}
+              className={attendanceView === "history" ? styles.attendanceViewActive : ""}
+              onClick={() => setAttendanceView("history")}
+            >
+              <Clock3 size={16} aria-hidden="true" />
+              <span>{t("serviceTemplates.employeeManagement.attendanceWorkspace.historyView")}</span>
+              <small>{t("serviceTemplates.employeeManagement.attendanceWorkspace.historyViewDescription")}</small>
+            </button>
+          </nav>
+          {attendanceView === "daily" && <>
           <section className={`${styles.section} ${styles.attendanceWorkspace}`}>
             <div className={styles.workflowHeader}>
               <div className={styles.workflowTitle}>
@@ -2226,26 +2300,30 @@ export const EmployeeManagement = () => {
             <div className={styles.attendanceToolbar}>
               <div className={styles.attendanceSummary}>
                 <div className={`${styles.attendanceMetric} ${styles.attendancePresentMetric}`}>
-                  <span>{t("serviceTemplates.employeeManagement.attendanceWorkspace.presentCount")}</span>
+                  <span><Wifi size={14} aria-hidden="true" />{t("serviceTemplates.employeeManagement.attendanceWorkspace.presentCount")}</span>
                   <strong>{attendanceSummary.present}</strong>
                 </div>
                 <div className={`${styles.attendanceMetric} ${styles.attendanceAbsentMetric}`}>
-                  <span>{t("serviceTemplates.employeeManagement.attendanceWorkspace.absentCount")}</span>
+                  <span><WifiOff size={14} aria-hidden="true" />{t("serviceTemplates.employeeManagement.attendanceWorkspace.absentCount")}</span>
                   <strong>{attendanceSummary.absent}</strong>
                 </div>
                 <div className={styles.attendanceMetric}>
-                  <span>{t("serviceTemplates.employeeManagement.attendanceWorkspace.employeeCount")}</span>
+                  <span><CircleHelp size={14} aria-hidden="true" />{t("serviceTemplates.employeeManagement.attendanceWorkspace.unrecordedCount")}</span>
+                  <strong>{attendanceSummary.unrecorded}</strong>
+                </div>
+                <div className={styles.attendanceMetric}>
+                  <span><UsersRound size={14} aria-hidden="true" />{t("serviceTemplates.employeeManagement.attendanceWorkspace.employeeCount")}</span>
                   <strong>{attendanceEmployees.length} / {attendanceRosterEmployees.length}</strong>
                 </div>
               </div>
               <div className={styles.attendanceActions}>
                 <Button variant="secondary" size="small" onClick={() => setAllAttendance("Present")} disabled={attendanceEmployees.length === 0 || isLoadingAttendance || isSavingAttendance}>
-                  <Check size={14} />{t(attendanceSearch ? "serviceTemplates.employeeManagement.attendanceWorkspace.markShownPresent" : "serviceTemplates.employeeManagement.actions.markAllPresent")}
+                  <Wifi size={14} />{t(attendanceSearch ? "serviceTemplates.employeeManagement.attendanceWorkspace.markShownPresent" : "serviceTemplates.employeeManagement.actions.markAllPresent")}
                 </Button>
                 <Button variant="secondary" size="small" onClick={() => setAllAttendance("Absent")} disabled={attendanceEmployees.length === 0 || isLoadingAttendance || isSavingAttendance}>
-                  <CircleX size={14} />{t(attendanceSearch ? "serviceTemplates.employeeManagement.attendanceWorkspace.markShownAbsent" : "serviceTemplates.employeeManagement.actions.markAllAbsent")}
+                  <WifiOff size={14} />{t(attendanceSearch ? "serviceTemplates.employeeManagement.attendanceWorkspace.markShownAbsent" : "serviceTemplates.employeeManagement.actions.markAllAbsent")}
                 </Button>
-                <Button onClick={() => void handleSaveAttendance()} disabled={attendanceRosterEmployees.length === 0 || isLoadingAttendance || isSavingAttendance}>
+                <Button onClick={() => void handleSaveAttendance()} disabled={attendanceRosterEmployees.length === 0 || isLoadingAttendance || isSavingAttendance || attendanceRosterEmployees.every((employee) => !attendanceDirty[employee.id] || attendanceStatus[employee.id] === undefined)}>
                   <CalendarCheck2 size={15} />{isSavingAttendance ? t("common.saving") : t("serviceTemplates.employeeManagement.actions.saveAttendance")}
                 </Button>
               </div>
@@ -2277,13 +2355,60 @@ export const EmployeeManagement = () => {
               <div className={styles.attendanceRoster}>
                 {attendanceEmployees.map((employee) => {
                   const employeeId = employee.id;
-                  const status = attendanceStatus[employeeId] ?? "Present";
+                  const status = attendanceStatus[employeeId];
                   const isPresent = status === "Present";
+                  const isAbsent = status === "Absent";
                   return (
-                    <article className={styles.attendanceRosterRow} key={employeeId}>
+                    <article
+                      className={`${styles.attendanceRosterRow} ${isPresent ? styles.attendanceRosterPresent : isAbsent ? styles.attendanceRosterAbsent : ""}`}
+                      key={employeeId}
+                    >
                       <div className={styles.attendanceEmployeeIdentity}>
-                        <strong>{employee.fullName}</strong>
-                        <span>{employee.phone || employee.shopCode || "-"}</span>
+                        <span className={styles.attendanceAvatar} aria-hidden="true">
+                          {employee.fullName.split(/\s+/).slice(0, 2).map((part) => part[0] ?? "").join("").toUpperCase()}
+                        </span>
+                        <div className={styles.attendanceEmployeeCopy}>
+                          <strong>{employee.fullName}</strong>
+                          <span>{employee.phone || employee.shopCode || "-"}</span>
+                          <span className={styles.attendanceRecordMeta}>
+                            {status === "Present" ? (
+                              <span
+                                className={`${styles.attendanceModeBadge} ${styles.attendanceOnline}`}
+                                aria-label={t("serviceTemplates.employeeManagement.attendanceWorkspace.onlineAttendanceStatus", {
+                                  status: t("serviceTemplates.employeeManagement.attendanceStatus.Present"),
+                                  mode: t("serviceTemplates.employeeManagement.attendanceStatus.online"),
+                                })}
+                              >
+                                <Wifi size={14} aria-hidden="true" />
+                                <span>{t("serviceTemplates.employeeManagement.attendanceStatus.Present")}</span>
+                                <strong>{t("serviceTemplates.employeeManagement.attendanceStatus.online")}</strong>
+                              </span>
+                            ) : status === "Absent" ? (
+                              <span
+                                className={`${styles.attendanceModeBadge} ${styles.attendanceOffline}`}
+                                aria-label={t("serviceTemplates.employeeManagement.attendanceWorkspace.onlineAttendanceStatus", {
+                                  status: t("serviceTemplates.employeeManagement.attendanceStatus.Absent"),
+                                  mode: t("serviceTemplates.employeeManagement.attendanceStatus.offline"),
+                                })}
+                              >
+                                <WifiOff size={14} aria-hidden="true" />
+                                <span>{t("serviceTemplates.employeeManagement.attendanceStatus.Absent")}</span>
+                                <strong>{t("serviceTemplates.employeeManagement.attendanceStatus.offline")}</strong>
+                              </span>
+                            ) : (
+                              <span className={`${styles.attendanceModeBadge} ${styles.attendanceUnrecorded}`}>
+                                <CircleHelp size={14} aria-hidden="true" />
+                                <span>{t("serviceTemplates.employeeManagement.attendanceStatus.notRecorded")}</span>
+                              </span>
+                            )}
+                            {attendanceSources[employeeId] && (
+                              <span className={styles.attendanceSourceBadge} data-source={attendanceSources[employeeId]}>
+                                <AttendanceSourceIcon source={attendanceSources[employeeId]} />
+                                {attendanceSources[employeeId]}
+                              </span>
+                            )}
+                          </span>
+                        </div>
                       </div>
                       <div className={styles.attendanceChoice} role="group" aria-label={t("serviceTemplates.employeeManagement.attendanceWorkspace.statusForEmployee", { employee: employee.fullName })}>
                         <Button
@@ -2292,21 +2417,27 @@ export const EmployeeManagement = () => {
                           variant="secondary"
                           aria-pressed={isPresent}
                           className={`${styles.attendanceChoiceButton} ${isPresent ? styles.attendancePresentSelected : ""}`}
-                          onClick={() => setAttendanceStatus((previous) => ({ ...previous, [employeeId]: "Present" }))}
-                          disabled={isSavingAttendance}
+                          onClick={() => {
+                            setAttendanceStatus((previous) => ({ ...previous, [employeeId]: "Present" }));
+                            setAttendanceDirty((previous) => ({ ...previous, [employeeId]: true }));
+                          }}
+                          disabled={isSavingAttendance || isLoadingAttendance}
                         >
-                          <Check size={14} />{t("serviceTemplates.employeeManagement.attendanceStatus.Present")}
+                          <Wifi size={14} />{t("serviceTemplates.employeeManagement.attendanceStatus.Present")}
                         </Button>
                         <Button
                           type="button"
                           size="small"
                           variant="secondary"
-                          aria-pressed={!isPresent}
-                          className={`${styles.attendanceChoiceButton} ${!isPresent ? styles.attendanceAbsentSelected : ""}`}
-                          onClick={() => setAttendanceStatus((previous) => ({ ...previous, [employeeId]: "Absent" }))}
-                          disabled={isSavingAttendance}
+                          aria-pressed={isAbsent}
+                          className={`${styles.attendanceChoiceButton} ${isAbsent ? styles.attendanceAbsentSelected : ""}`}
+                          onClick={() => {
+                            setAttendanceStatus((previous) => ({ ...previous, [employeeId]: "Absent" }));
+                            setAttendanceDirty((previous) => ({ ...previous, [employeeId]: true }));
+                          }}
+                          disabled={isSavingAttendance || isLoadingAttendance}
                         >
-                          <CircleX size={14} />{t("serviceTemplates.employeeManagement.attendanceStatus.Absent")}
+                          <WifiOff size={14} />{t("serviceTemplates.employeeManagement.attendanceStatus.Absent")}
                         </Button>
                       </div>
                       <TextField
@@ -2314,11 +2445,14 @@ export const EmployeeManagement = () => {
                         aria-label={t("serviceTemplates.employeeManagement.attendanceWorkspace.noteForEmployee", { employee: employee.fullName })}
                         placeholder={t("serviceTemplates.employeeManagement.attendanceWorkspace.notePlaceholder")}
                         value={attendanceNotes[employeeId] || ""}
-                        onChange={(event) => setAttendanceNotes((previous) => ({
-                          ...previous,
-                          [employeeId]: event.target.value,
-                        }))}
-                        disabled={isSavingAttendance}
+                        onChange={(event) => {
+                          setAttendanceNotes((previous) => ({
+                            ...previous,
+                            [employeeId]: event.target.value,
+                          }));
+                          setAttendanceDirty((previous) => ({ ...previous, [employeeId]: true }));
+                        }}
+                        disabled={isSavingAttendance || isLoadingAttendance}
                       />
                     </article>
                   );
@@ -2326,6 +2460,8 @@ export const EmployeeManagement = () => {
               </div>
             )}
           </section>
+          </>}
+          {attendanceView === "history" && (
           <section className={styles.section}>
             <div className={styles.header}>
               <h3 className={styles.title}>{t("serviceTemplates.employeeManagement.sections.attendanceHistory")}</h3>
@@ -2367,7 +2503,9 @@ export const EmployeeManagement = () => {
                   </Button>
                 </div>
               ) : attendanceHistory.length > 0 ? (
-                <DataTable data={attendanceHistory} columns={attendanceColumns} pageSize={10} />
+                <div className={styles.employeeTableSkin}>
+                  <DataTable data={attendanceHistory} columns={attendanceColumns} pageSize={10} fitContainer />
+                </div>
               ) : (
                 <div className={styles.attendanceState}>
                   {t("serviceTemplates.employeeManagement.attendanceWorkspace.noHistory")}
@@ -2379,16 +2517,48 @@ export const EmployeeManagement = () => {
               </div>
             )}
           </section>
+          )}
         </div>
       )}
 
       {activeTab === "payroll" && (
-        salaryLoading ? (
-          <div className={styles.payrollTabLoader}>
-            <PrpServiceLoader />
-          </div>
-        ) : (
         <div className={styles.stack}>
+          <nav className={styles.payrollViews} role="tablist" aria-label={t("serviceTemplates.employeeManagement.payrollWorkspace.viewNavigation")}>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={payrollView === "calculation"}
+              className={payrollView === "calculation" ? styles.payrollViewActive : ""}
+              onClick={() => setPayrollView("calculation")}
+            >
+              <Calculator size={17} aria-hidden="true" />
+              <span>{t("serviceTemplates.employeeManagement.payrollWorkspace.calculationView")}</span>
+              <small>{t("serviceTemplates.employeeManagement.payrollWorkspace.calculationViewDescription")}</small>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={payrollView === "unpaid"}
+              className={payrollView === "unpaid" ? styles.payrollViewActive : ""}
+              onClick={() => setPayrollView("unpaid")}
+            >
+              <Wallet size={17} aria-hidden="true" />
+              <span>{t("serviceTemplates.employeeManagement.payrollWorkspace.unpaidView")}</span>
+              <small>{t("serviceTemplates.employeeManagement.payrollWorkspace.unpaidViewDescription")}</small>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={payrollView === "history"}
+              className={payrollView === "history" ? styles.payrollViewActive : ""}
+              onClick={() => setPayrollView("history")}
+            >
+              <Clock3 size={17} aria-hidden="true" />
+              <span>{t("serviceTemplates.employeeManagement.payrollWorkspace.historyView")}</span>
+              <small>{t("serviceTemplates.employeeManagement.payrollWorkspace.historyViewDescription")}</small>
+            </button>
+          </nav>
+          {payrollView === "calculation" && <>
           <section className={`${styles.section} ${styles.payrollWorkspace}`}>
             <div className={styles.workflowHeader}>
               <div className={styles.workflowTitle}>
@@ -2461,7 +2631,7 @@ export const EmployeeManagement = () => {
                     <strong>{payrollSummary.paidCount}</strong>
                   </div>
                 </div>
-                <div className={styles.payrollTable}>
+                <div className={`${styles.payrollTable} ${styles.employeeTableSkin}`}>
                   <DataTable data={dailyPayroll} columns={dailySalaryColumns} pageSize={10} fitContainer />
                 </div>
               </>
@@ -2489,6 +2659,8 @@ export const EmployeeManagement = () => {
               </div>
             )}
           </section>
+          </>}
+          {payrollView === "unpaid" && (
           <section className={`${styles.section} ${styles.unpaidSalaryWorkspace}`}>
             <div className={styles.payrollResultsHeader}>
               <div>
@@ -2617,6 +2789,8 @@ export const EmployeeManagement = () => {
               </>
             )}
           </section>
+          )}
+          {payrollView === "history" && (
           <section className={styles.section}>
             <div className={styles.header}>
               <h3 className={styles.title}>{t("serviceTemplates.employeeManagement.sections.salaryHistory")}</h3>
@@ -2651,7 +2825,7 @@ export const EmployeeManagement = () => {
               salaryHistoryLoading ? (
                 <PrpServiceLoader />
               ) : salaryHistory.length > 0 ? (
-                <div className={styles.payrollTable}>
+                <div className={`${styles.payrollTable} ${styles.employeeTableSkin}`}>
                   <DataTable data={salaryHistory} columns={salaryHistoryColumns} pageSize={10} fitContainer />
                 </div>
               ) : (
@@ -2665,8 +2839,8 @@ export const EmployeeManagement = () => {
               </div>
             )}
           </section>
+          )}
         </div>
-        )
       )}
 
       {!!salaryToPayConfirm && (

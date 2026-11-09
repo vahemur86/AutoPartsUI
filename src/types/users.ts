@@ -5,6 +5,8 @@ export interface User {
   userType: string;
   shopId: number | null;
   warehouseId: number | null;
+  agentId?: string | null;
+  agentName?: string | null;
   email: string;
   isActive: boolean;
   createdAt: string;
@@ -27,4 +29,5 @@ export interface CreateUserPayload {
   shopId: number | null;
   warehouseId: number | null;
   username: string;
+  agentId?: string;
 }

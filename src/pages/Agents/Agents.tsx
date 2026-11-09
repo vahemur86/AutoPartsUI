@@ -7,8 +7,10 @@ import { ChartNoAxesColumn, ChevronLeft, ChevronRight, Eye, Filter, Plus, Rotate
 import { DataTable, TextField, Button, Select } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
 import { agentsService } from "@/services/agents";
+import { getUsers } from "@/services/users";
 import { getApiErrorMessage, getAgentTypeIcon, getAgentTypeColor } from "@/utils";
 import type { AgentDto, AgentTypeDto } from "@/types/agents";
+import type { User } from "@/types/users";
 import { AgentStatus } from "@/types/agents";
 import { getAgentSummaryCounts } from "./agentSummary";
 import { AgentActionButton, AgentIconButton } from "./AgentActionButton";
@@ -71,6 +73,9 @@ export const Agents = () => {
   const [items, setItems] = useState<AgentDto[]>([]);
   const [total, setTotal] = useState(0);
   const [agentTypes, setAgentTypes] = useState<AgentTypeDto[]>([]);
+  const [linkedAgentIds, setLinkedAgentIds] = useState<Set<string>>(new Set());
+  const [isLoadingAccountLinks, setIsLoadingAccountLinks] = useState(true);
+  const [accountLinksUnavailable, setAccountLinksUnavailable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
@@ -96,6 +101,27 @@ export const Agents = () => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    void getUsers()
+      .then((users: User[]) => {
+        if (active) {
+          setLinkedAgentIds(new Set(users.map((user) => user.agentId).filter((id): id is string => !!id)));
+          setAccountLinksUnavailable(false);
+        }
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setAccountLinksUnavailable(true);
+          toast.error(getApiErrorMessage(error, t("agents.errors.loadFailed")));
+        }
+      })
+      .finally(() => {
+        if (active) setIsLoadingAccountLinks(false);
+      });
+    return () => { active = false; };
+  }, [t]);
 
   // Load agents
   const load = useCallback(async () => {
@@ -208,6 +234,16 @@ export const Agents = () => {
           );
         },
       },
+      {
+        id: "portalAccount",
+        header: t("agents.portalAccount.title"),
+        cell: ({ row }: { row: { original: AgentDto } }) => {
+          if (isLoadingAccountLinks) return t("agents.portalAccount.loading");
+          if (linkedAgentIds.has(row.original.id)) return t("agents.portalAccount.connected");
+          if (accountLinksUnavailable) return t("agents.portalAccount.unknown");
+          return t("agents.portalAccount.notConnected");
+        },
+      },
       { 
         accessorKey: "registrationDate", 
         header: t("agents.fields.registrationDate"),
@@ -237,7 +273,7 @@ export const Agents = () => {
         ),
       },
     ],
-    [navigate, t],
+    [accountLinksUnavailable, isLoadingAccountLinks, linkedAgentIds, navigate, t],
   );
 
   const activeCount = items.filter((item) => Number(item.status) === AgentStatus.Active).length;
@@ -401,4 +437,3 @@ export const Agents = () => {
 };
 
 export default Agents;
-

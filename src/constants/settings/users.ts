@@ -4,6 +4,7 @@ export const ROLES = [
   { value: "Programmer", label: "Programmer" },
   { value: "Operator", label: "Operator" },
   { value: "Cashier", label: "Cashier" },
+  { value: "Agent", label: "Agent" },
   { value: "Admin", label: "Admin" },
 ];
 

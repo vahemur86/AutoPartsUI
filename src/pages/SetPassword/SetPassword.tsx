@@ -324,8 +324,7 @@ export const SetPassword = () => {
           <Button
             type="submit"
             variant="primary"
-            size="large"
-            fullWidth
+            size="medium"
             className={styles.loginButton}
             disabled={isLoading}
           >
@@ -333,7 +332,9 @@ export const SetPassword = () => {
               t("auth.setPassword.submitting")
             ) : (
               <>
-                <KeyRound size={17} aria-hidden="true" />
+                <span className={styles.loginButtonIcon} aria-hidden="true">
+                  <KeyRound size={17} strokeWidth={2.5} />
+                </span>
                 {t("auth.setPassword.submit")}
               </>
             )}

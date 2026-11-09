@@ -13,6 +13,7 @@ export const createUser = async (
   shopId: number | null,
   warehouseId: number | null,
   username: string | null,
+  agentId?: string | null,
 ) => {
   try {
     const response = await api.post(`/Users`, {
@@ -22,6 +23,7 @@ export const createUser = async (
       userType,
       shopId,
       warehouseId,
+      ...(agentId ? { agentId } : {}),
     });
 
     return response.data;

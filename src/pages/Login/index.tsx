@@ -49,6 +49,7 @@ const FALLBACK_LANGUAGES = [
 
 const getLoginRedirectPath = (role: string, isMobile: boolean) => {
   const userRole = role.toLowerCase();
+  if (userRole === "agent") return "/agent-portal";
   if (userRole === "operator") return "/operator";
   if (userRole === "cashier") return "/shop-operator";
   if (userRole === "programmer") return "/programmer";
@@ -199,7 +200,12 @@ export const Login = () => {
 
     if (login.fulfilled.match(resultAction)) {
       setIsRedirecting(true);
-      await initializeDefaultLanguage();
+      if (resultAction.payload.role.toLowerCase() === "agent") {
+        await i18n.changeLanguage(selectedLanguageCode);
+        localStorage.setItem("i18nextLng", selectedLanguageCode);
+      } else {
+        await initializeDefaultLanguage();
+      }
       toast.success(t("auth.login.welcomeBack"));
       await new Promise<void>((resolve) => window.setTimeout(resolve, 2500));
       navigate(
@@ -387,8 +393,7 @@ export const Login = () => {
           <Button
             type="submit"
             variant="primary"
-            size="large"
-            fullWidth
+            size="medium"
             className={styles.loginButton}
             disabled={isLoading}
           >
@@ -396,7 +401,9 @@ export const Login = () => {
               t("auth.login.loggingIn")
             ) : (
               <>
-                <LogIn size={17} aria-hidden="true" />
+                <span className={styles.loginButtonIcon} aria-hidden="true">
+                  <LogIn size={17} strokeWidth={2.5} />
+                </span>
                 {t("auth.login.submit")}
               </>
             )}

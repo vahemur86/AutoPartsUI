@@ -22,6 +22,10 @@ import {
   Boxes,
   WalletCards,
   ArrowRight,
+  Camera,
+  Gem,
+  Activity,
+  Mail,
 } from "lucide-react";
 
 // components
@@ -45,6 +49,7 @@ const useSettingsNavigation = () => {
     productsAndCatalysts: t("settings.groups.productsAndCatalysts"),
     customersAndSales: t("settings.groups.customersAndSales"),
     financialSettings: t("settings.groups.financialSettings"),
+    integrations: t("settings.groups.integrations"),
   };
 
   const navigationItems: NavItem[] = [
@@ -153,6 +158,34 @@ const useSettingsNavigation = () => {
       group: groups.financialSettings,
       groupIcon: WalletCards,
     },
+    {
+      path: "/hikvision",
+      label: t("settings.navigation.hikvision"),
+      icon: Camera,
+      group: groups.integrations,
+      groupIcon: Camera,
+    },
+    {
+      path: "/kitco",
+      label: t("settings.navigation.kitco"),
+      icon: Gem,
+      group: groups.integrations,
+      groupIcon: Camera,
+    },
+    {
+      path: "/rate-am",
+      label: t("settings.navigation.rateAm"),
+      icon: Activity,
+      group: groups.integrations,
+      groupIcon: Camera,
+    },
+    {
+      path: "/azure-email",
+      label: t("settings.navigation.azureEmail"),
+      icon: Mail,
+      group: groups.integrations,
+      groupIcon: Camera,
+    },
   ];
 
   const sectionDefinitions = [
@@ -161,6 +194,7 @@ const useSettingsNavigation = () => {
     { key: "productsAndCatalysts", icon: Boxes },
     { key: "customersAndSales", icon: Users },
     { key: "financialSettings", icon: WalletCards },
+    { key: "integrations", icon: Camera },
   ] as const;
 
   const sections: SettingsSection[] = sectionDefinitions.map(

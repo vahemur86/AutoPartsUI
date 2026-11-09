@@ -170,6 +170,7 @@ export interface EmployeeAttendanceItem {
   employeeFullName: string;
   workDate: string;
   status: EmployeeAttendanceStatus;
+  source?: "Manual" | "ServiceOrder" | "Hikvision" | "System" | string;
   notes?: string | null;
   createdAt: string;
 }

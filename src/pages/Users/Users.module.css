@@ -162,6 +162,30 @@
   background: rgba(66, 143, 137, 0.1);
 }
 
+.roleAgent {
+  color: #e5d29a;
+  border-color: rgba(196, 169, 106, 0.34);
+  background: rgba(196, 169, 106, 0.14);
+}
+
+.agentLookupMessage {
+  color: rgba(226, 231, 221, 0.68);
+  font-size: 12px;
+}
+
+.agentLookupError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(238, 110, 117, 0.34);
+  border-radius: 7px;
+  background: rgba(104, 35, 43, 0.21);
+  color: #ffd9dc;
+  font-size: 12px;
+}
+
 .roleDefault {
   color: #c4c8c3;
   border-color: rgba(160, 166, 161, 0.18);

@@ -12,17 +12,21 @@ import { getApiErrorMessage } from "@/utils";
 
 // types
 import type { MetalPrice } from "@/types/settings";
+import type { KitcoQuotaSnapshot } from "@/types/kitco";
+import { KitcoApiError } from "@/types/kitco";
 
 interface MetalPricesState {
   prices: MetalPrice[];
   isLoading: boolean;
   error: string | null;
+  kitcoQuota: KitcoQuotaSnapshot | null;
 }
 
 const initialState: MetalPricesState = {
   prices: [],
   isLoading: false,
   error: null,
+  kitcoQuota: null,
 };
 
 // Async thunk for fetching current metal prices
@@ -32,11 +36,17 @@ export const fetchMetalPrices = createAsyncThunk<
   { rejectValue: string }
 >(
   "metalPrices/fetchMetalPrices",
-  async (cashRegisterId, { rejectWithValue }) => {
+  async (cashRegisterId, { rejectWithValue, dispatch }) => {
     try {
-      const data = await getMetalPrices(cashRegisterId);
+      const data = await getMetalPrices(cashRegisterId, (quota) => {
+        dispatch(setKitcoQuota(quota));
+      });
       return data;
     } catch (error: unknown) {
+      if (error instanceof KitcoApiError) {
+        if (error.quota) dispatch(setKitcoQuota(error.quota));
+        if (error.statusCode === 402) return rejectWithValue("KITCO_PAYMENT_REQUIRED");
+      }
       return rejectWithValue(
         getApiErrorMessage(error, "Failed to fetch current metal prices"),
       );
@@ -50,6 +60,9 @@ const metalPricesSlice = createSlice({
   reducers: {
     clearPricesError: (state) => {
       state.error = null;
+    },
+    setKitcoQuota: (state, action: PayloadAction<KitcoQuotaSnapshot>) => {
+      state.kitcoQuota = { ...state.kitcoQuota, ...action.payload };
     },
   },
   extraReducers: (builder) => {
@@ -73,5 +86,5 @@ const metalPricesSlice = createSlice({
   },
 });
 
-export const { clearPricesError } = metalPricesSlice.actions;
+export const { clearPricesError, setKitcoQuota } = metalPricesSlice.actions;
 export default metalPricesSlice.reducer;

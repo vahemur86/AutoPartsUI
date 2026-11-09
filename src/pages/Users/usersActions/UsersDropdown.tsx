@@ -9,6 +9,7 @@ import styles from "../Users.module.css";
 
 // types
 import type { CreateUserPayload } from "@/types/users";
+import type { AgentDto } from "@/types/agents";
 
 interface UsersDropdownProps {
   open: boolean;
@@ -17,7 +18,15 @@ interface UsersDropdownProps {
   userTypes: { value: string; label: string }[];
   roles: { value: string; label: string }[];
   shops: { id: string; code: string }[];
+  isLoadingShops: boolean;
+  shopLoadError: string | null;
+  onRetryShops: () => void;
   warehouses: { id: string; code: string }[];
+  agents: AgentDto[];
+  linkedAgentIds: string[];
+  isLoadingAgents: boolean;
+  agentLoadError: string;
+  onRetryAgents: () => void;
   isSubmitting?: boolean;
   isSuperAdmin: boolean;
   isAdmin: boolean;
@@ -29,6 +38,8 @@ const initialFormState = {
   userType: "",
   shopId: "",
   warehouseId: "",
+  username: "",
+  agentId: "",
   selectedCountry: "AM" as const,
 };
 
@@ -39,7 +50,15 @@ export const UsersDropdown = ({
   userTypes,
   roles,
   shops,
+  isLoadingShops,
+  shopLoadError,
+  onRetryShops,
   warehouses,
+  agents,
+  linkedAgentIds,
+  isLoadingAgents,
+  agentLoadError,
+  onRetryAgents,
   isSubmitting = false,
   isSuperAdmin,
   isAdmin,
@@ -57,17 +76,20 @@ export const UsersDropdown = ({
   );
 
   const isCashier = form.role === "Cashier";
-  const resolvedUserType = isCashier ? "Shop" : form.userType;
+  const isAgent = form.role === "Agent";
+  const resolvedUserType = isCashier || isAgent ? "Shop" : form.userType;
   const isShopRequired =
-    isCashier || resolvedUserType === "Shop" || (resolvedUserType === "System" && !isSuperAdmin);
+    isCashier || isAgent || resolvedUserType === "Shop" || (resolvedUserType === "System" && !isSuperAdmin);
   const isWarehouseRequired =
-    resolvedUserType === "Warehouse" || (resolvedUserType === "System" && !isSuperAdmin);
+    !isAgent && (resolvedUserType === "Warehouse" || (resolvedUserType === "System" && !isSuperAdmin));
 
-  const isEmailValid = /\S+@\S+\.\S+/.test(form.email);
+  const isEmailValid = /\S+@\S+\.\S+/.test(form.email.trim());
+  const isUsernameValid = form.username.trim().length > 0;
   const isRoleValid = !!form.role;
   const isUserTypeValid = !!resolvedUserType;
-  const isShopValid = isShopRequired ? !!form.shopId : true;
+  const isShopValid = isShopRequired ? Number.isInteger(Number(form.shopId)) && Number(form.shopId) > 0 : true;
   const isWarehouseValid = isWarehouseRequired ? !!form.warehouseId : true;
+  const isAgentValid = !isAgent || !!form.agentId.trim();
 
   useEffect(() => {
     if (open) {
@@ -81,15 +103,26 @@ export const UsersDropdown = ({
 
   const handleSave = () => {
     setHasTriedSubmit(true);
-    if (!isEmailValid || !isRoleValid || !isUserTypeValid || !isShopValid || !isWarehouseValid) return;
+    if (!isEmailValid || !isUsernameValid || !isRoleValid || !isUserTypeValid || !isShopValid || !isWarehouseValid || !isAgentValid) return;
 
     onSave({
-      email: form.email,
+      email: form.email.trim(),
       role: form.role,
       userType: resolvedUserType,
       shopId: form.shopId ? parseInt(form.shopId, 10) : null,
-      warehouseId: form.warehouseId ? parseInt(form.warehouseId, 10) : null,
-      username: form.email,
+      warehouseId: isAgent ? null : form.warehouseId ? parseInt(form.warehouseId, 10) : null,
+      username: form.username.trim(),
+      ...(isAgent ? { agentId: form.agentId } : {}),
+    });
+  };
+
+  const handleRoleChange = (role: string) => {
+    updateField({
+      role,
+      userType: role === "Agent" || role === "Cashier" ? "Shop" : "",
+      shopId: "",
+      warehouseId: "",
+      agentId: "",
     });
   };
 
@@ -135,6 +168,16 @@ export const UsersDropdown = ({
     >
       <div className={styles.userCreateForm}>
         <TextField
+          label={t("users.form.username")}
+          placeholder={t("users.form.enterUsername")}
+          value={form.username}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => updateField({ username: e.target.value })}
+          error={hasTriedSubmit && !isUsernameValid}
+          helperText={hasTriedSubmit && !isUsernameValid ? t("users.validation.usernameRequired") : ""}
+          disabled={isSubmitting}
+        />
+
+        <TextField
           label={t("users.form.email")}
           placeholder={t("users.form.enterEmail")}
           value={form.email}
@@ -149,7 +192,7 @@ export const UsersDropdown = ({
           label={t("users.form.role")}
           placeholder={t("users.form.selectRole")}
           value={form.role}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => updateField({ role: e.target.value })}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => handleRoleChange(e.target.value)}
           error={hasTriedSubmit && !isRoleValid}
           helperText={hasTriedSubmit && !isRoleValid ? t("users.validation.roleRequired") : ""}
           disabled={isSubmitting}
@@ -169,10 +212,10 @@ export const UsersDropdown = ({
           onChange={(e: ChangeEvent<HTMLSelectElement>) => updateField({ userType: e.target.value, shopId: "", warehouseId: "" })}
           error={hasTriedSubmit && !isUserTypeValid}
           helperText={hasTriedSubmit && !isUserTypeValid ? t("users.validation.userTypeRequired") : ""}
-          disabled={isAdmin || isSubmitting || isCashier}
+          disabled={isAdmin || isSubmitting || isCashier || isAgent}
         >
           <option value="">{t("users.form.selectUserType")}</option>
-          {(isCashier
+          {(isCashier || isAgent
             ? userTypes.filter((type) => type.value === "Shop")
             : userTypes
           ).map((type) => (
@@ -182,6 +225,40 @@ export const UsersDropdown = ({
           ))}
         </Select>
 
+        {isAgent && (
+          <>
+            <Select
+              label={t("users.form.agent")}
+              placeholder={t("users.form.selectAgent")}
+              value={form.agentId}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => updateField({ agentId: e.target.value })}
+              error={hasTriedSubmit && !isAgentValid}
+              helperText={hasTriedSubmit && !isAgentValid ? t("users.validation.agentRequired") : ""}
+              disabled={isSubmitting || isLoadingAgents || !!agentLoadError}
+            >
+              <option value="">{t("users.form.selectAgent")}</option>
+              {agents.map((agent) => {
+                const fullName = [agent.firstName, agent.lastName].filter(Boolean).join(" ") || agent.customer?.fullName || agent.code;
+                return (
+                  <option key={agent.id} value={agent.id} disabled={linkedAgentIds.includes(agent.id)}>
+                    {fullName} · {agent.code}
+                  </option>
+                );
+              })}
+            </Select>
+            {isLoadingAgents && <span className={styles.agentLookupMessage}>{t("users.status.loadingAgents")}</span>}
+            {agentLoadError && (
+              <div className={styles.agentLookupError} role="alert">
+                <span>{agentLoadError}</span>
+                <Button variant="secondary" size="small" onClick={onRetryAgents} disabled={isSubmitting}>{t("common.retry")}</Button>
+              </div>
+            )}
+            {!isLoadingAgents && !agentLoadError && agents.length === 0 && (
+              <span className={styles.agentLookupMessage}>{t("users.status.noAvailableAgents")}</span>
+            )}
+          </>
+        )}
+
         {isShopRequired && (
           <Select
             label={t("users.form.shop")}
@@ -190,7 +267,7 @@ export const UsersDropdown = ({
             onChange={(e: ChangeEvent<HTMLSelectElement>) => updateField({ shopId: e.target.value })}
             error={hasTriedSubmit && !isShopValid}
             helperText={hasTriedSubmit && !isShopValid ? t("users.validation.shopRequired") : ""}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLoadingShops || !!shopLoadError}
           >
             <option value="">{t("users.form.selectShop")}</option>
             {shops.map((shop) => (
@@ -199,6 +276,15 @@ export const UsersDropdown = ({
               </option>
             ))}
           </Select>
+        )}
+        {isShopRequired && isLoadingShops && (
+          <span className={styles.agentLookupMessage}>{t("users.status.loadingShops")}</span>
+        )}
+        {isShopRequired && shopLoadError && (
+          <div className={styles.agentLookupError} role="alert">
+              <span>{shopLoadError}</span>
+              <Button variant="secondary" size="small" onClick={onRetryShops} disabled={isSubmitting}>{t("common.retry")}</Button>
+          </div>
         )}
 
         {isWarehouseRequired && (

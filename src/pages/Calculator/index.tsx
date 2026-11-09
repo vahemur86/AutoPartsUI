@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from "react";
+import { useCallback, useEffect, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./Calculator.module.css";
 import { Button, Switch, TextField } from "@/ui-kit";
@@ -135,7 +135,7 @@ export const NewCalculator: FC = () => {
     }));
   };
 
-  const loadDefaults = async () => {
+  const loadDefaults = useCallback(async () => {
     try {
       const metalRes = await dispatch(
         fetchMetalPrices(form.cashRegisterId),
@@ -155,9 +155,13 @@ export const NewCalculator: FC = () => {
         usdRate: prev.priceMode === 1 ? prev.usdRate : (exchangeRes?.rate ?? 0),
       }));
     } catch (e) {
-      console.error("Failed to load defaults", e);
+      if (e === "KITCO_PAYMENT_REQUIRED") {
+        toast.error(t("kitco.quota.paymentRequired"));
+      } else {
+        console.error("Failed to load defaults", e);
+      }
     }
-  };
+  }, [dispatch, form.cashRegisterId, t]);
 
   const onTogglePriceMode = (checked: boolean) => {
     setForm((prev) => ({
@@ -236,7 +240,7 @@ export const NewCalculator: FC = () => {
     if (form.priceMode === 0) {
       loadDefaults();
     }
-  }, [form.priceMode]);
+  }, [form.priceMode, loadDefaults]);
 
   return (
     <div className={styles.wrapper}>

@@ -87,10 +87,6 @@
   font-size: 12px;
 }
 
-.employeeTableSection :global(table) {
-  min-width: 760px;
-}
-
 .employeeIdentity,
 .employeeAssignment,
 .employeeCompensation {
@@ -659,6 +655,132 @@
   padding: 18px;
 }
 
+.attendanceViews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  padding: 5px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 9px;
+  background: rgba(10, 14, 11, 0.5);
+}
+
+.attendanceViews > button {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 9px;
+  min-width: 0;
+  padding: 10px 12px;
+  color: #aab2a9;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.attendanceViews > button > svg {
+  grid-row: span 2;
+  color: #aeb8ac;
+}
+
+.attendanceViews > button > span {
+  color: #d7d9d2;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.attendanceViews > button > small {
+  overflow: hidden;
+  color: #899389;
+  font-size: 11px;
+  text-overflow: ellipsis;
+}
+
+.attendanceViews > button:hover {
+  border-color: rgba(196, 169, 106, 0.16);
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.attendanceViews > button:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 1px;
+}
+
+.attendanceViews > .attendanceViewActive {
+  border-color: rgba(196, 169, 106, 0.28);
+  background: linear-gradient(110deg, rgba(196, 169, 106, 0.12), rgba(196, 169, 106, 0.045));
+}
+
+.attendanceViews > .attendanceViewActive > svg {
+  color: #d2bf8a;
+}
+
+.payrollViews {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding: 5px;
+  border: 1px solid rgba(196, 169, 106, 0.14);
+  border-radius: 9px;
+  background: rgba(10, 14, 11, 0.5);
+}
+
+.payrollViews > button {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 9px;
+  min-width: 0;
+  padding: 10px 12px;
+  color: #aab2a9;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.payrollViews > button > svg {
+  grid-row: span 2;
+  color: #aeb8ac;
+}
+
+.payrollViews > button > span {
+  color: #d7d9d2;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.payrollViews > button > small {
+  overflow: hidden;
+  color: #899389;
+  font-size: 11px;
+  text-overflow: ellipsis;
+}
+
+.payrollViews > button:hover {
+  border-color: rgba(196, 169, 106, 0.16);
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.payrollViews > button:focus-visible {
+  outline: 2px solid #d2bf8a;
+  outline-offset: 1px;
+}
+
+.payrollViews > .payrollViewActive {
+  border-color: rgba(196, 169, 106, 0.28);
+  background: linear-gradient(110deg, rgba(196, 169, 106, 0.12), rgba(196, 169, 106, 0.045));
+}
+
+.payrollViews > .payrollViewActive > svg {
+  color: #d2bf8a;
+}
+
 .workflowHeader {
   display: flex;
   align-items: flex-end;
@@ -713,8 +835,23 @@
 }
 
 .attendanceMetric span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: #aab2a9;
   font-size: 11px;
+}
+
+.attendancePresentMetric > span > svg {
+  color: #7ed39c;
+}
+
+.attendanceAbsentMetric > span > svg {
+  color: #e48b76;
+}
+
+.attendanceMetric:not(.attendancePresentMetric, .attendanceAbsentMetric) > span > svg {
+  color: #aab2a9;
 }
 
 .attendanceMetric strong {
@@ -772,23 +909,60 @@
 
 .attendanceRosterRow {
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) minmax(220px, auto) minmax(180px, 0.8fr);
+  grid-template-columns: minmax(190px, 1fr) minmax(220px, auto) minmax(180px, 0.75fr);
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
-  padding: 10px 12px;
-  border: 1px solid rgba(196, 169, 106, 0.12);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 16px;
+  border: 1px solid rgba(196, 169, 106, 0.13);
+  border-radius: 10px;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.08);
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.attendanceRosterRow:hover {
+  border-color: rgba(196, 169, 106, 0.27);
+  transform: translateY(-1px);
+}
+
+.attendanceRosterPresent {
+  border-left: 3px solid rgba(126, 211, 156, 0.62);
+}
+
+.attendanceRosterAbsent {
+  border-left: 3px solid rgba(228, 139, 118, 0.56);
 }
 
 .attendanceEmployeeIdentity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.attendanceAvatar {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #ded3b6;
+  border: 1px solid rgba(196, 169, 106, 0.25);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(196, 169, 106, 0.19), rgba(196, 169, 106, 0.055));
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.attendanceEmployeeCopy {
   display: grid;
   min-width: 0;
   gap: 4px;
 }
 
-.attendanceEmployeeIdentity strong {
+.attendanceEmployeeCopy > strong {
   overflow: hidden;
   color: #eee9db;
   font-size: 13px;
@@ -797,12 +971,149 @@
   white-space: nowrap;
 }
 
-.attendanceEmployeeIdentity span {
+.attendanceEmployeeCopy > span:not(.attendanceRecordMeta) {
   overflow: hidden;
   color: #929c92;
   font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.attendanceEmployeeIdentity .attendanceRecordMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  overflow: visible;
+  white-space: normal;
+}
+
+.attendanceEmployeeCopy .attendanceRecordMeta > span {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.attendanceModeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  min-height: 25px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.attendanceModeBadge > svg {
+  flex: 0 0 auto;
+}
+
+.attendanceModeBadge > strong {
+  margin-left: 2px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.attendanceOnline {
+  color: #b6e5c4;
+  border-color: rgba(99, 194, 129, 0.32);
+  background: linear-gradient(110deg, rgba(67, 144, 91, 0.2), rgba(67, 144, 91, 0.08));
+  box-shadow: inset 0 0 12px rgba(99, 194, 129, 0.045);
+}
+
+.attendanceOnline > svg {
+  color: #7ed39c;
+  animation: attendanceOnlinePulse 1.5s ease-in-out infinite;
+}
+
+.attendanceOnline > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #84d69e;
+}
+
+.attendanceOnline > strong::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 7px rgba(99, 194, 129, 0.8);
+  content: "";
+  animation: attendanceOnlinePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes attendanceOnlinePulse {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(99, 194, 129, 0.6));
+  }
+  50% {
+    opacity: 0.45;
+    filter: drop-shadow(0 0 1px rgba(99, 194, 129, 0.2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attendanceOnline > svg,
+  .attendanceOnline > strong::before {
+    animation: none;
+  }
+}
+
+.attendanceOffline {
+  color: #e6b7ad;
+  border-color: rgba(211, 116, 100, 0.3);
+  background: linear-gradient(110deg, rgba(150, 73, 65, 0.18), rgba(150, 73, 65, 0.07));
+}
+
+.attendanceOffline > svg {
+  color: #e48b76;
+}
+
+.attendanceOffline > strong {
+  color: #e59684;
+}
+
+.attendanceUnrecorded {
+  color: #b2b9b1;
+  border-color: rgba(170, 180, 170, 0.18);
+  background: rgba(170, 180, 170, 0.055);
+}
+
+.attendanceUnrecorded > svg {
+  color: #aab2a9;
+}
+
+.attendanceSourceBadge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  color: #d7d0bc;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 999px;
+  background: rgba(196, 169, 106, 0.08);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.attendanceSourceBadge[data-source="Hikvision"] {
+  color: #b7d5e0;
+  border-color: rgba(119, 157, 174, 0.32);
+  background: rgba(119, 157, 174, 0.1);
+}
+
+.attendanceSourceBadge[data-source="Manual"] {
+  color: #e7d6a4;
 }
 
 .attendanceNoteField {
@@ -832,11 +1143,12 @@
 .attendanceChoiceButton {
   min-width: 100px;
   gap: 6px;
-  padding: 6px 9px;
+  padding: 8px 12px;
   color: #aab2a9;
   border: 1px solid rgba(196, 169, 106, 0.14);
-  border-radius: 6px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.025);
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 
 .attendanceChoiceButton:hover:not(:disabled) {
@@ -846,15 +1158,17 @@
 }
 
 .attendancePresentSelected {
-  color: #c5d2c8;
-  border-color: rgba(145, 169, 154, 0.4);
-  background: rgba(91, 133, 103, 0.16);
+  color: #c7efd2;
+  border-color: rgba(126, 211, 156, 0.48);
+  background: linear-gradient(120deg, rgba(67, 144, 91, 0.24), rgba(67, 144, 91, 0.1));
+  box-shadow: inset 0 0 12px rgba(99, 194, 129, 0.06);
 }
 
 .attendanceAbsentSelected {
-  color: #d6beb8;
-  border-color: rgba(183, 134, 120, 0.36);
-  background: rgba(137, 84, 77, 0.14);
+  color: #f0c2b7;
+  border-color: rgba(228, 139, 118, 0.46);
+  background: linear-gradient(120deg, rgba(150, 73, 65, 0.22), rgba(150, 73, 65, 0.09));
+  box-shadow: inset 0 0 12px rgba(211, 116, 100, 0.045);
 }
 
 .historyFilters {
@@ -1374,34 +1688,53 @@
   color: var(--color-secondary-500);
 }
 
-.employeeManagement :global([class*="tableWrapper"]) {
-  overflow: auto;
+.employeeTableSkin {
+  min-width: 0;
+  overflow: hidden;
   border: 1px solid rgba(196, 169, 106, 0.14);
-  border-radius: 7px;
+  border-radius: 8px;
   background: #121814;
 }
 
-.employeeManagement .payrollTable :global([class*="tableWrapper"]) {
-  overflow-x: hidden;
+.employeeTableSkin :global([class*="tableWrapper"]) {
+  background: #121814;
+  border-radius: 8px;
 }
 
-.employeeManagement :global(table) {
+.employeeTableSkin :global(table) {
   background: #121814;
 }
 
-.employeeManagement :global(th) {
+.employeeTableSkin :global([class*="tableHeader"] [class*="tableCell"]) {
   color: #d2bf8a;
   border-bottom-color: rgba(196, 169, 106, 0.2);
   background: #1b231e;
 }
 
-.employeeManagement :global(td) {
+.employeeTableSkin :global([class*="tableCell"]) {
   color: #dfe3dc;
-  border-bottom-color: rgba(196, 169, 106, 0.08);
 }
 
-.employeeManagement :global(tbody tr:hover) {
+.employeeTableSkin :global([class*="tableRow"] [class*="tableCell"]) {
+  border-bottom-color: rgba(196, 169, 106, 0.09);
+}
+
+.employeeTableSkin :global([class*="tableRow"]:hover) {
   background: rgba(196, 169, 106, 0.045);
+}
+
+.employeeTableSkin :global([class*="fitContainerTable"] [class*="tableHeader"] [class*="tableCell"]) {
+  padding: 12px 16px;
+}
+
+.employeeTableSkin :global([class*="fitContainerTable"] [class*="tableRow"] [class*="tableCell"]) {
+  padding: 12px 16px;
+}
+
+.employeeTableSkin :global([class*="tableFooter"]) {
+  color: #aeb6ad;
+  border-top-color: rgba(196, 169, 106, 0.13);
+  background: #151b17;
 }
 
 .employeeManagement :global(button[class*="primary"]) {
@@ -1487,6 +1820,18 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .attendanceViews > button {
+    padding: 9px;
+  }
+
+  .payrollViews {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payrollViews > button {
+    padding: 9px;
+  }
+
   .attendanceSearch {
     grid-column: 1 / -1;
   }
@@ -1540,6 +1885,14 @@
 }
 
 @media (max-width: 560px) {
+  .attendanceViews {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .payrollViews {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .depositHeader {
     align-items: stretch;
     flex-direction: column;

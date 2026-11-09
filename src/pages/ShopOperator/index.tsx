@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAppDispatch } from "@/store/hooks";
+import { ClipboardList } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { ConfirmationModal } from "@/ui-kit";
 import { useOperator } from "@/pages/Operator/hooks";
@@ -11,6 +12,7 @@ import styles from "./ShopOperatorPage.module.css";
 export const ShopOperatorPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const userRole = useAppSelector((state) => state.auth.user?.role.toLowerCase());
   const {
     uiState,
     setUiState,
@@ -58,6 +60,12 @@ export const ShopOperatorPage = () => {
       />
 
       <div className={styles.contentArea}>
+        {userRole === "cashier" && (
+          <Link to="/shop-operator/agent-order-requests" className={styles.agentRequestsLink}>
+            <ClipboardList size={17} aria-hidden="true" />
+            {t("agentPortal.cashierOrdersTitle")}
+          </Link>
+        )}
         <CashierMode cashRegisterId={userData?.cashRegisterId} />
       </div>
 

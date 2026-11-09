@@ -76,6 +76,10 @@ import { IronShopSettings } from "@/components/settings/IronShop";
 import { ServiceTasks } from "@/components/settings/ServiceTasks";
 import { Tags } from "@/components/settings/Tags";
 import { ProgrammingPricingAdmin } from "@/components/settings/ProgrammingPricingAdmin";
+import { Hikvision } from "@/components/settings/Hikvision/Hikvision";
+import { Kitco } from "@/components/settings/Kitco/Kitco";
+import { RateAm } from "@/components/settings/RateAm/RateAm";
+import { AzureEmail } from "@/components/settings/AzureEmail/AzureEmail";
 
 // Reports components
 import { ZReports } from "@/components/reports/ZReports";
@@ -131,6 +135,8 @@ import { CatalystPricings } from "./components/settings/CatalystPricing";
 import { AdjustedSales } from "./components/warehouses/AdjustedSales/AdjustedSales";
 import { NewCalculator } from "./pages/Calculator";
 import { SetPassword } from "./pages/SetPassword/SetPassword";
+import { AgentPortal } from "./pages/AgentPortal/AgentPortal";
+import { CashierAgentOrderRequests } from "./pages/AgentPortal/CashierAgentOrderRequests";
 import { IronCatalystPowderFlow } from "./pages/IronCatalystPowderFlow";
 import { CarCatalystPage } from "./pages/CarCatalyst/CarCatalyst";
 import { CarCatalystDetails } from "./pages/CarCatalyst/CarCatalystDetails";
@@ -216,6 +222,12 @@ export const App = () => {
 
             <Route path="/set-password" element={<SetPassword />} />
 
+            <Route
+              element={<ProtectedRoute allowedRoles={["Agent"]} />}
+            >
+              <Route path="/agent-portal" element={<AgentPortal />} />
+            </Route>
+
             {/* OPERATOR / CASHIER SPECIFIC ROUTES */}
             <Route
               element={
@@ -224,6 +236,14 @@ export const App = () => {
             >
               <Route path="/operator" element={<OperatorPage />} />
               <Route path="/shop-operator" element={<ShopOperatorPage />} />
+              <Route
+                path="/shop-operator/agent-order-requests"
+                element={
+                  <ProtectedRoute allowedRoles={["Cashier"]} />
+                }
+              >
+                <Route index element={<CashierAgentOrderRequests />} />
+              </Route>
               <Route path="/programmer" element={<ProgrammerPage />} />
             </Route>
 
@@ -289,6 +309,10 @@ export const App = () => {
                     element={<ProgrammingPricingAdmin />}
                   />
                   <Route path="iron-management" element={<IronShopSettings />} />
+                  <Route path="hikvision" element={<Hikvision />} />
+                  <Route path="kitco" element={<Kitco />} />
+                  <Route path="rate-am" element={<RateAm />} />
+                  <Route path="azure-email" element={<AzureEmail />} />
                   <Route
                     path="iron-catalyst-powder-flow"
                     element={<IronCatalystPowderFlow />}

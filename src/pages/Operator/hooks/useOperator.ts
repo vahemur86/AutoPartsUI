@@ -505,6 +505,10 @@ export const useOperator = () => {
     const translateOperatorError = (msg: string | null | undefined) => {
       if (!msg) return msg;
 
+      if (msg === "KITCO_PAYMENT_REQUIRED") {
+        return t("kitco.quota.paymentRequired");
+      }
+
       if (msg === "Invalid status transition. Current: Offered.") {
         return t("finalOffer.error.invalidStatusTransition");
       }
