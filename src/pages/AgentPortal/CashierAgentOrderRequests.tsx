@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@/ui-kit";
 import { agentPortalService } from "@/services/agentPortal";
+import { agentContractsService } from "@/services/agentContracts";
 import { getProducts } from "@/services/products";
 import { getShops } from "@/services/settings/shop";
 import i18n from "@/i18n/config";
@@ -14,6 +15,7 @@ import type { Product } from "@/types/products";
 import type { Shop } from "@/types/settings";
 import type { PagedResult } from "@/types/agents";
 import type { AgentOrderRequest, AgentOrderRequestStatus } from "@/types/agentPortal";
+import type { AgentProductContractSelectionDto } from "@/types/agentContracts";
 import styles from "./AgentPortal.module.css";
 
 const PAGE_SIZE = 10;
@@ -48,9 +50,14 @@ export const CashierAgentOrderRequests = () => {
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
   const [selectedShops, setSelectedShops] = useState<Record<string, string>>({});
+  const [selectedContracts, setSelectedContracts] = useState<Record<string, string>>({});
+  const [eligibleContracts, setEligibleContracts] = useState<Record<string, AgentProductContractSelectionDto[]>>({});
+  const [contractLoading, setContractLoading] = useState<Record<string, boolean>>({});
+  const [contractErrors, setContractErrors] = useState<Record<string, string>>({});
   const [confirmingId, setConfirmingId] = useState("");
   const [rejectingId, setRejectingId] = useState("");
   const [reasons, setReasons] = useState<Record<string, string>>({});
+  const contractLookupRequestIds = useRef<Record<string, number>>({});
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -107,21 +114,54 @@ export const CashierAgentOrderRequests = () => {
 
   const approve = async (order: AgentOrderRequest) => {
     const shopId = Number(selectedShops[order.id]);
-    if (!Number.isInteger(shopId) || shopId <= 0 || getStatus(order.status) !== "Pending") return;
+    const agentContractId = selectedContracts[order.id];
+    if (!Number.isInteger(shopId) || shopId <= 0 || !agentContractId || getStatus(order.status) !== "Pending") return;
     setActionId(order.id);
     setError("");
     try {
-      const approved = await agentPortalService.approveOrderRequest(order.id, shopId);
+      const approved = await agentPortalService.approveOrderRequest(order.id, shopId, agentContractId);
       setPage((current) => current ? {
         ...current,
         results: current.results.map((item) => item.id === approved.id ? approved : item),
       } : current);
       setConfirmingId("");
       toast.success(t("agentPortal.approved"));
+      setRetry((current) => current + 1);
     } catch (actionError: unknown) {
-      setError(actionError instanceof Error ? actionError.message : t("agentPortal.actionError"));
+      const message = actionError instanceof Error ? actionError.message : t("agentPortal.actionError");
+      await loadRequests();
+      setError(message);
     } finally {
       setActionId("");
+    }
+  };
+
+  const loadEligibleContracts = async (order: AgentOrderRequest, shopValue: string) => {
+    const requestId = (contractLookupRequestIds.current[order.id] ?? 0) + 1;
+    contractLookupRequestIds.current[order.id] = requestId;
+    setSelectedShops((current) => ({ ...current, [order.id]: shopValue }));
+    setSelectedContracts((current) => ({ ...current, [order.id]: "" }));
+    setEligibleContracts((current) => ({ ...current, [order.id]: [] }));
+    setContractErrors((current) => ({ ...current, [order.id]: "" }));
+    setContractLoading((current) => ({ ...current, [order.id]: false }));
+    setConfirmingId("");
+    const shopId = Number(shopValue);
+    if (!Number.isInteger(shopId) || shopId <= 0) return;
+    setContractLoading((current) => ({ ...current, [order.id]: true }));
+    try {
+      const result = await agentContractsService.getShopProductCreditContracts(order.agentId, shopId, cashRegisterId);
+      if (contractLookupRequestIds.current[order.id] !== requestId) return;
+      setEligibleContracts((current) => ({ ...current, [order.id]: result }));
+    } catch (lookupError: unknown) {
+      if (contractLookupRequestIds.current[order.id] !== requestId) return;
+      setContractErrors((current) => ({
+        ...current,
+        [order.id]: lookupError instanceof Error ? lookupError.message : t("agentPortal.lookupError"),
+      }));
+    } finally {
+      if (contractLookupRequestIds.current[order.id] === requestId) {
+        setContractLoading((current) => ({ ...current, [order.id]: false }));
+      }
     }
   };
 
@@ -176,6 +216,8 @@ export const CashierAgentOrderRequests = () => {
           const status = getStatus(order.status);
           const isPending = status === "Pending";
           const selectedShopId = selectedShops[order.id] ?? "";
+          const contractChoices = eligibleContracts[order.id] ?? [];
+          const selectedContract = contractChoices.find(({ contractId }) => contractId === selectedContracts[order.id]);
           const reason = reasons[order.id] ?? "";
           return <article className={styles.dataCard} key={order.id}>
             <div className={styles.cardTitle}><strong>{order.agentName} · {order.agentCode}</strong><span className={`${styles.statusBadge} ${styles[`status${status}`] || ""}`}>{t(`agentPortal.statuses.${status}`)}</span></div>
@@ -194,22 +236,51 @@ export const CashierAgentOrderRequests = () => {
             </p>}
             {isPending && <>
               <label className={styles.filter}>{t("agentPortal.chooseShop")}
-                <select value={selectedShopId} onChange={(event) => { setSelectedShops((current) => ({ ...current, [order.id]: event.target.value })); setConfirmingId(""); }}>
+                <select value={selectedShopId} onChange={(event) => void loadEligibleContracts(order, event.target.value)}>
                   <option value="">{t("agentPortal.selectShop")}</option>
                   {shops.map((shop) => <option key={shop.id} value={shop.id}>{shop.code}</option>)}
                 </select>
               </label>
+              {contractLoading[order.id] && <p className={styles.notice} role="status">{t("agentPortal.loading")}</p>}
+              {contractErrors[order.id] && <p className={styles.error} role="alert">{contractErrors[order.id]}</p>}
+              {selectedShopId && !contractLoading[order.id] && !contractErrors[order.id] && contractChoices.length === 0 && (
+                <p className={styles.notice}>{t("agentPortal.noEligibleProductContracts")}</p>
+              )}
+              {contractChoices.length > 0 && (
+                <>
+                  <label className={styles.filter}>{t("agentPortal.chooseProductContract")}
+                    <select
+                      value={selectedContracts[order.id] ?? ""}
+                      onChange={(event) => { setSelectedContracts((current) => ({ ...current, [order.id]: event.target.value })); setConfirmingId(""); }}
+                    >
+                      <option value="">{t("agentPortal.selectProductContract")}</option>
+                      {contractChoices.map((contract) => (
+                        <option key={contract.contractId} value={contract.contractId}>
+                          {contract.contractNumber} · {t("agentPortal.availableCredit")}: {contract.availableCreditAmd} AMD
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {selectedContract && <div className={styles.requestSummary}>
+                    <h3>{selectedContract.contractNumber}</h3>
+                    <div><span>{t("agentPortal.availableCredit")}</span><strong>{selectedContract.availableCreditAmd} AMD</strong></div>
+                    <div><span>{t("agentPortal.productDebtBalance")}</span><strong>{selectedContract.outstandingAmountAmd} AMD</strong></div>
+                    <div><span>{t("agentPortal.discount")}</span><strong>{selectedContract.discountPercent}%</strong></div>
+                    <div><span>{t("agentPortal.deadline")}</span><strong>{formatDate(selectedContract.productCreditDeadline)}</strong></div>
+                  </div>}
+                </>
+              )}
               {confirmingId === order.id ? (
                 <div className={styles.confirmPanel}>
                   <p>{t("agentPortal.approveConfirmation", { shop: shops.find((shop) => String(shop.id) === selectedShopId)?.code ?? "" })}</p>
                   <p>{t("agentPortal.noPriceNotice")}</p>
                   <div className={styles.orderFooter}>
                     <Button variant="secondary" size="small" disabled={actionId === order.id} onClick={() => setConfirmingId("")}>{t("common.cancel")}</Button>
-                    <Button variant="primary" size="small" disabled={actionId === order.id} onClick={() => void approve(order)}>{actionId === order.id ? t("agentPortal.processing") : t("agentPortal.confirmApproval")}</Button>
+                    <Button variant="primary" size="small" disabled={actionId === order.id || !selectedContract} onClick={() => void approve(order)}>{actionId === order.id ? t("agentPortal.processing") : t("agentPortal.confirmApproval")}</Button>
                   </div>
                 </div>
               ) : <div className={styles.orderFooter}>
-                <Button variant="primary" size="small" disabled={!!actionId || !selectedShopId} onClick={() => setConfirmingId(order.id)}>{t("agentPortal.reviewApproval")}</Button>
+                <Button variant="primary" size="small" disabled={!!actionId || !selectedShopId || !selectedContract} onClick={() => setConfirmingId(order.id)}>{t("agentPortal.reviewApproval")}</Button>
                 {rejectingId === order.id ? (
                   <div className={styles.rejectBox}>
                     <TextField label={t("agentPortal.rejectionReason")} value={reason} onChange={(event) => setReasons((current) => ({ ...current, [order.id]: event.target.value }))} />

@@ -2,6 +2,7 @@ import { api } from "@/services/index";
 import type {
   RepaymentRule,
   RepaymentRuleVersion,
+  RepaymentRuleType,
   CreateRepaymentRuleRequest,
   CreateRepaymentRuleVersionRequest,
 } from "@/types/repaymentRules";
@@ -12,8 +13,10 @@ export const repaymentRulesService = {
     return res.data;
   },
 
-  getRepaymentRules: async () => {
-    const res = await api.get<RepaymentRule[]>("/repayment-rules");
+  getRepaymentRules: async (type?: RepaymentRuleType) => {
+    const res = await api.get<RepaymentRule[]>("/repayment-rules", {
+      params: type ? { type } : undefined,
+    });
     return res.data;
   },
 

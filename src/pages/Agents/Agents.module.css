@@ -1,4 +1,5 @@
 .page {
+  --color-primary-500: #7eb8a5;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -60,12 +61,14 @@
 
 .premiumFilterBar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 8px;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.01);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, 0.96), rgba(17, 22, 20, 0.96));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.025);
 }
 
 .premiumStatsGrid {
@@ -338,7 +341,14 @@
 }
 
 .productPurchasesFilter {
-  max-width: 360px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  max-width: none;
+  padding: 14px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, 0.96), rgba(17, 22, 20, 0.96));
 }
 
 .productPurchaseItems {
@@ -596,17 +606,20 @@
 }
 
 .filtersSection {
-  background: #151b17;
-  border: 1px solid rgba(196, 169, 106, 0.14);
-  border-radius: 8px;
-  padding: 16px;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, 0.96), rgba(17, 22, 20, 0.96));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.025);
 }
 
 .filtersSection h3 {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 16px 0;
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
   color: var(--color-white);
@@ -618,13 +631,62 @@
 }
 
 .resetButton {
-  margin-top: 12px;
+  justify-self: end;
+  margin-top: 0;
 }
 
 .filterGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.filterGrid > * { min-width: 0; }
+
+.agentWorkspaceFilters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, 0.96), rgba(17, 22, 20, 0.96));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.agentWorkspaceFilters > * { min-width: 0; }
+
+.classificationFilters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 10px;
+  background: radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 65%), rgba(17, 22, 20, 0.96);
+}
+
+.classificationFilters label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #e2e8df;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.classificationFilters input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #7eb8a5;
+}
+
+@media (max-width: 1200px) {
+  .filterGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1024px) {
@@ -633,21 +695,20 @@
     padding: 12px 14px;
   }
 
-  .filterGrid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-  }
 }
 
 @media (max-width: 768px) {
-  .filterGrid {
-    grid-template-columns: 1fr;
-  }
+  .filterGrid, .agentWorkspaceFilters, .premiumFilterBar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .listHeader {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+@media (max-width: 520px) {
+  .filterGrid, .agentWorkspaceFilters, .premiumFilterBar { grid-template-columns: minmax(0, 1fr); }
+  .filtersSection, .agentWorkspaceFilters, .premiumFilterBar { padding: 14px; }
 }
 
 .paginationSection {
@@ -890,5 +951,3 @@
   color: var(--color-secondary-300);
   margin-right: 10px;
 }
-
-

@@ -8,7 +8,10 @@ import type {
   CreateAgentAdvanceRequest,
   AgentAdvanceExtensionDto,
   CreateAgentAdvanceExtensionRequest,
+  AgentProductContractSelectionDto,
+  ExtendProductCreditDeadlineRequest,
   PagedResult,
+  SaveProductCreditTermsRequest,
   SaveAgentContractRequest,
 } from "@/types/agentContracts";
 import { getCashRegisterId, getHeaders } from "@/utils";
@@ -68,6 +71,26 @@ export const agentContractsService = {
     await api.post(`/agent-contracts/${id}/deactivate-product`);
   },
 
+  updateProductCreditTerms: async (id: string, data: SaveProductCreditTermsRequest) => {
+    await api.put(`/agent-contracts/${id}/product-credit-terms`, data);
+  },
+
+  extendProductCreditDeadline: async (id: string, data: ExtendProductCreditDeadlineRequest) => {
+    await api.post(`/agent-contracts/${id}/product-credit-deadline/extensions`, data);
+  },
+
+  getShopProductCreditContracts: async (agentId: string, shopId: number, cashRegisterId?: number) => {
+    const response = await api.get<AgentProductContractSelectionDto[]>(
+      `/agent-contracts/agents/${encodeURIComponent(agentId)}/shops/${shopId}/product-credit`,
+      { headers: getHeaders(cashRegisterId ?? getCashRegisterId()) },
+    );
+    return response.data;
+  },
+
+  confirmProductCreditShop: async (contractId: string, shopId: number) => {
+    await api.post(`/agent-contracts/${encodeURIComponent(contractId)}/shops/${shopId}/confirm`);
+  },
+
   listContractAdvances: async (id: string) => {
     const response = await api.get<AgentAdvanceDto[]>(`/agent-contracts/${id}/advances`);
     return response.data;
@@ -112,7 +135,7 @@ export const agentContractsService = {
     await api.delete(`/agent-advances/${id}/allocations/${allocationId}`);
   },
 
-  activateAdvance: async (id: string) => {
-    await api.post(`/agent-advances/${id}/activate`);
+  approveAdvance: async (id: string) => {
+    await api.post(`/agent-advances/${id}/approve`);
   },
 };

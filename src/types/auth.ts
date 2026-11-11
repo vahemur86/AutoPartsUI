@@ -10,6 +10,7 @@ export interface LoginResponse {
   userType: string;
   avatarUrl?: string | null;
   shopId: number | null;
+  shopIds?: number[];
   warehouseId: number | null;
   cashRegisterId?: number | null;
   cashRegisterName?: string | null;

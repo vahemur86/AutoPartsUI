@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { ChevronDown, Eye, Power } from "lucide-react";
 
-import { DataTable } from "@/ui-kit";
+import { DataTable, Select } from "@/ui-kit";
 import { SectionHeader } from "@/components/common";
 import { Button, ConfirmationModal } from "@/ui-kit";
 import { repaymentRulesService } from "@/services/repaymentRules";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
-import type { RepaymentRule } from "@/types/repaymentRules";
+import type { RepaymentRule, RepaymentRuleType } from "@/types/repaymentRules";
 import styles from "./RepaymentRules.module.css";
 import { AgentIconButton } from "@/pages/Agents/AgentActionButton";
 import { AgentTableDetails } from "@/pages/Agents/AgentTableDetails";
@@ -32,10 +32,11 @@ const getStatusLabel = (status?: number | string | null) => {
   return String(status ?? "Unknown");
 };
 
-export const RepaymentRules = () => {
+export const RepaymentRules = ({ type: presetType }: { type?: RepaymentRuleType } = {}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState<RepaymentRule[]>([]);
+  const [typeFilter, setTypeFilter] = useState<RepaymentRuleType | "">(presetType ?? "");
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   const [confirm, setConfirm] = useState<{ open: boolean; rule?: RepaymentRule }>(
@@ -45,7 +46,7 @@ export const RepaymentRules = () => {
   const load = async () => {
     setIsLoading(true);
     try {
-      const data = await repaymentRulesService.getRepaymentRules();
+      const data = await repaymentRulesService.getRepaymentRules(typeFilter || undefined);
       setItems(data);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("repaymentRules.errors.loadFailed")));
@@ -56,12 +57,18 @@ export const RepaymentRules = () => {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [typeFilter]);
 
   const columns = useMemo(
     () => [
       { accessorKey: "code", header: t("repaymentRules.fields.code") },
       { accessorKey: "name", header: t("repaymentRules.fields.name") },
+      {
+        accessorKey: "type",
+        header: t("repaymentRules.fields.type"),
+        cell: ({ row }: { row: { original: RepaymentRule } }) =>
+          t(`repaymentRules.types.${row.original.type}`),
+      },
       {
         accessorKey: "status",
         header: t("repaymentRules.fields.status"),
@@ -107,7 +114,7 @@ export const RepaymentRules = () => {
                 icon={<Eye size={16} />}
                 ariaLabel={`${t("repaymentRules.actions.view")} ${r.name}`}
                 title={t("repaymentRules.actions.view")}
-                onClick={() => navigate(`/agents/cash-powder/rules/${r.id}`)}
+                onClick={() => navigate(`/agents/rules/${r.id}`)}
               />
               <AgentIconButton
                 size="medium"
@@ -164,15 +171,30 @@ export const RepaymentRules = () => {
   return (
     <div className={styles.page}>
       <SectionHeader
-        title={t("repaymentRules.title")}
+        title={t("agentWorkspace.rulesSection")}
         actions={
           <div style={{ display: "flex", gap: 8 }}>
-            <Button onClick={() => navigate(`/agents/cash-powder/rules/create`)}>
+            <Button onClick={() => navigate("/agents/rules/create")}>
               {t("repaymentRules.create")}
             </Button>
           </div>
         }
       />
+
+      <div className={styles.filters}>
+        <Select
+          label={t("repaymentRules.fields.type")}
+          value={typeFilter}
+          onChange={(event) => {
+            const value = event.target.value;
+            setTypeFilter(value === "Dust" || value === "ProductCredit" ? value : "");
+          }}
+        >
+          <option value="">{t("common.all")}</option>
+          <option value="Dust">{t("repaymentRules.types.Dust")}</option>
+          <option value="ProductCredit">{t("repaymentRules.types.ProductCredit")}</option>
+        </Select>
+      </div>
 
       <div className={styles.summaryCard}>
         <div>

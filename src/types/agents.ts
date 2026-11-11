@@ -87,6 +87,7 @@ export interface AgentProductDebtDto {
   outstandingAmountAmd: number;
   totalAdvancedAmountAmd: number;
   totalPaidAmountAmd: number;
+  totalReturnedAmountAmd?: number;
 }
 
 export interface AgentProductCreditSaleItemDto {
@@ -130,7 +131,26 @@ export interface AgentProductDebtPaymentDto {
 
 export interface CreateAgentProductDebtPaymentRequest {
   amountAmd: number;
-  contractId?: string;
+  contractId: string;
+  idempotencyKey: string;
+}
+
+export interface AgentProductDebtReturnDto {
+  id: string;
+  agentContractId: string;
+  agentAdvanceId: string;
+  requestedAmountAmd: number;
+  appliedAmountAmd: number;
+  unresolvedExcessAmd: number;
+  idempotencyKey: string;
+  approvedAt: string;
+  approvedBy: string;
+}
+
+export interface CreateAgentProductDebtReturnRequest {
+  agentAdvanceId: string;
+  amountAmd: number;
+  idempotencyKey: string;
 }
 
 export interface AgentClassificationRuleConditionDto {

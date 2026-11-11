@@ -2,6 +2,7 @@ import api from "..";
 
 // utils
 import { getApiErrorMessage, getHeaders } from "@/utils";
+import type { Shop } from "@/types/settings";
 
 export const createShop = async (code: string, warehouseId: number) => {
   try {
@@ -17,7 +18,7 @@ export const createShop = async (code: string, warehouseId: number) => {
 
 export const getShops = async (cashRegisterId?: number) => {
   try {
-    const response = await api.get(`/Shop`, {
+    const response = await api.get<Shop[]>(`/Shop`, {
       headers: getHeaders(cashRegisterId),
     });
     return response.data;

@@ -1,7 +1,7 @@
 import {
   Archive,
+  BookOpenCheck,
   FileSignature,
-  FileText,
   Layers,
   PackageOpen,
   RotateCcw,
@@ -23,12 +23,22 @@ const sections = [
     icon: Wallet,
   },
   {
-    to: "/agents/cash-powder/contracts",
+    to: "/agents/contracts",
+    label: "agentWorkspace.contractsSection",
+    icon: FileSignature,
+  },
+  {
+    to: "/agents/rules",
+    label: "agentWorkspace.rulesSection",
+    icon: BookOpenCheck,
+  },
+  {
+    to: "/agents/cash-powder/advances",
     label: "agentWorkspace.cashPowder",
     icon: Wallet,
   },
   {
-    to: "/agents/product-credit/contracts",
+    to: "/agents/product-credit/advances",
     label: "agentWorkspace.productCredit",
     icon: ShoppingBag,
   },
@@ -36,7 +46,6 @@ const sections = [
 
 const generalTabs = [
   { to: "/agents", label: "agents.list", icon: Users, end: true },
-  { to: "/agents/profitability", label: "reports.navigation.agentProfitability", icon: Wallet },
   { to: "/agents/types", label: "agentTypes.title", icon: Tag },
   {
     to: "/agents/classification-rules",
@@ -46,12 +55,6 @@ const generalTabs = [
 ] as const;
 
 const cashPowderTabs = [
-  {
-    to: "/agents/cash-powder/contracts",
-    label: "agentContracts.title",
-    icon: FileSignature,
-    end: true,
-  },
   {
     to: "/agents/cash-powder/advances",
     label: "agentAdvances.title",
@@ -67,20 +70,9 @@ const cashPowderTabs = [
     label: "header.repayments",
     icon: RotateCcw,
   },
-  {
-    to: "/agents/cash-powder/rules",
-    label: "header.repaymentRules",
-    icon: FileText,
-  },
 ] as const;
 
 const productCreditTabs = [
-  {
-    to: "/agents/product-credit/contracts",
-    label: "agentWorkspace.contracts",
-    icon: FileSignature,
-    end: true,
-  },
   {
     to: "/agents/product-credit/advances",
     label: "agentWorkspace.advances",
@@ -103,19 +95,26 @@ const productCreditTabs = [
   },
 ] as const;
 
+const sectionDescriptions: Record<string, string> = {
+  general: "agentWorkspace.generalDescription",
+  profitability: "agentWorkspace.profitabilityDescription",
+  contracts: "agentWorkspace.contractsDescription",
+  rules: "agentWorkspace.rulesDescription",
+  cashPowder: "agentWorkspace.cashPowderDescription",
+  productCredit: "agentWorkspace.productCreditDescription",
+};
+
 export const AgentWorkspace = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const activeTabs = pathname.includes("/product-credit/")
+  const activeSection = getActiveSection(pathname);
+  const activeTabs = activeSection === "productCredit"
     ? productCreditTabs
-    : pathname.includes("/cash-powder/")
+    : activeSection === "cashPowder"
       ? cashPowderTabs
-      : generalTabs;
-  const activeSection = pathname.includes("/product-credit/")
-    ? "productCredit"
-    : pathname.includes("/cash-powder/")
-      ? "cashPowder"
-      : "general";
+      : activeSection === "general"
+        ? generalTabs
+        : [];
 
   return (
     <main className={styles.workspace}>
@@ -129,37 +128,42 @@ export const AgentWorkspace = () => {
         </span>
       </header>
 
-      <nav className={`${styles.tabRail} ${styles.sectionRail}`} aria-label={t("agentWorkspace.title")}>
+      <nav className={styles.sectionGrid} aria-label={t("agentWorkspace.title")}>
         {sections.map(({ to, label, icon: Icon, ...navProps }) => (
           <NavLink
             key={to}
             to={to}
             end={"end" in navProps ? navProps.end : false}
-            className={({ isActive }) =>
-              `${styles.tab} ${((to === "/agents" && activeSection === "general") || (to !== "/agents" && isActive)) ? styles.tabActive : ""}`
+            className={() =>
+              `${styles.sectionCard} ${activeSectionFor(to) === activeSection ? styles.sectionCardActive : ""}`
             }
           >
-            <Icon size={16} strokeWidth={1.8} />
-            <span>{t(label)}</span>
+            <span className={styles.sectionIcon}><Icon size={18} strokeWidth={1.8} /></span>
+            <span className={styles.sectionCardCopy}>
+              <strong>{t(label)}</strong>
+              <small>{t(sectionDescriptions[activeSectionFor(to)])}</small>
+            </span>
           </NavLink>
         ))}
       </nav>
 
-      <nav className={styles.tabRail} aria-label={t("agentWorkspace.sectionNavigation")}>
-        {activeTabs.map(({ to, label, icon: Icon, ...navProps }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={"end" in navProps ? navProps.end : false}
-            className={({ isActive }) =>
-              `${styles.tab} ${isActive ? styles.tabActive : ""}`
-            }
-          >
-            <Icon size={15} strokeWidth={1.8} />
-            <span>{t(label)}</span>
-          </NavLink>
-        ))}
-      </nav>
+      {activeTabs.length > 0 && (
+        <nav className={styles.tabRail} aria-label={t("agentWorkspace.sectionNavigation")}>
+          {activeTabs.map(({ to, label, icon: Icon, ...navProps }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={"end" in navProps ? navProps.end : false}
+              className={({ isActive }) =>
+                `${styles.tab} ${isActive ? styles.tabActive : ""}`
+              }
+            >
+              <Icon size={15} strokeWidth={1.8} />
+              <span>{t(label)}</span>
+            </NavLink>
+          ))}
+        </nav>
+      )}
 
       <section className={styles.content}>
         <Outlet />
@@ -167,5 +171,21 @@ export const AgentWorkspace = () => {
     </main>
   );
 };
+
+const getActiveSection = (pathname: string) =>
+  pathname === "/agents" || pathname.startsWith("/agents/types") || pathname.startsWith("/agents/classification-rules")
+    ? "general"
+    : pathname.startsWith("/agents/profitability")
+      ? "profitability"
+      : pathname.startsWith("/agents/contracts")
+        ? "contracts"
+        : pathname.includes("/rules")
+          ? "rules"
+          : pathname.includes("/product-credit/")
+            ? "productCredit"
+            : "cashPowder";
+
+const activeSectionFor = (path: string) =>
+  path === "/agents" ? "general" : getActiveSection(path);
 
 export default AgentWorkspace;

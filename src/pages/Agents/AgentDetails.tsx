@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { Ban, Layers, Pause, Pencil, Power } from "lucide-react";
 
 import { SectionHeader } from "@/components/common";
-import { Button, DataTable, ConfirmationModal } from "@/ui-kit";
+import { Button, DataTable, ConfirmationModal, Select } from "@/ui-kit";
 import { AgentIconButton } from "./AgentActionButton";
 import { agentsService } from "@/services/agents";
 import { agentContractsService } from "@/services/agentContracts";
@@ -13,7 +13,7 @@ import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import { AgentStatus } from "@/types/agents";
 import type { AgentDto } from "@/types/agents";
 import type { AgentProductDebtDto, AgentProductDebtPaymentDto } from "@/types/agents";
-import type { AgentContractDto } from "@/types/agentContracts";
+import type { AgentContractDto, AgentContractListItemDto } from "@/types/agentContracts";
 import { AgentProfitabilityReport } from "@/components/reports/AgentProfitabilityReport";
 import { AgentProductCreditPurchases } from "./AgentProductCreditPurchases";
 import styles from "./Agents.module.css";
@@ -68,7 +68,11 @@ export const AgentDetails = () => {
   const [history, setHistory] = useState<any[]>([]);
   const [productDebt, setProductDebt] = useState<AgentProductDebtDto | null>(null);
   const [productDebtPayments, setProductDebtPayments] = useState<AgentProductDebtPaymentDto[]>([]);
+  const [productContracts, setProductContracts] = useState<AgentContractListItemDto[]>([]);
+  const [productContractsAgentId, setProductContractsAgentId] = useState("");
+  const [selectedProductContractId, setSelectedProductContractId] = useState("");
   const [productContract, setProductContract] = useState<AgentContractDto | null>(null);
+  const [productCreditLoading, setProductCreditLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   const [detailTab, setDetailTab] = useState<"general" | "profitability" | "cashPowder" | "productCredit">("general");
@@ -78,42 +82,18 @@ export const AgentDetails = () => {
     if (!id) return;
     setIsLoading(true);
     try {
-      const [agentData, historyData] = await Promise.all([
+      const [agentData, historyData, contractsResult] = await Promise.all([
         agentsService.getAgent(id),
         agentsService.getAgentTypeHistory(id),
+        agentContractsService.listProductCreditContracts({ agentId: id, page: 1, pageSize: 500 }),
       ]);
       setAgent(agentData);
       setHistory(historyData || []);
-
-      const [contractsResult, debtResult, paymentsResult] = await Promise.allSettled([
-        agentContractsService.listProductCreditContracts({ agentId: id, page: 1, pageSize: 100 }),
-        agentsService.getAgentProductDebt(id),
-        agentsService.getAgentProductDebtPayments(id),
-      ]);
-      const eligibleContract =
-        contractsResult.status === "fulfilled"
-          ? (contractsResult.value.results ?? []).find(
-              (contract) =>
-                (String(contract.status).toLowerCase() === "active" || Number(contract.status) === 0),
-            )
-          : undefined;
-      if (eligibleContract) {
-        const fullContract = await agentContractsService.getContract(eligibleContract.id);
-        setProductContract(fullContract);
-        if (debtResult.status === "fulfilled") {
-          const contractDebt = await agentsService
-            .getAgentProductDebt(id, eligibleContract.id)
-            .catch(() => debtResult.value);
-          setProductDebt(contractDebt);
-        } else {
-          setProductDebt(null);
-        }
-      } else {
-        setProductContract(null);
-        setProductDebt(debtResult.status === "fulfilled" ? debtResult.value : null);
-      }
-      setProductDebtPayments(
-        paymentsResult.status === "fulfilled" ? paymentsResult.value ?? [] : [],
+      const contracts = contractsResult.results ?? [];
+      setProductContracts(contracts);
+      setProductContractsAgentId(id);
+      setSelectedProductContractId((current) =>
+        contracts.some((contract) => contract.id === current) ? current : "",
       );
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agents.errors.loadFailed")));
@@ -125,6 +105,45 @@ export const AgentDetails = () => {
   useEffect(() => {
     void load();
   }, [id]);
+
+  useEffect(() => {
+    if (!id || productContractsAgentId !== id || !selectedProductContractId) {
+      setProductContract(null);
+      setProductDebt(null);
+      setProductDebtPayments([]);
+      setProductCreditLoading(false);
+      return;
+    }
+
+    let isCancelled = false;
+    setProductCreditLoading(true);
+    void Promise.all([
+      agentContractsService.getContract(selectedProductContractId),
+      agentsService.getAgentProductDebt(id, selectedProductContractId),
+      agentsService.getAgentProductDebtPayments(id, selectedProductContractId),
+    ])
+      .then(([contract, debt, payments]) => {
+        if (isCancelled) return;
+        setProductContract(contract);
+        setProductDebt(debt);
+        setProductDebtPayments(payments);
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          setProductContract(null);
+          setProductDebt(null);
+          setProductDebtPayments([]);
+          toast.error(getApiErrorMessage(error, t("agents.productCredit.loadFailed")));
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setProductCreditLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [id, productContracts, productContractsAgentId, selectedProductContractId, t]);
 
   useEffect(() => {
     const handleContractChanged = () => {
@@ -216,7 +235,11 @@ export const AgentDetails = () => {
       cell: ({ row }: { row: { original: AgentProductDebtPaymentDto } }) =>
         row.original.agentId || "—",
     },
-    { accessorKey: "agentContractId", header: t("agents.productCredit.contract") },
+    {
+      id: "contractNumber",
+      header: t("agents.productCredit.contract"),
+      cell: () => productContract?.contractNumber ?? "—",
+    },
     { accessorKey: "cashRegisterId", header: t("agents.productCredit.cashRegister") },
     { accessorKey: "cashSessionId", header: t("agents.productCredit.cashSession") },
     { accessorKey: "cashLedgerEntryId", header: t("agents.productCredit.cashLedgerEntry") },
@@ -353,7 +376,20 @@ export const AgentDetails = () => {
       {detailTab === "productCredit" && (
         <div className={styles.infoCard}>
           <h3>{t("agents.productCredit.title")}</h3>
-          {productContract ? (
+          {productContracts.length > 0 && (
+            <Select value={selectedProductContractId} onChange={(event) => setSelectedProductContractId(event.target.value)}>
+              <option value="">{t("agentWorkspace.selectProductContract")}</option>
+              {productContracts.map((contract) => (
+                <option key={contract.id} value={contract.id}>{contract.contractNumber}</option>
+              ))}
+            </Select>
+          )}
+          {productCreditLoading && <div className={styles.banner}>{t("agents.loading")}</div>}
+          {productContracts.length === 0 && !productCreditLoading ? (
+            <div className={styles.detailRow}>{t("agents.productCredit.noActiveContract")}</div>
+          ) : !selectedProductContractId ? (
+            <div className={styles.detailRow}>{t("agents.productCredit.selectContractPrompt")}</div>
+          ) : productContract ? (
             <>
               <div className={styles.detailRow}>
                 <strong>{t("agents.productCredit.activeContract")}:</strong>
@@ -395,17 +431,17 @@ export const AgentDetails = () => {
                 </Button>
               </div>
             </>
-          ) : (
-            <div className={styles.detailRow}>{t("agents.productCredit.noActiveContract")}</div>
+          ) : null}
+          {selectedProductContractId && (
+            <DataTable
+              columns={productDebtPaymentColumns as any}
+              data={productDebtPayments}
+              isLoading={productCreditLoading}
+              fitContainer
+              noResultsText={t("agents.productCredit.noPayments")}
+              loadingText={t("agents.loading")}
+            />
           )}
-          <DataTable
-            columns={productDebtPaymentColumns as any}
-            data={productDebtPayments}
-            isLoading={isLoading}
-            fitContainer
-            noResultsText={t("agents.productCredit.noPayments")}
-            loadingText={t("agents.loading")}
-          />
           <AgentProductCreditPurchases agentId={agent.id} />
         </div>
       )}

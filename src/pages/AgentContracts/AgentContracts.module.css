@@ -1,4 +1,4 @@
-.page { display: grid; gap: 20px; }
+.page { --color-primary-500: #7eb8a5; display: grid; gap: 20px; }
 .page .modalPrimaryButton {
   border: 1px solid rgba(232, 210, 151, 0.72);
   background: #c4a96a;
@@ -15,14 +15,87 @@
   background: rgba(196, 169, 106, 0.14);
 }
 .filters, .detailGrid, .financials { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.contractFilters, .advanceFilters, .legacyAdvanceFilters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  padding: 18px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 52%),
+    linear-gradient(145deg, rgba(25, 34, 29, 0.96), rgba(17, 22, 20, 0.96));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+.contractFilters { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.legacyAdvanceFilters { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.contractFilters > *, .advanceFilters > *, .legacyAdvanceFilters > * { min-width: 0; }
+.fundingDateFilters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(126, 184, 165, 0.3);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top left, rgba(126, 184, 165, 0.1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, 0.96), rgba(17, 22, 20, 0.96));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+.fundingDateFilters > * { min-width: 0; }
+.contractCards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr)); gap: 16px; }
+.contractCard {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(126, 184, 165, 0.22);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at top right, rgba(126, 184, 165, 0.08), transparent 48%),
+    linear-gradient(145deg, rgba(25, 33, 29, 0.98), rgba(17, 21, 20, 0.98));
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.17), inset 0 1px rgba(255, 255, 255, 0.025);
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.contractCard:hover { transform: translateY(-2px); border-color: rgba(126, 184, 165, 0.42); box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.035); }
+.contractCardHeader, .contractCardIdentity, .contractCardBadges, .contractCardFooter { display: flex; align-items: center; }
+.contractCardHeader, .contractCardFooter { justify-content: space-between; gap: 12px; }
+.contractCardIdentity { gap: 11px; min-width: 0; }
+.contractCardIcon { display: grid; flex: 0 0 40px; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(196, 169, 106, 0.28); border-radius: 11px; background: rgba(196, 169, 106, 0.09); color: #d7c58f; }
+.contractCardTitle { min-width: 0; }
+.contractCardEyebrow { color: #97a49a; font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
+.contractCardTitle h2 { overflow: hidden; margin: 3px 0 0; color: #f0eee5; font-size: 17px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.contractCardBadges { justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
+.contractTypeBadge { display: inline-flex; align-items: center; min-height: 25px; padding: 4px 9px; border: 1px solid rgba(196, 169, 106, 0.25); border-radius: 999px; background: rgba(196, 169, 106, 0.09); color: #ddc98e; font-size: 11px; font-weight: 700; }
+.productContractBadge { border-color: rgba(126, 184, 165, 0.28); background: rgba(126, 184, 165, 0.09); color: #a6d3bf; }
+.contractAgent { display: grid; gap: 3px; padding: 12px 13px; border: 1px solid rgba(255, 255, 255, 0.055); border-radius: 10px; background: rgba(255, 255, 255, 0.025); }
+.contractAgent span, .contractCardFact span { color: #9ca89f; font-size: 11px; }
+.contractAgent strong { overflow: hidden; color: #eeece3; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.contractAgent small { color: #818d83; font-size: 11px; }
+.contractCardFacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.contractCardFact { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; row-gap: 4px; min-width: 0; padding: 10px 11px; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 9px; background: rgba(9, 13, 11, 0.28); }
+.contractCardFactWithIcon { grid-template-columns: auto minmax(0, 1fr); column-gap: 7px; }
+.contractCardFact svg { grid-row: span 2; align-self: center; color: #88b9a2; }
+.contractCardFact span, .contractCardFact strong { grid-column: 1 / -1; }
+.contractCardFactWithIcon span, .contractCardFactWithIcon strong { grid-column: 2; }
+.contractCardFactWithIcon svg { grid-column: 1; }
+.contractCardFact strong { overflow: hidden; color: #e6e8df; font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.contractCardFooter { flex-wrap: wrap; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.contractCardFooter > span { color: #89968c; font-size: 10px; }
+.contractPagination { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 2px; color: #aab4ab; font-size: 12px; }
+.contractListState { padding: 34px 18px; border: 1px dashed rgba(126, 184, 165, 0.28); border-radius: 12px; background: rgba(18, 24, 21, 0.55); color: #aab4ab; text-align: center; }
 .agentPhoneLookup { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; min-width: 0; }
 .summary, .headerActions, .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .summary, .actions { justify-content: space-between; }
 .form, .inlineForm, .modalFields { display: grid; gap: 16px; max-width: 820px; }
-.productCreditForm { width: 100%; max-width: none; grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr); align-items: start; gap: 20px; }
+.productCreditForm { --color-primary-500: #91a99a; width: 100%; max-width: none; grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr); align-items: start; gap: 20px; }
+.productCreditField { border-color: rgba(126, 184, 165, 0.32); }
 .contractFields { display: grid; gap: 16px; }
 .productContractFields { display: grid; gap: 16px; min-width: 0; }
 .productCreditAside { display: grid; gap: 16px; min-width: 0; }
+.productCreditTermsForm { display: grid; gap: 12px; padding: 18px; border: 1px solid rgba(196, 169, 106, 0.2); border-radius: 10px; background: rgba(15, 20, 16, 0.72); }
+.productCreditOption { display: flex; align-items: center; gap: 10px; color: #d7ddcf; font-size: 13px; }
+.productCreditOption input { width: 18px; height: 18px; margin: 0; accent-color: #75a982; }
 .productContractAction {
   min-height: 30px;
   padding: 6px 12px !important;
@@ -35,7 +108,24 @@
 }
 .productContractAction:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); }
 .productContractAction:focus-visible { outline: 2px solid rgba(196, 169, 106, 0.7); outline-offset: 2px; }
-.productContractDetailAction { box-sizing: border-box; height: 28px !important; min-height: 28px; padding: 4px 10px !important; font-size: 11px !important; }
+.contractManagement {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 18px;
+  border: 1px solid rgba(126, 184, 165, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(115deg, rgba(126, 184, 165, 0.075), rgba(15, 20, 16, 0.68) 55%);
+}
+.contractManagementCopy { display: grid; gap: 4px; min-width: 0; }
+.contractManagementCopy > span { color: #a9b5aa; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.contractManagementCopy > strong { color: #ece9dd; font-size: 14px; }
+.contractManagementCopy > p { margin: 0; color: #9da89e; font-size: 12px; line-height: 1.5; }
+.contractManagementButton { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 8px 14px !important; font-size: 12px !important; white-space: nowrap; }
+.contractActivateButton { border-color: rgba(126, 184, 165, 0.48) !important; box-shadow: 0 7px 18px rgba(67, 133, 103, 0.2); }
+.contractDeactivateButton { border: 1px solid rgba(196, 169, 106, 0.42) !important; background: rgba(196, 169, 106, 0.11) !important; color: #e3d3a5 !important; }
+.contractDeactivateButton:hover:not(:disabled) { background: rgba(196, 169, 106, 0.19) !important; }
 .chevronExpanded { transform: rotate(180deg); }
 .productCreditConfig { display: grid; gap: 22px; padding: 22px; border: 1px solid rgba(196, 169, 106, 0.28); border-radius: 10px; background: radial-gradient(ellipse at top right, rgba(196, 169, 106, 0.11), transparent 58%), linear-gradient(145deg, #20291f, #151b17 78%); }
 .productCreditConfig h2 { margin: 5px 0 8px; color: #f1eddf; font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 500; }
@@ -54,6 +144,9 @@
 .inlineForm { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); max-width: none; align-items: end; margin-bottom: 16px; }
 .section { display: grid; gap: 14px; }
 .section h2 { font-size: 18px; margin: 0; }
+.section h3 { margin: 0; font-size: 15px; }
+.fundingPlanRow { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(140px, .7fr) minmax(180px, 1fr) auto; gap: 10px; align-items: end; padding: 12px; border: 1px solid rgba(126, 184, 165, .22); border-radius: 9px; background: rgba(15, 20, 16, .48); }
+.fundingPlanWarning { padding: 12px; border: 1px solid rgba(196, 169, 106, .28); border-radius: 8px; background: rgba(196, 169, 106, .08); color: #e8dfc7; font-size: 13px; line-height: 1.5; }
 .detail { background: #151922; border: 1px solid #2a2f3a; border-radius: 8px; padding: 12px; display: grid; gap: 6px; }
 .detail span { color: #a3a8b3; font-size: 13px; }
 .status { display: inline-flex; width: fit-content; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 600; }
@@ -76,5 +169,7 @@
 .fundingMetrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 .fundingChart { background: linear-gradient(135deg, rgba(28, 35, 31, 0.96), rgba(12, 14, 18, 0.98)); border: 1px solid rgba(196, 169, 106, 0.18); border-radius: 16px; padding: 16px; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.2); }
 .sectionTitle { margin: 0; font-size: 1.05rem; }
-@media (max-width: 760px) { .productCreditForm { grid-template-columns: minmax(0, 1fr); } .productCreditAside { grid-row: auto; } .productCreditActions { grid-column: auto; } }
+@media (max-width: 1100px) { .contractFilters, .advanceFilters, .legacyAdvanceFilters { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .contractFilters, .advanceFilters, .legacyAdvanceFilters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; } .fundingDateFilters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; } .fundingDateFilters > :last-child { grid-column: 1 / -1; justify-self: end; } .contractManagement { align-items: stretch; flex-direction: column; gap: 12px; padding: 14px; } .contractManagementButton { width: 100%; } .contractCard { padding: 15px; } .contractCardHeader { align-items: flex-start; flex-direction: column; } .contractCardBadges { justify-content: flex-start; } .contractCardFacts { gap: 8px; } .productCreditForm { grid-template-columns: minmax(0, 1fr); } .productCreditAside { grid-row: auto; } .productCreditActions { grid-column: auto; } .fundingPlanRow { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 480px) { .contractFilters, .advanceFilters, .legacyAdvanceFilters, .fundingDateFilters { grid-template-columns: minmax(0, 1fr); } .contractCardFacts { grid-template-columns: minmax(0, 1fr); } .contractPagination { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 640px) { .actions { justify-content: flex-end; } .productCreditConfig { padding: 18px; } }

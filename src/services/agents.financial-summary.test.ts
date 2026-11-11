@@ -3,6 +3,7 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 vi.mock("@/services/index", () => ({
   api: {
     get: vi.fn(),
+    post: vi.fn(),
   },
 }));
 
@@ -45,6 +46,63 @@ describe("agentsService.getAgentProductCreditSales", () => {
       headers: { "X-CashRegister-Id": "7" },
     });
     expect(result).toEqual(sales);
+  });
+});
+
+describe("agentsService Product Credit debt operations", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("loads debt scoped to one contract", async () => {
+    const debt = { outstandingAmountAmd: 12000 };
+    vi.mocked(api.get).mockResolvedValue({ data: debt });
+
+    const result = await agentsService.getAgentProductDebt("agent-1", "contract-1", 7);
+
+    expect(api.get).toHaveBeenCalledWith("/agents/agent-1/product-debt", {
+      params: { contractId: "contract-1" },
+      headers: { "X-CashRegister-Id": "7" },
+    });
+    expect(result).toEqual(debt);
+  });
+
+  it("submits a retry-safe contract-scoped debt payment", async () => {
+    const payment = { id: "payment-1" };
+    const request = {
+      amountAmd: 1000,
+      contractId: "contract-1",
+      idempotencyKey: "payment-key-1",
+    };
+    vi.mocked(api.post).mockResolvedValue({ data: payment });
+
+    const result = await agentsService.payAgentProductDebt("agent-1", request, 7);
+
+    expect(api.post).toHaveBeenCalledWith(
+      "/agents/agent-1/product-debt/payments",
+      request,
+      { headers: { "X-CashRegister-Id": "7" } },
+    );
+    expect(result).toEqual(payment);
+  });
+
+  it("submits idempotent Product Credit returns", async () => {
+    const returned = { id: "return-1", appliedAmountAmd: 500 };
+    const request = {
+      agentAdvanceId: "advance-1",
+      amountAmd: 500,
+      idempotencyKey: "return-key-1",
+    };
+    vi.mocked(api.post).mockResolvedValue({ data: returned });
+
+    const result = await agentsService.returnAgentProductDebt("agent-1", request, 7);
+
+    expect(api.post).toHaveBeenCalledWith(
+      "/agents/agent-1/product-debt/returns",
+      request,
+      { headers: { "X-CashRegister-Id": "7" } },
+    );
+    expect(result).toEqual(returned);
   });
 });
 

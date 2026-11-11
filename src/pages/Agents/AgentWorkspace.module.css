@@ -1,4 +1,5 @@
 .workspace {
+  --color-primary-500: #7eb8a5;
   --agent-ink: #111713;
   --agent-surface: #171e19;
   --agent-line: rgba(210, 182, 111, 0.2);
@@ -71,24 +72,71 @@
   scrollbar-color: rgba(196, 169, 106, 0.35) transparent;
 }
 
-.sectionRail {
-  border-color: rgba(196, 169, 106, 0.18);
-  background: linear-gradient(100deg, rgba(29, 38, 30, 0.96), rgba(17, 23, 19, 0.98));
+.sectionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
-.sectionRail .tab {
-  min-height: 42px;
-  padding-right: 16px;
-  padding-left: 16px;
+.sectionCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 68px;
+  padding: 10px 12px;
   color: #c0c8bd;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  background: linear-gradient(130deg, rgba(28, 37, 30, 0.92), rgba(17, 23, 19, 0.98));
+  text-decoration: none;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.sectionCard:hover {
+  color: #f4f1e8;
+  border-color: rgba(196, 169, 106, 0.3);
+  transform: translateY(-1px);
+}
+
+.sectionCardActive {
+  color: #f7f0dd;
+  border-color: rgba(196, 169, 106, 0.48);
+  background: linear-gradient(130deg, rgba(84, 76, 48, 0.62), rgba(30, 41, 31, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(196, 169, 106, 0.08);
+}
+
+.sectionIcon {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--agent-gold);
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: rgba(10, 15, 11, 0.42);
+}
+
+.sectionCardCopy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sectionCardCopy strong {
+  overflow: hidden;
   font-size: 12px;
   font-weight: 700;
+  text-overflow: ellipsis;
 }
 
-.sectionRail .tabActive {
-  color: #f7f0dd;
-  border-color: rgba(196, 169, 106, 0.4);
-  background: linear-gradient(180deg, rgba(101, 89, 54, 0.45), rgba(48, 53, 36, 0.5));
+.sectionCardCopy small {
+  overflow: hidden;
+  color: var(--agent-muted);
+  font-size: 10px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
 }
 
 .tab {
@@ -169,13 +217,29 @@
     font-size: 11px;
   }
 
-  .sectionRail .tab {
-    padding: 0 10px;
+  .sectionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sectionCard {
+    min-height: 62px;
+    padding: 8px;
+  }
+
+  @media (min-width: 721px) and (max-width: 1050px) {
+    .sectionGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sectionCardCopy small {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .tab,
+  .sectionCard,
   .content {
     animation: none;
     transition: none;

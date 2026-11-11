@@ -18,12 +18,14 @@ export interface RepaymentTermsSnapshotDto {
   repaymentRuleId: string;
   repaymentRuleVersionId: string;
   ruleVersion: number;
-  debtRepaymentPercent: number;
-  agentPayoutPercent: number;
-  excessBusinessPercent: number;
-  excessAgentPercent: number;
+  type: "Dust" | "ProductCredit";
+  debtRepaymentPercent: number | null;
+  agentPayoutPercent: number | null;
+  excessBusinessPercent: number | null;
+  excessAgentPercent: number | null;
   defaultRepaymentPeriodDays: number;
-  maximumExtensions: number;
+  maximumExtensions: number | null;
+  maximumProductCreditExtensions?: number | null;
 }
 
 export interface CapitalSourceAllocationDto {
@@ -32,6 +34,7 @@ export interface CapitalSourceAllocationDto {
   capitalSourceCode: string;
   capitalSourceName: string;
   amount: number;
+  description?: string | null;
   referenceType: string;
   referenceId: string;
   createdAt: string;
@@ -66,8 +69,15 @@ export interface AgentContractListItemDto {
   contractNumber: string;
   agent: AgentSummaryDto;
   contractDate: string;
+  repaymentDeadline?: string | null;
   status: AgentContractStatus;
-  allowsProductAdvance?: boolean;
+  allowsProductAdvance?: boolean | null;
+  productCreditLimitAmd?: number | null;
+  productCreditDiscountPercent?: number | null;
+  restoreProductCreditLimitAfterRepayment?: boolean | null;
+  acceptsNewProductPurchases?: boolean | null;
+  productCreditDeadline?: string | null;
+  approvedShopIds?: number[] | null;
   repaymentTerms?: RepaymentTermsSnapshotDto | null;
   totalAdvancedAmount: number;
   totalRepaidAmount: number;
@@ -80,8 +90,16 @@ export interface AgentContractDto {
   contractNumber: string;
   agent: AgentSummaryDto;
   contractDate: string;
+  repaymentDeadline?: string | null;
   status: AgentContractStatus;
   allowsProductAdvance?: boolean;
+  productCreditLimitAmd?: number | null;
+  productCreditDiscountPercent?: number | null;
+  restoreProductCreditLimitAfterRepayment?: boolean | null;
+  acceptsNewProductPurchases?: boolean | null;
+  productCreditDeadline?: string | null;
+  approvedShopIds?: number[] | null;
+  availableProductCreditAmd?: number | null;
   notes: string | null;
   repaymentTerms: RepaymentTermsSnapshotDto;
   financials: {
@@ -104,10 +122,34 @@ export interface SaveAgentContractRequest {
   notes?: string;
 }
 
+export interface SaveProductCreditTermsRequest {
+  creditLimitAmd: number;
+  discountPercent: number;
+  restoreCreditLimitAfterRepayment: boolean;
+  acceptsNewPurchases: boolean;
+}
+
+export interface ExtendProductCreditDeadlineRequest {
+  newDeadline: string;
+  reason: string;
+}
+
+export interface AgentProductContractSelectionDto {
+  contractId: string;
+  contractNumber: string;
+  creditLimitAmd: number;
+  outstandingAmountAmd: number;
+  availableCreditAmd: number;
+  discountPercent: number;
+  productCreditDeadline: string;
+  termsVersion: number;
+}
+
 export interface CreateAgentAdvanceRequest {
   amount: number;
   advanceDate: string;
   notes?: string;
+  allocations: AddCapitalSourceAllocationRequest[];
 }
 
 export interface AddCapitalSourceAllocationRequest {

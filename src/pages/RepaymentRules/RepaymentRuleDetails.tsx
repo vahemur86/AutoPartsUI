@@ -64,17 +64,37 @@ export const RepaymentRuleDetails = () => {
   const columns = [
     { accessorKey: "version", header: t("repaymentRules.fields.version") },
     {
+      accessorKey: "type",
+      header: t("repaymentRules.fields.type"),
+      cell: ({ row }: { row: { original: RepaymentRuleVersion } }) =>
+        t(`repaymentRules.types.${row.original.type}`),
+    },
+    {
       accessorKey: "status",
       header: t("repaymentRules.fields.status"),
       cell: ({ row }: any) => getStatusLabel(row.original.status),
     },
-    {
-      accessorFn: (row: RepaymentRuleVersion) => `${row.debtRepaymentPercent}% / ${row.agentPayoutPercent}%`,
+    ...(rule?.type === "Dust" ? [{
+      accessorFn: (row: RepaymentRuleVersion) =>
+        `${row.debtRepaymentPercent ?? "—"}% / ${row.agentPayoutPercent ?? "—"}%`,
       id: "distribution",
       header: t("repaymentRules.fields.distribution"),
-    },
+    }] : []),
     { accessorKey: "defaultRepaymentPeriodDays", header: t("repaymentRules.fields.periodDays") },
-    { accessorKey: "maximumExtensions", header: t("repaymentRules.fields.extensions") },
+    {
+      id: "extensions",
+      header: t(rule?.type === "ProductCredit"
+        ? "repaymentRules.fields.maximumProductCreditExtensions"
+        : "repaymentRules.fields.maximumExtensions"),
+      cell: ({ row }: { row: { original: RepaymentRuleVersion } }) => {
+        const limit = row.original.type === "ProductCredit"
+          ? row.original.maximumProductCreditExtensions
+          : row.original.maximumExtensions;
+        return row.original.type === "ProductCredit" && limit == null
+          ? t("repaymentRules.fields.unlimited")
+          : limit ?? "—";
+      },
+    },
     {
       id: "actions",
       header: t("repaymentRules.fields.actions"),
@@ -84,7 +104,14 @@ export const RepaymentRuleDetails = () => {
         const isActive = normalizeStatus(v.status) === "active";
         return (
           <div style={{ display: "flex", gap: 8 }}>
-            <AgentIconButton size="medium" tone="primary" icon={<Eye size={16} />} ariaLabel={`${t("repaymentRules.actions.view")} ${v.version}`} title={t("repaymentRules.actions.view")} onClick={() => navigate(`/agents/cash-powder/rules/versions/${v.id}`)} />
+            <AgentIconButton
+              size="medium"
+              tone="primary"
+              icon={<Eye size={16} />}
+              ariaLabel={`${t("repaymentRules.actions.view")} ${v.version}`}
+              title={t("repaymentRules.actions.view")}
+              onClick={() => navigate(`/agents/rules/versions/${v.id}`)}
+            />
             {isDraft && (
               <AgentIconButton size="medium" tone="primary" icon={<CircleCheck size={16} />} ariaLabel={`${t("repaymentRules.actions.activate")} ${v.version}`} title={t("repaymentRules.actions.activate")} disabled={isMutating} onClick={async () => {
                 try {
@@ -133,11 +160,20 @@ export const RepaymentRuleDetails = () => {
         </div>
 
         <div style={{ marginBottom: 12 }}>
+          <strong>{t("repaymentRules.fields.type")}:</strong> {rule ? t(`repaymentRules.types.${rule.type}`) : "—"}
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
           <strong>{t("repaymentRules.fields.currentVersion")}:</strong> {rule?.currentVersion ?? "—"}
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate(`/agents/cash-powder/rules/${id}/versions/create`)}>{t("repaymentRules.actions.createVersion")}</AgentActionButton>
+          <AgentActionButton
+            icon={<Plus size={16} />}
+            onClick={() => navigate(`/agents/rules/${id}/versions/create`)}
+          >
+            {t("repaymentRules.actions.createVersion")}
+          </AgentActionButton>
         </div>
 
         <div style={{ marginTop: 16 }}>

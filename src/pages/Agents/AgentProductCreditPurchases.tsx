@@ -81,7 +81,9 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
         page: 1,
         pageSize: 500,
       });
-      setContracts(result.results ?? []);
+      const nextContracts = result.results ?? [];
+      setContracts(nextContracts);
+      setContractId((current) => nextContracts.some((contract) => contract.id === current) ? current : "");
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agents.productCredit.loadFailed")));
     }
@@ -104,6 +106,14 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
       return;
     }
 
+    if (!contractId) {
+      setSales([]);
+      setLoadError(null);
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
     if (isRefresh) setRefreshing(true);
     else {
       setLoading(true);
@@ -113,7 +123,7 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
 
     try {
       const salesResult = await agentsService.getAgentProductCreditSales(agentId, {
-        contractId: contractId || undefined,
+        contractId,
         page,
         pageSize: PAGE_SIZE,
       });
@@ -154,6 +164,12 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
   const columns = useMemo<ColumnDef<AgentProductCreditSaleDto, unknown>[]>(
     () => [
       { accessorKey: "saleId", header: t("agents.productCredit.saleId") },
+      {
+        id: "contractNumber",
+        header: t("agents.productCredit.contract"),
+        cell: ({ row }: { row: { original: AgentProductCreditSaleDto } }) =>
+          contracts.find((contract) => contract.id === row.original.contractId)?.contractNumber ?? row.original.contractId,
+      },
       {
         id: "saleDate",
         header: t("agents.productCredit.saleDate"),
@@ -215,7 +231,7 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
         ),
       },
     ],
-    [t],
+    [contracts, t],
   );
 
   const handleContractChange = (value: string) => {
@@ -231,44 +247,51 @@ export const AgentProductCreditPurchases = ({ agentId }: { agentId: string }) =>
     <section className={styles.productPurchases}>
       <div className={styles.productPurchasesHeader}>
         <h4>{t("agents.productCredit.purchasesTitle")}</h4>
-        <Button size="small" variant="secondary" disabled={loading || refreshing} onClick={() => void loadPurchases(true)}>
+        <Button size="small" variant="secondary" disabled={!contractId || loading || refreshing} onClick={() => void loadPurchases(true)}>
           <RefreshCw size={15} aria-hidden="true" />
           {refreshing ? t("common.loading") : t("common.refresh")}
         </Button>
       </div>
-      {visibleContracts.length > 1 && (
+      {visibleContracts.length > 0 && (
         <div className={styles.productPurchasesFilter}>
           <Select value={contractId} onChange={(event) => handleContractChange(event.target.value)}>
-            <option value="">{t("agents.productCredit.allProductContracts")}</option>
+            <option value="">{t("agentWorkspace.selectProductContract")}</option>
             {visibleContracts.map((contract) => (
               <option key={contract.id} value={contract.id}>{contract.contractNumber}</option>
             ))}
           </Select>
         </div>
       )}
+      {!visibleContracts.length ? (
+        <div className={styles.banner}>{t("agents.productCredit.noContracts")}</div>
+      ) : !contractId ? (
+        <div className={styles.banner}>{t("agents.productCredit.selectContractPrompt")}</div>
+      ) : null}
       {loadError ? (
         <div className={styles.banner} role="alert">
           <span>{loadError.message}</span>
           {salesErrorAction}
         </div>
       ) : null}
-      <DataTable
-        columns={columns}
-        data={sales}
-        isLoading={loading}
-        fitContainer
-        loadingText={t("agents.productCredit.loadingSales")}
-        noResultsText={t("agents.productCredit.noSales")}
-        renderSubComponent={({ row }) => <AgentProductCreditSaleItems items={row.original.items ?? []} />}
-        manualPagination
-        pageSize={PAGE_SIZE}
-        pageCount={hasNextPage ? page + 1 : page}
-        pageIndex={page - 1}
-        canNextPage={hasNextPage}
-        paginationLabel={<>{t("common.page")} {page}</>}
-        getRowId={(sale) => String(sale.saleId)}
-        onPaginationChange={(index) => setPage(index + 1)}
-      />
+      {contractId && (
+        <DataTable
+          columns={columns}
+          data={sales}
+          isLoading={loading}
+          fitContainer
+          loadingText={t("agents.productCredit.loadingSales")}
+          noResultsText={t("agents.productCredit.noSales")}
+          renderSubComponent={({ row }) => <AgentProductCreditSaleItems items={row.original.items ?? []} />}
+          manualPagination
+          pageSize={PAGE_SIZE}
+          pageCount={hasNextPage ? page + 1 : page}
+          pageIndex={page - 1}
+          canNextPage={hasNextPage}
+          paginationLabel={<>{t("common.page")} {page}</>}
+          getRowId={(sale) => String(sale.saleId)}
+          onPaginationChange={(index) => setPage(index + 1)}
+        />
+      )}
     </section>
   );
 };

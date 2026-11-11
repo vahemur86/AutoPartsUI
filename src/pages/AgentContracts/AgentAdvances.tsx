@@ -37,6 +37,7 @@ import type { AgentAdvanceFundingAnalyticsDto, FundingDailyCostDto } from "@/typ
 import type {
   AgentAdvanceDto,
   AgentAdvanceExtensionDto,
+  AgentContractDto,
   AgentContractStatus,
   RepaymentTermsSnapshotDto,
 } from "@/types/agentContracts";
@@ -336,6 +337,8 @@ export const AgentAdvancesList = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const role = useSelector((state: RootState) => state.auth.user?.role?.toLowerCase() || "");
+  const canApprove = role === "admin" || role === "superadmin";
   const [items, setItems] = useState<AgentAdvanceDto[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -407,9 +410,9 @@ export const AgentAdvancesList = () => {
       {
         id: "deadline",
         header: t("agentAdvances.fields.deadline"),
-        cell: ({ row }: any) => (
-          <DeadlineWarning deadline={deadlineFor(row.original)} />
-        ),
+        cell: ({ row }: any) => isDraftAgentStatus(row.original.status)
+          ? "—"
+          : <DeadlineWarning deadline={deadlineFor(row.original)} />,
       },
       {
         id: "actions",
@@ -433,11 +436,20 @@ export const AgentAdvancesList = () => {
               title={t("agentAdvances.actions.view")}
               onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)}
             />
+            {canApprove && isDraftAgentStatus(row.original.status) && (
+              <Button
+                size="small"
+                variant="primary"
+                onClick={() => navigate(`/agents/cash-powder/advances/${row.original.id}`)}
+              >
+                {t("agentAdvances.actions.reviewAndApprove")}
+              </Button>
+            )}
           </div>
         ),
       },
     ],
-    [navigate, t],
+    [canApprove, navigate, t],
   );
   return (
     <div className={styles.page}>
@@ -452,7 +464,7 @@ export const AgentAdvancesList = () => {
           </Button>
         }
       />
-      <div className={styles.filters}>
+      <div className={styles.advanceFilters}>
         <Select
           value={agentId}
           onChange={(event) => setFilter("agentId", event.target.value)}
@@ -506,9 +518,13 @@ export const AgentAdvancesList = () => {
               { label: t("agentAdvances.fields.contract"), value: row.original.agentContractId },
               { label: t("agentAdvances.fields.advanceDate"), value: date(row.original.advanceDate) },
               { label: t("agentAdvances.fields.extensions"), value: `${row.original.extensionCount ?? 0}/${row.original.maximumExtensions ?? row.original.repaymentTerms?.maximumExtensions ?? "—"}` },
-              { label: t("agentAdvances.fields.allocatedAmount"), value: money(row.original.allocatedAmount) },
+              { label: t(isDraftAgentStatus(row.original.status) ? "agentAdvances.fields.plannedAllocationAmount" : "agentAdvances.fields.allocatedAmount"), value: money(row.original.allocatedAmount) },
               { label: t("agentAdvances.fields.notes"), value: row.original.notes || "—" },
               { label: t("agentAdvances.fields.createdBy"), value: row.original.createdBy || "—" },
+              ...(row.original.allocations ?? []).map((allocation) => ({
+                label: `${allocation.capitalSourceCode} - ${allocation.capitalSourceName}`,
+                value: `${money(allocation.amount)} AMD${allocation.description ? ` · ${allocation.description}` : ""}`,
+              })),
             ]}
           />
         )}
@@ -526,6 +542,7 @@ export const AgentAdvanceDetails = () => {
   const role = useSelector(
     (state: RootState) => state.auth.user?.role?.toLowerCase() || "",
   );
+  const canApprove = role === "admin" || role === "superadmin";
   const canRequest = [
     "admin",
     "operations manager",
@@ -542,30 +559,39 @@ export const AgentAdvanceDetails = () => {
   const [description, setDescription] = useState("");
   const [allocationOpen, setAllocationOpen] = useState(false);
   const [removeId, setRemoveId] = useState<string | null>(null);
-  const [activateOpen, setActivateOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
   const [extensionOpen, setExtensionOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [extensionLoading, setExtensionLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [approvalSaving, setApprovalSaving] = useState(false);
+  const [contract, setContract] = useState<AgentContractDto | null>(null);
   const [fundingAnalytics, setFundingAnalytics] = useState<AgentAdvanceFundingAnalyticsDto | null>(null);
   const [fundingFromDate, setFundingFromDate] = useState("");
   const [fundingToDate, setFundingToDate] = useState("");
   const [fundingHistory, setFundingHistory] = useState<FundingDailyCostDto[]>([]);
   const load = async () => {
     if (!id) return;
-    if (fundingFromDate && fundingToDate && new Date(`${fundingFromDate}T00:00:00`) > new Date(`${fundingToDate}T00:00:00`)) {
+    const invalidFundingDateRange = Boolean(
+      fundingFromDate &&
+      fundingToDate &&
+      new Date(`${fundingFromDate}T00:00:00`) > new Date(`${fundingToDate}T00:00:00`),
+    );
+    if (invalidFundingDateRange) {
       toast.error(t("fundingAnalytics.validation.dateRange"));
-      return;
     }
     setLoading(true);
     try {
       const result = await agentContractsService.getAdvance(id);
       setAdvance(result);
       if (String(result.advanceType ?? "Cash").toLowerCase().includes("product")) {
+        const contractResult = await agentContractsService.getContract(result.agentContractId);
+        setContract(contractResult);
         setSources([]);
         setExtensions([]);
       } else {
-        const [sourceResult, extensionResult] = await Promise.all([
+        const [contractResult, sourceResult, extensionResult] = await Promise.allSettled([
+          agentContractsService.getContract(result.agentContractId),
           capitalSourcesService.listCapitalSources({
             page: 1,
             pageSize: 200,
@@ -573,8 +599,34 @@ export const AgentAdvanceDetails = () => {
           }),
           agentContractsService.getAdvanceExtensions(id),
         ]);
-        setSources(sourceResult.results ?? []);
-        setExtensions(extensionResult);
+        if (contractResult.status === "fulfilled") {
+          setContract(contractResult.value);
+        } else {
+          setContract(null);
+          toast.error(getApiErrorMessage(contractResult.reason, t("agentContracts.errors.loadDetailsFailed")));
+        }
+        if (sourceResult.status === "fulfilled") {
+          setSources(sourceResult.value.results ?? []);
+        } else {
+          setSources([]);
+          toast.error(getApiErrorMessage(sourceResult.reason, t("capitalSources.errors.loadFailed")));
+        }
+        if (extensionResult.status === "fulfilled") {
+          setExtensions(extensionResult.value);
+        } else {
+          setExtensions([]);
+          toast.error(getApiErrorMessage(extensionResult.reason, t("agentAdvances.errors.loadDetailsFailed")));
+        }
+        if (isDraftAgentStatus(result.status)) {
+          setFundingAnalytics(null);
+          setFundingHistory([]);
+          return;
+        }
+        if (invalidFundingDateRange) {
+          setFundingAnalytics(null);
+          setFundingHistory([]);
+          return;
+        }
         try {
           const analytics = await fundingAnalyticsService.getAgentAdvanceFundingAnalytics(id, {
             fromDate: toDateTimeRange(fundingFromDate, false),
@@ -645,9 +697,11 @@ export const AgentAdvanceDetails = () => {
   );
   const draft = isDraftAgentStatus(advance.status);
   const active = isActiveAgentStatus(advance.status);
-  const fundingStatus = isActiveAgentStatus(advance.status)
-    ? t("agentAdvances.statuses.active")
-    : advance.allocatedAmount >= advance.advancedAmount
+  const fundingStatus = draft
+    ? t("agentAdvances.statuses.waitingForApproval")
+    : isActiveAgentStatus(advance.status)
+      ? t("agentAdvances.fundingStatuses.committed")
+      : advance.allocatedAmount >= advance.advancedAmount
       ? t("agentAdvances.fundingStatuses.fullyAllocated")
       : advance.allocatedAmount > 0
         ? t("agentAdvances.fundingStatuses.partiallyFunded")
@@ -692,14 +746,19 @@ export const AgentAdvanceDetails = () => {
       setRemoveId(null);
     }
   };
-  const activate = async () => {
+  const approve = async () => {
     if (!id) return;
+    setApprovalSaving(true);
     try {
-      await agentContractsService.activateAdvance(id);
-      toast.success(t("agentAdvances.messages.activated"));
+      await agentContractsService.approveAdvance(id);
+      toast.success(t("agentAdvances.messages.approved"));
+      setApproveOpen(false);
       await load();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("agentAdvances.errors.activateFailed")));
+      toast.error(getApiErrorMessage(error, t("agentAdvances.errors.approveFailed")));
+      await load();
+    } finally {
+      setApprovalSaving(false);
     }
   };
   const createExtension = async (request: {
@@ -727,6 +786,7 @@ export const AgentAdvanceDetails = () => {
       header: t("agentAdvances.allocation.amount"),
       cell: ({ row }: any) => money(row.original.amount),
     },
+    { accessorKey: "description", header: t("agentAdvances.allocation.descriptionField") },
     { accessorKey: "createdBy", header: t("agentAdvances.fields.createdBy") },
     {
       id: "actions",
@@ -786,12 +846,12 @@ export const AgentAdvanceDetails = () => {
                 {t("agentAdvances.actions.allocateCapital")}
               </Button>
             )}
-            {draft && (
+            {draft && canApprove && (
               <Button
-                disabled={remaining !== 0}
-                onClick={() => setActivateOpen(true)}
+                disabled={advance.allocatedAmount < advance.advancedAmount || approvalSaving}
+                onClick={() => setApproveOpen(true)}
               >
-                {t("agentAdvances.actions.activate")}
+                {t("agentAdvances.actions.approve")}
               </Button>
             )}
             {canRequest && active && extensionCount < maximumExtensions && (
@@ -808,19 +868,31 @@ export const AgentAdvanceDetails = () => {
           value={<StatusBadge status={advance.status} />}
         />
         <Detail label={t("agentAdvances.fields.advanceDate")} value={datetime(advance.advanceDate)} />
+        <Detail label={t("agentAdvances.fields.contract")} value={contract?.contractNumber ?? advance.agentContractId} />
         <Detail
           label={t("agentAdvances.fields.agent")}
           value={`${advance.agent.code} - ${advance.agent.fullName}`}
         />
         <Detail
-          label={t("agentAdvances.fields.advancedAmount")}
+          label={t(draft ? "agentAdvances.fields.requestedAmount" : "agentAdvances.fields.advancedAmount")}
           value={`${money(advance.advancedAmount)} AMD`}
         />
+        <Detail label={t("agentAdvances.fields.notes")} value={advance.notes || "—"} />
       </div>
-      {fundingAnalytics && (
+      {draft && <div className={styles.fundingPlanWarning} role="status">{t("agentAdvances.allocation.draftNotReserved")}</div>}
+      {contract && (
+        <section className={styles.section}>
+          <h2>{t("agentAdvances.sections.contractFinancials")}</h2>
+          <div className={styles.financials}>
+            <Detail label={t("agentContracts.fields.advanced")} value={`${money(contract.financials.totalAdvancedAmount)} AMD`} />
+            <Detail label={t("agentContracts.fields.outstanding")} value={`${money(contract.financials.outstandingAmount)} AMD`} />
+          </div>
+        </section>
+      )}
+      {!draft && fundingAnalytics && (
         <section className={styles.section}>
           <h2>{t("fundingAnalytics.advance.title")}</h2>
-          <div className={styles.inlineForm}>
+          <div className={styles.fundingDateFilters}>
             <TextField label={t("fundingAnalytics.filters.fromDate")} type="date" value={fundingFromDate} onChange={(event) => setFundingFromDate(event.target.value)} />
             <TextField label={t("fundingAnalytics.filters.toDate")} type="date" value={fundingToDate} onChange={(event) => setFundingToDate(event.target.value)} />
             <Button variant="secondary" onClick={() => void load()} disabled={loading}>{t("common.apply")}</Button>
@@ -859,38 +931,42 @@ export const AgentAdvanceDetails = () => {
           <DataTable columns={fundingHistoryColumns as any} data={fundingHistory} fitContainer noResultsText={t("fundingAnalytics.advance.noHistory")} />
         </section>
       )}
-      <section className={styles.section}>
-        <h2>{t("agentAdvances.sections.repaymentInformation")}</h2>
-        <div className={styles.detailGrid}>
-          <Detail
-            label={t("agentAdvances.fields.currentDeadline")}
-            value={<DeadlineWarning deadline={deadline} />}
-          />
-          <Detail
-            label={t("agentAdvances.fields.extensionsGranted")}
-            value={`${extensionCount}/${maximumExtensions}`}
-          />
-          <Detail
-            label={t("agentAdvances.fields.extendedUntil")}
-            value={extensionCount > 0 ? date(deadline.toISOString()) : "-"}
-          />
-          <Detail label={t("agentAdvances.fields.notes")} value={advance.notes} />
-        </div>
-      </section>
-      <ExtensionHistory extensions={extensions} loading={extensionLoading} />
+      {!draft && (
+        <>
+          <section className={styles.section}>
+            <h2>{t("agentAdvances.sections.repaymentInformation")}</h2>
+            <div className={styles.detailGrid}>
+              <Detail
+                label={t("agentAdvances.fields.currentDeadline")}
+                value={<DeadlineWarning deadline={deadline} />}
+              />
+              <Detail
+                label={t("agentAdvances.fields.extensionsGranted")}
+                value={`${extensionCount}/${maximumExtensions}`}
+              />
+              <Detail
+                label={t("agentAdvances.fields.extendedUntil")}
+                value={extensionCount > 0 ? date(deadline.toISOString()) : "-"}
+              />
+              <Detail label={t("agentAdvances.fields.notes")} value={advance.notes} />
+            </div>
+          </section>
+          <ExtensionHistory extensions={extensions} loading={extensionLoading} />
+        </>
+      )}
       <section className={styles.section}>
         <h2>{t("agentAdvances.sections.fundingSummary")}</h2>
         <div className={styles.financials}>
           <Detail label={t("agentAdvances.fields.fundingStatus")} value={fundingStatus} />
           <Detail
-            label={t("agentAdvances.fields.advancedAmount")}
+            label={t(draft ? "agentAdvances.fields.requestedAmount" : "agentAdvances.fields.advancedAmount")}
             value={money(advance.advancedAmount)}
           />
           <Detail
-            label={t("agentAdvances.fields.allocatedAmount")}
+            label={t(draft ? "agentAdvances.fields.plannedAllocationAmount" : "agentAdvances.fields.allocatedAmount")}
             value={money(advance.allocatedAmount)}
           />
-          <Detail label={t("agentAdvances.fields.remainingAmount")} value={money(remaining)} />
+          <Detail label={t(draft ? "agentAdvances.allocation.remainingDifference" : "agentAdvances.fields.remainingAmount")} value={money(remaining)} />
         </div>
         <div className={styles.progress}>
           <span
@@ -968,12 +1044,13 @@ export const AgentAdvanceDetails = () => {
         onConfirm={() => void remove()}
       />
       <ConfirmationModal
-        open={activateOpen}
-        onOpenChange={setActivateOpen}
-        title={t("agentAdvances.activation.title")}
-        description={t("agentAdvances.activation.description")}
-        confirmText={t("agentAdvances.activation.confirm")}
-        onConfirm={() => void activate()}
+        open={approveOpen}
+        onOpenChange={setApproveOpen}
+        title={t("agentAdvances.approval.title")}
+        description={t("agentAdvances.approval.description")}
+        confirmText={t("agentAdvances.actions.approve")}
+        confirmLoading={approvalSaving}
+        onConfirm={() => void approve()}
       />
     </div>
   );

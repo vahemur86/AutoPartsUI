@@ -37,6 +37,31 @@ export interface AgentPortalFinancialSummary {
   }>;
 }
 
+export type AgentNotificationType =
+  | "ContractActivated"
+  | "ContractUpdated"
+  | "OrderApproved"
+  | "OrderRejected";
+
+export interface AgentNotification {
+  id: string;
+  type: AgentNotificationType;
+  title: string;
+  message: string;
+  relatedEntityType: "AgentContract" | "AgentOrderRequest" | "AgentAdvance" | null;
+  relatedEntityId: string | null;
+  createdAt: string;
+  readAt: string | null;
+}
+
+export interface AgentNotificationPage {
+  totalItems: number;
+  page: number;
+  pageSize: number;
+  unreadCount: number;
+  results: AgentNotification[];
+}
+
 export interface AgentOrderRequestItem {
   productId: number;
   quantity: number;

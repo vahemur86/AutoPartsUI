@@ -73,7 +73,7 @@ export const ClassificationRules = () => {
         <AgentActionButton icon={<Plus size={16} />} onClick={() => navigate("/agents/classification-rules/new")}>
           {t("classificationRules.actions.create")}
         </AgentActionButton>
-        <div className={styles.filters}>
+        <div className={styles.classificationFilters}>
           <label>
             <input
               type="checkbox"

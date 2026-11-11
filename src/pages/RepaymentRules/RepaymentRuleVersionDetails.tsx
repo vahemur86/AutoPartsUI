@@ -45,27 +45,39 @@ export const RepaymentRuleVersionDetails = () => {
         </div>
 
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("repaymentRules.fields.debtRepaymentPercent")}:</strong> {version.debtRepaymentPercent}%
+          <strong>{t("repaymentRules.fields.type")}:</strong> {t(`repaymentRules.types.${version.type}`)}
         </div>
 
-        <div style={{ marginBottom: 8 }}>
-          <strong>{t("repaymentRules.fields.agentPayoutPercent")}:</strong> {version.agentPayoutPercent}%
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <strong>{t("repaymentRules.fields.excessBusinessPercent")}:</strong> {version.excessBusinessPercent}%
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <strong>{t("repaymentRules.fields.excessAgentPercent")}:</strong> {version.excessAgentPercent}%
-        </div>
+        {version.type === "Dust" && (
+          <>
+            <div style={{ marginBottom: 8 }}>
+              <strong>{t("repaymentRules.fields.debtRepaymentPercent")}:</strong> {version.debtRepaymentPercent ?? "—"}%
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <strong>{t("repaymentRules.fields.agentPayoutPercent")}:</strong> {version.agentPayoutPercent ?? "—"}%
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <strong>{t("repaymentRules.fields.excessBusinessPercent")}:</strong> {version.excessBusinessPercent ?? "—"}%
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <strong>{t("repaymentRules.fields.excessAgentPercent")}:</strong> {version.excessAgentPercent ?? "—"}%
+            </div>
+          </>
+        )}
 
         <div style={{ marginBottom: 8 }}>
           <strong>{t("repaymentRules.fields.defaultRepaymentPeriodDays")}:</strong> {version.defaultRepaymentPeriodDays} {t("repaymentRules.fields.days")}
         </div>
 
         <div style={{ marginBottom: 8 }}>
-          <strong>{t("repaymentRules.fields.maximumExtensions")}:</strong> {version.maximumExtensions}
+          <strong>{t(version.type === "ProductCredit"
+            ? "repaymentRules.fields.maximumProductCreditExtensions"
+            : "repaymentRules.fields.maximumExtensions")}:</strong>{" "}
+          {version.type === "ProductCredit"
+            ? version.maximumProductCreditExtensions == null
+              ? t("repaymentRules.fields.unlimited")
+              : version.maximumProductCreditExtensions
+            : version.maximumExtensions ?? "—"}
         </div>
 
         <div style={{ marginBottom: 8 }}>

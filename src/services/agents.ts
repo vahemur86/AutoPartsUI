@@ -4,7 +4,9 @@ import type {
   AgentProductCreditSaleDto,
   AgentProductCreditSalesParams,
   AgentProductDebtPaymentDto,
+  AgentProductDebtReturnDto,
   CreateAgentProductDebtPaymentRequest,
+  CreateAgentProductDebtReturnRequest,
   AgentDto,
   AgentTypeDto,
   AgentTypeHistoryDto,
@@ -171,6 +173,19 @@ export const agentsService = {
   ) => {
     const res = await api.post<AgentProductDebtPaymentDto>(
       `/agents/${id}/product-debt/payments`,
+      data,
+      { headers: getHeaders(cashRegisterId) },
+    );
+    return res.data;
+  },
+
+  returnAgentProductDebt: async (
+    id: string,
+    data: CreateAgentProductDebtReturnRequest,
+    cashRegisterId: number,
+  ) => {
+    const res = await api.post<AgentProductDebtReturnDto>(
+      `/agents/${id}/product-debt/returns`,
       data,
       { headers: getHeaders(cashRegisterId) },
     );

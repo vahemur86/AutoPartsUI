@@ -1,10 +1,12 @@
 .page { display: grid; gap: 20px; }
 .monthlyReport { display: grid; gap: 16px; }
-.monthFilters { position: relative; z-index: 20; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 260px)); gap: 12px; }
+.monthFilters { position: relative; z-index: 20; display: grid; grid-template-columns: repeat(2, minmax(180px, 260px)); gap: 12px; align-items: end; padding: 16px; border: 1px solid rgba(126, 184, 165, .3); border-radius: 12px; background: radial-gradient(ellipse at top left, rgba(126, 184, 165, .1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, .96), rgba(17, 22, 20, .96)); box-shadow: 0 12px 30px rgba(0, 0, 0, .16), inset 0 1px rgba(255, 255, 255, .025); }
 .periodField { position: relative; display: grid; gap: 6px; min-width: 0; }
 .periodField span { color: #a3a8b3; font-size: 13px; }
 .reportTitle { margin: 0; font-size: 16px; }
-.filters, .grid, .detailGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); align-items: end; gap: 12px; padding: 18px; border: 1px solid rgba(126, 184, 165, .3); border-radius: 12px; background: radial-gradient(ellipse at top left, rgba(126, 184, 165, .1), transparent 52%), linear-gradient(145deg, rgba(25, 34, 29, .96), rgba(17, 22, 20, .96)); box-shadow: 0 12px 30px rgba(0, 0, 0, .16), inset 0 1px rgba(255, 255, 255, .025); }
+.filters > * { min-width: 0; }
+.grid, .detailGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
 .summary, .actions, .headerActions, .lifecycle { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .summary, .actions { justify-content: space-between; }
 .form { display: grid; gap: 16px; max-width: 820px; }
@@ -21,3 +23,6 @@
 .lifecycle .currentStep { color: #fff; border-color: #22c55e; }
 .cancelled { padding: 12px; border: 1px solid rgba(239, 68, 68, .4); background: rgba(239, 68, 68, .1); color: #fca5a5; border-radius: 8px; }
 .error { color: #fca5a5; }
+@media (max-width: 1100px) { .filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; } .monthFilters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; } }
+@media (max-width: 480px) { .filters, .monthFilters { grid-template-columns: minmax(0, 1fr); } }

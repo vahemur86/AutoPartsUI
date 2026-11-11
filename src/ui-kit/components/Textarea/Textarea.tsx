@@ -14,6 +14,7 @@ export interface TextareaProps
   label?: string;
   error?: boolean;
   helperText?: string;
+  containerClassName?: string;
   autoResize?: boolean;
   resizable?: boolean;
 }
@@ -24,6 +25,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       label,
       error = false,
       helperText,
+      containerClassName = "",
       className = "",
       id,
       disabled = false,
@@ -91,7 +93,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <div
           className={`${styles.textareaContainer} ${
             error ? styles.error : ""
-          } ${disabled ? styles.disabled : ""}`}
+          } ${disabled ? styles.disabled : ""} ${containerClassName}`}
         >
           <textarea
             ref={textareaRef}
