@@ -1,4 +1,7 @@
 .page {
+  --color-accent-cyan: #22d3ee;
+  --color-accent-cyan-bright: #a5f3fc;
+  --color-accent-cyan-rgb: 34, 211, 238;
   --portal-gold: #c4a96a;
   --portal-gold-light: #e5d29a;
   --portal-bg: #111612;
@@ -17,6 +20,21 @@
     radial-gradient(ellipse at 10% 0, rgba(196, 169, 106, 0.11), transparent 34rem),
     linear-gradient(155deg, #171d18 0%, #111612 55%, #0e1210 100%);
   font-family: "Manrope", sans-serif;
+}
+
+.page :global([class*="textFieldContainer"]:not([class*="disabled"]):hover),
+.page :global([class*="textFieldContainer"]:not([class*="disabled"]):focus-within),
+.page :global([class*="textareaContainer"]:not([class*="disabled"]):hover),
+.page :global([class*="textareaContainer"]:not([class*="disabled"]):focus-within),
+.page :global([class*="selectContainer"]:not([class*="disabled"]):hover),
+.page :global([class*="selectContainer"]:not([class*="disabled"]):focus-within) {
+  border-color: var(--color-accent-cyan);
+}
+
+.page :global([class*="textFieldContainer"]:not([class*="disabled"]):focus-within),
+.page :global([class*="textareaContainer"]:not([class*="disabled"]):focus-within),
+.page :global([class*="selectContainer"]:not([class*="disabled"]):focus-within) {
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-cyan-rgb), 0.16);
 }
 
 .portalLayout {
@@ -143,7 +161,53 @@
 .profileCard h3,
 .listHeading h3 {
   margin: 3px 0 0;
+}
+
+.header h1 {
   color: #f0eadb;
+  background: linear-gradient(110deg, #f3eddb 5%, var(--color-accent-cyan-bright) 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: clamp(24px, 2.7vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 18px rgba(var(--color-accent-cyan-rgb), 0.13);
+}
+
+.requestHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focusedRequest {
+  scroll-margin-block: 24px;
+  border-color: rgba(var(--color-accent-cyan-rgb), 0.72);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-cyan-rgb), 0.12), 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sectionHeading h2,
+.subheading,
+.profileCard h3,
+.listHeading h3 {
+  color: #e5d29a;
+  letter-spacing: -0.02em;
+}
+
+.sectionHeading h2 {
+  position: relative;
+  padding-bottom: 7px;
+}
+
+.sectionHeading h2::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 38px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-accent-cyan), rgba(var(--color-accent-cyan-rgb), 0.12));
+  content: "";
 }
 
 .header p {
@@ -389,6 +453,7 @@
 .statusBadge {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 27px;
   padding: 4px 10px;
   border: 1px solid rgba(196, 169, 106, 0.24);
@@ -400,11 +465,21 @@
   line-height: 1.2;
 }
 
+.statusBadge::before {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 7px currentColor;
+  content: "";
+}
+
 .statusActive,
 .statusApproved {
-  border-color: rgba(114, 178, 133, 0.32);
-  background: rgba(75, 135, 91, 0.16);
-  color: #abd7b4;
+  border-color: rgba(var(--color-accent-cyan-rgb), 0.3);
+  background: linear-gradient(120deg, rgba(var(--color-accent-cyan-rgb), 0.14), rgba(var(--color-accent-cyan-rgb), 0.055));
+  color: var(--color-accent-cyan-bright);
 }
 
 .statusInactive,
@@ -628,6 +703,93 @@
   color: #eee9db;
   font-size: 13px;
   overflow-wrap: anywhere;
+}
+
+.debtLists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.debtListPanel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(24, 31, 25, 0.92), rgba(11, 16, 12, 0.9));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+.debtPanelHeading {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 15px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.15);
+  background: linear-gradient(105deg, rgba(196, 169, 106, 0.09), transparent 78%);
+}
+
+.debtPanelIcon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 1px solid rgba(196, 169, 106, 0.25);
+  border-radius: 10px;
+  background: rgba(196, 169, 106, 0.1);
+  color: #e5d29a;
+}
+
+.debtPanelHeading h3 {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  color: #e5d29a;
+  font-size: 15px;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.debtPanelCount {
+  display: grid;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  place-items: center;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 999px;
+  background: rgba(196, 169, 106, 0.1);
+  color: #ead9a8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.debtPanelContent {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 156px;
+  padding: 14px;
+}
+
+.debtPanelContent .cardList {
+  gap: 9px;
+}
+
+.debtPanelContent .dataCard {
+  padding: 13px 14px;
+}
+
+.debtPanelContent .notice {
+  margin: 0;
+}
+
+.debtPanelContent .pager {
+  margin-top: 2px;
 }
 
 .subheading {
@@ -890,6 +1052,60 @@
 .deliveryFilters input:focus-visible {
   outline: 2px solid rgba(229, 210, 154, 0.82);
   outline-offset: 2px;
+}
+
+.debtContractFilter {
+  position: relative;
+  width: min(100%, 340px);
+}
+
+.debtContractFilter::after {
+  position: absolute;
+  right: 14px;
+  bottom: 16px;
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  border-right: 1.5px solid #e5d29a;
+  border-bottom: 1.5px solid #e5d29a;
+  content: "";
+  pointer-events: none;
+}
+
+.debtContractFilter select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 38px 0 12px;
+  appearance: none;
+  border: 1px solid rgba(196, 169, 106, 0.34);
+  border-radius: 8px;
+  background: #141a15;
+  color: #eee9db;
+  font: inherit;
+  transition: none;
+}
+
+.debtContractFilter select:hover,
+.debtContractFilter select:focus,
+.debtContractFilter select:focus-visible {
+  border-color: rgba(196, 169, 106, 0.34);
+  border-radius: 8px;
+}
+
+.debtContractFilter select:focus {
+  outline: none;
+}
+
+.debtContractFilter select:focus-visible {
+  outline: 2px solid rgba(229, 210, 154, 0.82);
+  outline-offset: 2px;
+}
+
+.debtContractFilter option {
+  background: #141a15;
+  color: #eee9db;
 }
 
 .orderBuilder {
@@ -1418,6 +1634,27 @@
   margin: 16px 0 12px;
 }
 
+.cashierPage .listHeading h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.requestCount {
+  display: inline-grid;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  place-items: center;
+  border: 1px solid rgba(196, 169, 106, 0.26);
+  border-radius: 999px;
+  background: rgba(196, 169, 106, 0.11);
+  color: #ead9a8;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+
 .listHeading h3 {
   font-size: 17px;
 }
@@ -1610,6 +1847,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .debtLists {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .deliveryFilters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1782,8 +2023,8 @@
   }
 
   .headerBrand {
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
   }
 
   .portalLogoMark {
@@ -1815,14 +2056,12 @@
   }
 
   .identityTitle {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
+    align-items: center;
+    gap: 7px;
   }
 
   .identityMeta {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
     gap: 8px;
   }
 
@@ -1831,18 +2070,23 @@
   }
 
   .headerActions {
+    display: grid;
     width: 100%;
     flex: 0 0 auto;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 6px;
+    grid-template-columns: 40px minmax(0, 1fr) auto auto;
+    align-items: center;
+    justify-content: initial;
+    gap: 8px;
   }
 
   .balanceSummary {
     min-width: 0;
+    justify-self: stretch;
   }
 
   .balanceToggle {
+    width: 100%;
+    justify-content: space-between;
     min-height: 42px;
     gap: 5px;
     padding: 0 7px;
@@ -1853,6 +2097,7 @@
   }
 
   .languageControl {
+    min-width: 0;
     gap: 4px;
     padding: 0 6px;
   }
@@ -1861,10 +2106,21 @@
     min-width: 66px;
   }
 
+  .headerActions > .logoutButton {
+    min-height: 40px;
+    padding: 0 8px;
+    gap: 5px;
+    font-size: 11px;
+  }
+
   .cashierPage .header {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+  }
+
+  .requestHeaderActions {
+    justify-content: space-between;
   }
 
   .metrics {
@@ -1956,6 +2212,21 @@
     padding: 13px;
   }
 
+  .debtLists {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .debtPanelHeading {
+    min-height: 60px;
+    padding: 11px 12px;
+  }
+
+  .debtPanelContent {
+    padding: 11px;
+  }
+
   .productRow {
     flex-wrap: wrap;
     align-items: flex-start;
@@ -2014,7 +2285,8 @@
     flex-basis: 100%;
   }
 
-  .cashierPage .header > button {
+  .cashierPage .header > button,
+  .requestHeaderActions > button {
     width: 100%;
     min-height: 44px;
   }
@@ -2098,11 +2370,39 @@
   }
 
   .headerActions {
-    gap: 4px;
+    gap: 5px;
   }
 
   .languageControl select {
     min-width: 54px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header {
+    padding: 13px;
+  }
+
+  .headerActions {
+    grid-template-columns: 38px minmax(0, 1fr) auto auto;
+    gap: 4px;
+  }
+
+  .balanceSummary > span {
+    display: none;
+  }
+
+  .languageControl > svg {
+    display: none;
+  }
+
+  .languageControl select {
+    min-width: 49px;
+  }
+
+  .headerActions > .logoutButton {
+    padding: 0 6px;
+    font-size: 10px;
   }
 }
 

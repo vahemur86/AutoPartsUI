@@ -31,10 +31,6 @@
   --color-primary-400: #f0f47e;
   --color-primary-500: #ecf15e;
 
-  --color-accent-cyan: #22d3ee;
-  --color-accent-cyan-bright: #a5f3fc;
-  --color-accent-cyan-rgb: 34, 211, 238;
-
   --color-secondary-300: #dddddd;
   --color-secondary-400: #d6d6d6;
   --color-secondary-500: #cccccc;
@@ -115,11 +111,6 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
-}
-
-:is(button, a, input, select, textarea, [role="button"]):focus-visible {
-  outline: 2px solid var(--color-accent-cyan) !important;
-  outline-offset: 2px;
 }
 
 div[class*="tableSkeleton"]:not([class*="tableSkeletonHeader"]):not([class*="tableSkeletonRows"]):not([class*="tableSkeletonRow"]) {

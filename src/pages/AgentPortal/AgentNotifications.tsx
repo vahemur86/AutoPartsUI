@@ -8,12 +8,60 @@ import type { AgentNotification, AgentNotificationPage } from "@/types/agentPort
 import styles from "./AgentNotifications.module.css";
 
 const PAGE_SIZE = 50;
+const ARMENIAN_MONTHS = [
+  "հունվարի",
+  "փետրվարի",
+  "մարտի",
+  "ապրիլի",
+  "մայիսի",
+  "հունիսի",
+  "հուլիսի",
+  "օգոստոսի",
+  "սեպտեմբերի",
+  "հոկտեմբերի",
+  "նոյեմբերի",
+  "դեկտեմբերի",
+];
 
 const formatTimestamp = (value: string, language: string) => {
   const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? value
-    : new Intl.DateTimeFormat(language, { dateStyle: "medium", timeStyle: "short" }).format(date);
+  if (Number.isNaN(date.getTime())) return value;
+  if (language.startsWith("am")) {
+    const time = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).format(date);
+    return `${date.getDate()} ${ARMENIAN_MONTHS[date.getMonth()]} ${date.getFullYear()}, ${time}`;
+  }
+  return new Intl.DateTimeFormat(language, { dateStyle: "medium", timeStyle: "short" }).format(date);
+};
+
+const getNotificationTitle = (notification: AgentNotification, t: (key: string) => string) => {
+  if (
+    notification.type === "ContractUpdated" &&
+    notification.title.toLocaleLowerCase().includes("terms")
+  ) {
+    return t("agentPortal.notifications.types.contractTermsUpdated");
+  }
+  return t(`agentPortal.notifications.types.${notification.type}`);
+};
+
+const getNotificationMessage = (
+  notification: AgentNotification,
+  t: (key: string, options?: Record<string, string>) => string,
+) => {
+  const contractTermsUpdate = notification.type === "ContractUpdated"
+    ? notification.message.match(/^The product-credit terms for contract (.+) have been updated\.$/i)
+    : null;
+
+  if (contractTermsUpdate) {
+    return t("agentPortal.notifications.messages.contractTermsUpdated", {
+      contractNumber: contractTermsUpdate[1],
+    });
+  }
+
+  return notification.message;
 };
 
 interface AgentNotificationsProps {
@@ -111,7 +159,7 @@ export const AgentNotifications = ({
         totalItems: current.totalItems + 1,
         unreadCount: current.unreadCount + (notification.readAt === null ? 1 : 0),
       } : current);
-      toast.info(`${notification.title}: ${notification.message}`);
+      toast.info(`${getNotificationTitle(notification, t)}: ${getNotificationMessage(notification, t)}`);
     });
     connection.onreconnecting(() => setConnectionState("reconnecting"));
     connection.onreconnected(() => {
@@ -133,7 +181,7 @@ export const AgentNotifications = ({
       active = false;
       void connection.stop();
     };
-  }, [accessToken, loadNotifications]);
+  }, [accessToken, loadNotifications, t]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -280,10 +328,10 @@ export const AgentNotifications = ({
                   <article className={`${styles.notification} ${unread ? styles.notificationUnread : ""}`} key={notification.id}>
                     <div className={styles.notificationCopy}>
                       <div className={styles.notificationHeading}>
-                        <strong>{notification.title}</strong>
+                        <strong>{getNotificationTitle(notification, t)}</strong>
                         {unread && <span className={styles.unreadDot} aria-label={t("agentPortal.notifications.unread")} />}
                       </div>
-                      <p>{notification.message}</p>
+                      <p>{getNotificationMessage(notification, t)}</p>
                       <time dateTime={notification.createdAt}>{formatTimestamp(notification.createdAt, i18n.resolvedLanguage || i18n.language)}</time>
                     </div>
                     <div className={styles.notificationActions}>

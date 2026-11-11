@@ -1,18 +1,23 @@
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ClipboardList } from "lucide-react";
+import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
+import { agentPortalService } from "@/services/agentPortal";
 import { ConfirmationModal } from "@/ui-kit";
 import { useOperator } from "@/pages/Operator/hooks";
 import { CashierMode, OperatorHeader, TopUpConfirmationModal } from "@/pages/Operator/components";
+import { CashierNotifications } from "@/pages/AgentPortal/CashierNotifications";
 import styles from "./ShopOperatorPage.module.css";
 
 export const ShopOperatorPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const userRole = useAppSelector((state) => state.auth.user?.role.toLowerCase());
+  const accessToken = useAppSelector((state) => state.auth.token);
+  const [pendingRequestCount, setPendingRequestCount] = useState(0);
   const {
     uiState,
     setUiState,
@@ -24,6 +29,21 @@ export const ShopOperatorPage = () => {
   } = useOperator();
 
   const { t } = useTranslation();
+  const openCashierRequest = useCallback((requestId: string) => {
+    navigate(`/shop-operator/agent-order-requests?requestId=${encodeURIComponent(requestId)}`);
+  }, [navigate]);
+  const refreshPendingRequests = useCallback(async () => {
+    try {
+      const pendingRequests = await agentPortalService.getCashierOrderRequests("Pending", 1, 50);
+      setPendingRequestCount(pendingRequests.totalItems);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : t("agentPortal.loadError"));
+    }
+  }, [t]);
+
+  useEffect(() => {
+    if (userRole === "cashier") void refreshPendingRequests();
+  }, [refreshPendingRequests, userRole]);
 
   const displayBalance = useMemo(() => {
     if (selectors.cashRegisters.isBalanceLoading)
@@ -61,10 +81,21 @@ export const ShopOperatorPage = () => {
 
       <div className={styles.contentArea}>
         {userRole === "cashier" && (
-          <Link to="/shop-operator/agent-order-requests" className={styles.agentRequestsLink}>
-            <ClipboardList size={17} aria-hidden="true" />
-            {t("agentPortal.cashierOrdersTitle")}
-          </Link>
+          <div className={styles.cashierActions}>
+            <Link
+              to="/shop-operator/agent-order-requests"
+              className={styles.agentRequestsLink}
+              aria-label={t("agentPortal.cashierNotifications.pendingRequestsCount", { count: pendingRequestCount })}
+            >
+              <ClipboardList size={17} aria-hidden="true" />
+              {pendingRequestCount > 0 && <span className={styles.pendingRequestCount}>{pendingRequestCount > 99 ? "99+" : pendingRequestCount}</span>}
+            </Link>
+            <CashierNotifications
+              accessToken={accessToken}
+              onOpenRequest={openCashierRequest}
+              onRefreshPendingRequests={refreshPendingRequests}
+            />
+          </div>
         )}
         <CashierMode cashRegisterId={userData?.cashRegisterId} />
       </div>

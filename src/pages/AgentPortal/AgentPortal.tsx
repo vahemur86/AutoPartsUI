@@ -487,6 +487,8 @@ export const AgentPortal = () => {
       .filter((entry) => entry.quantity > 0),
     [products, selectedItems],
   );
+  const selectedCreditSales = creditSales?.results.filter((sale) => sale.contractId === debtContract) ?? [];
+  const selectedDebtPayments = debtPayments.filter((payment) => payment.agentContractId === debtContract);
 
   const selectedCount = Object.keys(selectedItems).length;
   const selectedQuantity = Object.values(selectedItems).reduce((total, quantity) => total + quantity, 0);
@@ -781,8 +783,11 @@ export const AgentPortal = () => {
           {sectionLoading ? <div className={styles.loading}>{t("agentPortal.loading")}</div> : contracts?.results.length ? (
             <div className={styles.cardList}>{contracts.results.map((contract) => <article className={styles.dataCard} key={contract.id}>
               <div className={styles.cardTitle}><strong>{contract.contractNumber}</strong><span className={styles.statusBadge}>{getRecordStatus(contract.status, t)}</span></div>
-              <p>{formatDate(contract.contractDate)}</p>
               <dl className={styles.contractTerms}>
+                <div>
+                  <dt>{t("agentPortal.contractSigningDate")}</dt>
+                  <dd>{formatDate(contract.contractDate)}</dd>
+                </div>
                 {contract.allowsProductAdvance === true && (
                   <>
                     <div>
@@ -797,10 +802,6 @@ export const AgentPortal = () => {
                     </div>
                   </>
                 )}
-                <div>
-                  <dt>{t("agentPortal.repaymentDeadline")}</dt>
-                  <dd>{contract.repaymentDeadline ? formatDate(contract.repaymentDeadline) : t("common.notSpecified")}</dd>
-                </div>
               </dl>
               <div className={styles.cardMetrics}><span>{t("agentPortal.totalAdvanced")}: {formatAmd(contract.totalAdvancedAmount)}</span><span>{t("agentPortal.totalRepaid")}: {formatAmd(contract.totalRepaidAmount)}</span><strong>{t("agentPortal.balance")}: {formatAmd(contract.outstandingAmount)}</strong></div>
             </article>)}</div>
@@ -891,7 +892,7 @@ export const AgentPortal = () => {
       {section === "debt" && (
         <section className={styles.section}>
           <div className={styles.sectionHeading}><div><span className={styles.eyebrow}>{t("agentPortal.productDebt")}</span><h2>{t("agentPortal.debtOverview")}</h2></div></div>
-          <label className={styles.filter}>{t("agentPortal.contract")}
+          <label className={`${styles.filter} ${styles.debtContractFilter}`}>{t("agentPortal.contract")}
             <select value={debtContract} onChange={(event) => { setDebtContract(event.target.value); setSalesPage(1); }}>
               <option value="">{t("agentPortal.selectProductContract")}</option>
               {productCreditContracts.map((contract) => <option key={contract.id} value={contract.id}>{contract.contractNumber}</option>)}
@@ -909,27 +910,43 @@ export const AgentPortal = () => {
               <article><span>{t("agentPortal.productDebtBalance")}</span><strong>{formatAmd(productDebt.outstandingAmountAmd)}</strong></article>
             </div>
           )}
-          {debtContract && <>
-            <h3 className={styles.subheading}>{t("agentPortal.creditSales")}</h3>
-            {creditSales?.results.filter((sale) => sale.contractId === debtContract).length ? (
-              <div className={styles.cardList}>{creditSales.results.filter((sale) => sale.contractId === debtContract).map((sale) => <article className={styles.dataCard} key={sale.saleId}>
-                <div className={styles.cardTitle}><strong>#{sale.saleId}</strong><span className={styles.statusBadge}>{sale.status}</span></div>
-                <p>{formatDate(sale.saleDate)}</p>
-                <p>{t("agentPortal.contractNumber")}: {productCreditContracts.find((contract) => contract.id === sale.contractId)?.contractNumber ?? sale.contractId}</p>
-                <div className={styles.cardMetrics}><span>{t("agentPortal.total")}: {formatAmd(sale.totalAmount)}</span><span>{t("agentPortal.paid")}: {formatAmd(sale.paidAmount)}</span><strong>{t("agentPortal.balance")}: {formatAmd(sale.outstandingAmount)}</strong></div>
-                {sale.items.map((item, index) => <small key={`${item.productId}-${index}`}>{item.productCode || item.productSku || `#${item.productId}`} · {item.quantity}</small>)}
-              </article>)}</div>
-            ) : !sectionLoading && <EmptyState text={t("agentPortal.noSales")} />}
-            <Pager page={creditSales} onChange={setSalesPage} disabled={sectionLoading} />
-            <h3 className={styles.subheading}>{t("agentPortal.debtPayments")}</h3>
-            {debtPayments.filter((payment) => payment.agentContractId === debtContract).length ? (
-              <div className={styles.cardList}>{debtPayments.filter((payment) => payment.agentContractId === debtContract).map((payment) => <article className={styles.dataCard} key={payment.id}>
-                <div className={styles.cardTitle}><strong>{formatAmd(payment.amountAmd)}</strong><span>{formatDate(payment.paymentDate)}</span></div>
-                <p>{t("agentPortal.contractNumber")}: {productCreditContracts.find((contract) => contract.id === payment.agentContractId)?.contractNumber ?? payment.agentContractId}</p>
-              </article>)}</div>
-            ) : !sectionLoading && <EmptyState text={t("agentPortal.noPayments")} />}
-            <p className={styles.notice}>{t("agentPortal.noPaymentAction")}</p>
-          </>}
+          {debtContract && <div className={styles.debtLists}>
+            <section className={styles.debtListPanel}>
+              <div className={styles.debtPanelHeading}>
+                <span className={styles.debtPanelIcon}><ShoppingCart size={18} aria-hidden="true" /></span>
+                <h3>{t("agentPortal.creditPurchases")}</h3>
+                <span className={styles.debtPanelCount}>{selectedCreditSales.length}</span>
+              </div>
+              <div className={styles.debtPanelContent}>
+                {selectedCreditSales.length ? (
+                  <div className={styles.cardList}>{selectedCreditSales.map((sale) => <article className={styles.dataCard} key={sale.saleId}>
+                    <div className={styles.cardTitle}><strong>#{sale.saleId}</strong><span className={styles.statusBadge}>{sale.status}</span></div>
+                    <p>{formatDate(sale.saleDate)}</p>
+                    <p>{t("agentPortal.contractNumber")}: {productCreditContracts.find((contract) => contract.id === sale.contractId)?.contractNumber ?? sale.contractId}</p>
+                    <div className={styles.cardMetrics}><span>{t("agentPortal.total")}: {formatAmd(sale.totalAmount)}</span><span>{t("agentPortal.paid")}: {formatAmd(sale.paidAmount)}</span><strong>{t("agentPortal.balance")}: {formatAmd(sale.outstandingAmount)}</strong></div>
+                    {sale.items.map((item, index) => <small key={`${item.productId}-${index}`}>{item.productCode || item.productSku || `#${item.productId}`} · {item.quantity}</small>)}
+                  </article>)}</div>
+                ) : !sectionLoading && <EmptyState text={t("agentPortal.noSales")} />}
+                <Pager page={creditSales} onChange={setSalesPage} disabled={sectionLoading} />
+              </div>
+            </section>
+            <section className={styles.debtListPanel}>
+              <div className={styles.debtPanelHeading}>
+                <span className={styles.debtPanelIcon}><CreditCard size={18} aria-hidden="true" /></span>
+                <h3>{t("agentPortal.debtPayments")}</h3>
+                <span className={styles.debtPanelCount}>{selectedDebtPayments.length}</span>
+              </div>
+              <div className={styles.debtPanelContent}>
+                {selectedDebtPayments.length ? (
+                  <div className={styles.cardList}>{selectedDebtPayments.map((payment) => <article className={styles.dataCard} key={payment.id}>
+                    <div className={styles.cardTitle}><strong>{formatAmd(payment.amountAmd)}</strong><span>{formatDate(payment.paymentDate)}</span></div>
+                    <p>{t("agentPortal.contractNumber")}: {productCreditContracts.find((contract) => contract.id === payment.agentContractId)?.contractNumber ?? payment.agentContractId}</p>
+                  </article>)}</div>
+                ) : !sectionLoading && <EmptyState text={t("agentPortal.noPayments")} />}
+                <p className={styles.notice}>{t("agentPortal.noPaymentAction")}</p>
+              </div>
+            </section>
+          </div>}
         </section>
       )}
 

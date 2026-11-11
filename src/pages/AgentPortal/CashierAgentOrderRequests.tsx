@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@/ui-kit";
 import { agentPortalService } from "@/services/agentPortal";
+import { CashierNotifications } from "./CashierNotifications";
 import { agentContractsService } from "@/services/agentContracts";
 import { getProducts } from "@/services/products";
 import { getShops } from "@/services/settings/shop";
@@ -18,7 +19,7 @@ import type { AgentOrderRequest, AgentOrderRequestStatus } from "@/types/agentPo
 import type { AgentProductContractSelectionDto } from "@/types/agentContracts";
 import styles from "./AgentPortal.module.css";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 50;
 
 const getStatus = (status: AgentOrderRequest["status"]): AgentOrderRequestStatus | "Unknown" => {
   if (typeof status === "number") return (["Pending", "Approved", "Rejected"] as const)[status] ?? "Unknown";
@@ -40,10 +41,14 @@ const isProduct = (value: unknown): value is Product => {
 export const CashierAgentOrderRequests = () => {
   const { t } = useTranslation();
   const user = useAppSelector((state) => state.auth.user);
+  const accessToken = useAppSelector((state) => state.auth.token);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedOrderId = searchParams.get("requestId");
   const cashRegisterId = useMemo(() => getCashRegisterId(user?.cashRegisterId ?? 0), [user?.cashRegisterId]);
   const [page, setPage] = useState<PagedResult<AgentOrderRequest> | null>(null);
   const [shops, setShops] = useState<Shop[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [pendingRequestCount, setPendingRequestCount] = useState(0);
   const [filter, setFilter] = useState<AgentOrderRequestStatus | "Pending" | "">("Pending");
   const [loading, setLoading] = useState(false);
   const [actionId, setActionId] = useState("");
@@ -58,27 +63,58 @@ export const CashierAgentOrderRequests = () => {
   const [rejectingId, setRejectingId] = useState("");
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const contractLookupRequestIds = useRef<Record<string, number>>({});
+  const orderCardRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const result = await agentPortalService.getCashierOrderRequests(
+      let result = await agentPortalService.getCashierOrderRequests(
         filter || undefined,
-        page?.page ?? 1,
+        requestedOrderId ? 1 : page?.page ?? 1,
         PAGE_SIZE,
       );
+      if (requestedOrderId && !result.results.some((item) => item.id === requestedOrderId)) {
+        const requestedOrder = await agentPortalService.getCashierOrderRequest(requestedOrderId);
+        result = { ...result, results: [requestedOrder, ...result.results] };
+      }
       setPage(result);
     } catch (requestError: unknown) {
       setError(requestError instanceof Error ? requestError.message : t("agentPortal.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [filter, page?.page, t]);
+  }, [filter, page?.page, requestedOrderId, t]);
+
+  const refreshPendingQueue = useCallback(async () => {
+    try {
+      const pendingRequests = await agentPortalService.getCashierOrderRequests("Pending", 1, PAGE_SIZE);
+      setPendingRequestCount(pendingRequests.totalItems);
+    } catch (refreshError) {
+      setError(refreshError instanceof Error ? refreshError.message : t("agentPortal.loadError"));
+    }
+  }, [t]);
 
   useEffect(() => {
     void loadRequests();
   }, [loadRequests, retry]);
+
+  useEffect(() => {
+    void refreshPendingQueue();
+  }, [refreshPendingQueue, retry]);
+
+  useEffect(() => {
+    if (!requestedOrderId || loading) return;
+    orderCardRefs.current[requestedOrderId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [loading, page?.results, requestedOrderId]);
+
+  const openRequest = useCallback((requestId: string) => {
+    setSearchParams({ requestId });
+  }, [setSearchParams]);
+  const refreshPendingRequests = useCallback(async () => {
+    await refreshPendingQueue();
+    await loadRequests();
+  }, [loadRequests, refreshPendingQueue]);
 
   useEffect(() => {
     let active = true;
@@ -89,7 +125,7 @@ export const CashierAgentOrderRequests = () => {
         }
         const [shopsResult, productsResult] = await Promise.allSettled([
           getShops(cashRegisterId),
-          getProducts(),
+          getProducts(cashRegisterId),
         ]);
         if (!active) return;
         if (shopsResult.status === "fulfilled") {
@@ -199,10 +235,17 @@ export const CashierAgentOrderRequests = () => {
     <main className={`${styles.page} ${styles.cashierPage}`}>
       <header className={styles.header}>
         <div><span className={styles.eyebrow}>{t("agentPortal.cashierArea")}</span><h1>{t("agentPortal.cashierOrdersTitle")}</h1><p>{t("agentPortal.cashierOrdersDescription")}</p></div>
-        <Button variant="secondary" size="small" onClick={() => setRetry((current) => current + 1)}><RefreshCw size={15} aria-hidden="true" />{t("agentPortal.refresh")}</Button>
+        <div className={styles.requestHeaderActions}>
+          <CashierNotifications
+            accessToken={accessToken}
+            onOpenRequest={openRequest}
+            onRefreshPendingRequests={() => void refreshPendingRequests()}
+          />
+          <Button variant="secondary" size="small" onClick={() => setRetry((current) => current + 1)}><RefreshCw size={15} aria-hidden="true" />{t("agentPortal.refresh")}</Button>
+        </div>
       </header>
       <div className={styles.listHeading}>
-        <h2>{t("agentPortal.orderRequests")}</h2>
+        <h2>{t("agentPortal.orderRequests")}<span className={styles.requestCount} aria-label={t("agentPortal.cashierNotifications.pendingRequestsCount", { count: pendingRequestCount })}>{pendingRequestCount}</span></h2>
         <select aria-label={t("agentPortal.filterStatus")} value={filter} onChange={(event) => { setFilter(event.target.value as AgentOrderRequestStatus | ""); setPage(null); }}>
           <option value="">{t("agentPortal.allStatuses")}</option>
           <option value="Pending">{t("agentPortal.statuses.Pending")}</option>
@@ -219,7 +262,11 @@ export const CashierAgentOrderRequests = () => {
           const contractChoices = eligibleContracts[order.id] ?? [];
           const selectedContract = contractChoices.find(({ contractId }) => contractId === selectedContracts[order.id]);
           const reason = reasons[order.id] ?? "";
-          return <article className={styles.dataCard} key={order.id}>
+          return <article
+            className={`${styles.dataCard} ${order.id === requestedOrderId ? styles.focusedRequest : ""}`}
+            key={order.id}
+            ref={(element) => { orderCardRefs.current[order.id] = element; }}
+          >
             <div className={styles.cardTitle}><strong>{order.agentName} · {order.agentCode}</strong><span className={`${styles.statusBadge} ${styles[`status${status}`] || ""}`}>{t(`agentPortal.statuses.${status}`)}</span></div>
             <p>{t("agentPortal.requestedAt")}: {formatDate(order.requestedAt)}</p>
             <div className={styles.orderDetail}>

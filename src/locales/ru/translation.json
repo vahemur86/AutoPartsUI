@@ -4924,7 +4924,34 @@
       "unread": "Не прочитано",
       "openRelated": "Открыть связанный раздел",
       "markRead": "Отметить как прочитанное",
-      "delete": "Удалить"
+      "delete": "Удалить",
+      "types": {
+        "ContractActivated": "Договор активирован",
+        "ContractUpdated": "Договор обновлён",
+        "contractTermsUpdated": "Условия договора обновлены",
+        "OrderApproved": "Заявка на заказ одобрена",
+        "OrderRejected": "Заявка на заказ отклонена"
+      },
+      "messages": {
+        "contractTermsUpdated": "Условия товарного кредита по договору {{contractNumber}} обновлены."
+      }
+    },
+    "cashierNotifications": {
+      "open": "Уведомления кассира: {{count}}",
+      "title": "Уведомления о заявках агентов",
+      "loading": "Загрузка уведомлений…",
+      "empty": "Новых уведомлений о заказах нет.",
+      "loadError": "Не удалось загрузить уведомления.",
+      "deleteError": "Не удалось удалить уведомление.",
+      "connectionError": "Не удалось подключиться к уведомлениям.",
+      "reconnectError": "Не удалось восстановить подключение к уведомлениям.",
+      "invalidResponse": "Сервис уведомлений вернул неверный ответ.",
+      "loadingMore": "Загрузка…",
+      "loadMore": "Загрузить ещё",
+      "openRequest": "Открыть заявку на заказ",
+      "delete": "Удалить уведомление",
+      "retryConnection": "Подключиться снова",
+      "pendingRequestsCount": "Заявки на заказ в ожидании: {{count}}"
     },
     "financialSummary": "Финансовая сводка",
     "activeContracts": "Активные договоры",
@@ -4943,6 +4970,7 @@
     "finances": "Финансы",
     "balance": "Остаток",
     "dueDate": "Срок погашения",
+    "contractSigningDate": "Дата заключения договора",
     "productCreditLimit": "Лимит товарного кредита",
     "productCreditDeadline": "Срок погашения товарного кредита",
     "repaymentDeadline": "Срок погашения договора",
@@ -4973,10 +5001,10 @@
     "discount": "Скидка",
     "deadline": "Срок",
     "productDebtBalance": "Остаток товарного долга",
-    "creditSales": "Продажи в кредит",
+    "creditPurchases": "Покупки в кредит",
     "total": "Всего",
     "paid": "Оплачено",
-    "noSales": "Продажи в кредит не найдены.",
+    "noSales": "Покупки в кредит не найдены.",
     "debtPayments": "Платежи по долгу",
     "noPayments": "Платежи не найдены.",
     "noPaymentAction": "В этом портале нельзя регистрировать платежи.",

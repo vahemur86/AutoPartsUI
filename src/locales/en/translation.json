@@ -4918,7 +4918,34 @@
       "unread": "Unread",
       "openRelated": "Open related section",
       "markRead": "Mark as read",
-      "delete": "Delete"
+      "delete": "Delete",
+      "types": {
+        "ContractActivated": "Contract activated",
+        "ContractUpdated": "Contract updated",
+        "contractTermsUpdated": "Contract terms updated",
+        "OrderApproved": "Order request approved",
+        "OrderRejected": "Order request rejected"
+      },
+      "messages": {
+        "contractTermsUpdated": "Product-credit terms for contract {{contractNumber}} have been updated."
+      }
+    },
+    "cashierNotifications": {
+      "open": "Cashier notifications: {{count}}",
+      "title": "Agent order notifications",
+      "loading": "Loading notifications…",
+      "empty": "No new order notifications.",
+      "loadError": "Could not load notifications.",
+      "deleteError": "Could not delete the notification.",
+      "connectionError": "Could not connect to notifications.",
+      "reconnectError": "Could not restore the notification connection.",
+      "invalidResponse": "The notification service returned an invalid response.",
+      "loadingMore": "Loading…",
+      "loadMore": "Load more",
+      "openRequest": "Open order request",
+      "delete": "Delete notification",
+      "retryConnection": "Reconnect",
+      "pendingRequestsCount": "Pending order requests: {{count}}"
     },
     "financialSummary": "Financial summary",
     "activeContracts": "Active contracts",
@@ -4937,6 +4964,7 @@
     "finances": "Finances",
     "balance": "Balance",
     "dueDate": "Due date",
+    "contractSigningDate": "Contract signing date",
     "productCreditLimit": "Product-credit limit",
     "productCreditDeadline": "Product-credit repayment deadline",
     "repaymentDeadline": "Contract repayment deadline",
@@ -4967,10 +4995,10 @@
     "discount": "Discount",
     "deadline": "Deadline",
     "productDebtBalance": "Product debt balance",
-    "creditSales": "Credit sales",
+    "creditPurchases": "Credit purchases",
     "total": "Total",
     "paid": "Paid",
-    "noSales": "No credit sales found.",
+    "noSales": "No credit purchases found.",
     "debtPayments": "Debt payments",
     "noPayments": "No payments found.",
     "noPaymentAction": "Payments cannot be recorded from this portal.",

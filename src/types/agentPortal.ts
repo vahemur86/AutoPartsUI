@@ -62,6 +62,21 @@ export interface AgentNotificationPage {
   results: AgentNotification[];
 }
 
+export interface CashierNotification {
+  id: string;
+  agentOrderRequestId: string;
+  title: string;
+  message: string;
+  createdAt: string;
+}
+
+export interface CashierNotificationPage {
+  totalItems: number;
+  page: number;
+  pageSize: number;
+  results: CashierNotification[];
+}
+
 export interface AgentOrderRequestItem {
   productId: number;
   quantity: number;

@@ -8,6 +8,12 @@ vi.mock("@/services", () => ({
   },
 }));
 
+vi.mock("@/utils", () => ({
+  getCashRegisterId: () => 6,
+  getHeaders: (cashRegisterId?: number) =>
+    cashRegisterId ? { "X-CashRegister-Id": String(cashRegisterId) } : {},
+}));
+
 import api from "@/services";
 import { agentPortalService } from "./agentPortal";
 
@@ -25,8 +31,42 @@ describe("agentPortalService.approveOrderRequest", () => {
     expect(api.post).toHaveBeenCalledWith(
       "/agent-order-requests/request%2F1/approve",
       { shopId: 6, agentContractId: "contract-1" },
+      { headers: { "X-CashRegister-Id": "6" } },
     );
     expect(result).toEqual(approved);
+  });
+});
+
+describe("agentPortalService cashier notifications", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("loads the current cashier's inbox with paging and the cash-register context", async () => {
+    const notificationPage = {
+      totalItems: 1,
+      page: 1,
+      pageSize: 50,
+      results: [{ id: "notification-1", agentOrderRequestId: "request-1" }],
+    };
+    vi.mocked(api.get).mockResolvedValue({ data: notificationPage });
+
+    await expect(agentPortalService.getCashierNotifications()).resolves.toEqual(notificationPage);
+    expect(api.get).toHaveBeenCalledWith("/cashier-portal/notifications", {
+      params: { page: 1, pageSize: 50 },
+      headers: { "X-CashRegister-Id": "6" },
+    });
+  });
+
+  it("deletes only the selected notification using the current cashier context", async () => {
+    vi.mocked(api.delete).mockResolvedValue({ data: undefined });
+
+    await agentPortalService.deleteCashierNotification("notification/1");
+
+    expect(api.delete).toHaveBeenCalledWith(
+      "/cashier-portal/notifications/notification%2F1",
+      { headers: { "X-CashRegister-Id": "6" } },
+    );
   });
 });
 

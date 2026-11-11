@@ -1,4 +1,5 @@
 import api from "@/services";
+import { getCashRegisterId, getHeaders } from "@/utils";
 import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type {
   AgentDto,
@@ -16,6 +17,7 @@ import type {
   AgentOrderRequestStatus,
   AgentNotificationPage,
   AgentPortalFinancialSummary,
+  CashierNotificationPage,
   CreateAgentOrderRequest,
 } from "@/types/agentPortal";
 
@@ -27,6 +29,26 @@ const request = async <T>(action: () => Promise<{ data: T }>, fallback: string) 
     throw new Error(getApiErrorMessage(error, fallback));
   }
 };
+
+const normalizeCreditSalesPage = (
+  response: PagedResult<AgentProductCreditSaleDto> | AgentProductCreditSaleDto[],
+  page: number,
+  pageSize: number,
+): PagedResult<AgentProductCreditSaleDto> => {
+  if (Array.isArray(response)) {
+    return { totalItems: response.length, page, pageSize, results: response };
+  }
+
+  if (!response || !Array.isArray(response.results)) {
+    throw new Error("Failed to load product credit sales: unexpected response.");
+  }
+
+  return response;
+};
+
+const getCashierRequestConfig = () => ({
+  headers: getHeaders(getCashRegisterId(0)),
+});
 
 export const agentPortalService = {
   getProfile: () =>
@@ -79,10 +101,10 @@ export const agentPortalService = {
     ),
 
   getCreditSales: (page = 1, pageSize = 10) =>
-    request(
-      () => api.get<PagedResult<AgentProductCreditSaleDto>>("/agent-portal/product-credit-sales", { params: { page, pageSize } }),
+    request<PagedResult<AgentProductCreditSaleDto> | AgentProductCreditSaleDto[]>(
+      () => api.get("/agent-portal/product-credit-sales", { params: { page, pageSize } }),
       "Failed to load product credit sales.",
-    ),
+    ).then((response) => normalizeCreditSalesPage(response, page, pageSize)),
 
   getDebtPayments: () =>
     request(
@@ -159,13 +181,29 @@ export const agentPortalService = {
       () =>
         api.get<PagedResult<AgentOrderRequest>>("/agent-order-requests", {
           params: { ...(status ? { status } : {}), page, pageSize },
+          ...getCashierRequestConfig(),
         }),
       "Failed to load agent order requests.",
     ),
 
+  getCashierNotifications: (page = 1, pageSize = 50) =>
+    request<CashierNotificationPage>(
+      () => api.get("/cashier-portal/notifications", {
+        params: { page, pageSize },
+        ...getCashierRequestConfig(),
+      }),
+      "Failed to load cashier notifications.",
+    ),
+
+  deleteCashierNotification: (id: string) =>
+    request<void>(
+      () => api.delete(`/cashier-portal/notifications/${encodeURIComponent(id)}`, getCashierRequestConfig()),
+      "Failed to delete cashier notification.",
+    ),
+
   getCashierOrderRequest: (id: string) =>
     request(
-      () => api.get<AgentOrderRequest>(`/agent-order-requests/${encodeURIComponent(id)}`),
+      () => api.get<AgentOrderRequest>(`/agent-order-requests/${encodeURIComponent(id)}`, getCashierRequestConfig()),
       "Failed to load order request.",
     ),
 
@@ -174,6 +212,7 @@ export const agentPortalService = {
       () => api.post<AgentOrderRequest>(
         `/agent-order-requests/${encodeURIComponent(id)}/approve`,
         { shopId, agentContractId },
+        getCashierRequestConfig(),
       ),
       "Unable to approve order request.",
     ),
@@ -183,6 +222,7 @@ export const agentPortalService = {
       () => api.post<void>(
         `/agent-order-requests/${encodeURIComponent(id)}/reject`,
         { reason },
+        getCashierRequestConfig(),
       ),
       "Unable to reject order request.",
     ),

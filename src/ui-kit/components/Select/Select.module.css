@@ -29,14 +29,13 @@
 
 .selectContainer:hover:not(.disabled) {
   background-color: rgba(255, 255, 255, 0.12);
-  border-color: var(--color-accent-cyan);
+  border-color: var(--color-primary-500);
 }
 
 .selectContainer:focus-within:not(.disabled) {
   background-color: rgba(255, 255, 255, 0.08);
-  border-color: var(--color-accent-cyan);
+  border-color: var(--color-primary-500);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(var(--color-accent-cyan-rgb), 0.16);
 }
 
 .selectContainer.disabled {
