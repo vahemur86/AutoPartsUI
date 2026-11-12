@@ -1691,7 +1691,7 @@ export const AgentPortal = () => {
               const status = getRequestStatus(order.status);
               const requestShopId = order.shopId ?? orderDetails[order.id]?.shopId;
               return <article className={styles.dataCard} key={order.id}>
-                <div className={styles.cardTitle}>
+                <div className={`${styles.cardTitle} ${styles.requestCardTitle}`}>
                   <div className={styles.requestIdentity}><strong>{formatDate(order.requestedAt)}</strong><span>#{order.id.slice(0, 8)}</span></div>
                   <span className={`${styles.statusBadge} ${styles[`status${status}`] || ""}`}>{t(`agentPortal.statuses.${status}`)}</span>
                 </div>

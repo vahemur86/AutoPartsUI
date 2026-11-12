@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { CalendarDays, ChevronLeft, ChevronRight, CircleDollarSign, Eye, FileText, HandCoins, Plus, Save, X } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, CircleDollarSign, Eye, FileText, HandCoins, Plus, RotateCw, Save, X } from "lucide-react";
 import { SectionHeader } from "@/components/common";
 import {
   Button,
@@ -807,6 +807,9 @@ export const AgentContractDetails = () => {
   }>>([{ id: 1, capitalSourceId: "", amount: "", description: "" }]);
   const [nextFundingAllocationId, setNextFundingAllocationId] = useState(2);
   const [advanceSaving, setAdvanceSaving] = useState(false);
+  const [pendingAdvanceActivationId, setPendingAdvanceActivationId] = useState<string | null>(null);
+  const [advanceActivationError, setAdvanceActivationError] = useState("");
+  const [advanceActivationNotice, setAdvanceActivationNotice] = useState("");
 
   const load = async () => {
     if (!id) return;
@@ -867,7 +870,100 @@ export const AgentContractDetails = () => {
     }
   };
 
+  const completeAdvanceActivation = async () => {
+    setPendingAdvanceActivationId(null);
+    setAdvanceActivationError("");
+    setAdvanceActivationNotice("");
+    setAdvanceOpen(false);
+    setAdvanceAmount("");
+    setAdvanceNotes("");
+    setAdvanceDate(new Date().toISOString().slice(0, 10));
+    setFundingAllocations([{ id: nextFundingAllocationId, capitalSourceId: "", amount: "", description: "" }]);
+    setNextFundingAllocationId((current) => current + 1);
+    toast.success(t("agentContracts.messages.advanceActivated"));
+    await load();
+  };
+
+  const activateAdvance = async (advanceId: string, verifyBeforeApproval: boolean) => {
+    if (verifyBeforeApproval) {
+      try {
+        const existingAdvance = await agentContractsService.getAdvance(advanceId);
+        if (existingAdvance.status === "Active") {
+          await completeAdvanceActivation();
+          return;
+        }
+        if (existingAdvance.status !== "Draft") {
+          const message = t("agentContracts.errors.advanceStatusNotDraft");
+          setAdvanceActivationNotice(message);
+          setAdvanceActivationError(message);
+          toast.error(message);
+          return;
+        }
+      } catch (error) {
+        const message = t("agentContracts.errors.advanceStatusUnknown");
+        const detail = getApiErrorMessage(
+          error,
+          t("agentContracts.errors.advanceActivateFailed"),
+        );
+        setAdvanceActivationNotice(message);
+        setAdvanceActivationError(detail);
+        toast.error(`${message} ${detail}`);
+        return;
+      }
+    }
+
+    try {
+      await agentContractsService.approveAdvance(advanceId);
+      await completeAdvanceActivation();
+    } catch (approvalError) {
+      setPendingAdvanceActivationId(advanceId);
+      setAdvanceActivationNotice("");
+      try {
+        const currentAdvance = await agentContractsService.getAdvance(advanceId);
+        if (currentAdvance.status === "Active") {
+          await completeAdvanceActivation();
+          return;
+        }
+        const message = currentAdvance.status === "Draft"
+          ? t("agentContracts.errors.advanceCreatedNotActivated")
+          : t("agentContracts.errors.advanceStatusNotDraft");
+        const detail = getApiErrorMessage(
+          approvalError,
+          t("agentContracts.errors.advanceActivateFailed"),
+        );
+        setAdvanceActivationNotice(message);
+        setAdvanceActivationError(detail);
+        toast.error(
+          `${message} ${detail}`,
+        );
+        await load();
+      } catch (statusError) {
+        const message = t("agentContracts.errors.advanceStatusUnknown");
+        const detail = getApiErrorMessage(
+          statusError,
+          t("agentContracts.errors.advanceActivateFailed"),
+        );
+        setAdvanceActivationNotice(message);
+        setAdvanceActivationError(detail);
+        toast.error(`${message} ${detail}`);
+        await load();
+      }
+    }
+  };
+
   const createAdvance = async () => {
+    if (pendingAdvanceActivationId) {
+      setAdvanceSaving(true);
+      setAdvanceActivationError("");
+      setAdvanceActivationNotice("");
+      try {
+        await activateAdvance(pendingAdvanceActivationId, true);
+      } finally {
+        setAdvanceSaving(false);
+      }
+      return;
+    }
+
     const requestedAmount = Number(advanceAmount);
     const amountInCents = parseCents(advanceAmount);
     const allocationAmountsInCents = fundingAllocations.map((allocation) => parseCents(allocation.amount));
@@ -919,21 +1015,24 @@ export const AgentContractDetails = () => {
 
     setAdvanceSaving(true);
     try {
-      await agentContractsService.createAdvance(id, {
+      const advanceId = await agentContractsService.createAdvance(id, {
         amount: requestedAmount,
         advanceDate: new Date(advanceDate).toISOString(),
         notes: advanceNotes.trim() || undefined,
         allocations,
       });
 
-      toast.success(t("agentContracts.messages.advanceCreated"));
-      setAdvanceOpen(false);
-      setAdvanceAmount("");
-      setAdvanceNotes("");
-      setAdvanceDate(new Date().toISOString().slice(0, 10));
-      setFundingAllocations([{ id: nextFundingAllocationId, capitalSourceId: "", amount: "", description: "" }]);
-      setNextFundingAllocationId((current) => current + 1);
-      await load();
+      if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(advanceId)) {
+        const message = t("agentContracts.errors.advanceInvalidId");
+        setAdvanceActivationError(message);
+        toast.error(message);
+        return;
+      }
+
+      setPendingAdvanceActivationId(advanceId);
+      setAdvanceActivationError("");
+      setAdvanceActivationNotice("");
+      await activateAdvance(advanceId, false);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("agentContracts.errors.advanceCreateFailed")));
     } finally {
@@ -1383,17 +1482,39 @@ export const AgentContractDetails = () => {
           </span>
         }
         description={t("agentContracts.details.advanceDescription")}
-        confirmText={t("agentContracts.actions.createAdvance")}
-        confirmIcon={<Plus size={16} />}
+        confirmText={t(
+          pendingAdvanceActivationId
+            ? "agentContracts.actions.retryAdvanceActivation"
+            : "agentContracts.actions.createAndActivateAdvance",
+        )}
+        confirmIcon={pendingAdvanceActivationId ? <RotateCw size={16} /> : <HandCoins size={16} />}
         cancelIcon={<X size={16} />}
         confirmVariant="primary"
         confirmClassName={styles.modalPrimaryButton}
         cancelClassName={styles.modalCancelButton}
+        confirmDisabled={Boolean(advanceActivationError && !pendingAdvanceActivationId)}
         confirmLoading={advanceSaving}
+        preventClose
         className={styles.advanceModalCard}
         bodyClassName={styles.advanceModalBody}
         onConfirm={createAdvance}
       >
+        {pendingAdvanceActivationId ? (
+          <div className={styles.advanceActivationNotice} role="alert">
+            <HandCoins size={22} aria-hidden="true" />
+            <div>
+              <strong>{advanceActivationNotice || t("agentContracts.errors.advanceCreatedNotActivated")}</strong>
+              <p>{advanceActivationError || t("agentContracts.errors.advanceActivationRetryHint")}</p>
+            </div>
+          </div>
+        ) : advanceActivationError ? (
+          <div className={styles.advanceActivationNotice} role="alert">
+            <HandCoins size={22} aria-hidden="true" />
+            <div>
+              <strong>{advanceActivationError}</strong>
+            </div>
+          </div>
+        ) : (
         <div className={`${styles.modalFields} ${styles.advanceModalFields}`}>
           <TextField
             label={t("agentContracts.fields.advanceAmount")}
@@ -1515,6 +1636,7 @@ export const AgentContractDetails = () => {
             <div className={styles.fundingPlanWarning} role="note">{t("agentAdvances.allocation.draftNotReserved")}</div>
           </section>
         </div>
+        )}
       </ConfirmationModal>
 
       <ConfirmationModal
