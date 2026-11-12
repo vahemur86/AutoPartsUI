@@ -16,8 +16,11 @@ import type {
   AgentOrderRequest,
   AgentOrderRequestStatus,
   AgentNotificationPage,
+  AgentPortalBalances,
   AgentPortalFinancialSummary,
   CashierNotificationPage,
+  CashierOrderPricePreview,
+  CashierPOSSale,
   CreateAgentOrderRequest,
 } from "@/types/agentPortal";
 
@@ -56,6 +59,9 @@ export const agentPortalService = {
 
   getFinancialSummary: () =>
     request<AgentPortalFinancialSummary>(() => api.get("/agent-portal/financial-summary"), "Failed to load financial summary."),
+
+  getBalances: () =>
+    request<AgentPortalBalances>(() => api.get("/agent-portal/balances"), "Failed to load account balances."),
 
   getTypeHistory: () =>
     request<AgentTypeHistoryDto[]>(() => api.get("/agent-portal/type-history"), "Failed to load agent type history."),
@@ -168,7 +174,11 @@ export const agentPortalService = {
 
   createOrderRequest: (payload: CreateAgentOrderRequest) =>
     request(
-      () => api.post<AgentOrderRequest>("/agent-portal/order-requests", payload),
+      () => api.post<AgentOrderRequest>("/agent-portal/order-requests", {
+        shopId: payload.shopId,
+        items: payload.items,
+        ...(payload.notes ? { notes: payload.notes } : {}),
+      }),
       "Failed to submit order request.",
     ),
 
@@ -207,11 +217,26 @@ export const agentPortalService = {
       "Failed to load order request.",
     ),
 
-  approveOrderRequest: (id: string, shopId: number, agentContractId: string) =>
+  getCashierOrderPricePreview: (id: string, agentContractId: string) =>
+    request(
+      () => api.get<CashierOrderPricePreview>(
+        `/agent-order-requests/${encodeURIComponent(id)}/price-preview`,
+        { params: { agentContractId }, ...getCashierRequestConfig() },
+      ),
+      "Failed to load order price preview.",
+    ),
+
+  getCashierPOSSale: (id: number) =>
+    request(
+      () => api.get<CashierPOSSale>(`/POSSale/${id}`, getCashierRequestConfig()),
+      "Failed to load completed sale details.",
+    ),
+
+  approveOrderRequest: (id: string, agentContractId: string) =>
     request(
       () => api.post<AgentOrderRequest>(
         `/agent-order-requests/${encodeURIComponent(id)}/approve`,
-        { shopId, agentContractId },
+        { agentContractId },
         getCashierRequestConfig(),
       ),
       "Unable to approve order request.",

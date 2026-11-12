@@ -691,11 +691,7 @@ const ProductCreditContractDetails = () => {
   const canActivateContract = contract.allowsProductAdvance === true && contract.status === "Draft";
   const canDeactivateContract = contract.allowsProductAdvance === true && contract.status === "Active" && (contract.financials.outstandingAmount ?? 0) === 0;
   const contractOutstanding = debt?.outstandingAmountAmd ?? contract.financials.outstandingAmount;
-  const availableCredit = contract.availableProductCreditAmd ?? (
-    contract.restoreProductCreditLimitAfterRepayment && contract.productCreditLimitAmd != null
-      ? Math.max(0, contract.productCreditLimitAmd - contractOutstanding)
-      : null
-  );
+  const availableCredit = contract.availableProductCreditAmd;
   const selectedReturnAdvance = productAdvances.find((advance) => advance.id === selectedReturnAdvanceId);
 
   return (
@@ -715,13 +711,13 @@ const ProductCreditContractDetails = () => {
           <div className={styles.detail}><span>{t("agentContracts.fields.repaymentDeadline")}</span><strong>{date(contract.repaymentDeadline)}</strong></div>
           <div className={styles.detail}><span>{t("agentContracts.productCredit.repaymentRule")}</span><strong>{t("agentContracts.productCredit.ruleVersionNumber", { version: contract.repaymentTerms.ruleVersion })}</strong></div>
           <div className={styles.detail}><span>{t("common.notes")}</span><strong>{contract.notes || "-"}</strong></div>
-          <div className={styles.detail}><span>{t("agents.productCredit.creditLimit")}</span><strong>{contract.productCreditLimitAmd == null ? "—" : `${money(contract.productCreditLimitAmd)} AMD`}</strong></div>
+          <div className={styles.detail}><span>{t("agents.productCredit.creditLimitAllShops")}</span><strong>{contract.productCreditLimitAmd == null ? "—" : `${money(contract.productCreditLimitAmd)} AMD`}</strong></div>
           <div className={styles.detail}><span>{t("agents.productCredit.outstandingDebt")}</span><strong>{money(contractOutstanding)} AMD</strong></div>
           {availableCredit != null && <div className={styles.detail}><span>{t("agents.productCredit.availableCredit")}</span><strong>{money(availableCredit)} AMD</strong></div>}
           <div className={styles.detail}><span>{t("agents.productCredit.discountPercent")}</span><strong>{contract.productCreditDiscountPercent == null ? "—" : `${contract.productCreditDiscountPercent}%`}</strong></div>
           <div className={styles.detail}><span>{t("agents.productCredit.deadline")}</span><strong>{date(contract.productCreditDeadline)}</strong></div>
           <div className={styles.detail}><span>{t("agents.productCredit.purchasePermission")}</span><strong>{t(contract.acceptsNewProductPurchases ? "agentContracts.productCredit.allowed" : "agentContracts.productCredit.notAllowed")}</strong></div>
-          <div className={styles.detail}><span>{t("agents.productCredit.approvedShops")}</span><strong>{contract.approvedShopIds?.length ? contract.approvedShopIds.join(", ") : t("agents.productCredit.noApprovedShops")}</strong></div>
+          <div className={styles.detail}><span>{t("agents.productCredit.shopApplicability")}</span><strong>{t("agents.productCredit.allShops")}</strong></div>
           {debt && (
             <>
               <div className={styles.detail}><span>{t("agents.productCredit.totalAdvanced")}</span><strong>{money(debt.totalAdvancedAmountAmd)} AMD</strong></div>

@@ -56,7 +56,7 @@ describe("agentContractsService", () => {
       status: "Active",
       page: 1,
       pageSize: 50,
-    });
+    }, 9);
 
     expect(api.get).toHaveBeenCalledWith("/agent-contracts", {
       params: {
@@ -66,7 +66,7 @@ describe("agentContractsService", () => {
         pageSize: 50,
         allowsProductAdvance: true,
       },
-      headers: expect.objectContaining({ "X-CashRegister-Id": expect.any(String) }),
+      headers: { "X-CashRegister-Id": "9" },
     });
     expect(result).toEqual(payload);
   });

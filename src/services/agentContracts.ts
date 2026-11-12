@@ -42,10 +42,10 @@ export const agentContractsService = {
     return response.data;
   },
 
-  listProductCreditContracts: async (params?: AgentContractSearchParams) => {
+  listProductCreditContracts: async (params?: AgentContractSearchParams, cashRegisterId?: number) => {
     const response = await api.get<PagedResult<AgentContractListItemDto>>("/agent-contracts", {
       params: { ...params, allowsProductAdvance: true },
-      headers: getHeaders(getCashRegisterId()),
+      headers: getHeaders(cashRegisterId ?? getCashRegisterId()),
     });
     return response.data;
   },

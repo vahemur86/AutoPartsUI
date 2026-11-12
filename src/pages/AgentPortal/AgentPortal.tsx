@@ -5,6 +5,16 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -14,7 +24,9 @@ import {
   Eye,
   EyeOff,
   FileText,
+  FilePlus2,
   Languages,
+  LoaderCircle,
   LogOut,
   ListChecks,
   MoreHorizontal,
@@ -25,6 +37,7 @@ import {
   Plus,
   RefreshCw,
   ShoppingCart,
+  Send,
   Store,
   UserRound,
   X,
@@ -37,11 +50,12 @@ import { getShops } from "@/services/settings/shop";
 import i18n from "@/i18n/config";
 import { logout } from "@/store/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { AgentStatus } from "@/types/agents";
 import type { Product } from "@/types/products";
 import type { AgentDto, AgentProductCreditSaleDto, AgentProductDebtDto, AgentProductDebtPaymentDto, AgentTypeHistoryDto, PagedResult } from "@/types/agents";
 import type { AgentAdvanceDto, AgentContractListItemDto } from "@/types/agentContracts";
 import type { PowderDeliveryDto, PowderDeliveryListItemDto } from "@/types/powderDeliveries";
-import type { AgentNotification, AgentOrderRequest, AgentOrderRequestStatus, AgentPortalFinancialSummary } from "@/types/agentPortal";
+import type { AgentNotification, AgentOrderRequest, AgentOrderRequestStatus, AgentPortalFinancialContract, AgentPortalFinancialSummary } from "@/types/agentPortal";
 import type { Shop } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 import styles from "./AgentPortal.module.css";
@@ -62,6 +76,18 @@ const PORTAL_LANGUAGES = [
 
 const formatAmd = (value: number | null | undefined) =>
   `${Number(value ?? 0).toLocaleString()} AMD`;
+
+const formatAmdPrice = (valueInCents: number) =>
+  `${(valueInCents / 100).toLocaleString(i18n.resolvedLanguage?.startsWith("am") ? "hy-AM" : i18n.resolvedLanguage || undefined, {
+    minimumFractionDigits: valueInCents % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  })} AMD`;
+
+const getDiscountedPriceInCents = (salePrice: number, discountPercent: number) => {
+  const salePriceInCents = Math.round(salePrice * 100);
+  const discountBasisPoints = Math.round(discountPercent * 100);
+  return Math.round((salePriceInCents * (10000 - discountBasisPoints)) / 10000);
+};
 
 const formatNumber = (value: number | null | undefined) =>
   value == null
@@ -191,6 +217,8 @@ export const AgentPortal = () => {
   const [summaryError, setSummaryError] = useState("");
   const [profileLoading, setProfileLoading] = useState(true);
   const [summaryLoading, setSummaryLoading] = useState(true);
+  const [summaryLoadedAt, setSummaryLoadedAt] = useState<Date | null>(null);
+  const financialSummaryRequestId = useRef(0);
   const [typeHistory, setTypeHistory] = useState<AgentTypeHistoryDto[]>([]);
   const [contracts, setContracts] = useState<PageResult<AgentContractListItemDto> | null>(null);
   const [productCreditContracts, setProductCreditContracts] = useState<AgentContractListItemDto[]>([]);
@@ -231,6 +259,12 @@ export const AgentPortal = () => {
   const [catalogLoaded, setCatalogLoaded] = useState(false);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogShopId, setCatalogShopId] = useState<number | null>(null);
+  const [shopProductCreditContracts, setShopProductCreditContracts] = useState<AgentContractListItemDto[]>([]);
+  const [shopProductCreditBlockReason, setShopProductCreditBlockReason] = useState<
+    "noContract" | "purchasesDisabled" | "deadlineExpired" | "noEligibleContract" | "termsUnavailable" | null
+  >(null);
+  const [shopProductCreditContractsLoading, setShopProductCreditContractsLoading] = useState(false);
+  const [shopProductCreditContractsError, setShopProductCreditContractsError] = useState("");
   const [productSearch, setProductSearch] = useState("");
   const [selectedItems, setSelectedItems] = useState<Record<number, number>>({});
   const [orderStep, setOrderStep] = useState<"catalog" | "cart">("catalog");
@@ -248,30 +282,72 @@ export const AgentPortal = () => {
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+  const [isBalanceRefreshing, setIsBalanceRefreshing] = useState(false);
+  const [balanceRefreshError, setBalanceRefreshError] = useState("");
   const [catalogError, setCatalogError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState("");
   const selectedShop = shops.find((shop) => shop.id === selectedShopId) ?? null;
 
   const loadIdentity = useCallback(async () => {
     setProfileLoading(true);
-    setSummaryLoading(true);
     setProfileError("");
-    setSummaryError("");
-    const [profileResult, summaryResult] = await Promise.allSettled([
-      agentPortalService.getProfile(),
-      agentPortalService.getFinancialSummary(),
-    ]);
-    if (profileResult.status === "fulfilled") setProfile(profileResult.value);
-    else setProfileError(profileResult.reason instanceof Error ? profileResult.reason.message : t("agentPortal.loadError"));
-    if (summaryResult.status === "fulfilled") setSummary(summaryResult.value);
-    else setSummaryError(summaryResult.reason instanceof Error ? summaryResult.reason.message : t("agentPortal.loadError"));
+    try {
+      setProfile(await agentPortalService.getProfile());
+    } catch (error: unknown) {
+      setProfileError(error instanceof Error ? error.message : t("agentPortal.loadError"));
+    }
     setProfileLoading(false);
-    setSummaryLoading(false);
   }, [t]);
+
+  const loadFinancialSummary = useCallback(async () => {
+    const requestId = financialSummaryRequestId.current + 1;
+    financialSummaryRequestId.current = requestId;
+    setSummaryLoading(true);
+    setSummaryError("");
+    try {
+      const result = await agentPortalService.getFinancialSummary();
+      if (requestId !== financialSummaryRequestId.current) return false;
+      setSummary(result);
+      setSummaryLoadedAt(new Date());
+      return true;
+    } catch (error: unknown) {
+      if (requestId !== financialSummaryRequestId.current) return false;
+      setSummary(null);
+      setSummaryLoadedAt(null);
+      setSummaryError(error instanceof Error ? error.message : t("agentPortal.loadError"));
+      return false;
+    } finally {
+      if (requestId === financialSummaryRequestId.current) setSummaryLoading(false);
+    }
+  }, [t]);
+
+  const toggleBalanceVisibility = async () => {
+    if (isBalanceVisible) {
+      setIsBalanceVisible(false);
+      return;
+    }
+
+    setIsBalanceRefreshing(true);
+    setBalanceRefreshError("");
+    try {
+      const latestSummary = await agentPortalService.getFinancialSummary();
+      setSummary((current) => current ? { ...current, balances: latestSummary.balances } : current);
+      setSummaryLoadedAt(new Date());
+      setIsBalanceVisible(true);
+    } catch (error: unknown) {
+      setBalanceRefreshError(error instanceof Error ? error.message : t("agentPortal.loadError"));
+    } finally {
+      setIsBalanceRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     void loadIdentity();
   }, [loadIdentity, retry]);
+
+  useEffect(() => {
+    if (section === "overview") void loadFinancialSummary();
+  }, [section, retry, loadFinancialSummary]);
 
   useEffect(() => {
     if (!isMoreOpen) return;
@@ -319,7 +395,7 @@ export const AgentPortal = () => {
   }, []);
 
   useEffect(() => {
-    if (section !== "orders" || shopsLoaded) return;
+    if (!["orders", "myRequests"].includes(section) || shopsLoaded) return;
     let active = true;
     const loadAgentShops = async () => {
       setShopLoading(true);
@@ -379,6 +455,77 @@ export const AgentPortal = () => {
     void loadShopCatalog();
     return () => { active = false; };
   }, [section, shopsLoaded, selectedShopId, shops, catalogLoaded, catalogShopId, retry, t]);
+
+  useEffect(() => {
+    if (section !== "orders" || !selectedShopId || !shopsLoaded) {
+      setShopProductCreditContracts([]);
+      setShopProductCreditBlockReason(null);
+      setShopProductCreditContractsError("");
+      setShopProductCreditContractsLoading(false);
+      return;
+    }
+
+    let active = true;
+    setShopProductCreditContracts([]);
+    setShopProductCreditBlockReason(null);
+    setShopProductCreditContractsError("");
+    setShopProductCreditContractsLoading(true);
+    agentPortalService.getContracts(1, 50)
+      .then((contractPage) => {
+        if (!active) return;
+        const now = Date.now();
+        const productCreditContracts = contractPage.results.filter((contract) =>
+          contract.status === "Active" && contract.allowsProductAdvance === true,
+        );
+        const missingTerms = productCreditContracts.some((contract) =>
+          contract.acceptsNewProductPurchases == null ||
+          !contract.productCreditDeadline ||
+          !Number.isFinite(Date.parse(contract.productCreditDeadline)) ||
+          typeof contract.productCreditDiscountPercent !== "number" ||
+          contract.productCreditDiscountPercent < 0 ||
+          contract.productCreditDiscountPercent > 100,
+        );
+        const eligibleContracts = productCreditContracts.filter((contract) => {
+          const deadline = contract.productCreditDeadline ? Date.parse(contract.productCreditDeadline) : Number.NaN;
+          const discount = contract.productCreditDiscountPercent;
+          return contract.acceptsNewProductPurchases === true &&
+            Number.isFinite(deadline) &&
+            deadline >= now &&
+            typeof discount === "number" &&
+            Number.isFinite(discount) &&
+            discount >= 0 &&
+            discount <= 100;
+        });
+        setShopProductCreditContracts(eligibleContracts);
+        if (!eligibleContracts.length) {
+          if (missingTerms) {
+            setShopProductCreditBlockReason("termsUnavailable");
+          } else if (!productCreditContracts.length) {
+            setShopProductCreditBlockReason("noContract");
+          } else if (productCreditContracts.every((contract) => contract.acceptsNewProductPurchases === false)) {
+            setShopProductCreditBlockReason("purchasesDisabled");
+          } else if (productCreditContracts.every((contract) =>
+            contract.acceptsNewProductPurchases === true &&
+            !!contract.productCreditDeadline &&
+            Date.parse(contract.productCreditDeadline) < now,
+          )) {
+            setShopProductCreditBlockReason("deadlineExpired");
+          } else {
+            setShopProductCreditBlockReason("noEligibleContract");
+          }
+        }
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setShopProductCreditContractsError(error instanceof Error ? error.message : t("agentPortal.contractLoadError"));
+        }
+      })
+      .finally(() => {
+        if (active) setShopProductCreditContractsLoading(false);
+      });
+
+    return () => { active = false; };
+  }, [section, selectedShopId, shopsLoaded, retry, t]);
 
   useEffect(() => {
     if (section !== "myRequests" || productDirectoryLoaded) return;
@@ -492,9 +639,15 @@ export const AgentPortal = () => {
 
   const selectedCount = Object.keys(selectedItems).length;
   const selectedQuantity = Object.values(selectedItems).reduce((total, quantity) => total + quantity, 0);
-  const cartTotal = selectedProductSummary.reduce(
-    (total, { item, quantity }) => total + Number(item?.salePrice ?? 0) * quantity,
-    0,
+  const contractCartTotals = useMemo(
+    () => shopProductCreditContracts.map((contract) => ({
+      contract,
+      totalInCents: selectedProductSummary.reduce(
+        (total, { item, quantity }) => total + (item ? getDiscountedPriceInCents(item.salePrice, contract.productCreditDiscountPercent ?? 0) * quantity : 0),
+        0,
+      ),
+    })),
+    [selectedProductSummary, shopProductCreditContracts],
   );
 
   const addProductToCart = (productId: number, button: HTMLButtonElement) => {
@@ -516,9 +669,167 @@ export const AgentPortal = () => {
   };
   const summaryValue = (value?: number | null, alternate?: number | null, nested?: number | null) =>
     value == null && alternate == null && nested == null ? "—" : formatAmd(value ?? alternate ?? nested);
-  const activeContractsCount = summary?.activeContractsCount ??
-    summary?.contracts?.filter((contract) => contract.status?.toLowerCase() === "active").length ??
-    "—";
+  const financialContracts = summary?.contracts ?? [];
+  const dustContracts = financialContracts.filter((contract) => contract.contractType === "Dust");
+  const productCreditFinancialContracts = financialContracts.filter((contract) => contract.contractType === "ProductCredit");
+  const financialChartData = (contracts: AgentPortalFinancialContract[]) => contracts
+    .filter((contract) => [
+      contract.totalAdvancedAmount,
+      contract.totalRepaidAmount,
+      contract.outstandingAmount,
+    ].some((amount) => typeof amount === "number" && Number.isFinite(amount) && amount !== 0))
+    .map((contract) => ({
+      contract: contract.contractNumber || "—",
+      advanced: contract.totalAdvancedAmount ?? undefined,
+      repaid: contract.totalRepaidAmount ?? undefined,
+      outstanding: contract.outstandingAmount ?? undefined,
+    }));
+  const renderContractChart = (contracts: AgentPortalFinancialContract[]) => {
+    const data = financialChartData(contracts);
+    if (!data.length) return null;
+    return (
+      <div className={styles.financialChart} role="img" aria-label={t("agentPortal.financialDashboard.chartLabel")}>
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 8 }}>
+            <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+            <XAxis dataKey="contract" tick={{ fill: "#b8c0b5", fontSize: 10 }} tickLine={false} axisLine={{ stroke: "rgba(255,255,255,0.12)" }} />
+            <YAxis
+              width={78}
+              tick={{ fill: "#9da99c", fontSize: 10 }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value: number) => Number(value).toLocaleString(i18n.resolvedLanguage?.startsWith("am") ? "hy-AM" : i18n.resolvedLanguage || undefined)}
+            />
+            <Tooltip
+              formatter={(value) => formatAmd(Number(value))}
+              contentStyle={{ border: "1px solid rgba(196,169,106,0.28)", borderRadius: 9, background: "#151d17", color: "#eee9db" }}
+              labelStyle={{ color: "#e5d29a" }}
+            />
+            <Legend wrapperStyle={{ color: "#c5cdc1", fontSize: 11 }} />
+            <Bar dataKey="advanced" name={t("agentPortal.totalAdvanced")} fill="#c6a75e" stroke="#f0d998" strokeWidth={1} radius={[5, 5, 0, 0]} />
+            <Bar dataKey="repaid" name={t("agentPortal.totalRepaid")} fill="#3c9f9b" stroke="#78d8ce" strokeWidth={1} radius={[5, 5, 0, 0]} />
+            <Bar dataKey="outstanding" name={t("agentPortal.contractBalance")} fill="#b86c58" stroke="#e6a18a" strokeWidth={1} radius={[5, 5, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  };
+  const renderProductCreditBalanceChart = () => {
+    const data = (summary?.balances?.productCreditContracts ?? [])
+      .filter((contract) => [
+        contract.creditLimitAmd,
+        contract.outstandingAmountAmd,
+        contract.availableCreditAmd,
+      ].some((amount) => typeof amount === "number" && Number.isFinite(amount) && amount !== 0))
+      .map((contract) => ({
+        contract: contract.contractNumber || "—",
+        limit: contract.creditLimitAmd ?? undefined,
+        outstanding: contract.outstandingAmountAmd ?? undefined,
+        available: contract.availableCreditAmd ?? undefined,
+      }));
+    if (!data.length) return null;
+    return (
+      <div className={styles.financialChart} role="img" aria-label={t("agentPortal.financialDashboard.creditBalanceChartLabel")}>
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 8 }}>
+            <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+            <XAxis dataKey="contract" tick={{ fill: "#b8c0b5", fontSize: 10 }} tickLine={false} axisLine={{ stroke: "rgba(255,255,255,0.12)" }} />
+            <YAxis
+              width={78}
+              tick={{ fill: "#9da99c", fontSize: 10 }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value: number) => Number(value).toLocaleString(i18n.resolvedLanguage?.startsWith("am") ? "hy-AM" : i18n.resolvedLanguage || undefined)}
+            />
+            <Tooltip
+              formatter={(value) => formatAmd(Number(value))}
+              contentStyle={{ border: "1px solid rgba(196,169,106,0.28)", borderRadius: 9, background: "#151d17", color: "#eee9db" }}
+              labelStyle={{ color: "#e5d29a" }}
+            />
+            <Legend wrapperStyle={{ color: "#c5cdc1", fontSize: 11 }} />
+            <Bar dataKey="limit" name={t("agentPortal.productCreditLimit")} fill="#c6a75e" stroke="#f0d998" strokeWidth={1} radius={[5, 5, 0, 0]} />
+            <Bar dataKey="outstanding" name={t("agentPortal.financialDashboard.productCreditOutstanding")} fill="#b86c58" stroke="#e6a18a" strokeWidth={1} radius={[5, 5, 0, 0]} />
+            <Bar dataKey="available" name={t("agentPortal.productCreditBalance")} fill="#3f9f70" stroke="#8be0ad" strokeWidth={1} radius={[5, 5, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  };
+  const renderFinancialContract = (contract: AgentPortalFinancialContract, type: "Dust" | "ProductCredit") => {
+    const advances = contract.advances ?? [];
+    const isProductCredit = type === "ProductCredit";
+    return (
+      <article className={styles.summaryContractCard} key={contract.contractId ?? `${type}-${contract.contractNumber ?? contract.contractDate ?? "unknown"}`}>
+        <div className={styles.summaryContractHeading}>
+          <div>
+            <span className={styles.eyebrow}>{t(`agentPortal.financialDashboard.contractTypes.${type}`)}</span>
+            <h4>{contract.contractNumber || "—"}</h4>
+          </div>
+          <span className={`${styles.summaryStatus} ${contract.status === "Active" ? styles.summaryStatusActive : ""}`}>
+            {contract.status ? getRecordStatus(contract.status, t) : "—"}
+          </span>
+        </div>
+        <dl className={styles.summaryContractTerms}>
+          <div><dt>{t("agentPortal.contractSigningDate")}</dt><dd>{formatDate(contract.contractDate)}</dd></div>
+          <div>
+            <dt>{t(isProductCredit ? "agentPortal.productCreditDeadline" : "agentPortal.repaymentDeadline")}</dt>
+            <dd>{formatDate(isProductCredit ? contract.productCreditDeadline : contract.repaymentDeadline)}</dd>
+          </div>
+          {isProductCredit ? (
+            <>
+              <div><dt>{t("agentPortal.productCreditLimit")}</dt><dd>{summaryValue(contract.productCreditLimitAmd)}</dd></div>
+              <div><dt>{t("agentPortal.financialDashboard.productCreditOutstanding")}</dt><dd>{summaryValue(contract.productCreditOutstandingAmd)}</dd></div>
+              <div><dt>{t("agentPortal.financialDashboard.productCreditAvailable")}</dt><dd>{summaryValue(contract.productCreditAvailableAmd)}</dd></div>
+              <div>
+                <dt>{t("agentPortal.productCreditDiscount")}</dt>
+                <dd>{contract.productCreditDiscountPercent == null ? "—" : `${formatNumber(contract.productCreditDiscountPercent)}%`}</dd>
+              </div>
+              <div>
+                <dt>{t("agentPortal.financialDashboard.acceptsNewPurchases")}</dt>
+                <dd>{contract.acceptsNewProductPurchases == null ? "—" : t(contract.acceptsNewProductPurchases ? "common.yes" : "common.no")}</dd>
+              </div>
+              <div>
+                <dt>{t("agentPortal.financialDashboard.restoreLimitAfterRepayment")}</dt>
+                <dd>{contract.restoreProductCreditLimitAfterRepayment == null ? "—" : t(contract.restoreProductCreditLimitAfterRepayment ? "common.yes" : "common.no")}</dd>
+              </div>
+              <div><dt>{t("agentPortal.totalAdvanced")}</dt><dd>{summaryValue(contract.totalAdvancedAmount)}</dd></div>
+              <div><dt>{t("agentPortal.totalRepaid")}</dt><dd>{summaryValue(contract.totalRepaidAmount)}</dd></div>
+              <div><dt>{t("agentPortal.contractBalance")}</dt><dd>{summaryValue(contract.outstandingAmount)}</dd></div>
+            </>
+          ) : (
+            <>
+              <div><dt>{t("agentPortal.totalAdvanced")}</dt><dd>{summaryValue(contract.totalAdvancedAmount)}</dd></div>
+              <div><dt>{t("agentPortal.totalRepaid")}</dt><dd>{summaryValue(contract.totalRepaidAmount)}</dd></div>
+              <div><dt>{t("agentPortal.contractBalance")}</dt><dd>{summaryValue(contract.outstandingAmount)}</dd></div>
+              <div><dt>{t("agentPortal.financialDashboard.activeAdvances")}</dt><dd>{contract.activeAdvancesCount ?? "—"}</dd></div>
+            </>
+          )}
+        </dl>
+        {!isProductCredit && advances.length > 0 && (
+          <div className={styles.summaryAdvances}>
+            <h5>{t("agentPortal.advances")}</h5>
+            {advances.map((advance, index) => (
+              <div className={styles.summaryAdvance} key={advance.advanceId ?? advance.advanceNumber ?? `${contract.contractId}-advance-${index}`}>
+                <div>
+                  <strong>{advance.advanceNumber || "—"}</strong>
+                  <span>{advance.advanceType
+                    ? t(`agentPortal.financialDashboard.advanceTypes.${advance.advanceType}`, { defaultValue: advance.advanceType })
+                    : "—"}</span>
+                </div>
+                <dl>
+                  <div><dt>{t("agentPortal.status")}</dt><dd>{advance.status ? getRecordStatus(advance.status, t) : "—"}</dd></div>
+                  <div><dt>{t("agentPortal.financialDashboard.advanceDate")}</dt><dd>{formatDate(advance.advanceDate)}</dd></div>
+                  <div><dt>{t("agentPortal.financialDashboard.amount")}</dt><dd>{summaryValue(advance.advancedAmountAmd)}</dd></div>
+                  <div><dt>{t("agentPortal.repaymentDeadline")}</dt><dd>{formatDate(advance.repaymentDeadline)}</dd></div>
+                  <div><dt>{t("agentPortal.financialDashboard.extensionCount")}</dt><dd>{advance.extensionCount ?? "—"}</dd></div>
+                </dl>
+              </div>
+            ))}
+          </div>
+        )}
+      </article>
+    );
+  };
 
   const handleOpenNotification = useCallback((notification: AgentNotification) => {
     if (notification.relatedEntityType === "AgentOrderRequest" || notification.type.startsWith("Order")) {
@@ -534,12 +845,18 @@ export const AgentPortal = () => {
   }, []);
 
   const submitOrder = async () => {
+    const shopId = selectedShop?.id;
     const entries = Object.entries(selectedItems).map(([id, quantity]) => ({
       productId: Number(id),
       quantity,
     }));
     if (
-      !selectedShopId ||
+      !Number.isInteger(shopId) ||
+      !shopId ||
+      shopId <= 0 ||
+      shopProductCreditContractsLoading ||
+      !!shopProductCreditContractsError ||
+      !shopProductCreditContracts.length ||
       !entries.length ||
       entries.length > 50 ||
       entries.some(({ quantity }) => !Number.isInteger(quantity) || quantity <= 0) ||
@@ -550,6 +867,7 @@ export const AgentPortal = () => {
     setOrderSuccess("");
     try {
       await agentPortalService.createOrderRequest({
+        shopId,
         items: entries,
       });
       setSelectedItems({});
@@ -623,77 +941,102 @@ export const AgentPortal = () => {
   return (
     <main className={`${styles.page} ${styles.agentPortalPage}`}>
       <header className={styles.header}>
-        <div className={styles.headerIdentity}>
-          <div className={styles.headerBrand}>
-          <span className={styles.portalLogoMark} role="img" aria-label="PRP Service">
-            <span className={styles.portalLogoBrand}>
-              <span className={styles.portalLogoPrp}>PRP</span>
-              <span className={styles.portalLogoService}>Service</span>
-            </span>
-          </span>
-            <div className={styles.headerProfile}>
-              <span className={styles.eyebrow}>{t("agentPortal.portalLabel")}</span>
-              <div className={styles.identityTitle}>
-                <h1>{profile ? getFullName(profile) : authUser?.username || t("agentPortal.portalTitle")}</h1>
-                {profile && (
-                  <span className={`${styles.statusBadge} ${styles[`status${getStatusText(profile.status, (key) => key)}`] || ""}`}>
-                    {getStatusText(profile.status, t)}
-                  </span>
-                )}
-              </div>
-              <div className={styles.identityMeta}>
-                {profile && <p>{t("agentPortal.agentCode")}: <strong>{profile.code}</strong></p>}
-                <Button variant="secondary" size="small" className={styles.refreshButton} onClick={() => setRetry((current) => current + 1)}>
-                  <RefreshCw size={15} aria-hidden="true" /> {t("agentPortal.refresh")}
-                </Button>
+        <div className={styles.headerUtilityRow}>
+          <AgentNotifications accessToken={accessToken} onOpenNotification={handleOpenNotification} />
+          <div className={styles.headerActions}>
+            <label className={styles.languageControl}>
+              <Languages size={16} aria-hidden="true" />
+              <select
+                aria-label={t("header.language")}
+                value={PORTAL_LANGUAGES.some(({ code }) => code === activeLanguage) ? activeLanguage : "en"}
+                onChange={(event) => {
+                  const language = event.target.value;
+                  void i18n.changeLanguage(language);
+                  localStorage.setItem("i18nextLng", language);
+                }}
+              >
+                {PORTAL_LANGUAGES.map(({ code, label }) => (
+                  <option key={code} value={code}>{label}</option>
+                ))}
+              </select>
+            </label>
+            <Button
+              variant="secondary"
+              size="small"
+              className={styles.logoutButton}
+              onClick={() => setIsLogoutConfirmOpen(true)}
+              disabled={isLoggingOut}
+              aria-busy={isLoggingOut}
+            >
+              <LogOut size={15} aria-hidden="true" /> {t("header.logout")}
+            </Button>
+          </div>
+        </div>
+        <div className={styles.headerMainRow}>
+          <div className={styles.headerIdentity}>
+            <div className={styles.headerBrand}>
+              <span className={styles.portalLogoMark} role="img" aria-label="PRP Service">
+                <span className={styles.portalLogoBrand}>
+                  <span className={styles.portalLogoPrp}>PRP</span>
+                  <span className={styles.portalLogoService}>Service</span>
+                </span>
+              </span>
+              <div className={styles.headerProfile}>
+                <span className={styles.eyebrow}>{t("agentPortal.portalLabel")}</span>
+                <div className={styles.identityTitle}>
+                  <h1>{profile ? getFullName(profile) : authUser?.username || t("agentPortal.portalTitle")}</h1>
+                  {profile && (
+                    <span className={`${styles.statusBadge} ${profile.status === AgentStatus.Active
+                      ? styles.identityStatusActive
+                      : styles[`status${getStatusText(profile.status, (key) => key)}`] || ""}`}>
+                      {getStatusText(profile.status, t)}
+                    </span>
+                  )}
+                </div>
+                <div className={styles.identityMeta}>
+                  {profile && <p>{t("agentPortal.agentCode")}: <strong>{profile.code}</strong></p>}
+                  <Button variant="secondary" size="small" className={styles.refreshButton} onClick={() => setRetry((current) => current + 1)}>
+                    <RefreshCw size={15} aria-hidden="true" /> {t("agentPortal.refresh")}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className={styles.headerActions}>
-          <AgentNotifications accessToken={accessToken} onOpenNotification={handleOpenNotification} />
-          <div className={styles.balanceSummary}>
-            <span>{t("agentPortal.accountBalance")}</span>
-            <button
-              type="button"
-              className={styles.balanceToggle}
-              onClick={() => setIsBalanceVisible((visible) => !visible)}
-              aria-label={t(isBalanceVisible ? "agentPortal.hideBalance" : "agentPortal.showBalance")}
-              aria-pressed={isBalanceVisible}
-              disabled={summaryLoading || !summary}
-            >
-              <strong>{isBalanceVisible
-                ? summaryValue(summary?.totalAdvancedAmount, summary?.totalAdvancedAmountAmd, summary?.agent?.totalAdvancedAmount)
-                : "••••••"}</strong>
-              {isBalanceVisible ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
-            </button>
-          </div>
-          <label className={styles.languageControl}>
-            <Languages size={16} aria-hidden="true" />
-            <select
-              aria-label={t("header.language")}
-              value={PORTAL_LANGUAGES.some(({ code }) => code === activeLanguage) ? activeLanguage : "en"}
-              onChange={(event) => {
-                const language = event.target.value;
-                void i18n.changeLanguage(language);
-                localStorage.setItem("i18nextLng", language);
-              }}
-            >
-              {PORTAL_LANGUAGES.map(({ code, label }) => (
-                <option key={code} value={code}>{label}</option>
-              ))}
-            </select>
-          </label>
-          <Button
-            variant="secondary"
-            size="small"
-            className={styles.logoutButton}
-            onClick={() => setIsLogoutConfirmOpen(true)}
-            disabled={isLoggingOut}
-            aria-busy={isLoggingOut}
-          >
-            <LogOut size={15} aria-hidden="true" /> {t("header.logout")}
-          </Button>
+          {!summaryLoading && !summaryError && (dustContracts.length > 0 || productCreditFinancialContracts.length > 0) && (
+            <div className={styles.balanceSummary}>
+              <span>{t("agentPortal.accountBalance")}</span>
+              <div className={`${styles.balanceValues} ${
+                (dustContracts.length > 0) !== (productCreditFinancialContracts.length > 0)
+                  ? styles.balanceValuesSingle
+                  : ""
+              }`}>
+                {productCreditFinancialContracts.length > 0 && (
+                  <div className={`${styles.balanceItem} ${styles.productBalanceItem}`}>
+                    <small>{t("agentPortal.productCreditBalance")}</small>
+                    <strong>{isBalanceVisible ? summaryValue(summary?.balances?.productCreditAvailableAmd) : "••••••"}</strong>
+                  </div>
+                )}
+                {dustContracts.length > 0 && (
+                  <div className={`${styles.balanceItem} ${styles.powderBalanceItem}`}>
+                    <small>{t("agentPortal.powderAdvanceBalance")}</small>
+                    <strong>{isBalanceVisible ? summaryValue(summary?.balances?.powderAdvanceOutstandingAmd) : "••••••"}</strong>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className={styles.balanceToggle}
+                  onClick={() => void toggleBalanceVisibility()}
+                  aria-label={t(isBalanceVisible ? "agentPortal.hideBalance" : "agentPortal.showBalance")}
+                  aria-pressed={isBalanceVisible}
+                  aria-busy={isBalanceRefreshing}
+                  disabled={summaryLoading || isBalanceRefreshing}
+                >
+                  {isBalanceVisible ? <EyeOff size={17} aria-hidden="true" /> : isBalanceRefreshing ? <RefreshCw size={17} className={styles.balanceRefreshSpinner} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
+                </button>
+              </div>
+              {balanceRefreshError && <span className={styles.balanceError} role="alert">{balanceRefreshError}</span>}
+            </div>
+          )}
         </div>
       </header>
 
@@ -738,16 +1081,70 @@ export const AgentPortal = () => {
 
       {section === "overview" && (
         <section className={styles.section}>
-          <div className={styles.sectionHeading}><div><span className={styles.eyebrow}>{t("agentPortal.overview")}</span><h2>{t("agentPortal.financialSummary")}</h2></div></div>
+          <div className={styles.sectionHeading}>
+            <div>
+              <span className={styles.eyebrow}>{t("agentPortal.overview")}</span>
+              <h2>{t("agentPortal.financialSummary")}</h2>
+              {(summary?.agentFullName || summary?.agentCode) && (
+                <p className={styles.summaryAgent}>
+                  {summary.agentFullName || "—"}{summary.agentCode ? ` · ${t("agentPortal.agentCode")}: ${summary.agentCode}` : ""}
+                </p>
+              )}
+              {summaryLoadedAt && <span className={styles.summaryUpdated}>{t("agentPortal.financialDashboard.lastUpdated", {
+                time: new Intl.DateTimeFormat(
+                  i18n.resolvedLanguage?.startsWith("am") ? "hy-AM" : i18n.resolvedLanguage || undefined,
+                  { dateStyle: "short", timeStyle: "short" },
+                ).format(summaryLoadedAt),
+              })}</span>}
+            </div>
+            <Button variant="secondary" size="small" className={styles.summaryRefreshButton} onClick={() => void loadFinancialSummary()} disabled={summaryLoading}>
+              <RefreshCw size={15} aria-hidden="true" /> {summaryLoading ? t("agentPortal.loading") : t("agentPortal.refresh")}
+            </Button>
+          </div>
           {summaryError && <div className={styles.error} role="alert"><span>{summaryError}</span><Button variant="secondary" size="small" onClick={() => setRetry((current) => current + 1)}>{t("agentPortal.retry")}</Button></div>}
           {profileError && <div className={styles.error} role="alert"><span>{profileError}</span><Button variant="secondary" size="small" onClick={() => setRetry((current) => current + 1)}>{t("agentPortal.retry")}</Button></div>}
-          {summaryLoading ? <div className={styles.loading} role="status">{t("agentPortal.loading")}</div> : (
-            <div className={styles.metrics}>
-              <article><span>{t("agentPortal.activeContracts")}</span><strong>{activeContractsCount}</strong></article>
-              <article><span>{t("agentPortal.totalAdvanced")}</span><strong>{summaryValue(summary?.totalAdvancedAmount, summary?.totalAdvancedAmountAmd, summary?.agent?.totalAdvancedAmount)}</strong></article>
-              <article><span>{t("agentPortal.totalRepaid")}</span><strong>{summaryValue(summary?.totalRepaidAmount, summary?.totalRepaidAmountAmd, summary?.agent?.totalRepaidAmount)}</strong></article>
-              <article><span>{t("agentPortal.contractBalance")}</span><strong>{summaryValue(summary?.totalOutstandingAmount, summary?.totalOutstandingAmountAmd, summary?.agent?.outstandingAmount)}</strong></article>
-            </div>
+          {summaryLoading && !summary ? <div className={styles.loading} role="status">{t("agentPortal.loading")}</div> : summary && (
+            <>
+              {financialContracts.length === 0 ? (
+                <EmptyState text={t("agentPortal.noContracts")} />
+              ) : (
+                <div className={styles.financialContractSections}>
+                  {dustContracts.length > 0 && (
+                    <section className={styles.financialContractSection}>
+                      <div className={styles.financialSectionHeading}>
+                        <h3>{t("agentPortal.financialDashboard.contractTypes.Dust")}</h3>
+                        <span>{dustContracts.length}</span>
+                      </div>
+                      <div className={styles.typeBalanceGrid}>
+                        <article><span>{t("agentPortal.powderAdvanceBalance")}</span><strong>{summaryValue(summary.balances?.powderAdvanceOutstandingAmd)}</strong></article>
+                      </div>
+                      {renderContractChart(dustContracts)}
+                      <div className={styles.summaryContractList}>
+                        {dustContracts.map((contract) => renderFinancialContract(contract, "Dust"))}
+                      </div>
+                    </section>
+                  )}
+                  {productCreditFinancialContracts.length > 0 && (
+                    <section className={styles.financialContractSection}>
+                      <div className={styles.financialSectionHeading}>
+                        <h3>{t("agentPortal.financialDashboard.contractTypes.ProductCredit")}</h3>
+                        <span>{productCreditFinancialContracts.length}</span>
+                      </div>
+                      <div className={styles.typeBalanceGrid}>
+                        <article><span>{t("agentPortal.productCreditLimit")}</span><strong>{summaryValue(summary.balances?.productCreditLimitAmd)}</strong></article>
+                        <article><span>{t("agentPortal.financialDashboard.productCreditOutstanding")}</span><strong>{summaryValue(summary.balances?.productCreditOutstandingAmd)}</strong></article>
+                        <article><span>{t("agentPortal.productCreditBalance")}</span><strong>{summaryValue(summary.balances?.productCreditAvailableAmd)}</strong></article>
+                      </div>
+                      {renderProductCreditBalanceChart()}
+                      {renderContractChart(productCreditFinancialContracts)}
+                      <div className={styles.summaryContractList}>
+                        {productCreditFinancialContracts.map((contract) => renderFinancialContract(contract, "ProductCredit"))}
+                      </div>
+                    </section>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </section>
       )}
@@ -785,11 +1182,21 @@ export const AgentPortal = () => {
               <div className={styles.cardTitle}><strong>{contract.contractNumber}</strong><span className={styles.statusBadge}>{getRecordStatus(contract.status, t)}</span></div>
               <dl className={styles.contractTerms}>
                 <div>
+                  <dt>{t("agentPortal.productCreditEnabled")}</dt>
+                  <dd>{contract.allowsProductAdvance === true ? t("common.yes") : t("common.no")}</dd>
+                </div>
+                <div>
                   <dt>{t("agentPortal.contractSigningDate")}</dt>
                   <dd>{formatDate(contract.contractDate)}</dd>
                 </div>
                 {contract.allowsProductAdvance === true && (
                   <>
+                    <div>
+                      <dt>{t("agentPortal.productCreditDiscount")}</dt>
+                      <dd>{contract.productCreditDiscountPercent != null && Number.isFinite(contract.productCreditDiscountPercent)
+                        ? `${formatNumber(contract.productCreditDiscountPercent)}%`
+                        : t("common.notSpecified")}</dd>
+                    </div>
                     <div>
                       <dt>{t("agentPortal.productCreditLimit")}</dt>
                       <dd>{contract.productCreditLimitAmd != null && Number.isFinite(contract.productCreditLimitAmd) && contract.productCreditLimitAmd > 0
@@ -952,8 +1359,13 @@ export const AgentPortal = () => {
 
       {section === "orders" && (
         <section className={styles.section}>
-          <div className={styles.sectionHeading}><div><span className={styles.eyebrow}>{t("agentPortal.orders")}</span><h2>{t("agentPortal.createOrder")}</h2></div></div>
-          <p className={styles.notice}>{t("agentPortal.noPriceNotice")}</p>
+          <div className={styles.sectionHeading}>
+            <div>
+              <span className={styles.eyebrow}>{t("agentPortal.orders")}</span>
+              <h2 className={styles.orderSectionTitle}><FilePlus2 size={21} aria-hidden="true" />{t("agentPortal.createOrder")}</h2>
+            </div>
+          </div>
+          <p className={styles.notice}>{t("agentPortal.pricePreviewNotice")}</p>
           {orderSuccess && <div className={styles.success} role="status">{orderSuccess}</div>}
           {shopError && <div className={styles.error} role="alert">
             <span>{shopError}</span>
@@ -963,6 +1375,23 @@ export const AgentPortal = () => {
             <span>{catalogError}</span>
             <Button variant="secondary" size="small" onClick={() => { setCatalogLoaded(false); setCatalogShopId(null); setRetry((current) => current + 1); }}>{t("agentPortal.retry")}</Button>
           </div>}
+          {shopProductCreditContractsError && <div className={styles.error} role="alert">
+            <span>{shopProductCreditContractsError}</span>
+            <Button variant="secondary" size="small" onClick={() => setRetry((current) => current + 1)}>{t("agentPortal.retry")}</Button>
+          </div>}
+          {shopProductCreditContractsLoading && <p className={styles.notice} role="status">{t("agentPortal.productCreditContractsLoading")}</p>}
+          {!shopProductCreditContractsLoading && !shopProductCreditContractsError && selectedShopId && shopProductCreditBlockReason && (
+            <p className={styles.notice} role="status">{t(`agentPortal.productCreditBlockReasons.${shopProductCreditBlockReason}`)}</p>
+          )}
+          {!shopProductCreditContractsLoading && !shopProductCreditContractsError && shopProductCreditContracts.map((contract) => (
+            <p className={styles.notice} key={contract.id}>
+              {t("agentPortal.contractPreviewTerms", {
+                contract: contract.contractNumber,
+                percent: contract.productCreditDiscountPercent ?? 0,
+                limit: formatAmd(contract.productCreditLimitAmd),
+              })}
+            </p>
+          ))}
           <div className={styles.orderBuilder}>
             <div className={styles.orderToolbar}>
               <label className={styles.shopSelect}>
@@ -1026,8 +1455,22 @@ export const AgentPortal = () => {
                           <strong>{product.code}</strong>
                           <span>{[product.brandName, product.categoryName, product.sku, product.boxSizeName].filter(Boolean).join(" · ")}</span>
                           <div className={styles.productMeta}>
-                            <b>{formatAmd(item.salePrice)}{product.unitTypeName ? ` / ${product.unitTypeName}` : ""}</b>
-                            <span>{available > 0 ? t("agentPortal.inStock", { count: available }) : t("agentPortal.outOfStock")}</span>
+                            <span className={styles.priceLine}>
+                              <small>{t("agentPortal.salePrice")}</small>
+                              <b>{formatAmdPrice(Math.round(item.salePrice * 100))}{product.unitTypeName ? ` / ${product.unitTypeName}` : ""}</b>
+                            </span>
+                            {shopProductCreditContracts.map((contract) => (
+                              <span className={styles.priceLine} key={contract.id}>
+                                <small>{t("agentPortal.agentPriceEstimate", {
+                                  percent: contract.productCreditDiscountPercent ?? 0,
+                                  contract: contract.contractNumber,
+                                })}</small>
+                                <b className={styles.discountedPrice}>{formatAmdPrice(getDiscountedPriceInCents(item.salePrice, contract.productCreditDiscountPercent ?? 0))}{product.unitTypeName ? ` / ${product.unitTypeName}` : ""}</b>
+                              </span>
+                            ))}
+                            <span className={`${styles.stockBadge} ${available > 0 ? styles.inStockBadge : styles.outOfStockBadge}`}>
+                              {available > 0 ? t("agentPortal.inStock", { count: available }) : t("agentPortal.outOfStock")}
+                            </span>
                           </div>
                         </div>
                         {quantity ? <div className={styles.quantityControl}>
@@ -1042,7 +1485,9 @@ export const AgentPortal = () => {
                           disabled={selectedCount >= 50 || available < 1}
                           onClick={(event) => addProductToCart(productId, event.currentTarget)}
                         >
-                          <Plus size={19} strokeWidth={2.5} aria-hidden="true" />
+                          <span className={styles.addProductIcon} aria-hidden="true">
+                            <Plus size={24} strokeWidth={3.5} />
+                          </span>
                         </button>}
                       </article>;
                     })}
@@ -1068,7 +1513,20 @@ export const AgentPortal = () => {
                           <div className={styles.cartProduct}>
                             <strong>{product?.code || `#${id}`}</strong>
                             <span>{[product?.brandName, product?.categoryName, product?.unitTypeName].filter(Boolean).join(" · ")}</span>
-                            <b>{formatAmd(item?.salePrice)} × {quantity} = {formatAmd(Number(item?.salePrice ?? 0) * quantity)}</b>
+                            {item && <span className={styles.priceLine}>
+                              <small>{t("agentPortal.salePrice")}</small>
+                              <b>{formatAmdPrice(Math.round(item.salePrice * 100))} × {quantity} = {formatAmdPrice(Math.round(item.salePrice * 100) * quantity)}</b>
+                            </span>}
+                            {item && contractCartTotals.map(({ contract }) => {
+                              const discountedUnitPrice = getDiscountedPriceInCents(item.salePrice, contract.productCreditDiscountPercent ?? 0);
+                              return <span className={styles.priceLine} key={contract.id}>
+                                <small>{t("agentPortal.agentPriceEstimate", {
+                                  percent: contract.productCreditDiscountPercent ?? 0,
+                                  contract: contract.contractNumber,
+                                })}</small>
+                                <b className={styles.discountedPrice}>{formatAmdPrice(discountedUnitPrice)} × {quantity} = {formatAmdPrice(discountedUnitPrice * quantity)}</b>
+                              </span>;
+                            })}
                           </div>
                           <div className={styles.quantityControl}>
                             <button type="button" aria-label={t("agentPortal.decreaseQuantity")} onClick={() => setSelectedItems((items) => quantity <= 1 ? Object.fromEntries(Object.entries(items).filter(([entryId]) => Number(entryId) !== productId)) : { ...items, [productId]: quantity - 1 })}><Minus size={14} aria-hidden="true" /></button>
@@ -1079,8 +1537,29 @@ export const AgentPortal = () => {
                         </article>;
                       })}
                     </div>
-                    <div className={styles.cartTotal}><span>{t("agentPortal.cartTotal")} · {t("agentPortal.selectedItems", { count: selectedCount })}</span><strong>{formatAmd(cartTotal)}</strong></div>
-                    <div className={styles.orderFooter}><Button variant="primary" size="medium" disabled={isSubmittingOrder || !selectedCount || !selectedShopId} onClick={() => void submitOrder()}>{isSubmittingOrder ? t("agentPortal.submitting") : t("agentPortal.submitOrder")}</Button></div>
+                    {contractCartTotals.map(({ contract, totalInCents }) => (
+                      <div className={styles.cartTotal} key={contract.id}>
+                        <span>{t("agentPortal.estimatedTotalForContract", {
+                          contract: contract.contractNumber,
+                          percent: contract.productCreditDiscountPercent ?? 0,
+                        })} · {t("agentPortal.selectedItems", { count: selectedCount })}</span>
+                        <strong>{formatAmdPrice(totalInCents)}</strong>
+                      </div>
+                    ))}
+                    <div className={styles.orderFooter}>
+                      <Button
+                        variant="primary"
+                        size="medium"
+                        className={styles.submitOrderButton}
+                        disabled={isSubmittingOrder || shopProductCreditContractsLoading || !!shopProductCreditContractsError || !shopProductCreditContracts.length || !selectedCount || !selectedShopId}
+                        onClick={() => void submitOrder()}
+                      >
+                        {isSubmittingOrder
+                          ? <LoaderCircle size={17} className={styles.submitOrderSpinner} aria-hidden="true" />
+                          : <Send size={17} aria-hidden="true" />}
+                        {isSubmittingOrder ? t("agentPortal.submitting") : t("agentPortal.submitOrder")}
+                      </Button>
+                    </div>
                   </>
                 ) : <EmptyState text={t("agentPortal.emptyCart")} />}
               </div>
@@ -1133,6 +1612,7 @@ export const AgentPortal = () => {
           {sectionLoading ? <div className={styles.loading}>{t("agentPortal.loading")}</div> : orders?.results.length ? (
             <div className={styles.cardList}>{orders.results.map((order) => {
               const status = getRequestStatus(order.status);
+              const requestShopId = order.shopId ?? orderDetails[order.id]?.shopId;
               return <article className={styles.dataCard} key={order.id}>
                 <div className={styles.cardTitle}>
                   <div className={styles.requestIdentity}><strong>{formatDate(order.requestedAt)}</strong><span>#{order.id.slice(0, 8)}</span></div>
@@ -1140,6 +1620,9 @@ export const AgentPortal = () => {
                 </div>
                 <div className={styles.requestCardMeta}>
                   <span>{t("agentPortal.itemCount", { count: order.items.length })}</span>
+                  {requestShopId != null
+                    ? <span>{t("agentPortal.requestedShop")}: {shops.find((shop) => shop.id === requestShopId)?.code ?? `#${requestShopId}`}</span>
+                    : <span>{t("agentPortal.shopNotRecorded")}</span>}
                   {status === "Approved" && order.approvedShopId != null && <span>{t("agentPortal.approvedShopId", { id: order.approvedShopId })}</span>}
                   {status === "Approved" && order.posSaleId && <span>{t("agentPortal.saleReference", { id: order.posSaleId })}</span>}
                 </div>

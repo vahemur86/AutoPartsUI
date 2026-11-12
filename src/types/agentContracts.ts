@@ -73,6 +73,7 @@ export interface AgentContractListItemDto {
   status: AgentContractStatus;
   allowsProductAdvance?: boolean | null;
   productCreditLimitAmd?: number | null;
+  availableProductCreditAmd?: number | null;
   productCreditDiscountPercent?: number | null;
   restoreProductCreditLimitAfterRepayment?: boolean | null;
   acceptsNewProductPurchases?: boolean | null;

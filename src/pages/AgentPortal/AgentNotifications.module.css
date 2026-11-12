@@ -7,8 +7,8 @@
 .bellButton {
   position: relative;
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 44px;
   padding: 0;
   box-sizing: border-box;
   place-items: center;
@@ -29,6 +29,8 @@
 }
 
 .bellButton svg {
+  width: 20px;
+  height: 20px;
   filter: drop-shadow(0 1px 4px rgba(var(--color-accent-cyan-rgb), 0.42));
   stroke-width: 2.1;
 }

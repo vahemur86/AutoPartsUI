@@ -80,6 +80,17 @@ export const CashierNotifications = ({
   onOpenRequestRef.current = onOpenRequest;
   onRefreshPendingRequestsRef.current = onRefreshPendingRequests;
 
+  const getNotificationTitle = useCallback((title: string) =>
+    title.trim().toLocaleLowerCase() === "new agent order request"
+      ? t("agentPortal.cashierNotifications.newAgentOrderRequest")
+      : title, [t]);
+  const getNotificationMessage = useCallback((message: string) => {
+    const match = /^(.*?)\s+\((.*?)\)\s+submitted an order request for cashier approval\.$/.exec(message.trim());
+    return match
+      ? t("agentPortal.cashierNotifications.agentOrderRequestSubmitted", { agentName: match[1], agentCode: match[2] })
+      : message;
+  }, [t]);
+
   const loadNotifications = useCallback(async (nextPage = 1, append = false) => {
     if (append) setIsLoadingMore(true);
     else setIsLoading(true);
@@ -135,7 +146,7 @@ export const CashierNotifications = ({
       seenIdsRef.current.add(value.id);
       setNotifications((current) => [value, ...current].slice(0, PAGE_SIZE));
       setPage((current) => current ? { ...current, totalItems: current.totalItems + 1, page: 1 } : current);
-      toast.info(`${value.title}: ${value.message}`);
+      toast.info(`${getNotificationTitle(value.title)}: ${getNotificationMessage(value.message)}`);
       onRefreshPendingRequestsRef.current?.();
     });
 
@@ -174,7 +185,7 @@ export const CashierNotifications = ({
       active = false;
       void connection.stop();
     };
-  }, [accessToken, cashRegisterId, connectionRetry, loadNotifications, t]);
+  }, [accessToken, cashRegisterId, connectionRetry, getNotificationMessage, getNotificationTitle, loadNotifications, t]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -262,8 +273,8 @@ export const CashierNotifications = ({
                       onOpenRequestRef.current(notification.agentOrderRequestId);
                     }}
                   >
-                    <span className={styles.notificationTitle}>{notification.title}</span>
-                    <span className={styles.notificationMessage}>{notification.message}</span>
+                    <span className={styles.notificationTitle}>{getNotificationTitle(notification.title)}</span>
+                    <span className={styles.notificationMessage}>{getNotificationMessage(notification.message)}</span>
                     <span className={styles.notificationDate}>{formatTimestamp(notification.createdAt, dateLanguage)}</span>
                     <span className={styles.openHint}><ExternalLink size={13} aria-hidden="true" />{t("agentPortal.cashierNotifications.openRequest")}</span>
                   </button>

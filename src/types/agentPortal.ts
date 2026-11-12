@@ -11,14 +11,54 @@ import type { PowderDeliveryListItemDto } from "./powderDeliveries";
 
 export type AgentOrderRequestStatus = "Pending" | "Approved" | "Rejected";
 
+export interface AgentPortalFinancialAdvance {
+  advanceId?: string | null;
+  advanceNumber?: string | null;
+  advanceType?: string | null;
+  status?: string | null;
+  advanceDate?: string | null;
+  advancedAmountAmd?: number | null;
+  repaymentDeadline?: string | null;
+  extensionCount?: number | null;
+  productSaleId?: number | null;
+}
+
+export interface AgentPortalFinancialContract {
+  contractId?: string | null;
+  contractNumber?: string | null;
+  status?: string | null;
+  totalAdvancedAmount?: number | null;
+  totalRepaidAmount?: number | null;
+  outstandingAmount?: number | null;
+  activeAdvancesCount?: number | null;
+  contractType?: "Dust" | "ProductCredit" | string | null;
+  contractDate?: string | null;
+  repaymentDeadline?: string | null;
+  productCreditLimitAmd?: number | null;
+  productCreditOutstandingAmd?: number | null;
+  productCreditAvailableAmd?: number | null;
+  productCreditDiscountPercent?: number | null;
+  restoreProductCreditLimitAfterRepayment?: boolean | null;
+  acceptsNewProductPurchases?: boolean | null;
+  productCreditDeadline?: string | null;
+  advances?: AgentPortalFinancialAdvance[] | null;
+}
+
 export interface AgentPortalFinancialSummary {
-  activeContractsCount?: number;
-  totalAdvancedAmount?: number;
-  totalAdvancedAmountAmd?: number;
-  totalRepaidAmount?: number;
-  totalRepaidAmountAmd?: number;
-  totalOutstandingAmount?: number;
-  totalOutstandingAmountAmd?: number;
+  agentId?: string;
+  agentCode?: string | null;
+  agentFullName?: string | null;
+  activeContractsCount?: number | null;
+  totalAdvancedAmount?: number | null;
+  totalRepaidAmount?: number | null;
+  totalOutstandingAmount?: number | null;
+  contracts?: AgentPortalFinancialContract[] | null;
+  lastRepaymentsDate?: string | null;
+  recentRepaymentCount?: number | null;
+  balances?: AgentPortalBalances | null;
+  totalAdvancedAmountAmd?: number | null;
+  totalRepaidAmountAmd?: number | null;
+  totalOutstandingAmountAmd?: number | null;
   agent?: {
     name?: string;
     code?: string;
@@ -27,14 +67,25 @@ export interface AgentPortalFinancialSummary {
     totalRepaidAmount?: number;
     outstandingAmount?: number;
   };
-  contracts?: Array<{
+}
+
+export interface AgentPortalBalances {
+  agentId?: string;
+  currency?: string | null;
+  productCreditLimitAmd?: number | null;
+  productCreditOutstandingAmd?: number | null;
+  productCreditAvailableAmd?: number | null;
+  powderAdvanceOutstandingAmd?: number | null;
+  productCreditContracts?: Array<{
     contractId?: string;
     contractNumber?: string;
     status?: string;
-    totalAdvancedAmount?: number;
-    totalRepaidAmount?: number;
-    outstandingAmount?: number;
-  }>;
+    creditLimitAmd?: number | null;
+    outstandingAmountAmd?: number | null;
+    availableCreditAmd?: number | null;
+    acceptsNewPurchases?: boolean | null;
+    deadline?: string | null;
+  }> | null;
 }
 
 export type AgentNotificationType =
@@ -89,6 +140,7 @@ export interface AgentOrderRequest {
   agentId: string;
   agentCode: string;
   agentName: string;
+  shopId?: number | null;
   status: AgentOrderRequestStatus | number | string;
   notes: string | null;
   items: AgentOrderRequestItem[];
@@ -99,7 +151,55 @@ export interface AgentOrderRequest {
   decisionNote: string | null;
 }
 
+export interface CashierOrderPricePreviewItem {
+  productId: number;
+  productCode: string;
+  productSku: string;
+  quantity: number;
+  shopSalePriceAmd: number;
+  discountedUnitPriceAmd: number;
+  discountAmountAmd: number;
+  lineTotalAmd: number;
+  availableStock: number;
+  hasSufficientStock: boolean;
+}
+
+export interface CashierOrderPricePreview {
+  orderRequestId: string;
+  shopId: number;
+  agentContractId: string;
+  contractNumber: string;
+  discountPercent: number;
+  currency: string;
+  items: CashierOrderPricePreviewItem[];
+  subtotalAmd: number;
+  discountAmountAmd: number;
+  totalAmountAmd: number;
+  availableCreditAmd: number;
+  hasSufficientCredit: boolean;
+  hasSufficientStock: boolean;
+  canApprove: boolean;
+  priceCheckedAtUtc: string;
+}
+
+export interface CashierPOSSaleItem {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  originalUnitPrice: number;
+}
+
+export interface CashierPOSSale {
+  id: number;
+  totalAmount: number;
+  cashPaid: number;
+  nonCashPaid: number;
+  items: CashierPOSSaleItem[];
+}
+
 export interface CreateAgentOrderRequest {
+  shopId: number;
   items: Array<{ productId: number; quantity: number }>;
   notes?: string;
 }
