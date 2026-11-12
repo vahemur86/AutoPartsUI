@@ -71,6 +71,13 @@ const CallingContext = createContext<CallingContextValue | null>(null);
 const isGuid = (value: string) =>
   /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(value);
 
+const getHttpStatus = (error: unknown): number | undefined => {
+  if (!error || typeof error !== "object" || !("response" in error)) return undefined;
+  const response = error.response;
+  if (!response || typeof response !== "object" || !("status" in response)) return undefined;
+  return typeof response.status === "number" ? response.status : undefined;
+};
+
 const getHubUrl = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "");
   if (!baseUrl) throw new Error("VITE_API_BASE_URL is not configured.");
@@ -679,7 +686,11 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       });
     } catch (error) {
       closeMedia();
-      notifyCallError(error, "calling.startFailed");
+      if (getHttpStatus(error) === 409) {
+        toast.info(translationRef.current("calling.noCashierOnline"));
+      } else {
+        notifyCallError(error, "calling.startFailed");
+      }
     } finally {
       setIsBusy(false);
     }

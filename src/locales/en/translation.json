@@ -4885,6 +4885,7 @@
     "connectionUnavailable": "Calling is unavailable. Check your connection and try again.",
     "microphoneUnavailable": "A microphone is not available on this device.",
     "startFailed": "Could not start the call.",
+    "noCashierOnline": "No cashier is currently available to receive the call. Make sure a cashier is connected, then try again.",
     "acceptFailed": "Could not answer the call.",
     "rejectFailed": "Could not decline the call.",
     "endFailed": "Could not end the call.",

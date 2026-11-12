@@ -132,8 +132,10 @@ export const CashierNotifications = ({
     const hubBase = configuredApiBase.endsWith("/api")
       ? configuredApiBase
       : `${configuredApiBase}/api`;
+    const cashierHubUrl = new URL(`${hubBase}/hubs/cash`);
+    cashierHubUrl.searchParams.set("cashRegisterId", String(cashRegisterId));
     const connection = new HubConnectionBuilder()
-      .withUrl(`${hubBase}/hubs/cash`, {
+      .withUrl(cashierHubUrl.toString(), {
         accessTokenFactory: () => accessToken,
         headers: { "X-CashRegister-Id": String(cashRegisterId) },
       })
