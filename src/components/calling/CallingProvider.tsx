@@ -251,7 +251,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const pendingOfferRef = useRef<WebRtcDescriptionEvent | null>(null);
   const ringtoneContextRef = useRef<AudioContext | null>(null);
   const ringtoneTimerRef = useRef<number | null>(null);
-  const callProgressAudioRef = useRef<HTMLAudioElement | null>(null);
+  const agentRingbackRef = useRef<HTMLAudioElement | null>(null);
   const updateCall = useCallback((next: UiCall | null | ((current: UiCall | null) => UiCall | null)) => {
     const updated = typeof next === "function" ? next(callRef.current) : next;
     callRef.current = updated;
@@ -269,11 +269,11 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const stopRingtone = useCallback(() => {
-    const callProgressAudio = callProgressAudioRef.current;
-    if (callProgressAudio) {
-      callProgressAudio.pause();
-      callProgressAudio.currentTime = 0;
-      callProgressAudioRef.current = null;
+    const agentRingback = agentRingbackRef.current;
+    if (agentRingback) {
+      agentRingback.pause();
+      agentRingback.currentTime = 0;
+      agentRingbackRef.current = null;
     }
     if (ringtoneTimerRef.current !== null) {
       window.clearTimeout(ringtoneTimerRef.current);
@@ -286,7 +286,10 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, []);
 
-  const startRingtone = useCallback(() => {
+  const startTonePattern = useCallback((
+    notes: Array<{ frequency: number; offset: number; duration: number }>,
+    interval: number,
+  ) => {
     stopRingtone();
     if (typeof window.AudioContext === "undefined") {
       toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
@@ -297,23 +300,25 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     ringtoneContextRef.current = context;
     const playRingBurst = () => {
       if (ringtoneContextRef.current !== context || context.state !== "running") return;
-      const gain = context.createGain();
-      gain.gain.setValueAtTime(0, context.currentTime);
-      gain.gain.linearRampToValueAtTime(0.16, context.currentTime + 0.035);
-      gain.gain.setValueAtTime(0.16, context.currentTime + 0.38);
-      gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.46);
-      gain.connect(context.destination);
+      const startAt = context.currentTime;
+      for (const note of notes) {
+        const noteStart = startAt + note.offset;
+        const gain = context.createGain();
+        gain.gain.setValueAtTime(0, noteStart);
+        gain.gain.linearRampToValueAtTime(0.16, noteStart + 0.025);
+        gain.gain.setValueAtTime(0.16, noteStart + note.duration * 0.75);
+        gain.gain.linearRampToValueAtTime(0, noteStart + note.duration);
+        gain.connect(context.destination);
 
-      for (const frequency of [440, 480]) {
         const oscillator = context.createOscillator();
         oscillator.type = "sine";
-        oscillator.frequency.value = frequency;
+        oscillator.frequency.value = note.frequency;
         oscillator.connect(gain);
-        oscillator.start();
-        oscillator.stop(context.currentTime + 0.47);
+        oscillator.start(noteStart);
+        oscillator.stop(noteStart + note.duration);
       }
 
-      ringtoneTimerRef.current = window.setTimeout(playRingBurst, 2400);
+      ringtoneTimerRef.current = window.setTimeout(playRingBurst, interval);
     };
 
     void context.resume()
@@ -324,6 +329,24 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         if (ringtoneContextRef.current === context) stopRingtone();
         toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
       });
+  }, [stopRingtone]);
+
+  const startRingtone = useCallback(() => {
+    startTonePattern([
+      { frequency: 740, offset: 0, duration: 0.2 },
+      { frequency: 880, offset: 0.26, duration: 0.28 },
+    ], 2200);
+  }, [startTonePattern]);
+
+  const startAgentRingback = useCallback(() => {
+    stopRingtone();
+    const ringback = new Audio("/audio/agent-call-ringback.mp3");
+    ringback.loop = true;
+    agentRingbackRef.current = ringback;
+    void ringback.play().catch(() => {
+      if (agentRingbackRef.current === ringback) agentRingbackRef.current = null;
+      toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
+    });
   }, [stopRingtone]);
 
   const closeMedia = useCallback(() => {
@@ -734,13 +757,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         muted: false,
         connectionState: "new",
       });
-      const callProgressAudio = new Audio("/audio/prp-ivr-hy.mp3");
-      callProgressAudio.loop = true;
-      callProgressAudioRef.current = callProgressAudio;
-      void callProgressAudio.play().catch(() => {
-        callProgressAudioRef.current = null;
-        toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
-      });
+      startAgentRingback();
     } catch (error) {
       stopRingtone();
       closeMedia();
@@ -752,7 +769,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } finally {
       setIsBusy(false);
     }
-  }, [closeMedia, ensureMedia, notifyCallError, role, stopRingtone, updateCall, username]);
+  }, [closeMedia, ensureMedia, notifyCallError, role, startAgentRingback, stopRingtone, updateCall, username]);
 
   const acceptCall = useCallback(async () => {
     const current = callRef.current;
