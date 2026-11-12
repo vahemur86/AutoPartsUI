@@ -830,3 +830,23 @@ export const CallingStatusButton = () => {
     </button>
   );
 };
+
+export const CashierCallingStatusButton = () => {
+  const { isConnected } = useCalling();
+  const { t } = useTranslation();
+
+  return (
+    <a
+      href="#calling-history"
+      className={styles.cashierCallStatus}
+      title={t(isConnected ? "calling.readyForCalls" : "calling.callsUnavailable")}
+    >
+      <PhoneIncoming size={16} aria-hidden="true" />
+      <span>{t(isConnected ? "calling.readyForCalls" : "calling.callsUnavailable")}</span>
+      <span
+        className={`${styles.callConnectionDot} ${isConnected ? styles.callConnectionDotActive : ""}`}
+        aria-hidden="true"
+      />
+    </a>
+  );
+};

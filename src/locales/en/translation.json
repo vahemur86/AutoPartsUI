@@ -4856,6 +4856,8 @@
   },
   "calling": {
     "callShop": "Call the shop",
+    "readyForCalls": "Ready to receive calls",
+    "callsUnavailable": "Calling is disconnected",
     "incomingCall": "Incoming call",
     "incomingStatus": "An agent is calling the shop",
     "ringing": "Calling the shop…",

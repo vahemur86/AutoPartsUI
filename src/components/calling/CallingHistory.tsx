@@ -51,7 +51,7 @@ export const CallingHistory = () => {
   const totalPages = page ? Math.max(1, Math.ceil(page.totalItems / page.pageSize)) : 1;
 
   return (
-    <section className={styles.history}>
+    <section className={styles.history} id="calling-history">
       <header className={styles.historyHeader}>
         <div>
           <span>{t("calling.historyEyebrow")}</span>

@@ -1023,6 +1023,7 @@ export const AgentPortal = () => {
             onRefreshOrderRequests={() => void refreshOrderRequests()}
           />
           <div className={styles.headerActions}>
+            <CallingStatusButton />
             <label className={styles.languageControl}>
               <Languages size={16} aria-hidden="true" />
               <select
@@ -1245,9 +1246,6 @@ export const AgentPortal = () => {
                   <div><dt>{t("agentPortal.status")}</dt><dd>{getStatusText(profile.status, t)}</dd></div>
                   <div><dt>{t("agentPortal.agentType")}</dt><dd>{profile.agentType?.name || "—"}</dd></div>
                 </dl>
-              </div>
-              <div className={styles.callAgentAction}>
-                <CallingStatusButton />
               </div>
               <CallingHistory />
               <h3 className={styles.subheading}>{t("agentPortal.typeHistory")}</h3>

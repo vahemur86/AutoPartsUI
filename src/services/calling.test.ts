@@ -8,6 +8,13 @@ vi.mock("@/services/index", () => {
   return { api, default: api };
 });
 
+vi.mock("@/utils", () => ({
+  getCashRegisterId: () => 6,
+  getHeaders: (cashRegisterId?: number) => ({
+    ...(cashRegisterId ? { "X-CashRegister-Id": String(cashRegisterId) } : {}),
+  }),
+}));
+
 import { api } from "@/services/index";
 import { callingService } from "./calling";
 
@@ -21,7 +28,9 @@ describe("callingService", () => {
     vi.mocked(api.post).mockResolvedValue({ data: response });
 
     await expect(callingService.startCall()).resolves.toEqual(response);
-    expect(api.post).toHaveBeenCalledWith("/calls");
+    expect(api.post).toHaveBeenCalledWith("/calls", undefined, {
+      headers: { "X-CashRegister-Id": "6" },
+    });
   });
 
   it("accepts, rejects, and ends calls using their REST routes", async () => {
@@ -31,9 +40,10 @@ describe("callingService", () => {
     await callingService.rejectCall("call/one");
     await callingService.endCall("call/one");
 
-    expect(api.post).toHaveBeenNthCalledWith(1, "/calls/call%2Fone/accept");
-    expect(api.post).toHaveBeenNthCalledWith(2, "/calls/call%2Fone/reject");
-    expect(api.post).toHaveBeenNthCalledWith(3, "/calls/call%2Fone/end");
+    const config = { headers: { "X-CashRegister-Id": "6" } };
+    expect(api.post).toHaveBeenNthCalledWith(1, "/calls/call%2Fone/accept", undefined, config);
+    expect(api.post).toHaveBeenNthCalledWith(2, "/calls/call%2Fone/reject", undefined, config);
+    expect(api.post).toHaveBeenNthCalledWith(3, "/calls/call%2Fone/end", undefined, config);
   });
 
   it("loads call details, paginated history, and configured ICE servers", async () => {
@@ -46,10 +56,12 @@ describe("callingService", () => {
     await callingService.getHistory(2, 10);
     await callingService.getIceServers();
 
-    expect(api.get).toHaveBeenNthCalledWith(1, "/calls/call%2Fone");
+    const config = { headers: { "X-CashRegister-Id": "6" } };
+    expect(api.get).toHaveBeenNthCalledWith(1, "/calls/call%2Fone", config);
     expect(api.get).toHaveBeenNthCalledWith(2, "/calls/history", {
+      ...config,
       params: { page: 2, pageSize: 10 },
     });
-    expect(api.get).toHaveBeenNthCalledWith(3, "/calls/ice-servers");
+    expect(api.get).toHaveBeenNthCalledWith(3, "/calls/ice-servers", config);
   });
 });

@@ -12,6 +12,7 @@ import { CashierMode, OperatorHeader, TopUpConfirmationModal } from "@/pages/Ope
 import { CashierNotifications } from "@/pages/AgentPortal/CashierNotifications";
 import styles from "./ShopOperatorPage.module.css";
 import { CallingHistory } from "@/components/calling/CallingHistory";
+import { CashierCallingStatusButton } from "@/components/calling/CallingProvider";
 
 export const ShopOperatorPage = () => {
   const navigate = useNavigate();
@@ -91,6 +92,7 @@ export const ShopOperatorPage = () => {
               <ClipboardList size={17} aria-hidden="true" />
               {pendingRequestCount > 0 && <span className={styles.pendingRequestCount}>{pendingRequestCount > 99 ? "99+" : pendingRequestCount}</span>}
             </Link>
+            <CashierCallingStatusButton />
             <CashierNotifications
               accessToken={accessToken}
               onOpenRequest={openCashierRequest}
@@ -98,8 +100,8 @@ export const ShopOperatorPage = () => {
             />
           </div>
         )}
-        <CashierMode cashRegisterId={userData?.cashRegisterId} />
         {userRole === "cashier" && <CallingHistory />}
+        <CashierMode cashRegisterId={userData?.cashRegisterId} />
       </div>
 
       {!!selectors.cashRegisters.pendingDetails && (

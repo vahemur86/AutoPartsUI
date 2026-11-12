@@ -4862,6 +4862,8 @@
   },
   "calling": {
     "callShop": "Позвонить в магазин",
+    "readyForCalls": "Готов к приему звонков",
+    "callsUnavailable": "Связь для звонков отключена",
     "incomingCall": "Входящий звонок",
     "incomingStatus": "Агент звонит в магазин",
     "ringing": "Вызов магазина…",

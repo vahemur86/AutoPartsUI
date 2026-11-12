@@ -186,6 +186,44 @@
   opacity: 0.58;
 }
 
+.cashierCallStatus {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid rgba(196, 169, 106, 0.3);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(196, 169, 106, 0.1), rgba(17, 23, 19, 0.86));
+  color: #d7c58d;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cashierCallStatus:hover {
+  border-color: rgba(229, 210, 154, 0.62);
+}
+
+.cashierCallStatus:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 3px;
+}
+
+.callConnectionDot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #d77b71;
+}
+
+.callConnectionDotActive {
+  background: #8bcf8a;
+  box-shadow: 0 0 8px rgba(139, 207, 138, 0.55);
+}
+
 .history {
   display: grid;
   gap: 12px;
