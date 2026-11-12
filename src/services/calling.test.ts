@@ -34,9 +34,17 @@ describe("callingService", () => {
   });
 
   it("accepts, rejects, and ends calls using their REST routes", async () => {
-    vi.mocked(api.post).mockResolvedValue({ data: undefined });
+    const accepted = {
+      callId: "call/one",
+      status: "Accepted",
+      assignedCashierId: 17,
+      acceptedAt: "2026-11-12T10:00:04Z",
+    };
+    vi.mocked(api.post)
+      .mockResolvedValueOnce({ data: accepted })
+      .mockResolvedValue({ data: undefined });
 
-    await callingService.acceptCall("call/one");
+    await expect(callingService.acceptCall("call/one")).resolves.toEqual(accepted);
     await callingService.rejectCall("call/one");
     await callingService.endCall("call/one");
 

@@ -441,6 +441,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const stream = await ensureMedia();
       const { iceServers } = await callingService.getIceServers();
+      if (callRef.current?.callId !== callId) return;
       const peer = new RTCPeerConnection({
         iceServers: iceServers.map((server) => ({
           urls: server.urls,
@@ -491,7 +492,9 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       if (createOffer) {
         const offer = await peer.createOffer();
+        if (callRef.current?.callId !== callId) return;
         await peer.setLocalDescription(offer);
+        if (callRef.current?.callId !== callId) return;
         await invokeSignal("SendWebRtcOffer", { callId, sdp: offer.sdp });
       } else if (pendingOfferRef.current?.callId === callId) {
         const offer = pendingOfferRef.current;
@@ -499,19 +502,16 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         await processOffer(offer);
       }
     } catch (error) {
-      peerRef.current?.close();
-      peerRef.current = null;
+      closeMedia();
+      if (callRef.current?.callId !== callId) return;
+      updateCall((current) => current?.callId === callId
+        ? { ...current, status: "ConnectingAudio", connectionState: "failed" }
+        : current);
       notifyCallError(error, "calling.audioConnectionFailed");
-      try {
-        await callingService.endCall(callId);
-      } catch (endError) {
-        notifyCallError(endError, "calling.endFailed");
-      }
-      finishCall();
     } finally {
       peerStartingRef.current = false;
     }
-  }, [ensureMedia, finishCall, invokeSignal, notifyCallError, processOffer, updateCall]);
+  }, [closeMedia, ensureMedia, invokeSignal, notifyCallError, processOffer, updateCall]);
 
   useEffect(() => {
     if (!token || !isAllowedRole) {
@@ -780,8 +780,14 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       await ensureMedia();
       const accepted = await callingService.acceptCall(current.callId);
+      if (callRef.current?.callId !== current.callId) return;
+      if (accepted.callId !== current.callId || accepted.status !== "Accepted") {
+        throw new Error(translationRef.current("calling.acceptFailed"));
+      }
+      const activeCall = callRef.current;
+      if (!activeCall) return;
       updateCall({
-        ...current,
+        ...activeCall,
         status: "ConnectingAudio",
         assignedCashierId: accepted.assignedCashierId,
         acceptedAt: accepted.acceptedAt,
@@ -791,8 +797,9 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       });
       await startPeerConnection(current.callId, false);
     } catch (error) {
+      if (callRef.current?.callId !== current.callId) return;
       closeMedia();
-      if ((error as { response?: { status?: number } })?.response?.status === 409) {
+      if (getHttpStatus(error) === 409) {
         finishCall();
         toast.info(translationRef.current("calling.takenByAnotherCashier"));
       } else {
