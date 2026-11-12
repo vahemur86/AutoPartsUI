@@ -67,11 +67,15 @@ const getNotificationMessage = (
 interface AgentNotificationsProps {
   accessToken: string | null;
   onOpenNotification: (notification: AgentNotification) => void;
+  onOrderRequestDecision: (notification: AgentNotification) => void;
+  onRefreshOrderRequests: () => void;
 }
 
 export const AgentNotifications = ({
   accessToken,
   onOpenNotification,
+  onOrderRequestDecision,
+  onRefreshOrderRequests,
 }: AgentNotificationsProps) => {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +89,12 @@ export const AgentNotifications = ({
   const [connectionState, setConnectionState] = useState<"connecting" | "connected" | "reconnecting" | "disconnected">("connecting");
   const panelRef = useRef<HTMLDivElement>(null);
   const seenIdsRef = useRef(new Set<string>());
+  const orderDecisionToastIdsRef = useRef(new Set<string>());
   const liveNotificationsRef = useRef(new Map<string, AgentNotification>());
+  const onOrderRequestDecisionRef = useRef(onOrderRequestDecision);
+  const onRefreshOrderRequestsRef = useRef(onRefreshOrderRequests);
+  onOrderRequestDecisionRef.current = onOrderRequestDecision;
+  onRefreshOrderRequestsRef.current = onRefreshOrderRequests;
 
   const loadNotifications = useCallback(async (nextPage: number, append = false) => {
     if (append) setIsLoadingMore(true);
@@ -159,26 +168,78 @@ export const AgentNotifications = ({
         totalItems: current.totalItems + 1,
         unreadCount: current.unreadCount + (notification.readAt === null ? 1 : 0),
       } : current);
-      toast.info(`${getNotificationTitle(notification, t)}: ${getNotificationMessage(notification, t)}`);
+      const orderRequestId = notification.relatedEntityId;
+      const isOrderDecision = (
+        (notification.type === "OrderApproved" || notification.type === "OrderRejected") &&
+        notification.relatedEntityType === "AgentOrderRequest" &&
+        typeof orderRequestId === "string" &&
+        orderRequestId.trim().length > 0
+      );
+      if (isOrderDecision) {
+        onOrderRequestDecisionRef.current(notification);
+      }
+      const shouldToast = !isOrderDecision ||
+        (typeof orderRequestId === "string" && !orderDecisionToastIdsRef.current.has(orderRequestId));
+      if (isOrderDecision && typeof orderRequestId === "string") {
+        orderDecisionToastIdsRef.current.add(orderRequestId);
+      }
+      if (shouldToast) {
+        toast.info(`${getNotificationTitle(notification, t)}: ${getNotificationMessage(notification, t)}`);
+      }
     });
     connection.onreconnecting(() => setConnectionState("reconnecting"));
-    connection.onreconnected(() => {
+    connection.onreconnected(async () => {
       setConnectionState("connected");
-      void loadNotifications(1);
+      await loadNotifications(1);
+      onRefreshOrderRequestsRef.current();
     });
-    connection.onclose(() => setConnectionState("disconnected"));
 
     let active = true;
-    void connection.start()
-      .then(() => {
-        if (active) setConnectionState("connected");
-      })
-      .catch(() => {
-        if (active) setConnectionState("disconnected");
-      });
+    let retryAttempt = 0;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    const retryDelays = [1000, 2000, 5000, 10000, 30000];
+    const startConnection = async () => {
+      if (!active || connection.state !== "Disconnected") return;
+      try {
+        await connection.start();
+        if (!active) return;
+        retryAttempt = 0;
+        setError("");
+        setConnectionState("connected");
+        onRefreshOrderRequestsRef.current();
+      } catch (connectionError: unknown) {
+        if (!active) return;
+        setConnectionState("disconnected");
+        setError(connectionError instanceof Error
+          ? connectionError.message
+          : t("agentPortal.notifications.connectionError"));
+        const delay = retryDelays[Math.min(retryAttempt, retryDelays.length - 1)];
+        retryAttempt += 1;
+        if (retryTimer) clearTimeout(retryTimer);
+        retryTimer = setTimeout(() => void startConnection(), delay);
+      }
+    };
+    connection.onclose(() => {
+      if (!active) return;
+      setConnectionState("disconnected");
+      if (retryTimer) clearTimeout(retryTimer);
+      const delay = retryDelays[Math.min(retryAttempt, retryDelays.length - 1)];
+      retryAttempt += 1;
+      retryTimer = setTimeout(() => void startConnection(), delay);
+    });
+
+    void startConnection();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        onRefreshOrderRequestsRef.current();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       active = false;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (retryTimer) clearTimeout(retryTimer);
       void connection.stop();
     };
   }, [accessToken, loadNotifications, t]);

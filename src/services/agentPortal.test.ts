@@ -174,6 +174,19 @@ describe("agentPortalService notifications", () => {
     });
   });
 
+  describe("agentPortalService order requests", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it("loads an individual order request by its encoded ID", async () => {
+      const order = { id: "request-1", status: "Approved", decisionNote: null };
+      vi.mocked(api.get).mockResolvedValue({ data: order });
+
+      await expect(agentPortalService.getOrderRequest("request/1")).resolves.toEqual(order);
+      expect(api.get).toHaveBeenCalledWith("/agent-portal/order-requests/request%2F1");
+    });
+  });
   it("marks a single notification as read", async () => {
     vi.mocked(api.post).mockResolvedValue({ data: undefined });
 

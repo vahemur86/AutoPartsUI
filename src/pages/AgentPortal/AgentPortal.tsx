@@ -64,6 +64,7 @@ type PortalSection = "overview" | "profile" | "contracts" | "advances" | "delive
 type PageResult<T> = PagedResult<T>;
 
 const PAGE_SIZE = 10;
+const ORDER_REQUEST_PAGE_SIZE = 50;
 const isTabletViewport = () =>
   typeof window !== "undefined" &&
   typeof window.matchMedia === "function" &&
@@ -604,7 +605,11 @@ export const AgentPortal = () => {
             break;
           }
           case "myRequests": {
-            const orderPage = await agentPortalService.getOrderRequests(orderFilter || undefined, ordersPage, PAGE_SIZE);
+            const orderPage = await agentPortalService.getOrderRequests(
+              orderFilter || undefined,
+              ordersPage,
+              ORDER_REQUEST_PAGE_SIZE,
+            );
             if (!active) return;
             setOrders(orderPage);
             break;
@@ -636,6 +641,73 @@ export const AgentPortal = () => {
   );
   const selectedCreditSales = creditSales?.results.filter((sale) => sale.contractId === debtContract) ?? [];
   const selectedDebtPayments = debtPayments.filter((payment) => payment.agentContractId === debtContract);
+
+  const refreshOrderRequests = useCallback(async () => {
+    try {
+      const pendingOrders = await agentPortalService.getOrderRequests("Pending", 1, ORDER_REQUEST_PAGE_SIZE);
+      if (orderFilter === "Pending") {
+        setOrders(pendingOrders);
+        setOrdersPage(1);
+      } else {
+        const currentOrders = await agentPortalService.getOrderRequests(
+          orderFilter || undefined,
+          ordersPage,
+          ORDER_REQUEST_PAGE_SIZE,
+        );
+        setOrders(currentOrders);
+      }
+
+      if (expandedOrderId) {
+        try {
+          const details = await agentPortalService.getOrderRequest(expandedOrderId);
+          setOrderDetails((current) => ({ ...current, [expandedOrderId]: details }));
+        } catch (detailsError: unknown) {
+          toast.error(detailsError instanceof Error ? detailsError.message : t("agentPortal.loadError"));
+        }
+      }
+    } catch (refreshError: unknown) {
+      const message = refreshError instanceof Error ? refreshError.message : t("agentPortal.loadError");
+      if (section === "myRequests") setSectionError(message);
+      else toast.error(message);
+    }
+  }, [expandedOrderId, orderFilter, ordersPage, section, t]);
+
+  const handleOrderDecisionNotification = useCallback(async (notification: AgentNotification) => {
+    const requestId = notification.relatedEntityId;
+    if (!requestId) return;
+
+    try {
+      const updatedRequest = await agentPortalService.getOrderRequest(requestId);
+      setOrderDetails((current) => ({ ...current, [requestId]: updatedRequest }));
+      setOrders((current) => {
+        if (!current) return current;
+        const existing = current.results.some((order) => order.id === requestId);
+        const updatedStatus = getRequestStatus(updatedRequest.status);
+        const matchesFilter = !orderFilter || updatedStatus === orderFilter;
+        if (!matchesFilter) {
+          if (!existing) return current;
+          return {
+            ...current,
+            totalItems: Math.max(0, current.totalItems - 1),
+            results: current.results.filter((order) => order.id !== requestId),
+          };
+        }
+        if (!existing) return current;
+        return {
+          ...current,
+          results: current.results.map((order) => order.id === requestId ? updatedRequest : order),
+        };
+      });
+
+      if (!orders?.results.some((order) => order.id === requestId)) {
+        await refreshOrderRequests();
+      }
+    } catch (requestError: unknown) {
+      const message = requestError instanceof Error ? requestError.message : t("agentPortal.loadError");
+      toast.error(message);
+      await refreshOrderRequests();
+    }
+  }, [orderFilter, orders?.results, refreshOrderRequests, t]);
 
   const selectedCount = Object.keys(selectedItems).length;
   const selectedQuantity = Object.values(selectedItems).reduce((total, quantity) => total + quantity, 0);
@@ -942,7 +1014,12 @@ export const AgentPortal = () => {
     <main className={`${styles.page} ${styles.agentPortalPage}`}>
       <header className={styles.header}>
         <div className={styles.headerUtilityRow}>
-          <AgentNotifications accessToken={accessToken} onOpenNotification={handleOpenNotification} />
+          <AgentNotifications
+            accessToken={accessToken}
+            onOpenNotification={handleOpenNotification}
+            onOrderRequestDecision={(notification) => void handleOrderDecisionNotification(notification)}
+            onRefreshOrderRequests={() => void refreshOrderRequests()}
+          />
           <div className={styles.headerActions}>
             <label className={styles.languageControl}>
               <Languages size={16} aria-hidden="true" />
