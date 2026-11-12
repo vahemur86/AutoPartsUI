@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { CalendarDays, ChevronLeft, ChevronRight, CircleDollarSign, Eye, FileText, Plus, Save, X } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, CircleDollarSign, Eye, FileText, HandCoins, Plus, Save, X } from "lucide-react";
 import { SectionHeader } from "@/components/common";
 import {
   Button,
@@ -1376,7 +1376,12 @@ export const AgentContractDetails = () => {
       <ConfirmationModal
         open={advanceOpen}
         onOpenChange={setAdvanceOpen}
-        title={t("agentContracts.actions.createAdvance")}
+        title={
+          <span className={styles.advanceModalTitle}>
+            <HandCoins size={19} aria-hidden="true" />
+            <span>{t("agentContracts.actions.createAdvance")}</span>
+          </span>
+        }
         description={t("agentContracts.details.advanceDescription")}
         confirmText={t("agentContracts.actions.createAdvance")}
         confirmIcon={<Plus size={16} />}
@@ -1423,26 +1428,41 @@ export const AgentContractDetails = () => {
                   .map((item) => item.capitalSourceId)
                   .filter(Boolean),
               );
+              const selectedSource = activeCapitalSources.find(
+                (source) => source.id === allocation.capitalSourceId,
+              );
               return (
                 <div
                   className={`${styles.fundingPlanRow} ${styles.advanceFundingRow}`}
                   key={allocation.id}
                 >
-                  <Select
-                    value={allocation.capitalSourceId}
-                    onChange={(event) => setFundingAllocations((current) => current.map((item) =>
-                      item.id === allocation.id ? { ...item, capitalSourceId: event.target.value } : item,
-                    ))}
-                  >
-                    <option value="">{t("agentAdvances.allocation.selectSource")}</option>
-                    {activeCapitalSources
-                      .filter((source) => !selectedIds.has(source.id))
-                      .map((source) => (
-                        <option key={source.id} value={source.id}>
-                          {source.code} - {source.name} · {t("agentAdvances.allocation.currentBalance", { amount: money(source.currentBalance) })}
-                        </option>
+                  <div className={styles.advanceSourceField}>
+                    <Select
+                      value={allocation.capitalSourceId}
+                      onChange={(event) => setFundingAllocations((current) => current.map((item) =>
+                        item.id === allocation.id ? { ...item, capitalSourceId: event.target.value } : item,
                       ))}
-                  </Select>
+                    >
+                      <option value="">{t("agentAdvances.allocation.selectSource")}</option>
+                      {activeCapitalSources
+                        .filter((source) => !selectedIds.has(source.id))
+                        .map((source) => (
+                          <option key={source.id} value={source.id} title={`${source.code} - ${source.name}`}>
+                            {source.code} - {source.name}
+                          </option>
+                        ))}
+                    </Select>
+                    {selectedSource && (
+                      <div className={styles.advanceSourceBalance}>
+                        <CircleDollarSign size={16} aria-hidden="true" />
+                        <strong>
+                          {t("agentAdvances.allocation.currentBalance", {
+                            amount: `${money(selectedSource.currentBalance)} AMD`,
+                          })}
+                        </strong>
+                      </div>
+                    )}
+                  </div>
                   <TextField
                     label={t("agentAdvances.allocation.amount")}
                     type="number"
