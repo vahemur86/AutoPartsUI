@@ -4865,6 +4865,7 @@
     "connecting": "Connecting audio…",
     "connected": "Call connected",
     "connectionLost": "Connection lost",
+    "connectionUnstable": "Connection is temporarily unstable",
     "conversation": "Conversation",
     "mute": "Mute microphone",
     "unmute": "Unmute microphone",

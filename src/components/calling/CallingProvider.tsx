@@ -166,8 +166,10 @@ const CallingOverlays = ({
                 <Radio size={14} aria-hidden="true" />
                 {call.connectionState === "connected"
                   ? t("calling.connected")
-                  : call.connectionState === "failed" || call.connectionState === "disconnected"
+                  : call.connectionState === "failed"
                     ? t("calling.connectionLost")
+                    : call.connectionState === "disconnected"
+                      ? t("calling.connectionUnstable")
                     : t("calling.connecting")}
               </span>
               <strong>{formatDuration(durationSeconds)}</strong>
