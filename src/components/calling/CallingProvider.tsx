@@ -455,15 +455,32 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const flushCandidates = useCallback(async (peer: RTCPeerConnection, callId: string) => {
     const candidates = pendingCandidatesRef.current.splice(0);
+    logAudioDiagnostic(role, callId, "flushing queued remote ICE candidates", {
+      queuedCandidateCount: candidates.length,
+      remoteDescriptionSet: !!peer.remoteDescription,
+    });
     for (const candidate of candidates) {
       if (!candidate.candidate) continue;
-      await peer.addIceCandidate(new RTCIceCandidate({
-        candidate: candidate.candidate,
-        sdpMid: candidate.sdpMid,
-        sdpMLineIndex: candidate.sdpMLineIndex,
-        usernameFragment: candidate.usernameFragment ?? undefined,
-      }));
-      logAudioDiagnostic(role, callId, "queued remote ICE candidate applied");
+      try {
+        await peer.addIceCandidate(new RTCIceCandidate({
+          candidate: candidate.candidate,
+          sdpMid: candidate.sdpMid,
+          sdpMLineIndex: candidate.sdpMLineIndex,
+          usernameFragment: candidate.usernameFragment ?? undefined,
+        }));
+        logAudioDiagnostic(role, callId, "queued remote ICE candidate applied", {
+          candidateCallId: candidate.callId,
+          callIdMatches: candidate.callId === callId,
+        });
+      } catch (error) {
+        logAudioDiagnostic(role, callId, "queued remote ICE candidate failed", {
+          candidateCallId: candidate.callId,
+          callIdMatches: candidate.callId === callId,
+          errorName: error instanceof Error ? error.name : "UnknownError",
+          message: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      }
     }
     if (callRef.current?.callId !== callId) return;
   }, [role]);
@@ -594,7 +611,9 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       };
       peer.onicecandidate = (event) => {
         if (!event.candidate) {
-          logAudioDiagnostic(role, callId, "local ICE gathering complete");
+          logAudioDiagnostic(role, callId, "local ICE candidate gathering complete", {
+            iceGatheringState: peer.iceGatheringState,
+          });
           return;
         }
         const candidate: WebRtcIceCandidateEvent = {
@@ -611,6 +630,10 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         });
         if (localDescriptionSentCallIdRef.current !== callId) {
           pendingLocalCandidatesRef.current.push(candidate);
+          logAudioDiagnostic(role, callId, "local ICE candidate queued until description sent", {
+            candidateCallId: candidate.callId,
+            queuedCandidateCount: pendingLocalCandidatesRef.current.length,
+          });
           return;
         }
         void invokeSignal("SendWebRtcIceCandidate", candidate)
@@ -630,7 +653,25 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       peer.oniceconnectionstatechange = () => {
         logAudioDiagnostic(role, callId, "ICE connection state changed", {
           iceConnectionState: peer.iceConnectionState,
+          connectionState: peer.connectionState,
           iceGatheringState: peer.iceGatheringState,
+          signalingState: peer.signalingState,
+        });
+      };
+      peer.onicegatheringstatechange = () => {
+        logAudioDiagnostic(role, callId, "ICE gathering state changed", {
+          iceGatheringState: peer.iceGatheringState,
+          iceConnectionState: peer.iceConnectionState,
+          signalingState: peer.signalingState,
+        });
+      };
+      peer.onicecandidateerror = (event) => {
+        logAudioDiagnostic(role, callId, "ICE candidate error", {
+          errorCode: event.errorCode,
+          errorText: event.errorText,
+          url: event.url,
+          addressPresent: !!event.address,
+          port: event.port,
         });
       };
       peer.onconnectionstatechange = () => {
@@ -651,6 +692,12 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
           toast.error(translationRef.current("calling.audioConnectionFailed"));
         }
       };
+      logAudioDiagnostic(role, callId, "peer connection event listeners registered", {
+        connectionState: peer.connectionState,
+        iceConnectionState: peer.iceConnectionState,
+        iceGatheringState: peer.iceGatheringState,
+        signalingState: peer.signalingState,
+      });
       peerStatsTimerRef.current = window.setInterval(() => {
         if (peerRef.current !== peer) return;
         void peer.getStats().then((stats) => {
@@ -816,14 +863,29 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     });
 
     connection.on("WebRtcOffer", (event: WebRtcDescriptionEvent) => {
-      if (callRef.current?.callId !== event?.callId) return;
+      const currentCallId = callRef.current?.callId;
+      if (currentCallId !== event?.callId) {
+        logAudioDiagnostic(role, event?.callId ?? "unknown", "WebRtcOffer ignored: callId mismatch", {
+          currentCallId: currentCallId ?? "none",
+        });
+        return;
+      }
       logAudioDiagnostic(role, event.callId, "WebRtcOffer received");
       if (role === "cashier") void processOffer(event);
     });
 
     connection.on("WebRtcAnswer", async (event: WebRtcDescriptionEvent) => {
       const peer = peerRef.current;
-      if (role !== "agent" || callRef.current?.callId !== event?.callId || !peer) return;
+      const currentCallId = callRef.current?.callId;
+      if (role !== "agent" || currentCallId !== event?.callId || !peer) {
+        logAudioDiagnostic(role, event?.callId ?? "unknown", "WebRtcAnswer ignored", {
+          isAgent: role === "agent",
+          currentCallId: currentCallId ?? "none",
+          peerAvailable: !!peer,
+          callIdMatches: currentCallId === event?.callId,
+        });
+        return;
+      }
       logAudioDiagnostic(role, event.callId, "WebRtcAnswer received");
       try {
         await peer.setRemoteDescription(new RTCSessionDescription({
@@ -844,7 +906,13 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     });
 
     connection.on("WebRtcIceCandidate", async (event: WebRtcIceCandidateEvent) => {
-      if (callRef.current?.callId !== event?.callId) return;
+      const currentCallId = callRef.current?.callId;
+      if (currentCallId !== event?.callId) {
+        logAudioDiagnostic(role, event?.callId ?? "unknown", "remote ICE candidate ignored: callId mismatch", {
+          currentCallId: currentCallId ?? "none",
+        });
+        return;
+      }
       if (!event.candidate) return;
       const peer = peerRef.current;
       if (!peer?.remoteDescription) {
