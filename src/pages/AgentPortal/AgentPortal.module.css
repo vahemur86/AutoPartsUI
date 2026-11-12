@@ -3155,7 +3155,10 @@
   }
 
   .headerActions {
+    min-width: 0;
     width: auto;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 7px;
   }
 
@@ -3224,6 +3227,8 @@
 
   .headerActions > .logoutButton {
     min-height: 40px;
+    flex: 0 0 auto;
+    white-space: nowrap;
     padding: 0 8px;
     gap: 5px;
     font-size: 11px;

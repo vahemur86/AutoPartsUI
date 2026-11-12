@@ -249,7 +249,9 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const remoteStreamRef = useRef<MediaStream | null>(null);
   const pendingCandidatesRef = useRef<WebRtcIceCandidateEvent[]>([]);
   const pendingOfferRef = useRef<WebRtcDescriptionEvent | null>(null);
-  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const ringtoneContextRef = useRef<AudioContext | null>(null);
+  const ringtoneTimerRef = useRef<number | null>(null);
+  const callProgressAudioRef = useRef<HTMLAudioElement | null>(null);
   const updateCall = useCallback((next: UiCall | null | ((current: UiCall | null) => UiCall | null)) => {
     const updated = typeof next === "function" ? next(callRef.current) : next;
     callRef.current = updated;
@@ -267,12 +269,62 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const stopRingtone = useCallback(() => {
-    const ringtone = ringtoneRef.current;
-    if (!ringtone) return;
-    ringtone.pause();
-    ringtone.currentTime = 0;
-    ringtoneRef.current = null;
+    const callProgressAudio = callProgressAudioRef.current;
+    if (callProgressAudio) {
+      callProgressAudio.pause();
+      callProgressAudio.currentTime = 0;
+      callProgressAudioRef.current = null;
+    }
+    if (ringtoneTimerRef.current !== null) {
+      window.clearTimeout(ringtoneTimerRef.current);
+      ringtoneTimerRef.current = null;
+    }
+    const context = ringtoneContextRef.current;
+    ringtoneContextRef.current = null;
+    if (context && context.state !== "closed") {
+      void context.close();
+    }
   }, []);
+
+  const startRingtone = useCallback(() => {
+    stopRingtone();
+    if (typeof window.AudioContext === "undefined") {
+      toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
+      return;
+    }
+
+    const context = new AudioContext();
+    ringtoneContextRef.current = context;
+    const playRingBurst = () => {
+      if (ringtoneContextRef.current !== context || context.state !== "running") return;
+      const gain = context.createGain();
+      gain.gain.setValueAtTime(0, context.currentTime);
+      gain.gain.linearRampToValueAtTime(0.16, context.currentTime + 0.035);
+      gain.gain.setValueAtTime(0.16, context.currentTime + 0.38);
+      gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.46);
+      gain.connect(context.destination);
+
+      for (const frequency of [440, 480]) {
+        const oscillator = context.createOscillator();
+        oscillator.type = "sine";
+        oscillator.frequency.value = frequency;
+        oscillator.connect(gain);
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.47);
+      }
+
+      ringtoneTimerRef.current = window.setTimeout(playRingBurst, 2400);
+    };
+
+    void context.resume()
+      .then(() => {
+        if (ringtoneContextRef.current === context) playRingBurst();
+      })
+      .catch(() => {
+        if (ringtoneContextRef.current === context) stopRingtone();
+        toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
+      });
+  }, [stopRingtone]);
 
   const closeMedia = useCallback(() => {
     peerRef.current?.close();
@@ -479,10 +531,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         connectionState: "new",
       };
       updateCall(incoming);
-      const ringtone = new Audio("/audio/prp-ivr-hy.mp3");
-      ringtone.loop = true;
-      ringtoneRef.current = ringtone;
-      ringtone.play().catch(() => toast.warning(translationRef.current("calling.ringtonePlaybackFailed")));
+      startRingtone();
     });
 
     connection.on("CallAccepted", (event: CallAcceptedEvent) => {
@@ -654,6 +703,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     role,
     startPeerConnection,
     stopRingtone,
+    startRingtone,
     token,
     updateCall,
   ]);
@@ -684,7 +734,15 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         muted: false,
         connectionState: "new",
       });
+      const callProgressAudio = new Audio("/audio/prp-ivr-hy.mp3");
+      callProgressAudio.loop = true;
+      callProgressAudioRef.current = callProgressAudio;
+      void callProgressAudio.play().catch(() => {
+        callProgressAudioRef.current = null;
+        toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
+      });
     } catch (error) {
+      stopRingtone();
       closeMedia();
       if (getHttpStatus(error) === 409) {
         toast.info(translationRef.current("calling.noCashierOnline"));
@@ -694,7 +752,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } finally {
       setIsBusy(false);
     }
-  }, [closeMedia, ensureMedia, notifyCallError, role, updateCall, username]);
+  }, [closeMedia, ensureMedia, notifyCallError, role, stopRingtone, updateCall, username]);
 
   const acceptCall = useCallback(async () => {
     const current = callRef.current;
@@ -722,16 +780,13 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         toast.info(translationRef.current("calling.takenByAnotherCashier"));
       } else {
         updateCall({ ...current, status: "Incoming" });
-        const ringtone = new Audio("/audio/prp-ivr-hy.mp3");
-        ringtone.loop = true;
-        ringtoneRef.current = ringtone;
-        ringtone.play().catch(() => toast.warning(translationRef.current("calling.ringtonePlaybackFailed")));
+        startRingtone();
         notifyCallError(error, "calling.acceptFailed");
       }
     } finally {
       setIsBusy(false);
     }
-  }, [closeMedia, ensureMedia, finishCall, notifyCallError, role, startPeerConnection, stopRingtone, updateCall]);
+  }, [closeMedia, ensureMedia, finishCall, notifyCallError, role, startPeerConnection, startRingtone, stopRingtone, updateCall]);
 
   const rejectCall = useCallback(async () => {
     const current = callRef.current;
@@ -743,14 +798,11 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       finishCall();
     } catch (error) {
       notifyCallError(error, "calling.rejectFailed");
-      const ringtone = new Audio("/audio/prp-ivr-hy.mp3");
-      ringtone.loop = true;
-      ringtoneRef.current = ringtone;
-      ringtone.play().catch(() => toast.warning(translationRef.current("calling.ringtonePlaybackFailed")));
+      startRingtone();
     } finally {
       setIsBusy(false);
     }
-  }, [finishCall, notifyCallError, stopRingtone]);
+  }, [finishCall, notifyCallError, startRingtone, stopRingtone]);
 
   const endCall = useCallback(async () => {
     const current = callRef.current;
@@ -835,9 +887,10 @@ export const CallingStatusButton = () => {
       onClick={() => void startCall()}
       disabled={!isConnected || !!call}
       title={!isConnected ? t("calling.connecting") : undefined}
+      aria-label={t("calling.callShop")}
     >
       <Phone size={16} aria-hidden="true" />
-      {t("calling.callShop")}
+      <span>{t("calling.callShop")}</span>
     </button>
   );
 };
