@@ -1385,9 +1385,11 @@ export const AgentContractDetails = () => {
         confirmClassName={styles.modalPrimaryButton}
         cancelClassName={styles.modalCancelButton}
         confirmLoading={advanceSaving}
+        className={styles.advanceModalCard}
+        bodyClassName={styles.advanceModalBody}
         onConfirm={createAdvance}
       >
-        <div className={styles.modalFields}>
+        <div className={`${styles.modalFields} ${styles.advanceModalFields}`}>
           <TextField
             label={t("agentContracts.fields.advanceAmount")}
             type="number"
@@ -1407,7 +1409,7 @@ export const AgentContractDetails = () => {
             value={advanceNotes}
             onChange={(event) => setAdvanceNotes(event.target.value)}
           />
-          <section className={styles.section}>
+          <section className={`${styles.section} ${styles.advanceAllocationSection}`}>
             <h3>{t("agentAdvances.sections.allocations")}</h3>
             {activeCapitalSources.length === 0 && (
               <div className={styles.fundingPlanWarning} role="alert">
@@ -1422,7 +1424,10 @@ export const AgentContractDetails = () => {
                   .filter(Boolean),
               );
               return (
-                <div className={styles.fundingPlanRow} key={allocation.id}>
+                <div
+                  className={`${styles.fundingPlanRow} ${styles.advanceFundingRow}`}
+                  key={allocation.id}
+                >
                   <Select
                     value={allocation.capitalSourceId}
                     onChange={(event) => setFundingAllocations((current) => current.map((item) =>
@@ -1469,7 +1474,7 @@ export const AgentContractDetails = () => {
                 </div>
               );
             })}
-            <div className={styles.inlineActions}>
+            <div className={`${styles.inlineActions} ${styles.advanceAllocationSummary}`}>
               <Button
                 type="button"
                 variant="secondary"

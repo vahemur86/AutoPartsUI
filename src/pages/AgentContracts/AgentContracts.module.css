@@ -14,6 +14,65 @@
   border-color: rgba(196, 169, 106, 0.58);
   background: rgba(196, 169, 106, 0.14);
 }
+.advanceModalCard {
+  width: min(940px, calc(100vw - 40px));
+  max-width: min(940px, calc(100vw - 40px));
+  max-height: calc(100dvh - 40px);
+  overflow: hidden;
+}
+.advanceModalBody {
+  min-height: 0;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+.advanceModalFields {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+.advanceModalFields > :nth-child(3),
+.advanceAllocationSection {
+  grid-column: 1 / -1;
+}
+.advanceAllocationSection {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(126, 184, 165, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(126, 184, 165, 0.055), rgba(15, 20, 16, 0.48));
+}
+.advanceAllocationSection > h3 {
+  color: #e8dfc7;
+  font-size: 15px;
+}
+.advanceFundingRow {
+  grid-template-columns: minmax(180px, 1.2fr) minmax(130px, 0.75fr) minmax(170px, 1fr) auto;
+  gap: 12px;
+  min-width: 0;
+}
+.advanceFundingRow > * {
+  min-width: 0;
+}
+.advanceAllocationSummary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+.advanceAllocationSummary > button {
+  justify-self: start;
+}
+.advanceAllocationSummary > :nth-child(2) {
+  margin-left: auto;
+}
+.advanceAllocationSummary > :nth-child(3) {
+  grid-column: 1 / -1;
+}
+.advanceAllocationSection > .fundingPlanWarning {
+  font-size: 12px;
+}
 .filters, .detailGrid, .financials { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
 .contractFilters, .advanceFilters, .legacyAdvanceFilters {
   display: grid;
@@ -173,3 +232,32 @@
 @media (max-width: 760px) { .contractFilters, .advanceFilters, .legacyAdvanceFilters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; } .fundingDateFilters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; } .fundingDateFilters > :last-child { grid-column: 1 / -1; justify-self: end; } .contractManagement { align-items: stretch; flex-direction: column; gap: 12px; padding: 14px; } .contractManagementButton { width: 100%; } .contractCard { padding: 15px; } .contractCardHeader { align-items: flex-start; flex-direction: column; } .contractCardBadges { justify-content: flex-start; } .contractCardFacts { gap: 8px; } .productCreditForm { grid-template-columns: minmax(0, 1fr); } .productCreditAside { grid-row: auto; } .productCreditActions { grid-column: auto; } .fundingPlanRow { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 480px) { .contractFilters, .advanceFilters, .legacyAdvanceFilters, .fundingDateFilters { grid-template-columns: minmax(0, 1fr); } .contractCardFacts { grid-template-columns: minmax(0, 1fr); } .contractPagination { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 640px) { .actions { justify-content: flex-end; } .productCreditConfig { padding: 18px; } }
+@media (max-width: 760px) {
+  .advanceModalCard {
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+  }
+  .advanceModalFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .advanceModalFields > :nth-child(3),
+  .advanceAllocationSection {
+    grid-column: auto;
+  }
+  .advanceAllocationSection {
+    padding: 12px;
+  }
+  .advanceFundingRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .advanceAllocationSummary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .advanceAllocationSummary > :nth-child(2) {
+    margin-left: 0;
+  }
+  .advanceAllocationSummary > :nth-child(3) {
+    grid-column: auto;
+  }
+}

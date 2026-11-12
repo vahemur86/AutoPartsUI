@@ -35,6 +35,7 @@ export interface ConfirmationModalProps {
   confirmLoading?: boolean;
   preventClose?: boolean;
   className?: string;
+  bodyClassName?: string;
 
   children?: ReactNode;
 }
@@ -57,6 +58,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   confirmLoading = false,
   preventClose = false,
   className = "",
+  bodyClassName = "",
   children,
 }) => {
   const { t } = useTranslation();
@@ -142,7 +144,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
         </header>
 
         {(description || children) && (
-          <div className={styles.body}>
+          <div className={`${styles.body} ${bodyClassName}`}>
             {description && (
               <p className={styles.description} id={descId}>
                 {description}
