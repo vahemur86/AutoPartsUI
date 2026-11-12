@@ -11,6 +11,7 @@ import { useOperator } from "@/pages/Operator/hooks";
 import { CashierMode, OperatorHeader, TopUpConfirmationModal } from "@/pages/Operator/components";
 import { CashierNotifications } from "@/pages/AgentPortal/CashierNotifications";
 import styles from "./ShopOperatorPage.module.css";
+import { CallingHistory } from "@/components/calling/CallingHistory";
 
 export const ShopOperatorPage = () => {
   const navigate = useNavigate();
@@ -98,6 +99,7 @@ export const ShopOperatorPage = () => {
           </div>
         )}
         <CashierMode cashRegisterId={userData?.cashRegisterId} />
+        {userRole === "cashier" && <CallingHistory />}
       </div>
 
       {!!selectors.cashRegisters.pendingDetails && (

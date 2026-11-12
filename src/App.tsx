@@ -152,6 +152,7 @@ import {
   EditCapitalSource,
 } from "./pages/CapitalSources";
 import { RepaymentDetails, RepaymentManagement } from "./pages/Repayments";
+import { CallingProvider } from "@/components/calling/CallingProvider";
 
 const toastOptions = {
   position: "top-right",
@@ -216,6 +217,7 @@ export const App = () => {
         <LanguageInitializer />
         <BrowserRouter>
           <AuthEventListener />
+          <CallingProvider>
           <Routes>
             {/* PUBLIC ROUTE */}
             <Route path="/login" element={<Login />} />
@@ -516,6 +518,7 @@ export const App = () => {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </CallingProvider>
         </BrowserRouter>
 
         <ToastContainer {...toastOptions} />

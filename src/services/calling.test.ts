@@ -1,0 +1,55 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@/services/index", () => {
+  const api = {
+    get: vi.fn(),
+    post: vi.fn(),
+  };
+  return { api, default: api };
+});
+
+import { api } from "@/services/index";
+import { callingService } from "./calling";
+
+describe("callingService", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("starts a call without a request body", async () => {
+    const response = { callId: "call-1", status: "Ringing", startedAt: "2026-11-12T10:00:00Z" };
+    vi.mocked(api.post).mockResolvedValue({ data: response });
+
+    await expect(callingService.startCall()).resolves.toEqual(response);
+    expect(api.post).toHaveBeenCalledWith("/calls");
+  });
+
+  it("accepts, rejects, and ends calls using their REST routes", async () => {
+    vi.mocked(api.post).mockResolvedValue({ data: undefined });
+
+    await callingService.acceptCall("call/one");
+    await callingService.rejectCall("call/one");
+    await callingService.endCall("call/one");
+
+    expect(api.post).toHaveBeenNthCalledWith(1, "/calls/call%2Fone/accept");
+    expect(api.post).toHaveBeenNthCalledWith(2, "/calls/call%2Fone/reject");
+    expect(api.post).toHaveBeenNthCalledWith(3, "/calls/call%2Fone/end");
+  });
+
+  it("loads call details, paginated history, and configured ICE servers", async () => {
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({ data: { callId: "call-1" } })
+      .mockResolvedValueOnce({ data: { items: [], page: 2, pageSize: 10, totalItems: 0 } })
+      .mockResolvedValueOnce({ data: { iceServers: [] } });
+
+    await callingService.getCall("call/one");
+    await callingService.getHistory(2, 10);
+    await callingService.getIceServers();
+
+    expect(api.get).toHaveBeenNthCalledWith(1, "/calls/call%2Fone");
+    expect(api.get).toHaveBeenNthCalledWith(2, "/calls/history", {
+      params: { page: 2, pageSize: 10 },
+    });
+    expect(api.get).toHaveBeenNthCalledWith(3, "/calls/ice-servers");
+  });
+});

@@ -1,0 +1,832 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+  type ReactNode,
+} from "react";
+import {
+  HubConnectionBuilder,
+  HubConnectionState,
+  LogLevel,
+  type HubConnection,
+} from "@microsoft/signalr";
+import {
+  AudioLines,
+  Mic,
+  MicOff,
+  Phone,
+  PhoneOff,
+  PhoneIncoming,
+  Radio,
+  X,
+} from "lucide-react";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/store/hooks";
+import { callingService } from "@/services/calling";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
+import type {
+  CallAcceptedEvent,
+  CallDetails,
+  CallFailedEvent,
+  IncomingCallEvent,
+  WebRtcDescriptionEvent,
+  WebRtcIceCandidateEvent,
+} from "@/types/calling";
+import styles from "./Calling.module.css";
+
+type UiCallStatus =
+  | "Ringing"
+  | "Incoming"
+  | "Accepting"
+  | "ConnectingAudio"
+  | "InCall"
+  | "Ending";
+
+interface UiCall {
+  callId: string;
+  status: UiCallStatus;
+  direction: "incoming" | "outgoing";
+  agentName: string;
+  assignedCashierId?: number;
+  startedAt: string;
+  acceptedAt?: string;
+  muted: boolean;
+  connectionState: RTCPeerConnectionState | "new";
+}
+
+interface CallingContextValue {
+  isConnected: boolean;
+  startCall: () => Promise<void>;
+  call: UiCall | null;
+}
+
+const CallingContext = createContext<CallingContextValue | null>(null);
+
+const isGuid = (value: string) =>
+  /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(value);
+
+const getHubUrl = () => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "");
+  if (!baseUrl) throw new Error("VITE_API_BASE_URL is not configured.");
+  const apiBase = baseUrl.endsWith("/api") ? baseUrl : `${baseUrl}/api`;
+  return `${apiBase}/hubs/calling`;
+};
+
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+};
+
+const playEffect = (url: string, onError: () => void) => {
+  const audio = new Audio(url);
+  audio.play().catch(onError);
+};
+
+const CallingOverlays = ({
+  call,
+  durationSeconds,
+  isBusy,
+  onAccept,
+  onReject,
+  onEnd,
+  onMute,
+  onRemoteAudio,
+}: {
+  call: UiCall | null;
+  durationSeconds: number;
+  isBusy: boolean;
+  onAccept: () => void;
+  onReject: () => void;
+  onEnd: () => void;
+  onMute: () => void;
+  onRemoteAudio: (audio: HTMLAudioElement | null) => void;
+}) => {
+  const { t } = useTranslation();
+  if (!call) return null;
+
+  const incoming = call.status === "Incoming" || call.status === "Accepting";
+  const participant = call.direction === "incoming"
+    ? call.agentName
+    : call.assignedCashierId
+      ? `${t("calling.cashier")} #${call.assignedCashierId}`
+      : t("calling.cashier");
+
+  return (
+    <>
+      <audio ref={onRemoteAudio} autoPlay />
+      <div className={styles.overlay} role="presentation">
+        <section
+          className={styles.callDialog}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="calling-title"
+          aria-describedby="calling-status"
+        >
+          <button
+            type="button"
+            className={styles.closeButton}
+            aria-label={t("common.close")}
+            onClick={incoming ? onReject : onEnd}
+            disabled={isBusy}
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+          <div className={styles.callIcon} aria-hidden="true">
+            {incoming ? <PhoneIncoming size={25} /> : <AudioLines size={25} />}
+          </div>
+          <span className={styles.callEyebrow}>
+            {incoming ? t("calling.incomingCall") : t("calling.conversation")}
+          </span>
+          <h2 id="calling-title">{participant}</h2>
+          <p id="calling-status" className={styles.callStatus}>
+            {call.status === "Incoming" && t("calling.incomingStatus")}
+            {call.status === "Accepting" && t("calling.accepting")}
+            {call.status === "Ringing" && t("calling.ringing")}
+            {call.status === "ConnectingAudio" && t("calling.connecting")}
+            {call.status === "InCall" && t("calling.connected")}
+            {call.status === "Ending" && t("calling.ending")}
+          </p>
+          {!incoming && (
+            <div className={styles.callMeta}>
+              <span className={call.connectionState === "connected" ? styles.connectionConnected : ""}>
+                <Radio size={14} aria-hidden="true" />
+                {call.connectionState === "connected"
+                  ? t("calling.connected")
+                  : call.connectionState === "failed" || call.connectionState === "disconnected"
+                    ? t("calling.connectionLost")
+                    : t("calling.connecting")}
+              </span>
+              <strong>{formatDuration(durationSeconds)}</strong>
+            </div>
+          )}
+          <div className={styles.callActions}>
+            {incoming ? (
+              <>
+                <button
+                  type="button"
+                  className={styles.rejectButton}
+                  onClick={onReject}
+                  disabled={isBusy}
+                >
+                  <PhoneOff size={17} aria-hidden="true" />
+                  {t("calling.reject")}
+                </button>
+                <button
+                  type="button"
+                  className={styles.acceptButton}
+                  onClick={onAccept}
+                  disabled={isBusy}
+                  aria-busy={call.status === "Accepting"}
+                >
+                  <Phone size={17} aria-hidden="true" />
+                  {t("calling.answer")}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className={styles.muteButton}
+                  onClick={onMute}
+                  disabled={isBusy || call.status === "Ending"}
+                  aria-pressed={call.muted}
+                >
+                  {call.muted
+                    ? <MicOff size={17} aria-hidden="true" />
+                    : <Mic size={17} aria-hidden="true" />}
+                  {t(call.muted ? "calling.unmute" : "calling.mute")}
+                </button>
+                <button
+                  type="button"
+                  className={styles.rejectButton}
+                  onClick={onEnd}
+                  disabled={isBusy || call.status === "Ending"}
+                >
+                  <PhoneOff size={17} aria-hidden="true" />
+                  {t("calling.end")}
+                </button>
+              </>
+            )}
+          </div>
+        </section>
+      </div>
+    </>
+  );
+};
+
+export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
+  const translationRef = useRef(t);
+  translationRef.current = t;
+  const token = useAppSelector((state) => state.auth.token);
+  const role = useAppSelector((state) => state.auth.user?.role.toLowerCase() ?? "");
+  const username = useAppSelector((state) => state.auth.user?.username ?? "");
+  const isAllowedRole = role === "agent" || role === "cashier";
+  const [isConnected, setIsConnected] = useState(false);
+  const [call, setCallState] = useState<UiCall | null>(null);
+  const [durationSeconds, setDurationSeconds] = useState(0);
+  const [isBusy, setIsBusy] = useState(false);
+  const connectionRef = useRef<HubConnection | null>(null);
+  const callRef = useRef<UiCall | null>(null);
+  const peerRef = useRef<RTCPeerConnection | null>(null);
+  const peerStartingRef = useRef(false);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
+  const remoteStreamRef = useRef<MediaStream | null>(null);
+  const pendingCandidatesRef = useRef<WebRtcIceCandidateEvent[]>([]);
+  const pendingOfferRef = useRef<WebRtcDescriptionEvent | null>(null);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const updateCall = useCallback((next: UiCall | null | ((current: UiCall | null) => UiCall | null)) => {
+    const updated = typeof next === "function" ? next(callRef.current) : next;
+    callRef.current = updated;
+    setCallState(updated);
+  }, []);
+
+  const setRemoteAudio = useCallback((audio: HTMLAudioElement | null) => {
+    remoteAudioRef.current = audio;
+    if (audio && remoteStreamRef.current) {
+      audio.srcObject = remoteStreamRef.current;
+      audio.play().catch(() => {
+        toast.warning(translationRef.current("calling.remoteAudioPlaybackFailed"));
+      });
+    }
+  }, []);
+
+  const stopRingtone = useCallback(() => {
+    const ringtone = ringtoneRef.current;
+    if (!ringtone) return;
+    ringtone.pause();
+    ringtone.currentTime = 0;
+    ringtoneRef.current = null;
+  }, []);
+
+  const closeMedia = useCallback(() => {
+    peerRef.current?.close();
+    peerRef.current = null;
+    peerStartingRef.current = false;
+    localStreamRef.current?.getTracks().forEach((track) => track.stop());
+    localStreamRef.current = null;
+    if (remoteAudioRef.current) {
+      remoteAudioRef.current.pause();
+      remoteAudioRef.current.srcObject = null;
+      remoteAudioRef.current = null;
+    }
+    remoteStreamRef.current = null;
+    pendingCandidatesRef.current = [];
+    pendingOfferRef.current = null;
+  }, []);
+
+  const finishCall = useCallback(() => {
+    stopRingtone();
+    closeMedia();
+    updateCall(null);
+    setDurationSeconds(0);
+    setIsBusy(false);
+  }, [closeMedia, stopRingtone, updateCall]);
+
+  const notifyCallError = useCallback((error: unknown, fallbackKey: string) => {
+    toast.error(getApiErrorMessage(error, translationRef.current(fallbackKey)));
+  }, []);
+
+  const ensureMedia = useCallback(async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error(translationRef.current("calling.microphoneUnavailable"));
+    }
+    if (!localStreamRef.current) {
+      localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+    }
+    return localStreamRef.current;
+  }, []);
+
+  const invokeSignal = useCallback(async (method: string, payload: object) => {
+    const connection = connectionRef.current;
+    if (!connection || connection.state !== HubConnectionState.Connected) {
+      throw new Error(translationRef.current("calling.connectionUnavailable"));
+    }
+    await connection.invoke(method, payload);
+  }, []);
+
+  const flushCandidates = useCallback(async (peer: RTCPeerConnection, callId: string) => {
+    const candidates = pendingCandidatesRef.current.splice(0);
+    for (const candidate of candidates) {
+      if (!candidate.candidate) continue;
+      await peer.addIceCandidate(new RTCIceCandidate({
+        candidate: candidate.candidate,
+        sdpMid: candidate.sdpMid,
+        sdpMLineIndex: candidate.sdpMLineIndex,
+        usernameFragment: candidate.usernameFragment ?? undefined,
+      }));
+    }
+    if (callRef.current?.callId !== callId) return;
+  }, []);
+
+  const processOffer = useCallback(async (offer: WebRtcDescriptionEvent) => {
+    const peer = peerRef.current;
+    if (!peer || peer.signalingState !== "stable") {
+      pendingOfferRef.current = offer;
+      return;
+    }
+    try {
+      await peer.setRemoteDescription(new RTCSessionDescription({
+        type: "offer",
+        sdp: offer.sdp,
+      }));
+      await flushCandidates(peer, offer.callId);
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
+      await invokeSignal("SendWebRtcAnswer", {
+        callId: offer.callId,
+        sdp: answer.sdp,
+      });
+    } catch (error) {
+      notifyCallError(error, "calling.audioConnectionFailed");
+    }
+  }, [flushCandidates, invokeSignal, notifyCallError]);
+
+  const startPeerConnection = useCallback(async (callId: string, createOffer: boolean) => {
+    if (peerRef.current || peerStartingRef.current) return;
+    peerStartingRef.current = true;
+    try {
+      const stream = await ensureMedia();
+      const { iceServers } = await callingService.getIceServers();
+      const peer = new RTCPeerConnection({
+        iceServers: iceServers.map((server) => ({
+          urls: server.urls,
+          username: server.username ?? undefined,
+          credential: server.credential ?? undefined,
+        })),
+      });
+      peerRef.current = peer;
+      stream.getAudioTracks().forEach((track) => peer.addTrack(track, stream));
+      peer.ontrack = (event) => {
+        const [remoteStream] = event.streams;
+        if (!remoteStream) return;
+        remoteStreamRef.current = remoteStream;
+        const audio = remoteAudioRef.current;
+        if (audio) {
+          audio.srcObject = remoteStream;
+          audio.play().catch(() => {
+            toast.warning(translationRef.current("calling.remoteAudioPlaybackFailed"));
+          });
+        }
+      };
+      peer.onicecandidate = (event) => {
+        if (!event.candidate) return;
+        void invokeSignal("SendWebRtcIceCandidate", {
+          callId,
+          candidate: event.candidate.candidate,
+          sdpMid: event.candidate.sdpMid,
+          sdpMLineIndex: event.candidate.sdpMLineIndex,
+          usernameFragment: event.candidate.usernameFragment,
+        }).catch((error: unknown) => notifyCallError(error, "calling.signalingFailed"));
+      };
+      peer.onconnectionstatechange = () => {
+        const connectionState = peer.connectionState;
+        updateCall((current) => current?.callId === callId
+          ? {
+              ...current,
+              connectionState,
+              status: connectionState === "connected" ? "InCall" : "ConnectingAudio",
+            }
+          : current);
+        if (connectionState === "failed") {
+          toast.error(translationRef.current("calling.audioConnectionFailed"));
+        }
+      };
+      updateCall((current) => current?.callId === callId
+        ? { ...current, status: "ConnectingAudio", connectionState: "new" }
+        : current);
+
+      if (createOffer) {
+        const offer = await peer.createOffer();
+        await peer.setLocalDescription(offer);
+        await invokeSignal("SendWebRtcOffer", { callId, sdp: offer.sdp });
+      } else if (pendingOfferRef.current?.callId === callId) {
+        const offer = pendingOfferRef.current;
+        pendingOfferRef.current = null;
+        await processOffer(offer);
+      }
+    } catch (error) {
+      peerRef.current?.close();
+      peerRef.current = null;
+      notifyCallError(error, "calling.audioConnectionFailed");
+      try {
+        await callingService.endCall(callId);
+      } catch (endError) {
+        notifyCallError(endError, "calling.endFailed");
+      }
+      finishCall();
+    } finally {
+      peerStartingRef.current = false;
+    }
+  }, [ensureMedia, finishCall, invokeSignal, notifyCallError, processOffer, updateCall]);
+
+  useEffect(() => {
+    if (!token || !isAllowedRole) {
+      setIsConnected(false);
+      connectionRef.current = null;
+      finishCall();
+      return;
+    }
+
+    let active = true;
+    let retryAttempt = 0;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let hubUrl: string;
+    try {
+      hubUrl = getHubUrl();
+    } catch (error) {
+      notifyCallError(error, "calling.connectionUnavailable");
+      return;
+    }
+    const connection = new HubConnectionBuilder()
+      .withUrl(hubUrl, { accessTokenFactory: () => token })
+      .withAutomaticReconnect()
+      .configureLogging(LogLevel.Warning)
+      .build();
+    connectionRef.current = connection;
+
+    connection.on("IncomingCall", (event: IncomingCallEvent) => {
+      if (role !== "cashier" || !event?.callId || callRef.current?.callId === event.callId) return;
+      if (callRef.current) {
+        toast.info(translationRef.current("calling.alreadyOnCall"));
+        return;
+      }
+      const incoming: UiCall = {
+        callId: event.callId,
+        status: "Incoming",
+        direction: "incoming",
+        agentName: event.agentName,
+        startedAt: event.startedAt,
+        muted: false,
+        connectionState: "new",
+      };
+      updateCall(incoming);
+      const ringtone = new Audio("/audio/prp-ivr-hy.mp3");
+      ringtone.loop = true;
+      ringtoneRef.current = ringtone;
+      ringtone.play().catch(() => toast.warning(translationRef.current("calling.ringtonePlaybackFailed")));
+    });
+
+    connection.on("CallAccepted", (event: CallAcceptedEvent) => {
+      const current = callRef.current;
+      if (role !== "agent" || !current || current.callId !== event?.callId) return;
+      stopRingtone();
+      playEffect("/audio/prp-option-confirmation-hy.mp3", () => {
+        toast.warning(translationRef.current("calling.soundPlaybackFailed"));
+      });
+      updateCall({
+        ...current,
+        status: "ConnectingAudio",
+        assignedCashierId: event.assignedCashierId,
+        acceptedAt: event.acceptedAt,
+      });
+      void startPeerConnection(event.callId, true);
+    });
+
+    connection.on("CallTakenByAnotherCashier", (event: CallAcceptedEvent) => {
+      if (callRef.current?.callId !== event?.callId || role !== "cashier") return;
+      finishCall();
+      toast.info(translationRef.current("calling.takenByAnotherCashier"));
+    });
+
+    connection.on("CallRejected", (event: { callId: string; status?: string }) => {
+      if (callRef.current?.callId !== event?.callId) return;
+      finishCall();
+      if (role === "agent" || event.status === "Rejected") {
+        toast.info(translationRef.current("calling.callRejected"));
+      }
+    });
+
+    connection.on("CallEnded", (event: CallDetails | { callId: string; status: string }) => {
+      if (callRef.current?.callId !== event?.callId) return;
+      finishCall();
+      toast.info(translationRef.current("calling.callEnded"));
+    });
+
+    connection.on("CallFailed", (event: CallFailedEvent) => {
+      if (callRef.current?.callId !== event?.callId) return;
+      finishCall();
+      toast.error(event.reason || translationRef.current("calling.callFailed"));
+    });
+
+    connection.on("WebRtcOffer", (event: WebRtcDescriptionEvent) => {
+      if (callRef.current?.callId !== event?.callId) return;
+      if (role === "cashier") void processOffer(event);
+    });
+
+    connection.on("WebRtcAnswer", async (event: WebRtcDescriptionEvent) => {
+      const peer = peerRef.current;
+      if (role !== "agent" || callRef.current?.callId !== event?.callId || !peer) return;
+      try {
+        await peer.setRemoteDescription(new RTCSessionDescription({
+          type: "answer",
+          sdp: event.sdp,
+        }));
+        await flushCandidates(peer, event.callId);
+      } catch (error) {
+        notifyCallError(error, "calling.audioConnectionFailed");
+      }
+    });
+
+    connection.on("WebRtcIceCandidate", async (event: WebRtcIceCandidateEvent) => {
+      if (callRef.current?.callId !== event?.callId) return;
+      if (!event.candidate) return;
+      const peer = peerRef.current;
+      if (!peer?.remoteDescription) {
+        pendingCandidatesRef.current.push(event);
+        return;
+      }
+      try {
+        await peer.addIceCandidate(new RTCIceCandidate({
+          candidate: event.candidate,
+          sdpMid: event.sdpMid,
+          sdpMLineIndex: event.sdpMLineIndex,
+          usernameFragment: event.usernameFragment ?? undefined,
+        }));
+      } catch (error) {
+        notifyCallError(error, "calling.signalingFailed");
+      }
+    });
+
+    const refreshCurrentCall = async () => {
+      const current = callRef.current;
+      if (!current) return;
+      try {
+        const latest = await callingService.getCall(current.callId);
+        if (callRef.current?.callId !== current.callId) return;
+        if (["Ended", "Cancelled", "Rejected", "Failed"].includes(latest.status)) {
+          finishCall();
+          return;
+        }
+        if (
+          role === "agent"
+          && current.direction === "outgoing"
+          && latest.status === "Accepted"
+          && !current.acceptedAt
+        ) {
+          updateCall({
+            ...current,
+            status: "ConnectingAudio",
+            assignedCashierId: latest.assignedCashierId ?? undefined,
+            acceptedAt: latest.acceptedAt ?? undefined,
+          });
+          void startPeerConnection(current.callId, true);
+        }
+      } catch (error) {
+        notifyCallError(error, "calling.callRefreshFailed");
+      }
+    };
+
+    connection.onreconnecting(() => setIsConnected(false));
+    connection.onreconnected(async () => {
+      setIsConnected(true);
+      await refreshCurrentCall();
+    });
+    connection.onclose(() => setIsConnected(false));
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") void refreshCurrentCall();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    const start = async () => {
+      try {
+        await connection.start();
+        if (!active) {
+          await connection.stop();
+          return;
+        }
+        retryAttempt = 0;
+        setIsConnected(true);
+      } catch (error) {
+        if (!active) return;
+        setIsConnected(false);
+        retryAttempt += 1;
+        if (retryAttempt <= 5) {
+          retryTimer = setTimeout(() => void start(), Math.min(1000 * 2 ** (retryAttempt - 1), 15000));
+        } else {
+          notifyCallError(error, "calling.connectionUnavailable");
+        }
+      }
+    };
+    void start();
+
+    return () => {
+      active = false;
+      if (retryTimer) clearTimeout(retryTimer);
+      connection.off("IncomingCall");
+      connection.off("CallAccepted");
+      connection.off("CallTakenByAnotherCashier");
+      connection.off("CallRejected");
+      connection.off("CallEnded");
+      connection.off("CallFailed");
+      connection.off("WebRtcOffer");
+      connection.off("WebRtcAnswer");
+      connection.off("WebRtcIceCandidate");
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      if (connectionRef.current === connection) connectionRef.current = null;
+      void connection.stop();
+      finishCall();
+    };
+  }, [
+    finishCall,
+    flushCandidates,
+    isAllowedRole,
+    notifyCallError,
+    processOffer,
+    role,
+    startPeerConnection,
+    stopRingtone,
+    token,
+    updateCall,
+  ]);
+
+  const startCall = useCallback(async () => {
+    if (role !== "agent") return;
+    if (connectionRef.current?.state !== HubConnectionState.Connected) {
+      toast.error(translationRef.current("calling.connectionUnavailable"));
+      return;
+    }
+    if (callRef.current) {
+      toast.error(translationRef.current("calling.alreadyOnCall"));
+      return;
+    }
+    setIsBusy(true);
+    try {
+      await ensureMedia();
+      const created = await callingService.startCall();
+      if (!created.callId || !isGuid(created.callId)) {
+        throw new Error(translationRef.current("calling.invalidCallResponse"));
+      }
+      updateCall({
+        callId: created.callId,
+        status: "Ringing",
+        direction: "outgoing",
+        agentName: username || translationRef.current("calling.agent"),
+        startedAt: created.startedAt,
+        muted: false,
+        connectionState: "new",
+      });
+    } catch (error) {
+      closeMedia();
+      notifyCallError(error, "calling.startFailed");
+    } finally {
+      setIsBusy(false);
+    }
+  }, [closeMedia, ensureMedia, notifyCallError, role, updateCall, username]);
+
+  const acceptCall = useCallback(async () => {
+    const current = callRef.current;
+    if (role !== "cashier" || !current || current.direction !== "incoming") return;
+    setIsBusy(true);
+    stopRingtone();
+    updateCall({ ...current, status: "Accepting" });
+    try {
+      await ensureMedia();
+      const accepted = await callingService.acceptCall(current.callId);
+      updateCall({
+        ...current,
+        status: "ConnectingAudio",
+        assignedCashierId: accepted.assignedCashierId,
+        acceptedAt: accepted.acceptedAt,
+      });
+      playEffect("/audio/prp-option-confirmation-hy.mp3", () => {
+        toast.warning(translationRef.current("calling.soundPlaybackFailed"));
+      });
+      await startPeerConnection(current.callId, false);
+    } catch (error) {
+      closeMedia();
+      if ((error as { response?: { status?: number } })?.response?.status === 409) {
+        finishCall();
+        toast.info(translationRef.current("calling.takenByAnotherCashier"));
+      } else {
+        updateCall({ ...current, status: "Incoming" });
+        const ringtone = new Audio("/audio/prp-ivr-hy.mp3");
+        ringtone.loop = true;
+        ringtoneRef.current = ringtone;
+        ringtone.play().catch(() => toast.warning(translationRef.current("calling.ringtonePlaybackFailed")));
+        notifyCallError(error, "calling.acceptFailed");
+      }
+    } finally {
+      setIsBusy(false);
+    }
+  }, [closeMedia, ensureMedia, finishCall, notifyCallError, role, startPeerConnection, stopRingtone, updateCall]);
+
+  const rejectCall = useCallback(async () => {
+    const current = callRef.current;
+    if (!current || current.direction !== "incoming") return;
+    setIsBusy(true);
+    stopRingtone();
+    try {
+      await callingService.rejectCall(current.callId);
+      finishCall();
+    } catch (error) {
+      notifyCallError(error, "calling.rejectFailed");
+      const ringtone = new Audio("/audio/prp-ivr-hy.mp3");
+      ringtone.loop = true;
+      ringtoneRef.current = ringtone;
+      ringtone.play().catch(() => toast.warning(translationRef.current("calling.ringtonePlaybackFailed")));
+    } finally {
+      setIsBusy(false);
+    }
+  }, [finishCall, notifyCallError, stopRingtone]);
+
+  const endCall = useCallback(async () => {
+    const current = callRef.current;
+    if (!current) return;
+    setIsBusy(true);
+    updateCall({ ...current, status: "Ending" });
+    stopRingtone();
+    try {
+      await callingService.endCall(current.callId);
+      finishCall();
+    } catch (error) {
+      updateCall(current);
+      notifyCallError(error, "calling.endFailed");
+    } finally {
+      setIsBusy(false);
+    }
+  }, [finishCall, notifyCallError, stopRingtone, updateCall]);
+
+  const toggleMute = useCallback(() => {
+    const current = callRef.current;
+    const stream = localStreamRef.current;
+    if (!current || !stream) return;
+    const nextMuted = !current.muted;
+    stream.getAudioTracks().forEach((track) => {
+      track.enabled = !nextMuted;
+    });
+    updateCall({ ...current, muted: nextMuted });
+  }, [updateCall]);
+
+  useEffect(() => {
+    if (!call?.acceptedAt) {
+      setDurationSeconds(0);
+      return;
+    }
+    const updateDuration = () => {
+      const acceptedAt = new Date(call.acceptedAt as string).getTime();
+      setDurationSeconds(Math.max(0, Math.floor((Date.now() - acceptedAt) / 1000)));
+    };
+    updateDuration();
+    const intervalId = window.setInterval(updateDuration, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [call?.acceptedAt]);
+
+  const value = useMemo<CallingContextValue>(() => ({
+    isConnected,
+    startCall,
+    call,
+  }), [call, isConnected, startCall]);
+
+  return (
+    <CallingContext.Provider value={value}>
+      {children}
+      <CallingOverlays
+        call={call}
+        durationSeconds={durationSeconds}
+        isBusy={isBusy}
+        onAccept={() => void acceptCall()}
+        onReject={() => void rejectCall()}
+        onEnd={() => void endCall()}
+        onMute={toggleMute}
+        onRemoteAudio={setRemoteAudio}
+      />
+    </CallingContext.Provider>
+  );
+};
+
+// Keep the context private while exporting its consumer hook alongside the provider.
+// eslint-disable-next-line react-refresh/only-export-components
+export const useCalling = () => {
+  const context = useContext(CallingContext);
+  if (!context) throw new Error("useCalling must be used within CallingProvider.");
+  return context;
+};
+
+export const CallingStatusButton = () => {
+  const { isConnected, startCall, call } = useCalling();
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      className={styles.startCallButton}
+      onClick={() => void startCall()}
+      disabled={!isConnected || !!call}
+      title={!isConnected ? t("calling.connecting") : undefined}
+    >
+      <Phone size={16} aria-hidden="true" />
+      {t("calling.callShop")}
+    </button>
+  );
+};

@@ -1,0 +1,324 @@
+.overlay {
+  position: fixed;
+  z-index: 3000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(5, 8, 6, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.callDialog {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: min(100%, 390px);
+  padding: 32px 26px 26px;
+  border: 1px solid rgba(196, 169, 106, 0.4);
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 50% 0, rgba(196, 169, 106, 0.14), transparent 58%),
+    linear-gradient(155deg, #1a211b, #101511);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), inset 0 1px rgba(255, 255, 255, 0.04);
+  color: #eee9db;
+  text-align: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(196, 169, 106, 0.22);
+  border-radius: 8px;
+  background: rgba(196, 169, 106, 0.06);
+  color: #e5d29a;
+  cursor: pointer;
+}
+
+.closeButton:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.callIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 1px solid rgba(196, 169, 106, 0.42);
+  border-radius: 50%;
+  background: rgba(196, 169, 106, 0.12);
+  color: #e5d29a;
+  box-shadow: 0 0 28px rgba(196, 169, 106, 0.12);
+}
+
+.callEyebrow {
+  margin-top: 16px;
+  color: #b7aa80;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.callDialog h2 {
+  max-width: 100%;
+  margin: 6px 0 0;
+  color: #f2efe5;
+  font-size: 21px;
+  overflow-wrap: anywhere;
+}
+
+.callStatus {
+  min-height: 22px;
+  margin: 7px 0 0;
+  color: #aab4aa;
+  font-size: 13px;
+}
+
+.callMeta {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid rgba(196, 169, 106, 0.16);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #9faa9e;
+  font-size: 12px;
+}
+
+.callMeta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.callMeta strong,
+.connectionConnected {
+  color: #a8d7a1;
+}
+
+.callActions {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.callActions button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #f5f2e8;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  transition: filter 140ms ease, transform 140ms ease;
+}
+
+.callActions button:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.callActions button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.acceptButton {
+  background: linear-gradient(145deg, #267747, #14502f);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.18), 0 3px 0 #0b3420;
+}
+
+.rejectButton {
+  border-color: rgba(225, 133, 119, 0.3) !important;
+  background: linear-gradient(145deg, #843c37, #5c2928);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), 0 3px 0 #3f1c1b;
+}
+
+.muteButton {
+  border-color: rgba(196, 169, 106, 0.3) !important;
+  background: rgba(196, 169, 106, 0.1);
+  color: #e5d29a !important;
+}
+
+.startCallButton {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid rgba(196, 169, 106, 0.42);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(196, 169, 106, 0.17), rgba(17, 23, 19, 0.9));
+  color: #e5d29a;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.startCallButton:hover:not(:disabled) {
+  border-color: rgba(229, 210, 154, 0.7);
+  background: rgba(196, 169, 106, 0.23);
+}
+
+.startCallButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.history {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 10px;
+  background: rgba(13, 18, 14, 0.56);
+  color: #eee9db;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.historyHeader span {
+  color: #b7aa80;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.historyHeader h3 {
+  margin: 4px 0 0;
+  color: #f0e5c4;
+  font-size: 16px;
+}
+
+.historyList {
+  display: grid;
+  gap: 8px;
+}
+
+.historyItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px 14px;
+  padding: 11px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.historyItem > div {
+  display: grid;
+  gap: 4px;
+  color: #aeb8ae;
+  font-size: 11px;
+}
+
+.historyItem > div:first-child strong {
+  color: #eee9db;
+  font-size: 13px;
+}
+
+.historyItem > div:nth-child(2) {
+  justify-items: end;
+}
+
+.historyStatus {
+  color: #e5d29a;
+  font-weight: 750;
+}
+
+.historyDetails {
+  grid-column: 1 / -1;
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 5px 12px !important;
+}
+
+.historyState,
+.historyError {
+  margin: 0;
+  color: #aeb8ae;
+  font-size: 12px;
+}
+
+.historyError {
+  color: #f2a4a4;
+}
+
+.historyPager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #b7c0b5;
+  font-size: 12px;
+}
+
+.historyPager button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid rgba(196, 169, 106, 0.23);
+  border-radius: 7px;
+  background: rgba(196, 169, 106, 0.07);
+  color: #e5d29a;
+  cursor: pointer;
+  font: inherit;
+}
+
+.historyPager button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 480px) {
+  .callDialog {
+    padding: 28px 17px 18px;
+  }
+
+  .callActions {
+    flex-direction: column-reverse;
+  }
+
+  .callActions button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .history {
+    padding: 12px;
+  }
+
+  .historyItem {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .historyItem > div:nth-child(2) {
+    justify-items: start;
+  }
+}

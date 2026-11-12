@@ -59,6 +59,8 @@ import type { AgentNotification, AgentOrderRequest, AgentOrderRequestStatus, Age
 import type { Shop } from "@/types/settings";
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
 import styles from "./AgentPortal.module.css";
+import { CallingHistory } from "@/components/calling/CallingHistory";
+import { CallingStatusButton } from "@/components/calling/CallingProvider";
 
 type PortalSection = "overview" | "profile" | "contracts" | "advances" | "deliveries" | "debt" | "orders" | "myRequests";
 type PageResult<T> = PagedResult<T>;
@@ -1244,6 +1246,10 @@ export const AgentPortal = () => {
                   <div><dt>{t("agentPortal.agentType")}</dt><dd>{profile.agentType?.name || "—"}</dd></div>
                 </dl>
               </div>
+              <div className={styles.callAgentAction}>
+                <CallingStatusButton />
+              </div>
+              <CallingHistory />
               <h3 className={styles.subheading}>{t("agentPortal.typeHistory")}</h3>
               {typeHistory.length ? <div className={styles.cardList}>{typeHistory.map((item) => <article className={styles.dataCard} key={item.id}><strong>{item.newType?.name || "—"}</strong><span>{formatDate(item.changedAt)}</span></article>)}</div> : <EmptyState text={t("agentPortal.noHistory")} />}
             </>
