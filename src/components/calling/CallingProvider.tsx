@@ -73,6 +73,24 @@ interface CallingContextValue {
 
 const CallingContext = createContext<CallingContextValue | null>(null);
 
+const CALL_ACCEPTED_BROADCAST_CHANNEL = "prp-calling-accepted";
+
+interface CallAcceptedBroadcastMessage {
+  type: "call-accepted";
+  callId: string;
+}
+
+const isCallAcceptedBroadcastMessage = (
+  value: unknown,
+): value is CallAcceptedBroadcastMessage => (
+  !!value
+  && typeof value === "object"
+  && "type" in value
+  && value.type === "call-accepted"
+  && "callId" in value
+  && typeof value.callId === "string"
+);
+
 const isGuid = (value: string) =>
   /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(value);
 
@@ -297,6 +315,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const connectionRef = useRef<HubConnection | null>(null);
   const callRef = useRef<UiCall | null>(null);
   const callAcceptedCallIdRef = useRef<string | null>(null);
+  const callAcceptedChannelRef = useRef<BroadcastChannel | null>(null);
   const negotiationGuardRef = useRef(new CallNegotiationGuard());
   const peerRef = useRef<RTCPeerConnection | null>(null);
   const peerStartingRef = useRef(false);
@@ -311,6 +330,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const pendingOfferRef = useRef<WebRtcDescriptionEvent | null>(null);
   const ringtoneContextRef = useRef<AudioContext | null>(null);
   const ringtoneTimerRef = useRef<number | null>(null);
+  const ringtoneCallIdRef = useRef<string | null>(null);
   const ringtoneNodesRef = useRef(new Set<{
     oscillator: OscillatorNode;
     gain: GainNode;
@@ -356,7 +376,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [role]);
 
-  const stopRingtone = useCallback(() => {
+  const stopRingtone = useCallback((reason = "unspecified") => {
     const agentRingback = agentRingbackRef.current;
     if (agentRingback) {
       agentRingback.pause();
@@ -368,7 +388,17 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       ringtoneTimerRef.current = null;
     }
     const context = ringtoneContextRef.current;
+    const hadRingtone = !!context || ringtoneNodesRef.current.size > 0;
+    if (hadRingtone) {
+      logAudioDiagnostic(role, callRef.current?.callId ?? ringtoneCallIdRef.current ?? "none", "incoming ringtone stopped", {
+        reason,
+        contextState: context?.state ?? "no-context",
+        activeOscillatorCount: ringtoneNodesRef.current.size,
+        callStatus: callRef.current?.status ?? null,
+      });
+    }
     ringtoneContextRef.current = null;
+    ringtoneCallIdRef.current = null;
     ringtoneNodesRef.current.forEach(({ oscillator, gain }) => {
       if (context && context.state !== "closed") {
         gain.gain.cancelScheduledValues(context.currentTime);
@@ -382,14 +412,24 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (context && context.state !== "closed") {
       void context.close();
     }
-  }, []);
+  }, [role]);
 
   const startTonePattern = useCallback((
     notes: Array<{ frequency: number; offset: number; duration: number }>,
     interval: number,
   ) => {
-    if (ringtoneContextRef.current && ringtoneContextRef.current.state !== "closed") return;
-    stopRingtone();
+    const currentCall = callRef.current;
+    if (
+      !currentCall
+      || currentCall.direction !== "incoming"
+      || currentCall.status !== "Incoming"
+    ) return;
+    if (
+      ringtoneContextRef.current
+      && ringtoneContextRef.current.state !== "closed"
+      && ringtoneCallIdRef.current === currentCall.callId
+    ) return;
+    stopRingtone("starting ringtone for a new incoming call");
     if (typeof window.AudioContext === "undefined") {
       toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
       return;
@@ -397,8 +437,21 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const context = new AudioContext();
     ringtoneContextRef.current = context;
+    ringtoneCallIdRef.current = currentCall.callId;
+    logAudioDiagnostic(role, currentCall.callId, "incoming ringtone started", {
+      contextState: context.state,
+    });
     const playRingBurst = () => {
       if (ringtoneContextRef.current !== context || context.state !== "running") return;
+      const activeCall = callRef.current;
+      if (
+        activeCall?.callId !== ringtoneCallIdRef.current
+        || activeCall.direction !== "incoming"
+        || activeCall.status !== "Incoming"
+      ) {
+        stopRingtone("call is no longer waiting for an answer");
+        return;
+      }
       const startAt = context.currentTime;
       for (const note of notes) {
         const noteStart = startAt + note.offset;
@@ -433,10 +486,10 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       })
       .catch(() => {
         if (ringtoneContextRef.current !== context) return;
-        stopRingtone();
+        stopRingtone("ringtone AudioContext resume failed");
         toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
       });
-  }, [stopRingtone]);
+  }, [role, stopRingtone]);
 
   const startRingtone = useCallback(() => {
     startTonePattern([
@@ -446,7 +499,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [startTonePattern]);
 
   const startAgentRingback = useCallback(() => {
-    stopRingtone();
+    stopRingtone("starting Agent ringback");
     const ringback = new Audio("/audio/agent-call-ringback.mp3");
     ringback.loop = true;
     agentRingbackRef.current = ringback;
@@ -506,7 +559,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (callId !== "none") {
       logAudioDiagnostic(role, callId, "call cleanup started", { reason });
     }
-    stopRingtone();
+    stopRingtone(`call cleanup: ${reason}`);
     closeMedia(reason);
     callAcceptedCallIdRef.current = null;
     negotiationGuardRef.current.clear();
@@ -518,6 +571,31 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       logAudioDiagnostic(role, callId, "call cleanup completed", { reason });
     }
   }, [closeMedia, role, stopRingtone, updateCall]);
+
+  useEffect(() => {
+    if (role !== "cashier" || typeof BroadcastChannel === "undefined") return;
+    const channel = new BroadcastChannel(CALL_ACCEPTED_BROADCAST_CHANNEL);
+    callAcceptedChannelRef.current = channel;
+    const onMessage = (event: MessageEvent<unknown>) => {
+      if (!isCallAcceptedBroadcastMessage(event.data)) return;
+      const current = callRef.current;
+      if (
+        current?.callId !== event.data.callId
+        || current.direction !== "incoming"
+        || current.status !== "Incoming"
+      ) return;
+      logAudioDiagnostic(role, current.callId, "call accepted in another cashier tab");
+      finishCall("call accepted in another cashier tab");
+    };
+    channel.addEventListener("message", onMessage);
+    return () => {
+      channel.removeEventListener("message", onMessage);
+      if (callAcceptedChannelRef.current === channel) {
+        callAcceptedChannelRef.current = null;
+      }
+      channel.close();
+    };
+  }, [finishCall, role]);
 
   const notifyCallError = useCallback((error: unknown, fallbackKey: string) => {
     toast.error(getApiErrorMessage(error, translationRef.current(fallbackKey)));
@@ -1178,6 +1256,17 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         ...getHubDiagnosticContext(),
         ...getPeerDiagnosticDetails(peer),
       });
+      if (
+        role === "cashier"
+        && current?.direction === "incoming"
+        && current.callId === event?.callId
+      ) {
+        if (current.status === "Incoming") {
+          finishCall("CallAccepted received by another cashier session");
+        } else {
+          stopRingtone("matching CallAccepted event received");
+        }
+      }
       if (role !== "agent" || !current || current.callId !== event?.callId) return;
       if (!Number.isInteger(event.assignedCashierId) || event.assignedCashierId <= 0) {
         logAudioDiagnostic(role, event.callId, "CallAccepted ignored: invalid assignedCashierId");
@@ -1188,7 +1277,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         return;
       }
       callAcceptedCallIdRef.current = event.callId;
-      stopRingtone();
+      stopRingtone("Agent received CallAccepted");
       playEffect("/audio/prp-option-confirmation-hy.mp3", () => {
         toast.warning(translationRef.current("calling.soundPlaybackFailed"));
       });
@@ -1321,21 +1410,39 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
     });
 
+    let callStatusRefreshInProgress = false;
+    let callStatusRefreshFailureCallId: string | null = null;
     const refreshCurrentCall = async () => {
       const current = callRef.current;
-      if (!current) return;
+      if (!current || callStatusRefreshInProgress) return;
+      callStatusRefreshInProgress = true;
       try {
         const latest = await callingService.getCall(current.callId);
-        if (callRef.current?.callId !== current.callId) return;
+        const latestUiCall = callRef.current;
+        if (latestUiCall?.callId !== current.callId) return;
+        callStatusRefreshFailureCallId = null;
         if (["Ended", "Cancelled", "Rejected", "Failed"].includes(latest.status)) {
           finishCall("terminal call status recovered after Hub reconnect/visibility refresh");
           return;
         }
         if (
-          role === "agent"
-          && current.direction === "outgoing"
+          role === "cashier"
+          && latestUiCall.direction === "incoming"
+          && latestUiCall.status === "Incoming"
           && latest.status === "Accepted"
-          && !current.acceptedAt
+        ) {
+          logAudioDiagnostic(role, current.callId, "call accepted in another cashier session", {
+            assignedCashierId: latest.assignedCashierId,
+            acceptedAt: latest.acceptedAt,
+          });
+          finishCall("call accepted in another cashier session");
+          return;
+        }
+        if (
+          role === "agent"
+          && latestUiCall.direction === "outgoing"
+          && latest.status === "Accepted"
+          && !latestUiCall.acceptedAt
         ) {
           if (!Number.isInteger(latest.assignedCashierId) || (latest.assignedCashierId ?? 0) <= 0) {
             logAudioDiagnostic(role, current.callId, "CallAccepted recovery skipped: invalid assignedCashierId");
@@ -1348,7 +1455,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
             acceptedAt: latest.acceptedAt,
           });
           updateCall({
-            ...current,
+            ...latestUiCall,
             status: "ConnectingAudio",
             assignedCashierId: latest.assignedCashierId ?? undefined,
             acceptedAt: latest.acceptedAt ?? undefined,
@@ -1356,9 +1463,27 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
           void startPeerConnection(current.callId, true);
         }
       } catch (error) {
-        notifyCallError(error, "calling.callRefreshFailed");
+        if (callStatusRefreshFailureCallId !== current.callId) {
+          callStatusRefreshFailureCallId = current.callId;
+          logAudioDiagnostic(role, current.callId, "call status refresh failed", {
+            httpStatus: getHttpStatus(error) ?? null,
+            errorName: error instanceof Error ? error.name : "UnknownError",
+            errorMessage: getSafeErrorMessage(error),
+          });
+          notifyCallError(error, "calling.callRefreshFailed");
+        }
+      } finally {
+        callStatusRefreshInProgress = false;
       }
     };
+    const callStatusPollTimer = role === "cashier"
+      ? window.setInterval(() => {
+        const current = callRef.current;
+        if (current?.direction === "incoming" && current.status === "Incoming") {
+          void refreshCurrentCall();
+        }
+      }, 1000)
+      : null;
 
     connection.onreconnecting((error) => {
       logAudioDiagnostic(role, callRef.current?.callId ?? "none", "Calling Hub onreconnecting", {
@@ -1430,6 +1555,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return () => {
       active = false;
       if (retryTimer) clearTimeout(retryTimer);
+      if (callStatusPollTimer !== null) window.clearInterval(callStatusPollTimer);
       connection.off("IncomingCall");
       connection.off("CallAccepted");
       connection.off("CallTakenByAnotherCashier");
@@ -1500,7 +1626,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         httpStatus: getHttpStatus(error) ?? null,
         errorName: error instanceof Error ? error.name : "UnknownError",
       });
-      stopRingtone();
+      stopRingtone("call start request failed");
       closeMedia("call start request failed");
       if (getHttpStatus(error) === 409) {
         toast.info(translationRef.current("calling.noCashierOnline"));
@@ -1534,7 +1660,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
       return;
     }
     setIsBusy(true);
-    stopRingtone();
+    stopRingtone("Cashier clicked Answer");
     updateCall({ ...current, status: "Accepting" });
     try {
       const stream = await ensureMedia();
@@ -1603,7 +1729,11 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         assignedCashierId: accepted.assignedCashierId,
         userId: getUserIdFromToken(token),
       });
-      stopRingtone();
+      callAcceptedChannelRef.current?.postMessage({
+        type: "call-accepted",
+        callId: current.callId,
+      } satisfies CallAcceptedBroadcastMessage);
+      stopRingtone("Cashier accept API succeeded");
       updateCall({
         ...activeCall,
         status: "ConnectingAudio",
