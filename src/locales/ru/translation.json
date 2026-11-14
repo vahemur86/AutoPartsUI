@@ -599,6 +599,27 @@
       "listTitle": "Список расходов",
       "searchPlaceholder": "Поиск по названию, магазину или складу",
       "emptyState": "Расходы не найдены",
+      "addService": "Добавить услугу",
+      "tabs": {
+        "label": "Разделы расходов",
+        "services": "Услуги",
+        "paymentHistory": "История платежей"
+      },
+      "pageTitle": "Услуги и прочие расходы",
+      "pageDescription": "Управляйте услугами и отдельно записывайте каждый фактический платеж.",
+      "servicesCount": "услуг",
+      "resultsCount": "Показано {{shown}} из {{total}}",
+      "emptyDescription": "Добавьте услугу, например оплату электричества, газа или другой регулярный расход.",
+      "referenceAmount": "Сумма в описании",
+      "referencePaymentDay": "Плановый день",
+      "referenceNote": "Только справочная информация; это не запись об оплате и не лимит расходов.",
+      "definitionNote": "Услуга создается один раз. Ее сумма и день указаны для справки; каждый фактический платеж вводится отдельно.",
+      "recordPayment": "Записать платеж",
+      "deactivate": "Деактивировать",
+      "status": {
+        "active": "Активна",
+        "inactive": "Неактивна"
+      },
       "actions": {
         "view": "Просмотр"
       },
@@ -626,8 +647,8 @@
         "paymentDay": "День оплаты"
       },
       "confirmation": {
-        "deleteTitle": "Удалить расход",
-        "deleteDescription": "Вы уверены, что хотите удалить расход {{name}}?"
+        "deleteTitle": "Деактивировать услугу",
+        "deleteDescription": "Вы уверены, что хотите деактивировать услугу «{{name}}»?"
       },
       "validation": {
         "nameRequired": "Введите название расхода",
@@ -644,6 +665,56 @@
         "loadFailed": "Не удалось загрузить расходы",
         "saveFailed": "Не удалось сохранить расход",
         "deleteFailed": "Не удалось удалить расход"
+      },
+      "payment": {
+        "eyebrow": "Новый платеж",
+        "info": "Введите фактическую сумму. Для наличных нужна касса, для безналичной оплаты касса не требуется.",
+        "paymentType": "Тип оплаты",
+        "cashOnly": "Только наличными",
+        "nonCashOnly": "Только безналично",
+        "split": "Раздельно",
+        "cashPart": "Наличная часть",
+        "nonCashPart": "Безналичная часть",
+        "amount": "Сумма (AMD)",
+        "cashRegister": "Касса для наличных",
+        "comment": "Комментарий",
+        "submit": "Записать платеж",
+        "noLinkedShops": "Для магазинов, связанных с этим складом, кассы не найдены.",
+        "registersLoadFailed": "Не удалось загрузить кассы",
+        "balanceLoadFailed": "Не удалось загрузить баланс кассы",
+        "balanceRefreshFailed": "Платеж записан, но баланс кассы не удалось обновить.",
+        "balance": "Баланс",
+        "sessionOpen": "Смена открыта",
+        "sessionClosed": "Нет открытой смены",
+        "loadingBalance": "Загрузка баланса…",
+        "invalidAmounts": "Введите корректные суммы, равные нулю или больше.",
+        "amountRequired": "Общая сумма платежа должна быть больше нуля.",
+        "cashRegisterRequired": "Для наличной части выберите кассу.",
+        "openSessionRequired": "Для выбранной кассы наличной части должна быть открыта смена.",
+        "saveFailed": "Не удалось записать платеж",
+        "success": "Платеж успешно записан",
+        "historyTitle": "История платежей",
+        "allPayments": "Все платежи",
+        "serviceHistory": "История услуги",
+        "serviceHistoryFor": "{{name}} · история",
+        "fromDate": "С",
+        "toDate": "По",
+        "allRegisters": "Все кассы",
+        "allMethods": "Все способы",
+        "method": "Способ оплаты",
+        "cashTotal": "Наличные:",
+        "nonCashTotal": "Безналичные:",
+        "recordsCount": "Записей: {{count}}",
+        "historyLoadFailed": "Не удалось загрузить историю платежей",
+        "reportLoadFailed": "Не удалось загрузить отчет по платежам",
+        "page": "{{page}} / {{totalPages}}",
+        "reportEyebrow": "История",
+        "reportTitle": "Отчет по платежам",
+        "applyFilters": "Обновить отчет",
+        "allLocations": "Все объекты",
+        "filteredTotal": "Итого по фильтру",
+        "records": "Платежи",
+        "noPayments": "По выбранным фильтрам платежей нет"
       }
     }
   },
@@ -960,6 +1031,7 @@
       "saleProfit": "Прибыль по продажам",
       "warehouseInventory": "Остатки склада",
       "shopInventory": "Остатки магазина",
+      "cashFunds": "Наличные и безналичные остатки",
       "otherExpenses": "Прочие расходы"
     },
     "navigationGroups": {
@@ -968,6 +1040,34 @@
       "profitability": "Прибыль и продажи",
       "inventory": "Остатки",
       "expenses": "Расходы"
+    },
+    "cashFunds": {
+      "title": "Остатки наличных и безналичных средств",
+      "description": "Текущие остатки по кассам и общие суммы по всем кассам.",
+      "filtersTitle": "Фильтры отчета",
+      "allShops": "Все магазины",
+      "cashRegister": "Касса",
+      "allRegisters": "Все кассы",
+      "clearFilters": "Сбросить фильтры",
+      "refresh": "Обновить",
+      "retry": "Повторить",
+      "retryFilters": "Загрузить фильтры повторно",
+      "filtersLoadFailed": "Не удалось загрузить список магазинов и касс.",
+      "loadFailed": "Не удалось загрузить отчет о денежных средствах.",
+      "asOf": "Данные на {{time}}",
+      "totalCash": "Общий остаток наличных",
+      "totalNonCash": "Общий остаток безналичных средств",
+      "unassignedNonCash": "Безналичный остаток без привязки к кассе",
+      "breakdownTitle": "Остатки по кассам",
+      "registerCount": "Касс: {{count}}",
+      "noRegisters": "По выбранным фильтрам кассы не найдены.",
+      "shopCode": "Магазин",
+      "registerCode": "Касса",
+      "cashBalance": "Остаток наличных",
+      "nonCashBalance": "Остаток безналичных средств",
+      "status": "Статус",
+      "active": "Активна",
+      "inactive": "Неактивна"
     },
     "otherExpenses": {
       "monthlyTotal": "Прочие расходы за месяц",
@@ -4954,7 +5054,7 @@
       "overview": "Обзор",
       "contracts": "Договоры",
       "advances": "Авансы",
-      "orders": "Заявки",
+      "orders": "Заказы",
       "myRequests": "Мои заявки",
       "more": "Ещё"
     },

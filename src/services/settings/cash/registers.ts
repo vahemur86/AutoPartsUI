@@ -4,14 +4,17 @@ import api from "@/services";
 import { getApiErrorMessage, getHeaders } from "@/utils";
 import type {
   CashRegister,
+  CashRegisterListResponse,
   CashRegisterBalance,
   TopUpRequest,
   PendingTransaction,
 } from "@/types/cash";
 
-export const getCashRegisters = async (shopId?: number) => {
+export const getCashRegisters = async (
+  shopId?: number,
+): Promise<CashRegisterListResponse> => {
   try {
-    const response = await api.get("/cash-registers", {
+    const response = await api.get<CashRegisterListResponse>("/cash-registers", {
       params: {
         shopId,
       },

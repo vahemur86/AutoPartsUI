@@ -5,6 +5,8 @@ import { getApiErrorMessage, getHeaders } from "@/utils";
 import { AxiosError } from "axios";
 import type {
   DashboardReportResponse,
+  CashFundsReportDto,
+  CashFundsReportParams,
   SalesRevenueByEmployeeItem,
   SalesRevenueByPaymentMethodItem,
   SalesRevenueByPeriodItem,
@@ -100,6 +102,36 @@ const buildQuery = (params: QueryParams): string => {
   });
 
   return searchParams.toString();
+};
+
+export const getCashFundsReport = async (
+  params: CashFundsReportParams = {},
+): Promise<CashFundsReportDto> => {
+  const query: QueryParams = {};
+
+  if (params.shopId !== undefined) {
+    if (!Number.isInteger(params.shopId) || params.shopId <= 0) {
+      throw new Error("shopId must be a positive integer.");
+    }
+    query.shopId = params.shopId;
+  }
+
+  if (params.cashRegisterId !== undefined) {
+    if (!Number.isInteger(params.cashRegisterId) || params.cashRegisterId <= 0) {
+      throw new Error("cashRegisterId must be a positive integer.");
+    }
+    query.cashRegisterId = params.cashRegisterId;
+  }
+
+  const queryString = buildQuery(query);
+  const path = `/admin/cash-funds/report${queryString ? `?${queryString}` : ""}`;
+
+  try {
+    const response = await api.get<CashFundsReportDto>(path);
+    return response.data;
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Failed to fetch cash funds report."));
+  }
 };
 
 export const getProfitBySaleId = async (

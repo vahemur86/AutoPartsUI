@@ -1,5 +1,29 @@
 import type { DashboardOtherExpenseItem } from "@/types/otherExpenses";
 
+export interface CashFundsRegisterDto {
+  cashRegisterId: number;
+  shopId: number;
+  shopCode: string;
+  cashRegisterCode: string;
+  isActive: boolean;
+  cashBalanceAmd: number;
+  nonCashBalanceAmd: number;
+}
+
+export interface CashFundsReportDto {
+  asOfUtc: string;
+  registerCount: number;
+  totalCashBalanceAmd: number;
+  totalNonCashBalanceAmd: number;
+  unassignedNonCashBalanceAmd: number;
+  registers: CashFundsRegisterDto[];
+}
+
+export interface CashFundsReportParams {
+  shopId?: number;
+  cashRegisterId?: number;
+}
+
 export interface ShopReportSummaryResponse {
   shopId: number;
   fromDate: string;

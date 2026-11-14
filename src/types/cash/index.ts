@@ -30,6 +30,7 @@ export type { GetRegisterSession } from "./sessions";
 
 export type {
   CashRegister,
+  CashRegisterListResponse,
   CashRegisterBalance,
   TopUpRequest,
   Operator,

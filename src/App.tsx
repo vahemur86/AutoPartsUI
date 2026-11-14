@@ -108,6 +108,7 @@ import { WarehouseReports } from "@/components/financeReports/WarehouseReports";
 import { SalesReports } from "@/components/financeReports/SalesReports";
 import { DashboardReports } from "@/components/financeReports/DashboardReports";
 import { OtherExpensesReports } from "@/components/financeReports/OtherExpensesReports";
+import { CashFundsReport } from "@/components/financeReports/CashFundsReport";
 
 // Warehouses components
 import { TotalBatches } from "@/components/warehouses/TotalBatches";
@@ -384,6 +385,9 @@ export const App = () => {
                     />
                     <Route path="shop-inventory" element={<ShopInventoryStatus />} />
                     <Route path="other-expenses" element={<OtherExpensesReports />} />
+                    <Route element={<ProtectedRoute allowedRoles={["SuperAdmin"]} />}>
+                      <Route path="cash-funds" element={<CashFundsReport />} />
+                    </Route>
                   </Route>
                 </Route>
 

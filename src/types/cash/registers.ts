@@ -6,6 +6,10 @@ export interface CashRegister {
   isActive: boolean;
 }
 
+export type CashRegisterListResponse =
+  | CashRegister[]
+  | { items: CashRegister[] };
+
 export interface CashRegisterBalance {
   cashRegisterId: number;
   balance: number;

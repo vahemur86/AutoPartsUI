@@ -3373,9 +3373,31 @@
     padding: 9px;
   }
 
+  .productList {
+    grid-auto-rows: max-content;
+  }
+
   .productRow > div:first-child {
     padding-top: 6px;
     flex-basis: 100%;
+  }
+
+  .productMeta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 8px;
+  }
+
+  .productMeta .priceLine {
+    width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .productMeta .stockBadge {
+    width: fit-content;
+    max-width: 100%;
+    white-space: normal;
   }
 
   .addProductButton {

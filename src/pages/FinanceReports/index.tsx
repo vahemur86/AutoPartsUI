@@ -16,11 +16,13 @@ import {
   Boxes,
   ArrowLeftRight,
   ArrowRight,
+  WalletCards,
 } from "lucide-react";
 
 // components
 import { ReportsWorkspace, type ReportNavSection } from "@/pages/Reports/ReportsWorkspace";
 import { SectionHeader } from "@/components/common";
+import { useAppSelector } from "@/store/hooks";
 import styles from "./FinanceReportsHome.module.css";
 
 interface FinanceReportSection extends ReportNavSection {
@@ -29,6 +31,9 @@ interface FinanceReportSection extends ReportNavSection {
 
 const useFinanceReportSections = (): FinanceReportSection[] => {
   const { t } = useTranslation();
+  const isSuperAdmin = useAppSelector(
+    (state) => state.auth.user?.role?.toLowerCase() === "superadmin",
+  );
 
   return [
     {
@@ -103,6 +108,13 @@ const useFinanceReportSections = (): FinanceReportSection[] => {
           label: t("financeReports.navigation.shopInventory"),
           icon: Store,
         },
+        ...(isSuperAdmin
+          ? [{
+              path: "/cash-funds",
+              label: t("financeReports.navigation.cashFunds"),
+              icon: WalletCards,
+            }]
+          : []),
       ],
     },
     {

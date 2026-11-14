@@ -600,6 +600,27 @@
       "listTitle": "Expense list",
       "searchPlaceholder": "Search by name, shop, or warehouse",
       "emptyState": "No expenses found",
+      "addService": "Add service",
+      "tabs": {
+        "label": "Expense sections",
+        "services": "Services",
+        "paymentHistory": "Payment history"
+      },
+      "pageTitle": "Services and other expenses",
+      "pageDescription": "Manage expense services and record each actual payment separately.",
+      "servicesCount": "services",
+      "resultsCount": "Showing {{shown}} of {{total}}",
+      "emptyDescription": "Add a service such as electricity, gas, or another recurring expense.",
+      "referenceAmount": "Definition amount",
+      "referencePaymentDay": "Scheduled day",
+      "referenceNote": "For reference only; this is not a payment record or spending limit.",
+      "definitionNote": "Create a service once. Its amount and day are for reference only; enter each actual payment separately.",
+      "recordPayment": "Record payment",
+      "deactivate": "Deactivate",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
       "actions": {
         "view": "View"
       },
@@ -627,8 +648,8 @@
         "paymentDay": "Payment day"
       },
       "confirmation": {
-        "deleteTitle": "Delete expense",
-        "deleteDescription": "Are you sure you want to delete {{name}}?"
+        "deleteTitle": "Deactivate service",
+        "deleteDescription": "Are you sure you want to deactivate the “{{name}}” service?"
       },
       "validation": {
         "nameRequired": "Please enter expense name",
@@ -645,6 +666,56 @@
         "loadFailed": "Failed to load expenses",
         "saveFailed": "Failed to save expense",
         "deleteFailed": "Failed to delete expense"
+      },
+      "payment": {
+        "eyebrow": "New payment",
+        "info": "Enter the actual amount. Cash requires a register; non-cash payments do not.",
+        "paymentType": "Payment type",
+        "cashOnly": "Cash only",
+        "nonCashOnly": "Non-cash only",
+        "split": "Split",
+        "cashPart": "Cash portion",
+        "nonCashPart": "Non-cash portion",
+        "amount": "Amount (AMD)",
+        "cashRegister": "Cash register",
+        "comment": "Comment",
+        "submit": "Record payment",
+        "noLinkedShops": "No cash registers are available for shops linked to this warehouse.",
+        "registersLoadFailed": "Failed to load cash registers",
+        "balanceLoadFailed": "Failed to load cash register balance",
+        "balanceRefreshFailed": "Payment was recorded, but the register balance could not be refreshed.",
+        "balance": "Balance",
+        "sessionOpen": "Session open",
+        "sessionClosed": "No open session",
+        "loadingBalance": "Loading balance…",
+        "invalidAmounts": "Enter valid amounts that are zero or greater.",
+        "amountRequired": "The payment total must be greater than zero.",
+        "cashRegisterRequired": "Select a cash register for the cash payment portion.",
+        "openSessionRequired": "The selected cash register must have an open session.",
+        "saveFailed": "Failed to record payment",
+        "success": "Payment recorded successfully",
+        "historyTitle": "Payment history",
+        "allPayments": "All payments",
+        "serviceHistory": "Service history",
+        "serviceHistoryFor": "{{name}} · history",
+        "fromDate": "From",
+        "toDate": "To",
+        "allRegisters": "All registers",
+        "allMethods": "All methods",
+        "method": "Payment method",
+        "cashTotal": "Cash:",
+        "nonCashTotal": "Non-cash:",
+        "recordsCount": "Records: {{count}}",
+        "historyLoadFailed": "Failed to load payment history",
+        "reportLoadFailed": "Failed to load payment report",
+        "page": "{{page}} / {{totalPages}}",
+        "reportEyebrow": "History",
+        "reportTitle": "Payment report",
+        "applyFilters": "Refresh report",
+        "allLocations": "All locations",
+        "filteredTotal": "Filtered total",
+        "records": "Payments",
+        "noPayments": "No payments match these filters"
       }
     }
   },
@@ -965,6 +1036,7 @@
       "saleProfit": "Sales Profit",
       "warehouseInventory": "Warehouse Inventory",
       "shopInventory": "Shop Inventory",
+      "cashFunds": "Cash and non-cash balances",
       "otherExpenses": "Other Expenses"
     },
     "navigationGroups": {
@@ -973,6 +1045,34 @@
       "profitability": "Profit and Sales",
       "inventory": "Inventory",
       "expenses": "Expenses"
+    },
+    "cashFunds": {
+      "title": "Cash and non-cash fund balances",
+      "description": "View current register balances and all-register totals.",
+      "filtersTitle": "Report filters",
+      "allShops": "All shops",
+      "cashRegister": "Cash register",
+      "allRegisters": "All cash registers",
+      "clearFilters": "Clear filters",
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "retryFilters": "Reload filters",
+      "filtersLoadFailed": "Failed to load shops and cash registers.",
+      "loadFailed": "Failed to load the cash funds report.",
+      "asOf": "Balances as of {{time}}",
+      "totalCash": "Total cash balance",
+      "totalNonCash": "Total non-cash balance",
+      "unassignedNonCash": "Non-cash balance not assigned to a register",
+      "breakdownTitle": "Balances by cash register",
+      "registerCount": "Registers: {{count}}",
+      "noRegisters": "No registers match these filters.",
+      "shopCode": "Shop",
+      "registerCode": "Cash register",
+      "cashBalance": "Cash balance",
+      "nonCashBalance": "Non-cash balance",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
     },
     "otherExpenses": {
       "monthlyTotal": "Monthly other expenses",
@@ -4948,7 +5048,7 @@
       "overview": "Overview",
       "contracts": "Contracts",
       "advances": "Advances",
-      "orders": "Requests",
+      "orders": "Orders",
       "myRequests": "My requests",
       "more": "More"
     },

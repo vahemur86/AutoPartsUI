@@ -64,7 +64,8 @@ export const fetchCashRegisters = createAsyncThunk<
   { rejectValue: string }
 >("cashRegisters/fetchAll", async (shopId, { rejectWithValue }) => {
   try {
-    return await getCashRegisters(shopId);
+    const response = await getCashRegisters(shopId);
+    return Array.isArray(response) ? response : response.items;
   } catch (error) {
     return rejectWithValue(
       getApiErrorMessage(error, "Failed to fetch registers"),
