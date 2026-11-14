@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC, type RefObject } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
@@ -10,10 +10,18 @@ import {
   SlidersHorizontal,
   UserRound,
   UsersRound,
+  X,
 } from "lucide-react";
+import {
+  getCountryCallingCode,
+  parsePhoneNumberFromString,
+  type CountryCode,
+} from "libphonenumber-js";
 
 // ui-kit
-import { Button, Dropdown, DatePicker, TextField, Select } from "@/ui-kit";
+import { Button, DatePicker, TextField, Select } from "@/ui-kit";
+import { FormDrawer } from "@/components/common/FormDrawer";
+import { CountryPhoneInput } from "@/components/common";
 
 // types
 import type { CustomerType } from "@/types/settings";
@@ -28,6 +36,7 @@ import styles from "./FilterBatchesDropdown.module.css";
 export interface BatchReportFilters {
   fromDate: string | null;
   toDate: string | null;
+  clientName: string | null;
   superClientId: number | null;
   clientPhone: string | null;
   clientTypeId: number | null;
@@ -36,7 +45,6 @@ export interface BatchReportFilters {
 
 interface FilterBatchesDropdownProps {
   open: boolean;
-  anchorRef?: RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
   onSave: (filters: BatchReportFilters) => void;
   initialFilters?: BatchReportFilters;
@@ -46,6 +54,7 @@ interface FilterBatchesDropdownProps {
 const defaultFilters: BatchReportFilters = {
   fromDate: null,
   toDate: null,
+  clientName: null,
   superClientId: null,
   clientPhone: null,
   clientTypeId: null,
@@ -58,9 +67,15 @@ const parseDate = (iso: string | null): Date | null => {
   return isNaN(d.getTime()) ? null : d;
 };
 
+const getPhoneCountry = (phone: string | null): CountryCode => {
+  const trimmedPhone = phone?.trim();
+  return trimmedPhone
+    ? parsePhoneNumberFromString(trimmedPhone, "AM")?.country ?? "AM"
+    : "AM";
+};
+
 export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   open,
-  anchorRef,
   onOpenChange,
   onSave,
   initialFilters,
@@ -72,6 +87,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   const customerNames = useAppSelector((s) => s.customers.names);
 
   const [showDropdown, setShowDropdown] = useState(false);
+  const [phoneCountry, setPhoneCountry] = useState<CountryCode>("AM");
 
   const [selectedClient, setSelectedClient] = useState<{
     id: number | null;
@@ -113,10 +129,11 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
             : "",
         supplierClientId: initialFilters.supplierClientId ?? null,
       });
+      setPhoneCountry(getPhoneCountry(initialFilters.clientPhone));
 
       setSelectedClient({
         id: initialFilters.supplierClientId ?? null,
-        displayName: "",
+        displayName: initialFilters.clientName ?? "",
       });
     }
   }, [open, initialFilters]);
@@ -142,6 +159,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
     onSave({
       fromDate: toSafeISO(tempValues.fromDate),
       toDate: toSafeISO(tempValues.toDate),
+      clientName: selectedClient.displayName.trim() || null,
       superClientId:
         superClientIdNum != null && !Number.isNaN(superClientIdNum)
           ? superClientIdNum
@@ -158,6 +176,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   };
 
   const handleReset = () => {
+    setPhoneCountry("AM");
     setTempValues({
       fromDate: null,
       toDate: null,
@@ -177,25 +196,35 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
   };
 
   return (
-    <Dropdown
+    <FormDrawer
       open={open}
       onOpenChange={onOpenChange}
-      anchorRef={anchorRef}
-      align="start"
-      side="left"
+      eyebrow={t("cashbox.batches.filters.filterHint")}
       title={t("common.filters")}
-      contentClassName={styles.dropdownContentOverride}
-    >
-      <div className={styles.header}>
-        <span className={styles.headerIcon} aria-hidden="true">
-          <SlidersHorizontal size={17} />
-        </span>
-        <div className={styles.headerCopy}>
-          <span className={styles.title}>{t("common.filters")}</span>
-          <span className={styles.headerHint}>{t("cashbox.batches.filters.filterHint")}</span>
+      titleId="batch-reports-filters-title"
+      closeLabel={t("common.close")}
+      icon={<SlidersHorizontal size={18} />}
+      footer={(
+        <div className={styles.primaryActions}>
+          <Button
+            variant="secondary"
+            className={styles.neutralButton}
+            onClick={handleReset}
+          >
+            <RotateCcw size={15} aria-hidden="true" />
+            {t("common.reset")}
+          </Button>
+          <Button
+            variant="primary"
+            className={styles.primaryButton}
+            onClick={handleApply}
+          >
+            <Check size={15} aria-hidden="true" />
+            {t("common.save")}
+          </Button>
         </div>
-      </div>
-
+      )}
+    >
       <div className={styles.content}>
         <section className={styles.filterSection}>
           <div className={styles.sectionHeading}>
@@ -343,23 +372,54 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
                 <Phone size={14} aria-hidden="true" />
                 <span>{t("cashbox.batches.filters.clientPhone")}</span>
               </label>
-              <TextField
-                value={tempValues.clientPhone}
-                onChange={(e) =>
+              <CountryPhoneInput
+                phone={tempValues.clientPhone}
+                selectedCountry={phoneCountry}
+                onCountryChange={(country) => {
+                  const oldDialCode = `+${getCountryCallingCode(phoneCountry)}`;
+                  const newDialCode = `+${getCountryCallingCode(country)}`;
+                  const localPhone = tempValues.clientPhone.startsWith(oldDialCode)
+                    ? tempValues.clientPhone.slice(oldDialCode.length)
+                    : tempValues.clientPhone;
+                  setPhoneCountry(country);
                   setTempValues((previous) => ({
                     ...previous,
-                    clientPhone: e.target.value,
-                  }))
+                    clientPhone: localPhone.trim()
+                      ? `${newDialCode}${localPhone}`.trim()
+                      : "",
+                  }));
+                }}
+                onPhoneChange={(clientPhone) =>
+                  setTempValues((previous) => ({ ...previous, clientPhone }))
                 }
-                placeholder={t("cashbox.batches.filters.placeholderClientPhone")}
+                containerClassName={styles.phoneNumberField}
+                preservePhoneFormat
               />
             </div>
 
             <div className={styles.inputWrapper}>
-              <label className={styles.labelWithIcon}>
-                <UsersRound size={14} aria-hidden="true" />
-                <span>{t("cashbox.batches.filters.customerType")}</span>
-              </label>
+              <div className={styles.typeLabelRow}>
+                <label className={styles.labelWithIcon}>
+                  <UsersRound size={14} aria-hidden="true" />
+                  <span>{t("cashbox.batches.filters.customerType")}</span>
+                </label>
+                {tempValues.clientTypeId && (
+                  <button
+                    type="button"
+                    className={styles.clearTypeButton}
+                    onClick={() =>
+                      setTempValues((previous) => ({
+                        ...previous,
+                        clientTypeId: "",
+                      }))
+                    }
+                    aria-label={t("common.reset")}
+                    title={t("common.reset")}
+                  >
+                    <X size={13} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
               <Select
                 value={tempValues.clientTypeId}
                 onChange={(e) =>
@@ -380,25 +440,7 @@ export const FilterBatchesDropdown: FC<FilterBatchesDropdownProps> = ({
           </div>
         </section>
 
-        <div className={styles.primaryActions}>
-          <Button
-            variant="secondary"
-            className={styles.neutralButton}
-            onClick={handleReset}
-          >
-            <RotateCcw size={15} aria-hidden="true" />
-            {t("common.reset")}
-          </Button>
-          <Button
-            variant="primary"
-            className={styles.primaryButton}
-            onClick={handleApply}
-          >
-            <Check size={15} aria-hidden="true" />
-            {t("common.save")}
-          </Button>
-        </div>
       </div>
-    </Dropdown>
+    </FormDrawer>
   );
 };

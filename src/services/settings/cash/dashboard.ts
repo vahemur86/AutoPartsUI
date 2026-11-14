@@ -129,6 +129,7 @@ export const getBatchDetailsForFilter = async ({
   cashRegisterId,
   fromDate,
   toDate,
+  clientName,
   supplierClientId,
   clientPhone,
   clientTypeId,
@@ -136,19 +137,23 @@ export const getBatchDetailsForFilter = async ({
   pageSize = 50,
 }: GetBatchDetailsForFilterParams) => {
   try {
+    const trimmedClientName = clientName?.trim();
+    const trimmedClientPhone = clientPhone?.trim();
+    const params = {
+      fromDate,
+      toDate,
+      supplierClientId,
+      ...(trimmedClientName ? { clientName: trimmedClientName } : {}),
+      ...(trimmedClientPhone ? { clientPhone: trimmedClientPhone } : {}),
+      clientTypeId,
+      ...(cashRegisterId != null ? { cashRegisterId } : {}),
+      page,
+      pageSize,
+    };
     const { data } = await api.get<BatchDetailsForFilter>(
       `/cashbox-sessions/batch-details`,
       {
-        params: {
-          fromDate,
-          toDate,
-          supplierClientId,
-          clientPhone,
-          clientTypeId,
-          cashRegisterId,
-          page,
-          pageSize,
-        },
+        params,
         headers: getHeaders(cashRegisterId),
       },
     );

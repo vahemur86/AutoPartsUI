@@ -25,6 +25,7 @@ interface CountryPhoneInputProps {
   disabled?: boolean;
   containerClassName?: string;
   accentedCountrySelect?: boolean;
+  preservePhoneFormat?: boolean;
 }
 
 const getFlagEmoji = (countryCode: string) =>
@@ -42,6 +43,7 @@ export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
   disabled,
   containerClassName,
   accentedCountrySelect = false,
+  preservePhoneFormat = false,
 }) => {
   const { t, i18n } = useTranslation();
 
@@ -71,10 +73,26 @@ export const CountryPhoneInput: FC<CountryPhoneInputProps> = ({
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "");
+    let value = preservePhoneFormat
+      ? e.target.value
+      : e.target.value.replace(/\D/g, "");
 
-    if (selectedCountry === "AM" && value.startsWith("0")) {
+    if (!preservePhoneFormat && selectedCountry === "AM" && value.startsWith("0")) {
       value = value.substring(1);
+    }
+
+    if (preservePhoneFormat) {
+      const pastedCountry = allCountryOptions.find((country) =>
+        value.trimStart().startsWith(country.dialCode),
+      );
+      if (pastedCountry) {
+        onCountryChange(pastedCountry.code);
+        value = value.trimStart().slice(pastedCountry.dialCode.length);
+        onPhoneChange(value ? `${pastedCountry.dialCode}${value}` : "");
+        return;
+      }
+
+      if (value.startsWith(dialCode)) value = value.slice(dialCode.length);
     }
 
     const fullNumber = value ? `${dialCode}${value}` : "";

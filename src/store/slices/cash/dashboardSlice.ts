@@ -32,6 +32,7 @@ interface CashDashboardState {
   openSessionsSummary: OpenSessionSummary[];
   powderBatches: PowderBatchResponse | null;
   batchDetailsForFilter: BatchDetailsForFilter | null;
+  isBatchDetailsForFilterLoading: boolean;
   selectedPowderBatch: PowderBatch | null;
   powderBatchesSummary: PowderBatchesSummary | null;
   isLoading: boolean;
@@ -43,6 +44,7 @@ const initialState: CashDashboardState = {
   openSessionsSummary: [],
   powderBatches: null,
   batchDetailsForFilter: null,
+  isBatchDetailsForFilterLoading: false,
   selectedPowderBatch: null,
   powderBatchesSummary: null,
   isLoading: false,
@@ -175,9 +177,16 @@ const cashDashboardSlice = createSlice({
         state.isLoading = false;
         state.powderBatches = action.payload;
       })
+      .addCase(fetchBatchDetailsForFilter.pending, (state) => {
+        state.isBatchDetailsForFilterLoading = true;
+      })
       .addCase(fetchBatchDetailsForFilter.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isBatchDetailsForFilterLoading = false;
         state.batchDetailsForFilter = action.payload;
+      })
+      .addCase(fetchBatchDetailsForFilter.rejected, (state) => {
+        state.isBatchDetailsForFilterLoading = false;
       })
       .addCase(fetchPowderBatchesSummary.fulfilled, (state, action) => {
         state.isLoading = false;

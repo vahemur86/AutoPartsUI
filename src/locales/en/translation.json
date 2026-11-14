@@ -2462,7 +2462,9 @@
         "placeholderClientTypeId": "By client type ID",
         "specialCustomer": "Special customer",
         "specialCustomerTooltip": "When selected, report includes only purchases from this special customer (kept separate, not mixed with other purchases). Totals are computed from those purchases only.",
-        "specialOnly": "Special-customer only"
+        "specialOnly": "Special-customer only",
+        "noResults": "No results for these filters",
+        "noResultsHint": "Try changing or clearing the filters, then search again."
       },
       "columns": {
         "createdAt": "Created At",

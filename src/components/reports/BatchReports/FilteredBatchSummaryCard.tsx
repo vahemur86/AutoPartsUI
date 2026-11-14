@@ -36,7 +36,7 @@ export const FilteredBatchSummaryCard: FC<Props> = ({ data, t, styles }) => {
         <strong>{data.avgRhPerKg_g ?? 0} g</strong>
       </div>
 
-      <div className={styles.totalCard}>
+      <div className={`${styles.totalCard} ${styles.costTotalCard}`}>
         <span>{t("cashbox.batches.details.cost")}</span>
         <strong>{(data.totalCostAmd ?? 0).toLocaleString()} AMD</strong>
       </div>

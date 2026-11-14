@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState, useRef } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
@@ -28,6 +28,7 @@ import {
   Phone,
   Percent,
   Star,
+  SearchX,
   Target,
   TrendingUp,
   User,
@@ -525,9 +526,9 @@ export const BatchReports: FC = () => {
     isLoading && !batches?.results?.length,
   );
   const { customerTypes } = useAppSelector((state) => state.customerTypes);
-  const { batchDetailsForFilter } = useAppSelector(
-    (state) => state.cashDashboard,
-  );
+  const { batchDetailsForFilter, isBatchDetailsForFilterLoading } =
+    useAppSelector((state) => state.cashDashboard);
+  const hasFilteredBatchResults = Boolean(batchDetailsForFilter?.items?.length);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [expandedBatchId, setExpandedBatchId] = useState<number | null>(null);
@@ -535,18 +536,18 @@ export const BatchReports: FC = () => {
   const [activeFilters, setActiveFilters] = useState<BatchReportFilters>({
     fromDate: null,
     toDate: null,
+    clientName: null,
     superClientId: null,
     clientPhone: null,
     clientTypeId: null,
     supplierClientId: null,
   });
-  const filterAnchorRef = useRef<HTMLButtonElement>(null);
-
   useEffect(() => {
     dispatch(fetchCustomerTypes());
   }, [dispatch]);
 
   const hasClientFilter =
+    !!activeFilters.clientName ||
     activeFilters.superClientId != null ||
     !!activeFilters.clientPhone ||
     activeFilters.clientTypeId != null;
@@ -555,10 +556,10 @@ export const BatchReports: FC = () => {
   const activeFilterCount = [
     activeFilters.fromDate,
     activeFilters.toDate,
+    activeFilters.clientName || activeFilters.supplierClientId,
     activeFilters.superClientId,
     activeFilters.clientPhone,
     activeFilters.clientTypeId,
-    activeFilters.supplierClientId,
   ].filter((value) => value != null && value !== "").length;
 
   useEffect(() => {
@@ -569,6 +570,7 @@ export const BatchReports: FC = () => {
           pageSize: PAGE_SIZE,
           fromDate: activeFilters.fromDate ?? undefined,
           toDate: activeFilters.toDate ?? undefined,
+          clientName: activeFilters.clientName?.trim() || undefined,
           supplierClientId: activeFilters.supplierClientId ?? undefined,
           clientPhone: activeFilters.clientPhone ?? undefined,
           clientTypeId: activeFilters.clientTypeId ?? undefined,
@@ -602,8 +604,8 @@ export const BatchReports: FC = () => {
             undefined,
 
           clientPhone: activeFilters.clientPhone ?? undefined,
+          clientName: activeFilters.clientName?.trim() || undefined,
           clientTypeId: activeFilters.clientTypeId ?? undefined,
-          cashRegisterId: 1,
         }),
       )
         .unwrap()
@@ -638,7 +640,6 @@ export const BatchReports: FC = () => {
         <div className={styles.headerActions}>
           <button
             type="button"
-            ref={filterAnchorRef}
             className={`${styles.filterButton} ${isFilterOpen ? styles.filterButtonOpen : ""} ${activeFilterCount ? styles.filterButtonActive : ""}`}
             onClick={() => setIsFilterOpen(true)}
             aria-expanded={isFilterOpen}
@@ -658,7 +659,6 @@ export const BatchReports: FC = () => {
 
       <FilterBatchesDropdown
         open={isFilterOpen}
-        anchorRef={filterAnchorRef}
         onOpenChange={setIsFilterOpen}
         onSave={handleApplyFilters}
         initialFilters={activeFilters}
@@ -759,18 +759,23 @@ export const BatchReports: FC = () => {
             <div className={styles.itemsSection}>
               <h5 className={styles.subTitle}>
                 {t("cashbox.batches.title")} (
-                {batchDetailsForFilter?.totalItems || 0})
+                {isBatchDetailsForFilterLoading
+                  ? "..."
+                  : batchDetailsForFilter?.totalItems ?? 0}
+                )
               </h5>
 
-              {batchDetailsForFilter && (
-                <FilteredBatchSummaryCard
-                  data={batchDetailsForFilter}
-                  t={t}
-                  styles={styles}
-                />
-              )}
+              {!isBatchDetailsForFilterLoading &&
+                hasFilteredBatchResults &&
+                batchDetailsForFilter && (
+                  <FilteredBatchSummaryCard
+                    data={batchDetailsForFilter}
+                    t={t}
+                    styles={styles}
+                  />
+                )}
 
-              {isLoading && !batchDetailsForFilter?.items?.length ? (
+              {isBatchDetailsForFilterLoading ? (
                 <div className={styles.filterSkeletonGrid}>
                   {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className={styles.filterSkeletonCard}>
@@ -780,7 +785,7 @@ export const BatchReports: FC = () => {
                     </div>
                   ))}
                 </div>
-              ) : (
+              ) : hasFilteredBatchResults ? (
                 <div className={styles.itemsGrid}>
                   {batchDetailsForFilter?.items?.map((batch) => (
                     <FilteredBatchCard
@@ -791,7 +796,19 @@ export const BatchReports: FC = () => {
                     />
                   ))}
                 </div>
-              )}
+              ) : batchDetailsForFilter ? (
+                <div
+                  className={`${styles.emptyState} ${styles.filterEmptyState}`}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span className={styles.filterEmptyIcon}>
+                    <SearchX size={25} aria-hidden="true" />
+                  </span>
+                  <h3>{t("cashbox.batches.filters.noResults")}</h3>
+                  <p>{t("cashbox.batches.filters.noResultsHint")}</p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
