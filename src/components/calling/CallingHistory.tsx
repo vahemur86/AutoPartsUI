@@ -5,11 +5,18 @@ import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 import type { CallHistoryPage } from "@/types/calling";
 import styles from "./Calling.module.css";
 
+const getDateLocale = (language: string) => {
+  const normalizedLanguage = language.toLowerCase();
+  return normalizedLanguage === "am" || normalizedLanguage.startsWith("am-")
+    ? "hy-AM"
+    : language;
+};
+
 const formatDateTime = (value: string, language: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? value
-    : new Intl.DateTimeFormat(language, {
+    : new Intl.DateTimeFormat(getDateLocale(language), {
         dateStyle: "medium",
         timeStyle: "short",
       }).format(date);

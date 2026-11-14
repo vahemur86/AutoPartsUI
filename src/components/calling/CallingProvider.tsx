@@ -68,6 +68,7 @@ interface CallingContextValue {
   isConnected: boolean;
   startCall: () => Promise<void>;
   call: UiCall | null;
+  openIncomingCallDialog: () => void;
 }
 
 const CallingContext = createContext<CallingContextValue | null>(null);
@@ -292,6 +293,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [call, setCallState] = useState<UiCall | null>(null);
   const [durationSeconds, setDurationSeconds] = useState(0);
   const [isBusy, setIsBusy] = useState(false);
+  const [isIncomingCallDialogOpen, setIsIncomingCallDialogOpen] = useState(false);
   const connectionRef = useRef<HubConnection | null>(null);
   const callRef = useRef<UiCall | null>(null);
   const callAcceptedCallIdRef = useRef<string | null>(null);
@@ -309,6 +311,10 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const pendingOfferRef = useRef<WebRtcDescriptionEvent | null>(null);
   const ringtoneContextRef = useRef<AudioContext | null>(null);
   const ringtoneTimerRef = useRef<number | null>(null);
+  const ringtoneNodesRef = useRef(new Set<{
+    oscillator: OscillatorNode;
+    gain: GainNode;
+  }>());
   const agentRingbackRef = useRef<HTMLAudioElement | null>(null);
   const updateCall = useCallback((next: UiCall | null | ((current: UiCall | null) => UiCall | null)) => {
     const updated = typeof next === "function" ? next(callRef.current) : next;
@@ -363,6 +369,16 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
     const context = ringtoneContextRef.current;
     ringtoneContextRef.current = null;
+    ringtoneNodesRef.current.forEach(({ oscillator, gain }) => {
+      if (context && context.state !== "closed") {
+        gain.gain.cancelScheduledValues(context.currentTime);
+        gain.gain.setValueAtTime(0, context.currentTime);
+      }
+      oscillator.stop();
+      oscillator.disconnect();
+      gain.disconnect();
+    });
+    ringtoneNodesRef.current.clear();
     if (context && context.state !== "closed") {
       void context.close();
     }
@@ -372,6 +388,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     notes: Array<{ frequency: number; offset: number; duration: number }>,
     interval: number,
   ) => {
+    if (ringtoneContextRef.current && ringtoneContextRef.current.state !== "closed") return;
     stopRingtone();
     if (typeof window.AudioContext === "undefined") {
       toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
@@ -396,6 +413,13 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         oscillator.type = "sine";
         oscillator.frequency.value = note.frequency;
         oscillator.connect(gain);
+        const nodes = { oscillator, gain };
+        ringtoneNodesRef.current.add(nodes);
+        oscillator.addEventListener("ended", () => {
+          ringtoneNodesRef.current.delete(nodes);
+          oscillator.disconnect();
+          gain.disconnect();
+        }, { once: true });
         oscillator.start(noteStart);
         oscillator.stop(noteStart + note.duration);
       }
@@ -408,7 +432,8 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         if (ringtoneContextRef.current === context) playRingBurst();
       })
       .catch(() => {
-        if (ringtoneContextRef.current === context) stopRingtone();
+        if (ringtoneContextRef.current !== context) return;
+        stopRingtone();
         toast.warning(translationRef.current("calling.ringtonePlaybackFailed"));
       });
   }, [stopRingtone]);
@@ -485,6 +510,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     closeMedia(reason);
     callAcceptedCallIdRef.current = null;
     negotiationGuardRef.current.clear();
+    setIsIncomingCallDialogOpen(false);
     updateCall(null);
     setDurationSeconds(0);
     setIsBusy(false);
@@ -1131,6 +1157,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         muted: false,
         connectionState: "new",
       };
+      setIsIncomingCallDialogOpen(false);
       logAudioDiagnostic(role, event.callId, "incoming call displayed", {
         ...getHubDiagnosticContext(),
         ...getPeerDiagnosticDetails(peerRef.current),
@@ -1576,6 +1603,7 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
         assignedCashierId: accepted.assignedCashierId,
         userId: getUserIdFromToken(token),
       });
+      stopRingtone();
       updateCall({
         ...activeCall,
         status: "ConnectingAudio",
@@ -1679,17 +1707,35 @@ export const CallingProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return () => window.clearInterval(intervalId);
   }, [call?.acceptedAt]);
 
+  const openIncomingCallDialog = useCallback(() => {
+    const current = callRef.current;
+    if (
+      role === "cashier"
+      && current?.direction === "incoming"
+      && (current.status === "Incoming" || current.status === "Accepting")
+    ) {
+      setIsIncomingCallDialogOpen(true);
+    }
+  }, [role]);
+
   const value = useMemo<CallingContextValue>(() => ({
     isConnected,
     startCall,
     call,
-  }), [call, isConnected, startCall]);
+    openIncomingCallDialog,
+  }), [call, isConnected, openIncomingCallDialog, startCall]);
+
+  const visibleCall = call && (
+    role !== "cashier"
+    || call.direction !== "incoming"
+    || isIncomingCallDialogOpen
+  ) ? call : null;
 
   return (
     <CallingContext.Provider value={value}>
       {children}
       <CallingOverlays
-        call={call}
+        call={visibleCall}
         durationSeconds={durationSeconds}
         isBusy={isBusy}
         onAccept={() => void acceptCall()}
@@ -1729,22 +1775,43 @@ export const CallingStatusButton = () => {
 };
 
 export const CashierCallingStatus = () => {
-  const { isConnected } = useCalling();
+  const { isConnected, call, openIncomingCallDialog } = useCalling();
   const { t } = useTranslation();
+  const incomingCall = call?.direction === "incoming" && call.status === "Incoming"
+    ? call
+    : null;
 
-  return (
+  const statusContent = (
+    <>
+      <PhoneIncoming size={16} aria-hidden="true" />
+      <span>{t(incomingCall ? "calling.incomingCall" : isConnected ? "calling.readyForCalls" : "calling.callsUnavailable")}</span>
+      <span
+        className={`${styles.callConnectionDot} ${isConnected ? styles.callConnectionDotActive : ""}`}
+        aria-hidden="true"
+      />
+    </>
+  );
+
+  return incomingCall ? (
+    <button
+      type="button"
+      className={`${styles.cashierCallStatus} ${styles.cashierCallStatusIncoming}`}
+      onClick={openIncomingCallDialog}
+      aria-haspopup="dialog"
+      aria-live="assertive"
+      aria-label={`${t("calling.incomingCall")}: ${incomingCall.agentName}`}
+      title={`${t("calling.incomingCall")}: ${incomingCall.agentName}`}
+    >
+      {statusContent}
+    </button>
+  ) : (
     <div
       className={styles.cashierCallStatus}
       role="status"
       aria-live="polite"
       title={t(isConnected ? "calling.readyForCalls" : "calling.callsUnavailable")}
     >
-      <PhoneIncoming size={16} aria-hidden="true" />
-      <span>{t(isConnected ? "calling.readyForCalls" : "calling.callsUnavailable")}</span>
-      <span
-        className={`${styles.callConnectionDot} ${isConnected ? styles.callConnectionDotActive : ""}`}
-        aria-hidden="true"
-      />
+      {statusContent}
     </div>
   );
 };
