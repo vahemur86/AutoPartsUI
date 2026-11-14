@@ -51,13 +51,7 @@ export const CallingHistory = () => {
   const totalPages = page ? Math.max(1, Math.ceil(page.totalItems / page.pageSize)) : 1;
 
   return (
-    <section className={styles.history} id="calling-history">
-      <header className={styles.historyHeader}>
-        <div>
-          <span>{t("calling.historyEyebrow")}</span>
-          <h3>{t("calling.historyTitle")}</h3>
-        </div>
-      </header>
+    <section className={styles.history}>
       {error && <p className={styles.historyError} role="alert">{error}</p>}
       {loading ? (
         <p className={styles.historyState} role="status">{t("calling.historyLoading")}</p>

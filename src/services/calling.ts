@@ -28,7 +28,7 @@ export const callingService = {
       undefined,
       getRequestConfig(),
     );
-    return response.data;
+    return { data: response.data, httpStatus: response.status };
   },
 
   rejectCall: async (callId: string) => {

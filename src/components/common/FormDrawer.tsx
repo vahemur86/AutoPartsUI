@@ -13,7 +13,7 @@ interface FormDrawerProps {
   closeDisabled?: boolean;
   icon: ReactNode;
   children: ReactNode;
-  footer: ReactNode;
+  footer?: ReactNode;
 }
 
 export const FormDrawer = ({
@@ -76,7 +76,7 @@ export const FormDrawer = ({
           </button>
         </header>
         <div className={styles.body}>{children}</div>
-        <footer className={styles.footer}>{footer}</footer>
+        {footer != null && <footer className={styles.footer}>{footer}</footer>}
       </aside>
     </div>,
     document.body,

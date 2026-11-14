@@ -1,18 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, History } from "lucide-react";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { agentPortalService } from "@/services/agentPortal";
 import { ConfirmationModal } from "@/ui-kit";
+import { FormDrawer } from "@/components/common/FormDrawer";
 import { useOperator } from "@/pages/Operator/hooks";
 import { CashierMode, OperatorHeader, TopUpConfirmationModal } from "@/pages/Operator/components";
 import { CashierNotifications } from "@/pages/AgentPortal/CashierNotifications";
 import styles from "./ShopOperatorPage.module.css";
 import { CallingHistory } from "@/components/calling/CallingHistory";
-import { CashierCallingStatusButton } from "@/components/calling/CallingProvider";
+import { CashierCallingStatus } from "@/components/calling/CallingProvider";
 
 export const ShopOperatorPage = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const ShopOperatorPage = () => {
   const userRole = useAppSelector((state) => state.auth.user?.role.toLowerCase());
   const accessToken = useAppSelector((state) => state.auth.token);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
+  const [isCallingHistoryOpen, setIsCallingHistoryOpen] = useState(false);
   const {
     uiState,
     setUiState,
@@ -92,7 +94,18 @@ export const ShopOperatorPage = () => {
               <ClipboardList size={17} aria-hidden="true" />
               {pendingRequestCount > 0 && <span className={styles.pendingRequestCount}>{pendingRequestCount > 99 ? "99+" : pendingRequestCount}</span>}
             </Link>
-            <CashierCallingStatusButton />
+            <button
+              type="button"
+              className={styles.callHistoryButton}
+              onClick={() => setIsCallingHistoryOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={isCallingHistoryOpen}
+              aria-label={t("calling.historyTitle")}
+            >
+              <History size={17} aria-hidden="true" />
+              <span>{t("calling.historyTitle")}</span>
+            </button>
+            <CashierCallingStatus />
             <CashierNotifications
               accessToken={accessToken}
               onOpenRequest={openCashierRequest}
@@ -100,9 +113,23 @@ export const ShopOperatorPage = () => {
             />
           </div>
         )}
-        {userRole === "cashier" && <CallingHistory />}
         <CashierMode cashRegisterId={userData?.cashRegisterId} />
       </div>
+
+      {userRole === "cashier" && (
+        <FormDrawer
+          open={isCallingHistoryOpen}
+          onOpenChange={setIsCallingHistoryOpen}
+          eyebrow={t("calling.historyEyebrow")}
+          title={t("calling.historyTitle")}
+          titleId="calling-history-title"
+          closeLabel={t("common.close")}
+          icon={<History size={20} />}
+          footer={null}
+        >
+          <CallingHistory />
+        </FormDrawer>
+      )}
 
       {!!selectors.cashRegisters.pendingDetails && (
         <TopUpConfirmationModal

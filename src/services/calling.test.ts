@@ -41,10 +41,13 @@ describe("callingService", () => {
       acceptedAt: "2026-11-12T10:00:04Z",
     };
     vi.mocked(api.post)
-      .mockResolvedValueOnce({ data: accepted })
+      .mockResolvedValueOnce({ data: accepted, status: 200 })
       .mockResolvedValue({ data: undefined });
 
-    await expect(callingService.acceptCall("call/one")).resolves.toEqual(accepted);
+    await expect(callingService.acceptCall("call/one")).resolves.toEqual({
+      data: accepted,
+      httpStatus: 200,
+    });
     await callingService.rejectCall("call/one");
     await callingService.endCall("call/one");
 

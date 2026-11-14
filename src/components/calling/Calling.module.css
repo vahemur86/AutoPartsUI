@@ -199,16 +199,8 @@
   color: #d7c58d;
   font-size: 11px;
   font-weight: 700;
-  text-decoration: none;
-}
-
-.cashierCallStatus:hover {
-  border-color: rgba(229, 210, 154, 0.62);
-}
-
-.cashierCallStatus:focus-visible {
-  outline: 2px solid #e5d29a;
-  outline-offset: 3px;
+  cursor: default;
+  user-select: none;
 }
 
 .callConnectionDot {
@@ -241,32 +233,7 @@
 .history {
   display: grid;
   gap: 12px;
-  margin-top: 20px;
-  padding: 16px;
-  border: 1px solid rgba(196, 169, 106, 0.2);
-  border-radius: 10px;
-  background: rgba(13, 18, 14, 0.56);
   color: #eee9db;
-}
-
-.historyHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.historyHeader span {
-  color: #b7aa80;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.historyHeader h3 {
-  margin: 4px 0 0;
-  color: #f0e5c4;
-  font-size: 16px;
 }
 
 .historyList {
@@ -360,10 +327,6 @@
   .callActions button {
     width: 100%;
     min-height: 46px;
-  }
-
-  .history {
-    padding: 12px;
   }
 
   .historyItem {
