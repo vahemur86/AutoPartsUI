@@ -12,6 +12,24 @@
   gap: 16px;
 }
 
+.filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.sealFilter {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.sealNumberField {
+  width: min(280px, 100%);
+}
+
 .title {
   font-size: 24px;
   font-weight: 600;
@@ -163,6 +181,23 @@
 .sellButton.sellButton:focus-visible {
   outline: 2px solid #e5d29a;
   outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sealFilter {
+    align-items: flex-end;
+  }
+
+  .sealNumberField {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .todayRow {

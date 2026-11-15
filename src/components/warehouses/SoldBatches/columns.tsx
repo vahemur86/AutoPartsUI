@@ -40,6 +40,11 @@ export const getSoldBatchesColumns = ({
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
   }),
+  columnHelper.accessor((row) => row.sealNumber ?? "", {
+    id: "sealNumber",
+    header: i18next.t("warehouses.soldBatches.columns.sealNumber"),
+    cell: (info) => info.getValue() || "-",
+  }),
 
   columnHelper.accessor("currencyCode", {
     header: i18next.t("warehouses.soldBatches.columns.currencyCode"),

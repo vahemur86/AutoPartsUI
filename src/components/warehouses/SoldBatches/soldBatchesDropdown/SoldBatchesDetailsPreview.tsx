@@ -123,6 +123,12 @@ export const SoldBatchesDetailsPreview: FC<Props> = ({
             {t("warehouses.soldBatches.dropdown.saleId")}
             <strong>#{lot.salesLotId}</strong>
           </span>
+          {lot.sealNumber && (
+            <span className={styles.saleIdLabel}>
+              {t("warehouses.soldBatches.columns.sealNumber")}
+              <strong>{lot.sealNumber}</strong>
+            </span>
+          )}
         </div>
         {lot.hasSpecialCustomerLots && (
           <span className={styles.specialBadge}>

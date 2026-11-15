@@ -43,6 +43,7 @@ import {
   Coins,
   Info,
   Scale,
+  Search,
   WalletCards,
   X,
 } from "lucide-react";
@@ -70,6 +71,8 @@ export const BatchesToSale = () => {
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
     null,
   );
+  const [sealNumberInput, setSealNumberInput] = useState("");
+  const [sealNumberFilter, setSealNumberFilter] = useState("");
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
   const [lotToSell, setLotToSell] = useState<BaseLot | null>(null);
@@ -107,10 +110,17 @@ export const BatchesToSale = () => {
         fetchSalesLots({
           warehouseId: selectedWarehouseId,
           cashRegisterId,
+          ...(sealNumberFilter ? { sealNumber: sealNumberFilter } : {}),
         }),
       );
     }
-  }, [selectedWarehouseId, cashRegisterId, currentPageIndex, dispatch]);
+  }, [
+    selectedWarehouseId,
+    cashRegisterId,
+    sealNumberFilter,
+    currentPageIndex,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (error) {
@@ -268,6 +278,17 @@ export const BatchesToSale = () => {
     setCurrentPageIndex(0);
   };
 
+  const applySealNumberFilter = () => {
+    setSealNumberFilter(sealNumberInput.trim());
+    setCurrentPageIndex(0);
+  };
+
+  const clearSealNumberFilter = () => {
+    setSealNumberInput("");
+    setSealNumberFilter("");
+    setCurrentPageIndex(0);
+  };
+
   const handlePaginationChange = (pageIndex: number) => {
     setCurrentPageIndex(pageIndex);
   };
@@ -277,17 +298,52 @@ export const BatchesToSale = () => {
   return (
     <div className={styles.batchesToSaleWrapper}>
       <div className={styles.header}>
-        <WarehousePageSelect
-          label={t("warehouses.batchesToSale.warehouseSelectorTitle")}
-          placeholder={t("warehouses.form.selectWarehouse")}
-          value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
-          onChange={handleWarehouseChange}
-          disabled={isLoading}
-          options={warehouses.map((warehouse) => ({
-            value: String(warehouse.id),
-            label: warehouse.code,
-          }))}
-        />
+        <div className={styles.filters}>
+          <WarehousePageSelect
+            label={t("warehouses.batchesToSale.warehouseSelectorTitle")}
+            placeholder={t("warehouses.form.selectWarehouse")}
+            value={selectedWarehouseId ? selectedWarehouseId.toString() : ""}
+            onChange={handleWarehouseChange}
+            disabled={isLoading}
+            options={warehouses.map((warehouse) => ({
+              value: String(warehouse.id),
+              label: warehouse.code,
+            }))}
+          />
+          <div className={styles.sealFilter}>
+            <TextField
+              className={styles.sealNumberField}
+              label={t("warehouses.batchesToSale.filters.sealNumber")}
+              value={sealNumberInput}
+              maxLength={50}
+              onChange={(e) => setSealNumberInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") applySealNumberFilter();
+              }}
+            />
+            <Button
+              type="button"
+              size="small"
+              variant="primary"
+              aria-label={t("warehouses.batchesToSale.filters.searchSealNumber")}
+              title={t("warehouses.batchesToSale.filters.searchSealNumber")}
+              onClick={applySealNumberFilter}
+            >
+              <Search size={16} aria-hidden="true" />
+            </Button>
+            <Button
+              type="button"
+              size="small"
+              variant="secondary"
+              aria-label={t("warehouses.batchesToSale.filters.clearSealNumber")}
+              title={t("warehouses.batchesToSale.filters.clearSealNumber")}
+              onClick={clearSealNumberFilter}
+              disabled={!sealNumberInput && !sealNumberFilter}
+            >
+              <X size={16} aria-hidden="true" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div className={styles.tableSection}>

@@ -1747,6 +1747,8 @@
         "unknown": "Unknown"
       },
       "previewTitle": "Sale Preview",
+      "sealNumber": "Seal number",
+      "sealNumberHint": "Enter a seal number (up to 50 characters)",
       "totalPowder": "Total Powder",
       "totalCost": "Total Cost",
       "details": {
@@ -1800,6 +1802,7 @@
       },
       "error": {
         "noItemsSelected": "Please add at least one batch before creating a sale",
+        "invalidSealNumber": "Enter a valid seal number (50 characters maximum)",
         "failedToCreateSale": "Failed to create sales lot"
       }
     },
@@ -1807,6 +1810,11 @@
       "loading": "Loading batches to sale...",
       "emptyState": "No batches available for sale.",
       "warehouseSelectorTitle": "Select warehouse",
+      "filters": {
+        "sealNumber": "Seal number",
+        "searchSealNumber": "Search by seal number",
+        "clearSealNumber": "Clear seal number filter"
+      },
       "sale": "Sell",
       "statuses": {
         "open": "Open",
@@ -1852,6 +1860,7 @@
       },
       "columns": {
         "id": "ID",
+        "sealNumber": "Seal number",
         "warehouseId": "Warehouse ID",
         "status": "Status",
         "itemsCostTotalAmd": "Cost",
@@ -1907,6 +1916,7 @@
       "columns": {
         "id": "ID",
         "salesLotId": "Sales Lot ID",
+        "sealNumber": "Seal number",
         "warehouseId": "Warehouse ID",
         "currencyCode": "Currency",
         "revenueTotal": "Sold Price",

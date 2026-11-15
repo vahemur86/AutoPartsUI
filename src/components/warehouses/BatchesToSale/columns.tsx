@@ -48,6 +48,11 @@ export const getSalesLotColumns = ({
     header: "ID",
     cell: (info) => `#${info.getValue()}`,
   }),
+  columnHelper.accessor((row) => row.sealNumber ?? "", {
+    id: "sealNumber",
+    header: i18next.t("warehouses.batchesToSale.columns.sealNumber"),
+    cell: (info) => info.getValue() || "-",
+  }),
   columnHelper.display({
     id: "special",
     header: () => null,

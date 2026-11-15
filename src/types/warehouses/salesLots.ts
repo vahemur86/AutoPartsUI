@@ -1,6 +1,7 @@
 export interface BaseLot {
   id: number;
   warehouseId: number;
+  sealNumber?: string;
   status: number;
   totalPowderKg: number;
   itemsCostTotalAmd: number;
@@ -33,6 +34,7 @@ export interface LotItem {
 
 export interface GetSalesLotsParams {
   warehouseId?: number;
+  sealNumber?: string;
   status?: number;
   fromDate?: string;
   toDate?: string;
@@ -49,6 +51,7 @@ export interface CreateSalesLotItem {
 
 export interface CreateSalesLotRequest {
   warehouseId: number;
+  sealNumber: string;
   items: CreateSalesLotItem[];
   cashRegisterId: number;
 }
@@ -109,6 +112,7 @@ export interface PowderSale {
   id: number;
   salesLotId: number;
   warehouseId: number;
+  sealNumber?: string;
   currencyCode: string;
   revenueTotal: number;
   revenueTotalAmd: number;

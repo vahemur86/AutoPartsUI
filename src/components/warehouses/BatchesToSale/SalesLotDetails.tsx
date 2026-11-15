@@ -18,6 +18,10 @@ export const SalesLotDetails = ({ lot }: { lot: BaseLot }) => {
   return (
     <div className={styles.lotDetails}>
       <div className={styles.lotDetail}>
+        <span>{t("warehouses.batchesToSale.columns.sealNumber")}</span>
+        <strong>{lot.sealNumber || "-"}</strong>
+      </div>
+      <div className={styles.lotDetail}>
         <span>{t("warehouses.batchesToSale.columns.status")}</span>
         <span className={status.className}>
           {t(`warehouses.batchesToSale.statuses.${statusKeys[lot.status] ?? "unknown"}`)}

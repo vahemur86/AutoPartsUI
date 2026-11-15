@@ -27,6 +27,7 @@ import type {
   SellSalesLotResponse,
   BaseLot,
   SalesLotPreviewResponse,
+  SalesLotPreviewRequest,
   SalesLotsSellFormResponse,
   SellRecalculationResponse,
   GetLotPreviewResponse,
@@ -106,7 +107,7 @@ export const fetchSalesLotDetails = createAsyncThunk<
 
 export const fetchSalesLotPreview = createAsyncThunk<
   SalesLotPreviewResponse,
-  CreateSalesLotRequest,
+  SalesLotPreviewRequest,
   { rejectValue: string }
 >("salesLots/fetchPreview", async (request, { rejectWithValue }) => {
   try {

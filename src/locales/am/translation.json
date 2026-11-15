@@ -1744,6 +1744,8 @@
         "unknown": "Անհայտ"
       },
       "previewTitle": "Վաճառքի նախադիտում",
+      "sealNumber": "Պլոմբի համար",
+      "sealNumberHint": "Մուտքագրեք պլոմբի համարը (մինչև 50 նիշ)",
       "details": {
         "individualIntakes": "Առանձին մուտքեր"
       },
@@ -1795,6 +1797,7 @@
       },
       "error": {
         "noItemsSelected": "Վաճառք ստեղծելուց առաջ ավելացրեք առնվազն մեկ խումբ",
+        "invalidSealNumber": "Մուտքագրեք պլոմբի վավեր համար (առավելագույնը 50 նիշ)",
         "failedToCreateSale": "Չհաջողվեց ստեղծել վաճառքի խումբը"
       }
     },
@@ -1802,6 +1805,11 @@
       "loading": "Վաճառքի համար պատրաստի խմբերը բեռնվում են...",
       "emptyState": "Վաճառքի համար հասանելի խմբեր չեն գտնվել։",
       "warehouseSelectorTitle": "Պահեստի ընտրություն",
+      "filters": {
+        "sealNumber": "Պլոմբի համար",
+        "searchSealNumber": "Փնտրել պլոմբի համարով",
+        "clearSealNumber": "Մաքրել պլոմբի համարի ֆիլտրը"
+      },
       "sale": "Վաճառել",
       "statuses": {
         "open": "Հասանելի",
@@ -1847,6 +1855,7 @@
       },
       "columns": {
         "id": "ID",
+        "sealNumber": "Պլոմբի համար",
         "warehouseId": "Պահեստի ID",
         "status": "Կարգավիճակ",
         "itemsCostTotalAmd": "Ինքնարժեք",
@@ -1901,6 +1910,7 @@
       "columns": {
         "id": "ID",
         "salesLotId": "Վաճառքի խմբի ID",
+        "sealNumber": "Պլոմբի համար",
         "warehouseId": "Պահեստի ID",
         "currencyCode": "Արժույթ",
         "revenueTotal": "Վաճառքի գին",

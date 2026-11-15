@@ -36,6 +36,7 @@ interface SalesLotPreviewModalProps {
   cashRegisterId: number;
   onConfirm: (
     updatedItems: Array<{ inventoryLotId: number; powderKg: number }>,
+    sealNumber: string,
   ) => void;
   onRemoveItem: (id: number) => void;
   isCreating: boolean;
@@ -59,6 +60,7 @@ export const SalesLotPreviewModal = ({
   );
 
   const [localWeights, setLocalWeights] = useState<Record<number, string>>({});
+  const [sealNumber, setSealNumber] = useState("");
 
   const debouncedFetch = useMemo(
     () =>
@@ -214,11 +216,13 @@ export const SalesLotPreviewModal = ({
       <Button
         variant="primary"
         className={styles.previewConfirmButton}
-        onClick={() => onConfirm(getFinalItems())}
+        onClick={() => onConfirm(getFinalItems(), sealNumber.trim())}
         disabled={
           isCreating ||
           isLoading ||
           !!error ||
+          !sealNumber.trim() ||
+          sealNumber.trim().length > 50 ||
           items.length === 0 ||
           getFinalItems().some((i) => i.powderKg <= 0)
         }
@@ -287,6 +291,16 @@ export const SalesLotPreviewModal = ({
             </div>
           ))}
         </div>
+
+        <TextField
+          label={`${t("warehouses.totalBatches.sealNumber")} *`}
+          value={sealNumber}
+          onChange={(e) => setSealNumber(e.target.value)}
+          maxLength={50}
+          required
+          helperText={t("warehouses.totalBatches.sealNumberHint")}
+          autoComplete="off"
+        />
 
         <div className={styles.summaryDivider} />
 

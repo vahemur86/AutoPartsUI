@@ -1747,6 +1747,8 @@
         "unknown": "Неизвестно"
       },
       "previewTitle": "Предпросмотр продажи",
+      "sealNumber": "Номер пломбы",
+      "sealNumberHint": "Введите номер пломбы (не более 50 символов)",
       "totalPowder": "Всего порошка",
       "totalCost": "Общая стоимость",
       "details": {
@@ -1800,6 +1802,7 @@
       },
       "error": {
         "noItemsSelected": "Пожалуйста, добавьте хотя бы одну партию перед созданием продажи",
+        "invalidSealNumber": "Введите корректный номер пломбы (не более 50 символов)",
         "failedToCreateSale": "Не удалось создать партию продажи"
       }
     },
@@ -1807,6 +1810,11 @@
       "loading": "Загрузка партий к продаже...",
       "emptyState": "Партии для продажи не найдены.",
       "warehouseSelectorTitle": "Выбор склада",
+      "filters": {
+        "sealNumber": "Номер пломбы",
+        "searchSealNumber": "Найти по номеру пломбы",
+        "clearSealNumber": "Очистить фильтр по номеру пломбы"
+      },
       "sale": "Продать",
       "statuses": {
         "open": "Открыта",
@@ -1852,6 +1860,7 @@
       },
       "columns": {
         "id": "ID",
+        "sealNumber": "Номер пломбы",
         "warehouseId": "ID склада",
         "status": "Статус",
         "totalPowderKg": "Вес",
@@ -1906,6 +1915,7 @@
       "columns": {
         "id": "ID",
         "salesLotId": "ID партии продажи",
+        "sealNumber": "Номер пломбы",
         "warehouseId": "ID склада",
         "currencyCode": "Валюта",
         "revenueTotal": "Продажная цена",

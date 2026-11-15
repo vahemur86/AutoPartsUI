@@ -187,13 +187,21 @@ export const TotalBatches = () => {
 
   const handleConfirmSale = async (
     updatedItems: Array<{ inventoryLotId: number; powderKg: number }>,
+    sealNumber: string,
   ) => {
     if (!selectedWarehouseId) return;
+
+    const normalizedSealNumber = sealNumber.trim();
+    if (!normalizedSealNumber || normalizedSealNumber.length > 50) {
+      toast.error(t("warehouses.totalBatches.error.invalidSealNumber"));
+      return;
+    }
 
     try {
       await dispatch(
         createNewSalesLot({
           warehouseId: selectedWarehouseId,
+          sealNumber: normalizedSealNumber,
           items: updatedItems,
           cashRegisterId,
         }),
