@@ -1,10 +1,19 @@
-import { useEffect, useState, useMemo } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { debounce } from "lodash";
 
 // stores
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchSalesLotPreview } from "@/store/slices/warehouses/salesLotsSlice";
+import type { InventoryLot } from "@/types/warehouses/reports";
+import type { SalesLotPreviewItem } from "@/types/warehouses/salesLots";
 
 // ui-kit
 import { Modal, Button, TextField } from "@/ui-kit";
@@ -15,6 +24,7 @@ import {
   Calculator,
   Check,
   CircleDollarSign,
+  GripVertical,
   Layers3,
   LoaderCircle,
   Package,
@@ -32,6 +42,7 @@ interface SalesLotPreviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   warehouseId: number;
+  inventoryLots: InventoryLot[];
   items: Array<{ inventoryLotId: number; powderKg: number }>;
   cashRegisterId: number;
   onConfirm: (
@@ -46,6 +57,7 @@ export const SalesLotPreviewModal = ({
   open,
   onOpenChange,
   warehouseId,
+  inventoryLots = [],
   items,
   cashRegisterId,
   onConfirm,
@@ -61,6 +73,10 @@ export const SalesLotPreviewModal = ({
 
   const [localWeights, setLocalWeights] = useState<Record<number, string>>({});
   const [sealNumber, setSealNumber] = useState("");
+  const [orderedItems, setOrderedItems] = useState(items);
+  const [draggedItemId, setDraggedItemId] = useState<number | null>(null);
+  const [draggedPointerId, setDraggedPointerId] = useState<number | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<number | null>(null);
 
   const debouncedFetch = useMemo(
     () =>
@@ -83,7 +99,28 @@ export const SalesLotPreviewModal = ({
       items.forEach((item) => {
         initialWeights[item.inventoryLotId] = item.powderKg.toString();
       });
-      setLocalWeights(initialWeights);
+      setOrderedItems((currentItems) => {
+        const availableIds = new Set(items.map((item) => item.inventoryLotId));
+        const retainedItems = currentItems.filter((item) =>
+          availableIds.has(item.inventoryLotId),
+        );
+        const retainedIds = new Set(
+          retainedItems.map((item) => item.inventoryLotId),
+        );
+        return [
+          ...retainedItems,
+          ...items.filter((item) => !retainedIds.has(item.inventoryLotId)),
+        ];
+      });
+      setLocalWeights((currentWeights) => {
+        const nextWeights: Record<number, string> = {};
+        items.forEach((item) => {
+          nextWeights[item.inventoryLotId] =
+            currentWeights[item.inventoryLotId] ??
+            initialWeights[item.inventoryLotId];
+        });
+        return nextWeights;
+      });
 
       dispatch(
         fetchSalesLotPreview({
@@ -121,7 +158,12 @@ export const SalesLotPreviewModal = ({
 
   const handleRemove = (id: number) => {
     onRemoveItem(id);
-    const updatedItems = items.filter((item) => item.inventoryLotId !== id);
+    setOrderedItems((currentItems) =>
+      currentItems.filter((item) => item.inventoryLotId !== id),
+    );
+    const updatedItems = orderedItems.filter(
+      (item) => item.inventoryLotId !== id,
+    );
 
     if (updatedItems.length === 0) {
       onOpenChange(false);
@@ -138,6 +180,102 @@ export const SalesLotPreviewModal = ({
         cashRegisterId,
       }),
     );
+  };
+
+  const reorderItems = useCallback((sourceId: number, targetId: number) => {
+    if (sourceId === targetId) return;
+
+    setOrderedItems((currentItems) => {
+      const sourceIndex = currentItems.findIndex(
+        (item) => item.inventoryLotId === sourceId,
+      );
+      const targetIndex = currentItems.findIndex(
+        (item) => item.inventoryLotId === targetId,
+      );
+      if (sourceIndex < 0 || targetIndex < 0) return currentItems;
+
+      const nextItems = [...currentItems];
+      const [movedItem] = nextItems.splice(sourceIndex, 1);
+      nextItems.splice(targetIndex, 0, movedItem);
+      return nextItems;
+    });
+  }, []);
+
+  const handlePointerDown = (
+    event: ReactPointerEvent<HTMLSpanElement>,
+    id: number,
+  ) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    setDraggedItemId(id);
+    setDraggedPointerId(event.pointerId);
+    setDropTargetId(id);
+  };
+
+  useEffect(() => {
+    if (draggedItemId === null || draggedPointerId === null) return;
+
+    const getTargetId = (event: PointerEvent) => {
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const card = target?.closest<HTMLElement>("[data-inventory-lot-id]");
+      const id = Number(card?.dataset.inventoryLotId);
+      return Number.isInteger(id) && id > 0 ? id : null;
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerId === draggedPointerId) {
+        setDropTargetId(getTargetId(event));
+      }
+    };
+
+    const finishPointerDrag = (event: PointerEvent) => {
+      if (event.pointerId !== draggedPointerId) return;
+
+      const targetId = getTargetId(event);
+      if (targetId !== null) reorderItems(draggedItemId, targetId);
+      setDraggedItemId(null);
+      setDraggedPointerId(null);
+      setDropTargetId(null);
+    };
+
+    const cancelPointerDrag = (event: PointerEvent) => {
+      if (event.pointerId !== draggedPointerId) return;
+      setDraggedItemId(null);
+      setDraggedPointerId(null);
+      setDropTargetId(null);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", finishPointerDrag);
+    window.addEventListener("pointercancel", cancelPointerDrag);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", finishPointerDrag);
+      window.removeEventListener("pointercancel", cancelPointerDrag);
+    };
+  }, [draggedItemId, draggedPointerId, reorderItems]);
+
+  const handleCardKeyDown = (
+    event: KeyboardEvent<HTMLElement>,
+    id: number,
+  ) => {
+    if (
+      event.target !== event.currentTarget ||
+      !event.altKey ||
+      (event.key !== "ArrowLeft" && event.key !== "ArrowRight")
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    const currentIndex = orderedItems.findIndex(
+      (item) => item.inventoryLotId === id,
+    );
+    const targetItem = orderedItems[
+      currentIndex + (event.key === "ArrowLeft" ? -1 : 1)
+    ];
+    if (targetItem) reorderItems(id, targetItem.inventoryLotId);
   };
 
   const formatValue = (val: number, decimals = 2) =>
@@ -196,8 +334,24 @@ export const SalesLotPreviewModal = ({
       }));
   }, [previewData, t]);
 
+  const inventoryLotsById = useMemo(
+    () => new Map(inventoryLots.map((lot) => [lot.id, lot])),
+    [inventoryLots],
+  );
+
+  const previewItemsById = useMemo(
+    () => {
+      const itemsById = new Map<number, SalesLotPreviewItem>();
+      previewData?.items.forEach((item) =>
+        itemsById.set(item.inventoryLotId, item),
+      );
+      return itemsById;
+    },
+    [previewData],
+  );
+
   const getFinalItems = () =>
-    items.map((item) => ({
+    orderedItems.map((item) => ({
       ...item,
       powderKg: parseFloat(localWeights[item.inventoryLotId]) || 0,
     }));
@@ -223,7 +377,7 @@ export const SalesLotPreviewModal = ({
           !!error ||
           !sealNumber.trim() ||
           sealNumber.trim().length > 50 ||
-          items.length === 0 ||
+          orderedItems.length === 0 ||
           getFinalItems().some((i) => i.powderKg <= 0)
         }
       >
@@ -258,49 +412,132 @@ export const SalesLotPreviewModal = ({
       className={styles.previewModal}
     >
       <div className={styles.previewContainer}>
-        <div className={styles.editableItemsList}>
+        <div className={styles.previewItemsHeader}>
           <div className={styles.previewSectionTitle}>
             <Package size={16} aria-hidden="true" />
             <h4>{t("warehouses.totalBatches.details.individualIntakes")}</h4>
           </div>
-          {items.map((item) => (
-            <div key={item.inventoryLotId} className={styles.editableItemRow}>
-              <div className={styles.itemHeaderGroup}>
-                <span className={styles.itemId}>#{item.inventoryLotId}</span>
-                <button
-                  type="button"
-                  className={styles.deleteIconButton}
-                  onClick={() => handleRemove(item.inventoryLotId)}
-                  aria-label={t("common.delete")}
-                  title={t("common.delete")}
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-              <div className={styles.inputWrapper}>
-                <TextField
-                  type="text"
-                  inputMode="decimal"
-                  value={localWeights[item.inventoryLotId] || ""}
-                  onChange={(e) =>
-                    handleWeightChange(item.inventoryLotId, e.target.value)
-                  }
-                  suffix={t("warehouses.totalBatches.unitKg")}
-                />
-              </div>
-            </div>
-          ))}
+          <TextField
+            className={styles.sealNumberField}
+            label={`${t("warehouses.totalBatches.sealNumber")} *`}
+            value={sealNumber}
+            onChange={(e) => setSealNumber(e.target.value)}
+            maxLength={50}
+            required
+            autoComplete="off"
+          />
         </div>
 
-        <TextField
-          label={`${t("warehouses.totalBatches.sealNumber")} *`}
-          value={sealNumber}
-          onChange={(e) => setSealNumber(e.target.value)}
-          maxLength={50}
-          required
-          helperText={t("warehouses.totalBatches.sealNumberHint")}
-          autoComplete="off"
-        />
+        <div className={styles.editableItemsList}>
+          {orderedItems.map((item) => {
+            const inventoryLot = inventoryLotsById.get(item.inventoryLotId);
+            const previewItem = previewItemsById.get(item.inventoryLotId);
+            const selectedPowderKg =
+              parseFloat(localWeights[item.inventoryLotId]) || 0;
+            const selfCostAmd =
+              inventoryLot && inventoryLot.remainingPowderKg > 0
+                ? (inventoryLot.remainingCostAmd / inventoryLot.remainingPowderKg) *
+                  selectedPowderKg
+                : null;
+
+            const formatMetalWeight = (weightPerKg: number | undefined) =>
+              weightPerKg === undefined
+                ? "-"
+                : `${formatValue(weightPerKg * selectedPowderKg, 2)} g`;
+
+            return (
+              <article
+                key={item.inventoryLotId}
+                className={[
+                  styles.editableItemCard,
+                  draggedItemId === item.inventoryLotId
+                    ? styles.draggingItem
+                    : "",
+                  dropTargetId === item.inventoryLotId
+                    ? styles.dropTarget
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                tabIndex={0}
+                aria-keyshortcuts="Alt+ArrowLeft Alt+ArrowRight"
+                data-inventory-lot-id={item.inventoryLotId}
+                aria-label={t(
+                  "warehouses.totalBatches.details.reorderHelp",
+                  { id: item.inventoryLotId },
+                )}
+                onKeyDown={(event) =>
+                  handleCardKeyDown(event, item.inventoryLotId)
+                }
+              >
+                <div className={styles.itemCardHeader}>
+                  <span className={styles.itemIdentity}>
+                    <span
+                      className={styles.dragHandle}
+                      title={t(
+                        "warehouses.totalBatches.details.reorderHelp",
+                        { id: item.inventoryLotId },
+                      )}
+                      onPointerDown={(event) =>
+                        handlePointerDown(event, item.inventoryLotId)
+                      }
+                    >
+                      <GripVertical size={14} aria-hidden="true" />
+                    </span>
+                    <span className={styles.itemId}>
+                      #{item.inventoryLotId}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.deleteIconButton}
+                    onClick={() => handleRemove(item.inventoryLotId)}
+                    aria-label={t("common.delete")}
+                    title={t("common.delete")}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+
+                <div className={styles.itemCardDetails}>
+                  <TextField
+                    className={styles.itemWeightField}
+                    containerClassName={styles.itemWeightInput}
+                    type="text"
+                    inputMode="decimal"
+                    label={t("warehouses.totalBatches.columns.selectedKg")}
+                    value={localWeights[item.inventoryLotId] || ""}
+                    onChange={(e) =>
+                      handleWeightChange(item.inventoryLotId, e.target.value)
+                    }
+                    suffix={t("warehouses.totalBatches.unitKg")}
+                  />
+                  <div className={styles.itemCost}>
+                    <span>{t("warehouses.totalBatches.details.itemCost")}</span>
+                    <strong>
+                      {selfCostAmd !== null
+                        ? `${formatValue(selfCostAmd, 0)} AMD`
+                        : "-"}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className={styles.itemMetals}>
+                  {[
+                    { label: "Pt", value: previewItem?.ptPerKg_g },
+                    { label: "Pd", value: previewItem?.pdPerKg_g },
+                    { label: "Rh", value: previewItem?.rhPerKg_g },
+                  ].map((metal) => (
+                    <div className={styles.itemMetal} key={metal.label}>
+                      <span>{metal.label}</span>
+                      <strong>{formatMetalWeight(metal.value)}</strong>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
 
         <div className={styles.summaryDivider} />
 

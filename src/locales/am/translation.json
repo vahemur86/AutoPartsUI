@@ -1745,9 +1745,10 @@
       },
       "previewTitle": "Վաճառքի նախադիտում",
       "sealNumber": "Պլոմբի համար",
-      "sealNumberHint": "Մուտքագրեք պլոմբի համարը (մինչև 50 նիշ)",
       "details": {
-        "individualIntakes": "Առանձին մուտքեր"
+        "individualIntakes": "Առանձին մուտքեր",
+        "itemCost": "Ինքնարժեք",
+        "reorderHelp": "Խումբ #{{id}}. Տեղափոխելու համար քաշեք բռնակը կամ օգտագործեք Alt+ձախ/աջ սլաքները։"
       },
       "columns": {
         "id": "ID",

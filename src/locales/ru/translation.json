@@ -1748,11 +1748,12 @@
       },
       "previewTitle": "Предпросмотр продажи",
       "sealNumber": "Номер пломбы",
-      "sealNumberHint": "Введите номер пломбы (не более 50 символов)",
       "totalPowder": "Всего порошка",
       "totalCost": "Общая стоимость",
       "details": {
-        "individualIntakes": "Индивидуальные приемы"
+        "individualIntakes": "Индивидуальные приемы",
+        "itemCost": "Себестоимость",
+        "reorderHelp": "Партия #{{id}}. Перетащите за ручку или используйте Alt+стрелки влево/вправо."
       },
       "columns": {
         "id": "ID",

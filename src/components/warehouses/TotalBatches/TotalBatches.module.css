@@ -470,18 +470,34 @@
   flex: 0 0 auto;
 }
 
+.previewItemsHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sealNumberField {
+  width: min(280px, 100%);
+}
+
 .editableItemsList {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 220px; /* reduced from 320px */
-  overflow-y: auto;
-  padding-right: 12px;
+  flex-shrink: 0;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 10px;
   margin-bottom: 4px;
+  scroll-snap-type: x proximity;
+  scrollbar-color: rgba(196, 169, 106, 0.35) transparent;
+  scrollbar-width: thin;
 }
 
 .editableItemsList::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
   display: block;
 }
 
@@ -502,21 +518,128 @@
   background-clip: content-box;
 }
 
-.editableItemRow {
+.editableItemCard {
+  display: flex;
+  flex: 0 0 220px;
+  flex-direction: column;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(196, 169, 106, 0.07), rgba(18, 24, 20, 0.72));
+  scroll-snap-align: start;
+  transition: border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease, transform 150ms ease;
+}
+
+.editableItemCard:focus-visible {
+  outline: 2px solid #e5d29a;
+  outline-offset: 2px;
+}
+
+.editableItemCard.draggingItem {
+  opacity: 0.45;
+}
+
+.editableItemCard.dropTarget:not(.draggingItem) {
+  border-color: rgba(232, 210, 151, 0.7);
+  box-shadow: 0 0 0 2px rgba(196, 169, 106, 0.14);
+  transform: translateY(-2px);
+}
+
+.itemCardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 9px 12px;
-  border: 1px solid rgba(196, 169, 106, 0.12);
-  border-radius: 7px;
-  background: linear-gradient(100deg, rgba(196, 169, 106, 0.045), rgba(255, 255, 255, 0.018));
 }
 
-.itemHeaderGroup {
-  display: flex;
+.itemIdentity {
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 5px;
+}
+
+.dragHandle {
+  display: inline-flex;
+  align-items: center;
+  color: #aeb6ad;
+  cursor: grab;
+  touch-action: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.itemCardDetails {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: end;
+  gap: 8px;
+}
+
+.itemCost {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  color: #aeb6ad;
+  font-size: 11px;
+}
+
+.itemCost strong {
+  color: #eee9db;
+  font-weight: 650;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.itemWeightField {
+  min-width: 0;
+}
+
+.itemWeightField label {
+  font-size: 10px;
+}
+
+.itemWeightField input {
+  font-size: 12px;
+}
+
+.itemWeightInput {
+  height: 34px;
+  padding: 6px 8px;
+  gap: 4px;
+}
+
+.itemMetals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.itemMetal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 5px 3px;
+  border: 1px solid rgba(196, 169, 106, 0.12);
+  border-radius: 6px;
+  background: rgba(196, 169, 106, 0.045);
+}
+
+.itemMetal span {
+  color: #aeb6ad;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.itemMetal strong {
+  color: #eee9db;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .deleteIconButton {
@@ -542,13 +665,13 @@
 }
 
 .itemId {
+  padding: 3px 7px;
   color: #e3e5de;
-  font-size: 12px;
+  border: 1px solid rgba(196, 169, 106, 0.18);
+  border-radius: 5px;
+  background: rgba(196, 169, 106, 0.08);
+  font-size: 11px;
   font-weight: 650;
-}
-
-.inputWrapper {
-  width: 130px;
 }
 
 .summaryDivider {
@@ -826,15 +949,20 @@
     gap: 8px;
   }
 
-  .editableItemRow {
-    gap: 8px;
-    padding: 8px;
+  .editableItemCard {
+    flex-basis: 210px;
   }
 
-  .inputWrapper {
-    width: 112px;
-    flex: 0 0 auto;
+  .previewItemsHeader {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
   }
+
+  .sealNumberField {
+    width: 100%;
+  }
+
 }
 
 @media (max-width: 900px) {

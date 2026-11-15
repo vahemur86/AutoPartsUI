@@ -378,6 +378,7 @@ export const TotalBatches = () => {
           open={isPreviewModalOpen}
           onOpenChange={setIsPreviewModalOpen}
           warehouseId={selectedWarehouseId}
+          inventoryLots={inventoryLots}
           items={selectedItems}
           cashRegisterId={cashRegisterId}
           onConfirm={handleConfirmSale}

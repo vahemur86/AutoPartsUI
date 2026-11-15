@@ -1748,11 +1748,12 @@
       },
       "previewTitle": "Sale Preview",
       "sealNumber": "Seal number",
-      "sealNumberHint": "Enter a seal number (up to 50 characters)",
       "totalPowder": "Total Powder",
       "totalCost": "Total Cost",
       "details": {
-        "individualIntakes": "Individual Intakes"
+        "individualIntakes": "Individual Intakes",
+        "itemCost": "Cost",
+        "reorderHelp": "Batch #{{id}}. Drag the handle or use Alt+Left/Right Arrow to reorder."
       },
       "columns": {
         "id": "ID",
