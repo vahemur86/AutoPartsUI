@@ -33,6 +33,34 @@ export const InventoryLotDetails = ({ lot }: { lot: InventoryLot }) => {
         </span>
       </div>
       <div className={styles.lotDetail}>
+        <span>{i18next.t("warehouses.totalBatches.columns.sealNumber")}</span>
+        <strong>{lot.sealNumber || "—"}</strong>
+      </div>
+      {lot.sourceType && (
+        <div className={styles.lotDetail}>
+          <span>{i18next.t("warehouses.totalBatches.columns.sourceType")}</span>
+          <strong>
+            {lot.sourceType === "IronDerived"
+              ? t("warehouses.totalBatches.sourceType.ironDerived")
+              : lot.sourceType === "Catalyst"
+                ? t("warehouses.totalBatches.sourceType.catalyst")
+                : lot.sourceType}
+          </strong>
+        </div>
+      )}
+      {lot.processingBatchId != null && (
+        <div className={styles.lotDetail}>
+          <span>{i18next.t("warehouses.totalBatches.columns.processingBatchId")}</span>
+          <strong>#{lot.processingBatchId}</strong>
+        </div>
+      )}
+      {lot.containsIronPowder != null && (
+        <div className={styles.lotDetail}>
+          <span>{i18next.t("warehouses.totalBatches.columns.containsIronPowder")}</span>
+          <strong>{t(lot.containsIronPowder ? "common.yes" : "common.no")}</strong>
+        </div>
+      )}
+      <div className={styles.lotDetail}>
         <span>{i18next.t("warehouses.totalBatches.columns.createdAt")}</span>
         <strong>{formatDate(lot.createdAt)}</strong>
       </div>

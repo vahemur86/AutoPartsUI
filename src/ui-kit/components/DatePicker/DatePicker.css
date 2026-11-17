@@ -43,7 +43,7 @@
   background: linear-gradient(150deg, #1c231e, #101512);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.44);
   font-family: "Manrope", sans-serif;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .react-datepicker__header {
@@ -100,7 +100,47 @@
   opacity: 0.5;
 }
 
-.react-datepicker__navigation-icon::before {
+.react-datepicker__navigation,
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  position: absolute;
+  top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden !important;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(196, 169, 106, 0.2);
+  border-radius: 50%;
+  background: rgba(196, 169, 106, 0.06);
+  opacity: 1 !important;
+  text-indent: -999em;
+}
+
+.react-datepicker__navigation:hover {
+  background: rgba(196, 169, 106, 0.12);
+}
+
+.react-datepicker__navigation--previous {
+  left: 2px;
+}
+
+.react-datepicker__navigation--next {
+  right: 2px;
+}
+
+.react-datepicker__navigation-icon {
+  position: relative;
+  top: -1px;
+  width: 0;
+  font-size: 20px;
+}
+
+.react-datepicker__navigation-icon::before,
+.react-datepicker__navigation-icon--next::before,
+.react-datepicker__navigation-icon--previous::before {
   border-color: #d2bf8a;
 }
 

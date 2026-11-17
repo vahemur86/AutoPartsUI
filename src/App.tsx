@@ -118,6 +118,7 @@ import { ProfitReport } from "@/components/warehouses/ProfitReport";
 import { AddProduct } from "@/components/warehouses/AddProduct";
 import { WarehouseProducts } from "@/components/warehouses/WarehouseProducts";
 import { TransferToShop } from "@/components/warehouses/TransferToShop";
+import { PowderPackages } from "@/pages/PowderPackages";
 
 // Products components
 import { GeneralProducts } from "@/components/products/General";
@@ -397,6 +398,7 @@ export const App = () => {
                     element={<Navigate to="total-batches" replace />}
                   />
                   <Route path="total-batches" element={<TotalBatches />} />
+                  <Route path="powder-packages" element={<PowderPackages />} />
                   <Route path="batches-to-sale" element={<BatchesToSale />} />
                   <Route path="sold-batches" element={<SoldBatches />} />
                   <Route path="adjusted-sales" element={<AdjustedSales />} />

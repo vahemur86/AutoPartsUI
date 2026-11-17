@@ -235,7 +235,7 @@
 }
 
 .summaryDropdownContent {
-  width: min(460px, calc(100vw - 28px)) !important;
+  width: min(520px, calc(100vw - 28px)) !important;
   min-width: 0;
   max-width: calc(100vw - 28px);
   padding: 0 !important;
@@ -299,6 +299,11 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+.datePickerWrapper :global(.react-datepicker-popper),
+.datePickerWrapper :global(.react-datepicker) {
+  min-width: 240px;
 }
 
 .dateLabel {

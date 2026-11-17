@@ -38,6 +38,10 @@ export const getInventoryLotColumns = (): ColumnDef<InventoryLot, any>[] => {
     header: i18next.t("warehouses.totalBatches.columns.id"),
     cell: (info) => `#${info.getValue()}`,
   }),
+  columnHelper.accessor("sealNumber", {
+    header: i18next.t("warehouses.totalBatches.columns.sealNumber"),
+    cell: (info) => info.getValue() || "—",
+  }),
 
   columnHelper.display({
     id: "lotType",

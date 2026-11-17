@@ -7,6 +7,7 @@ import {
   Warehouse,
   Coins,
   Package,
+  PackageCheck,
   Box,
   Store,
   Receipt,
@@ -26,6 +27,11 @@ export const Warehouses = () => {
           path: "/total-batches",
           label: t("warehouses.navigation.totalBatches"),
           icon: Boxes,
+        },
+        {
+          path: "/powder-packages",
+          label: t("warehouses.navigation.powderPackages"),
+          icon: PackageCheck,
         },
         {
           path: "/batches-to-sale",

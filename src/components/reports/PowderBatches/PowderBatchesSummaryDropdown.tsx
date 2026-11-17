@@ -125,6 +125,7 @@ export const PowderBatchesSummaryDropdown: FC<
       anchorRef={anchorRef}
       align="start"
       side="left"
+      contentWidth={520}
       title={t("cashbox.powderBatches.summary.title")}
       contentClassName={styles.summaryDropdownContent}
     >
@@ -155,6 +156,7 @@ export const PowderBatchesSummaryDropdown: FC<
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                popperPlacement="bottom-start"
                 maxDate={dateTo || undefined}
               />
             </div>
@@ -175,6 +177,7 @@ export const PowderBatchesSummaryDropdown: FC<
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                popperPlacement="bottom-end"
                 minDate={dateFrom || undefined}
               />
             </div>

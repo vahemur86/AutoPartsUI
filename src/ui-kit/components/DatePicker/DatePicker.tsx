@@ -25,6 +25,7 @@ interface BaseDatePickerProps {
   showMonthDropdown?: boolean;
   showYearDropdown?: boolean;
   dropdownMode?: "select" | "scroll";
+  popperPlacement?: "bottom-start" | "bottom-end";
   className?: string;
   calendarClassName?: string;
   wrapperClassName?: string;
@@ -87,6 +88,7 @@ export const DatePicker: FC<DatePickerProps> = ({
   showMonthDropdown = false,
   showYearDropdown = false,
   dropdownMode = "select",
+  popperPlacement,
   className = "",
   calendarClassName = "",
   wrapperClassName = "",
@@ -130,6 +132,7 @@ export const DatePicker: FC<DatePickerProps> = ({
           showMonthDropdown={showMonthDropdown}
           showYearDropdown={showYearDropdown}
           dropdownMode={dropdownMode}
+          popperPlacement={popperPlacement}
           className={`date-picker-input ${className}`}
           calendarClassName={`date-picker-calendar ${calendarClassName}`}
           excludeDates={excludeDates}
@@ -167,6 +170,7 @@ export const DatePicker: FC<DatePickerProps> = ({
         showMonthDropdown={showMonthDropdown}
         showYearDropdown={showYearDropdown}
         dropdownMode={dropdownMode}
+        popperPlacement={popperPlacement}
         className={`date-picker-input ${className}`}
         calendarClassName={`date-picker-calendar ${calendarClassName}`}
         excludeDates={excludeDates}

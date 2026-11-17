@@ -37,12 +37,14 @@ export interface InventoryLot {
   warehouseId?: number;
   sourceType?: string;
   processingBatchId?: number | null;
+  containsIronPowder?: boolean;
   sourceIronPurchaseId?: number | null;
   unitCostAmd?: number | null;
   ptPerKg?: number;
   pdPerKg?: number;
   rhPerKg?: number;
   powderBatchId: number;
+  sealNumber?: string | null;
   remainingPowderKg: number;
   remainingCostAmd: number;
   remainingPt_g: number;
