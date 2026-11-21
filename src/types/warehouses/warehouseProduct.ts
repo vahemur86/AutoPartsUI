@@ -68,6 +68,7 @@ export interface ShopProductItem {
     categoryName: string;
     unitTypeName: string;
     boxSizeName: string;
+    imageUrl?: string | null;
   };
 }
 

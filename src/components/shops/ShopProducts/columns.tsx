@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import i18next from "i18next";
+import { ProductImage } from "@/components/products/ProductImage";
 
 // types
 import type { ShopProductItem } from "@/types/warehouses/warehouseProduct";
@@ -31,6 +32,17 @@ export const getShopProductColumns =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): ColumnDef<ShopProductItem, any>[] =>
   [
+    columnHelper.display({
+      id: "image",
+      header: i18next.t("productImages.image"),
+      cell: ({ row }) => row.original.product ? (
+        <ProductImage
+          productId={row.original.product.id}
+          imageUrl={row.original.product.imageUrl}
+          alt={i18next.t("productImages.alt", { product: row.original.product.code })}
+        />
+      ) : null,
+    }),
     columnHelper.accessor("id", {
       header: i18next.t("shops.products.columns.id"),
       cell: (info) => `#${info.getValue()}`,

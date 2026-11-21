@@ -63,13 +63,11 @@ export const GeneralProducts = () => {
 
         toast.success(t("products.success.productUpdated"));
         dispatch(fetchProducts());
-        handleCloseEditDropdown();
       } catch (error: unknown) {
-        console.error(error);
-        toast.error(getErrorMessage(error, t("products.error.failedToUpdate")));
+        throw new Error(getErrorMessage(error, t("products.error.failedToUpdate")));
       }
     },
-    [dispatch, editingProduct, handleCloseEditDropdown, t],
+    [dispatch, editingProduct, t],
   );
 
   return (

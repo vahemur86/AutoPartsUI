@@ -3,6 +3,7 @@ import i18next from "i18next";
 
 // ui-kit
 import { IconButton } from "@/ui-kit";
+import { ProductImage } from "@/components/products/ProductImage";
 
 // icons
 import { Pencil, Trash2 } from "lucide-react";
@@ -86,6 +87,17 @@ export const getProductColumns = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: ColumnHandlers): ColumnDef<Product, any>[] => {
   return [
+    columnHelper.display({
+      id: "image",
+      header: i18next.t("productImages.image"),
+      cell: ({ row }) => (
+        <ProductImage
+          productId={row.original.id}
+          imageUrl={row.original.imageUrl}
+          alt={i18next.t("productImages.alt", { product: row.original.code })}
+        />
+      ),
+    }),
     columnHelper.accessor("id", {
       header: i18next.t("products.columns.id"),
       cell: (info) => `#${info.getValue()}`,

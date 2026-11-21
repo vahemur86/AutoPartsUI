@@ -10,10 +10,20 @@ import {
   fetchUnitTypes,
   fetchBoxSizes,
 } from "@/store/slices/productSettingsSlice";
+import { fetchProducts } from "@/store/slices/productsSlice";
 
 // ui-kit
 import { Button, Switch, TextField, Select } from "@/ui-kit";
+import {
+  deleteProductImage,
+  getProductImageErrorMessage,
+  uploadProductImage,
+} from "@/services/productImages";
+import { toast } from "react-toastify";
 import { FormDrawer } from "@/components/common/FormDrawer";
+import { ProductImage } from "@/components/products/ProductImage";
+import { ProductImageFileField } from "@/components/products/ProductImageFileField";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
 
 // tyoes
 import type { Product } from "@/types/products";
@@ -48,6 +58,10 @@ export const EditProductDropdown = ({
   const [boxSize, setBoxSize] = useState("");
   const [vehicleDependent, setVehicleDependent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageDeleted, setImageDeleted] = useState(false);
+  const [imageUploadProgress, setImageUploadProgress] = useState(0);
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   const sortedCategories = useMemo(
     () =>
@@ -123,6 +137,10 @@ export const EditProductDropdown = ({
       setUnitType(product.unitTypeId.toString());
       setBoxSize(product.boxSizeId.toString());
       setVehicleDependent(product.vehicleDependent);
+      setImageFile(null);
+      setImageDeleted(false);
+      setImageUploadProgress(0);
+      setIsImageUploading(false);
     }
   }, [open, product]);
 
@@ -164,6 +182,7 @@ export const EditProductDropdown = ({
       return;
     }
     setIsSubmitting(true);
+    let savingImage = false;
     try {
       await onSave({
         id: product.id,
@@ -175,6 +194,40 @@ export const EditProductDropdown = ({
         boxSize: parseInt(boxSize),
         vehicleDependent,
       });
+      if (imageFile) {
+        savingImage = true;
+        setIsImageUploading(true);
+        try {
+          await uploadProductImage(product.id, imageFile, setImageUploadProgress);
+        } finally {
+          setIsImageUploading(false);
+        }
+        await dispatch(fetchProducts());
+        setImageFile(null);
+        toast.success(t("productImages.success.saved"));
+      }
+      onOpenChange(false);
+    } catch (saveError: unknown) {
+      toast.error(savingImage
+        ? getProductImageErrorMessage(saveError, t("productImages.errors.uploadFailed"))
+        : getApiErrorMessage(saveError, t("products.error.failedToUpdate")));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    if (!product) return;
+    if (!window.confirm(t("productImages.confirm.delete"))) return;
+    setIsSubmitting(true);
+    try {
+      await deleteProductImage(product.id);
+      setImageDeleted(true);
+      setImageFile(null);
+      await dispatch(fetchProducts());
+      toast.success(t("productImages.success.deleted"));
+    } catch (deleteError: unknown) {
+      toast.error(getProductImageErrorMessage(deleteError, t("productImages.errors.deleteFailed")));
     } finally {
       setIsSubmitting(false);
     }
@@ -290,6 +343,32 @@ export const EditProductDropdown = ({
               </option>
             ))}
           </Select>
+        </div>
+
+        <div className={styles.productImageField}>
+          <strong className={styles.productImageHeading}>{t("productImages.image")}</strong>
+          <ProductImage
+            productId={product.id}
+            imageUrl={imageDeleted ? null : product.imageUrl}
+            alt={t("productImages.alt", { product: product.code })}
+          />
+          <div className={styles.productImageActions}>
+            <ProductImageFileField
+              id="edit-product-image"
+              label={t("productImages.replace")}
+              file={imageFile}
+              disabled={isSubmitting}
+              onChange={setImageFile}
+            />
+            {imageFile && isImageUploading && (
+              <span role="status">{t("productImages.uploading", { progress: imageUploadProgress })}</span>
+            )}
+            {!imageDeleted && product.imageUrl && (
+              <Button type="button" variant="secondary" onClick={() => void handleDeleteImage()} disabled={isSubmitting}>
+                {t("productImages.delete")}
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className={styles.vehicleDependentField}>

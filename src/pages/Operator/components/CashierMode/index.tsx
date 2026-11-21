@@ -6,6 +6,8 @@ import type { CountryCode } from "libphonenumber-js";
 import { Button, ConfirmationModal, Select, TextField } from "@/ui-kit";
 import { ArrowLeftRight, BadgeCheck, BadgeDollarSign, Banknote, Check, CheckCircle2, CircleAlert, CircleDollarSign, CreditCard, FileText, ScanLine, Search, ShoppingBag, Trash2, Wallet } from "lucide-react";
 import { CountryPhoneInput } from "@/components/common";
+import { ProductImage } from "@/components/products/ProductImage";
+import { ProductReturnDialog } from "@/components/pos/ProductReturnDialog";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -57,6 +59,7 @@ type CartItem = {
   productId: number;
   shopStockId: number;
   productCode: string;
+  imageUrl?: string | null;
   unitPrice: number;
   quantity: number;
   availableQuantity: number;
@@ -67,6 +70,8 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const dispatch = useAppDispatch();
 
   const { shops } = useAppSelector((state) => state.shops);
+  const currentUserRole = useAppSelector((state) => state.auth.user?.role);
+  const canCreateReturns = ["Cashier", "Admin", "SuperAdmin"].includes(currentUserRole ?? "");
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [saleType, setSaleType] = useState<SaleType>("normal");
@@ -97,7 +102,10 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const [saleSuccess, setSaleSuccess] = useState<{
     amount: number;
     saleNumber: string | number;
+    id: number;
   } | null>(null);
+  const [returnSale, setReturnSale] = useState<{ saleId: number; shopId: number } | null>(null);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [searchSku, setSearchSku] = useState("");
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
   const [searchMessageType, setSearchMessageType] = useState<"success" | "error" | null>(null);
@@ -248,6 +256,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
             productId: resolvedProductId,
             shopStockId,
             productCode: product.productCode,
+            imageUrl: product.product?.imageUrl ?? null,
             unitPrice: product.salePrice,
             quantity: 1,
             availableQuantity: product.quantity,
@@ -633,6 +642,7 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
       setSaleSuccess({
         amount: Number(saleResponse.totalAmount),
         saleNumber: saleResponse.saleNumber || saleResponse.id,
+        id: saleResponse.id,
       });
       if (isAgentCreditSale && identifiedAgent?.id) {
         window.dispatchEvent(new CustomEvent("agent-product-credit-activity-changed", {
@@ -684,6 +694,13 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
   const handleDismissSaleSuccess = useCallback(() => {
     setSaleSuccess(null);
   }, []);
+
+  const handleOpenSaleReturn = useCallback(() => {
+    if (!saleSuccess || !currentShopId || !resolvedCashRegisterId) return;
+    setReturnSale({ saleId: saleSuccess.id, shopId: currentShopId });
+    setReturnDialogOpen(true);
+    setSaleSuccess(null);
+  }, [currentShopId, resolvedCashRegisterId, saleSuccess]);
 
   const handleFindEstimate = useCallback(async () => {
     const estimateNumber = estimateNumberInput.trim();
@@ -1185,11 +1202,18 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               <div className={styles.cartItems}>
                 {cartItems.map((item) => (
                   <div key={item.productId} className={styles.cartItem}>
-                    <div>
-                      <strong>{item.productCode}</strong>
-                      <div className={styles.cartItemMeta}>
-                        {t("operatorPage.cashier.unitPrice")}:
-                        <span>{item.unitPrice.toFixed(2)}</span>
+                    <div className={styles.cartProductIdentity}>
+                      <ProductImage
+                        productId={item.productId}
+                        imageUrl={item.imageUrl}
+                        alt={t("productImages.alt", { product: item.productCode })}
+                      />
+                      <div>
+                        <strong>{item.productCode}</strong>
+                        <div className={styles.cartItemMeta}>
+                          {t("operatorPage.cashier.unitPrice")}:
+                          <span>{item.unitPrice.toFixed(2)}</span>
+                        </div>
                       </div>
                     </div>
                     <div className={styles.cartItemControls}>
@@ -1468,6 +1492,11 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
               <span>{t("operatorPage.cashier.saleNumber")}</span>
               <strong>{saleSuccess.saleNumber}</strong>
             </div>
+            {canCreateReturns && (
+              <Button type="button" variant="secondary" size="small" onClick={handleOpenSaleReturn} disabled={!currentShopId || !resolvedCashRegisterId}>
+                {t("productReturns.open")}
+              </Button>
+            )}
             <div className={`${styles.saleSuccessDetails} ${styles.saleSuccessAmount}`}>
               <span>{t("operatorPage.cashier.amountPaid")}</span>
               <strong>{saleSuccess.amount.toLocaleString()} AMD</strong>
@@ -1475,6 +1504,18 @@ export const CashierMode = ({ cashRegisterId }: CashierModeProps) => {
           </div>
         )}
       </ConfirmationModal>
+      {returnSale && (
+        <ProductReturnDialog
+          open={returnDialogOpen}
+          onOpenChange={(open) => {
+            setReturnDialogOpen(open);
+            if (!open) setReturnSale(null);
+          }}
+          saleId={returnSale.saleId}
+          shopId={returnSale.shopId}
+          cashRegisterId={resolvedCashRegisterId}
+        />
+      )}
     </div>
   );
 };

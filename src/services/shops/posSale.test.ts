@@ -1,5 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
+vi.mock("@/utils", () => ({ getApiErrorMessage: (_e: unknown, fallback: string) => fallback, getHeaders: (id?: number) => id ? { "X-CashRegister-Id": String(id) } : {} }));
+
 vi.mock("@/services", () => ({
   default: { post: vi.fn() },
 }));

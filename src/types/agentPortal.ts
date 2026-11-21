@@ -183,18 +183,30 @@ export interface CashierOrderPricePreview {
 }
 
 export interface CashierPOSSaleItem {
+  id: number;
   productId: number;
   quantity: number;
   unitPrice: number;
   lineTotal: number;
   originalUnitPrice: number;
+  productCode?: string | null;
+  productName?: string | null;
 }
 
 export interface CashierPOSSale {
   id: number;
+  saleNumber?: string | number | null;
+  createdAt?: string | null;
+  shopId?: number | null;
+  cashRegisterId?: number | null;
+  cashierName?: string | null;
+  customerName?: string | null;
+  agentName?: string | null;
+  paymentType?: string | null;
   totalAmount: number;
   cashPaid: number;
   nonCashPaid: number;
+  isAgentCredit?: boolean | null;
   items: CashierPOSSaleItem[];
 }
 

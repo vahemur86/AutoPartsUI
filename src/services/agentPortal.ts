@@ -1,6 +1,5 @@
 import api from "@/services";
-import { getCashRegisterId, getHeaders } from "@/utils";
-import { getApiErrorMessage } from "@/utils/getApiErrorMessage.util";
+import { getApiErrorMessage, getCashRegisterId, getHeaders } from "@/utils";
 import type {
   AgentDto,
   AgentProductCreditSaleDto,
@@ -226,10 +225,16 @@ export const agentPortalService = {
       "Failed to load order price preview.",
     ),
 
-  getCashierPOSSale: (id: number) =>
+  getCashierPOSSale: (
+    id: number,
+    cashRegisterId?: number,
+    fallback = "Failed to load completed sale details.",
+  ) =>
     request(
-      () => api.get<CashierPOSSale>(`/POSSale/${id}`, getCashierRequestConfig()),
-      "Failed to load completed sale details.",
+      () => api.get<CashierPOSSale>(`/POSSale/${id}`, {
+        headers: getHeaders(cashRegisterId ?? getCashRegisterId(0)),
+      }),
+      fallback,
     ),
 
   approveOrderRequest: (id: string, agentContractId: string) =>

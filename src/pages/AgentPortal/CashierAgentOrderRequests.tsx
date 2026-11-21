@@ -12,6 +12,7 @@ import { getShops } from "@/services/settings/shop";
 import i18n from "@/i18n/config";
 import { getCashRegisterId } from "@/utils";
 import { useAppSelector } from "@/store/hooks";
+import { ProductReturnDialog } from "@/components/pos/ProductReturnDialog";
 import type { Product } from "@/types/products";
 import type { Shop } from "@/types/settings";
 import type { PagedResult } from "@/types/agents";
@@ -104,10 +105,13 @@ export const CashierAgentOrderRequests = () => {
   const [priceRefreshKey, setPriceRefreshKey] = useState(0);
   const [completedSale, setCompletedSale] = useState<CashierPOSSale | null>(null);
   const [completedSaleError, setCompletedSaleError] = useState("");
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [orderActionError, setOrderActionError] = useState("");
+
   useEffect(() => {
     setCompletedSale(null);
     setCompletedSaleError("");
+    setReturnDialogOpen(false);
   }, [requestedOrderId]);
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -496,6 +500,18 @@ export const CashierAgentOrderRequests = () => {
                     <span>{t("agentPortal.completedSaleTotal")}</span>
                     <strong>{formatMoney(completedSale.totalAmount)}</strong>
                   </div>
+                  {order.approvedShopId != null
+                    && completedSale.items.length > 0
+                    && completedSale.items.every((item) => Number.isInteger(item.id) && item.id > 0) ? (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="small"
+                      onClick={() => setReturnDialogOpen(true)}
+                    >
+                      {t("productReturns.open")}
+                    </Button>
+                  ) : <p className={styles.error}>{t("productReturns.errors.saleItemsUnavailable")}</p>}
                   <div className={styles.cashierSaleLines}>
                     {completedSale.items.map((item, index) => (
                       <div key={`${item.productId}-${index}`}>
@@ -507,6 +523,15 @@ export const CashierAgentOrderRequests = () => {
                     ))}
                   </div>
                 </div>
+              )}
+              {completedSale && order.posSaleId === completedSale.id && order.approvedShopId != null && (
+                <ProductReturnDialog
+                  open={returnDialogOpen}
+                  onOpenChange={setReturnDialogOpen}
+                  saleId={completedSale.id}
+                  shopId={order.approvedShopId}
+                  cashRegisterId={cashRegisterId}
+                />
               )}
               {completedSaleError && (
                 <div className={styles.error} role="alert">

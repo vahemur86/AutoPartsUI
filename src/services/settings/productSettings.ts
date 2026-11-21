@@ -189,7 +189,7 @@ export const categoryService = {
 };
 
 // Export individual services
-export const brandsService = createCrudService("Brands", "brands");
+export const brandsService = createCrudService("Brand", "brand");
 export const unitTypeService = createCrudService("UnitType", "unitType");
 export const boxSizeService = createCrudService("BoxSize", "boxSize");
 

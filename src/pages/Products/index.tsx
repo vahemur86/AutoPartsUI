@@ -17,6 +17,7 @@ import { AddProductDropdown } from "@/components/products/General/actions/AddPro
 import { Button } from "@/ui-kit";
 
 // types
+import type { Product } from "@/types/products";
 import type { ProductFormData } from "@/components/products/General/types";
 
 // styles
@@ -33,8 +34,8 @@ export const Products = () => {
   }, []);
 
   const handleSaveProduct = useCallback(
-    async (data: ProductFormData): Promise<void> => {
-      await dispatch(
+    async (data: ProductFormData): Promise<Product> => {
+      return await dispatch(
         addProduct({
           code: data.productKey,
           sku: data.sku,

@@ -11,6 +11,7 @@ export interface Product {
   boxSizeId: number;
   boxSizeName?: string;
   vehicleDependent: boolean;
+  imageUrl?: string | null;
   brand?: { id: number; code: string };
   category?: { id: number; code: string };
   unitType?: { id: number; code: string };

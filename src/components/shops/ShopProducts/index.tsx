@@ -6,6 +6,7 @@ import { useMinimumLoadingDuration } from "@/hooks/useMinimumLoadingDuration";
 
 // ui-kit
 import { DataTable, Select, TextField } from "@/ui-kit";
+import { ProductImage } from "@/components/products/ProductImage";
 
 // store
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -141,6 +142,13 @@ export const ShopProducts = () => {
 
       return (
         <div className={styles.detailsGrid}>
+          <div className={styles.detailsImage}>
+            <ProductImage
+              productId={product.id}
+              imageUrl={product.imageUrl}
+              alt={t("productImages.alt", { product: product.code })}
+            />
+          </div>
           <div className={styles.detailsRow}>
             <span className={styles.detailsLabel}>ID</span>
             <span className={styles.detailsValue}>#{product.id}</span>

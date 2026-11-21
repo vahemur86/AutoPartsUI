@@ -6675,5 +6675,112 @@
       "interestRange": "Interest rate must be between 0 and 100.",
       "amountPositive": "Amount must be greater than 0."
     }
+  },
+  "productImages": {
+    "image": "Product image",
+    "alt": "Product image: {{product}}",
+    "previewAlt": "Selected product image preview",
+    "requirements": "JPEG, PNG or WebP; maximum 5 MB.",
+    "replace": "Upload or replace image",
+    "delete": "Delete image",
+    "uploading": "Uploading image… {{progress}}%",
+    "success": {
+      "saved": "Product image saved.",
+      "deleted": "Product image deleted."
+    },
+    "errors": {
+      "unsupported": "Choose a JPEG, PNG or WebP image.",
+      "tooLarge": "Image must be 5 MB or smaller.",
+      "deleteFailed": "Could not delete the product image.",
+      "uploadFailed": "Could not upload the product image."
+    },
+    "confirm": {
+      "delete": "Delete this product image?"
+    }
+  },
+  "productReturns": {
+    "title": "Product return",
+    "description": "Select original sale items, quantities, and condition. Refund values are calculated by the server.",
+    "open": "Return items",
+    "create": "Submit return",
+    "retrySameRequest": "Retry the same request",
+    "loading": "Loading sale and return history…",
+    "refreshHistory": "Refresh history",
+    "unknownOutcome": "The server response could not be confirmed. Refresh return history before deciding; retrying will reuse the same request key.",
+    "originalSale": "Original sale",
+    "receiptNumber": "Receipt number",
+    "date": "Date",
+    "shop": "Shop",
+    "cashier": "Cashier",
+    "customer": "Customer",
+    "agent": "Agent",
+    "paymentType": "Payment type",
+    "cashPaid": "Cash paid",
+    "nonCashPaid": "Non-cash paid",
+    "reason": "Reason",
+    "item": "Item",
+    "originalQuantity": "Sold",
+    "unitPrice": "Unit price",
+    "originalPrice": "Original price",
+    "remainingQuantity": "Remaining returnable",
+    "returnQuantity": "Return quantity",
+    "condition": "Condition",
+    "selectCondition": "Select condition",
+    "returnQuantityFor": "Return quantity for {{item}}",
+    "conditionFor": "Return condition for {{item}}",
+    "productId": "Product ID {{id}}",
+    "conditionNotice": "Pending-inspection and non-saleable items are not available for POS sale.",
+    "review": "Review this return",
+    "serverRefundNotice": "The backend calculates the refund from the original sale. No refund estimate is shown.",
+    "history": "Return history",
+    "historyEmpty": "No returns have been recorded for this sale.",
+    "returnId": "Return #{{id}}",
+    "totalRefund": "Total refund",
+    "cashRefund": "Cash refund",
+    "nonCashRefund": "Non-cash refund",
+    "operator": "Operator",
+    "quantity": "Quantity",
+    "initialCondition": "Initial condition",
+    "currentCondition": "Current condition",
+    "itemRefund": "Item refund",
+    "itemCost": "Cost amount",
+    "inspectedAudit": "Inspected by {{user}} on {{date}}",
+    "lossAudit": "Loss confirmed by {{user}} on {{date}}",
+    "notSaleableYet": "Not available for POS sale.",
+    "inspectSaleable": "Inspect as saleable",
+    "inspectNonSaleable": "Inspect as non-saleable",
+    "lossNotes": "Loss notes (optional)",
+    "confirmLoss": "Confirm loss",
+    "lossComplete": "Loss confirmed; item remains non-saleable.",
+    "fullyReturned": "All original quantities have been returned.",
+    "conditions": {
+      "saleable": "Saleable",
+      "nonSaleable": "Non-saleable",
+      "pendingInspection": "Pending inspection"
+    },
+    "validation": {
+      "reasonRequired": "Enter a return reason.",
+      "quantityWhole": "Enter a positive whole-number quantity.",
+      "quantityExceeds": "Quantity cannot exceed the remaining {{remaining}}.",
+      "conditionRequired": "Select a condition."
+    },
+    "errors": {
+      "loadFailed": "Could not load the sale and its returns.",
+      "saleItemsUnavailable": "Original sale-item IDs are unavailable; this sale cannot be returned here.",
+      "historyFailed": "Could not refresh return history.",
+      "createFailed": "Could not create the return.",
+      "networkFailed": "The return request could not be confirmed. Refresh history before retrying.",
+      "inspectionFailed": "Could not inspect the returned item.",
+      "lossFailed": "Could not confirm the item loss."
+    },
+    "messages": {
+      "created": "Return #{{id}} recorded.",
+      "inspectionSaved": "Inspection saved.",
+      "lossConfirmed": "Loss confirmation saved."
+    },
+    "confirm": {
+      "inspect": "Confirm inspection result: {{condition}}?",
+      "loss": "Confirm that this inspected non-saleable item is a loss?"
+    }
   }
 }

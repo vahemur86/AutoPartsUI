@@ -11,12 +11,16 @@ import {
   fetchUnitTypes,
   fetchBoxSizes,
 } from "@/store/slices/productSettingsSlice";
+import { fetchProducts } from "@/store/slices/productsSlice";
 
 // ui-kit
 import { Button, Switch, Select } from "@/ui-kit";
 
 // types
 import type { ProductFormData } from "../types";
+import type { Product } from "@/types/products";
+import { getProductImageErrorMessage, uploadProductImage } from "@/services/productImages";
+import { ProductImageFileField } from "@/components/products/ProductImageFileField";
 
 // styles
 import styles from "./AddProductDropdown.module.css";
@@ -24,7 +28,7 @@ import styles from "./AddProductDropdown.module.css";
 export interface AddProductDropdownProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: ProductFormData) => Promise<void>;
+  onSave: (data: ProductFormData) => Promise<Product>;
 }
 
 type ProductRowStatus = "ready" | "creating" | "created" | "failed";
@@ -35,6 +39,9 @@ interface ProductEntryRow {
   sku: string;
   status: ProductRowStatus;
   error?: string;
+  imageFile?: File | null;
+  createdProductId?: number;
+  uploadProgress?: number;
 }
 
 const createEntryRow = (id: number): ProductEntryRow => ({
@@ -172,24 +179,52 @@ export const AddProductDropdown = ({
     setIsSubmitting(true);
     let createdCount = 0;
     let failedCount = 0;
+    let uploadedImage = false;
     try {
       for (const row of pendingRows) {
         setRows((current) =>
           current.map((item) =>
-            item.id === row.id ? { ...item, status: "creating", error: undefined } : item,
+            item.id === row.id
+              ? { ...item, status: "creating", error: undefined, uploadProgress: undefined }
+              : item,
           ),
         );
 
         try {
-          await onSave({
-            productKey: row.productKey.trim(),
-            sku: row.sku.trim(),
-            brand: parseInt(brand, 10),
-            category: parseInt(selectedCategoryId, 10),
-            unitType: parseInt(unitType, 10),
-            boxSize: parseInt(boxSize, 10),
-            vehicleDependent,
-          });
+          let createdProductId = row.createdProductId;
+          if (!createdProductId) {
+            const createdProduct = await onSave({
+              productKey: row.productKey.trim(),
+              sku: row.sku.trim(),
+              brand: parseInt(brand, 10),
+              category: parseInt(selectedCategoryId, 10),
+              unitType: parseInt(unitType, 10),
+              boxSize: parseInt(boxSize, 10),
+              vehicleDependent,
+            });
+            createdProductId = createdProduct.id;
+            setRows((current) =>
+              current.map((item) =>
+                item.id === row.id
+                  ? { ...item, createdProductId, status: "creating", uploadProgress: undefined }
+                  : item,
+              ),
+            );
+          }
+          if (row.imageFile) {
+            try {
+              await uploadProductImage(createdProductId, row.imageFile, (uploadProgress) => {
+                setRows((current) =>
+                  current.map((item) =>
+                    item.id === row.id ? { ...item, uploadProgress } : item,
+                  ),
+                );
+              });
+            } catch (uploadError: unknown) {
+              throw new Error(getProductImageErrorMessage(uploadError, t("productImages.errors.uploadFailed")));
+            }
+            uploadedImage = true;
+          }
           createdCount += 1;
           setRows((current) =>
             current.map((item) =>
@@ -212,6 +247,7 @@ export const AddProductDropdown = ({
         }
       }
 
+      if (uploadedImage) await dispatch(fetchProducts());
       if (createdCount > 0) {
         toast.success(t("products.success.productsCreated", { count: createdCount }));
       }
@@ -365,6 +401,7 @@ export const AddProductDropdown = ({
                 <tr>
                   <th scope="col">{t("products.form.productKey")}</th>
                   <th scope="col">{t("products.form.sku")}</th>
+                  <th scope="col">{t("productImages.image")}</th>
                   <th scope="col">{t("products.bulk.status")}</th>
                   <th scope="col"><span className={styles.visuallyHidden}>{t("common.actions")}</span></th>
                 </tr>
@@ -383,7 +420,7 @@ export const AddProductDropdown = ({
                         onChange={(event) => updateRow(row.id, { productKey: event.target.value })}
                         placeholder={t("products.form.type")}
                         required
-                        disabled={isSubmitting || row.status === "created"}
+                        disabled={isSubmitting || row.status === "created" || Boolean(row.createdProductId)}
                         aria-invalid={hasTriedSubmit && !row.productKey.trim() && row.status !== "created"}
                       />
                     </td>
@@ -398,8 +435,17 @@ export const AddProductDropdown = ({
                         onChange={(event) => updateRow(row.id, { sku: event.target.value })}
                         placeholder={t("products.form.type")}
                         required
-                        disabled={isSubmitting || row.status === "created"}
+                        disabled={isSubmitting || row.status === "created" || Boolean(row.createdProductId)}
                         aria-invalid={hasTriedSubmit && !row.sku.trim() && row.status !== "created"}
+                      />
+                    </td>
+                    <td>
+                      <ProductImageFileField
+                        id={`product-image-${row.id}`}
+                        label={t("productImages.image")}
+                        file={row.imageFile ?? null}
+                        disabled={isSubmitting || row.status === "created"}
+                        onChange={(imageFile) => updateRow(row.id, { imageFile })}
                       />
                     </td>
                     <td>
@@ -410,7 +456,9 @@ export const AddProductDropdown = ({
                         {row.status === "created" ? <CircleCheck size={14} aria-hidden="true" /> : null}
                         {row.status === "failed" ? <CircleAlert size={14} aria-hidden="true" /> : null}
                         {row.status === "creating" ? <LoaderCircle className={styles.bulkSpinner} size={14} aria-hidden="true" /> : null}
-                        {t(`products.bulk.rowStatus.${row.status}`)}
+                        {row.status === "creating" && row.imageFile && row.uploadProgress !== undefined
+                          ? t("productImages.uploading", { progress: row.uploadProgress })
+                          : t(`products.bulk.rowStatus.${row.status}`)}
                       </span>
                     </td>
                     <td>
@@ -418,7 +466,7 @@ export const AddProductDropdown = ({
                         type="button"
                         className={styles.removeBulkRow}
                         onClick={() => removeRow(row.id)}
-                        disabled={isSubmitting || row.status === "created" || rows.length === 1}
+                        disabled={isSubmitting || row.status === "created" || Boolean(row.createdProductId) || rows.length === 1}
                         aria-label={t("products.bulk.removeRow")}
                         title={t("products.bulk.removeRow")}
                       >
