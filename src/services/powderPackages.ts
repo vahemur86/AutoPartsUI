@@ -53,13 +53,13 @@ export const powderPackagesService = {
 
   create: (data: CreatePowderPackageRequest) =>
     request(
-      () => api.post<PowderPackage>("/admin/powder-packages", data),
+      () => api.post<PowderPackage[]>("/admin/powder-packages", data),
       "Failed to create powder package.",
     ),
 
   createIron: (data: CreateIronPowderPackageRequest) =>
     request(
-      () => api.post<PowderPackage>(`${IRON_SHOP}/powder-packages`, data),
+      () => api.post<PowderPackage[]>(`${IRON_SHOP}/powder-packages`, data),
       "Failed to create iron powder package.",
     ),
 
@@ -73,5 +73,11 @@ export const powderPackagesService = {
     request(
       () => api.post<PowderPackage>(`/admin/powder-packages/${id}/cancel`),
       "Failed to cancel powder package.",
+    ),
+
+  invalidate: (id: number) =>
+    request(
+      () => api.post<PowderPackage>(`/admin/powder-packages/${id}/invalidate`),
+      "Failed to invalidate powder package.",
     ),
 };

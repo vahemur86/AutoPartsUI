@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Plus, RefreshCw, Send, Sparkles, Trash2 } from "lucide-react";
+import { Ban, CircleX, Minus, PackageCheck, Plus, RefreshCw, Send, ShoppingBag, Trash2, Truck } from "lucide-react";
 
-import { Button, Select } from "@/ui-kit";
+import { Button, ConfirmationModal, Select } from "@/ui-kit";
 import { getApiErrorMessage, getCashRegisterId } from "@/utils";
 import { getWarehouses } from "@/services/settings/warehouses";
 import { powderPackagesService } from "@/services/powderPackages";
@@ -14,20 +15,11 @@ import type {
   IronPowderPackageSourceBatch,
   PowderPackage,
   PowderPackageSourceBatch,
-  PowderPackageSourceItem,
 } from "@/types/powderPackages";
 import styles from "./PowderPackages.module.css";
 
 interface DraftPackage {
   clientId: string;
-  powderBatchId: number;
-  sealNumber: string;
-  itemWeights: Record<number, string>;
-}
-
-interface IronDraftPackage {
-  clientId: string;
-  ironProcessingBatchId: number;
   sealNumber: string;
   powderKg: string;
 }
@@ -46,34 +38,18 @@ const formatKg = (value: number) =>
     minimumFractionDigits: 3,
     maximumFractionDigits: 3,
   });
-const formatAmd = (value: number) => value.toLocaleString(undefined, {
-  maximumFractionDigits: 2,
-});
 const formatDate = (value: string) => new Date(value).toLocaleString();
 const packageStatusLabel = (status: PowderPackage["status"], t: (key: string) => string) =>
   t(`warehouses.packages.statuses.${status}`);
-
-const getMixError = (
-  item: PowderPackageSourceItem,
-  selectedItems: PowderPackageSourceItem[],
-  t: (key: string) => string,
-) => {
-  if (selectedItems.length === 0) return "";
-  const selectedSpecial = selectedItems[0].isSpecialCustomerLot;
-  if (selectedSpecial !== item.isSpecialCustomerLot) {
-    return t("warehouses.packages.mixingNotAllowed");
-  }
-  if (
-    item.isSpecialCustomerLot &&
-    selectedItems.some((selected) => selected.specialCustomerId !== item.specialCustomerId)
-  ) {
-    return t("warehouses.packages.differentSpecialCustomers");
-  }
-  return "";
-};
+const createDraft = (): DraftPackage => ({
+  clientId: `${Date.now()}-${Math.random()}`,
+  sealNumber: "",
+  powderKg: "",
+});
 
 export const PowderPackages = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const cashRegisterId = useMemo(() => getCashRegisterId(), []);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [warehouseId, setWarehouseId] = useState("");
@@ -82,13 +58,18 @@ export const PowderPackages = () => {
   const [ironSourceBatches, setIronSourceBatches] = useState<IronPowderPackageSourceBatch[]>([]);
   const [packages, setPackages] = useState<PowderPackage[]>([]);
   const [draftPackages, setDraftPackages] = useState<DraftPackage[]>([]);
-  const [ironDraftPackages, setIronDraftPackages] = useState<IronDraftPackage[]>([]);
+  const [packageCount, setPackageCount] = useState("");
   const [batchId, setBatchId] = useState("");
   const [statusFilter, setStatusFilter] = useState("1");
   const [loadingWarehouses, setLoadingWarehouses] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
   const [saving, setSaving] = useState(false);
   const [busyPackageId, setBusyPackageId] = useState<number | null>(null);
+  const [pendingAction, setPendingAction] = useState<{
+    item: PowderPackage;
+    action: "send" | "cancel" | "invalidate";
+  } | null>(null);
+  const [sendingAnimation, setSendingAnimation] = useState<PowderPackage | null>(null);
   const [loadError, setLoadError] = useState("");
   const warehouseIdRef = useRef(Number(warehouseId));
   const packageSourceRef = useRef(packageSource);
@@ -103,11 +84,6 @@ export const PowderPackages = () => {
   const selectedIronBatch = packageSource === "iron"
     ? ironSourceBatches.find((batch) => String(batch.ironProcessingBatchId) === batchId)
     : undefined;
-  const batchesById = useMemo(
-    () => new Map(sourceBatches.map((batch) => [batch.powderBatchId, batch])),
-    [sourceBatches],
-  );
-
   const loadSourceBatches = useCallback(async (id: number, source: PackageSource = packageSourceRef.current) => {
     if (source === "iron") {
       const rows = (await powderPackagesService.listIronSourceBatches(id))
@@ -186,7 +162,7 @@ export const PowderPackages = () => {
 
   useEffect(() => {
     setDraftPackages([]);
-    setIronDraftPackages([]);
+    setPackageCount("");
     setSourceBatches([]);
     setIronSourceBatches([]);
     setBatchId("");
@@ -221,48 +197,28 @@ export const PowderPackages = () => {
     });
   }, [loadPackages, statusFilter, t, warehouseId]);
 
-  const allocatedByItem = useMemo(() => {
-    const allocations = new Map<number, number>();
-    for (const draft of draftPackages) {
-      for (const [rawItemId, rawWeight] of Object.entries(draft.itemWeights)) {
-        const itemId = Number(rawItemId);
-        allocations.set(itemId, (allocations.get(itemId) ?? 0) + valueAsMilliKg(rawWeight));
-      }
-    }
-    return allocations;
-  }, [draftPackages]);
-
-  const plannedKg = useMemo(() => (
-    draftPackages
-      .filter((draft) => draft.powderBatchId === selectedBatch?.powderBatchId)
-      .reduce(
-        (total, draft) => total + Object.values(draft.itemWeights).reduce(
-          (sum, value) => sum + valueAsMilliKg(value),
-          0,
-        ),
-        0,
-      ) / 1000
-  ), [draftPackages, selectedBatch?.powderBatchId]);
-
-  const plannedIronMilliKg = useMemo(
-    () =>
-      ironDraftPackages
-        .filter((draft) => draft.ironProcessingBatchId === selectedIronBatch?.ironProcessingBatchId)
-        .reduce((total, draft) => total + valueAsMilliKg(draft.powderKg), 0),
-    [ironDraftPackages, selectedIronBatch?.ironProcessingBatchId],
+  const availableKg = packageSource === "iron"
+    ? selectedIronBatch?.availablePowderKg ?? 0
+    : selectedBatch?.availablePowderKg ?? 0;
+  const plannedMilliKg = useMemo(
+    () => draftPackages.reduce((total, draft) => total + valueAsMilliKg(draft.powderKg), 0),
+    [draftPackages],
   );
+  const remainingMilliKg = Math.max(0, milliKg(availableKg) - plannedMilliKg);
 
-  const addDraft = () => {
-    if (!selectedBatch) return;
-    setDraftPackages((current) => [
-      ...current,
-      {
-        clientId: `${Date.now()}-${Math.random()}`,
-        powderBatchId: selectedBatch.powderBatchId,
-        sealNumber: "",
-        itemWeights: {},
-      },
-    ]);
+  const changePackageCount = (value: string) => {
+    setPackageCount(value);
+    const count = Number(value);
+    if (!Number.isSafeInteger(count) || count < 1) return;
+    setDraftPackages((current) => count <= current.length
+      ? current.slice(0, count)
+      : [...current, ...Array.from({ length: count - current.length }, createDraft)]);
+  };
+
+  const adjustPackageCount = (delta: number) => {
+    const currentCount = Number(packageCount);
+    const nextCount = Math.max(1, (Number.isSafeInteger(currentCount) ? currentCount : 0) + delta);
+    changePackageCount(String(nextCount));
   };
 
   const changeDraft = (clientId: string, update: Partial<DraftPackage>) => {
@@ -271,275 +227,153 @@ export const PowderPackages = () => {
     );
   };
 
-  const setDraftWeight = (
-    draft: DraftPackage,
-    item: PowderPackageSourceItem,
-    value: string,
-  ) => {
-    const batch = batchesById.get(draft.powderBatchId);
-    if (!batch) return;
-    const selectedItems = batch.items.filter((candidate) =>
-      candidate.powderBatchItemId !== item.powderBatchItemId &&
-      valueAsMilliKg(draft.itemWeights[candidate.powderBatchItemId] ?? "") > 0,
-    );
-    if (valueAsMilliKg(value) > 0) {
-      const mixError = getMixError(item, selectedItems, t);
-      if (mixError) {
-        toast.error(mixError);
-        return;
-      }
-      const otherDraftAllocation = draftPackages.reduce((total, otherDraft) => {
-        if (otherDraft.clientId === draft.clientId) return total;
-        return total + valueAsMilliKg(otherDraft.itemWeights[item.powderBatchItemId] ?? "");
-      }, 0);
-      const maxMilliKg = milliKg(item.availablePowderKg) - otherDraftAllocation;
-      if (valueAsMilliKg(value) > Math.max(0, maxMilliKg)) {
-        toast.error(t("warehouses.packages.errors.overAvailable", {
-          item: item.powderBatchItemId,
-          remaining: formatKg(Math.max(0, maxMilliKg) / 1000),
-        }));
-        return;
-      }
+  const setDraftWeight = (clientId: string, value: string) => {
+    if (value.trim() === "") {
+      changeDraft(clientId, { powderKg: value });
+      return;
     }
-    changeDraft(draft.clientId, {
-      itemWeights: { ...draft.itemWeights, [item.powderBatchItemId]: value },
+    if (!validKg(value)) {
+      changeDraft(clientId, { powderKg: value });
+      return;
+    }
+    const incomingMilliKg = valueAsMilliKg(value);
+    const otherMilliKg = draftPackages
+      .filter((draft) => draft.clientId !== clientId)
+      .reduce((total, draft) => total + valueAsMilliKg(draft.powderKg), 0);
+    const maxMilliKg = Math.max(0, milliKg(availableKg) - otherMilliKg);
+    if (incomingMilliKg > maxMilliKg) {
+      toast.error(t("warehouses.packages.errors.overAvailableBatch", {
+        remaining: formatKg(maxMilliKg / 1000),
+      }));
+      return;
+    }
+    changeDraft(clientId, { powderKg: value });
+  };
+
+  const removeDraft = (clientId: string) => {
+    setDraftPackages((current) => {
+      const next = current.filter((draft) => draft.clientId !== clientId);
+      setPackageCount(String(next.length));
+      return next;
     });
   };
 
-  const addIronDraft = () => {
-    if (!selectedIronBatch) return;
-    setIronDraftPackages((current) => [
-      ...current,
-      {
-        clientId: `${Date.now()}-${Math.random()}`,
-        ironProcessingBatchId: selectedIronBatch.ironProcessingBatchId,
-        sealNumber: "",
-        powderKg: "",
-      },
-    ]);
-  };
-
-  const changeIronDraft = (clientId: string, update: Partial<IronDraftPackage>) => {
-    setIronDraftPackages((current) =>
-      current.map((draft) => draft.clientId === clientId ? { ...draft, ...update } : draft),
-    );
-  };
-
-  const setIronDraftWeight = (draft: IronDraftPackage, value: string) => {
-    const batch = ironSourceBatches.find(
-      (candidate) => candidate.ironProcessingBatchId === draft.ironProcessingBatchId,
-    );
-    if (!batch || value.trim() === "" || !validKg(value)) {
-      changeIronDraft(draft.clientId, { powderKg: value });
-      return;
-    }
-
-    const otherDraftWeight = ironDraftPackages
-      .filter((candidate) =>
-        candidate.clientId !== draft.clientId &&
-        candidate.ironProcessingBatchId === draft.ironProcessingBatchId,
-      )
-      .reduce((total, candidate) => total + valueAsMilliKg(candidate.powderKg), 0);
-    const remainingMilliKg = Math.max(0, milliKg(batch.availablePowderKg) - otherDraftWeight);
-    if (valueAsMilliKg(value) > remainingMilliKg) {
-      toast.error(t("warehouses.packages.errors.overAvailableBatch", {
-        remaining: formatKg(remainingMilliKg / 1000),
-      }));
-      return;
-    }
-
-    changeIronDraft(draft.clientId, { powderKg: value });
-  };
-
-  const draftRequest = (draft: DraftPackage): CreatePowderPackageRequest | null => {
-    const sealNumber = draft.sealNumber.trim();
-    const itemEntries = Object.entries(draft.itemWeights)
-      .filter(([, value]) => value.trim() !== "")
-      .map(([itemId, value]) => ({ itemId: Number(itemId), value: value.trim() }));
-    if (!sealNumber || sealNumber.length > 50 || itemEntries.length === 0) return null;
-    if (itemEntries.some(({ value }) => !validKg(value) || valueAsMilliKg(value) <= 0)) return null;
-    return {
-      powderBatchId: draft.powderBatchId,
-      sealNumber,
-      items: itemEntries.map(({ itemId, value }) => ({
-        powderBatchItemId: itemId,
-        powderKg: valueAsMilliKg(value) / 1000,
-      })),
-    };
-  };
-
-  const ironDraftRequest = (draft: IronDraftPackage): CreateIronPowderPackageRequest | null => {
-    const sealNumber = draft.sealNumber.trim();
-    if (
-      !sealNumber ||
-      sealNumber.length > 50 ||
-      !validKg(draft.powderKg) ||
-      valueAsMilliKg(draft.powderKg) <= 0
-    ) return null;
-    return {
-      ironProcessingBatchId: draft.ironProcessingBatchId,
-      sealNumber,
-      powderKg: valueAsMilliKg(draft.powderKg) / 1000,
-    };
-  };
-
   const saveDrafts = async () => {
-    if (saving || draftPackages.length === 0) return;
-    const duplicateSeals = new Set<string>();
-    for (const draft of draftPackages) {
-      const key = draft.sealNumber.trim().toLocaleLowerCase();
-      if (!draftRequest(draft)) {
-        toast.error(t("warehouses.packages.errors.invalidDraft", { number: draftPackages.indexOf(draft) + 1 }));
+    if (saving || !Number.isSafeInteger(Number(packageCount)) || Number(packageCount) < 1) {
+      toast.error(t("warehouses.packages.errors.invalidCount"));
+      return;
+    }
+    if (draftPackages.length !== Number(packageCount)) {
+      toast.error(t("warehouses.packages.errors.invalidCount"));
+      return;
+    }
+    const batchIdForRequest = packageSource === "iron"
+      ? selectedIronBatch?.ironProcessingBatchId
+      : selectedBatch?.powderBatchId;
+    if (!batchIdForRequest) return;
+
+    const requestPackages: CreatePowderPackageRequest["packages"] = [];
+    const draftSeals = new Set<string>();
+    for (const [index, draft] of draftPackages.entries()) {
+      const sealNumber = draft.sealNumber.trim();
+      if (
+        !sealNumber ||
+        sealNumber.length > 50 ||
+        !validKg(draft.powderKg) ||
+        valueAsMilliKg(draft.powderKg) <= 0
+      ) {
+        toast.error(t("warehouses.packages.errors.invalidDraft", { number: index + 1 }));
         return;
       }
-      if (duplicateSeals.has(key)) {
-        toast.error(t("warehouses.packages.errors.duplicateSeal", { seal: draft.sealNumber.trim() }));
+      const key = sealNumber.toLowerCase();
+      if (draftSeals.has(key)) {
+        toast.error(t("warehouses.packages.errors.duplicateSeal", { seal: sealNumber }));
         return;
       }
-      duplicateSeals.add(key);
+      draftSeals.add(key);
+      requestPackages.push({
+        sealNumber,
+        powderKg: valueAsMilliKg(draft.powderKg) / 1000,
+      });
     }
 
-    setSaving(true);
-    try {
-      for (const draft of draftPackages) {
-        const payload = draftRequest(draft);
-        if (!payload) break;
-        try {
-          const created = await powderPackagesService.create(payload);
-          setDraftPackages((current) => current.filter((entry) => entry.clientId !== draft.clientId));
-          setPackages((current) =>
-            statusFilter === "" || statusFilter === "1" ? [created, ...current] : current,
-          );
-          try {
-            await Promise.all([
-              loadSourceBatches(Number(warehouseId)),
-              loadPackages(Number(warehouseId), statusFilter),
-            ]);
-          } catch (refreshError: unknown) {
-            toast.error(t("warehouses.packages.errors.createdRefreshFailed", {
-              seal: payload.sealNumber,
-              error: getApiErrorMessage(refreshError, t("warehouses.packages.errors.refresh")),
-            }));
-            return;
-          }
-        } catch (error: unknown) {
-          toast.error(t("warehouses.packages.errors.createFailed", {
-            seal: payload.sealNumber,
-            error: getApiErrorMessage(error, t("warehouses.packages.errors.create")),
-          }));
-          try {
-            await Promise.all([
-              loadSourceBatches(Number(warehouseId)),
-              loadPackages(Number(warehouseId), statusFilter),
-            ]);
-          } catch (refreshError: unknown) {
-            toast.error(getApiErrorMessage(refreshError, t("warehouses.packages.errors.refresh")));
-          }
-          return;
-        }
-      }
-      toast.success(t("warehouses.packages.success.created"));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const saveIronDrafts = async () => {
-    if (saving || ironDraftPackages.length === 0 || !selectedIronBatch) return;
-
-    const duplicateSeals = new Set<string>();
-    const payloads: Array<{ draft: IronDraftPackage; payload: CreateIronPowderPackageRequest }> = [];
-    for (const [index, draft] of ironDraftPackages.entries()) {
-      const payload = ironDraftRequest(draft);
-      if (!payload) {
-        toast.error(t("warehouses.packages.errors.invalidIronDraft", { number: index + 1 }));
-        return;
-      }
-      const key = payload.sealNumber.toLocaleLowerCase();
-      if (duplicateSeals.has(key)) {
-        toast.error(t("warehouses.packages.errors.duplicateSeal", { seal: payload.sealNumber }));
-        return;
-      }
-      duplicateSeals.add(key);
-      payloads.push({ draft, payload });
-    }
-
-    const plannedMilliKg = payloads.reduce(
-      (total, entry) => total + milliKg(entry.payload.powderKg),
-      0,
-    );
-    if (plannedMilliKg > milliKg(selectedIronBatch.availablePowderKg)) {
+    if (plannedMilliKg > milliKg(availableKg)) {
       toast.error(t("warehouses.packages.errors.overAvailableBatch", {
-        remaining: formatKg(selectedIronBatch.availablePowderKg),
+        remaining: formatKg(availableKg),
       }));
       return;
     }
 
-    const packageSummary = payloads
-      .map(({ payload }) => `${payload.sealNumber}: ${formatKg(payload.powderKg)} kg`)
-      .join("\n");
-    if (!window.confirm(t("warehouses.packages.confirmIronCreate", {
-      batch: selectedIronBatch.ironProcessingBatchId,
-      packages: packageSummary,
-      total: formatKg(plannedMilliKg / 1000),
-      available: formatKg(selectedIronBatch.availablePowderKg),
-    }))) return;
-
     setSaving(true);
     try {
-      for (const { draft, payload } of payloads) {
-        try {
-          const created = await powderPackagesService.createIron(payload);
-          setIronDraftPackages((current) =>
-            current.filter((entry) => entry.clientId !== draft.clientId),
-          );
-          setPackages((current) =>
-            statusFilter === "" || statusFilter === "1" ? [created, ...current] : current,
-          );
-          try {
-            await Promise.all([
-              loadSourceBatches(Number(warehouseId), "iron"),
-              loadPackages(Number(warehouseId), statusFilter),
-            ]);
-          } catch (refreshError: unknown) {
-            toast.error(t("warehouses.packages.errors.createdRefreshFailed", {
-              seal: payload.sealNumber,
-              error: getApiErrorMessage(refreshError, t("warehouses.packages.errors.refresh")),
-            }));
-            return;
-          }
-        } catch (error: unknown) {
-          toast.error(t("warehouses.packages.errors.createFailed", {
-            seal: payload.sealNumber,
-            error: getApiErrorMessage(error, t("warehouses.packages.errors.create")),
-          }));
-          try {
-            await Promise.all([
-              loadSourceBatches(Number(warehouseId), "iron"),
-              loadPackages(Number(warehouseId), statusFilter),
-            ]);
-          } catch (refreshError: unknown) {
-            toast.error(getApiErrorMessage(refreshError, t("warehouses.packages.errors.refresh")));
-          }
-          return;
-        }
+      const allPackages = await Promise.all(
+        warehouses.map((warehouse) => powderPackagesService.list(warehouse.id)),
+      );
+      const existingSeals = new Set(
+        allPackages.flat()
+          .filter((item) => item.status !== 4)
+          .map((item) => item.sealNumber.toLowerCase()),
+      );
+      const alreadyUsed = requestPackages.find((item) => existingSeals.has(item.sealNumber.toLowerCase()));
+      if (alreadyUsed) {
+        toast.error(t("warehouses.packages.errors.sealAlreadyUsed", { seal: alreadyUsed.sealNumber }));
+        return;
       }
+
+      const created = packageSource === "iron"
+        ? await powderPackagesService.createIron({
+          ironProcessingBatchId: batchIdForRequest,
+          packages: requestPackages,
+        } satisfies CreateIronPowderPackageRequest)
+        : await powderPackagesService.create({
+          powderBatchId: batchIdForRequest,
+          packages: requestPackages,
+        });
+
+      setDraftPackages([]);
+      setPackageCount("");
+      setPackages((current) => statusFilter === "" || statusFilter === "1"
+        ? [...created, ...current.filter((item) => !created.some((entry) => entry.id === item.id))]
+        : current);
       toast.success(t("warehouses.packages.success.created"));
+      try {
+        await Promise.all([
+          loadSourceBatches(Number(warehouseId), packageSource),
+          loadPackages(Number(warehouseId), statusFilter),
+        ]);
+      } catch (refreshError: unknown) {
+        toast.error(t("warehouses.packages.errors.createdRefreshFailed", {
+          error: getApiErrorMessage(refreshError, t("warehouses.packages.errors.refresh")),
+        }));
+      }
+    } catch (error: unknown) {
+      toast.error(t("warehouses.packages.errors.createFailed", {
+        error: getApiErrorMessage(error, t("warehouses.packages.errors.create")),
+      }));
+      try {
+        await loadSourceBatches(Number(warehouseId), packageSource);
+      } catch (refreshError: unknown) {
+        toast.error(getApiErrorMessage(refreshError, t("warehouses.packages.errors.refresh")));
+      }
     } finally {
       setSaving(false);
     }
   };
 
-  const runPackageAction = async (item: PowderPackage, action: "send" | "cancel") => {
+  const runPackageAction = async (
+    item: PowderPackage,
+    action: "send" | "cancel" | "invalidate",
+  ) => {
     if (busyPackageId !== null) return;
-    if (
-      action === "cancel" &&
-      !window.confirm(t("warehouses.packages.confirmCancel", {
-        seal: item.sealNumber,
-        weight: formatKg(item.totalPowderKg),
-      }))
-    ) return;
+    setPendingAction({ item, action });
+  };
+
+  const executePendingAction = async () => {
+    if (!pendingAction || busyPackageId !== null) return;
+    const { item, action } = pendingAction;
+    setPendingAction(null);
     setBusyPackageId(item.id);
+    if (action === "send") setSendingAnimation(item);
     const sourceToRefresh: PackageSource = item.sourceType === "Iron"
       ? "iron"
       : item.sourceType === "Catalyst"
@@ -554,11 +388,14 @@ export const PowderPackages = () => {
       try {
         updated = action === "send"
           ? await powderPackagesService.sendToWarehouse(item.id)
-          : await powderPackagesService.cancel(item.id);
+          : action === "cancel"
+            ? await powderPackagesService.cancel(item.id)
+            : await powderPackagesService.invalidate(item.id);
       } catch (error: unknown) {
+        if (action === "send") setSendingAnimation(null);
         toast.error(getApiErrorMessage(
           error,
-          t(`warehouses.packages.errors.${action === "send" ? "send" : "cancel"}`),
+          t(`warehouses.packages.errors.${action}`),
         ));
         try {
           await refreshData();
@@ -573,7 +410,11 @@ export const PowderPackages = () => {
         if (!matchesFilter) return current.filter((entry) => entry.id !== updated.id);
         return [updated, ...current.filter((entry) => entry.id !== updated.id)];
       });
-      toast.success(t(`warehouses.packages.success.${action === "send" ? "sent" : "cancelled"}`, {
+      toast.success(t(`warehouses.packages.success.${action === "send"
+        ? "sent"
+        : action === "cancel"
+          ? "cancelled"
+          : "invalidated"}`, {
         seal: item.sealNumber,
       }));
       try {
@@ -586,42 +427,43 @@ export const PowderPackages = () => {
       }
     } finally {
       setBusyPackageId(null);
+      if (action === "send") {
+        window.setTimeout(() => {
+          setSendingAnimation((current) =>
+            current?.id === item.id ? null : current,
+          );
+          navigate("/warehouses/total-batches");
+        }, 3500);
+      }
     }
   };
 
-  const removeDraft = (clientId: string) =>
-    setDraftPackages((current) => current.filter((draft) => draft.clientId !== clientId));
-
-  const removeIronDraft = (clientId: string) =>
-    setIronDraftPackages((current) => current.filter((draft) => draft.clientId !== clientId));
-
   const changeWarehouse = (nextWarehouseId: string) => {
     if (
-      (draftPackages.length > 0 || ironDraftPackages.length > 0) &&
+      draftPackages.length > 0 &&
       !window.confirm(t("warehouses.packages.discardDrafts"))
     ) return;
+    setDraftPackages([]);
+    setPackageCount("");
     setWarehouseId(nextWarehouseId);
   };
 
   const changePackageSource = (nextSource: PackageSource) => {
     if (nextSource === packageSource) return;
     if (
-      (draftPackages.length > 0 || ironDraftPackages.length > 0) &&
+      draftPackages.length > 0 &&
       !window.confirm(t("warehouses.packages.discardDrafts"))
     ) return;
     setDraftPackages([]);
-    setIronDraftPackages([]);
+    setPackageCount("");
     setPackageSource(nextSource);
   };
 
   const changeBatch = (nextBatchId: string) => {
-    const hasCurrentDrafts = packageSource === "iron"
-      ? ironDraftPackages.length > 0
-      : draftPackages.length > 0;
-    if (nextBatchId !== batchId && hasCurrentDrafts) {
+    if (nextBatchId !== batchId && draftPackages.length > 0) {
       if (!window.confirm(t("warehouses.packages.discardBatchDrafts"))) return;
-      if (packageSource === "iron") setIronDraftPackages([]);
-      else setDraftPackages([]);
+      setDraftPackages([]);
+      setPackageCount("");
     }
     setBatchId(nextBatchId);
   };
@@ -676,6 +518,7 @@ export const PowderPackages = () => {
           <option value="1">{t("warehouses.packages.statuses.1")}</option>
           <option value="2">{t("warehouses.packages.statuses.2")}</option>
           <option value="3">{t("warehouses.packages.statuses.3")}</option>
+          <option value="4">{t("warehouses.packages.statuses.4")}</option>
         </Select>
       </section>
 
@@ -688,10 +531,7 @@ export const PowderPackages = () => {
               <h2>{t("warehouses.packages.ironSourceBatch", {
                 id: selectedIronBatch.ironProcessingBatchId,
               })}</h2>
-              <p>{t("warehouses.packages.ironBatchCreated", {
-                purchase: selectedIronBatch.ironPurchaseId,
-                date: formatDate(selectedIronBatch.createdAt),
-              })}</p>
+              <p>{formatDate(selectedIronBatch.createdAt)}</p>
             </div>
             <div className={styles.batchSelector}>
               <Select
@@ -710,10 +550,6 @@ export const PowderPackages = () => {
 
           <div className={styles.summary}>
             <div>
-              <span>{t("warehouses.packages.sourceWeight")}</span>
-              <strong>{formatKg(selectedIronBatch.sourceWeightKg)} kg</strong>
-            </div>
-            <div>
               <span>{t("warehouses.packages.totalPowder")}</span>
               <strong>{formatKg(selectedIronBatch.powderWeightKg)} kg</strong>
             </div>
@@ -727,47 +563,49 @@ export const PowderPackages = () => {
             </div>
           </div>
 
-          <article className={styles.sourceItem}>
-            <div>
-              <strong>{t("warehouses.packages.ironComposition")}</strong>
-              <span className={`${styles.badge} ${styles.generalBadge}`}>
-                {t("warehouses.packages.ironPurchase", { id: selectedIronBatch.ironPurchaseId })}
-              </span>
-            </div>
-            <div className={styles.sourceNumbers}>
-              <span>Pt: {formatKg(selectedIronBatch.ptPerKg)} g/kg</span>
-              <span>Pd: {formatKg(selectedIronBatch.pdPerKg)} g/kg</span>
-              <span>Rh: {formatKg(selectedIronBatch.rhPerKg)} g/kg</span>
-              <strong>{t("warehouses.packages.totalCost")}: {formatAmd(selectedIronBatch.totalCost)} AMD</strong>
-            </div>
-          </article>
-
           <p className={styles.packageTotal}>
             {t("warehouses.packages.planSummary", {
-              planned: formatKg(plannedIronMilliKg / 1000),
+              planned: formatKg(plannedMilliKg / 1000),
               available: formatKg(selectedIronBatch.availablePowderKg),
-              remaining: formatKg(Math.max(
-                0,
-                milliKg(selectedIronBatch.availablePowderKg) - plannedIronMilliKg,
-              ) / 1000),
+              remaining: formatKg(remainingMilliKg / 1000),
             })}
           </p>
 
-          <div className={styles.actions}>
-            <Button
-              variant="secondary"
-              onClick={addIronDraft}
-              disabled={loadingData || saving || selectedIronBatch.availablePowderKg <= 0}
-            >
-              <Plus size={16} aria-hidden="true" />
-              {t("warehouses.packages.addPackage")}
-            </Button>
-            <Button
-              onClick={() => void saveIronDrafts()}
-              disabled={saving || ironDraftPackages.length === 0}
-            >
-              {saving ? t("warehouses.packages.saving") : t("warehouses.packages.createSelected")}
-            </Button>
+          <div className={styles.creationControls}>
+            <label className={`${styles.fieldLabel} ${styles.countField}`}>
+              {t("warehouses.packages.packageCount")}
+              <div className={styles.packageCountControl}>
+                <button
+                  type="button"
+                  aria-label={t("warehouses.packages.decreasePackageCount")}
+                  onClick={() => adjustPackageCount(-1)}
+                  disabled={saving || loadingData || Number(packageCount) <= 1}
+                >
+                  <Minus size={14} />
+                </button>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={packageCount}
+                  onChange={(event) => changePackageCount(event.target.value)}
+                  disabled={saving || loadingData}
+                />
+                <button
+                  type="button"
+                  aria-label={t("warehouses.packages.increasePackageCount")}
+                  onClick={() => adjustPackageCount(1)}
+                  disabled={saving || loadingData}
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            </label>
+            <div className={styles.createAction}>
+              <Button onClick={() => void saveDrafts()} disabled={saving || draftPackages.length === 0}>
+                {saving ? t("warehouses.packages.saving") : t("warehouses.packages.createSelected")}
+              </Button>
+            </div>
           </div>
         </section>
       ) : (
@@ -814,60 +652,51 @@ export const PowderPackages = () => {
               <span>{t("warehouses.packages.available")}</span>
               <strong>{formatKg(selectedBatch.availablePowderKg)} kg</strong>
             </div>
-            <div>
-              <span>{t("warehouses.packages.planned")}</span>
-              <strong>{formatKg(plannedKg)} / {formatKg(selectedBatch.availablePowderKg)} kg</strong>
-            </div>
-            <div>
-              <span>{t("warehouses.packages.remaining")}</span>
-              <strong>{formatKg(Math.max(0, selectedBatch.availablePowderKg -
-                (draftPackages.filter((draft) => draft.powderBatchId === selectedBatch.powderBatchId)
-                  .reduce((sum, draft) => sum + Object.values(draft.itemWeights).reduce(
-                    (draftSum, value) => draftSum + valueAsMilliKg(value),
-                    0,
-                  ), 0) / 1000)))} kg</strong>
-            </div>
           </div>
 
-          <div className={styles.sourceList}>
-            {selectedBatch.items.map((item) => {
-              const remainingMilliKg = Math.max(
-                0,
-                milliKg(item.availablePowderKg) - (allocatedByItem.get(item.powderBatchItemId) ?? 0),
-              );
-              return (
-                <article className={styles.sourceItem} key={item.powderBatchItemId}>
-                  <div>
-                    <strong>#{item.intakeId} · {item.supplierClientName}</strong>
-                    {item.isSpecialCustomerLot ? (
-                      <span className={`${styles.badge} ${styles.specialBadge}`}>
-                        <Sparkles size={13} aria-hidden="true" />
-                        {t("warehouses.packages.specialCustomer")}: {item.specialCustomerName ?? `#${item.specialCustomerId}`}
-                      </span>
-                    ) : (
-                      <span className={`${styles.badge} ${styles.generalBadge}`}>
-                        {t("warehouses.packages.generalPowder")}
-                      </span>
-                    )}
-                  </div>
-                  <div className={styles.sourceNumbers}>
-                    <span>{t("warehouses.packages.initial")}: {formatKg(item.powderKg)} kg</span>
-                    <span>{t("warehouses.packages.allocated")}: {formatKg(item.allocatedPowderKg)} kg</span>
-                    <strong>{t("warehouses.packages.remaining")}: {formatKg(remainingMilliKg / 1000)} kg</strong>
-                  </div>
-                </article>
-              );
+          <p className={styles.packageTotal}>
+            {t("warehouses.packages.planSummary", {
+              planned: formatKg(plannedMilliKg / 1000),
+              available: formatKg(selectedBatch.availablePowderKg),
+              remaining: formatKg(remainingMilliKg / 1000),
             })}
-          </div>
+          </p>
 
-          <div className={styles.actions}>
-            <Button variant="secondary" onClick={addDraft} disabled={loadingData || saving}>
-              <Plus size={16} aria-hidden="true" />
-              {t("warehouses.packages.addPackage")}
-            </Button>
-            <Button onClick={() => void saveDrafts()} disabled={saving || draftPackages.length === 0}>
-              {saving ? t("warehouses.packages.saving") : t("warehouses.packages.createSelected")}
-            </Button>
+          <div className={styles.creationControls}>
+            <label className={`${styles.fieldLabel} ${styles.countField}`}>
+              {t("warehouses.packages.packageCount")}
+              <div className={styles.packageCountControl}>
+                <button
+                  type="button"
+                  aria-label={t("warehouses.packages.decreasePackageCount")}
+                  onClick={() => adjustPackageCount(-1)}
+                  disabled={saving || loadingData || Number(packageCount) <= 1}
+                >
+                  <Minus size={14} />
+                </button>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={packageCount}
+                  onChange={(event) => changePackageCount(event.target.value)}
+                  disabled={saving || loadingData}
+                />
+                <button
+                  type="button"
+                  aria-label={t("warehouses.packages.increasePackageCount")}
+                  onClick={() => adjustPackageCount(1)}
+                  disabled={saving || loadingData}
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            </label>
+            <div className={styles.createAction}>
+              <Button onClick={() => void saveDrafts()} disabled={saving || draftPackages.length === 0}>
+                {saving ? t("warehouses.packages.saving") : t("warehouses.packages.createSelected")}
+              </Button>
+            </div>
           </div>
         </section>
       ) : (
@@ -880,119 +709,31 @@ export const PowderPackages = () => {
         </p>
       ))}
 
-      {packageSource === "iron" && ironDraftPackages.length > 0 && (
+      {draftPackages.length > 0 && (
         <section className={styles.drafts}>
-          <h2>{t("warehouses.packages.draftTitle", { count: ironDraftPackages.length })}</h2>
+          <h2>{t("warehouses.packages.draftTitle", { count: draftPackages.length })}</h2>
           <p className={styles.packageTotal}>
             {t("warehouses.packages.planSummary", {
-              planned: formatKg(plannedIronMilliKg / 1000),
-              available: formatKg(selectedIronBatch?.availablePowderKg ?? 0),
-              remaining: formatKg(Math.max(
-                0,
-                milliKg(selectedIronBatch?.availablePowderKg ?? 0) - plannedIronMilliKg,
-              ) / 1000),
+              planned: formatKg(plannedMilliKg / 1000),
+              available: formatKg(availableKg),
+              remaining: formatKg(remainingMilliKg / 1000),
             })}
           </p>
           <div className={styles.draftGrid}>
-            {ironDraftPackages.map((draft, index) => {
-              const batch = ironSourceBatches.find(
-                (candidate) => candidate.ironProcessingBatchId === draft.ironProcessingBatchId,
-              );
-              if (!batch) return null;
-              const otherDraftWeight = ironDraftPackages
-                .filter((candidate) =>
-                  candidate.clientId !== draft.clientId &&
-                  candidate.ironProcessingBatchId === draft.ironProcessingBatchId,
-                )
-                .reduce((total, candidate) => total + valueAsMilliKg(candidate.powderKg), 0);
-              const maxMilliKg = Math.max(0, milliKg(batch.availablePowderKg) - otherDraftWeight);
+            {draftPackages.map((draft, index) => {
               const weightValid = validKg(draft.powderKg) && valueAsMilliKg(draft.powderKg) > 0;
               return (
                 <article className={styles.draftCard} key={draft.clientId}>
                   <div className={styles.draftHeading}>
-                    <h3>{t("warehouses.packages.packageNumber", { number: index + 1 })}</h3>
-                    <button
-                      type="button"
-                      className={styles.iconButton}
-                      aria-label={t("warehouses.packages.removeDraft")}
-                      title={t("warehouses.packages.removeDraft")}
-                      disabled={saving}
-                      onClick={() => removeIronDraft(draft.clientId)}
-                    >
-                      <Trash2 size={17} />
-                    </button>
-                  </div>
-                  <p className={styles.sectionHeading}>
-                    {t("warehouses.packages.ironSourceBatch", { id: draft.ironProcessingBatchId })}
-                  </p>
-                  <label className={styles.fieldLabel}>
-                    {t("warehouses.packages.sealNumber")}
-                    <input
-                      value={draft.sealNumber}
-                      maxLength={50}
-                      onChange={(event) =>
-                        changeIronDraft(draft.clientId, { sealNumber: event.target.value })
-                      }
-                      placeholder={t("warehouses.packages.sealPlaceholder")}
-                      disabled={saving}
-                    />
-                  </label>
-                  <label className={styles.fieldLabel}>
-                    {t("warehouses.packages.ironPackageWeight")}
-                    <span className={styles.weightInput}>
-                      <input
-                        type="number"
-                        min="0.001"
-                        max={maxMilliKg / 1000}
-                        step="0.001"
-                        value={draft.powderKg}
-                        aria-label={t("warehouses.packages.ironPackageWeight")}
-                        onChange={(event) => setIronDraftWeight(draft, event.target.value)}
-                        disabled={saving}
-                      />
-                      <span>kg</span>
-                    </span>
-                  </label>
-                  <small className={!weightValid && draft.powderKg ? styles.error : ""}>
-                    {weightValid || !draft.powderKg
-                      ? t("warehouses.packages.remainingForIronPackage", {
-                        remaining: formatKg(maxMilliKg / 1000),
-                      })
-                      : t("warehouses.packages.errors.invalidIronWeight")}
-                  </small>
-                </article>
-              );
-            })}
-          </div>
-          <div className={styles.actions}>
-            <Button
-              onClick={() => void saveIronDrafts()}
-              disabled={saving || ironDraftPackages.length === 0 || !selectedIronBatch}
-            >
-              {saving ? t("warehouses.packages.saving") : t("warehouses.packages.createSelected")}
-            </Button>
-          </div>
-        </section>
-      )}
-
-      {packageSource === "catalyst" && draftPackages.length > 0 && (
-        <section className={styles.drafts}>
-          <h2>{t("warehouses.packages.draftTitle", { count: draftPackages.length })}</h2>
-          <div className={styles.draftGrid}>
-            {draftPackages.map((draft, index) => {
-              const batch = batchesById.get(draft.powderBatchId);
-              if (!batch) return null;
-              const packageTotal = Object.values(draft.itemWeights).reduce(
-                (sum, value) => sum + valueAsMilliKg(value),
-                0,
-              );
-              const selectedItems = batch.items.filter((item) =>
-                valueAsMilliKg(draft.itemWeights[item.powderBatchItemId] ?? "") > 0,
-              );
-              return (
-                <article className={styles.draftCard} key={draft.clientId}>
-                  <div className={styles.draftHeading}>
-                    <h3>{t("warehouses.packages.packageNumber", { number: index + 1 })}</h3>
+                    <h3>
+                      <span className={styles.packageIcon}>
+                        <ShoppingBag size={18} aria-hidden="true" />
+                      </span>
+                      <span>
+                        <small>{t("warehouses.packages.packageLabel")}</small>
+                        <strong>#{index + 1}</strong>
+                      </span>
+                    </h3>
                     <button
                       type="button"
                       className={styles.iconButton}
@@ -1004,73 +745,41 @@ export const PowderPackages = () => {
                       <Trash2 size={17} />
                     </button>
                   </div>
-                  <label className={styles.fieldLabel}>
-                    {t("warehouses.packages.sealNumber")}
-                    <input
-                      value={draft.sealNumber}
-                      maxLength={50}
-                      onChange={(event) => changeDraft(draft.clientId, { sealNumber: event.target.value })}
-                      placeholder={t("warehouses.packages.sealPlaceholder")}
-                      disabled={saving}
-                    />
-                  </label>
-                  <p className={styles.packageTotal}>
-                    {t("warehouses.packages.packageTotal")}: <strong>{formatKg(packageTotal / 1000)} kg</strong>
-                  </p>
-                  <div className={styles.draftItems}>
-                    {batch.items.map((item) => {
-                      const mixError = getMixError(item, selectedItems.filter(
-                        (selected) => selected.powderBatchItemId !== item.powderBatchItemId,
-                      ), t);
-                      const otherDraftAllocation = draftPackages.reduce((total, otherDraft) =>
-                        otherDraft.clientId === draft.clientId
-                          ? total
-                          : total + valueAsMilliKg(otherDraft.itemWeights[item.powderBatchItemId] ?? ""),
-                      0);
-                      const maxMilliKg = Math.max(
-                        0,
-                        milliKg(item.availablePowderKg) - otherDraftAllocation,
-                      );
-                      return (
-                        <div className={styles.draftItem} key={item.powderBatchItemId}>
-                          <label className={styles.fieldLabel}>
-                            <span>
-                              #{item.intakeId} · {item.supplierClientName}
-                              {item.isSpecialCustomerLot && (
-                                <span className={styles.itemType}>{t("warehouses.packages.specialShort")}</span>
-                              )}
-                            </span>
-                            <span className={styles.weightInput}>
-                              <input
-                                type="number"
-                                min="0"
-                                max={maxMilliKg / 1000}
-                                step="0.001"
-                                value={draft.itemWeights[item.powderBatchItemId] ?? ""}
-                                aria-label={t("warehouses.packages.weightForIntake", { intake: item.intakeId })}
-                                onChange={(event) => setDraftWeight(draft, item, event.target.value)}
-                                disabled={saving || !!mixError}
-                              />
-                              <span>kg</span>
-                            </span>
-                          </label>
-                          <small className={mixError ? styles.error : ""}>
-                            {mixError || t("warehouses.packages.remainingForItem", {
-                              remaining: formatKg(maxMilliKg / 1000),
-                            })}
-                          </small>
-                        </div>
-                      );
-                    })}
+                  <div className={styles.draftFields}>
+                    <label className={styles.fieldLabel}>
+                      {t("warehouses.packages.sealNumber")}
+                      <input
+                        value={draft.sealNumber}
+                        maxLength={50}
+                        onChange={(event) => changeDraft(draft.clientId, { sealNumber: event.target.value })}
+                        placeholder={t("warehouses.packages.sealPlaceholder")}
+                        disabled={saving}
+                      />
+                    </label>
+                    <label className={styles.fieldLabel}>
+                      {t("warehouses.packages.packageWeight")}
+                      <span className={styles.weightInput}>
+                        <input
+                          type="number"
+                          min="0.001"
+                          step="0.001"
+                          value={draft.powderKg}
+                          aria-label={t("warehouses.packages.packageWeight")}
+                          onChange={(event) => setDraftWeight(draft.clientId, event.target.value)}
+                          disabled={saving}
+                        />
+                        <span>kg</span>
+                      </span>
+                    </label>
                   </div>
+                  {!weightValid && draft.powderKg && (
+                    <small className={styles.error}>
+                      {t("warehouses.packages.errors.invalidWeight")}
+                    </small>
+                  )}
                 </article>
               );
             })}
-          </div>
-          <div className={styles.actions}>
-            <Button onClick={() => void saveDrafts()} disabled={saving || draftPackages.length === 0}>
-              {saving ? t("warehouses.packages.saving") : t("warehouses.packages.createSelected")}
-            </Button>
           </div>
         </section>
       )}
@@ -1116,23 +825,39 @@ export const PowderPackages = () => {
                       ))}
                     </ul>
                   )}
-                  {item.status === 1 && (
+                  {(item.status === 1 || item.status === 3) && (
                     <div className={styles.packageActions}>
+                      {item.status === 1 && (
+                        <>
+                          <Button
+                            size="small"
+                            onClick={() => void runPackageAction(item, "send")}
+                            disabled={busyPackageId !== null}
+                          >
+                            <Send size={14} aria-hidden="true" />
+                            {busyPackageId === item.id ? t("warehouses.packages.sending") : t("warehouses.packages.send")}
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="danger"
+                            className={styles.cancelPackageButton}
+                            onClick={() => void runPackageAction(item, "cancel")}
+                            disabled={busyPackageId !== null}
+                          >
+                            <CircleX size={14} aria-hidden="true" />
+                            {t("warehouses.packages.cancel")}
+                          </Button>
+                        </>
+                      )}
                       <Button
                         size="small"
-                        onClick={() => void runPackageAction(item, "send")}
+                        variant="secondary"
+                        className={styles.invalidatePackageButton}
+                        onClick={() => void runPackageAction(item, "invalidate")}
                         disabled={busyPackageId !== null}
                       >
-                        <Send size={14} aria-hidden="true" />
-                        {busyPackageId === item.id ? t("warehouses.packages.sending") : t("warehouses.packages.send")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="danger"
-                        onClick={() => void runPackageAction(item, "cancel")}
-                        disabled={busyPackageId !== null}
-                      >
-                        {t("warehouses.packages.cancel")}
+                        <Ban size={14} aria-hidden="true" />
+                        {t("warehouses.packages.invalidate")}
                       </Button>
                     </div>
                   )}
@@ -1142,6 +867,95 @@ export const PowderPackages = () => {
           </div>
         )}
       </section>
+
+      {pendingAction && (
+        <ConfirmationModal
+          open
+          onOpenChange={(open) => {
+            if (!open) setPendingAction(null);
+          }}
+          title={
+            pendingAction.action === "send"
+              ? t("warehouses.packages.confirmSendTitle")
+              : pendingAction.action === "cancel"
+                ? t("warehouses.packages.confirmCancelTitle")
+                : t("warehouses.packages.confirmInvalidateTitle")
+          }
+          description={
+            pendingAction.action === "send"
+              ? t("warehouses.packages.confirmSend", {
+                  seal: pendingAction.item.sealNumber,
+                  weight: formatKg(pendingAction.item.totalPowderKg),
+                })
+              : pendingAction.action === "cancel"
+                ? t("warehouses.packages.confirmCancel", {
+                    seal: pendingAction.item.sealNumber,
+                    weight: formatKg(pendingAction.item.totalPowderKg),
+                  })
+                : t("warehouses.packages.confirmInvalidate", {
+                    seal: pendingAction.item.sealNumber,
+                    weight: formatKg(pendingAction.item.totalPowderKg),
+                  })
+          }
+          confirmText={
+            pendingAction.action === "send"
+              ? t("warehouses.packages.send")
+              : pendingAction.action === "cancel"
+                ? t("warehouses.packages.cancel")
+                : t("warehouses.packages.invalidate")
+          }
+          cancelText={t("common.cancel")}
+          confirmVariant={pendingAction.action === "invalidate" ? "secondary" : "danger"}
+          confirmLoading={busyPackageId === pendingAction.item.id}
+          confirmIcon={
+            pendingAction.action === "send"
+              ? <Send size={16} aria-hidden="true" />
+              : pendingAction.action === "cancel"
+                ? <CircleX size={16} aria-hidden="true" />
+                : <Ban size={16} aria-hidden="true" />
+          }
+          onConfirm={() => void executePendingAction()}
+        >
+          {pendingAction.action === "cancel" && (
+            <div className={`${styles.confirmVisual} ${styles.cancelConfirmVisual}`} aria-hidden="true">
+              <CircleX size={28} />
+            </div>
+          )}
+          {pendingAction.action === "invalidate" && (
+            <div className={styles.confirmVisual} aria-hidden="true">
+              <Ban size={28} />
+            </div>
+          )}
+          {pendingAction.action === "send" && (
+            <div className={styles.confirmVisual} aria-hidden="true">
+              <PackageCheck size={28} />
+            </div>
+          )}
+        </ConfirmationModal>
+      )}
+
+      {sendingAnimation && (
+        <div className={styles.sendOverlay} role="status" aria-live="polite">
+          <div className={styles.warehouseScene}>
+            <div className={styles.routeLine} />
+            <div className={styles.loadedTruck}>
+              <div className={styles.truckCargo}>
+                <ShoppingBag size={24} aria-hidden="true" />
+                <span>{formatKg(sendingAnimation.totalPowderKg)} kg</span>
+              </div>
+              <Truck size={104} strokeWidth={1.45} aria-hidden="true" />
+            </div>
+            <div className={styles.warehouseIcon}>
+              <div className={styles.warehouseRoof} />
+              <div className={styles.warehouseDoor} />
+            </div>
+            <div className={styles.sendCaption}>
+              <strong>{t("warehouses.packages.sendAnimationTitle")}</strong>
+              <span>{t("warehouses.packages.savedPackage", { seal: sendingAnimation.sealNumber })}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

@@ -88,6 +88,88 @@
   width: min(360px, 100%);
 }
 
+.countField {
+  width: 168px;
+}
+
+.packageCountControl {
+  display: grid;
+  grid-template-columns: 36px 68px 36px;
+  height: 38px;
+  overflow: hidden;
+  border: 1px solid rgba(210, 191, 138, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
+}
+
+.packageCountControl button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  color: #d2bf8a;
+  border: 0;
+  background: rgba(210, 191, 138, 0.07);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.packageCountControl button:first-child {
+  border-right: 1px solid rgba(210, 191, 138, 0.16);
+}
+
+.packageCountControl button:last-child {
+  border-left: 1px solid rgba(210, 191, 138, 0.16);
+}
+
+.packageCountControl button:hover:not(:disabled) {
+  color: #f1e6ba;
+  background: rgba(210, 191, 138, 0.15);
+}
+
+.packageCountControl button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.packageCountControl input {
+  width: 68px;
+  min-height: 36px;
+  padding: 0;
+  color: #f1eedf;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  -moz-appearance: textfield;
+}
+
+.packageCountControl input::-webkit-inner-spin-button,
+.packageCountControl input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.creationControls {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  width: 100%;
+  padding-top: 14px;
+  border-top: 1px solid rgba(196, 169, 106, 0.12);
+}
+
+.createAction {
+  display: flex;
+  justify-content: flex-end;
+  flex: 1;
+}
+
 .summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -121,6 +203,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 10px;
+}
+
+.draftGrid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
 }
 
 .sourceItem,
@@ -187,7 +273,45 @@
 }
 
 .draftHeading {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(196, 169, 106, 0.12);
+}
+
+.draftHeading h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.draftHeading h3 > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.draftHeading h3 small {
+  color: #aeb6ad;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.draftHeading h3 strong {
+  color: #eee9db;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.packageIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(210, 191, 138, 0.24);
+  border-radius: 9px;
+  background: rgba(210, 191, 138, 0.09);
 }
 
 .iconButton {
@@ -215,6 +339,35 @@
   color: #d2d8d1;
   font-size: 12px;
   font-weight: 600;
+}
+
+.draftCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.draftCard .fieldLabel {
+  gap: 5px;
+}
+
+.draftCard .weightInput {
+  flex: 0 0 100%;
+  width: 100%;
+}
+
+.draftFields {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
+.draftFields input {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .fieldLabel > input,
@@ -323,6 +476,11 @@
   background: rgba(160, 73, 62, 0.18);
 }
 
+.status4 {
+  color: #d3b9e8;
+  background: rgba(133, 89, 163, 0.2);
+}
+
 .savedPackageHeading {
   align-items: flex-start;
 }
@@ -348,6 +506,172 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 14px;
+}
+
+.confirmVisual {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin: 2px auto 4px;
+  place-items: center;
+  color: #d2bf8a;
+  border: 1px solid rgba(210, 191, 138, 0.22);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(210, 191, 138, 0.16), rgba(210, 191, 138, 0.04) 58%, transparent 60%);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
+  animation: confirmPulse 1.8s ease-in-out infinite;
+}
+
+.cancelConfirmVisual {
+  color: #f1bd87;
+  border-color: rgba(226, 159, 92, 0.34);
+  background:
+    radial-gradient(circle, rgba(226, 159, 92, 0.18), rgba(226, 159, 92, 0.05) 58%, transparent 60%);
+}
+
+.sendOverlay {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 10, 8, 0.72);
+  backdrop-filter: blur(8px);
+  perspective: 900px;
+  animation: overlayIn 0.25s ease-out;
+}
+
+.warehouseScene {
+  position: relative;
+  width: min(700px, calc(100vw - 24px));
+  height: 320px;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid rgba(210, 191, 138, 0.24);
+  border-radius: 18px;
+  background:
+    linear-gradient(155deg, rgba(210, 191, 138, 0.08), transparent 45%),
+    radial-gradient(circle at 78% 45%, rgba(94, 126, 84, 0.22), transparent 28%),
+    linear-gradient(180deg, #171d18 0%, #0c110e 100%);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.52);
+  transform: rotateX(2deg);
+}
+
+.routeLine {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 78px;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, rgba(210, 191, 138, 0.32) 0 18px, transparent 18px 34px);
+  transform: skewX(-18deg);
+  transform-origin: left;
+}
+
+.loadedTruck {
+  position: absolute;
+  left: 12%;
+  bottom: 82px;
+  display: flex;
+  align-items: flex-end;
+  color: #d2bf8a;
+  filter: drop-shadow(0 16px 12px rgba(0, 0, 0, 0.38));
+  animation: truckToWarehouse 3s cubic-bezier(.18,.68,.24,1) forwards;
+}
+
+.truckCargo {
+  position: absolute;
+  left: -2px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 82px;
+  height: 54px;
+  padding: 8px;
+  color: #eadcae;
+  border: 1px solid rgba(210, 191, 138, 0.42);
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(145deg, #5d5032, #30291d);
+  transform: skewY(-2deg);
+  box-shadow: inset 8px 0 18px rgba(255, 255, 255, 0.04);
+}
+
+.truckCargo span {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.warehouseIcon {
+  position: absolute;
+  right: 8%;
+  bottom: 84px;
+  width: 118px;
+  height: 104px;
+  border: 1px solid rgba(210, 191, 138, 0.28);
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(90deg, rgba(210, 191, 138, 0.07) 0 18px, transparent 18px 36px),
+    linear-gradient(145deg, #2f3a31, #1a211c);
+  box-shadow: 14px 18px 30px rgba(0, 0, 0, 0.34);
+  transform: perspective(220px) rotateY(-7deg);
+}
+
+.warehouseRoof {
+  position: absolute;
+  left: -10px;
+  top: -24px;
+  width: 138px;
+  height: 44px;
+  border: 1px solid rgba(210, 191, 138, 0.24);
+  background: linear-gradient(145deg, #65705f, #30382f);
+  clip-path: polygon(50% 0, 100% 62%, 100% 100%, 0 100%, 0 62%);
+}
+
+.warehouseDoor {
+  position: absolute;
+  left: 36px;
+  bottom: 0;
+  width: 46px;
+  height: 58px;
+  border: 1px solid rgba(210, 191, 138, 0.24);
+  border-bottom: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(210, 191, 138, 0.08) 0 7px, transparent 7px 14px),
+    #111612;
+}
+
+.sendCaption {
+  position: absolute;
+  left: clamp(18px, 4vw, 42px);
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: calc(100% - 36px);
+  color: #dce7d7;
+}
+
+.sendCaption strong {
+  font-size: 20px;
+}
+
+.sendCaption span {
+  color: #aeb6ad;
+  font-size: 12px;
+}
+
+.cancelPackageButton {
+  color: #f1bd87 !important;
+  border: 1px solid rgba(226, 159, 92, 0.38) !important;
+  background: rgba(226, 159, 92, 0.12) !important;
+}
+
+.invalidatePackageButton {
+  color: #d5b8ea !important;
+  border: 1px solid rgba(164, 112, 194, 0.38) !important;
+  background: rgba(164, 112, 194, 0.14) !important;
 }
 
 .emptyState,
@@ -376,6 +700,21 @@
   .savedPackages {
     padding: 12px;
   }
+
+  .creationControls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .countField,
+  .createAction,
+  .createAction > * {
+    width: 100%;
+  }
+
+  .draftFields {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 440px) {
@@ -390,5 +729,78 @@
   .draftItem .fieldLabel {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .draftFields {
+    grid-template-columns: 1fr;
+  }
+
+  .draftCard .weightInput {
+    width: 100%;
+  }
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes confirmPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes truckToWarehouse {
+  0% {
+    left: 12%;
+    transform: translateY(0) rotateY(-8deg);
+  }
+  20% {
+    transform: translateY(-3px) rotateY(-8deg);
+  }
+  55% {
+    transform: translateY(-4px) rotateY(-8deg);
+  }
+  72% {
+    transform: translateY(-2px) rotateY(-8deg);
+  }
+  88% {
+    transform: translateY(0) rotateY(-8deg) scale(0.96);
+  }
+  100% {
+    left: calc(100% - 250px);
+    transform: translateY(2px) rotateY(-8deg) scale(0.94);
+  }
+}
+
+@media (max-width: 720px) {
+  .warehouseScene {
+    height: 230px;
+  }
+
+  .warehouseIcon {
+    right: 4%;
+    width: 92px;
+  }
+
+  .loadedTruck {
+    transform: scale(0.82);
+  }
+
+  @keyframes truckToWarehouse {
+    0% {
+      left: 4%;
+    }
+    100% {
+        left: calc(100% - 190px);
+    }
   }
 }

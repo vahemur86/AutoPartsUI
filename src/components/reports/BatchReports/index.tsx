@@ -71,6 +71,15 @@ const batchStatusKeys: Record<number, string> = {
   4: "cancelled",
 };
 
+const isToday = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return false;
+  const now = new Date();
+  return date.getFullYear() === now.getFullYear()
+    && date.getMonth() === now.getMonth()
+    && date.getDate() === now.getDate();
+};
+
 interface BatchSummaryCardProps {
   batch: Batch;
   expanded: boolean;
@@ -93,9 +102,10 @@ const BatchSummaryCard: FC<BatchSummaryCardProps> = ({
         : batch.status === 4
           ? styles.statusCancelled
           : styles.statusUnknown;
+  const today = isToday(batch.createdAt);
 
   return (
-    <article className={`${styles.batchCard} ${batch.hasPreventMergeItems ? styles.specialBatchCard : ""}`}>
+    <article className={`${styles.batchCard} ${today ? styles.todayBatchCard : ""} ${batch.hasPreventMergeItems ? styles.specialBatchCard : ""}`}>
       <header className={styles.batchCardHeader}>
         <div className={styles.batchIdentity}>
           <span className={styles.batchIcon} aria-hidden="true">
@@ -104,6 +114,12 @@ const BatchSummaryCard: FC<BatchSummaryCardProps> = ({
           <div className={styles.batchIdentityCopy}>
             <div className={styles.batchTitleLine}>
               <h2>{t("cashbox.batches.card.batchNumber", { id: batch.id })}</h2>
+              {today && (
+                <span className={styles.todayBadge}>
+                  <Clock3 size={11} aria-hidden="true" />
+                  {t("common.today")}
+                </span>
+              )}
               {batch.status !== 1 && (
                 <span className={`${styles.batchStatus} ${statusClass}`}>
                   {t(`cashbox.batches.statuses.${statusKey}`)}

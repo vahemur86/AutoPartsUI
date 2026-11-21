@@ -48,6 +48,15 @@ const formatDateTime = (value: string) => {
 
 const formatAmd = (value: number) => `${value.toLocaleString()} AMD`;
 
+const isToday = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return false;
+  const now = new Date();
+  return date.getFullYear() === now.getFullYear()
+    && date.getMonth() === now.getMonth()
+    && date.getDate() === now.getDate();
+};
+
 const formatDuration = (report: ZReport, t: ReturnType<typeof useTranslation>["t"]) => {
   const durationMs = new Date(report.closedAt).getTime() - new Date(report.openedAt).getTime();
   if (!Number.isFinite(durationMs) || durationMs < 0) return "-";
@@ -199,6 +208,7 @@ export const ZReports: FC = () => {
 
 const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
   const { t } = useTranslation();
+  const today = isToday(report.closedAt);
   const totalNonCashIn = report.totalNonCashInAmd ?? report.totalNonCashIn ?? 0;
   const totalNonCashOut = report.totalNonCashOutAmd ?? report.totalNonCashOut ?? 0;
   const differenceClass = report.diffPurchasesVsCashOutAmd < 0
@@ -208,7 +218,7 @@ const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
       : "";
 
   return (
-    <article className={styles.reportCard}>
+    <article className={`${styles.reportCard} ${today ? styles.todayReportCard : ""}`}>
       <header className={styles.cardHeader}>
         <div className={styles.reportIdentity}>
           <span className={styles.reportIcon} aria-hidden="true">
@@ -217,6 +227,12 @@ const ZReportCard: FC<{ report: ZReport }> = ({ report }) => {
           <div className={styles.identityCopy}>
             <div className={styles.reportTitleLine}>
               <h2>{t("cashbox.zReports.details.reportNumber", { id: report.id })}</h2>
+              {today && (
+                <span className={styles.todayBadge}>
+                  <Clock3 size={11} aria-hidden="true" />
+                  {t("common.today")}
+                </span>
+              )}
               <span className={styles.generatedBadge}>
                 <CheckCircle2 size={13} aria-hidden="true" />
                 {t("cashbox.zReports.details.generated")}

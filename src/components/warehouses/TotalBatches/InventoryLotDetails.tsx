@@ -36,6 +36,14 @@ export const InventoryLotDetails = ({ lot }: { lot: InventoryLot }) => {
         <span>{i18next.t("warehouses.totalBatches.columns.sealNumber")}</span>
         <strong>{lot.sealNumber || "—"}</strong>
       </div>
+      <div className={styles.lotDetail}>
+        <span>{i18next.t("warehouses.totalBatches.columns.lotType")}</span>
+        <strong>
+          {lot.isSpecialCustomerLot
+            ? t("warehouses.totalBatches.lotType.special")
+            : t("warehouses.totalBatches.lotType.general")}
+        </strong>
+      </div>
       {lot.sourceType && (
         <div className={styles.lotDetail}>
           <span>{i18next.t("warehouses.totalBatches.columns.sourceType")}</span>
@@ -48,6 +56,15 @@ export const InventoryLotDetails = ({ lot }: { lot: InventoryLot }) => {
           </strong>
         </div>
       )}
+      <div className={styles.lotDetail}>
+        <span>{i18next.t("warehouses.totalBatches.columns.specialCustomer")}</span>
+        <strong>
+          {lot.isSpecialCustomerLot
+            ? lot.specialCustomerName ??
+              (lot.specialCustomerId ? `#${lot.specialCustomerId}` : "-")
+            : t("warehouses.totalBatches.lotType.mergedFromMultiple")}
+        </strong>
+      </div>
       {lot.processingBatchId != null && (
         <div className={styles.lotDetail}>
           <span>{i18next.t("warehouses.totalBatches.columns.processingBatchId")}</span>

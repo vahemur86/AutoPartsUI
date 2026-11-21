@@ -38,21 +38,19 @@ export interface IronPowderPackageSourceBatch {
   createdAt: string;
 }
 
-export interface PowderPackageItemRequest {
-  powderBatchItemId: number;
+export interface PowderPackageRequest {
+  sealNumber: string;
   powderKg: number;
 }
 
 export interface CreatePowderPackageRequest {
   powderBatchId: number;
-  sealNumber: string;
-  items: PowderPackageItemRequest[];
+  packages: PowderPackageRequest[];
 }
 
 export interface CreateIronPowderPackageRequest {
   ironProcessingBatchId: number;
-  sealNumber: string;
-  powderKg: number;
+  packages: PowderPackageRequest[];
 }
 
 export interface PowderPackageItem {
@@ -76,7 +74,7 @@ export interface PowderPackage {
   ptPerKg_g: number;
   pdPerKg_g: number;
   rhPerKg_g: number;
-  status: 1 | 2 | 3;
+  status: 1 | 2 | 3 | 4;
   createdAt: string;
   createdByUserId: number;
   sentAt: string | null;

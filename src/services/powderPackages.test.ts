@@ -33,13 +33,38 @@ describe("powder packages API", () => {
   it("creates an iron powder package with its processing batch, seal, and weight", async () => {
     const request = {
       ironProcessingBatchId: 321,
-      sealNumber: "IRON-12",
-      powderKg: 3.125,
+      packages: [
+        { sealNumber: "IRON-12", powderKg: 3.125 },
+        { sealNumber: "IRON-13", powderKg: 2.875 },
+      ],
     };
-    vi.mocked(api.post).mockResolvedValue({ data: { id: 17 } });
+    vi.mocked(api.post).mockResolvedValue({ data: [{ id: 17 }, { id: 18 }] });
 
     await powderPackagesService.createIron(request);
 
     expect(api.post).toHaveBeenCalledWith("/admin/iron-shop/powder-packages", request);
+  });
+
+  it("creates a batch of catalyst packages in one request", async () => {
+    const request = {
+      powderBatchId: 123,
+      packages: [
+        { sealNumber: "N165", powderKg: 3 },
+        { sealNumber: "N166", powderKg: 3 },
+      ],
+    };
+    vi.mocked(api.post).mockResolvedValue({ data: [{ id: 20 }, { id: 21 }] });
+
+    await powderPackagesService.create(request);
+
+    expect(api.post).toHaveBeenCalledWith("/admin/powder-packages", request);
+  });
+
+  it("invalidates a ready or cancelled package", async () => {
+    vi.mocked(api.post).mockResolvedValue({ data: { id: 17, status: 4 } });
+
+    await powderPackagesService.invalidate(17);
+
+    expect(api.post).toHaveBeenCalledWith("/admin/powder-packages/17/invalidate");
   });
 });
